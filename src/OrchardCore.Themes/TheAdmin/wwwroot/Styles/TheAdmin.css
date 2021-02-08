@@ -15531,6 +15531,8 @@
     background: transparent !important; }
   [dir]:root[data-theme='default'] .CodeMirror-focused .CodeMirror-activeline-background {
     background: rgba(100, 100, 100, 0.1) !important; }
+  :root[data-theme='default'] .trumbowyg-fullscreen {
+    z-index: 1040; }
   :root[data-theme='default'] .switch {
     font-size: 1rem;
     position: relative; }
@@ -15748,7 +15750,7 @@
     bottom: 0;
     width: 260px;
     color: #343a40;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     background-color: #eaeaea; }
   [dir=ltr]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar {
@@ -15822,14 +15824,6 @@
         transition: width 0.2s ease-in-out; }
       [dir]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li {
         background-color: #eaeaea; }
-        :root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li:first-child:after {
-          content: "";
-          width: 92%;
-          height: 1px;
-          display: block; }
-        [dir]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li:first-child:after {
-          background: rgba(140, 130, 115, 0.13);
-          margin: 0px auto; }
       :root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > figure > ul > li {
         line-height: 2.5em; }
       :root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
@@ -15845,6 +15839,14 @@
         border-right: 3px solid;
         border-right-color: #0078d4;
         right: 0; }
+      :root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.new:after {
+        content: "";
+        width: 92%;
+        height: 1px;
+        display: block; }
+      [dir]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.new:after {
+        background: rgba(140, 130, 115, 0.13);
+        margin: 0px auto; }
       :root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin {
         overflow-y: auto;
         overflow-x: hidden;
@@ -32211,6 +32213,8 @@
     background: transparent !important; }
   [dir]:root[data-theme='darkmode'] .CodeMirror-focused .CodeMirror-activeline-background {
     background: rgba(100, 100, 100, 0.1) !important; }
+  :root[data-theme='darkmode'] .trumbowyg-fullscreen {
+    z-index: 1040; }
   :root[data-theme='darkmode'] .switch {
     font-size: 1rem;
     position: relative; }
@@ -32428,7 +32432,7 @@
     bottom: 0;
     width: 260px;
     color: #b5afa6;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     background-color: #242728; }
   [dir=ltr]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar {
@@ -32502,14 +32506,6 @@
         transition: width 0.2s ease-in-out; }
       [dir]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li {
         background-color: #242728; }
-        :root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li:first-child:after {
-          content: "";
-          width: 92%;
-          height: 1px;
-          display: block; }
-        [dir]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li:first-child:after {
-          background: rgba(140, 130, 115, 0.13);
-          margin: 0px auto; }
       :root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > figure > ul > li {
         line-height: 2.5em; }
       :root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
@@ -32525,6 +32521,14 @@
         border-right: 3px solid;
         border-right-color: #0078d4;
         right: 0; }
+      :root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.new:after {
+        content: "";
+        width: 92%;
+        height: 1px;
+        display: block; }
+      [dir]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.new:after {
+        background: rgba(140, 130, 115, 0.13);
+        margin: 0px auto; }
       :root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin {
         overflow-y: auto;
         overflow-x: hidden;

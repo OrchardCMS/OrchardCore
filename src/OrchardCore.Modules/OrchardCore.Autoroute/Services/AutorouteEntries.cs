@@ -32,7 +32,7 @@ namespace OrchardCore.Autoroute.Services
         {
             await EnsureInitializedAsync();
 
-            if (_contentItemIds.TryGetValue(path, out var entry))
+            if (_contentItemIds.TryGetValue(path.TrimEnd('/'), out var entry))
             {
                 return (true, entry);
             }

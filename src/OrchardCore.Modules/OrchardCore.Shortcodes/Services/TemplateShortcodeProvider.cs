@@ -1,6 +1,6 @@
-
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.ViewModels;
@@ -34,6 +34,12 @@ namespace OrchardCore.Shortcodes.Services
                 return null;
             }
 
+            // Check if a shortcode template is recursively called.
+            if (!(_liquidTemplateManager.Context.LocalScope.GetValue(identifier) is NilValue))
+            {
+                return null;
+            }
+
             var model = new ShortcodeViewModel
             {
                 Args = arguments,
@@ -44,7 +50,21 @@ namespace OrchardCore.Shortcodes.Services
             return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
                 scope =>
                 {
-                    scope.SetValue("Content", model.Content);
+                    // Used for recursion checking.
+                    scope.SetValue(identifier, "");
+
+                    // Don't conflict with the liquid scope 'Content' property.
+                    var content = scope.GetValue("Content").ToObjectValue();
+                    if (content is LiquidContentAccessor contentAccessor)
+                    {
+                        contentAccessor.Content = model.Content ?? "";
+                        scope.SetValue("Content", contentAccessor);
+                    }
+                    else
+                    {
+                        scope.SetValue("Content", model.Content ?? "");
+                    }
+
                     scope.SetValue("Args", model.Args);
                     scope.SetValue("Context", model.Context);
                 });
