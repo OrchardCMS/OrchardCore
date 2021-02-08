@@ -29,6 +29,7 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select Avg(a)", "SELECT Avg([a]);")]
         [InlineData("select Min(*)", "SELECT Min(*);")]
         [InlineData("select distinct a", "SELECT DISTINCT [a];")]
+        [InlineData("select Now()", "SELECT Now();")]
         public void ShouldParseSelectClause(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
