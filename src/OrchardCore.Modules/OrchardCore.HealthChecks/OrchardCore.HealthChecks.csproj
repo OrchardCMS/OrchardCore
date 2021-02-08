@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <!-- NuGet properties-->
     <Title>OrchardCore HealthChecks</Title>
     <Description>$(OCFrameworkDescription)
-    
+
     This module provides health check for the website.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework Infrastructure</PackageTags>
   </PropertyGroup>

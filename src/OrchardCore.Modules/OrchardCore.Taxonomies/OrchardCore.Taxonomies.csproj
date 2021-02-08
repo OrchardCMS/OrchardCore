@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
     <Title>OrchardCore Taxonomies</Title>
     <Description>$(OCCMSDescription)
-    
+
     The taxonomies module provides a way to categorize content items.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>

@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <!-- NuGet properties-->
     <Title>OrchardCore Resources</Title>
     <Description>$(OCFrameworkDescription)
-    
+
     The Resources module provides popular javascript libraries and stylesheet libraries.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>

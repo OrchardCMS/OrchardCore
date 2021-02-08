@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <!-- NuGet properties-->
     <Title>OrchardCore Response Compression</Title>
     <Description>$(OCFrameworkDescription)
-    
+
     The Response Compression module provides the gzip compression.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>

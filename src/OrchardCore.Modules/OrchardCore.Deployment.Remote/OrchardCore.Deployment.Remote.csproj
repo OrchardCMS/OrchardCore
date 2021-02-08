@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
       <!-- NuGet properties-->
     <Title>OrchardCore Remote Deployment</Title>
     <Description>$(OCCMSDescription)
-    
+
     Provides Remote Deployment.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>

@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <RootNamespace>OrchardCore.Users</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Users Core</Title>
     <Description>$(OCCMSDescription)
-    
+
     Core implementation for Users module.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
