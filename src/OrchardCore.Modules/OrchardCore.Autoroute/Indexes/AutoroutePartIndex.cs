@@ -16,6 +16,11 @@ namespace OrchardCore.ContentManagement.Records
     public class AutoroutePartIndex : MapIndex
     {
         /// <summary>
+        /// The id of the document.
+        /// </summary>
+        public int DocumentId { get; set; }
+
+        /// <summary>
         /// The container content item id.
         /// </summary>
         public string ContentItemId { get; set; }
@@ -74,7 +79,7 @@ namespace OrchardCore.ContentManagement.Records
             return Task.CompletedTask;
         }
 
-        public override async Task UpdatedAsync(UpdateContentContext context)
+        public override async Task PublishedAsync(PublishContentContext context)
         {
             var part = context.ContentItem.As<AutoroutePart>();
 
@@ -116,7 +121,7 @@ namespace OrchardCore.ContentManagement.Records
                         return null;
                     }
 
-                    // When the part has been removed from the type definition, we still need to process the index.
+                    // If the part was removed from the type definition, a record is still added.
                     var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
 
                     var part = contentItem.As<AutoroutePart>();
@@ -127,7 +132,7 @@ namespace OrchardCore.ContentManagement.Records
 
                     var results = new List<AutoroutePartIndex>
                     {
-                        // If the part is disabled, or removed, a record is still added but with a null path.
+                        // If the part is disabled or was removed, a record is still added but with a null path.
                         new AutoroutePartIndex
                         {
                             ContentItemId = contentItem.ContentItemId,

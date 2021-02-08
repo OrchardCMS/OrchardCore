@@ -134,21 +134,33 @@ namespace OrchardCore.ContentLocalization.Services
                 {
                     var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId).ListAsync();
 
-                    RemoveEntries(indexes.Where(i => !i.Published)
-                        .Select(i => new LocalizationEntry
-                        {
-                            ContentItemId = i.ContentItemId,
-                            LocalizationSet = i.LocalizationSet,
-                            Culture = i.Culture.ToLowerInvariant()
-                        }));
+                    // A drafts is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
+                    // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
+                    // is not updated for the published version that may be already scanned, so the entry may not be re-added.
 
-                    AddEntries(indexes.Where(i => i.Published)
+                    var entriesToRemove = indexes
+                        .Where(i => !i.Published || i.Culture == null)
+                        .SelectMany(i => _localizations.Values.Where(e =>
+                            // The item was removed.
+                            ((!i.Published && !i.Latest) ||
+                            // The part was removed.
+                            (i.Culture == null && i.Published) ||
+                            // The item was unpublished.
+                            (!i.Published && e.DocumentId == i.DocumentId)) &&
+                            (e.ContentItemId == i.ContentItemId)));
+
+                    var entriesToAdd = indexes.
+                        Where(i => i.Published && i.Culture != null)
                         .Select(i => new LocalizationEntry
                         {
+                            DocumentId = i.DocumentId,
                             ContentItemId = i.ContentItemId,
                             LocalizationSet = i.LocalizationSet,
                             Culture = i.Culture.ToLowerInvariant()
-                        }));
+                        });
+
+                    RemoveEntries(entriesToRemove);
+                    AddEntries(entriesToAdd);
 
                     _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
                     _stateIdentifier = state.Identifier;
@@ -174,14 +186,16 @@ namespace OrchardCore.ContentLocalization.Services
                 {
                     var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
 
-                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published).ListAsync();
-
-                    AddEntries(indexes.Select(i => new LocalizationEntry
+                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null).ListAsync();
+                    var entries = indexes.Select(i => new LocalizationEntry
                     {
+                        DocumentId = i.DocumentId,
                         ContentItemId = i.ContentItemId,
                         LocalizationSet = i.LocalizationSet,
                         Culture = i.Culture.ToLowerInvariant()
-                    }));
+                    });
+
+                    AddEntries(entries);
 
                     _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
                     _stateIdentifier = state.Identifier;

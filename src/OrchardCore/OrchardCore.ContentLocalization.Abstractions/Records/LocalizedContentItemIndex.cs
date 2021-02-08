@@ -14,6 +14,7 @@ namespace OrchardCore.ContentLocalization.Records
 {
     public class LocalizedContentItemIndex : MapIndex
     {
+        public int DocumentId { get; set; }
         public string ContentItemId { get; set; }
         public string LocalizationSet { get; set; }
         public string Culture { get; set; }
@@ -48,7 +49,7 @@ namespace OrchardCore.ContentLocalization.Records
             return Task.CompletedTask;
         }
 
-        public override Task UpdatedAsync(UpdateContentContext context)
+        public override Task PublishedAsync(PublishContentContext context)
         {
             var part = context.ContentItem.As<LocalizationPart>();
 
@@ -87,15 +88,19 @@ namespace OrchardCore.ContentLocalization.Records
                         return null;
                     }
 
+                    // If the part was removed from the type definition, a record is still added.
+                    var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
+
                     var part = contentItem.As<LocalizationPart>();
-                    if (part == null || String.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null)
+                    if (!partRemoved && (part == null || String.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null))
                     {
                         return null;
                     }
 
+                    // If the part was removed, a record is still added but with a null Culture.
                     return new LocalizedContentItemIndex
                     {
-                        Culture = part.Culture.ToLowerInvariant(),
+                        Culture = !partRemoved ? part.Culture.ToLowerInvariant() : null,
                         LocalizationSet = part.LocalizationSet,
                         ContentItemId = contentItem.ContentItemId,
                         Published = contentItem.Published,
