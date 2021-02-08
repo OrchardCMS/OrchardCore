@@ -569,8 +569,6 @@
         padding-left: 17px; }
     [dir=rtl]:root[data-theme='default'] .modal-dialog.media-modal {
       padding-right: 17px; } }
-  :root[data-theme='default'] #mediaModalBody.html-body-part {
-    z-index: 99999; }
   :root[data-theme='default'] #createFolderModal, :root[data-theme='default'] #renameMediaModal {
     z-index: 100000; }
   :root[data-theme='default'] .modal-body #media-pager .page-number, :root[data-theme='default'] .modal-body #media-pager .media-first-button, :root[data-theme='default'] .modal-body #media-pager .media-last-button {
@@ -1158,8 +1156,6 @@
         padding-left: 17px; }
     [dir=rtl]:root[data-theme='darkmode'] .modal-dialog.media-modal {
       padding-right: 17px; } }
-  :root[data-theme='darkmode'] #mediaModalBody.html-body-part {
-    z-index: 99999; }
   :root[data-theme='darkmode'] #createFolderModal, :root[data-theme='darkmode'] #renameMediaModal {
     z-index: 100000; }
   :root[data-theme='darkmode'] .modal-body #media-pager .page-number, :root[data-theme='darkmode'] .modal-body #media-pager .media-first-button, :root[data-theme='darkmode'] .modal-body #media-pager .media-last-button {

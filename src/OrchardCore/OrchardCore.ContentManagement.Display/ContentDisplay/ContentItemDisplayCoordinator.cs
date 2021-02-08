@@ -226,7 +226,7 @@ namespace OrchardCore.ContentManagement.Display
             dynamic partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
                 Arguments.From(new
                 {
-                    ContentItem = contentItem
+                    Identifier = contentItem.ContentItemId
                 }));
 
             contentShape.Zones["Parts"] = partsShape;
@@ -326,7 +326,7 @@ namespace OrchardCore.ContentManagement.Display
             dynamic partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
                 Arguments.From(new
                 {
-                    ContentItem = contentItem
+                    Identifier = contentItem.ContentItemId
                 }));
 
             contentShape.Zones["Parts"] = partsShape;
