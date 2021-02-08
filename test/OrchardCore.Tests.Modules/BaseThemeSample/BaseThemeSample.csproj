@@ -5,7 +5,7 @@
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
   </PropertyGroup>
 
   <ItemGroup>

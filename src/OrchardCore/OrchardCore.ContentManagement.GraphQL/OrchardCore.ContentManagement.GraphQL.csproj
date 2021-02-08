@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
-    
+    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
+
     <!-- NuGet properties-->
     <Title>OrchardCore GraphQL for ContentManagement</Title>
     <Description>$(OCCMSDescription)

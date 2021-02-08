@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <RootNamespace>OrchardCore.Workflows</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Workflows Abstractions</Title>

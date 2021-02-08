@@ -1,10 +1,32 @@
 <Project>
   <PropertyGroup>
-    <AspNetCoreVersion>3.1.12</AspNetCoreVersion>
-    <AspNetCoreTargetFramework>netcoreapp3.1</AspNetCoreTargetFramework>
+    <AspNetCoreTargetFrameworks>netcoreapp3.1;net5.0</AspNetCoreTargetFrameworks>
+    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
   </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(TargetFramework)' == 'net5.0' ">
+      <PropertyGroup>
+        <AspNetCoreVersion>5.0.1</AspNetCoreVersion>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <!--
+      Fallback when not targetting .net 5.0.
+      At this time, that would mean .net core 3.1.  If there are more target frameworks in the future,
+      this logic should change slightly.
+      -->
+      <PropertyGroup>
+        <AspNetCoreVersion>3.1.12</AspNetCoreVersion>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
   <ItemGroup>
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCoreVersion)" />
+    <!-- Needs to stay at older package due to items being obsoleted -->
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.1.12" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCoreVersion)" />

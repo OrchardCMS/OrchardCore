@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <!-- NuGet properties-->
     <Title>OrchardCore Azure DataProtection</Title>
     <Description>$(OCFrameworkDescription)

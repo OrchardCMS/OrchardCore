@@ -6,7 +6,7 @@
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.props" />
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <PreserveCompilationReferences>true</PreserveCompilationReferences>

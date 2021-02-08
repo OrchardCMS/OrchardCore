@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework> -->
     <RootNamespace>OrchardCore.Indexing</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Indexing Abstractions</Title>
