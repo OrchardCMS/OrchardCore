@@ -35,11 +35,10 @@
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        QueryString queryString;
-
-        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+        var queryString = String.Empty;
+        if (!String.IsNullOrEmpty(shellSettingsEntry.Token))
         {
-            queryString = QueryString.Create("token", shellSettingsEntry.Token);
+            queryString = QueryString.Create("token", shellSettingsEntry.Token).ToString();
         }
 
         return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";

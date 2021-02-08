@@ -319,11 +319,10 @@ namespace OrchardCore.Tenants.Controllers
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
 
-            QueryString queryString;
-
+            var queryString = String.Empty;
             if (!String.IsNullOrEmpty(token))
             {
-                queryString = QueryString.Create("token", token);
+                queryString = QueryString.Create("token", token).ToString();
             }
 
             return $"{Request.Scheme}://{hostString + pathString + queryString}";
