@@ -84,7 +84,7 @@ namespace OrchardCore.Workflows
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 3;
+            return 4;
         }
 
         // This code can be removed in a later version.
