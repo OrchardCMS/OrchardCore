@@ -16,7 +16,7 @@
   <!-- Add a ".props" file in the package specific to the "Theme" module type -->
   <ItemGroup>
     <None Include="OrchardCore.Theme.Targets.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Theme.Targets.props</PackagePath>
+      <PackagePath>build\OrchardCore.Theme.Targets.props</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>

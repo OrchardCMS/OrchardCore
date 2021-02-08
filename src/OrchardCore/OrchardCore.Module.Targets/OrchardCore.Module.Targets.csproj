@@ -16,13 +16,13 @@
   <!-- Add the OrchardCore.Module.props file in the package -->
   <ItemGroup>
     <None Include="OrchardCore.Module.Targets.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Module.Targets.props</PackagePath>
+      <PackagePath>build\OrchardCore.Module.Targets.props</PackagePath>
     </None>
     <None Include="OrchardCore.Module.Targets.targets" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Module.Targets.targets</PackagePath>
+      <PackagePath>build\OrchardCore.Module.Targets.targets</PackagePath>
     </None>
     <None Include="Package.Build.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\Package.Build.props</PackagePath>
+      <PackagePath>build\Package.Build.props</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -12,10 +12,10 @@
   <!-- Add ".props" and ".targets" files in the package specific to the "Cms.Core" bundle -->
   <ItemGroup>
     <None Include="OrchardCore.Application.Cms.Core.Targets.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Application.Cms.Core.Targets.props</PackagePath>
+      <PackagePath>build\OrchardCore.Application.Cms.Core.Targets.props</PackagePath>
     </None>
     <None Include="OrchardCore.Application.Cms.Core.Targets.targets" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Application.Cms.Core.Targets.targets</PackagePath>
+      <PackagePath>build\OrchardCore.Application.Cms.Core.Targets.targets</PackagePath>
     </None>
   </ItemGroup>
 
