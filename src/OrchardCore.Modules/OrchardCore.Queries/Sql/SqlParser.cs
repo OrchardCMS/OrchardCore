@@ -446,7 +446,9 @@ namespace OrchardCore.Queries.Sql
             IList<string> arguments;
             var tempBuilder = _builder;
 
-            if (funCall.ChildNodes[1].ChildNodes[0].Term.Name == "selectStatement")
+            if (funCall.ChildNodes[1].ChildNodes.Count == 0) {
+                arguments = new string[] { };
+            } else if (funCall.ChildNodes[1].ChildNodes[0].Term.Name == "selectStatement")
             {
                 // selectStatement
                 _builder = new StringBuilder();
