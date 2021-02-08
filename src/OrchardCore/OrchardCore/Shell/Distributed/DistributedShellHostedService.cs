@@ -456,7 +456,6 @@ namespace OrchardCore.Environment.Shell.Distributed
             // Check if the default tenant has changed.
             if (_defaultContext != defaultContext)
             {
-                _defaultContext = defaultContext;
                 var previousContext = _context;
 
                 // Create a new distributed context based on the default tenant.
