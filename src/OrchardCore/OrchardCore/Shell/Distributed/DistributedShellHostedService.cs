@@ -93,7 +93,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     var context = await GetOrCreateDistributedContextAsync(defaultContext);
 
                     // If the required distributed features are not enabled, nothing to do.
-                    var distributedCache = context.DistributedCache;
+                    var distributedCache = context?.DistributedCache;
                     if (distributedCache == null)
                     {
                         continue;
@@ -252,7 +252,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             using var context = await CreateDistributedContextAsync(defautSettings);
 
             // If the required distributed features are not enabled, nothing to do.
-            var distributedCache = context.DistributedCache;
+            var distributedCache = context?.DistributedCache;
             if (distributedCache == null)
             {
                 return;
@@ -318,7 +318,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             using var context = await AcquireOrCreateDistributedContextAsync(settings);
 
             // If the required distributed features are not enabled, nothing to do.
-            var distributedCache = context.DistributedCache;
+            var distributedCache = context?.DistributedCache;
             if (distributedCache == null)
             {
                 return;
@@ -369,7 +369,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             using var context = await AcquireOrCreateDistributedContextAsync(settings);
 
             // If the required distributed features are not enabled, nothing to do.
-            var distributedCache = context.DistributedCache;
+            var distributedCache = context?.DistributedCache;
             if (distributedCache == null)
             {
                 return;
@@ -410,10 +410,43 @@ namespace OrchardCore.Environment.Shell.Distributed
         private string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
 
         /// <summary>
+        /// Creates a distributed context based on the default tenant settings and descriptor.
+        /// </summary>
+        private async Task<DistributedContext> CreateDistributedContextAsync(ShellContext defaultShell)
+        {
+            if (defaultShell.Blueprint?.Descriptor == null)
+            {
+                return await CreateDistributedContextAsync(defaultShell.Settings);
+            }
+
+            // Using the current shell descritor prevents a database access, and a race condition
+            // when resolving `IStore` while the default tenant is activating and does migrations.
+            try
+            {
+                return new DistributedContext(await _shellContextFactory.CreateDescribedContextAsync(
+                    defaultShell.Settings,
+                    defaultShell.Blueprint.Descriptor));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Creates a distributed context based on the default tenant settings.
         /// </summary>
-        private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings defaultSettings) =>
-            new DistributedContext(await _shellContextFactory.CreateShellContextAsync(defaultSettings));
+        private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings defaultSettings)
+        {
+            try
+            {
+                return new DistributedContext(await _shellContextFactory.CreateShellContextAsync(defaultSettings));
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Gets the distributed context or creates a new one if the default tenant has changed.
@@ -423,11 +456,15 @@ namespace OrchardCore.Environment.Shell.Distributed
             // Check if the default tenant has changed.
             if (_defaultContext != defaultContext)
             {
-                _defaultContext = defaultContext;
                 var previousContext = _context;
 
-                // Create a new distributed context based on the default tenant settings.
-                _context = await CreateDistributedContextAsync(defaultContext.Settings);
+                // Create a new distributed context based on the default tenant.
+                _context = await CreateDistributedContextAsync(defaultContext);
+
+                if (_context != null)
+                {
+                    _defaultContext = defaultContext;
+                }
 
                 // Release the previous one.
                 previousContext?.Release();
