@@ -49,7 +49,17 @@ namespace OrchardCore.Rules
             services
                 .AddScoped<IDisplayDriver<Condition>, JavascriptConditionDisplayDriver>()
                 .AddCondition<JavascriptCondition, JavascriptConditionEvaluator, ConditionFactory<JavascriptCondition>>();
-                
+
+            // Is authenticated condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, IsAuthenticatedConditionDisplayDriver>()
+                .AddCondition<IsAuthenticatedCondition, IsAuthenticatedConditionEvaluator, ConditionFactory<IsAuthenticatedCondition>>();
+
+            // Is anonymous condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, IsAnonymousConditionDisplayDriver>()
+                .AddCondition<IsAnonymousCondition, IsAnonymousConditionEvaluator, ConditionFactory<IsAnonymousCondition>>();                       
+
             services.AddScoped<IDisplayManager<Condition>, DisplayManager<Condition>>();
 
             services.AddSingleton<IConditionIdGenerator, ConditionIdGenerator>();

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,18 +10,18 @@ namespace OrchardCore.Rules.ViewComponents
 {
     public class SelectStringOperationViewComponent : ViewComponent
     {
-        private readonly ConditionOperatorOptions _ruleOperatorOptions;
+        private readonly ConditionOperatorOptions _options;
 
         public SelectStringOperationViewComponent(IOptions<ConditionOperatorOptions> options)
         {
-            _ruleOperatorOptions = options.Value;
+            _options = options.Value;
         }
 
         public IViewComponentResult Invoke(string selectedOperation, string htmlName)
         {
-            var stringComparers = _ruleOperatorOptions.Operators.Where(x => typeof(StringOperator).IsAssignableFrom(x.Operator));
+            var stringOperators = _options.Operators.Where(x => typeof(StringOperator).IsAssignableFrom(x.Operator));
 
-            var items = stringComparers
+            var items = stringOperators
                 .Select(x => 
                     new SelectListItem(
                         x.DisplayText, 

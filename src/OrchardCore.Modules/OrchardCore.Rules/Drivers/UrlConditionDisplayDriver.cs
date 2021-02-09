@@ -31,9 +31,9 @@ namespace OrchardCore.Rules.Drivers
         {
             return Initialize<UrlConditionViewModel>("UrlCondition_Fields_Edit", model =>
             {
-                if (condition.Operation != null && _options.FactoriesByType.TryGetValue(condition.Operation.GetType(), out var factory))
+                if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
                 {
-                    model.SelectedOperation = factory.Name;
+                    model.SelectedOperation = option.Factory.Name;
                 }
                 model.Value = condition.Value;
                 model.Condition = condition;

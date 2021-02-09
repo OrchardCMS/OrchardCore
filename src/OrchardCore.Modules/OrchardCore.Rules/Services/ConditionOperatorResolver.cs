@@ -14,9 +14,9 @@ namespace OrchardCore.Rules.Services
 
         public IOperatorComparer GetOperatorComparer(ConditionOperator conditionOperator)
         {
-            if (_options.Comparers.TryGetValue(conditionOperator.GetType(), out var operatorComparer))
+            if (_options.ConditionOperatorOptionByType.TryGetValue(conditionOperator.GetType(), out var option))
             {
-                return operatorComparer;
+                return option.Comparer;
             }
 
             throw new InvalidOperationException($"Operator comparer for '{conditionOperator.GetType().Name}; not registered");

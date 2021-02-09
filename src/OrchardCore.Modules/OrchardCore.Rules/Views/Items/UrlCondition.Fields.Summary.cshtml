@@ -1,3 +1,11 @@
 @model ShapeViewModel<UrlCondition>
-@*TODO localize condition *@
-<span>@T["Url condition"] - Url @Model.Value.Operation?.ToString() @Model.Value.Value</span>
+@using Microsoft.Extensions.Options
+@inject IOptions<ConditionOperatorOptions> Options;
+@{
+    var displayText = String.Empty;
+    if (Model.Value.Operation != null && Options.Value.ConditionOperatorOptionByType.TryGetValue(Model.Value.Operation.GetType(), out var option))
+    {
+        displayText = option.DisplayText;
+    }
+}
+<span>@T["Url"] - @displayText @Model.Value.Value</span>

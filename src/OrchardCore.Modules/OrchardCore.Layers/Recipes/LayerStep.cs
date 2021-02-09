@@ -37,6 +37,7 @@ namespace OrchardCore.Layers.Recipes
 
                 if (existing != null)
                 {
+                    // TODO migrate
                     // Replace any property that is set in the recipe step
                     if (!String.IsNullOrEmpty(layer.Rule))
                     {
