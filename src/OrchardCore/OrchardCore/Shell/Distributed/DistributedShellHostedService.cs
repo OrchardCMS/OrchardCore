@@ -414,23 +414,23 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private async Task<DistributedContext> CreateDistributedContextAsync(ShellContext defaultShell)
         {
-            // Capture the descriptor as the blueprint may be set to null.
+            // Capture the descriptor as the blueprint may be set to null right after.
             var descriptor = defaultShell.Blueprint?.Descriptor;
-            if (descriptor == null)
+            if (descriptor != null)
             {
-                return await CreateDistributedContextAsync(defaultShell.Settings);
+                // Using the current shell descritor prevents a database access, and a race condition
+                // when resolving `IStore` while the default tenant is activating and does migrations.
+                try
+                {
+                    return new DistributedContext(await _shellContextFactory.CreateDescribedContextAsync(defaultShell.Settings, descriptor));
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
-            // Using the current shell descritor prevents a database access, and a race condition
-            // when resolving `IStore` while the default tenant is activating and does migrations.
-            try
-            {
-                return new DistributedContext(await _shellContextFactory.CreateDescribedContextAsync(defaultShell.Settings, descriptor));
-            }
-            catch
-            {
-                return null;
-            }
+            return await CreateDistributedContextAsync(defaultShell.Settings);
         }
 
         /// <summary>
