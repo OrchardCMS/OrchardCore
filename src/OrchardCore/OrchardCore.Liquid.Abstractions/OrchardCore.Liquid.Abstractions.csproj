@@ -16,7 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fluid.Core" />
+    <!--<PackageReference Include="Fluid.Core" />-->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\fluid\Fluid\Fluid.csproj" />
   </ItemGroup>
 
 </Project>

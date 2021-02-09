@@ -1,5 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -51,7 +53,7 @@ namespace OrchardCore.ContentFields.Drivers
                 if (!settings.SanitizeHtml)
                 {
                     model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model,
-                        scope => scope.SetValue("ContentItem", field.ContentItem));
+                        context => context.SetValue("ContentItem", field.ContentItem));
                 }
 
                 model.Html = await _shortcodeService.ProcessAsync(model.Html,

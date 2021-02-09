@@ -12,16 +12,13 @@ using OrchardCore.Taxonomies.Fields;
 
 namespace OrchardCore.Taxonomies.Liquid
 {
-    public class TaxonomyTermsFilter : ILiquidFilter
+    public static class TaxonomyTermsFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static async ValueTask<FluidValue> TaxonomyTerms(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'taxonomy_terms'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
-            var contentManager = ((IServiceProvider)services).GetRequiredService<IContentManager>();
+            var contentManager = context.Services.GetRequiredService<IContentManager>();
 
             string taxonomyContentItemId = null;
             string[] termContentItemIds = null;
@@ -68,7 +65,7 @@ namespace OrchardCore.Taxonomies.Liquid
                 }
             }
 
-            return FluidValue.Create(terms);
+            return FluidValue.Create(terms, ctx.Options);
         }
     }
 }

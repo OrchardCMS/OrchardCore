@@ -1,6 +1,8 @@
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -62,7 +64,7 @@ namespace OrchardCore.ContentFields.GraphQL
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
                 html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", ctx.Source.ContentItem));
+                    context => context.SetValue("ContentItem", ctx.Source.ContentItem));
             }
 
             return await shortcodeService.ProcessAsync(html,

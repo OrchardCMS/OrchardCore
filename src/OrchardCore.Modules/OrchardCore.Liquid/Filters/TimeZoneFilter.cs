@@ -3,21 +3,18 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public class TimeZoneFilter : ILiquidFilter
+    public static class TimeZoneFilter
     {
-        private readonly ILocalClock _localClock;
-
-        public TimeZoneFilter(ILocalClock localClock)
+        public static async ValueTask<FluidValue> Local(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            _localClock = localClock;
-        }
+            var orchardContext = (LiquidTemplateContext)context;
+            var localClock = orchardContext.Services.GetRequiredService<ILocalClock>();
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
             var value = DateTimeOffset.MinValue;
 
             if (input.Type == FluidValues.String)
@@ -26,11 +23,11 @@ namespace OrchardCore.Liquid.Filters
 
                 if (stringValue == "now" || stringValue == "today")
                 {
-                    value = await _localClock.LocalNowAsync;
+                    value = await localClock.LocalNowAsync;
                 }
                 else
                 {
-                    if (!DateTimeOffset.TryParse(stringValue, context.CultureInfo, DateTimeStyles.AssumeUniversal, out value))
+                    if (!DateTimeOffset.TryParse(stringValue, context.Options.CultureInfo, DateTimeStyles.AssumeUniversal, out value))
                     {
                         return NilValue.Instance;
                     }
@@ -53,7 +50,7 @@ namespace OrchardCore.Liquid.Filters
                 }
             }
 
-            return new ObjectValue(await _localClock.ConvertToLocalAsync(value));
+            return new ObjectValue(await localClock.ConvertToLocalAsync(value));
         }
     }
 }

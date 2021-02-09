@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Web;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
@@ -206,12 +207,35 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
-            services.AddLiquidFilter<HasPermissionFilter>("has_permission");
-            services.AddLiquidFilter<HasClaimFilter>("has_claim");
-            services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
-            services.AddLiquidFilter<UserEmailFilter>("user_email");
-            services.AddLiquidFilter<UserIdFilter>("user_id");
-            services.AddLiquidFilter<UsersByIdFilter>("users_by_id");
+
+            services.Configure<TemplateOptions>(o =>
+           {
+               o.Filters.AddFilter("has_permission", UserFilters.HasPermission);
+               o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
+               o.Filters.AddFilter("is_in_role", UserFilters.IsInRole);
+               o.Filters.AddFilter("user_email", UserFilters.UserEmail);
+               o.Filters.AddFilter("user_id", UserFilters.UserId);
+               o.Filters.AddFilter("users_by_id", UserFilters.UsersById);
+
+               o.MemberAccessStrategy.Register<User>(
+                    nameof(User.UserId),
+                    nameof(User.UserName),
+                    nameof(User.NormalizedUserName),
+                    nameof(User.Email),
+                    nameof(User.NormalizedEmail),
+                    nameof(User.EmailConfirmed),
+                    nameof(User.IsEnabled),
+                    nameof(User.RoleNames),
+                    nameof(User.Properties)
+                );
+
+                o.MemberAccessStrategy.Register<ClaimsPrincipal>();
+                o.MemberAccessStrategy.Register<ClaimsIdentity>();
+
+               // TODO: define in TemplateOptions.Scope
+               var user = _httpContextAccessor.HttpContext.User;
+               o.Scope.SetValue("User", user);
+           });
         }
     }
 
@@ -236,11 +260,6 @@ namespace OrchardCore.Users
         private const string ChangeEmailPath = "ChangeEmail";
         private const string ChangeEmailConfirmationPath = "ChangeEmailConfirmation";
 
-        static ChangeEmailStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ChangeEmailViewModel>();
-        }
-
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
@@ -260,6 +279,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
+            });
+
             services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
         }
@@ -286,11 +310,6 @@ namespace OrchardCore.Users
     {
         private const string RegisterPath = "Register";
 
-        static RegistrationStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ConfirmEmailViewModel>();
-        }
-
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
@@ -303,6 +322,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
+            });
+
             services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         }
@@ -331,11 +355,6 @@ namespace OrchardCore.Users
         private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
-
-        static ResetPasswordStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<LostPasswordViewModel>();
-        }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -367,6 +386,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<LostPasswordViewModel>();
+            });
+
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
         }

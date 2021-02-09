@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Models;
@@ -35,7 +36,7 @@ namespace OrchardCore.Shortcodes.Services
             }
 
             // Check if a shortcode template is recursively called.
-            if (!(_liquidTemplateManager.Context.LocalScope.GetValue(identifier) is NilValue))
+            if (!(_liquidTemplateManager.Context.GetValue(identifier) is NilValue))
             {
                 return null;
             }
@@ -48,25 +49,25 @@ namespace OrchardCore.Shortcodes.Services
             };
 
             return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
-                scope =>
+                context =>
                 {
                     // Used for recursion checking.
-                    scope.SetValue(identifier, "");
+                    context.SetValue(identifier, "");
 
                     // Don't conflict with the liquid scope 'Content' property.
-                    var content = scope.GetValue("Content").ToObjectValue();
+                    var content = context.GetValue("Content").ToObjectValue();
                     if (content is LiquidContentAccessor contentAccessor)
                     {
                         contentAccessor.Content = model.Content ?? "";
-                        scope.SetValue("Content", contentAccessor);
+                        context.SetValue("Content", contentAccessor);
                     }
                     else
                     {
-                        scope.SetValue("Content", model.Content ?? "");
+                        context.SetValue("Content", model.Content ?? "");
                     }
 
-                    scope.SetValue("Args", model.Args);
-                    scope.SetValue("Context", model.Context);
+                    context.SetValue("Args", model.Args);
+                    context.SetValue("Context", model.Context);
                 });
         }
     }

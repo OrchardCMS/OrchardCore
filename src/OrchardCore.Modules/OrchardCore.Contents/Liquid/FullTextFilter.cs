@@ -12,19 +12,14 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    public class FullTextFilter : ILiquidFilter
+    public class FullTextFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static async ValueTask<FluidValue> FullText(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'full_text_aspect'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
-            var serviceProvider = (IServiceProvider)services;
-
-            var contentManager = serviceProvider.GetRequiredService<IContentManager>();
-            var fullTextRecursionHelper = serviceProvider.GetRequiredService<IContentItemRecursionHelper<FullTextFilter>>();
+            var contentManager = context.Services.GetRequiredService<IContentManager>();
+            var fullTextRecursionHelper = context.Services.GetRequiredService<IContentItemRecursionHelper<FullTextFilter>>();
 
             if (input.Type == FluidValues.Array)
             {

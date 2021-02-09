@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -8,18 +7,15 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
-    public class SanitizeHtmlFilter : ILiquidFilter
+    public static class SanitizeHtmlFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static ValueTask<FluidValue> SanitizeHtml(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
+            var context = (LiquidTemplateContext)ctx;
+
             var html = input.ToStringValue();
 
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'sanitize'");
-            }
-
-            var sanitizer = ((IServiceProvider)services).GetRequiredService<IHtmlSanitizerService>();
+            var sanitizer = context.Services.GetRequiredService<IHtmlSanitizerService>();
             html = sanitizer.Sanitize(html);
 
             return new ValueTask<FluidValue>(new StringValue(html));

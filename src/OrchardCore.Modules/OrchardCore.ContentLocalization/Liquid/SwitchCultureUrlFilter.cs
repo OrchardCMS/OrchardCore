@@ -4,18 +4,20 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentLocalization.Liquid
 {
-    public class SwitchCultureUrlFilter : ILiquidFilter
+    public static class SwitchCultureUrlFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static ValueTask<FluidValue> SwitchCultureUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("UrlHelper", out var urlHelperObj))
-            {
-                throw new ArgumentException("UrlHelper missing while invoking 'switch_culture_url'");
-            }
+            var context = (LiquidTemplateContext)ctx;
+            var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
+            var urlHelper = urlHelperFactory.GetUrlHelper(context.ViewContext);
+
             var request = (HttpRequest)ctx.GetValue("Request")?.ToObjectValue();
             if (request == null)
             {
@@ -23,7 +25,6 @@ namespace OrchardCore.ContentLocalization.Liquid
             }
 
             var targetCulture = input.ToStringValue();
-            var urlHelper = (IUrlHelper)urlHelperObj;
 
             var url = urlHelper.RouteUrl("RedirectToLocalizedContent",
                 new
@@ -33,7 +34,7 @@ namespace OrchardCore.ContentLocalization.Liquid
                     contentItemUrl = request.Path.Value,
                     queryStringValue = request.QueryString.Value
                 });
-            return new ValueTask<FluidValue>(FluidValue.Create(url));
+            return new ValueTask<FluidValue>(FluidValue.Create(url, ctx.Options));
         }
     }
 }

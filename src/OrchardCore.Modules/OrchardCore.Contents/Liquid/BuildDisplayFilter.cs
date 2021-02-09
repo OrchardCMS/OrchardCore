@@ -12,15 +12,15 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    public class BuildDisplayFilter : ILiquidFilter
+    public class BuildDisplayFilter
     {
         private const int DefaultMaxContentItemRecursions = 20;
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static ValueTask<FluidValue> ShapeBuildDisplay(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            static async ValueTask<FluidValue> Awaited(Task<IShape> task)
+            static async ValueTask<FluidValue> Awaited(Task<IShape> task, TemplateOptions options)
             {
-                return FluidValue.Create(await task);
+                return FluidValue.Create(await task, options);
             }
 
             var obj = input.ToObjectValue();
@@ -42,14 +42,9 @@ namespace OrchardCore.Contents.Liquid
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }
 
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'shape_build_display'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
-            var serviceProvider = (IServiceProvider)services;
-
-            var buildDisplayRecursionHelper = serviceProvider.GetRequiredService<IContentItemRecursionHelper<BuildDisplayFilter>>();
+            var buildDisplayRecursionHelper = context.Services.GetRequiredService<IContentItemRecursionHelper<BuildDisplayFilter>>();
 
             // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent unlimited recursions.
             // max_recursions is an optional argument to override the default limit of 20.
@@ -61,16 +56,16 @@ namespace OrchardCore.Contents.Liquid
             }
 
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
-            var displayManager = serviceProvider.GetRequiredService<IContentItemDisplayManager>();
-            var updateModelAccessor = serviceProvider.GetRequiredService<IUpdateModelAccessor>();
+            var displayManager = context.Services.GetRequiredService<IContentItemDisplayManager>();
+            var updateModelAccessor = context.Services.GetRequiredService<IUpdateModelAccessor>();
 
             var task = displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
             if (task.IsCompletedSuccessfully)
             {
-                return new ValueTask<FluidValue>(FluidValue.Create(task.Result));
+                return new ValueTask<FluidValue>(FluidValue.Create(task.Result, ctx.Options));
             }
 
-            return Awaited(task);
+            return Awaited(task, ctx.Options);
         }
     }
 }

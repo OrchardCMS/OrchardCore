@@ -28,12 +28,6 @@ namespace OrchardCore.Markdown
 
         private readonly IShellConfiguration _shellConfiguration;
 
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownFieldViewModel>();
-        }
-
         public Startup(IShellConfiguration shellConfiguration)
         {
             _shellConfiguration = shellConfiguration;
@@ -41,6 +35,13 @@ namespace OrchardCore.Markdown
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
+                o.MemberAccessStrategy.Register<MarkdownFieldViewModel>();
+                o.Filters.AddFilter("markdownify", Markdownify.Markdown);
+            });
+
             // Markdown Part
             services.AddContentPart<MarkdownBodyPart>()
                 .UseDisplayDriver<MarkdownBodyPartDisplayDriver>()
@@ -56,8 +57,6 @@ namespace OrchardCore.Markdown
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
-
-            services.AddLiquidFilter<Markdownify>("markdownify");
 
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>

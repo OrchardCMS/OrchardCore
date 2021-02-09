@@ -1,4 +1,5 @@
 using System;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,7 +52,11 @@ namespace OrchardCore.Queries
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
             services.AddScoped<ILiquidTemplateEventHandler, QueriesLiquidTemplateEventHandler>();
-            services.AddLiquidFilter<QueryFilter>("query");
+
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.Filters.AddFilter("query", QueryFilter.Query);
+            });
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

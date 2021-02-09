@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -23,7 +24,11 @@ namespace OrchardCore.ContentManagement.Display
 
             services.AddOptions<ContentDisplayOptions>();
 
-            services.AddLiquidFilter<ConsoleLogFilter>("console_log");
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.Filters.AddFilter("console_log", ConsoleLogFilter.ConsoleLog);
+            });
+            
 
             return services;
         }

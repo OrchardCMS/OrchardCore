@@ -2,20 +2,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Queries.Liquid
 {
-    public class QueryFilter : ILiquidFilter
+    public static class QueryFilter
     {
-        private readonly IQueryManager _queryManager;
-
-        public QueryFilter(IQueryManager queryManager)
-        {
-            _queryManager = queryManager;
-        }
-
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static async ValueTask<FluidValue> Query(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var query = input.ToObjectValue() as Query;
 
@@ -31,8 +25,11 @@ namespace OrchardCore.Queries.Liquid
                 parameters.Add(name, arguments[name].ToObjectValue());
             }
 
-            var result = await _queryManager.ExecuteQueryAsync(query, parameters);
-            return FluidValue.Create(result.Items);
+            var context = (LiquidTemplateContext)ctx;
+            var queryManager = context.Services.GetRequiredService<IQueryManager>();
+
+            var result = await queryManager.ExecuteQueryAsync(query, parameters);
+            return FluidValue.Create(result.Items, ctx.Options);
         }
     }
 }

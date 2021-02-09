@@ -8,16 +8,13 @@ using OrchardCore.Markdown.Services;
 
 namespace OrchardCore.Markdown.Filters
 {
-    public class Markdownify : ILiquidFilter
+    public static class Markdownify
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static ValueTask<FluidValue> Markdown(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'markdownify'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
-            var markdownService = ((IServiceProvider)services).GetRequiredService<IMarkdownService>();
+            var markdownService = context.Services.GetRequiredService<IMarkdownService>();
 
             return new ValueTask<FluidValue>(new StringValue(markdownService.ToHtml(input.ToStringValue())));
         }

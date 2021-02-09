@@ -17,13 +17,14 @@ namespace OrchardCore.PublishLater
 {
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<PublishLaterPartViewModel>();
-        }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<PublishLaterPartViewModel>();
+            });
+
             services
                 .AddContentPart<PublishLaterPart>()
                 .UseDisplayDriver<PublishLaterPartDisplayDriver>()

@@ -14,25 +14,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
     public static class LiquidViewFilters
     {
-        private static readonly AsyncFilterDelegate _localizeDelegate = Localize;
-        private static readonly AsyncFilterDelegate _htmlClassDelegate = HtmlClass;
-        private static readonly AsyncFilterDelegate _newShapeDelegate = NewShape;
-        private static readonly AsyncFilterDelegate _shapeRenderDelegate = ShapeRender;
-        private static readonly AsyncFilterDelegate _shapeStringifyDelegate = ShapeStringify;
-        private static readonly FilterDelegate _shapePropertiesDelegate = ShapeProperties;
-
-        public static FilterCollection WithLiquidViewFilters(this FilterCollection filters)
-        {
-            filters.AddAsyncFilter("t", _localizeDelegate);
-            filters.AddAsyncFilter("html_class", _htmlClassDelegate);
-            filters.AddAsyncFilter("shape_new", _newShapeDelegate);
-            filters.AddAsyncFilter("shape_render", _shapeRenderDelegate);
-            filters.AddAsyncFilter("shape_stringify", _shapeStringifyDelegate);
-            filters.AddFilter("shape_properties", _shapePropertiesDelegate);
-
-            return filters;
-        }
-
         public static ValueTask<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var localizer = context.GetValue("ViewLocalizer")?.ToObjectValue() as IViewLocalizer;
@@ -58,9 +39,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
         public static ValueTask<FluidValue> NewShape(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            static async ValueTask<FluidValue> Awaited(ValueTask<IShape> task)
+            static async ValueTask<FluidValue> Awaited(ValueTask<IShape> task, TemplateOptions options)
             {
-                return FluidValue.Create(await task);
+                return FluidValue.Create(await task, options);
             }
 
             if (!context.AmbientValues.TryGetValue("ShapeFactory", out var item) || !(item is IShapeFactory shapeFactory))
@@ -79,9 +60,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             var task = shapeFactory.CreateAsync(type, Arguments.From(properties));
             if (!task.IsCompletedSuccessfully)
             {
-                return Awaited(task);
+                return Awaited(task, context.Options);
             }
-            return new ValueTask<FluidValue>(FluidValue.Create(task.Result));
+            return new ValueTask<FluidValue>(FluidValue.Create(task.Result, context.Options));
         }
 
         public static ValueTask<FluidValue> ShapeStringify(FluidValue input, FilterArguments arguments, TemplateContext context)
@@ -143,7 +124,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return new ValueTask<FluidValue>(NilValue.Instance);
         }
 
-        public static FluidValue ShapeProperties(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> ShapeProperties(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             if (input.ToObjectValue() is IShape shape)
             {
@@ -151,7 +132,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 {
                     shape.Properties[name.ToPascalCaseUnderscore()] = arguments[name].ToObjectValue();
                 }
-                return FluidValue.Create(shape);
+                return FluidValue.Create(shape, context.Options);
             }
 
             return NilValue.Instance;

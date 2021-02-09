@@ -11,16 +11,13 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentManagement.Display.Liquid
 {
-    public class ConsoleLogFilter : ILiquidFilter
+    public static class ConsoleLogFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> ConsoleLog(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'console_log'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
-            var env = ((IServiceProvider)services).GetRequiredService<IHostEnvironment>();
+            var env = context.Services.GetRequiredService<IHostEnvironment>();
 
             var content = input.ToObjectValue();
 

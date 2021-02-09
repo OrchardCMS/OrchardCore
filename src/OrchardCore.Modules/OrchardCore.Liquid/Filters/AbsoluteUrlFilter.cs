@@ -1,15 +1,15 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public class AbsoluteUrlFilter : ILiquidFilter
+    public static class AbsoluteUrlFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> AbsoluteUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var relativePath = input.ToStringValue();
 
@@ -18,12 +18,11 @@ namespace OrchardCore.Liquid.Filters
                 return new ValueTask<FluidValue>(input);
             }
 
-            if (!context.AmbientValues.TryGetValue("UrlHelper", out var urlHelper))
-            {
-                throw new ArgumentException("UrlHelper missing while invoking 'display_url'");
-            }
+            var context = (LiquidTemplateContext)ctx;
+            var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
+            var urlHelper = urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-            var result = new StringValue(((IUrlHelper)urlHelper).ToAbsoluteUrl(relativePath));
+            var result = new StringValue(urlHelper.ToAbsoluteUrl(relativePath));
             return new ValueTask<FluidValue>(result);
         }
     }

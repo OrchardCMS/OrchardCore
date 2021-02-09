@@ -1,5 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Models;
@@ -34,7 +36,7 @@ namespace OrchardCore.Facebook.Widgets.Handlers
                     };
 
                     var result = await _liquidTemplateManager.RenderAsync(part.Liquid, _htmlEncoder, model,
-                        scope => scope.SetValue("ContentItem", model.ContentItem));
+                        context => context.SetValue("ContentItem", model.ContentItem));
 
                     bodyAspect.Body = new HtmlString(result);
                 }

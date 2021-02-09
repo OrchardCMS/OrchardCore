@@ -59,14 +59,18 @@ namespace OrchardCore.Media
             _adminOptions = adminOptions.Value;
         }
 
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<Anchor>();
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
+                o.MemberAccessStrategy.Register<Anchor>();
+
+                o.Filters.AddFilter("asset_url", MediaFilters.AssetUrl);
+                o.Filters.AddFilter("resize_url", MediaFilters.ResizeUrl);
+                o.Filters.AddFilter("img_tag", MediaFilters.ImgTag);
+            });
+
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
             services.AddSingleton<IMediaFileProvider>(serviceProvider =>
@@ -116,10 +120,6 @@ namespace OrchardCore.Media
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, AttachedMediaFieldsFolderAuthorizationHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.AddLiquidFilter<MediaUrlFilter>("asset_url");
-            services.AddLiquidFilter<ResizeUrlFilter>("resize_url");
-            services.AddLiquidFilter<ImageTagFilter>("img_tag");
 
             // ImageSharp
 

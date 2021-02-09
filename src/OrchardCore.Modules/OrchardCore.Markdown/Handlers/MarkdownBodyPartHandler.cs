@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -67,7 +69,7 @@ namespace OrchardCore.Markdown.Handlers
                         };
 
                         html = await _liquidTemplateManager.RenderAsync(html, _htmlEncoder, model,
-                            scope => scope.SetValue("ContentItem", model.ContentItem));
+                            context => context.SetValue("ContentItem", model.ContentItem));
                     }
 
                     html = await _shortcodeService.ProcessAsync(html,

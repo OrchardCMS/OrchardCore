@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Alias.Drivers;
 using OrchardCore.Alias.Indexes;
@@ -73,7 +74,7 @@ namespace OrchardCore.Alias.Handlers
                 };
 
                 part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                    scope => scope.SetValue(nameof(ContentItem), model.ContentItem));
+                    scope => scope.SetValue(nameof(ContentItem), new ObjectValue(model.ContentItem)));
 
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
 

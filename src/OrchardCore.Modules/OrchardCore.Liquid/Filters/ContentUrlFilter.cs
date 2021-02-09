@@ -3,17 +3,18 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public class ContentUrlFilter : ILiquidFilter
+    public static class ContentUrlFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static ValueTask<FluidValue> Href(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("UrlHelper", out var urlHelper))
-            {
-                throw new ArgumentException("UrlHelper missing while invoking 'href'");
-            }
+            var context = (LiquidTemplateContext)ctx;
+            var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
+            var urlHelper = urlHelperFactory.GetUrlHelper(context.ViewContext);
 
             return new ValueTask<FluidValue>(new StringValue(((IUrlHelper)urlHelper).Content(input.ToStringValue())));
         }

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -8,16 +7,13 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentLocalization.Liquid
 {
-    public class ContentLocalizationFilter : ILiquidFilter
+    public static class ContentLocalizationFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static async ValueTask<FluidValue> LocalizationSet(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'localization_set'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
-            var innoFieldsService = ((IServiceProvider)services).GetRequiredService<IContentLocalizationManager>();
+            var innoFieldsService = context.Services.GetRequiredService<IContentLocalizationManager>();
 
             var locale = arguments.At(0).ToStringValue();
 
@@ -32,13 +28,13 @@ namespace OrchardCore.ContentLocalization.Liquid
 
                 var localizationSets = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
 
-                return FluidValue.Create(await innoFieldsService.GetItemsForSetsAsync(localizationSets, locale));
+                return FluidValue.Create(await innoFieldsService.GetItemsForSetsAsync(localizationSets, locale), ctx.Options);
             }
             else
             {
                 var localizationSet = input.ToStringValue();
 
-                return FluidValue.Create(await innoFieldsService.GetContentItemAsync(localizationSet, locale));
+                return FluidValue.Create(await innoFieldsService.GetContentItemAsync(localizationSet, locale), ctx.Options);
             }
         }
     }

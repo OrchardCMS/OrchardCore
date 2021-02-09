@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 
@@ -12,38 +12,31 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
     /// <summary>
     /// Returns the Cdn Base Url of the specified resource path.
     /// </summary>
-    public class ResourceUrlFilter : ILiquidFilter
+    public static class ResourceUrlFilter
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ResourceManagementOptions _options;
-
-        public ResourceUrlFilter(
-            IHttpContextAccessor httpContextAccessor,
-            IOptions<ResourceManagementOptions> options
-            )
+        public static ValueTask<FluidValue> ResourceUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            _httpContextAccessor = httpContextAccessor;
-            _options = options.Value;
-        }
+            var context = (LiquidTemplateContext)ctx;
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
+            var httpContextAccessor = context.Services.GetRequiredService< IHttpContextAccessor>();
+            var options = context.Services.GetRequiredService<ResourceManagementOptions>();
+
             var resourcePath = input.ToStringValue();
 
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourcePath = _httpContextAccessor.HttpContext.Request.PathBase.Add(resourcePath.Substring(1)).Value;
+                resourcePath = httpContextAccessor.HttpContext.Request.PathBase.Add(resourcePath.Substring(1)).Value;
             }
 
             // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
-            if (!_options.DebugMode && !String.IsNullOrEmpty(_options.CdnBaseUrl) &&
+            if (!options.DebugMode && !String.IsNullOrEmpty(options.CdnBaseUrl) &&
                 // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
                 !resourcePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
                 !resourcePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
                 !resourcePath.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
                 !resourcePath.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
             {
-                resourcePath = _options.CdnBaseUrl + resourcePath;
+                resourcePath = options.CdnBaseUrl + resourcePath;
             }
 
             return new ValueTask<FluidValue>(new StringValue(resourcePath));

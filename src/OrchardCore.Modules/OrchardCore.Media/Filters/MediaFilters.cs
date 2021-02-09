@@ -15,27 +15,20 @@ using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Filters
 {
-    public class MediaUrlFilter : ILiquidFilter
+    public static class MediaFilters
     {
-        private readonly IMediaFileStore _mediaFileStore;
-
-        public MediaUrlFilter(IMediaFileStore mediaFileStore)
+        public static ValueTask<FluidValue> AssetUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            _mediaFileStore = mediaFileStore;
-        }
+            var context = (LiquidTemplateContext)ctx;
+            var mediaFileStore = context.Services.GetRequiredService<IMediaFileStore>();
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
             var url = input.ToStringValue();
-            var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
+            var imageUrl = mediaFileStore.MapPathToPublicUrl(url);
 
             return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
         }
-    }
 
-    public class ImageTagFilter : ILiquidFilter
-    {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static ValueTask<FluidValue> ImgTag(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
 
@@ -50,28 +43,21 @@ namespace OrchardCore.Media.Filters
 
             return new ValueTask<FluidValue>(new StringValue(imgTag) { Encode = false });
         }
-    }
 
-    public class ResizeUrlFilter : ILiquidFilter
-    {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static async ValueTask<FluidValue> ResizeUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var url = input.ToStringValue();
 
             IDictionary<string, string> queryStringParams = null;
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'resize_url'");
-            }
 
-            var serviceProvider = ((IServiceProvider)services);
+            var context = (LiquidTemplateContext)ctx;
 
             // Profile is a named argument only.
             var profile = arguments["profile"];
 
             if (!profile.IsNil())
             {
-                var mediaProfileService = serviceProvider.GetRequiredService<IMediaProfileService>();
+                var mediaProfileService = context.Services.GetRequiredService<IMediaProfileService>();
                 queryStringParams = await mediaProfileService.GetMediaProfileCommands(profile.ToStringValue());
 
                 // Additional commands to a profile must be named.
@@ -104,11 +90,11 @@ namespace OrchardCore.Media.Filters
 
             var resizedUrl = QueryHelpers.AddQueryString(url, queryStringParams);
 
-            var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
+            var mediaOptions = context.Services.GetRequiredService<IOptions<MediaOptions>>().Value;
 
             if (mediaOptions.UseTokenizedQueryString)
             {
-                var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
+                var mediaTokenService = context.Services.GetRequiredService<IMediaTokenService>();
                 resizedUrl = mediaTokenService.AddTokenToPath(resizedUrl);
             }
 

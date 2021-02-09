@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -10,14 +9,11 @@ using YesSql;
 
 namespace OrchardCore.Lists.Liquid
 {
-    public class ListCountFilter : ILiquidFilter
+    public static class ListCountFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static async ValueTask<FluidValue> ListCount(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'list_count'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
             string listContentItemId = null;
 
@@ -30,7 +26,7 @@ namespace OrchardCore.Lists.Liquid
                 listContentItemId = input.ToStringValue();
             }
 
-            var session = ((IServiceProvider)services).GetRequiredService<ISession>();
+            var session = context.Services.GetRequiredService<ISession>();
 
             var listCount = await ListQueryHelpers.QueryListItemsCountAsync(session, listContentItemId);
 

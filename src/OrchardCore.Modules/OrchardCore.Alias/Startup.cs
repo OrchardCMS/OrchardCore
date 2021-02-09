@@ -22,13 +22,9 @@ namespace OrchardCore.Alias
 {
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<AliasPartViewModel>();
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o => o.MemberAccessStrategy.Register<AliasPartViewModel>());
             services.AddScoped<IScopedIndexProvider, AliasPartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();

@@ -1,5 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -57,17 +59,6 @@ namespace OrchardCore.Contents
     {
         private readonly AdminOptions _adminOptions;
 
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentTypePartDefinition>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartFieldDefinition>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
-        }
-
         public Startup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
@@ -75,6 +66,58 @@ namespace OrchardCore.Contents
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ContentItem>();
+                o.MemberAccessStrategy.Register<ContentElement>();
+                o.MemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
+                o.MemberAccessStrategy.Register<ContentTypePartDefinition>();
+                o.MemberAccessStrategy.Register<ContentPartFieldDefinition>();
+                o.MemberAccessStrategy.Register<ContentFieldDefinition>();
+                o.MemberAccessStrategy.Register<ContentPartDefinition>();
+
+                o.Filters.AddFilter("shape_build_display", BuildDisplayFilter.ShapeBuildDisplay);
+                o.Filters.AddFilter("content_item_id", ContentItemFilter.ContentItemId);
+                o.Filters.AddFilter("display_text", DisplayTextFilter.DisplayText);
+                o.Filters.AddFilter("display_url", DisplayUrlFilter.DisplayUrl);
+                o.Filters.AddFilter("full_text", FullTextFilter.FullText);
+
+                o.Scope.SetValue("Content", new ObjectValue(new LiquidContentAccessor()));
+
+                o.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
+
+                o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", obj =>
+                {
+                    return new LiquidPropertyAccessor(async contentItemId => FluidValue.Create(await _contentManager.GetAsync(contentItemId)));
+                });
+
+                o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemVersionId", obj =>
+                {
+                    return new LiquidPropertyAccessor(async contentItemVersionId => FluidValue.Create(await _contentManager.GetVersionAsync(contentItemVersionId)));
+                });
+
+                o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => GetContentByHandleAsync(name, true)));
+
+                o.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name, context) => GetContentByHandleAsync((LiquidTemplateContext)context, name));
+
+                async Task<FluidValue> GetContentByHandleAsync(LiquidTemplateContext context, string handle, bool latest = false)
+                {
+                    var contentHandleManager = context.Services.GetRequiredService<IContentHandleManager>();
+
+                    var contentItemId = await contentHandleManager.GetContentItemIdAsync(handle);
+
+                    if (contentItemId == null)
+                    {
+                        return NilValue.Instance;
+                    }
+
+                    var contentManager = context.Services.GetRequiredService<IContentManager>();
+
+                    var contentItem = await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+                    return FluidValue.Create(contentItem, context.Options);
+                }
+            });
+
             services.AddContentManagement();
             services.AddContentManagementDisplay();
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -130,15 +173,6 @@ namespace OrchardCore.Contents
 
             services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
-
-            // Liquid
-            services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
-
-            services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
-            services.AddLiquidFilter<ContentItemFilter>("content_item_id");
-            services.AddLiquidFilter<DisplayTextFilter>("display_text");
-            services.AddLiquidFilter<DisplayUrlFilter>("display_url");
-            services.AddLiquidFilter<FullTextFilter>("full_text");
 
             services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
         }

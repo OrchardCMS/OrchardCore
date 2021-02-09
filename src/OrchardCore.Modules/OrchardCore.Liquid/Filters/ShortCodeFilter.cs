@@ -9,31 +9,28 @@ using Shortcodes;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public class ShortcodeFilter : ILiquidFilter
+    public static class ShortcodeFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static async ValueTask<FluidValue> Shortcode(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'shortcode'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
-            var shortcodeService = ((IServiceProvider)services).GetRequiredService<IShortcodeService>();
+            var shortcodeService = context.Services.GetRequiredService<IShortcodeService>();
 
-            var context = new Context();
+            var shortcodeContext = new Context();
 
             // Retrieve the 'ContentItem' from the ambient liquid scope.
-            var model = ctx.LocalScope.GetValue("Model").ToObjectValue();
+            var model = context.GetValue("Model").ToObjectValue();
             if (model is Shape shape && shape.Properties.TryGetValue("ContentItem", out var contentItem))
             {
-                context["ContentItem"] = contentItem;
+                shortcodeContext["ContentItem"] = contentItem;
             }
             else
             {
-                context["ContentItem"] = null;
+                shortcodeContext["ContentItem"] = null;
             }
 
-            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue(), context));
+            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue(), shortcodeContext));
         }
     }
 }

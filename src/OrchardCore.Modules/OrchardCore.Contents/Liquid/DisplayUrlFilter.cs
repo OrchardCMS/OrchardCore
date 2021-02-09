@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -12,27 +13,18 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    public class DisplayUrlFilter : ILiquidFilter
+    public static class DisplayUrlFilter
     {
-        private readonly IContentManager _contentManager;
-
-        public DisplayUrlFilter(IContentManager contentManager)
+        public static async ValueTask<FluidValue> DisplayUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            _contentManager = contentManager;
-        }
+            var context = (LiquidTemplateContext)ctx;
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
             var contentItem = input.ToObjectValue() as ContentItem;
             RouteValueDictionary routeValues;
 
             if (contentItem == null)
             {
-                if (!ctx.AmbientValues.TryGetValue("Services", out var servicesValue))
-                {
-                    throw new ArgumentException("Services missing while invoking 'display_url'");
-                }
-                var autoRouteOption = ((IServiceProvider)servicesValue).GetRequiredService<IOptions<AutorouteOptions>>()?.Value;
+                var autoRouteOption = context.Services.GetRequiredService<IOptions<AutorouteOptions>>()?.Value;
                 routeValues = new RouteValueDictionary(autoRouteOption.GlobalRouteValues);
                 if (string.IsNullOrEmpty(input.ToStringValue()))
                 {
@@ -42,14 +34,13 @@ namespace OrchardCore.Contents.Liquid
             }
             else
             {
-                var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+                var contentManager = context.Services.GetRequiredService<IContentManager>();
+                var contentItemMetadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
                 routeValues = contentItemMetadata.DisplayRouteValues;
             }
 
-            if (!ctx.AmbientValues.TryGetValue("UrlHelper", out var urlHelper))
-            {
-                throw new ArgumentException("UrlHelper missing while invoking 'display_url'");
-            }
+            var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
+            var urlHelper = urlHelperFactory.GetUrlHelper(context.ViewContext);
 
             var linkUrl = ((IUrlHelper)urlHelper).RouteUrl(routeValues);
 

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -9,29 +8,26 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    public class ContentItemFilter : ILiquidFilter
+    public static class ContentItemFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static async ValueTask<FluidValue> ContentItemId(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'content_item_id'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
-            var contentManager = ((IServiceProvider)services).GetRequiredService<IContentManager>();
+            var contentManager = context.Services.GetRequiredService<IContentManager>();
 
             if (input.Type == FluidValues.Array)
             {
                 // List of content item ids
                 var contentItemIds = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
 
-                return FluidValue.Create(await contentManager.GetAsync(contentItemIds));
+                return FluidValue.Create(await contentManager.GetAsync(contentItemIds), ctx.Options);
             }
             else
             {
                 var contentItemId = input.ToStringValue();
 
-                return FluidValue.Create(await contentManager.GetAsync(contentItemId));
+                return FluidValue.Create(await contentManager.GetAsync(contentItemId), ctx.Options);
             }
         }
     }

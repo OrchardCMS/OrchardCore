@@ -10,14 +10,11 @@ using YesSql;
 
 namespace OrchardCore.Lists.Liquid
 {
-    public class ListItemsFilter : ILiquidFilter
+    public static class ListItemsFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static async ValueTask<FluidValue> ListItems(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'list_items'");
-            }
+            var context = (LiquidTemplateContext)ctx;
 
             string listContentItemId = null;
 
@@ -30,11 +27,11 @@ namespace OrchardCore.Lists.Liquid
                 listContentItemId = input.ToStringValue();
             }
 
-            var session = ((IServiceProvider)services).GetRequiredService<ISession>();
+            var session = context.Services.GetRequiredService<ISession>();
 
             var listItems = await ListQueryHelpers.QueryListItemsAsync(session, listContentItemId);
 
-            return FluidValue.Create(listItems);
+            return FluidValue.Create(listItems, ctx.Options);
         }
     }
 }

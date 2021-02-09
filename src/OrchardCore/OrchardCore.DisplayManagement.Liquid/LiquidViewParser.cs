@@ -15,13 +15,6 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             FluidTagHelper.DefaultArgumentsMapping["shape"] = "type";
             FluidTagHelper.DefaultArgumentsMapping["zone"] = "name";
-
-            FluidValue.SetTypeMapping<Shape>(o => new ObjectValue(o));
-            FluidValue.SetTypeMapping<ZoneHolding>(o => new ObjectValue(o));
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
-            TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
-            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeMetadata>(); TemplateContext.GlobalFilters.WithLiquidViewFilters();
         }
 
         public LiquidViewParser()
