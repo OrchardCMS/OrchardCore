@@ -6,9 +6,9 @@
 <form asp-action="Create" method="post">
     @await DisplayAsync(Model.Editor)
     
-    <input type="hidden" asp-for="RuleType" />
+    <input type="hidden" asp-for="ConditionType" />
     <input type="hidden" asp-for="Name" />
-    <input type="hidden" asp-for="RuleGroupId" />
+    <input type="hidden" asp-for="ConditionGroupId" />
 
     <div class="form-group">
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Rules.Drivers;
+using OrchardCore.Rules;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,42 +14,53 @@ namespace OrchardCore.Rules
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions<RuleOptions>();
+            services.AddOptions<ConditionOptions>();
 
             services
-                .AddRuleMethod<UrlRule, UrlRuleEvaluator>()
-                .AddRuleOperator<StringEqualsOperator, StringEqualsOperatorComparer>();
+                .AddScoped<IDisplayManager<Rule>, DisplayManager<Rule>>()
+                .AddScoped<IDisplayDriver<Rule>, RuleDisplayDriver>();
 
-            services.AddTransient<IRuleFactory, RuleFactory<UrlRule>>();
+            // All condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, AllConditionDisplayDriver>()
+                .AddCondition<AllConditionGroup, AllConditionEvaluator, ConditionFactory<AllConditionGroup>>();
 
+            // Any condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, AnyConditionDisplayDriver>()
+                .AddCondition<AnyConditionGroup, AnyConditionEvaluator, ConditionFactory<AnyConditionGroup>>();
 
-            services.AddScoped<IDisplayDriver<Rule>, AllRuleDisplayDriver>();
+            // Boolean condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, BooleanConditionDisplayDriver>()
+                .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
 
+            // Homepage condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, HomepageConditionDisplayDriver>()
+                .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>();
 
-            services.AddRuleMethod<RuleContainer, RuleContainerEvaluator>()
-                .AddRuleMethod<AllRule, AllRuleEvaluator>()
-                .AddRuleMethod<BooleanRule, BooleanRuleEvaluator>()
-                .AddRuleMethod<IsHomepageRule, IsHomepageRuleEvaluator>();
+            // Url condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, UrlConditionDisplayDriver>()
+                .AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
 
-            services.AddTransient<IRuleFactory, RuleFactory<AllRule>>();
-            services.AddTransient<IRuleFactory, RuleFactory<BooleanRule>>();
-            services.AddTransient<IRuleFactory, RuleFactory<IsHomepageRule>>();
+            // Javascript condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, JavascriptConditionDisplayDriver>()
+                .AddCondition<JavascriptCondition, JavascriptConditionEvaluator, ConditionFactory<JavascriptCondition>>();
+                
+            services.AddScoped<IDisplayManager<Condition>, DisplayManager<Condition>>();
 
+            services.AddSingleton<IConditionIdGenerator, ConditionIdGenerator>();
+            services.AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>();
 
-            services.AddScoped<IDisplayManager<Rule>, DisplayManager<Rule>>();
+            services.AddScoped<IConditionResolver, ConditionResolver>();
+            services.AddScoped<IConditionOperatorResolver, ConditionOperatorResolver>();
 
-            services.AddScoped<IDisplayManager<RuleContainer>, DisplayManager<RuleContainer>>();
-            services.AddScoped<IDisplayDriver<RuleContainer>, RuleContainerDisplayDriver>();
+            services.AddScoped<IRuleService, RuleService>();
 
-            services.AddSingleton<IRuleIdGenerator, RuleIdGenerator>();
-
-
-            services.AddTransient<IRuleResolver, RuleResolver>();
-            services.AddTransient<IOperatorResolver, OperatorResolver>();
-
-            services.AddTransient<IRuleService, RuleService>();
-
-            services.AddTransient<AllRuleEvaluator>();
+            services.AddScoped<IRuleMigrator, RuleMigrator>();
         }
     }
 }

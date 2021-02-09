@@ -6,7 +6,7 @@
         { "controller", "LayerRule" },
         { "name", Model.Name }
     };
-    ViewData["RuleRouteValues"] = routeValues;
+    ViewData["ConditionRouteValues"] = routeValues;
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
@@ -21,26 +21,20 @@
         <span asp-validation-for="Name"></span>
     </div>
 
-    <div class="form-group" asp-validation-class-for="Rule">
-        <label asp-for="Rule">@T["Rule"]</label>
-        <input asp-for="Rule" class="form-control" type="text" />
-        <span asp-validation-for="Rule"></span>
-    </div>
-
     <div class="form-group" asp-validation-class-for="Description">
         <label asp-for="Description">@T["Description"]</label>
         <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
         <span asp-validation-for="Description"></span>
     </div>       
 
-    @await DisplayAsync(Model.RuleContainer)
+    @await DisplayAsync(Model.LayerRule)
 
     <input class="button mt-3" type="submit" value="@T["Save"]" />
 </form>
 
 
 <!-- Modal TODO move to partial in Rules module -->
-<div class="modal fade" id="modalRules" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true">
+<div class="modal fade" id="modalConditions" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -72,12 +66,12 @@
 
 <script At="Foot" depends-on="jQuery">
     $(function () {
-        $('#modalRules').on('show.bs.modal', function (event) {
+        $('#modalConditions').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
-            var ruleGroupId = button.data('rule-group-id');
+            var conditionGroupId = button.data('condition-group-id');
 
-            $('.rule-thumbnail').one('click', function () {
-                var url = $(this).data("target-url") + "&ruleGroupId=" + ruleGroupId;
+            $('.condition-thumbnail').one('click', function () {
+                var url = $(this).data("target-url") + "&conditionGroupId=" + conditionGroupId;
                 $(location).attr('href',url);
             });
         });

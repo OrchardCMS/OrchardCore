@@ -24,7 +24,6 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.Rules.Models;
 using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;

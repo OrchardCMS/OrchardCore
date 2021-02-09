@@ -3,10 +3,10 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-.rule-group {
+.condition-group {
   list-style: none;
   padding-left: 0; }
 
-.rule-group li {
+.condition-group li {
   list-style: none;
   cursor: move; }

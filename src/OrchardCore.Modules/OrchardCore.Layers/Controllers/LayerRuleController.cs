@@ -9,11 +9,10 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Rules.Models;
-using OrchardCore.Rules.Services;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Settings;
+using OrchardCore.Rules;
 
 namespace OrchardCore.Layers.Controllers
 {
@@ -21,10 +20,10 @@ namespace OrchardCore.Layers.Controllers
     public class LayerRuleController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDisplayManager<Rule> _displayManager;
-        private readonly IEnumerable<IRuleFactory> _factories;
+        private readonly IDisplayManager<Condition> _displayManager;
+        private readonly IEnumerable<IConditionFactory> _factories;
         private readonly ILayerService _layerService;
-        private readonly IRuleIdGenerator _ruleIdGenerator;
+        private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -33,10 +32,10 @@ namespace OrchardCore.Layers.Controllers
 
         public LayerRuleController(
             IAuthorizationService authorizationService,
-            IDisplayManager<Rule> displayManager,
-            IEnumerable<IRuleFactory> factories,
+            IDisplayManager<Condition> displayManager,
+            IEnumerable<IConditionFactory> factories,
             ILayerService layerService,
-            IRuleIdGenerator ruleIdGenerator,
+            IConditionIdGenerator conditionIdGenerator,
             ISiteService siteService,
             IShapeFactory shapeFactory,
             IHtmlLocalizer<LayerRuleController> htmlLocalizer,
@@ -47,7 +46,7 @@ namespace OrchardCore.Layers.Controllers
             _factories = factories;
             _authorizationService = authorizationService;
             _layerService = layerService;
-            _ruleIdGenerator = ruleIdGenerator;
+            _conditionIdGenerator = conditionIdGenerator;
             _siteService = siteService;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
@@ -55,7 +54,7 @@ namespace OrchardCore.Layers.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Create(string queryType, string name, string type, string ruleGroupId)
+        public async Task<IActionResult> Create(string queryType, string name, string type, string conditionGroupId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
@@ -70,16 +69,16 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var ruleGroup = FindRuleGroup(layer.RuleContainer, ruleGroupId);
+            var conditionGroup = FindConditionGroup(layer.LayerRule, conditionGroupId);
 
-            if (ruleGroup == null)
+            if (conditionGroup == null)
             {
                 return NotFound();
             }
 
-            var rule = _factories.FirstOrDefault(x => x.Name == type)?.Create();
+            var condition = _factories.FirstOrDefault(x => x.Name == type)?.Create();
 
-            if (rule == null)
+            if (condition == null)
             {
                 return NotFound();
             }
@@ -87,9 +86,9 @@ namespace OrchardCore.Layers.Controllers
             var model = new LayerRuleCreateViewModel
             {
                 Name = name,
-                RuleGroupId = ruleGroup.RuleId,
-                RuleType = type,
-                Editor = await _displayManager.BuildEditorAsync(rule, updater: _updateModelAccessor.ModelUpdater, isNew: true)
+                ConditionGroupId = conditionGroup.ConditionId,
+                ConditionType = type,
+                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true)
             };
 
             return View(model);
@@ -111,28 +110,28 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var ruleGroup = FindRuleGroup(layer.RuleContainer, model.RuleGroupId);
+            var conditionGroup = FindConditionGroup(layer.LayerRule, model.ConditionGroupId);
 
-            if (ruleGroup == null)
+            if (conditionGroup == null)
             {
                 return NotFound();
             }
 
-            var rule = _factories.FirstOrDefault(x => x.Name == model.RuleType)?.Create();
+            var condition = _factories.FirstOrDefault(x => x.Name == model.ConditionType)?.Create();
 
-            if (rule == null)
+            if (condition == null)
             {
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(rule, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            var editor = await _displayManager.UpdateEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
             if (ModelState.IsValid)
             {
-                rule.RuleId = _ruleIdGenerator.GenerateUniqueId();
-                ruleGroup.Rules.Add(rule);
+                _conditionIdGenerator.GenerateUniqueId(condition);
+                conditionGroup.Conditions.Add(condition);
                 await _layerService.UpdateAsync(layers);
-                _notifier.Success(H["Rule added successfully."]);
+                _notifier.Success(H["Condition added successfully."]);
                 return RedirectToAction("Edit", "Admin", new { name = model.Name });
             }
 
@@ -143,7 +142,7 @@ namespace OrchardCore.Layers.Controllers
         }
 
 
-        public async Task<IActionResult> Edit(string name, string ruleId)
+        public async Task<IActionResult> Edit(string name, string conditionId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
@@ -158,9 +157,9 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var rule = FindRule(layer.RuleContainer, ruleId);
+            var condition = FindCondition(layer.LayerRule, conditionId);
 
-            if (rule == null)
+            if (condition == null)
             {
                 return NotFound();
             }
@@ -168,7 +167,7 @@ namespace OrchardCore.Layers.Controllers
             var model = new LayerRuleEditViewModel
             {
                 Name = name,
-                Editor = await _displayManager.BuildEditorAsync(rule, updater: _updateModelAccessor.ModelUpdater, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false)
             };
 
             return View(model);
@@ -190,115 +189,33 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var rule = FindRule(layer.RuleContainer, model.RuleId);
+            var condition = FindCondition(layer.LayerRule, model.ConditionId);
 
-            if (rule == null)
+            if (condition == null)
             {
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(rule, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             if (ModelState.IsValid)
             {
                 await _layerService.UpdateAsync(layers);
-                _notifier.Success(H["Rule updated successfully."]);
+                _notifier.Success(H["Condition updated successfully."]);
                 return RedirectToAction("Edit", "Admin", new { name = model.Name });
             }
 
-            _notifier.Error(H["The rule has validation errors."]);
+            _notifier.Error(H["The condition has validation errors."]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-        private Rule FindRule(Rule rule, string ruleId)
-        {
-            if (String.Equals(rule.RuleId, ruleId, StringComparison.OrdinalIgnoreCase))
-            {
-                return rule;
-            }
 
-            if (!(rule is RuleGroup groupRule))
-            {
-                return null;
-            }
-
-            if (!groupRule.Rules.Any())
-            {
-                return null;
-            }
-
-            Rule result;
-
-            foreach (var nestedRule in groupRule.Rules)
-            {
-                // Search in inner rules
-                result = FindRule(nestedRule, ruleId);
-
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
-            return null;
-        }
-
-        private RuleGroup FindRuleGroup(RuleGroup rule, string groupRuleId)
-        {
-            if (String.Equals(rule.RuleId, groupRuleId, StringComparison.OrdinalIgnoreCase))
-            {
-                return rule;
-            }
-
-            if (!rule.Rules.Any())
-            {
-                return null;
-            }
-
-            RuleGroup result;
-
-            foreach (var nestedRule in rule.Rules.OfType<RuleGroup>())
-            {
-                // Search in inner rules
-                result = FindRuleGroup(nestedRule, groupRuleId);
-
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
-            return null;
-        }
-        private RuleGroup FindRuleParent(RuleGroup rule, string ruleId)
-        {
-            RuleGroup result;
-
-            foreach (var nestedRule in rule.Rules)
-            {
-                if (String.Equals(nestedRule.RuleId, ruleId, StringComparison.OrdinalIgnoreCase))
-                {
-                    return rule;
-                }
-
-                if (nestedRule is RuleGroup nestedRuleGroup)
-                {
-                    result = FindRuleParent(nestedRuleGroup, ruleId);
-                    if (result != null)
-                    {
-                        return result;
-                    }
-                }
-            }
-
-            return null;
-        }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(string name, string ruleId)
+        public async Task<IActionResult> Delete(string name, string conditionId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
@@ -313,26 +230,111 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var rule = FindRule(layer.RuleContainer, ruleId);
+            var condition = FindCondition(layer.LayerRule, conditionId);
 
-            if (rule == null)
+            if (condition == null)
             {
                 return NotFound();
             }
 
-            var ruleParent = FindRuleParent(layer.RuleContainer, ruleId);
+            var conditionParent = FindConditionParent(layer.LayerRule, conditionId);
 
-            if (ruleParent == null)
+            if (conditionParent == null)
             {
                 return NotFound();
             }
 
-            ruleParent.Rules.Remove(rule);
+            conditionParent.Conditions.Remove(condition);
             await _layerService.UpdateAsync(layers);
 
-            _notifier.Success(H["Rule deleted successfully."]);
+            _notifier.Success(H["Condition deleted successfully."]);
 
             return RedirectToAction("Edit", "Admin", new { name = name });
+        }
+
+        private Condition FindCondition(Condition condition, string conditionId)
+        {
+            if (String.Equals(condition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
+            {
+                return condition;
+            }
+
+            if (!(condition is ConditionGroup conditionGroup))
+            {
+                return null;
+            }
+
+            if (!conditionGroup.Conditions.Any())
+            {
+                return null;
+            }
+
+            Condition result;
+
+            foreach (var nestedCondition in conditionGroup.Conditions)
+            {
+                // Search in inner conditions
+                result = FindCondition(nestedCondition, conditionId);
+
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
+        private ConditionGroup FindConditionGroup(ConditionGroup condition, string groupconditionId)
+        {
+            if (String.Equals(condition.ConditionId, groupconditionId, StringComparison.OrdinalIgnoreCase))
+            {
+                return condition;
+            }
+
+            if (!condition.Conditions.Any())
+            {
+                return null;
+            }
+
+            ConditionGroup result;
+
+            foreach (var nestedCondition in condition.Conditions.OfType<ConditionGroup>())
+            {
+                // Search in inner conditions
+                result = FindConditionGroup(nestedCondition, groupconditionId);
+
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
+        private ConditionGroup FindConditionParent(ConditionGroup condition, string conditionId)
+        {
+            ConditionGroup result;
+
+            foreach (var nestedCondition in condition.Conditions)
+            {
+                if (String.Equals(nestedCondition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
+                {
+                    return condition;
+                }
+
+                if (nestedCondition is ConditionGroup nestedConditionGroup)
+                {
+                    result = FindConditionParent(nestedConditionGroup, conditionId);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

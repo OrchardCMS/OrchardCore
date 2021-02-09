@@ -1,0 +1,44 @@
+@model dynamic
+
+@{
+    var condition = Model.Condition as Condition;
+    var isGroup = false;
+    if (condition is ConditionGroup)
+    {
+        isGroup = true;
+    }
+
+    var routeValues = (RouteValueDictionary)ViewData["ConditionRouteValues"];
+
+    routeValues["action"] = "Edit";
+    routeValues["conditionId"] = condition.ConditionId;
+
+    var editUrl = Url.RouteUrl(routeValues);
+
+    routeValues["action"] = "Delete";
+    var deleteUrl = Url.RouteUrl(routeValues);
+}
+
+<div class="properties rule.summary pr-3">
+    <div class="related">
+        @if (isGroup)
+        {
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalConditions" data-condition-group-id="@condition.ConditionId">
+                @T["Add"]
+            </button>
+        }
+
+        <a href="@editUrl"
+           class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+        <a href="@deleteUrl"
+           class="btn btn-danger btn-sm"
+           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    </div>
+
+</div>
+
+@* we might move the groupfields.rules (children) into Model.Footer to render here.
+and summary in Model.Content if summaries are looking bad
+*@
+@await DisplayAsync(Model.Content)

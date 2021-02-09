@@ -1,44 +1,12 @@
 @model dynamic
 
-@{
-    var rule = Model.Rule as Rule;
-    var isGroup = false;
-    if (rule is RuleGroup)
-    {
-        isGroup = true;
-    }
-
-    var routeValues = (RouteValueDictionary)ViewData["RuleRouteValues"];
-
-    routeValues["action"] = "Edit";
-    routeValues["ruleId"] = rule.RuleId;
-
-    var editUrl = Url.RouteUrl(routeValues);
-
-    routeValues["action"] = "Delete";
-    var deleteUrl = Url.RouteUrl(routeValues);
-}
-
-<div class="properties rule.summary pr-3">
+<div class="properties">
     <div class="related">
-        @if (isGroup)
-        {
-            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalRules" data-rule-group-id="@Model.Rule.RuleId">
-                @T["Add"]
-            </button>
-        }
-
-        <a href="@editUrl"
-           class="btn btn-primary btn-sm">@T["Edit"]</a>
-
-        <a href="@deleteUrl"
-           class="btn btn-danger btn-sm"
-           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalConditions" data-condition-group-id="@Model.ConditionId">
+            @T["Add"]
+        </button>            
     </div>
-
+    
+    @await DisplayAsync(Model.Content)
 </div>
-
-@* we might move the groupfields.rules (children) into Model.Footer to render here.
-and summary in Model.Content if summaries are looking bad
-*@
-@await DisplayAsync(Model.Content)

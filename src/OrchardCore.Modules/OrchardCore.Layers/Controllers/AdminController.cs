@@ -17,8 +17,7 @@ using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
-using OrchardCore.Rules.Models;
-using OrchardCore.Rules.Services;
+using OrchardCore.Rules;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -34,10 +33,10 @@ namespace OrchardCore.Layers.Controllers
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
+        private readonly IDisplayManager<Condition> _conditionDisplayManager;
         private readonly IDisplayManager<Rule> _ruleDisplayManager;
-        private readonly IDisplayManager<RuleContainer> _ruleContainerDisplayManager;
-        private readonly IRuleIdGenerator _ruleIdGenerator;
-        private readonly IEnumerable<IRuleFactory> _ruleFactories;
+        private readonly IConditionIdGenerator _conditionIdGenerator;
+        private readonly IEnumerable<IConditionFactory> _conditionFactories;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
@@ -51,10 +50,10 @@ namespace OrchardCore.Layers.Controllers
             ISession session,
             IUpdateModelAccessor updateModelAccessor,
             IVolatileDocumentManager<LayerState> layerStateManager,
+            IDisplayManager<Condition> conditionDisplayManager,
             IDisplayManager<Rule> ruleDisplayManager,
-            IDisplayManager<RuleContainer> ruleContainerDisplayManager,
-            IRuleIdGenerator ruleIdGenerator,
-            IEnumerable<IRuleFactory> ruleFactories,
+            IConditionIdGenerator conditionIdGenerator,
+            IEnumerable<IConditionFactory> conditionFactories,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier)
@@ -67,10 +66,10 @@ namespace OrchardCore.Layers.Controllers
             _session = session;
             _updateModelAccessor = updateModelAccessor;
             _layerStateManager = layerStateManager;
+            _conditionDisplayManager = conditionDisplayManager;
             _ruleDisplayManager = ruleDisplayManager;
-            _ruleContainerDisplayManager = ruleContainerDisplayManager;
-            _ruleIdGenerator = ruleIdGenerator;
-            _ruleFactories = ruleFactories;
+            _conditionIdGenerator = conditionIdGenerator;
+            _conditionFactories = conditionFactories;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -146,12 +145,11 @@ namespace OrchardCore.Layers.Controllers
                 var layer = new Layer
                 {
                     Name = model.Name,
-                    Rule = model.Rule,
                     Description = model.Description
                 };
                 
-                layer.RuleContainer = new RuleContainer();
-                layer.RuleContainer.RuleId = _ruleIdGenerator.GenerateUniqueId();
+                layer.LayerRule = new Rule();
+                _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
 
                 layers.Layers.Add(layer);
 
@@ -179,33 +177,23 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            // This code is for backwards compatability.
-            if (layer.RuleContainer == null)
-            {
-                layers = await _layerService.LoadLayersAsync();
-                layer.RuleContainer = new RuleContainer();
-                layer.RuleContainer.RuleId = _ruleIdGenerator.GenerateUniqueId();
-                await _layerService.UpdateAsync(layers);
-            }
-
-            dynamic ruleContainer = await _ruleContainerDisplayManager.BuildDisplayAsync(layer.RuleContainer, _updateModelAccessor.ModelUpdater, "Summary");
-            ruleContainer.RuleId = layer.RuleContainer.RuleId;
+            dynamic rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
+            rule.ConditionId = layer.LayerRule.ConditionId;
 
             var thumbnails = new Dictionary<string, dynamic>();
-            foreach (var factory in _ruleFactories)
+            foreach (var factory in _conditionFactories)
             {
-                var rule = factory.Create();
-                dynamic thumbnail = await _ruleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, "Thumbnail");
-                thumbnail.Rule = rule;
+                var condition = factory.Create();
+                dynamic thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Condition = condition;
                 thumbnails.Add(factory.Name, thumbnail);
             }
 
             var model = new LayerEditViewModel
             {
                 Name = layer.Name,
-                Rule = layer.Rule,
                 Description = layer.Description,
-                RuleContainer = ruleContainer,
+                LayerRule = rule,
                 Thumbnails = thumbnails,
             };
 
@@ -234,7 +222,6 @@ namespace OrchardCore.Layers.Controllers
                 }
 
                 layer.Name = model.Name;
-                layer.Rule = model.Rule;
                 layer.Description = model.Description;
 
                 await _layerService.UpdateAsync(layers);
@@ -353,11 +340,6 @@ namespace OrchardCore.Layers.Controllers
             else if (isNew && layers.Layers.Any(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name already exists."]);
-            }
-
-            if (String.IsNullOrWhiteSpace(model.Rule))
-            {
-                ModelState.AddModelError(nameof(LayerEditViewModel.Rule), S["The rule is required."]);
             }
         }
     }
