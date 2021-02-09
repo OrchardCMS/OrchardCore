@@ -84,7 +84,7 @@ namespace OrchardCore.Workflows
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 4;
+            return 3;
         }
 
         // This code can be removed in a later version.
@@ -129,38 +129,6 @@ namespace OrchardCore.Workflows
             );
 
             SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-                .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityId",
-                    "DocumentId",
-                    "ActivityId",
-                    "WorkflowTypeId",
-                    "WorkflowId")
-            );
-
-            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-                .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityName",
-                    "DocumentId",
-                    "ActivityName",
-                    "WorkflowTypeId",
-                    "WorkflowCorrelationId")
-            );
-
-            return 3;
-        }
-
-        // This code can be removed in a later version.
-        public int UpdateFrom3()
-        {
-            //For PostgreSQL
-            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-                .DropIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_Activity"));
-
-            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-                .DropIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityId"));
-
-            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-                .DropIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityName"));
-
-            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
                 .CreateIndex("IDX_WFBA_DocumentId_ActivityId",
                     "DocumentId",
                     "ActivityId",
@@ -176,7 +144,7 @@ namespace OrchardCore.Workflows
                     "WorkflowCorrelationId")
             );
 
-            return 4;
+            return 3;
         }
     }
 }
