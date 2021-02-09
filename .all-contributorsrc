@@ -2235,6 +2235,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "lampersky",
+      "name": "lampersky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6403130?v=4",
+      "profile": "https://github.com/lampersky",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
