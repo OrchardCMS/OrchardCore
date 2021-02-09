@@ -7,6 +7,8 @@ using OrchardCore.Rules;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using Orchard.Rules.Drivers;
 
 namespace OrchardCore.Rules
 {
@@ -59,6 +61,13 @@ namespace OrchardCore.Rules
             services
                 .AddScoped<IDisplayDriver<Condition>, IsAnonymousConditionDisplayDriver>()
                 .AddCondition<IsAnonymousCondition, IsAnonymousConditionEvaluator, ConditionFactory<IsAnonymousCondition>>();                       
+
+            // Content type condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
+                .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluator, ConditionFactory<ContentTypeCondition>>()                       
+                .AddScoped<IDisplayedContentItemDriver, DisplayedContentTypeDriver>()
+                .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<IDisplayedContentItemDriver>() as IContentDisplayDriver);
 
             services.AddScoped<IDisplayManager<Condition>, DisplayManager<Condition>>();
 
