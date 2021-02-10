@@ -94,6 +94,7 @@ What if you want all tenants to access the same database? The corresponding conf
     "ConnectionString": "...",
     "DatabaseProvider": "SqlConnection",
     "Default" : {
+      "State": "Uninitialized",
       "TablePrefix": "Default"
     }
   }
