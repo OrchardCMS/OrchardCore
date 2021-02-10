@@ -10,27 +10,27 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCondition>
+    public class CultureConditionDisplayDriver : DisplayDriver<Condition, CultureCondition>
     {
         private readonly ConditionOperatorOptions _options;
 
-        public UrlConditionDisplayDriver(IOptions<ConditionOperatorOptions> options)
+        public CultureConditionDisplayDriver(IOptions<ConditionOperatorOptions> options)
         {
             _options = options.Value;
         }
-        
-        public override IDisplayResult Display(UrlCondition condition)
+
+        public override IDisplayResult Display(CultureCondition condition)
         {
             return
                 Combine(
-                    View("UrlCondition_Fields_Summary", condition).Location("Summary", "Content"),
-                    View("UrlCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
+                    View("CultureCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                    View("CultureCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(UrlCondition condition)
+        public override IDisplayResult Edit(CultureCondition condition)
         {
-            return Initialize<UrlConditionViewModel>("UrlCondition_Fields_Edit", model =>
+            return Initialize<CultureConditionViewModel>("CultureCondition_Fields_Edit", model =>
             {
                 if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
                 {
@@ -41,9 +41,9 @@ namespace OrchardCore.Rules.Drivers
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UrlCondition condition, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(CultureCondition condition, IUpdateModel updater)
         {
-            var model = new UrlConditionViewModel();
+            var model = new CultureConditionViewModel();
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
                 condition.Value = model.Value;

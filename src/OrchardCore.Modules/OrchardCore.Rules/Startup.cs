@@ -52,6 +52,16 @@ namespace OrchardCore.Rules
                 .AddScoped<IDisplayDriver<Condition>, UrlConditionDisplayDriver>()
                 .AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
 
+            // Culture condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, CultureConditionDisplayDriver>()
+                .AddCondition<CultureCondition, CultureConditionEvaluator, ConditionFactory<CultureCondition>>();
+
+            // Role condition.
+            services
+                .AddScoped<IDisplayDriver<Condition>, RoleConditionDisplayDriver>()
+                .AddCondition<RoleCondition, RoleConditionEvaluator, ConditionFactory<RoleCondition>>();
+
             // Javascript condition.
             services
                 .AddScoped<IDisplayDriver<Condition>, JavascriptConditionDisplayDriver>()

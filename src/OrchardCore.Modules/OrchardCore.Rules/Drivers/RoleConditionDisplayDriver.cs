@@ -10,27 +10,27 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Rules.Drivers
 {
-    public class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCondition>
+    public class RoleConditionDisplayDriver : DisplayDriver<Condition, RoleCondition>
     {
         private readonly ConditionOperatorOptions _options;
 
-        public UrlConditionDisplayDriver(IOptions<ConditionOperatorOptions> options)
+        public RoleConditionDisplayDriver(IOptions<ConditionOperatorOptions> options)
         {
             _options = options.Value;
         }
         
-        public override IDisplayResult Display(UrlCondition condition)
+        public override IDisplayResult Display(RoleCondition condition)
         {
             return
                 Combine(
-                    View("UrlCondition_Fields_Summary", condition).Location("Summary", "Content"),
-                    View("UrlCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
+                    View("RoleCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                    View("RoleCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(UrlCondition condition)
+        public override IDisplayResult Edit(RoleCondition condition)
         {
-            return Initialize<UrlConditionViewModel>("UrlCondition_Fields_Edit", model =>
+            return Initialize<RoleConditionViewModel>("RoleCondition_Fields_Edit", model =>
             {
                 if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
                 {
@@ -41,9 +41,9 @@ namespace OrchardCore.Rules.Drivers
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(UrlCondition condition, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(RoleCondition condition, IUpdateModel updater)
         {
-            var model = new UrlConditionViewModel();
+            var model = new RoleConditionViewModel();
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
                 condition.Value = model.Value;
