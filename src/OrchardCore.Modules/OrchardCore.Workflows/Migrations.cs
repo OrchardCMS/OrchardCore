@@ -68,7 +68,7 @@ namespace OrchardCore.Workflows
             );
 
             SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-                .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityId",
+                .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityId",
                     "DocumentId",
                     "ActivityId",
                     "WorkflowTypeId",
@@ -76,7 +76,7 @@ namespace OrchardCore.Workflows
             );
 
             SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-                .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityName",
+                .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityName",
                     "DocumentId",
                     "ActivityName",
                     "WorkflowTypeId",
@@ -129,7 +129,7 @@ namespace OrchardCore.Workflows
             );
 
             SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-                .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityId",
+                .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityId",
                     "DocumentId",
                     "ActivityId",
                     "WorkflowTypeId",
@@ -137,7 +137,7 @@ namespace OrchardCore.Workflows
             );
 
             SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-                .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityName",
+                .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityName",
                     "DocumentId",
                     "ActivityName",
                     "WorkflowTypeId",
