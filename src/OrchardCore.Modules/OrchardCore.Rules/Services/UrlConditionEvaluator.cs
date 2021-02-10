@@ -18,7 +18,6 @@ namespace OrchardCore.Rules.Services
 
         public override ValueTask<bool> EvaluateAsync(UrlCondition condition)
         {
-
             if (condition.Value.StartsWith("~/", StringComparison.Ordinal))
             {
                 condition.Value = condition.Value.Substring(1);
@@ -33,8 +32,8 @@ namespace OrchardCore.Rules.Services
                 requestPath = "/";
             }
 
-            var operatorResolver = _operatorResolver.GetOperatorComparer(condition.Operation);
-            return new ValueTask<bool>(operatorResolver.Compare(condition.Operation, requestPath, condition.Value));
+            var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
+            return new ValueTask<bool>(operatorComparer.Compare(condition.Operation, requestPath, condition.Value));
         }
     }
 }

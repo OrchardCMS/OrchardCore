@@ -3,12 +3,10 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Rules.Drivers;
-using OrchardCore.Rules;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using Orchard.Rules.Drivers;
 
 namespace OrchardCore.Rules
 {
@@ -18,9 +16,16 @@ namespace OrchardCore.Rules
         {
             services.AddOptions<ConditionOptions>();
 
-            services
+            // Rule services.
+            services.AddScoped<IDisplayManager<Condition>, DisplayManager<Condition>>()
                 .AddScoped<IDisplayManager<Rule>, DisplayManager<Rule>>()
-                .AddScoped<IDisplayDriver<Rule>, RuleDisplayDriver>();
+                .AddScoped<IDisplayDriver<Rule>, RuleDisplayDriver>()
+                .AddSingleton<IConditionIdGenerator, ConditionIdGenerator>()
+                .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()
+                .AddScoped<IConditionResolver, ConditionResolver>()
+                .AddScoped<IConditionOperatorResolver, ConditionOperatorResolver>()
+                .AddScoped<IRuleService, RuleService>()
+                .AddScoped<IRuleMigrator, RuleMigrator>();
 
             // All condition.
             services
@@ -60,27 +65,13 @@ namespace OrchardCore.Rules
             // Is anonymous condition.
             services
                 .AddScoped<IDisplayDriver<Condition>, IsAnonymousConditionDisplayDriver>()
-                .AddCondition<IsAnonymousCondition, IsAnonymousConditionEvaluator, ConditionFactory<IsAnonymousCondition>>();                       
+                .AddCondition<IsAnonymousCondition, IsAnonymousConditionEvaluator, ConditionFactory<IsAnonymousCondition>>();
 
             // Content type condition.
             services
                 .AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
-                .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluator, ConditionFactory<ContentTypeCondition>>()                       
-                .AddScoped<IDisplayedContentItemDriver, DisplayedContentTypeDriver>()
-                .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<IDisplayedContentItemDriver>() as IContentDisplayDriver);
-
-            services.AddScoped<IDisplayManager<Condition>, DisplayManager<Condition>>();
-
-            services.AddSingleton<IConditionIdGenerator, ConditionIdGenerator>();
-            services.AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>();
-
-            services.AddScoped<IConditionResolver, ConditionResolver>();
-            services.AddScoped<IConditionOperatorResolver, ConditionOperatorResolver>();
-
-            services.AddScoped<IRuleService, RuleService>();
-
-            services.AddScoped<IRuleMigrator, RuleMigrator>();
+                .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver, ConditionFactory<ContentTypeCondition>>()
+                .AddScoped<IContentDisplayDriver>(sp => (IContentDisplayDriver)sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
         }
     }
 }
-
