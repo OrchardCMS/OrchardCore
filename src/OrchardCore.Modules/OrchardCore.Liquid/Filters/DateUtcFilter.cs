@@ -10,10 +10,12 @@ namespace OrchardCore.Liquid.Filters
     public class DateUtcFilter : ILiquidFilter
     {
         private readonly IClock _clock;
+        private readonly ILocalClock _localClock;
 
-        public DateUtcFilter(IClock clock)
+        public DateUtcFilter(IClock clock, ILocalClock localClock)
         {
             _clock = clock;
+            _localClock = localClock;
         }
 
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
@@ -53,7 +55,7 @@ namespace OrchardCore.Liquid.Filters
                 }
             }
 
-            return new ValueTask<FluidValue>(new ObjectValue(value));
+            return new ValueTask<FluidValue>(new ObjectValue(value.UtcDateTime));
         }
     }
 }
