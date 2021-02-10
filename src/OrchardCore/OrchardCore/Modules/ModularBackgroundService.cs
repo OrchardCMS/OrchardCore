@@ -32,15 +32,18 @@ namespace OrchardCore.Modules
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
+        private readonly IClock _clock;
 
         public ModularBackgroundService(
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<ModularBackgroundService> logger)
+            ILogger<ModularBackgroundService> logger,
+            IClock clock)
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
+            _clock = clock;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -171,12 +174,22 @@ namespace OrchardCore.Modules
                     }
 
                     var settingsProvider = scope.ServiceProvider.GetService<IBackgroundTaskSettingsProvider>();
+                    _changeTokens[tenant] = settingsProvider?.ChangeToken ?? NullChangeToken.Singleton;
+
+                    ITimeZone timeZone = null;
 
                     var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                    var siteSettings = await siteService.GetSiteSettingsAsync();
-                    var clock = scope.ServiceProvider.GetService<IClock>();
-
-                    _changeTokens[tenant] = settingsProvider?.ChangeToken ?? NullChangeToken.Singleton;
+                    if (siteService != null)
+                    {
+                        try
+                        {
+                            timeZone = _clock.GetTimeZone((await siteService.GetSiteSettingsAsync()).TimeZoneId);
+                        }
+                        catch (Exception ex) when (!ex.IsFatal())
+                        {
+                            _logger.LogError(ex, "Error while getting the time zone of the site on tenant '{TenantName}'.", tenant);
+                        }
+                    }
 
                     foreach (var task in tasks)
                     {
@@ -184,8 +197,7 @@ namespace OrchardCore.Modules
 
                         if (!_schedulers.TryGetValue(tenant + taskName, out var scheduler))
                         {
-                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime,
-                                clock, siteSettings.TimeZoneId);
+                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
                         }
 
                         if (!scheduler.Released && scheduler.Updated)
@@ -195,16 +207,16 @@ namespace OrchardCore.Modules
 
                         BackgroundTaskSettings settings = null;
 
-                        try
+                        if (settingsProvider != null)
                         {
-                            if (settingsProvider != null)
+                            try
                             {
                                 settings = await settingsProvider.GetSettingsAsync(task);
                             }
-                        }
-                        catch (Exception ex) when (!ex.IsFatal())
-                        {
-                            _logger.LogError(ex, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                _logger.LogError(ex, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            }
                         }
 
                         settings ??= task.GetDefaultSettings();
@@ -215,6 +227,7 @@ namespace OrchardCore.Modules
                         }
 
                         scheduler.Settings = settings;
+                        scheduler.TimeZone = timeZone;
                         scheduler.Released = false;
                         scheduler.Updated = true;
                     }
@@ -241,7 +254,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
         {
-            var tenantsToRun = _schedulers.Where(s => s.Value.CanRun()).Select(s => s.Value.Tenant).Distinct().ToArray();
+            var tenantsToRun = _schedulers.Where(s => s.Value.CanRun(_clock)).Select(s => s.Value.Tenant).Distinct().ToArray();
             return shells.Where(s => tenantsToRun.Contains(s.Settings.Name)).ToArray();
         }
 
@@ -269,7 +282,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<BackgroundTaskScheduler> GetSchedulersToRun(string tenant)
         {
-            return _schedulers.Where(s => s.Value.Tenant == tenant && s.Value.CanRun()).Select(s => s.Value).ToArray();
+            return _schedulers.Where(s => s.Value.Tenant == tenant && s.Value.CanRun(_clock)).Select(s => s.Value).ToArray();
         }
 
         private void UpdateSchedulers(IEnumerable<string> tenants, Action<BackgroundTaskScheduler> action)
