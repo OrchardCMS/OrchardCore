@@ -134,7 +134,7 @@ namespace OrchardCore.ContentLocalization.Services
                 {
                     var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId).ListAsync();
 
-                    // A drafts is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
+                    // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                     // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
                     // is not updated for the published version that may be already scanned, so the entry may not be re-added.
 
