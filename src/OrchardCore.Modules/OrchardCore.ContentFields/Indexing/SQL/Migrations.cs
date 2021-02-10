@@ -228,7 +228,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_SelectedContentItemId",
+                .CreateIndex("IDX_ContentPickerField_DocumentId_SelectedItemId",
                     "DocumentId",
                     "SelectedContentItemId",
                     "Published",
@@ -581,7 +581,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_SelectedContentItemId",
+                .CreateIndex("IDX_ContentPickerField_DocumentId_SelectedItemId",
                     "DocumentId",
                     "SelectedContentItemId",
                     "Published",
