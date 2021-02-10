@@ -36,6 +36,7 @@ namespace OrchardCore.Liquid
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
             services.AddLiquidFilter<TimeZoneFilter>("local");
+            services.AddLiquidFilter<DateUtcFilter>("date_utc");
             services.AddLiquidFilter<SlugifyFilter>("slugify");
             services.AddLiquidFilter<ContentUrlFilter>("href");
             services.AddLiquidFilter<AbsoluteUrlFilter>("absolute_url");
