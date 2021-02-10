@@ -48,6 +48,7 @@ namespace OrchardCore.ResourceManagement
         public List<string> Dependencies { get; private set; }
         public AttributeDictionary Attributes { get; private set; }
         public string InnerContent { get; private set; }
+        public ResourcePosition Position { get; private set; }
 
         public ResourceDefinition SetAttribute(string name, string value)
         {
@@ -173,6 +174,16 @@ namespace OrchardCore.ResourceManagement
         public ResourceDefinition SetInnerContent(string innerContent)
         {
             InnerContent = innerContent;
+
+            return this;
+        }
+        /// <summary>
+        /// Position a resource first,last or by dependency.
+        /// </summary>
+        /// <param name="position"></param>
+        public ResourceDefinition SetPosition(ResourcePosition position)
+        {
+            Position = position;
 
             return this;
         }

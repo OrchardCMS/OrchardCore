@@ -127,10 +127,24 @@ namespace OrchardCore.Tests.ResourceManagement
                 new[] {
                     new StubResourceManifestProvider(builder => {
                         var manifest = builder.Add();
-                        manifest.DefineResource("foo", "required")
+                        manifest.DefineResource("foo", "first-resource")
+                            .SetDependencies("first-dependency")
+                            .SetPosition(ResourcePosition.First);
+                        manifest.DefineResource("foo", "requires-dependency")
                             .SetDependencies("dependency");
                         manifest.DefineResource("foo", "dependency");
-                        manifest.DefineResource("foo", "not-required");
+                        manifest.DefineResource("foo", "another-dependency")
+                            .SetDependencies("first-dependency");
+                        manifest.DefineResource("foo", "first-dependency");
+                        manifest.DefineResource("foo", "last-dependency")
+                            .SetPosition(ResourcePosition.Last)
+                            .SetDependencies("another-dependency");
+                        manifest.DefineResource("foo", "simple-resource")
+                            .SetDependencies("first-dependency");
+                        manifest.DefineResource("foo", "last-resource")
+                            .SetPosition(ResourcePosition.Last)
+                            .SetDependencies("last-dependency");
+                        manifest.DefineResource("foo","not-used-resource");
                     })
                 },
                 new ResourceManifestState(),
@@ -138,20 +152,35 @@ namespace OrchardCore.Tests.ResourceManagement
                 StubFileVersionProvider.Instance
             );
 
-            resourceManager.RegisterResource("foo", "required");
+            resourceManager.RegisterResource("foo", "last-resource");
+            resourceManager.RegisterResource("foo", "requires-dependency");
+            resourceManager.RegisterResource("foo", "first-resource");
+            resourceManager.RegisterResource("foo", "simple-resource");
 
             var requiredResources = resourceManager.GetRequiredResources("foo")
                 .Select(ctx => ctx.Resource)
                 .ToList();
 
-            Assert.Contains(requiredResources, resource => resource.Name == "required");
-            Assert.Contains(requiredResources, resource => resource.Name == "dependency");
-            Assert.DoesNotContain(requiredResources, resource => resource.Name == "not-required");
+            // Ensure dependencies loaded
+            Assert.True(requiredResources.Count == 8);
 
             // Ensure order
-            var requiredIndex = requiredResources.FindIndex(resource => resource.Name == "required");
-            var dependecyIndex = requiredResources.FindIndex(resource => resource.Name == "dependency");
-            Assert.True(requiredIndex > dependecyIndex);
+            var firstDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "first-dependency");
+            var firstResourceIndex = requiredResources.FindIndex(resource => resource.Name == "first-resource");
+            var anotherDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "another-dependency");
+            var dependencyIndex = requiredResources.FindIndex(resource => resource.Name == "dependency");
+            var requiresDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "requires-dependency");
+            var simpleResourceIndex = requiredResources.FindIndex(resource => resource.Name == "simple-resource");
+            var lastDependecyIndex = requiredResources.FindIndex(resource => resource.Name == "last-dependency");
+            var lastResourceIndex = requiredResources.FindIndex(resource => resource.Name == "last-resource");
+
+            Assert.True(firstResourceIndex > firstDependencyIndex);
+            Assert.True(anotherDependencyIndex > firstResourceIndex);
+            Assert.True(dependencyIndex > anotherDependencyIndex);
+            Assert.True(requiresDependencyIndex > dependencyIndex);
+            Assert.True(simpleResourceIndex > requiresDependencyIndex);
+            Assert.True(lastDependecyIndex > simpleResourceIndex);
+            Assert.True(lastResourceIndex > lastDependecyIndex);
         }
 
         [Fact]
@@ -165,7 +194,6 @@ namespace OrchardCore.Tests.ResourceManagement
                             .SetDependencies("dependency");
                         manifest.DefineResource("foo", "dependency")
                             .SetDependencies("required");;
-                        manifest.DefineResource("foo", "not-required");
                     })
                 },
                 new ResourceManifestState(),
@@ -175,11 +203,12 @@ namespace OrchardCore.Tests.ResourceManagement
 
             resourceManager.RegisterResource("foo", "required");
 
-            Assert.Throws<InvalidOperationException>(() => resourceManager.GetRequiredResources("foo"));
+            var ex = Assert.Throws<InvalidOperationException>(() => resourceManager.GetRequiredResources("foo"));
+            Assert.StartsWith("Circular dependency", ex.Message);
         }
 
         [Fact]
-        public void RequireMultipleStarResourceDependencies()
+        public void RequireCircularNestedDependencyShouldThrowException()
         {
             var resourceManager = new ResourceManager(
                 new[] {
@@ -187,160 +216,10 @@ namespace OrchardCore.Tests.ResourceManagement
                         var manifest = builder.Add();
                         manifest.DefineResource("foo", "requires-dependency")
                             .SetDependencies("dependency");
-                        manifest.DefineResource("foo", "dependency");
-                        manifest.DefineResource("foo", "another-dependency");
-                        manifest.DefineResource("foo", "unused-dependency");
-                        manifest.DefineResource("foo", "star-dependency")
-                            .SetDependencies("*","another-dependency");
-                        manifest.DefineResource("foo", "simple-resource");
-                        manifest.DefineResource("foo", "star-resource")
-                            .SetDependencies("*","star-dependency");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
-            );
-
-            resourceManager.RegisterResource("foo", "star-resource");
-            resourceManager.RegisterResource("foo", "requires-dependency");
-            resourceManager.RegisterResource("foo", "simple-resource");
-
-            var requiredResources = resourceManager.GetRequiredResources("foo")
-                .Select(ctx => ctx.Resource)
-                .ToList();
-
-            // Ensure dependencies loaded
-            Assert.True(requiredResources.Count == 6);
-
-            // Ensure order
-            var dependecyIndex = requiredResources.FindIndex(resource => resource.Name == "dependency");
-            var requiresDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "requires-dependency");
-            var simpleResourceIndex = requiredResources.FindIndex(resource => resource.Name == "simple-resource");
-            var starDependecyIndex = requiredResources.FindIndex(resource => resource.Name == "star-dependency");
-            var starResourceIndex = requiredResources.FindIndex(resource => resource.Name == "star-resource");
-            var anotherDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "another-dependency");
-
-            Assert.True(requiresDependencyIndex > dependecyIndex);
-            Assert.True(simpleResourceIndex > requiresDependencyIndex);
-            Assert.True(anotherDependencyIndex > simpleResourceIndex);
-            Assert.True(starDependecyIndex > anotherDependencyIndex);
-            Assert.True(starResourceIndex > starDependecyIndex);
-        }
-
-
-        [Fact]
-        public void RequireStarDependency()
-        {
-            var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "requires-dependency")
-                            .SetDependencies("dependency");
-                        manifest.DefineResource("foo", "dependency");
-                        manifest.DefineResource("foo", "another-dependency");
-                        manifest.DefineResource("foo", "requires-star-dependency")
-                            .SetDependencies("star-dependency");
-                        manifest.DefineResource("foo", "simple-resource");
-                        manifest.DefineResource("foo", "star-dependency")
-                            .SetDependencies("*");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
-            );
-
-            resourceManager.RegisterResource("foo", "requires-star-dependency");
-            resourceManager.RegisterResource("foo", "requires-dependency");
-            resourceManager.RegisterResource("foo", "simple-resource");
-
-            var requiredResources = resourceManager.GetRequiredResources("foo")
-                .Select(ctx => ctx.Resource)
-                .ToList();
-
-            // Ensure dependencies loaded
-            Assert.True(requiredResources.Count == 5);
-
-            // Ensure order
-            var dependecyIndex = requiredResources.FindIndex(resource => resource.Name == "dependency");
-            var requiresDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "requires-dependency");
-            var simpleResourceIndex = requiredResources.FindIndex(resource => resource.Name == "simple-resource");
-            var requiresStarDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "requires-star-dependency");
-            var starDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "star-dependency");
-
-            Assert.True(requiresDependencyIndex > dependecyIndex);
-            Assert.True(simpleResourceIndex > requiresDependencyIndex);
-            Assert.True(requiresStarDependencyIndex > starDependencyIndex);
-        }
-
-        [Fact]
-        public void RequireIndirectStarDependency()
-        {
-            var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "requires-dependency")
-                            .SetDependencies("dependency");
-                        manifest.DefineResource("foo", "dependency");
-                        manifest.DefineResource("foo", "indirect-dependency");
-                        manifest.DefineResource("foo", "requires-star-dependency")
-                            .SetDependencies("star-dependency","indirect-dependency");
-                        manifest.DefineResource("foo", "simple-resource");
-                        manifest.DefineResource("foo", "star-dependency")
-                            .SetDependencies("*");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
-                StubFileVersionProvider.Instance
-            );
-
-            resourceManager.RegisterResource("foo", "requires-star-dependency");
-            resourceManager.RegisterResource("foo", "requires-dependency");
-            resourceManager.RegisterResource("foo", "simple-resource");
-
-            var requiredResources = resourceManager.GetRequiredResources("foo")
-                .Select(ctx => ctx.Resource)
-                .ToList();
-
-            // Ensure dependencies loaded
-            Assert.True(requiredResources.Count == 6);
-
-            // Ensure order
-            var dependecyIndex = requiredResources.FindIndex(resource => resource.Name == "dependency");
-            var requiresDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "requires-dependency");
-            var simpleResourceIndex = requiredResources.FindIndex(resource => resource.Name == "simple-resource");
-            var requiresStarDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "requires-star-dependency");
-            var indirectDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "indirect-dependency");
-            var starDependencyIndex = requiredResources.FindIndex(resource => resource.Name == "star-dependency");
-
-            Assert.True(dependecyIndex > indirectDependencyIndex);
-            Assert.True(requiresDependencyIndex > dependecyIndex);
-            Assert.True(simpleResourceIndex > requiresDependencyIndex);
-            Assert.True(requiresStarDependencyIndex > starDependencyIndex);
-        }
-
-        [Fact]
-        public void RequireCircularIndirectStarDependencyShouldThrowException()
-        {
-            var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "requires-dependency")
-                            .SetDependencies("dependency");
+                        manifest.DefineResource("foo", "requires-indirect-dependency")
+                            .SetDependencies("requires-dependency");
                         manifest.DefineResource("foo", "dependency")
-                            .SetDependencies("indirect-dependency");
-                        manifest.DefineResource("foo", "indirect-dependency")
-                            .SetDependencies("dependency");
-                        manifest.DefineResource("foo", "requires-star-dependency")
-                            .SetDependencies("star-dependency","indirect-dependency");
-                        manifest.DefineResource("foo", "simple-resource");
-                        manifest.DefineResource("foo", "star-dependency")
-                            .SetDependencies("*");
+                            .SetDependencies("requires-indirect-dependency");
                     })
                 },
                 new ResourceManifestState(),
@@ -348,11 +227,107 @@ namespace OrchardCore.Tests.ResourceManagement
                 StubFileVersionProvider.Instance
             );
 
-            resourceManager.RegisterResource("foo", "requires-star-dependency");
+            resourceManager.RegisterResource("foo", "requires-indirect-dependency");
             resourceManager.RegisterResource("foo", "requires-dependency");
-            resourceManager.RegisterResource("foo", "simple-resource");
 
-            Assert.Throws<InvalidOperationException>(() => resourceManager.GetRequiredResources("foo"));
+            var ex = Assert.Throws<InvalidOperationException>(() => resourceManager.GetRequiredResources("foo"));
+            Assert.StartsWith("Circular dependency", ex.Message);
+        }
+
+        [Fact]
+        public void RequireByDependencyResourceThatDependsOnLastPositionedResourceShouldRegisterResourceLast()
+        {
+            var resourceManager = new ResourceManager(
+                new[] {
+                    new StubResourceManifestProvider(builder => {
+                        var manifest = builder.Add();
+                        manifest.DefineResource("foo", "resource")
+                            .SetDependencies("last-resource");
+                        manifest.DefineResource("foo", "last-resource")
+                            .SetPosition(ResourcePosition.Last);
+                    })
+                },
+                new ResourceManifestState(),
+                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                StubFileVersionProvider.Instance
+            );
+
+            resourceManager.RegisterResource("foo", "resource");
+
+            var requiredResources = resourceManager.GetRequiredResources("foo")
+                .Select(ctx => ctx.Resource)
+                .ToList();
+
+            // Ensure dependencies loaded
+            Assert.True(requiredResources.Count == 2);
+
+            // Ensure order
+            var resourceIndex = requiredResources.FindIndex(resource => resource.Name == "resource");
+            var lastResourceIndex = requiredResources.FindIndex(resource => resource.Name == "last-resource");
+
+            Assert.True(resourceIndex > lastResourceIndex);
+        }
+
+        [Fact]
+        public void RequireFirstPositionedResourceThatDependsOnByDependencyResourceShouldRegisterDependencyFirst()
+        {
+            var resourceManager = new ResourceManager(
+                new[] {
+                    new StubResourceManifestProvider(builder => {
+                        var manifest = builder.Add();
+                        manifest.DefineResource("foo", "dependency");
+                        manifest.DefineResource("foo", "first-resource")
+                            .SetDependencies("dependency")
+                            .SetPosition(ResourcePosition.First);
+                    })
+                },
+                new ResourceManifestState(),
+                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                StubFileVersionProvider.Instance
+            );
+
+            resourceManager.RegisterResource("foo", "first-resource");
+
+            var requiredResources = resourceManager.GetRequiredResources("foo")
+                .Select(ctx => ctx.Resource)
+                .ToList();
+
+            // Ensure dependencies loaded
+            Assert.True(requiredResources.Count == 2);
+
+            // Ensure order
+            var dependencyIndex = requiredResources.FindIndex(resource => resource.Name == "dependency");
+            var firstResourceIndex = requiredResources.FindIndex(resource => resource.Name == "first-resource");
+
+            Assert.True(firstResourceIndex > dependencyIndex);
+        }
+
+        [Fact]
+        public void RequireFirstPositionedResourceWithDependencyToResourcePositionedLastShouldThrowException()
+        {
+            var resourceManager = new ResourceManager(
+                new[] {
+                    new StubResourceManifestProvider(builder => {
+                        var manifest = builder.Add();
+                        manifest.DefineResource("foo", "resource")
+                            .SetDependencies("last-resource");
+                        manifest.DefineResource("foo", "last-resource")
+                            .SetPosition(ResourcePosition.Last);
+                        manifest.DefineResource("foo", "first-resource")
+                            .SetPosition(ResourcePosition.First)
+                            .SetDependencies("resource");
+                    })
+                },
+                new ResourceManifestState(),
+                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                StubFileVersionProvider.Instance
+            );
+
+            resourceManager.RegisterResource("foo", "first-resource");
+            resourceManager.RegisterResource("foo", "last-resource");
+
+            var ex = Assert.Throws<InvalidOperationException>(() => resourceManager.GetRequiredResources("foo"));
+            Assert.StartsWith("Invalid dependency position", ex.Message);
         }
 
         [Fact]
