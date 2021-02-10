@@ -14,6 +14,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Modules
 {
@@ -171,7 +172,9 @@ namespace OrchardCore.Modules
 
                     var settingsProvider = scope.ServiceProvider.GetService<IBackgroundTaskSettingsProvider>();
 
-                    var localClock = scope.ServiceProvider.GetService<ILocalClock>();
+                    var siteService = scope.ServiceProvider.GetService<ISiteService>();
+                    var siteSettings = await siteService.GetSiteSettingsAsync();
+                    var clock = scope.ServiceProvider.GetService<IClock>();
 
                     _changeTokens[tenant] = settingsProvider?.ChangeToken ?? NullChangeToken.Singleton;
 
@@ -181,7 +184,8 @@ namespace OrchardCore.Modules
 
                         if (!_schedulers.TryGetValue(tenant + taskName, out var scheduler))
                         {
-                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, localClock);
+                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime,
+                                clock, siteSettings.TimeZoneId);
                         }
 
                         if (!scheduler.Released && scheduler.Updated)
