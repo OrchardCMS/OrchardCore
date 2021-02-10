@@ -308,14 +308,14 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // If there is no default tenant or it is not running, nothing to do.
-            if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var settings) ||
-                settings.State != TenantState.Running)
+            if (!_shellHost.TryGetShellContext(ShellHelper.DefaultShellName, out var defaultContext) ||
+                defaultContext.Settings.State != TenantState.Running)
             {
                 return;
             }
 
             // Acquire the distributed context or create a new one if not yet built.
-            using var context = await AcquireOrCreateDistributedContextAsync(settings);
+            using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -359,14 +359,14 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // If there is no default tenant or it is not running, nothing to do.
-            if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var settings) ||
-                settings.State != TenantState.Running)
+            if (!_shellHost.TryGetShellContext(ShellHelper.DefaultShellName, out var defaultContext) ||
+                defaultContext.Settings.State != TenantState.Running)
             {
                 return;
             }
 
             // Acquire the distributed context or create a new one if not yet built.
-            using var context = await AcquireOrCreateDistributedContextAsync(settings);
+            using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -414,23 +414,23 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private async Task<DistributedContext> CreateDistributedContextAsync(ShellContext defaultShell)
         {
-            if (defaultShell.Blueprint?.Descriptor == null)
+            // Capture the descriptor as the blueprint may be set to null right after.
+            var descriptor = defaultShell.Blueprint?.Descriptor;
+            if (descriptor != null)
             {
-                return await CreateDistributedContextAsync(defaultShell.Settings);
+                // Using the current shell descritor prevents a database access, and a race condition
+                // when resolving `IStore` while the default tenant is activating and does migrations.
+                try
+                {
+                    return new DistributedContext(await _shellContextFactory.CreateDescribedContextAsync(defaultShell.Settings, descriptor));
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
-            // Using the current shell descritor prevents a database access, and a race condition
-            // when resolving `IStore` while the default tenant is activating and does migrations.
-            try
-            {
-                return new DistributedContext(await _shellContextFactory.CreateDescribedContextAsync(
-                    defaultShell.Settings,
-                    defaultShell.Blueprint.Descriptor));
-            }
-            catch
-            {
-                return null;
-            }
+            return await CreateDistributedContextAsync(defaultShell.Settings);
         }
 
         /// <summary>
@@ -476,12 +476,12 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// <summary>
         /// Acquires the distributed context or creates a new one if not yet initialized.
         /// </summary>
-        private Task<DistributedContext> AcquireOrCreateDistributedContextAsync(ShellSettings settings)
+        private Task<DistributedContext> AcquireOrCreateDistributedContextAsync(ShellContext defaultContext)
         {
             var distributedContext = _context?.Acquire();
             if (distributedContext == null)
             {
-                return CreateDistributedContextAsync(settings);
+                return CreateDistributedContextAsync(defaultContext);
             }
 
             return Task.FromResult(distributedContext);
