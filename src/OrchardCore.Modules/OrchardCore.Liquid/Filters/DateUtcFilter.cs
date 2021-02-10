@@ -18,7 +18,7 @@ namespace OrchardCore.Liquid.Filters
             _localClock = localClock;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var value = DateTimeOffset.MinValue;
 
@@ -34,7 +34,7 @@ namespace OrchardCore.Liquid.Filters
                 {
                     if (!DateTimeOffset.TryParse(stringValue, context.CultureInfo, DateTimeStyles.AssumeUniversal, out value))
                     {
-                        return new ValueTask<FluidValue>(StringValue.Create("null"));
+                        return NilValue.Instance;
                     }
                 }
             }
@@ -43,7 +43,7 @@ namespace OrchardCore.Liquid.Filters
                 switch (input.ToObjectValue())
                 {
                     case DateTime dateTime:
-                        value = dateTime;
+                        value = await _localClock.ConvertToUtcAsync(dateTime);
                         break;
 
                     case DateTimeOffset dateTimeOffset:
@@ -51,11 +51,11 @@ namespace OrchardCore.Liquid.Filters
                         break;
 
                     default:
-                        return new ValueTask<FluidValue>(StringValue.Create("null"));
+                        return NilValue.Instance;
                 }
             }
 
-            return new ValueTask<FluidValue>(new ObjectValue(value.UtcDateTime));
+            return new ObjectValue(value.UtcDateTime);
         }
     }
 }
