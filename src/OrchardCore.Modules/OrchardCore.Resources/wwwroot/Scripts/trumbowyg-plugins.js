@@ -4,206 +4,6 @@
 */
 
 /* ===========================================================
- * trumbowyg.allowTagsFromPaste.js v1.0.2
- * It cleans tags from pasted text, whilst allowing several specified tags
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author	: Fathi Anshory (0x00000F5C)
- * Twitter	: @fscchannl
- * Notes:
- *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
- *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
- */
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    // When empty, all tags are allowed making this plugin useless
-    // If you want to remove all tags, use removeformatPasted core option instead
-    allowedTags: [],
-    // List of tags which can be allowed
-    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(trumbowyg) {
-          // Force disable remove format pasted
-          trumbowyg.o.removeformatPasted = false;
-
-          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
-            return;
-          }
-
-          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
-          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
-
-          if (allowedTags.length === 0) {
-            return;
-          } // Get list of tags to remove
-
-
-          var tagsToRemove = $(removableTags).not(allowedTags).get();
-          trumbowyg.pasteHandlers.push(function () {
-            setTimeout(function () {
-              var processNodes = trumbowyg.$ed.html();
-              $.each(tagsToRemove, function (iterator, tagName) {
-                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
-              });
-              trumbowyg.$ed.html(processNodes);
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.base64.js v1.0
- * Base64 plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Cyril Biencourt (lizardK)
- */
-(function ($) {
-  'use strict';
-
-  var isSupported = function isSupported() {
-    return typeof FileReader !== 'undefined';
-  };
-
-  var isValidImage = function isValidImage(type) {
-    return /^data:image\/[a-z]?/i.test(type);
-  };
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        base64: 'Image as base64',
-        file: 'File',
-        errFileReaderNotSupported: 'FileReader is not supported by your browser.',
-        errInvalidImage: 'Invalid image file.'
-      },
-      cs: {
-        base64: 'Vložit obrázek',
-        file: 'Soubor'
-      },
-      da: {
-        base64: 'Billede som base64',
-        file: 'Fil',
-        errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
-        errInvalidImage: 'Ugyldig billedfil.'
-      },
-      fr: {
-        base64: 'Image en base64',
-        file: 'Fichier'
-      },
-      hu: {
-        base64: 'Kép beszúrás inline',
-        file: 'Fájl',
-        errFileReaderNotSupported: 'Ez a böngésző nem támogatja a FileReader funkciót.',
-        errInvalidImage: 'Érvénytelen képfájl.'
-      },
-      ja: {
-        base64: '画像 (Base64形式)',
-        file: 'ファイル',
-        errFileReaderNotSupported: 'あなたのブラウザーはFileReaderをサポートしていません',
-        errInvalidImage: '画像形式が正しくありません'
-      },
-      ko: {
-        base64: '그림 넣기(base64)',
-        file: '파일',
-        errFileReaderNotSupported: 'FileReader가 현재 브라우저를 지원하지 않습니다.',
-        errInvalidImage: '유효하지 않은 파일'
-      },
-      nl: {
-        base64: 'Afbeelding inline',
-        file: 'Bestand',
-        errFileReaderNotSupported: 'Uw browser ondersteunt deze functionaliteit niet.',
-        errInvalidImage: 'De gekozen afbeelding is ongeldig.'
-      },
-      pt_br: {
-        base64: 'Imagem em base64',
-        file: 'Arquivo',
-        errFileReaderNotSupported: 'FileReader não é suportado pelo seu navegador.',
-        errInvalidImage: 'Arquivo de imagem inválido.'
-      },
-      ru: {
-        base64: 'Изображение как код в base64',
-        file: 'Файл',
-        errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
-        errInvalidImage: 'Недопустимый файл изображения.'
-      },
-      tr: {
-        base64: 'Base64 olarak resim',
-        file: 'Dosya',
-        errFileReaderNotSupported: 'FileReader tarayıcınız tarafından desteklenmiyor.',
-        errInvalidImage: 'Geçersiz resim dosyası.'
-      },
-      zh_cn: {
-        base64: '图片（Base64编码）',
-        file: '文件'
-      },
-      zh_tw: {
-        base64: '圖片(base64編碼)',
-        file: '檔案',
-        errFileReaderNotSupported: '你的瀏覽器不支援FileReader',
-        errInvalidImage: '不正確的檔案格式'
-      }
-    },
-    // jshint camelcase:true
-    plugins: {
-      base64: {
-        shouldInit: isSupported,
-        init: function init(trumbowyg) {
-          var btnDef = {
-            isSupported: isSupported,
-            fn: function fn() {
-              trumbowyg.saveRange();
-              var file;
-              var $modal = trumbowyg.openModalInsert( // Title
-              trumbowyg.lang.base64, // Fields
-              {
-                file: {
-                  type: 'file',
-                  required: true,
-                  attributes: {
-                    accept: 'image/*'
-                  }
-                },
-                alt: {
-                  label: 'description',
-                  value: trumbowyg.getRangeText()
-                }
-              }, // Callback
-              function (values) {
-                var fReader = new FileReader();
-
-                fReader.onloadend = function (e) {
-                  if (isValidImage(e.target.result)) {
-                    trumbowyg.execCmd('insertImage', fReader.result, false, true);
-                    $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
-                    trumbowyg.closeModal();
-                  } else {
-                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.errInvalidImage);
-                  }
-                };
-
-                fReader.readAsDataURL(file);
-              });
-              $('input[type=file]').on('change', function (e) {
-                file = e.target.files[0];
-              });
-            }
-          };
-          trumbowyg.addBtnDef('base64', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
  * trumbowyg.cleanpaste.js v1.0
  * Font Clean paste plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -323,6 +123,61 @@
                 trumbowyg.saveRange();
                 trumbowyg.syncCode();
               } catch (c) {}
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ */
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    // When empty, all tags are allowed making this plugin useless
+    // If you want to remove all tags, use removeformatPasted core option instead
+    allowedTags: [],
+    // List of tags which can be allowed
+    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(trumbowyg) {
+          // Force disable remove format pasted
+          trumbowyg.o.removeformatPasted = false;
+
+          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
+            return;
+          }
+
+          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
+          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
+
+          if (allowedTags.length === 0) {
+            return;
+          } // Get list of tags to remove
+
+
+          var tagsToRemove = $(removableTags).not(allowedTags).get();
+          trumbowyg.pasteHandlers.push(function () {
+            setTimeout(function () {
+              var processNodes = trumbowyg.$ed.html();
+              $.each(tagsToRemove, function (iterator, tagName) {
+                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
+              });
+              trumbowyg.$ed.html(processNodes);
             }, 0);
           });
         }
@@ -569,6 +424,151 @@
 
     return dropdown;
   }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.base64.js v1.0
+ * Base64 plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Cyril Biencourt (lizardK)
+ */
+(function ($) {
+  'use strict';
+
+  var isSupported = function isSupported() {
+    return typeof FileReader !== 'undefined';
+  };
+
+  var isValidImage = function isValidImage(type) {
+    return /^data:image\/[a-z]?/i.test(type);
+  };
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        base64: 'Image as base64',
+        file: 'File',
+        errFileReaderNotSupported: 'FileReader is not supported by your browser.',
+        errInvalidImage: 'Invalid image file.'
+      },
+      cs: {
+        base64: 'Vložit obrázek',
+        file: 'Soubor'
+      },
+      da: {
+        base64: 'Billede som base64',
+        file: 'Fil',
+        errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
+        errInvalidImage: 'Ugyldig billedfil.'
+      },
+      fr: {
+        base64: 'Image en base64',
+        file: 'Fichier'
+      },
+      hu: {
+        base64: 'Kép beszúrás inline',
+        file: 'Fájl',
+        errFileReaderNotSupported: 'Ez a böngésző nem támogatja a FileReader funkciót.',
+        errInvalidImage: 'Érvénytelen képfájl.'
+      },
+      ja: {
+        base64: '画像 (Base64形式)',
+        file: 'ファイル',
+        errFileReaderNotSupported: 'あなたのブラウザーはFileReaderをサポートしていません',
+        errInvalidImage: '画像形式が正しくありません'
+      },
+      ko: {
+        base64: '그림 넣기(base64)',
+        file: '파일',
+        errFileReaderNotSupported: 'FileReader가 현재 브라우저를 지원하지 않습니다.',
+        errInvalidImage: '유효하지 않은 파일'
+      },
+      nl: {
+        base64: 'Afbeelding inline',
+        file: 'Bestand',
+        errFileReaderNotSupported: 'Uw browser ondersteunt deze functionaliteit niet.',
+        errInvalidImage: 'De gekozen afbeelding is ongeldig.'
+      },
+      pt_br: {
+        base64: 'Imagem em base64',
+        file: 'Arquivo',
+        errFileReaderNotSupported: 'FileReader não é suportado pelo seu navegador.',
+        errInvalidImage: 'Arquivo de imagem inválido.'
+      },
+      ru: {
+        base64: 'Изображение как код в base64',
+        file: 'Файл',
+        errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
+        errInvalidImage: 'Недопустимый файл изображения.'
+      },
+      tr: {
+        base64: 'Base64 olarak resim',
+        file: 'Dosya',
+        errFileReaderNotSupported: 'FileReader tarayıcınız tarafından desteklenmiyor.',
+        errInvalidImage: 'Geçersiz resim dosyası.'
+      },
+      zh_cn: {
+        base64: '图片（Base64编码）',
+        file: '文件'
+      },
+      zh_tw: {
+        base64: '圖片(base64編碼)',
+        file: '檔案',
+        errFileReaderNotSupported: '你的瀏覽器不支援FileReader',
+        errInvalidImage: '不正確的檔案格式'
+      }
+    },
+    // jshint camelcase:true
+    plugins: {
+      base64: {
+        shouldInit: isSupported,
+        init: function init(trumbowyg) {
+          var btnDef = {
+            isSupported: isSupported,
+            fn: function fn() {
+              trumbowyg.saveRange();
+              var file;
+              var $modal = trumbowyg.openModalInsert( // Title
+              trumbowyg.lang.base64, // Fields
+              {
+                file: {
+                  type: 'file',
+                  required: true,
+                  attributes: {
+                    accept: 'image/*'
+                  }
+                },
+                alt: {
+                  label: 'description',
+                  value: trumbowyg.getRangeText()
+                }
+              }, // Callback
+              function (values) {
+                var fReader = new FileReader();
+
+                fReader.onloadend = function (e) {
+                  if (isValidImage(e.target.result)) {
+                    trumbowyg.execCmd('insertImage', fReader.result, false, true);
+                    $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
+                    trumbowyg.closeModal();
+                  } else {
+                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.errInvalidImage);
+                  }
+                };
+
+                fReader.readAsDataURL(file);
+              });
+              $('input[type=file]').on('change', function (e) {
+                file = e.target.files[0];
+              });
+            }
+          };
+          trumbowyg.addBtnDef('base64', btnDef);
+        }
+      }
+    }
+  });
 })(jQuery);
 /* ===========================================================
  * trumbowyg.emoji.js v0.1
@@ -1043,171 +1043,6 @@
     return dropdown;
   }
 })(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        giphy: 'Insert GIF'
-      },
-      fr: {
-        giphy: 'Insérer un GIF'
-      },
-      hu: {
-        giphy: 'GIF beszúrás'
-      } // jshint camelcase:true
-
-    }
-  });
-  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>';
-  var CANCEL_EVENT = 'tbwcancel'; // Throttle helper
-
-  function trumbowygThrottle(callback, delay) {
-    var last;
-    var timer;
-    return function () {
-      var context = this;
-      var now = +new Date();
-      var args = arguments;
-
-      if (last && now < last + delay) {
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          last = now;
-          callback.apply(context, args);
-        }, delay);
-      } else {
-        last = now;
-        callback.apply(context, args);
-      }
-    };
-  } // Fills modal with response gifs
-
-
-  function renderGifs(response, $giphyModal, trumbowyg, mustEmpty) {
-    var width = ($giphyModal.width() - 20) / 3;
-    var html = response.data.filter(function (gifData) {
-      return gifData.images.downsized.url !== '';
-    }).map(function (gifData) {
-      var image = gifData.images.downsized,
-          imageRatio = image.height / image.width;
-      return '<div class="img-container"><img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" loading="lazy" onload="this.classList.add(\'tbw-loaded\')"/></div>';
-    }).join('');
-
-    if (mustEmpty === true) {
-      if (html.length === 0) {
-        if ($('.' + trumbowyg.o.prefix + 'giphy-no-result', $giphyModal).length > 0) {
-          return;
-        }
-
-        html = '<img class="' + trumbowyg.o.prefix + 'giphy-no-result" src="' + trumbowyg.o.plugins.giphy.noResultGifUrl + '"/>';
-      }
-
-      $giphyModal.empty();
-    }
-
-    $giphyModal.append(html);
-    $('img', $giphyModal).on('click', function () {
-      trumbowyg.restoreRange();
-      trumbowyg.execCmd('insertImage', $(this).attr('src'), false, true);
-      $('img', $giphyModal).off();
-      trumbowyg.closeModal();
-    });
-  }
-
-  var defaultOptions = {
-    rating: 'g',
-    apiKey: null,
-    throttleDelay: 300,
-    noResultGifUrl: 'https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif'
-  }; // Add dropdown with font sizes
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      giphy: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.giphy = $.extend({}, defaultOptions, trumbowyg.o.plugins.giphy || {});
-          trumbowyg.addBtnDef('giphy', {
-            fn: function fn() {
-              if (trumbowyg.o.plugins.giphy.apiKey === null) {
-                throw new Error('You must set a Giphy API Key');
-              }
-
-              var BASE_URL = 'https://api.giphy.com/v1/gifs/search?api_key=' + trumbowyg.o.plugins.giphy.apiKey + '&rating=' + trumbowyg.o.plugins.giphy.rating,
-                  DEFAULT_URL = BASE_URL.replace('/search', '/trending');
-              var previousAjaxCall = {
-                abort: function abort() {}
-              };
-              var prefix = trumbowyg.o.prefix; // Create and open the modal
-
-              var searchInput = '<input name="" class="' + prefix + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">',
-                  closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
-                  poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
-                  giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
-              trumbowyg.openModal(null, giphyModalHtml, false).one(CANCEL_EVENT, function () {
-                try {
-                  previousAjaxCall.abort();
-                } catch (e) {}
-
-                trumbowyg.closeModal();
-              });
-              var $giphyInput = $('.' + prefix + 'giphy-search'),
-                  $giphyClose = $('.' + prefix + 'giphy-close'),
-                  $giphyModal = $('.' + prefix + 'giphy-modal');
-
-              var ajaxError = function ajaxError() {
-                if (!navigator.onLine && !$('.' + prefix + 'giphy-offline', $giphyModal).length) {
-                  $giphyModal.empty();
-                  $giphyModal.append('<p class="' + prefix + 'giphy-offline">You are offline</p>');
-                }
-              }; // Load trending gifs as default
-
-
-              $.ajax({
-                url: DEFAULT_URL,
-                dataType: 'json',
-                success: function success(response) {
-                  renderGifs(response, $giphyModal, trumbowyg, true);
-                },
-                error: ajaxError
-              });
-
-              var searchGifsOnInput = function searchGifsOnInput() {
-                var query = $giphyInput.val();
-
-                if (query.length === 0) {
-                  return;
-                }
-
-                try {
-                  previousAjaxCall.abort();
-                } catch (e) {}
-
-                previousAjaxCall = $.ajax({
-                  url: BASE_URL + '&q=' + encodeURIComponent(query),
-                  dataType: 'json',
-                  success: function success(response) {
-                    renderGifs(response, $giphyModal, trumbowyg, true);
-                  },
-                  error: ajaxError
-                });
-              };
-
-              var throttledInputRequest = trumbowygThrottle(searchGifsOnInput, trumbowyg.o.plugins.giphy.throttleDelay);
-              $giphyInput.on('input', throttledInputRequest);
-              $giphyInput.focus();
-              $giphyClose.one('click', function () {
-                $giphyModal.trigger(CANCEL_EVENT);
-              });
-            }
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
 /*/* ===========================================================
  * trumbowyg.history.js v1.0
  * history plugin for Trumbowyg
@@ -1420,6 +1255,171 @@
     }
   });
 })(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        giphy: 'Insert GIF'
+      },
+      fr: {
+        giphy: 'Insérer un GIF'
+      },
+      hu: {
+        giphy: 'GIF beszúrás'
+      } // jshint camelcase:true
+
+    }
+  });
+  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>';
+  var CANCEL_EVENT = 'tbwcancel'; // Throttle helper
+
+  function trumbowygThrottle(callback, delay) {
+    var last;
+    var timer;
+    return function () {
+      var context = this;
+      var now = +new Date();
+      var args = arguments;
+
+      if (last && now < last + delay) {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          last = now;
+          callback.apply(context, args);
+        }, delay);
+      } else {
+        last = now;
+        callback.apply(context, args);
+      }
+    };
+  } // Fills modal with response gifs
+
+
+  function renderGifs(response, $giphyModal, trumbowyg, mustEmpty) {
+    var width = ($giphyModal.width() - 20) / 3;
+    var html = response.data.filter(function (gifData) {
+      return gifData.images.downsized.url !== '';
+    }).map(function (gifData) {
+      var image = gifData.images.downsized,
+          imageRatio = image.height / image.width;
+      return '<div class="img-container"><img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" loading="lazy" onload="this.classList.add(\'tbw-loaded\')"/></div>';
+    }).join('');
+
+    if (mustEmpty === true) {
+      if (html.length === 0) {
+        if ($('.' + trumbowyg.o.prefix + 'giphy-no-result', $giphyModal).length > 0) {
+          return;
+        }
+
+        html = '<img class="' + trumbowyg.o.prefix + 'giphy-no-result" src="' + trumbowyg.o.plugins.giphy.noResultGifUrl + '"/>';
+      }
+
+      $giphyModal.empty();
+    }
+
+    $giphyModal.append(html);
+    $('img', $giphyModal).on('click', function () {
+      trumbowyg.restoreRange();
+      trumbowyg.execCmd('insertImage', $(this).attr('src'), false, true);
+      $('img', $giphyModal).off();
+      trumbowyg.closeModal();
+    });
+  }
+
+  var defaultOptions = {
+    rating: 'g',
+    apiKey: null,
+    throttleDelay: 300,
+    noResultGifUrl: 'https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif'
+  }; // Add dropdown with font sizes
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      giphy: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.giphy = $.extend({}, defaultOptions, trumbowyg.o.plugins.giphy || {});
+          trumbowyg.addBtnDef('giphy', {
+            fn: function fn() {
+              if (trumbowyg.o.plugins.giphy.apiKey === null) {
+                throw new Error('You must set a Giphy API Key');
+              }
+
+              var BASE_URL = 'https://api.giphy.com/v1/gifs/search?api_key=' + trumbowyg.o.plugins.giphy.apiKey + '&rating=' + trumbowyg.o.plugins.giphy.rating,
+                  DEFAULT_URL = BASE_URL.replace('/search', '/trending');
+              var previousAjaxCall = {
+                abort: function abort() {}
+              };
+              var prefix = trumbowyg.o.prefix; // Create and open the modal
+
+              var searchInput = '<input name="" class="' + prefix + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">',
+                  closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
+                  poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
+                  giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
+              trumbowyg.openModal(null, giphyModalHtml, false).one(CANCEL_EVENT, function () {
+                try {
+                  previousAjaxCall.abort();
+                } catch (e) {}
+
+                trumbowyg.closeModal();
+              });
+              var $giphyInput = $('.' + prefix + 'giphy-search'),
+                  $giphyClose = $('.' + prefix + 'giphy-close'),
+                  $giphyModal = $('.' + prefix + 'giphy-modal');
+
+              var ajaxError = function ajaxError() {
+                if (!navigator.onLine && !$('.' + prefix + 'giphy-offline', $giphyModal).length) {
+                  $giphyModal.empty();
+                  $giphyModal.append('<p class="' + prefix + 'giphy-offline">You are offline</p>');
+                }
+              }; // Load trending gifs as default
+
+
+              $.ajax({
+                url: DEFAULT_URL,
+                dataType: 'json',
+                success: function success(response) {
+                  renderGifs(response, $giphyModal, trumbowyg, true);
+                },
+                error: ajaxError
+              });
+
+              var searchGifsOnInput = function searchGifsOnInput() {
+                var query = $giphyInput.val();
+
+                if (query.length === 0) {
+                  return;
+                }
+
+                try {
+                  previousAjaxCall.abort();
+                } catch (e) {}
+
+                previousAjaxCall = $.ajax({
+                  url: BASE_URL + '&q=' + encodeURIComponent(query),
+                  dataType: 'json',
+                  success: function success(response) {
+                    renderGifs(response, $giphyModal, trumbowyg, true);
+                  },
+                  error: ajaxError
+                });
+              };
+
+              var throttledInputRequest = trumbowygThrottle(searchGifsOnInput, trumbowyg.o.plugins.giphy.throttleDelay);
+              $giphyInput.on('input', throttledInputRequest);
+              $giphyInput.focus();
+              $giphyClose.one('click', function () {
+                $giphyModal.trigger(CANCEL_EVENT);
+              });
+            }
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
 /*/* ===========================================================
  * trumbowyg.insertaudio.js v1.0
  * InsertAudio plugin for Trumbowyg
@@ -1519,6 +1519,127 @@
             }
           };
           trumbowyg.addBtnDef('insertAudio', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.mathMl.js v1.0
+ * MathML plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : loclamor
+ */
+
+/* globals MathJax */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        mathml: 'Insert Formulas',
+        formulas: 'Formulas',
+        inline: 'Inline'
+      },
+      da: {
+        mathml: 'Indsæt formler',
+        formulas: 'Formler',
+        inline: 'Inline'
+      },
+      fr: {
+        mathml: 'Inserer une formule',
+        formulas: 'Formule',
+        inline: 'En ligne'
+      },
+      hu: {
+        mathml: 'Formulák beszúrás',
+        formulas: 'Formulák',
+        inline: 'Inline'
+      },
+      ko: {
+        mathml: '수식 넣기',
+        formulas: '수식',
+        inline: '글 안에 넣기'
+      },
+      pt_br: {
+        mathml: 'Inserir fórmulas',
+        formulas: 'Fórmulas',
+        inline: 'Em linha'
+      },
+      tr: {
+        mathml: 'Formül Ekle',
+        formulas: 'Formüller',
+        inline: 'Satır içi'
+      },
+      zh_tw: {
+        mathml: '插入方程式',
+        formulas: '方程式',
+        inline: '內嵌'
+      }
+    },
+    // jshint camelcase:true
+    plugins: {
+      mathml: {
+        init: function init(trumbowyg) {
+          var btnDef = {
+            fn: function fn() {
+              trumbowyg.saveRange();
+              var mathMLoptions = {
+                formulas: {
+                  label: trumbowyg.lang.formulas,
+                  required: true,
+                  value: ''
+                },
+                inline: {
+                  label: trumbowyg.lang.inline,
+                  attributes: {
+                    checked: true
+                  },
+                  type: 'checkbox',
+                  required: false
+                }
+              };
+
+              var mathmlCallback = function mathmlCallback(v) {
+                var delimiter = v.inline ? '$' : '$$';
+
+                if (trumbowyg.currentMathNode) {
+                  $(trumbowyg.currentMathNode).html(delimiter + ' ' + v.formulas + ' ' + delimiter).attr('formulas', v.formulas).attr('inline', v.inline ? 'true' : 'false');
+                } else {
+                  var html = '<span class="mathMlContainer" contenteditable="false" formulas="' + v.formulas + '" inline="' + (v.inline ? 'true' : 'false') + '" >' + delimiter + ' ' + v.formulas + ' ' + delimiter + '</span>';
+                  var node = $(html)[0];
+
+                  node.onclick = function () {
+                    trumbowyg.currentMathNode = this;
+                    mathMLoptions.formulas.value = $(this).attr('formulas');
+
+                    if ($(this).attr('inline') === 'true') {
+                      mathMLoptions.inline.attributes.checked = true;
+                    } else {
+                      delete mathMLoptions.inline.attributes.checked;
+                    }
+
+                    trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMLoptions, mathmlCallback);
+                  };
+
+                  trumbowyg.range.deleteContents();
+                  trumbowyg.range.insertNode(node);
+                }
+
+                trumbowyg.currentMathNode = false;
+                MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
+                return true;
+              };
+
+              mathMLoptions.formulas.value = trumbowyg.getRangeText();
+              mathMLoptions.inline.attributes.checked = true;
+              trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMLoptions, mathmlCallback);
+            }
+          };
+          trumbowyg.addBtnDef('mathml', btnDef);
         }
       }
     }
@@ -1684,234 +1805,6 @@
 
     return parentEl;
   }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.mathMl.js v1.0
- * MathML plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : loclamor
- */
-
-/* globals MathJax */
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mathml: 'Insert Formulas',
-        formulas: 'Formulas',
-        inline: 'Inline'
-      },
-      da: {
-        mathml: 'Indsæt formler',
-        formulas: 'Formler',
-        inline: 'Inline'
-      },
-      fr: {
-        mathml: 'Inserer une formule',
-        formulas: 'Formule',
-        inline: 'En ligne'
-      },
-      hu: {
-        mathml: 'Formulák beszúrás',
-        formulas: 'Formulák',
-        inline: 'Inline'
-      },
-      ko: {
-        mathml: '수식 넣기',
-        formulas: '수식',
-        inline: '글 안에 넣기'
-      },
-      pt_br: {
-        mathml: 'Inserir fórmulas',
-        formulas: 'Fórmulas',
-        inline: 'Em linha'
-      },
-      tr: {
-        mathml: 'Formül Ekle',
-        formulas: 'Formüller',
-        inline: 'Satır içi'
-      },
-      zh_tw: {
-        mathml: '插入方程式',
-        formulas: '方程式',
-        inline: '內嵌'
-      }
-    },
-    // jshint camelcase:true
-    plugins: {
-      mathml: {
-        init: function init(trumbowyg) {
-          var btnDef = {
-            fn: function fn() {
-              trumbowyg.saveRange();
-              var mathMLoptions = {
-                formulas: {
-                  label: trumbowyg.lang.formulas,
-                  required: true,
-                  value: ''
-                },
-                inline: {
-                  label: trumbowyg.lang.inline,
-                  attributes: {
-                    checked: true
-                  },
-                  type: 'checkbox',
-                  required: false
-                }
-              };
-
-              var mathmlCallback = function mathmlCallback(v) {
-                var delimiter = v.inline ? '$' : '$$';
-
-                if (trumbowyg.currentMathNode) {
-                  $(trumbowyg.currentMathNode).html(delimiter + ' ' + v.formulas + ' ' + delimiter).attr('formulas', v.formulas).attr('inline', v.inline ? 'true' : 'false');
-                } else {
-                  var html = '<span class="mathMlContainer" contenteditable="false" formulas="' + v.formulas + '" inline="' + (v.inline ? 'true' : 'false') + '" >' + delimiter + ' ' + v.formulas + ' ' + delimiter + '</span>';
-                  var node = $(html)[0];
-
-                  node.onclick = function () {
-                    trumbowyg.currentMathNode = this;
-                    mathMLoptions.formulas.value = $(this).attr('formulas');
-
-                    if ($(this).attr('inline') === 'true') {
-                      mathMLoptions.inline.attributes.checked = true;
-                    } else {
-                      delete mathMLoptions.inline.attributes.checked;
-                    }
-
-                    trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMLoptions, mathmlCallback);
-                  };
-
-                  trumbowyg.range.deleteContents();
-                  trumbowyg.range.insertNode(node);
-                }
-
-                trumbowyg.currentMathNode = false;
-                MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
-                return true;
-              };
-
-              mathMLoptions.formulas.value = trumbowyg.getRangeText();
-              mathMLoptions.inline.attributes.checked = true;
-              trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMLoptions, mathmlCallback);
-            }
-          };
-          trumbowyg.addBtnDef('mathml', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.noembed.js v1.0
- * noEmbed plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Jake Johns (jakejohns)
- */
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    proxy: 'https://noembed.com/embed?nowrap=on',
-    urlFiled: 'url',
-    data: [],
-    success: undefined,
-    error: undefined
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        noembed: 'Noembed',
-        noembedError: 'Error'
-      },
-      cs: {
-        noembedError: 'Chyba'
-      },
-      da: {
-        noembedError: 'Fejl'
-      },
-      fr: {
-        noembedError: 'Erreur'
-      },
-      hu: {
-        noembed: 'Noembed',
-        noembedError: 'Hiba'
-      },
-      ja: {
-        noembedError: 'エラー'
-      },
-      ko: {
-        noembed: 'oEmbed 넣기',
-        noembedError: '에러'
-      },
-      pt_br: {
-        noembed: 'Incorporar',
-        noembedError: 'Erro'
-      },
-      ru: {
-        noembedError: 'Ошибка'
-      },
-      sk: {
-        noembedError: 'Chyba'
-      },
-      tr: {
-        noembedError: 'Hata'
-      },
-      zh_tw: {
-        noembed: '插入影片',
-        noembedError: '錯誤'
-      } // jshint camelcase:true
-
-    },
-    plugins: {
-      noembed: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.noembed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.noembed || {});
-          var btnDef = {
-            fn: function fn() {
-              var $modal = trumbowyg.openModalInsert( // Title
-              trumbowyg.lang.noembed, // Fields
-              {
-                url: {
-                  label: 'URL',
-                  required: true
-                }
-              }, // Callback
-              function (data) {
-                $.ajax({
-                  url: trumbowyg.o.plugins.noembed.proxy,
-                  type: 'GET',
-                  data: data,
-                  cache: false,
-                  dataType: 'json',
-                  success: trumbowyg.o.plugins.noembed.success || function (data) {
-                    if (data.html) {
-                      trumbowyg.execCmd('insertHTML', data.html);
-                      setTimeout(function () {
-                        trumbowyg.closeModal();
-                      }, 250);
-                    } else {
-                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
-                    }
-                  },
-                  error: trumbowyg.o.plugins.noembed.error || function () {
-                    trumbowyg.addErrorOnModalField($('input[type=text]', $modal), trumbowyg.lang.noembedError);
-                  }
-                });
-              });
-            }
-          };
-          trumbowyg.addBtnDef('noembed', btnDef);
-        }
-      }
-    }
-  });
 })(jQuery);
 /* ===========================================================
  * trumbowyg.mention.js v0.1
@@ -2118,6 +2011,113 @@
   });
 })(jQuery);
 /* ===========================================================
+ * trumbowyg.noembed.js v1.0
+ * noEmbed plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Jake Johns (jakejohns)
+ */
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    proxy: 'https://noembed.com/embed?nowrap=on',
+    urlFiled: 'url',
+    data: [],
+    success: undefined,
+    error: undefined
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        noembed: 'Noembed',
+        noembedError: 'Error'
+      },
+      cs: {
+        noembedError: 'Chyba'
+      },
+      da: {
+        noembedError: 'Fejl'
+      },
+      fr: {
+        noembedError: 'Erreur'
+      },
+      hu: {
+        noembed: 'Noembed',
+        noembedError: 'Hiba'
+      },
+      ja: {
+        noembedError: 'エラー'
+      },
+      ko: {
+        noembed: 'oEmbed 넣기',
+        noembedError: '에러'
+      },
+      pt_br: {
+        noembed: 'Incorporar',
+        noembedError: 'Erro'
+      },
+      ru: {
+        noembedError: 'Ошибка'
+      },
+      sk: {
+        noembedError: 'Chyba'
+      },
+      tr: {
+        noembedError: 'Hata'
+      },
+      zh_tw: {
+        noembed: '插入影片',
+        noembedError: '錯誤'
+      } // jshint camelcase:true
+
+    },
+    plugins: {
+      noembed: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.noembed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.noembed || {});
+          var btnDef = {
+            fn: function fn() {
+              var $modal = trumbowyg.openModalInsert( // Title
+              trumbowyg.lang.noembed, // Fields
+              {
+                url: {
+                  label: 'URL',
+                  required: true
+                }
+              }, // Callback
+              function (data) {
+                $.ajax({
+                  url: trumbowyg.o.plugins.noembed.proxy,
+                  type: 'GET',
+                  data: data,
+                  cache: false,
+                  dataType: 'json',
+                  success: trumbowyg.o.plugins.noembed.success || function (data) {
+                    if (data.html) {
+                      trumbowyg.execCmd('insertHTML', data.html);
+                      setTimeout(function () {
+                        trumbowyg.closeModal();
+                      }, 250);
+                    } else {
+                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
+                    }
+                  },
+                  error: trumbowyg.o.plugins.noembed.error || function () {
+                    trumbowyg.addErrorOnModalField($('input[type=text]', $modal), trumbowyg.lang.noembedError);
+                  }
+                });
+              });
+            }
+          };
+          trumbowyg.addBtnDef('noembed', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
  * trumbowyg.pasteimage.js v1.0
  * Basic base64 paste plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -2165,153 +2165,6 @@
       }
     }
   });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.preformatted.js v1.0
- * Preformatted plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Casella Edoardo (Civile)
- */
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        preformatted: 'Code sample <pre>'
-      },
-      da: {
-        preformatted: 'Præformateret <pre>'
-      },
-      fr: {
-        preformatted: 'Exemple de code <pre>'
-      },
-      hu: {
-        preformatted: 'Kód minta <pre>'
-      },
-      it: {
-        preformatted: 'Codice <pre>'
-      },
-      ja: {
-        preformatted: 'コードサンプル <pre>'
-      },
-      ko: {
-        preformatted: '코드 예제 <pre>'
-      },
-      pt_br: {
-        preformatted: 'Exemple de código <pre>'
-      },
-      ru: {
-        preformatted: 'Пример кода <pre>'
-      },
-      tr: {
-        preformatted: 'Kod örneği <pre>'
-      },
-      zh_cn: {
-        preformatted: '代码示例 <pre>'
-      },
-      zh_tw: {
-        preformatted: '代碼範例 <pre>'
-      }
-    },
-    // jshint camelcase:true
-    plugins: {
-      preformatted: {
-        init: function init(trumbowyg) {
-          var btnDef = {
-            fn: function fn() {
-              trumbowyg.saveRange();
-              var text = trumbowyg.getRangeText();
-
-              if (text.replace(/\s/g, '') !== '') {
-                try {
-                  var curtag = getSelectionParentElement().tagName.toLowerCase();
-
-                  if (curtag === 'code' || curtag === 'pre') {
-                    return unwrapCode();
-                  } else {
-                    trumbowyg.execCmd('insertHTML', '<pre><code>' + strip(text) + '</code></pre>');
-                  }
-                } catch (e) {}
-              }
-            },
-            tag: 'pre'
-          };
-          trumbowyg.addBtnDef('preformatted', btnDef);
-        }
-      }
-    }
-  });
-  /*
-   * GetSelectionParentElement
-   */
-
-  function getSelectionParentElement() {
-    var parentEl = null,
-        selection;
-
-    if (window.getSelection) {
-      selection = window.getSelection();
-
-      if (selection.rangeCount) {
-        parentEl = selection.getRangeAt(0).commonAncestorContainer;
-
-        if (parentEl.nodeType !== 1) {
-          parentEl = parentEl.parentNode;
-        }
-      }
-    } else if ((selection = document.selection) && selection.type !== 'Control') {
-      parentEl = selection.createRange().parentElement();
-    }
-
-    return parentEl;
-  }
-  /*
-   * Strip
-   * returns a text without HTML tags
-   */
-
-
-  function strip(html) {
-    var tmp = document.createElement('DIV');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
-  }
-  /*
-   * UnwrapCode
-   * ADD/FIX: to improve, works but can be better
-   * "paranoic" solution
-   */
-
-
-  function unwrapCode() {
-    var container = null;
-
-    if (document.selection) {
-      //for IE
-      container = document.selection.createRange().parentElement();
-    } else {
-      var select = window.getSelection();
-
-      if (select.rangeCount > 0) {
-        container = select.getRangeAt(0).startContainer.parentNode;
-      }
-    } //'paranoic' unwrap
-
-
-    var ispre = $(container).contents().closest('pre').length;
-    var iscode = $(container).contents().closest('code').length;
-
-    if (ispre && iscode) {
-      $(container).contents().unwrap('code').unwrap('pre');
-    } else if (ispre) {
-      $(container).contents().unwrap('pre');
-    } else if (iscode) {
-      $(container).contents().unwrap('code');
-    }
-  }
 })(jQuery);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -2617,74 +2470,150 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   });
 })(jQuery);
 /* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
+ * trumbowyg.preformatted.js v1.0
+ * Preformatted plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
+ * Author : Casella Edoardo (Civile)
+ */
 (function ($) {
   'use strict';
 
-  var defaultOptions = {
-    symbolList: [// currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null, // legal signs
-    '00A9', '00AE', '2122', null, // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null, //maths
-    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
-  };
   $.extend(true, $.trumbowyg, {
     langs: {
+      // jshint camelcase:false
       en: {
-        specialChars: 'Special characters'
+        preformatted: 'Code sample <pre>'
+      },
+      da: {
+        preformatted: 'Præformateret <pre>'
       },
       fr: {
-        specialChars: 'Caractères spéciaux'
+        preformatted: 'Exemple de code <pre>'
       },
       hu: {
-        specialChars: 'Speciális karakterek'
+        preformatted: 'Kód minta <pre>'
+      },
+      it: {
+        preformatted: 'Codice <pre>'
+      },
+      ja: {
+        preformatted: 'コードサンプル <pre>'
       },
       ko: {
-        specialChars: '특수문자'
+        preformatted: '코드 예제 <pre>'
+      },
+      pt_br: {
+        preformatted: 'Exemple de código <pre>'
+      },
+      ru: {
+        preformatted: 'Пример кода <pre>'
+      },
+      tr: {
+        preformatted: 'Kod örneği <pre>'
+      },
+      zh_cn: {
+        preformatted: '代码示例 <pre>'
+      },
+      zh_tw: {
+        preformatted: '代碼範例 <pre>'
       }
     },
+    // jshint camelcase:true
     plugins: {
-      specialchars: {
+      preformatted: {
         init: function init(trumbowyg) {
-          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
-          var specialCharsBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
+          var btnDef = {
+            fn: function fn() {
+              trumbowyg.saveRange();
+              var text = trumbowyg.getRangeText();
+
+              if (text.replace(/\s/g, '') !== '') {
+                try {
+                  var curtag = getSelectionParentElement().tagName.toLowerCase();
+
+                  if (curtag === 'code' || curtag === 'pre') {
+                    return unwrapCode();
+                  } else {
+                    trumbowyg.execCmd('insertHTML', '<pre><code>' + strip(text) + '</code></pre>');
+                  }
+                } catch (e) {}
+              }
+            },
+            tag: 'pre'
           };
-          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+          trumbowyg.addBtnDef('preformatted', btnDef);
         }
       }
     }
   });
+  /*
+   * GetSelectionParentElement
+   */
 
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
-      if (symbol === null) {
-        symbol = '&nbsp';
-      } else {
-        symbol = '&#x' + symbol;
-      }
+  function getSelectionParentElement() {
+    var parentEl = null,
+        selection;
 
-      var btn = symbol.replace(/:/g, ''),
-          defaultSymbolBtnName = 'symbol-' + btn,
-          defaultSymbolBtnDef = {
-        text: symbol,
-        hasIcon: false,
-        fn: function fn() {
-          var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-          trumbowyg.execCmd('insertText', encodedSymbol);
-          return true;
+    if (window.getSelection) {
+      selection = window.getSelection();
+
+      if (selection.rangeCount) {
+        parentEl = selection.getRangeAt(0).commonAncestorContainer;
+
+        if (parentEl.nodeType !== 1) {
+          parentEl = parentEl.parentNode;
         }
-      };
-      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
-      dropdown.push(defaultSymbolBtnName);
-    });
-    return dropdown;
+      }
+    } else if ((selection = document.selection) && selection.type !== 'Control') {
+      parentEl = selection.createRange().parentElement();
+    }
+
+    return parentEl;
+  }
+  /*
+   * Strip
+   * returns a text without HTML tags
+   */
+
+
+  function strip(html) {
+    var tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  }
+  /*
+   * UnwrapCode
+   * ADD/FIX: to improve, works but can be better
+   * "paranoic" solution
+   */
+
+
+  function unwrapCode() {
+    var container = null;
+
+    if (document.selection) {
+      //for IE
+      container = document.selection.createRange().parentElement();
+    } else {
+      var select = window.getSelection();
+
+      if (select.rangeCount > 0) {
+        container = select.getRangeAt(0).startContainer.parentNode;
+      }
+    } //'paranoic' unwrap
+
+
+    var ispre = $(container).contents().closest('pre').length;
+    var iscode = $(container).contents().closest('code').length;
+
+    if (ispre && iscode) {
+      $(container).contents().unwrap('code').unwrap('pre');
+    } else if (ispre) {
+      $(container).contents().unwrap('pre');
+    } else if (iscode) {
+      $(container).contents().unwrap('code');
+    }
   }
 })(jQuery);
 /* ===========================================================
@@ -3088,83 +3017,75 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
   });
 })(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
 (function ($) {
-  'use strict'; // Adds the language variables
+  'use strict';
 
+  var defaultOptions = {
+    symbolList: [// currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null, // legal signs
+    '00A9', '00AE', '2122', null, // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null, //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
+  };
   $.extend(true, $.trumbowyg, {
     langs: {
-      // jshint camelcase:false
       en: {
-        template: 'Template'
-      },
-      da: {
-        template: 'Skabelon'
-      },
-      de: {
-        template: 'Vorlage'
+        specialChars: 'Special characters'
       },
       fr: {
-        template: 'Patron'
+        specialChars: 'Caractères spéciaux'
       },
       hu: {
-        template: 'Sablon'
-      },
-      ja: {
-        template: 'テンプレート'
+        specialChars: 'Speciális karakterek'
       },
       ko: {
-        template: '서식'
-      },
-      nl: {
-        template: 'Sjabloon'
-      },
-      pt_br: {
-        template: 'Modelo'
-      },
-      ru: {
-        template: 'Шаблон'
-      },
-      tr: {
-        template: 'Şablon'
-      },
-      zh_tw: {
-        template: '模板'
-      } // jshint camelcase:true
-
-    }
-  }); // Adds the extra button definition
-
-  $.extend(true, $.trumbowyg, {
+        specialChars: '특수문자'
+      }
+    },
     plugins: {
-      template: {
-        shouldInit: function shouldInit(trumbowyg) {
-          return trumbowyg.o.plugins.hasOwnProperty('templates');
-        },
+      specialchars: {
         init: function init(trumbowyg) {
-          trumbowyg.addBtnDef('template', {
-            dropdown: templateSelector(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.template
-          });
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
         }
       }
     }
-  }); // Creates the template-selector dropdown.
+  });
 
-  function templateSelector(trumbowyg) {
-    var available = trumbowyg.o.plugins.templates;
-    var templates = [];
-    $.each(available, function (index, template) {
-      trumbowyg.addBtnDef('template_' + index, {
-        fn: function fn() {
-          trumbowyg.html(template.html);
-        },
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+
+      var btn = symbol.replace(/:/g, ''),
+          defaultSymbolBtnName = 'symbol-' + btn,
+          defaultSymbolBtnDef = {
+        text: symbol,
         hasIcon: false,
-        title: template.name
-      });
-      templates.push('template_' + index);
+        fn: function fn() {
+          var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+          trumbowyg.execCmd('insertText', encodedSymbol);
+          return true;
+        }
+      };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
     });
-    return templates;
+    return dropdown;
   }
 })(jQuery);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -3432,5 +3353,84 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       });
       $.trumbowyg.addedXhrProgressEvent = true;
     }
+  }
+})(jQuery);
+(function ($) {
+  'use strict'; // Adds the language variables
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        template: 'Template'
+      },
+      da: {
+        template: 'Skabelon'
+      },
+      de: {
+        template: 'Vorlage'
+      },
+      fr: {
+        template: 'Patron'
+      },
+      hu: {
+        template: 'Sablon'
+      },
+      ja: {
+        template: 'テンプレート'
+      },
+      ko: {
+        template: '서식'
+      },
+      nl: {
+        template: 'Sjabloon'
+      },
+      pt_br: {
+        template: 'Modelo'
+      },
+      ru: {
+        template: 'Шаблон'
+      },
+      tr: {
+        template: 'Şablon'
+      },
+      zh_tw: {
+        template: '模板'
+      } // jshint camelcase:true
+
+    }
+  }); // Adds the extra button definition
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      template: {
+        shouldInit: function shouldInit(trumbowyg) {
+          return trumbowyg.o.plugins.hasOwnProperty('templates');
+        },
+        init: function init(trumbowyg) {
+          trumbowyg.addBtnDef('template', {
+            dropdown: templateSelector(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.template
+          });
+        }
+      }
+    }
+  }); // Creates the template-selector dropdown.
+
+  function templateSelector(trumbowyg) {
+    var available = trumbowyg.o.plugins.templates;
+    var templates = [];
+    $.each(available, function (index, template) {
+      trumbowyg.addBtnDef('template_' + index, {
+        fn: function fn() {
+          trumbowyg.html(template.html);
+        },
+        hasIcon: false,
+        title: template.name
+      });
+      templates.push('template_' + index);
+    });
+    return templates;
   }
 })(jQuery);
