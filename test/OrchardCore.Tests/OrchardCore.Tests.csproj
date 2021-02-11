@@ -58,7 +58,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
+    <!--
+      The test project should also be multi-targeted so that tests are run under both TFMs.
+      Since we want to default the TFM for the OrchardCore.Cms.Web project, we need to specify
+      the TFM from the <ProjectReference> here to force the project to use the specified TFM and
+      not the default one.
+    -->
+    <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" SetTargetFramework="TargetFramework=$(TargetFramework)" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
   </ItemGroup>
 
