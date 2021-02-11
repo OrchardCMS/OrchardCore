@@ -200,6 +200,8 @@ namespace OrchardCore.Modules
                             _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
                         }
 
+                        scheduler.TimeZone = timeZone;
+
                         if (!scheduler.Released && scheduler.Updated)
                         {
                             continue;
@@ -227,7 +229,6 @@ namespace OrchardCore.Modules
                         }
 
                         scheduler.Settings = settings;
-                        scheduler.TimeZone = timeZone;
                         scheduler.Released = false;
                         scheduler.Updated = true;
                     }
