@@ -197,7 +197,7 @@ namespace OrchardCore.Modules
 
                         if (!_schedulers.TryGetValue(tenant + taskName, out var scheduler))
                         {
-                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
+                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _clock);
                         }
 
                         scheduler.TimeZone = timeZone;
@@ -255,7 +255,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
         {
-            var tenantsToRun = _schedulers.Where(s => s.Value.CanRun(_clock)).Select(s => s.Value.Tenant).Distinct().ToArray();
+            var tenantsToRun = _schedulers.Where(s => s.Value.CanRun()).Select(s => s.Value.Tenant).Distinct().ToArray();
             return shells.Where(s => tenantsToRun.Contains(s.Settings.Name)).ToArray();
         }
 
@@ -283,7 +283,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<BackgroundTaskScheduler> GetSchedulersToRun(string tenant)
         {
-            return _schedulers.Where(s => s.Value.Tenant == tenant && s.Value.CanRun(_clock)).Select(s => s.Value).ToArray();
+            return _schedulers.Where(s => s.Value.Tenant == tenant && s.Value.CanRun()).Select(s => s.Value).ToArray();
         }
 
         private void UpdateSchedulers(IEnumerable<string> tenants, Action<BackgroundTaskScheduler> action)

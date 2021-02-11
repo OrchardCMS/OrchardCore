@@ -6,13 +6,16 @@ namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundTaskScheduler
     {
-        public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime)
+        private readonly IClock _clock;
+
+        public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock)
         {
             Name = name;
             Tenant = tenant;
             ReferenceTime = referenceTime;
             Settings = new BackgroundTaskSettings() { Name = name };
             State = new BackgroundTaskState() { Name = name };
+            _clock = clock;
         }
 
         public string Name { get; }
@@ -20,19 +23,19 @@ namespace OrchardCore.BackgroundTasks
         public DateTime ReferenceTime { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
+        public ITimeZone TimeZone { get; set; }
         public bool Released { get; set; }
         public bool Updated { get; set; }
-        public ITimeZone TimeZone { get; set; }
 
-        public bool CanRun(IClock clock)
+        public bool CanRun()
         {
             var now = DateTime.UtcNow;
             var referenceTime = ReferenceTime;
 
             if (TimeZone != null)
             {
-                now = clock.ConvertToTimeZone(DateTime.UtcNow, TimeZone).DateTime;
-                referenceTime = clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;
+                now = _clock.ConvertToTimeZone(DateTime.UtcNow, TimeZone).DateTime;
+                referenceTime = _clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;
             }
 
             var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTime);
