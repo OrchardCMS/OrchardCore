@@ -18,11 +18,7 @@ namespace OrchardCore.Lists.Indexes
                 .When(contentItem => contentItem.Has<ContainedPart>())
                 .Map(contentItem =>
                 {
-                    // Remove index records of soft deleted items.
-                    if (!contentItem.Published && !contentItem.Latest)
-                    {
-                        return null;
-                    }
+                    // Keep index records of soft deleted items as they are contained items.
 
                     var containedPart = contentItem.As<ContainedPart>();
                     if (containedPart == null)

@@ -17,11 +17,7 @@ namespace OrchardCore.Layers.Indexes
                 .When(contentItem => contentItem.Has<LayerMetadata>())
                 .Map(contentItem =>
                 {
-                    // Remove index records of soft deleted items.
-                    if (!contentItem.Published && !contentItem.Latest)
-                    {
-                        return null;
-                    }
+                    // Keep index records of soft deleted items as they are contained items.
 
                     var layerMetadata = contentItem.As<LayerMetadata>();
                     if (layerMetadata == null)
