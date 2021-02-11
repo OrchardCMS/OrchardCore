@@ -122,6 +122,19 @@ namespace OrchardCore.Modules
                             return;
                         }
 
+                        var siteService = scope.ServiceProvider.GetService<ISiteService>();
+                        if (siteService != null)
+                        {
+                            try
+                            {
+                                _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
+                            }
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                _logger.LogError(ex, "Error while getting the site settings of the tenant '{TenantName}'.", tenant);
+                            }
+                        }
+
                         try
                         {
                             _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
@@ -187,7 +200,7 @@ namespace OrchardCore.Modules
                         }
                         catch (Exception ex) when (!ex.IsFatal())
                         {
-                            _logger.LogError(ex, "Error while getting the time zone of the tenant '{TenantName}'.", tenant);
+                            _logger.LogError(ex, "Error while getting the site settings of the tenant '{TenantName}'.", tenant);
                         }
                     }
 
@@ -315,6 +328,26 @@ namespace OrchardCore.Modules
         }
     }
 
+    internal static class HttpContextExtensions
+    {
+        public static void SetBaseUrl(this HttpContext context, string baseUrl)
+        {
+            if (!String.IsNullOrWhiteSpace(baseUrl) && Uri.IsWellFormedUriString(baseUrl, UriKind.Absolute))
+            {
+                var uri = new Uri(baseUrl, UriKind.Absolute);
+
+                context.Request.Scheme = uri.Scheme;
+                context.Request.Host = new HostString(uri.Host, uri.Port);
+                context.Request.PathBase = uri.AbsolutePath;
+
+                if (!String.IsNullOrWhiteSpace(uri.Query))
+                {
+                    context.Request.QueryString = new QueryString(uri.Query);
+                }
+            }
+        }
+    }
+
     internal static class ShellExtensions
     {
         public static HttpContext CreateHttpContext(this ShellContext shell)
@@ -334,6 +367,8 @@ namespace OrchardCore.Modules
         public static HttpContext CreateHttpContext(this ShellSettings settings)
         {
             var context = new DefaultHttpContext().UseShellScopeServices();
+
+            context.Request.Scheme = "https";
 
             var urlHost = settings.RequestUrlHost?.Split('/',
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
