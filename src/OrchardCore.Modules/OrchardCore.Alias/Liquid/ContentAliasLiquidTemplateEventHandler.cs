@@ -10,10 +10,12 @@ namespace OrchardCore.Alias.Liquid
 {
     public class ContentAliasLiquidTemplateEventHandler : ILiquidTemplateEventHandler
     {
+        private readonly IContentManager _contentManager;
         private readonly ISession _session;
 
         public ContentAliasLiquidTemplateEventHandler(IContentManager contentManager, ISession session)
         {
+            _contentManager = contentManager;
             _session = session;
         }
 
@@ -31,6 +33,8 @@ namespace OrchardCore.Alias.Liquid
                     {
                         return NilValue.Instance;
                     }
+
+                    contentItem = await _contentManager.LoadAsync(contentItem);
 
                     return FluidValue.Create(contentItem);
                 });
