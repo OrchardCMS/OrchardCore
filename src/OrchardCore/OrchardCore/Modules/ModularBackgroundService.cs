@@ -187,7 +187,7 @@ namespace OrchardCore.Modules
                         }
                         catch (Exception ex) when (!ex.IsFatal())
                         {
-                            _logger.LogError(ex, "Error while getting the time zone of the site on tenant '{TenantName}'.", tenant);
+                            _logger.LogError(ex, "Error while getting the time zone of the tenant '{TenantName}'.", tenant);
                         }
                     }
 
