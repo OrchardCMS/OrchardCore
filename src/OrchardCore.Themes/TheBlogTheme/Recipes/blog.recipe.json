@@ -67,6 +67,7 @@
         "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
         "OrchardCore.Taxonomies",
         "OrchardCore.Title",
         "OrchardCore.Templates",
@@ -1279,12 +1280,34 @@
       "Layers": [
         {
           "Name": "Always",
-          "Rule": "true",
+          "LayerRule": {
+            "ConditionId":"[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "BooleanCondition",
+                "Condition": {
+                  "Value": true,
+                  "ConditionId": "[js: uuid()]"
+                }
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
           "Name": "Homepage",
-          "Rule": "isHomepage()",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "HomepageCondition",
+                "Condition": {
+                  "Value": true,
+                  "ConditionId": "[js: uuid()]"
+                }
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]

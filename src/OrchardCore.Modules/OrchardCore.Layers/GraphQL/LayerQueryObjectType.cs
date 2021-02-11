@@ -20,7 +20,11 @@ namespace OrchardCore.Layers.GraphQL
             Name = "Layer";
 
             Field(layer => layer.Name).Description("The name of the layer.");
-            Field(layer => layer.Rule).Description("The rule that activates the layer.");
+            #pragma warning disable 0618
+            Field(layer => layer.Rule).Description("Deprecated. The rule that activates the layer.");
+            #pragma warning restore 0618
+            // TODO ToString() representation.
+            // Field(layer => layer.LayerRule).Description("The rule that activates the layer.");
             Field(layer => layer.Description).Description("The description of the layer.");
 
             Field<ListGraphType<LayerWidgetQueryObjectType>, IEnumerable<ContentItem>>()

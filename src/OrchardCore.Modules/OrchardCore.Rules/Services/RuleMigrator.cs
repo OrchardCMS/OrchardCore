@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules.Services
@@ -7,17 +6,25 @@ namespace OrchardCore.Rules.Services
     {
         public void Migrate(string existingRule, Rule rule)
         {
-            if (String.Equals(existingRule, "true", StringComparison.OrdinalIgnoreCase))
+            // Migrates well-known rules to well-known conditions.
+            // A javascript condition is automatically created for less well-known rules. 
+            switch (existingRule)
             {
-                rule.Conditions.Add(new BooleanCondition { Value = true });
-            }
-            else if (String.Equals(existingRule, "isHomepage()", StringComparison.OrdinalIgnoreCase))
-            {
-                rule.Conditions.Add(new HomepageCondition());
-            }
-            else
-            {
-                rule.Conditions.Add(new JavascriptCondition { Script = existingRule });
+                case "true":
+                    rule.Conditions.Add(new BooleanCondition { Value = true });
+                    break;
+                case "isHomepage()":
+                    rule.Conditions.Add(new HomepageCondition { Value = true });
+                    break;
+                case "isAnonymous()":
+                    rule.Conditions.Add(new IsAnonymousCondition());
+                    break;
+                case "isAuthenticated()":
+                    rule.Conditions.Add(new IsAuthenticatedCondition());
+                    break;  
+                default:
+                    rule.Conditions.Add(new JavascriptCondition { Script = existingRule });
+                    break;
             }
         }
     }

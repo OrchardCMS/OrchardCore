@@ -4,8 +4,16 @@ using OrchardCore.Modules.Manifest;
     Name = "Rules",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion,
+    Version = ManifestConstants.OrchardCoreVersion
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Rules",
+    Name = "Rules",
     Description = "The Rules module adds rule building capabilities.",
-    Category = "Infrastructure",
-    IsAlwaysEnabled = true
+    Dependencies = new[]
+    {
+        "OrchardCore.Scripting"
+    },
+    Category = "Infrastructure"
 )]
