@@ -1,14 +1,17 @@
-@model dynamic
+@model GroupingsViewModel
 @{
-    var tabIndex = 0;
+    var first = true;
 }
-@await DisplayAsync(await New.LocalNavigation(ContentItem: Model.ContentItem, Tabs: Model.Grouping))
+@await DisplayAsync(await New.LocalNavigation(Identifier: Model.Identifier, Tabs: Model.Groupings))
 
 <div class="tab-content">
     @foreach(var item in Model.Items)
     {           
-        item.TabIndex = tabIndex;   
+        if (first)
+        {
+            item.Classes.Add("show active");
+            first = false;
+        }
         @await DisplayAsync(item)
-        tabIndex++;
     }
 </div>

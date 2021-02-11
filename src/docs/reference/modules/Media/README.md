@@ -480,11 +480,3 @@ When the query string is signed with a token any width, height value may be used
 <iframe width="560" height="315" src="https://www.youtube.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-## CREDITS
-
-### ImageSharp
-
-<https://sixlabors.com/products/imagesharpweb/>  
-Copyright 2012 James South  
-Licensed under the Apache License, Version 2.0, or with a commercial support license <https://sixlabors.com/pricing>

@@ -10,6 +10,7 @@
             <a class="dropdown-item" href="?Options.ContentsStatus=Owner">@T["Owned by me"]</a>
         </div>
     </div>
+    <label asp-for="DisplayText" class="sr-only">@T["Search"]</label>
     <i class="fa fa-search form-control-feedback"></i>
-    <input asp-for="DisplayText" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+    <input asp-for="DisplayText" class="form-control" placeholder="@T["Search"]" inputmode="search" type="search" autofocus />
 </div>

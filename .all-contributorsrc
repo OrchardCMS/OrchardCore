@@ -406,7 +406,8 @@
       "profile": "https://github.com/netwavebe",
       "contributions": [
         "code",
-        "question"
+        "question",
+        "translation"
       ]
     },
     {
@@ -1952,7 +1953,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/30324480?v=4",
       "profile": "https://github.com/tropcicstefan",
       "contributions": [
-        "code"
+        "code",
+        "translation"
       ]
     },
     {
@@ -2158,6 +2160,87 @@
       "name": "Titus Anderson",
       "avatar_url": "https://avatars.githubusercontent.com/u/4671044?v=4",
       "profile": "https://github.com/flew2bits",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "agono",
+      "name": "agono",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22931999?v=4",
+      "profile": "https://github.com/agono",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "vleitzgen",
+      "name": "vleitzgen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7782936?v=4",
+      "profile": "https://github.com/vleitzgen",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "IvoCZ",
+      "name": "ivocz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38103008?v=4",
+      "profile": "https://github.com/IvoCZ",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "actsgo",
+      "name": "ACTSGO",
+      "avatar_url": "https://avatars.githubusercontent.com/u/461413?v=4",
+      "profile": "https://github.com/actsgo",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "bdrajer",
+      "name": "bdrajer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17597722?v=4",
+      "profile": "https://github.com/bdrajer",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "aikesyz2016",
+      "name": "aikesyz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40224745?v=4",
+      "profile": "https://github.com/aikesyz2016",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "GuidoNeele",
+      "name": "Guido Neele",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1301586?v=4",
+      "profile": "http://www.neele.name",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "DrProbie",
+      "name": "Jon Agust Reynisson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17481522?v=4",
+      "profile": "http://www.qonnect.no",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "lampersky",
+      "name": "lampersky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6403130?v=4",
+      "profile": "https://github.com/lampersky",
       "contributions": [
         "code"
       ]

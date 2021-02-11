@@ -23,7 +23,7 @@ namespace OrchardCore.Forms
 
             _contentDefinitionManager.AlterTypeDefinition("Form", type => type
                 .WithPart("TitlePart", part => part
-                    .WithSettings<TitlePartSettings>(new TitlePartSettings { RenderTitle = false })
+                    .WithSettings(new TitlePartSettings { RenderTitle = false })
                     .WithPosition("0")
                 )
                 .WithPart("FormElementPart", part =>
@@ -47,7 +47,7 @@ namespace OrchardCore.Forms
 
             _contentDefinitionManager.AlterTypeDefinition("Label", type => type
                 .WithPart("TitlePart", part => part
-                    .WithSettings<TitlePartSettings>(new TitlePartSettings { RenderTitle = false })
+                    .WithSettings(new TitlePartSettings { RenderTitle = false })
                 )
                 .WithPart("FormElementPart")
                 .WithPart("LabelPart")
@@ -109,9 +109,11 @@ namespace OrchardCore.Forms
                 .WithPart("ValidationPart")
                 .Stereotype("Widget"));
 
+            // Shortcut other migration steps on new content definition schemas.
             return 3;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom1()
         {
             _contentDefinitionManager.AlterTypeDefinition("Form", type => type
@@ -125,6 +127,7 @@ namespace OrchardCore.Forms
             return 2;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom2()
         {
             _contentDefinitionManager.AlterTypeDefinition("Form", type => type
@@ -138,6 +141,7 @@ namespace OrchardCore.Forms
 
             return 3;
         }
+
         internal class TitlePartSettings
         {
             public int Options { get; set; }
