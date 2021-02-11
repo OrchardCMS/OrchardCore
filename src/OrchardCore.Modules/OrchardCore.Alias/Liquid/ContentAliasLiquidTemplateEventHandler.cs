@@ -10,12 +10,10 @@ namespace OrchardCore.Alias.Liquid
 {
     public class ContentAliasLiquidTemplateEventHandler : ILiquidTemplateEventHandler
     {
-        private readonly IContentManager _contentManager;
         private readonly ISession _session;
 
         public ContentAliasLiquidTemplateEventHandler(IContentManager contentManager, ISession session)
         {
-            _contentManager = contentManager;
             _session = session;
         }
 
@@ -25,15 +23,16 @@ namespace OrchardCore.Alias.Liquid
             {
                 return new LiquidPropertyAccessor(async alias =>
                 {
-                    var aliasPartIndex = await _session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
-                    var contentItemId = aliasPartIndex?.ContentItemId;
+                    var contentItem = await _session.Query<ContentItem, AliasPartIndex>(x =>
+                        x.Published && x.Alias == alias.ToLowerInvariant())
+                        .FirstOrDefaultAsync();
 
-                    if (contentItemId == null)
+                    if (contentItem == null)
                     {
                         return NilValue.Instance;
                     }
 
-                    return FluidValue.Create(await _contentManager.GetAsync(contentItemId));
+                    return FluidValue.Create(contentItem);
                 });
             });
 
