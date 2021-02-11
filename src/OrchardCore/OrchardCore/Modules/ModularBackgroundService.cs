@@ -339,6 +339,11 @@ namespace OrchardCore.Modules
                 context.Request.Scheme = uri.Scheme;
                 context.Request.Host = new HostString(uri.Host, uri.Port);
                 context.Request.PathBase = uri.AbsolutePath;
+
+                if (!String.IsNullOrWhiteSpace(uri.Query))
+                {
+                    context.Request.QueryString = new QueryString(uri.Query);
+                }
             }
         }
     }
