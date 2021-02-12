@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <AspNetCoreVersion>5.0.2</AspNetCoreVersion>
-    <AspNetCoreVersion2>5.0.1</AspNetCoreVersion2>
+    <AspNetCoreVersion>5.0.3</AspNetCoreVersion>
+    <MicrosoftExtensionsVersion>5.0.1</MicrosoftExtensionsVersion>
     <AspNetCoreTargetFramework>net5.0</AspNetCoreTargetFramework>
   </PropertyGroup>
   <ItemGroup>
@@ -16,8 +16,7 @@
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCoreVersion)" />
-    <!--These dependencies have another version-->
-    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(AspNetCoreVersion2)" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCoreVersion2)" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsVersion)" />
   </ItemGroup>
 </Project>
