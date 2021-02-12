@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public class UnpublishContentTaskDisplayDriver : ContentTaskDisplayDriverDriver<UnpublishContentTask, UnpublishContentTaskViewModel>
+    public class UnpublishContentTaskDisplayDriver : ContentTaskDisplayDriver<UnpublishContentTask, UnpublishContentTaskViewModel>
     {
         protected override void EditActivity(UnpublishContentTask activity, UnpublishContentTaskViewModel model)
         {

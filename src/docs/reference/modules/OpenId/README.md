@@ -304,10 +304,3 @@ A sample of OpenID Connect Client Settings recipe step:
       "ClientSecret": "secret"
 }
 ```
-
-## CREDITS
-
-### OpenIddict
-
-<https://github.com/openiddict>  
-License under Apache License 2.0

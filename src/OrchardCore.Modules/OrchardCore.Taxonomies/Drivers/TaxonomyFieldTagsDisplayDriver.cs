@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -17,13 +20,18 @@ using OrchardCore.Taxonomies.ViewModels;
 namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
-    {
+    {      
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
         private readonly IContentManager _contentManager;
         private readonly IStringLocalizer S;
 
         public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,
-            IStringLocalizer<TaxonomyFieldDisplayDriver> s)
+            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> s)
         {
             _contentManager = contentManager;
             S = s;
@@ -43,7 +51,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
+            return Initialize<EditTagTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
                 model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
@@ -52,7 +60,15 @@ namespace OrchardCore.Taxonomies.Drivers
                 {
                     var termEntries = new List<TermEntry>();
                     TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
-                    model.TermEntries = termEntries;
+                    var tagTermEntries = termEntries.Select(te => new TagTermEntry
+                    { 
+                        ContentItemId = te.ContentItemId, 
+                        Selected = te.Selected, 
+                        DisplayText = te.Term.DisplayText, 
+                        IsLeaf = te.IsLeaf
+                    });
+
+                    model.TagTermEntries = JsonConvert.SerializeObject(tagTermEntries, SerializerSettings);
                 }
 
                 model.Field = field;
@@ -63,19 +79,21 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TaxonomyField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            var model = new EditTaxonomyFieldViewModel();
+            var model = new EditTagTaxonomyFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix))
+            if (await updater.TryUpdateModelAsync(model, Prefix, f => f.TermContentItemIds))
             {
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
-                field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
+     
+                field.TermContentItemIds = model.TermContentItemIds == null
+                    ? Array.Empty<string>() : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
                 if (settings.Required && field.TermContentItemIds.Length == 0)
                 {
                     updater.ModelState.AddModelError(
-                        nameof(EditTaxonomyFieldViewModel.TermEntries),
+                        nameof(EditTagTaxonomyFieldViewModel.TermContentItemIds),
                         S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]);
                 }
 

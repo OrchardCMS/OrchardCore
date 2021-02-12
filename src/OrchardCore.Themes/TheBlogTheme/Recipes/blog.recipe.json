@@ -64,6 +64,7 @@
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
+        "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Taxonomies",
@@ -1306,7 +1307,7 @@
       "data": [
         {
           "Id": "baef6f85ad13481681cde70ada401333",
-          "Name": "Admin menu from blog recipe",
+          "Name": "Admin menus",
           "Enabled": true,
           "MenuItems": [
             {

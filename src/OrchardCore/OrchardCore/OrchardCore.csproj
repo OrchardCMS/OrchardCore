@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Implementation of OrchardCore modular, multi-tenant ShellHost</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
   </ItemGroup>
 

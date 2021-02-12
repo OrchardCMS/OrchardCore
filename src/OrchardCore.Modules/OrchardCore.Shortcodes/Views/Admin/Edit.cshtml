@@ -91,7 +91,7 @@
             <div class="form-group" asp-validation-class-for="DefaultValue">
                 <label asp-for="DefaultValue">@T["Default Shortcode Value"]</label>
                 <input asp-for="DefaultValue" class="form-control" />
-                <span class="hint">@T["The default value of the short code when selected. Defaults to [name]."]</span>
+                <span class="hint">@T["The default value of the shortcode when selected. Defaults to [name]."]</span>
             </div>  
         </div>
         <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
@@ -114,6 +114,7 @@
             <div class="form-group" asp-validation-class-for="Content">
                 <label asp-for="Content">@T["Content"]</label>
                 <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+                <span asp-validation-for="Content"></span>
                 <span class="hint">@T["The Liquid template."]</span>
             </div>
         </div>    

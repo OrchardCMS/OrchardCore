@@ -11,9 +11,8 @@ namespace OrchardCore.Documents
     {
         /// <summary>
         /// Executes the provided delegate and updates the cache, the whole being done atomically and after the session is committed,
-        /// this only if a lock can be acquired (default timeout to 1s), and atomically only before the lock expires (default to 1s).
+        /// this only if a lock can be acquired (default timeout to 10s), and atomically if the lock doesn't expire (default to 10s).
         /// </summary>
-        Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null,
-            TimeSpan? lockAcquireTimeout = null, TimeSpan? lockExpirationTime = null);
+        Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null);
     }
 }

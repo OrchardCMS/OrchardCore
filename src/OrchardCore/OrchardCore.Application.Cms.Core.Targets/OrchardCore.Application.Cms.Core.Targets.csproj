@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+     <!-- NuGet properties-->
+    <Title>Target for Modular OrchardCore CMS Application</Title>
+    <Description>$(OCCMSDescription)
+    
+    Converts the application into a modular OrchardCore CMS application with TheAdmin theme but without any front-end Themes.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
 
   <!-- Add ".props" and ".targets" files in the package specific to the "Cms.Core" bundle -->
@@ -30,6 +36,7 @@
       When adding a reference to this list, please keep it ordered alphabetically, and set PrivateAssets="none" 
     -->
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Admin\OrchardCore.Admin.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.AdminDashboard\OrchardCore.AdminDashboard.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.AdminMenu\OrchardCore.AdminMenu.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Alias\OrchardCore.Alias.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Apis.GraphQL\OrchardCore.Apis.GraphQL.csproj" PrivateAssets="none" />
@@ -40,6 +47,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentPreview\OrchardCore.ContentPreview.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Contents\OrchardCore.Contents.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentTypes\OrchardCore.ContentTypes.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Cors\OrchardCore.Cors.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.CustomSettings\OrchardCore.CustomSettings.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DataProtection.Azure\OrchardCore.DataProtection.Azure.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Deployment\OrchardCore.Deployment.csproj" PrivateAssets="none" />
