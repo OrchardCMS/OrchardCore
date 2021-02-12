@@ -332,10 +332,8 @@ namespace OrchardCore.Modules
     {
         public static void SetBaseUrl(this HttpContext context, string baseUrl)
         {
-            if (!String.IsNullOrWhiteSpace(baseUrl) && Uri.IsWellFormedUriString(baseUrl, UriKind.Absolute))
+            if (Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri))
             {
-                var uri = new Uri(baseUrl, UriKind.Absolute);
-
                 context.Request.Scheme = uri.Scheme;
                 context.Request.Host = new HostString(uri.Host, uri.Port);
                 context.Request.PathBase = uri.AbsolutePath;
