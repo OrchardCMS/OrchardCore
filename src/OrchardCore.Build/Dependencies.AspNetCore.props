@@ -9,6 +9,7 @@
     <When Condition=" '$(TargetFramework)' == 'net5.0' ">
       <PropertyGroup>
         <AspNetCoreVersion>5.0.3</AspNetCoreVersion>
+        <MicrosoftExtensionsVersion>5.0.1</MicrosoftExtensionsVersion>
       </PropertyGroup>
     </When>
     <Otherwise>
@@ -19,10 +20,12 @@
       -->
       <PropertyGroup>
         <AspNetCoreVersion>3.1.12</AspNetCoreVersion>
+        <MicrosoftExtensionsVersion>3.1.12</MicrosoftExtensionsVersion>
       </PropertyGroup>
     </Otherwise>
   </Choose>
 
+  <!-- Add all of the AspNetCore packages -->
   <ItemGroup>
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCoreVersion)" />
@@ -39,15 +42,10 @@
     <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
-  <!-- For .NET 5.0 packages that do not have a version number that matches $(AspNetCoreVersion) available -->
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
-
-    <!-- Fixes error NU1102: Unable to find package Microsoft.Extensions.Http.Polly with version (>= 5.0.3), Found 50 version(s) in NuGet [ Nearest version: 5.0.1 ]-->
-    <PackageManagement Remove="Microsoft.Extensions.Http.Polly" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="5.0.1" />
-
-    <!-- Fixes error NU1102: Unable to find package Microsoft.Extensions.Caching.StackExchangeRedis with version (>= 5.0.3), Found 45 version(s) in NuGet [ Nearest version: 5.0.1 ] -->
-    <PackageManagement Remove="Microsoft.Extensions.Caching.StackExchangeRedis" />
-    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="5.0.1" />
+  <!-- Add all Microsoft.Extensions packages -->
+  <ItemGroup>
+    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsVersion)" />
   </ItemGroup>
+
 </Project>
