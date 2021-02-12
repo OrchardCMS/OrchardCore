@@ -9,7 +9,7 @@ namespace OrchardCore.Rules
         {
             services.Configure<ConditionOptions>(o =>
             {
-                o.AddCondition(condition, conditionEvaluator, conditionFactory);
+                o.AddCondition(condition, conditionEvaluator);
             });
 
             // Rules are scoped so that during a request rules like the script rule can build the scripting engine once.

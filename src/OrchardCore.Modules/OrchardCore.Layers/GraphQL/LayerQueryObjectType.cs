@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
+using OrchardCore.Rules;
 
 namespace OrchardCore.Layers.GraphQL
 {
@@ -23,10 +24,11 @@ namespace OrchardCore.Layers.GraphQL
             #pragma warning disable 0618
             Field(layer => layer.Rule).Description("Deprecated. The rule that activates the layer.");
             #pragma warning restore 0618
-            // TODO ToString() representation.
-            // Field(layer => layer.LayerRule).Description("The rule that activates the layer.");
+            Field<ListGraphType<StringGraphType>, IEnumerable<Condition>>()
+                .Name("layerrule")
+                .Description("The rule that activates the layer.")
+                .Resolve(ctx => ctx.Source.LayerRule.Conditions);
             Field(layer => layer.Description).Description("The description of the layer.");
-
             Field<ListGraphType<LayerWidgetQueryObjectType>, IEnumerable<ContentItem>>()
                 .Name("widgets")
                 .Description("The widgets for this layer.")

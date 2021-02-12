@@ -12,6 +12,9 @@ namespace OrchardCore.Rules
         public string Name => TypeName;
 
         public Condition Create()
-            => new TCondition();     
+            => new TCondition()
+            {
+                Name = this.Name
+            };     
     }
 }

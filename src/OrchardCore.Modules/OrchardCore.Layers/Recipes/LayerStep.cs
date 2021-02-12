@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
@@ -85,17 +83,18 @@ namespace OrchardCore.Layers.Recipes
                 {
                     // The conditions list is cleared, because we cannot logically merge conditions.
                     layer.LayerRule.Conditions.Clear();
-                    foreach (var conditionModel in layerStep.LayerRule.Conditions)
+                    foreach (var condition in layerStep.LayerRule.Conditions)
                     {
-                        if (factories.TryGetValue(conditionModel.Name, out var factory))
+                        if (factories.TryGetValue(condition.Name, out var factory))
                         {
-                            var condition = (Condition)conditionModel.Condition.ToObject(factory.Create().GetType());
+                            var jCondition = JObject.FromObject(condition);
+                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType());
 
-                            layer.LayerRule.Conditions.Add(condition);
+                            layer.LayerRule.Conditions.Add(factoryCondition);
                         }
                         else
                         {
-                             unknownTypes.Add(conditionModel.Name);
+                             unknownTypes.Add(condition.Name);
                         }
                     }
                 }
@@ -129,27 +128,6 @@ namespace OrchardCore.Layers.Recipes
 
     public class LayersStepModel
     {
-        public LayerStepModel[] Layers { get; set; }
-    }
-
-    public class LayerStepModel
-    {
-        public string Name { get; set; }
-        public string Rule { get; set; }
-        public string Description { get; set; }
-
-        public RuleStepModel LayerRule { get; set; }
-    }
-
-    public class RuleStepModel
-    {
-        public string ConditionId { get; set; }
-        public ConditionStepModel[] Conditions { get; set; }
-    }
-
-    public class ConditionStepModel
-    {
-        public string Name { get; set; }
-        public JObject Condition { get; set; }
+        public Layer[] Layers { get; set; }
     }
 }

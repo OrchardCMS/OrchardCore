@@ -1,6 +1,6 @@
 namespace OrchardCore.Rules.Models
 {
-    public class AnyConditionGroup : NamedConditionGroup
+    public class AnyConditionGroup : DisplayTextConditionGroup
     {
     }    
 }

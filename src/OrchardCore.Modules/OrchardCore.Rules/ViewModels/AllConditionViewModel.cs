@@ -5,7 +5,7 @@ namespace OrchardCore.Rules.ViewModels
 {
     public class AllConditionViewModel
     {
-        public string Name { get; set; }
+        public string DisplayText { get; set; }
 
         [BindNever]
         public AllConditionGroup Condition { get; set; }

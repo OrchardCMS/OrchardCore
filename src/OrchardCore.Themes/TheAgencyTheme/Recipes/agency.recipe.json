@@ -974,10 +974,8 @@
             "Conditions": [
               {
                 "Name": "BooleanCondition",
-                "Condition": {
-                  "Value": true,
-                  "ConditionId": "[js: uuid()]"
-                }
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
               }
             ]
           },          
@@ -990,10 +988,8 @@
             "Conditions": [
               {
                 "Name": "HomepageCondition",
-                "Condition": {
-                  "Value": true,
-                  "ConditionId": "[js: uuid()]"
-                }
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
               }
             ]
           },          

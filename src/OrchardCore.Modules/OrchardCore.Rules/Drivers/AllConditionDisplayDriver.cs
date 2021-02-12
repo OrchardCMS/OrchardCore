@@ -28,14 +28,14 @@ namespace OrchardCore.Rules.Drivers
         {
             return Initialize<AllConditionViewModel>("AllCondition_Fields_Edit", model =>
             {
-                model.Name = condition.Name;
+                model.DisplayText = condition.DisplayText;
                 model.Condition = condition;
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AllConditionGroup condition, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(condition, Prefix, x => x.Name);
+            await updater.TryUpdateModelAsync(condition, Prefix, x => x.DisplayText);
           
             return Edit(condition);
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.Rules
 {
@@ -8,8 +9,8 @@ namespace OrchardCore.Rules
         public List<Condition> Conditions { get; set; } = new List<Condition>();
     }   
 
-    public class NamedConditionGroup : ConditionGroup
+    public class DisplayTextConditionGroup : ConditionGroup
     {
-        public string Name { get; set; }
+        public string DisplayText { get; set; }
     }
 }
