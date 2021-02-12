@@ -15,11 +15,10 @@ namespace OrchardCore.Lists.Indexes
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<ContainedPartIndex>()
-                .When(contentItem => contentItem.Has<ContainedPart>())
+                // Keep index records of soft deleted items as they are contained items.
+                .When(contentItem => contentItem.Has<ContainedPart>() && (contentItem.Published || contentItem.Latest))
                 .Map(contentItem =>
                 {
-                    // Keep index records of soft deleted items as they are contained items.
-
                     var containedPart = contentItem.As<ContainedPart>();
                     if (containedPart == null)
                     {

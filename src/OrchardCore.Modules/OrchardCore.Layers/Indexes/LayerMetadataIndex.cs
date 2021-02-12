@@ -14,11 +14,10 @@ namespace OrchardCore.Layers.Indexes
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<LayerMetadataIndex>()
-                .When(contentItem => contentItem.Has<LayerMetadata>())
+                // Keep index records of soft deleted items as they are contained items.
+                .When(contentItem => contentItem.Has<LayerMetadata>() && (contentItem.Published || contentItem.Latest))
                 .Map(contentItem =>
                 {
-                    // Keep index records of soft deleted items as they are contained items.
-
                     var layerMetadata = contentItem.As<LayerMetadata>();
                     if (layerMetadata == null)
                     {
