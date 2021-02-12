@@ -7,6 +7,7 @@ using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -28,6 +29,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             IStore store,
             ILiquidTemplateManager liquidTemplateManager,
             IStringLocalizer<AdminController> stringLocalizer)
+
         {
             _authorizationService = authorizationService;
             _store = store;
@@ -71,14 +73,13 @@ namespace OrchardCore.Queries.Sql.Controllers
 
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
-            var templateContext = _liquidTemplateManager.Context;
-
-            foreach (var parameter in parameters)
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, NullEncoder.Default, context =>
             {
-                templateContext.SetValue(parameter.Key, parameter.Value);
-            }
-
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, NullEncoder.Default);
+                foreach (var parameter in parameters)
+                {
+                    context.SetValue(parameter.Key, parameter.Value);
+                }
+            });
 
             model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
 

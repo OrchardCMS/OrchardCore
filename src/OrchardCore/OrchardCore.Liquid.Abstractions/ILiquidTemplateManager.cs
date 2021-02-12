@@ -13,11 +13,6 @@ namespace OrchardCore.Liquid
     public interface ILiquidTemplateManager
     {
         /// <summary>
-        /// Gets the current <see cref="LiquidTemplateContext"/>.
-        /// </summary>
-        LiquidTemplateContext Context { get; }
-
-        /// <summary>
         /// Renders a Liquid template as a <see cref="string"/>.
         /// </summary>
         Task<string> RenderAsync(string template, TextEncoder encoder, object model, Action<LiquidTemplateContext> action);

@@ -7,6 +7,7 @@ using Fluid.Ast;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DynamicCache.Liquid
 {
@@ -14,12 +15,7 @@ namespace OrchardCore.DynamicCache.Liquid
     {
         public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
-            {
-                throw new ArgumentException("Services missing while invoking 'cache_expires_sliding' tag");
-            }
-
-            var services = servicesObj as IServiceProvider;
+            var services = ((LiquidTemplateContext)context).Services;
 
             var cacheScopeManager = services.GetService<ICacheScopeManager>();
 

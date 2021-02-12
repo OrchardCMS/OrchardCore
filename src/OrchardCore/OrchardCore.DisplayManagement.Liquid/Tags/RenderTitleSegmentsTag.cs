@@ -8,6 +8,7 @@ using Fluid.Ast;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -15,10 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'page_title'");
-            }
+            var services = ((LiquidTemplateContext)context).Services;
 
             var arguments = new NamedExpressionList(argumentsList);
 

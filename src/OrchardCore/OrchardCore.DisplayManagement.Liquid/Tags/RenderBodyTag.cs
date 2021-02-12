@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -12,15 +15,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         public static async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
-            {
-                throw new ArgumentException("ThemeLayout missing while invoking 'render_body'");
-            }
+            var services = ((LiquidTemplateContext)context).Services;
 
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
-            {
-                throw new ArgumentException("DisplayHelper missing while invoking 'render_body'");
-            }
+            dynamic layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync();
+            var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
             IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(layout.Content);
 

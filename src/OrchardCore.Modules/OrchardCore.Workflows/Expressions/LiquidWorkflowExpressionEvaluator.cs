@@ -17,21 +17,24 @@ namespace OrchardCore.Workflows.Expressions
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
         private readonly ILogger _logger;
+        private readonly TemplateOptions _templateOptions;
 
         public LiquidWorkflowExpressionEvaluator(
             ILiquidTemplateManager liquidTemplateManager,
             IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
-            ILogger<LiquidWorkflowExpressionEvaluator> logger
+            ILogger<LiquidWorkflowExpressionEvaluator> logger,
+            TemplateOptions templateOptions
         )
         {
             _liquidTemplateManager = liquidTemplateManager;
             _workflowContextHandlers = workflowContextHandlers;
             _logger = logger;
+            _templateOptions = templateOptions;
         }
 
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder)
         {
-            var templateContext = CreateTemplateContext(workflowContext);
+            var templateContext = new TemplateContext(_templateOptions);
             var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
 
             await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
@@ -46,25 +49,14 @@ namespace OrchardCore.Workflows.Expressions
             return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));
         }
 
-        private TemplateContext CreateTemplateContext(WorkflowExecutionContext workflowContext)
-        {
-            var context = _liquidTemplateManager.Context;
-
-            context.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
-            context.MemberAccessStrategy.Register<WorkflowExecutionContext>();
-            context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Input, name)));
-            context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Output, name)));
-            context.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", obj => new LiquidPropertyAccessor(name => ToFluidValue(obj.Properties, name)));
-
-            return context;
-        }
-
-        private Task<FluidValue> ToFluidValue(IDictionary<string, object> dictionary, string key)
+        public static Task<FluidValue> ToFluidValue(IDictionary<string, object> dictionary, string key, TemplateContext context)
         {
             if (!dictionary.ContainsKey(key))
-                return Task.FromResult(default(FluidValue));
+            {
+                return Task.FromResult<FluidValue>(NilValue.Instance);
+            }
 
-            return Task.FromResult(FluidValue.Create(dictionary[key]));
+            return Task.FromResult(FluidValue.Create(dictionary[key], context.Options));
         }
     }
 }

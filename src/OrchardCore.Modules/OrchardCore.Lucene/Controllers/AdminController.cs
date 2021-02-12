@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
@@ -48,6 +49,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
+        private readonly IOptions<TemplateOptions> _templateOptions;
 
         public AdminController(
             ISession session,
@@ -65,7 +67,8 @@ namespace OrchardCore.Lucene.Controllers
             JavaScriptEncoder javaScriptEncoder,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger,
+            IOptions<TemplateOptions> templateOptions)
         {
             _session = session;
             _luceneIndexManager = luceneIndexManager;
@@ -84,6 +87,7 @@ namespace OrchardCore.Lucene.Controllers
             S = stringLocalizer;
             H = htmlLocalizer;
             _logger = logger;
+            _templateOptions = templateOptions;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -370,7 +374,8 @@ namespace OrchardCore.Lucene.Controllers
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(model.IndexName));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
-                var templateContext = _liquidTemplateManager.Context;
+                var templateContext = new LiquidTemplateContext(HttpContext.RequestServices, _templateOptions.Value);
+
                 var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
                 foreach (var parameter in parameters)

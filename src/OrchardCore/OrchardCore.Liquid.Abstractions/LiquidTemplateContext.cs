@@ -8,7 +8,7 @@ namespace OrchardCore.Liquid
     {
         public const int MaxShapeRecursions = 3;
 
-        public LiquidTemplateContext(IServiceProvider services)
+        public LiquidTemplateContext(IServiceProvider services, TemplateOptions options) : base(options)
         {
             Services = services;
         }

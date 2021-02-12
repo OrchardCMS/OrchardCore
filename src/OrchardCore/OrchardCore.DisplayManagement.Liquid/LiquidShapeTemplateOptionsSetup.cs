@@ -8,9 +8,9 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         private readonly TemplateOptions _templateOptions;
 
-        public LiquidShapeTemplateOptionsSetup(TemplateOptions templateOptions)
+        public LiquidShapeTemplateOptionsSetup(IOptions<TemplateOptions> templateOptions)
         {
-            _templateOptions = templateOptions;
+            _templateOptions = templateOptions.Value;
         }
 
         public void Configure(ShapeTemplateOptions options)

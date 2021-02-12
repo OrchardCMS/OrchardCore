@@ -7,6 +7,7 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -14,12 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> expressions, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
-            {
-                throw new ArgumentException("Services missing while invoking 'helper'");
-            }
-
-            var services = servicesValue as IServiceProvider;
+            var services = ((LiquidTemplateContext)context).Services;
 
             var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
 

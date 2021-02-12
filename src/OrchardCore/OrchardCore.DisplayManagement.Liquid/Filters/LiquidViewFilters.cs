@@ -8,6 +8,8 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Liquid;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -44,10 +46,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 return FluidValue.Create(await task, options);
             }
 
-            if (!context.AmbientValues.TryGetValue("ShapeFactory", out var item) || !(item is IShapeFactory shapeFactory))
-            {
-                return ThrowArgumentException<ValueTask<FluidValue>>("ShapeFactory missing while invoking 'shape_new'");
-            }
+
+            var services = ((LiquidTemplateContext)context).Services;
+
+            var shapeFactory = services.GetRequiredService<IShapeFactory>();
 
             var type = input.ToStringValue();
             var properties = new Dictionary<string, object>(arguments.Count);
@@ -74,10 +76,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
 
             if (input.ToObjectValue() is IShape shape)
             {
-                if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
-                {
-                    return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_stringify'");
-                }
+
+                var services = ((LiquidTemplateContext)context).Services;
+
+                var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
                 var task = displayHelper.ShapeExecuteAsync(shape);
                 if (!task.IsCompletedSuccessfully)
@@ -108,10 +110,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             var shape = input.ToObjectValue();
             if (shape != null)
             {
-                if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
-                {
-                    return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_render'");
-                }
+                var services = ((LiquidTemplateContext)context).Services;
+
+                var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
                 var task = displayHelper.ShapeExecuteAsync(shape);
                 if (!task.IsCompletedSuccessfully)

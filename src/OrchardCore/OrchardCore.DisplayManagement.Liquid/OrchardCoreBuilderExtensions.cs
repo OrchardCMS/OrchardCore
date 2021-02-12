@@ -29,6 +29,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
+                services.AddSingleton<LiquidViewParser>();
+
                 services.AddTransient<IConfigureOptions<TemplateOptions>, TemplateOptionsFileProviderSetup>();
 
                 services.TryAddEnumerable(

@@ -37,9 +37,10 @@ namespace OrchardCore.Media.Azure
             options.ConnectionString = section.GetValue(nameof(options.ConnectionString), String.Empty);
             options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
 
-            var templateContext = new TemplateContext();
-            templateContext.MemberAccessStrategy.Register<ShellSettings>();
-            templateContext.MemberAccessStrategy.Register<MediaBlobStorageOptions>();
+            var templateOptions = new TemplateOptions();
+            var templateContext = new TemplateContext(templateOptions);
+            templateOptions.MemberAccessStrategy.Register<ShellSettings>();
+            templateOptions.MemberAccessStrategy.Register<MediaBlobStorageOptions>();
             templateContext.SetValue("ShellSettings", _shellSettings);
 
             ParseContainerName(options, templateContext);

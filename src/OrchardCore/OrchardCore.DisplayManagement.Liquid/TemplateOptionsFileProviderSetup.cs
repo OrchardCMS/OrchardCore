@@ -8,10 +8,11 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         private readonly LiquidViewOptions _liquidViewOptions;
 
-        public TemplateOptionsFileProviderSetup(LiquidViewOptions liquidViewOptions)
+        public TemplateOptionsFileProviderSetup(IOptions<LiquidViewOptions> liquidViewOptions)
         {
-            _liquidViewOptions = liquidViewOptions;
+            _liquidViewOptions = liquidViewOptions.Value;
         }
+
         public void Configure(TemplateOptions options)
         {
             var fileProviders = _liquidViewOptions.FileProviders;

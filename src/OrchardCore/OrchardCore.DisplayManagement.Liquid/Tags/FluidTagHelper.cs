@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -9,6 +8,7 @@ using Fluid.Ast;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -28,12 +28,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
         public static async ValueTask<Completion> WriteToAsync(string identifier, List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
-            {
-                throw new ArgumentException("Services missing while invoking 'helper'");
-            }
-
-            var services = servicesValue as IServiceProvider;
+            var services = ((LiquidTemplateContext)context).Services;
 
             var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;

@@ -56,8 +56,9 @@ namespace OrchardCore.DataProtection.Azure
             // Use Fluid directly as the service provider has not been built.
             try
             {
-                var templateContext = new TemplateContext();
-                templateContext.MemberAccessStrategy.Register<ShellSettings>();
+                var templateOptions = new TemplateOptions();
+                templateOptions.MemberAccessStrategy.Register<ShellSettings>();
+                var templateContext = new TemplateContext(templateOptions);
                 templateContext.SetValue("ShellSettings", _shellSettings);
 
                 var template = _fluidParser.Parse(containerName);
@@ -106,8 +107,9 @@ namespace OrchardCore.DataProtection.Azure
                 try
                 {
                     // Use Fluid directly as the service provider has not been built.
-                    var templateContext = new TemplateContext();
-                    templateContext.MemberAccessStrategy.Register<ShellSettings>();
+                    var templateOptions = new TemplateOptions();
+                    var templateContext = new TemplateContext(templateOptions);
+                    templateOptions.MemberAccessStrategy.Register<ShellSettings>();
                     templateContext.SetValue("ShellSettings", _shellSettings);
 
                     var template = _fluidParser.Parse(blobName);

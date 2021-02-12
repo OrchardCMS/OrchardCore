@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
@@ -21,7 +20,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
@@ -30,8 +28,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewTemplate
     {
-        public static LiquidViewParser Parser = new LiquidViewParser();
-        
         public static readonly string ViewsFolder = "Views";
         public static readonly string ViewExtension = ".liquid";
         public static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
@@ -42,27 +38,22 @@ namespace OrchardCore.DisplayManagement.Liquid
             FluidTemplate = fluidTemplate;
         }
 
-        /// <summary>
-        /// Retrieve the current <see cref="LiquidTemplateContext"/> from the current shell scope.
-        /// </summary>
-        public static LiquidTemplateContext Context => ShellScope.GetOrCreateFeature(() => new LiquidTemplateContext(ShellScope.Services));
-
         internal static async Task RenderAsync(RazorPage<dynamic> page)
-        {
+        {            
             var services = page.Context.RequestServices;
-
+            var liquidViewParser = services.GetRequiredService<LiquidViewParser>();
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
-            var templateOptions = services.GetRequiredService<TemplateOptions>();
+            var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
             var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
 
-            var template = await ParseAsync(path, templateOptions.FileProvider, Cache, isDevelopment);
-
-            var context = Context;
+            var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment);
+            var context = new LiquidTemplateContext(services, templateOptions);
+            
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
             try
             {
-                await context.EnterScopeAsync(page.ViewContext, (object)page.Model, scopeAction: null);
+                await context.EnterScopeAsync(page.ViewContext, (object)page.Model, action: null);
                 await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
             }
             finally
@@ -71,7 +62,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
         }
 
-        public static Task<LiquidViewTemplate> ParseAsync(string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
+        public static Task<LiquidViewTemplate> ParseAsync(LiquidViewParser parser, string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
         {
             return cache.GetOrCreateAsync(path, async entry =>
             {
@@ -87,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     using (var sr = new StreamReader(stream))
                     {
-                        if (Parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
+                        if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
                         {
                             return new LiquidViewTemplate(template);
                         }
@@ -140,7 +131,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidViewTemplateExtensions
     {
-        public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model, Action<Scope> scopeAction)
+        public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model, Action<LiquidTemplateContext> action)
         {
             var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
@@ -152,7 +143,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
-                await context.EnterScopeAsync(viewContext, model, scopeAction);
+                await context.EnterScopeAsync(viewContext, model, action);
                 return await template.FluidTemplate.RenderAsync(context, encoder);
             }
             finally
@@ -161,7 +152,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
         }
 
-        public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model, Action<Scope> scopeAction)
+        public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model, Action<LiquidTemplateContext> action)
         {
             var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
@@ -173,7 +164,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
-                await context.EnterScopeAsync(viewContext, model, scopeAction);
+                await context.EnterScopeAsync(viewContext, model, action);
                 await template.FluidTemplate.RenderAsync(writer, encoder, context);
             }
             finally
@@ -246,30 +237,11 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidTemplateContextExtensions
     {
-        internal static async Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model, Action<Scope> scopeAction)
+        internal static Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model, Action<LiquidTemplateContext> action)
         {
             if (!context.IsInitialized)
             {
                 context.ViewContext = viewContext;
-
-                var displayHelper = context.Services.GetRequiredService<IDisplayHelper>();
-                context.AmbientValues.Add("DisplayHelper", displayHelper);
-
-                var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
-                var urlHelper = urlHelperFactory.GetUrlHelper(viewContext);
-                context.AmbientValues.Add("UrlHelper", urlHelper);
-
-                var shapeFactory = context.Services.GetRequiredService<IShapeFactory>();
-                context.AmbientValues.Add("ShapeFactory", shapeFactory);
-
-                var layoutAccessor = context.Services.GetRequiredService<ILayoutAccessor>();
-                var layout = await layoutAccessor.GetLayoutAsync();
-                context.AmbientValues.Add("ThemeLayout", layout);
-
-                foreach (var handler in context.Services.GetServices<ILiquidTemplateEventHandler>())
-                {
-                    await handler.RenderingAsync(context);
-                }
 
                 context.CultureInfo = CultureInfo.CurrentUICulture;
 
@@ -294,7 +266,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
             {
-                if (contextInternal.ShapeRecursions++ > LiquidTemplateContext.MaxShapeRecursions)
+                if (context.ShapeRecursions++ > LiquidTemplateContext.MaxShapeRecursions)
                 {
                     throw new InvalidOperationException(
                         $"The '{shape.Metadata.Type}' shape has been called recursively more than {LiquidTemplateContext.MaxShapeRecursions} times.");
@@ -302,12 +274,14 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
             else
             {
-                contextInternal.ShapeRecursions = 0;
+                context.ShapeRecursions = 0;
             }
 
             context.SetValue("Model", model);
 
-            scopeAction?.Invoke(context.LocalScope);
+            action?.Invoke(context);
+
+            return Task.CompletedTask;
         }
     }
 }

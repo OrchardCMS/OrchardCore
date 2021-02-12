@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -14,6 +15,7 @@ namespace OrchardCore.Shortcodes.Services
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly HashSet<string> _identifiers = new HashSet<string>();
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
 
@@ -36,9 +38,13 @@ namespace OrchardCore.Shortcodes.Services
             }
 
             // Check if a shortcode template is recursively called.
-            if (!(_liquidTemplateManager.Context.GetValue(identifier) is NilValue))
+            if (_identifiers.Contains(identifier))
             {
                 return null;
+            }
+            else
+            {
+                _identifiers.Add(identifier);
             }
 
             var model = new ShortcodeViewModel

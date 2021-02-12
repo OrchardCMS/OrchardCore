@@ -2,7 +2,9 @@ using System;
 using System.Security.Claims;
 using System.Web;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -206,8 +208,6 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
-
             services.Configure<TemplateOptions>(o =>
            {
                o.Filters.AddFilter("has_permission", UserFilters.HasPermission);
@@ -217,24 +217,35 @@ namespace OrchardCore.Users
                o.Filters.AddFilter("user_id", UserFilters.UserId);
                o.Filters.AddFilter("users_by_id", UserFilters.UsersById);
 
-               o.MemberAccessStrategy.Register<User>(
-                    nameof(User.UserId),
-                    nameof(User.UserName),
-                    nameof(User.NormalizedUserName),
-                    nameof(User.Email),
-                    nameof(User.NormalizedEmail),
-                    nameof(User.EmailConfirmed),
-                    nameof(User.IsEnabled),
-                    nameof(User.RoleNames),
-                    nameof(User.Properties)
-                );
 
                 o.MemberAccessStrategy.Register<ClaimsPrincipal>();
                 o.MemberAccessStrategy.Register<ClaimsIdentity>();
 
-               // TODO: define in TemplateOptions.Scope
-               var user = _httpContextAccessor.HttpContext.User;
-               o.Scope.SetValue("User", user);
+               o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
+
+               o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, context) =>
+               {
+                   var liquidTemplateContext = (LiquidTemplateContext)context;
+
+                   var httpContextAccessor = liquidTemplateContext.Services.GetRequiredService<IHttpContextAccessor>();
+                   var user = httpContextAccessor.HttpContext.User;
+
+               //    FluidValue result = name switch
+               //    {
+               //    nameof(User.UserId) => user.UserId,
+               //    nameof(User.UserName),
+               //    nameof(User.NormalizedUserName),
+               //    nameof(User.Email),
+               //    nameof(User.NormalizedEmail),
+               //    nameof(User.EmailConfirmed),
+               //    nameof(User.IsEnabled),
+               //    nameof(User.RoleNames),
+               //    nameof(User.Properties)
+               //_ => NilValue.Instance
+               //    };
+
+                   return NilValue.Instance;
+               });
            });
         }
     }

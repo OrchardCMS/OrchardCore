@@ -39,17 +39,16 @@ namespace OrchardCore.Queries.Sql
             var sqlQuery = query as SqlQuery;
             var sqlQueryResults = new SQLQueryResults();
 
-            var templateContext = _liquidTemplateManager.Context;
-
-            if (parameters != null)
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default, context =>
             {
-                foreach (var parameter in parameters)
+                if (parameters != null)
                 {
-                    templateContext.SetValue(parameter.Key, parameter.Value);
+                    foreach (var parameter in parameters)
+                    {
+                        context.SetValue(parameter.Key, parameter.Value);
+                    }
                 }
-            }
-
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default);
+            });
 
             var connection = _dbConnectionAccessor.CreateConnection();
             var dialect = _session.Store.Configuration.SqlDialect;

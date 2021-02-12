@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DynamicCache.Liquid
 {
@@ -19,12 +20,7 @@ namespace OrchardCore.DynamicCache.Liquid
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
-            {
-                throw new ArgumentException("Services missing while invoking 'cache' block");
-            }
-
-            var services = servicesObj as IServiceProvider;
+            var services = ((LiquidTemplateContext)context).Services;
 
             var dynamicCache = services.GetService<IDynamicCacheService>();
             var cacheScopeManager = services.GetService<ICacheScopeManager>();

@@ -23,8 +23,8 @@ namespace OrchardCore.Benchmark
     [MemoryDiagnoser]
     public class ShapeFactoryBenchmark
     {
-        private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", DateTime.UtcNow).Add("format", "MMMM dd, yyyy");
-        private static readonly FluidValue input = FluidValue.Create("DateTime");
+        private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+        private static readonly FluidValue input = StringValue.Create("DateTime");
         private static readonly TemplateContext _templateContext;
 
         static ShapeFactoryBenchmark()
