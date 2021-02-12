@@ -388,8 +388,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Configuration.K
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AdminDashboard", "src\OrchardCore.Modules\OrchardCore.AdminDashboard\OrchardCore.AdminDashboard.csproj", "{231F7904-FAD1-4E7A-8BCB-061C41C55BDC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fluid", "..\fluid\Fluid\Fluid.csproj", "{625E6A63-6956-45C8-9ABE-87C7EBE7D3AB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1056,10 +1054,6 @@ Global
 		{231F7904-FAD1-4E7A-8BCB-061C41C55BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{231F7904-FAD1-4E7A-8BCB-061C41C55BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{231F7904-FAD1-4E7A-8BCB-061C41C55BDC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{625E6A63-6956-45C8-9ABE-87C7EBE7D3AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{625E6A63-6956-45C8-9ABE-87C7EBE7D3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{625E6A63-6956-45C8-9ABE-87C7EBE7D3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{625E6A63-6956-45C8-9ABE-87C7EBE7D3AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
