@@ -41,12 +41,6 @@
 
   <!-- For .NET 5.0 packages that do not have a version number that matches $(AspNetCoreVersion) available -->
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
-    <!-- Fixes the following obsolete warnings used across multiple files in OrchardCore.Microsoft.Authentication
-      warning CS0618: 'AzureADOptions' is obsolete: 'This is obsolete and will be removed in a future version. Use Microsoft.Identity.Web instead. See https://aka.ms/ms-identity-web
-      warning CS0618: 'AzureADDefaults' is obsolete: 'This is obsolete and will be removed in a future version. Use Microsoft.Identity.Web instead. See https://aka.ms/ms-identity-web.
-    -->
-    <PackageManagement Remove="Microsoft.AspNetCore.Authentication.AzureAD.UI" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.1.12" />
 
     <!-- Fixes error NU1102: Unable to find package Microsoft.Extensions.Http.Polly with version (>= 5.0.3), Found 50 version(s) in NuGet [ Nearest version: 5.0.1 ]-->
     <PackageManagement Remove="Microsoft.Extensions.Http.Polly" />
