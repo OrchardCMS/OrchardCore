@@ -22,10 +22,10 @@ namespace OrchardCore.Rules.Drivers
 
         public override IDisplayResult Edit(BooleanCondition condition)
         {
-            return Initialize<BooleanConditionViewModel>("BooleanCondition_Fields_Edit", model =>
+            return Initialize<BooleanConditionViewModel>("BooleanCondition_Fields_Edit", m =>
             {
-                model.Value = condition.Value;
-                model.Condition = condition;
+                m.Value = condition.Value;
+                m.Condition = condition;
             }).Location("Content");
         }
 

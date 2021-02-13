@@ -28,7 +28,7 @@ namespace OrchardCore.Rules.Services
                 },
                 new ConditionOperatorOption
                 {
-                    DisplayText = S["Does Not Equal"],
+                    DisplayText = S["Does not equal"],
                     Operator = typeof(StringNotEqualsOperator),
                     Comparer = new StringNotEqualsOperatorComparer(),
                     Factory = new ConditionOperatorFactory<StringNotEqualsOperator>()
@@ -42,7 +42,7 @@ namespace OrchardCore.Rules.Services
                 },           
                 new ConditionOperatorOption
                 {
-                    DisplayText = S["Does Not Start with"],
+                    DisplayText = S["Does not start with"],
                     Operator = typeof(StringNotStartsWithOperator),
                     Comparer = new StringNotStartsWithOperatorComparer(),
                     Factory = new ConditionOperatorFactory<StringNotStartsWithOperator>()
@@ -56,7 +56,7 @@ namespace OrchardCore.Rules.Services
                 },
                 new ConditionOperatorOption
                 {
-                    DisplayText = S["Does Not End with"],
+                    DisplayText = S["Does not end with"],
                     Operator = typeof(StringNotEndsWithOperator),
                     Comparer = new StringNotEndsWithOperatorComparer(),
                     Factory = new ConditionOperatorFactory<StringNotEndsWithOperator>()
@@ -70,7 +70,7 @@ namespace OrchardCore.Rules.Services
                 },
                 new ConditionOperatorOption
                 {
-                    DisplayText = S["Does Not Contain"],
+                    DisplayText = S["Does not contain"],
                     Operator = typeof(StringNotContainsOperator),
                     Comparer = new StringNotContainsOperatorComparer(),
                     Factory = new ConditionOperatorFactory<StringNotContainsOperator>()

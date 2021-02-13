@@ -252,6 +252,39 @@ namespace OrchardCore.Layers.Controllers
             return RedirectToAction("Edit", "Admin", new { name = name });
         }
 
+        public async Task<IActionResult> UpdateOrder(string name, string conditionId, string toConditionId, int toPosition)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            {
+                return Forbid();
+            }
+
+            var layers = await _layerService.LoadLayersAsync();
+            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+
+            if (layer == null)
+            {
+                return NotFound();
+            }
+
+            var condition = FindCondition(layer.LayerRule, conditionId);
+            var conditionParent = FindConditionParent(layer.LayerRule, conditionId);
+            var toCondition = FindCondition(layer.LayerRule, toConditionId);
+
+            if (condition == null || conditionParent == null || toCondition == null || !(toCondition is ConditionGroup toGroupCondition))
+            {
+                return NotFound();
+            }              
+
+            conditionParent.Conditions.Remove(condition);
+            toGroupCondition.Conditions.Insert(toPosition, condition);
+
+            await _layerService.UpdateAsync(layers);   
+
+            return Ok();  
+        }
+
+
         private Condition FindCondition(Condition condition, string conditionId)
         {
             if (String.Equals(condition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))

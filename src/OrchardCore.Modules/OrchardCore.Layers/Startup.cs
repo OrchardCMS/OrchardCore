@@ -117,7 +117,14 @@ namespace OrchardCore.Layers
                 areaName: "OrchardCore.Layers",
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Edit",
                 defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.Edit) }
-            );              
+            ); 
+
+            routes.MapAreaControllerRoute(
+                name: "Layers.Rules.Order",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Order",
+                defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.UpdateOrder) }
+            ); 
         }
     }
 }

@@ -1,3 +1,4 @@
+@using OrchardCore.Mvc.Utilities
 @model ShapeViewModel<JavascriptCondition>
 
-<span>@T["Javascript condition"]</span>
+<span>@T["Javascript condition"]</span><span class="ml-2 hint dashed">@Model.Value.Script.Ellipsize(50)</span>

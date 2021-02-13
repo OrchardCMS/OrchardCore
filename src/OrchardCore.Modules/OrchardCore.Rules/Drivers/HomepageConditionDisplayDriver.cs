@@ -22,10 +22,10 @@ namespace OrchardCore.Rules.Drivers
 
         public override IDisplayResult Edit(HomepageCondition condition)
         {
-            return Initialize<HomepageConditionViewModel>("HomepageCondition_Fields_Edit", model =>
+            return Initialize<HomepageConditionViewModel>("HomepageCondition_Fields_Edit", m =>
             {
-                model.Value = condition.Value;
-                model.Condition = condition;
+                m.Value = condition.Value;
+                m.Condition = condition;
             }).Location("Content");
         }
 

@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using OrchardCore.Rules.Models;
 using OrchardCore.Rules.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -17,6 +15,7 @@ namespace OrchardCore.Rules.Drivers
                 Initialize<ConditionGroupViewModel>("ConditionGroup_Fields_Summary", m =>
                 {
                     m.Entries = rule.Conditions.Select(x => new ConditionEntry { Condition = x}).ToArray();
+                    m.Condition = rule;
                 }).Location("Summary", "Content")
             );
         }

@@ -29,14 +29,14 @@ namespace OrchardCore.Rules.Drivers
 
         public override IDisplayResult Edit(ContentTypeCondition condition)
         {
-            return Initialize<ContentTypeConditionViewModel>("ContentTypeCondition_Fields_Edit", model =>
+            return Initialize<ContentTypeConditionViewModel>("ContentTypeCondition_Fields_Edit", m =>
             {
                 if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
                 {
-                    model.SelectedOperation = option.Factory.Name;
+                    m.SelectedOperation = option.Factory.Name;
                 }
-                model.Value = condition.Value;
-                model.Condition = condition;
+                m.Value = condition.Value;
+                m.Condition = condition;
             }).Location("Content");
         }
 

@@ -30,14 +30,14 @@ namespace OrchardCore.Rules.Drivers
 
         public override IDisplayResult Edit(CultureCondition condition)
         {
-            return Initialize<CultureConditionViewModel>("CultureCondition_Fields_Edit", model =>
+            return Initialize<CultureConditionViewModel>("CultureCondition_Fields_Edit", m =>
             {
                 if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
                 {
-                    model.SelectedOperation = option.Factory.Name;
+                    m.SelectedOperation = option.Factory.Name;
                 }
-                model.Value = condition.Value;
-                model.Condition = condition;
+                m.Value = condition.Value;
+                m.Condition = condition;
             }).Location("Content");
         }
 

@@ -7,12 +7,11 @@
         { "name", Model.Name }
     };
     ViewData["ConditionRouteValues"] = routeValues;
+
+    var orderUrl = Url.Action("UpdateOrder", "LayerRule");
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
-
-<script asp-src="~/OrchardCore.Rules/Scripts/rules.min.js" debug-src="~/OrchardCore.Rules/Scripts/rules.js" depends-on="sortable, jQuery" at="Foot"></script>
-<style asp-src="~/OrchardCore.Rules/Styles/rules.min.css" debug-src="~/OrchardCore.Rules/Styles/rules.css"></style>
 
 <form asp-action="Edit" method="post">
     <div class="form-group" asp-validation-class-for="Name">
@@ -25,56 +24,15 @@
         <label asp-for="Description">@T["Description"]</label>
         <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
         <span asp-validation-for="Description"></span>
-    </div>       
+    </div>
+
+    <div class="d-none" id="ruleOrderUrl" data-url="@orderUrl"></div>
+    <div class="d-none ruleorderparameters" data-param="name" data-value="@Model.Name"></div>
+    <div class="d-none" id="ruleOrderErrorMessage" data-message="@T["Error updating rule order"]"></div>
 
     @await DisplayAsync(Model.LayerRule)
 
     <input class="button mt-3" type="submit" value="@T["Save"]" />
 </form>
 
-
-<!-- Modal TODO move to partial in Rules module -->
-<div class="modal fade" id="modalConditions" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="available-rules-title">@T["Available Rules"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
-                </div>
-                <div id="cards" class="row">
-                    @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
-                    {
-                        thumbnail.Value.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name = Model.Name, type = thumbnail.Key });
-                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
-                            @await DisplayAsync(thumbnail.Value)
-                        </div>
-                    }
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script At="Foot" depends-on="jQuery">
-    $(function () {
-        $('#modalConditions').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget) // Button that triggered the modal
-            var conditionGroupId = button.data('condition-group-id');
-
-            $('.condition-thumbnail').one('click', function () {
-                var url = $(this).data("target-url") + "&conditionGroupId=" + conditionGroupId;
-                $(location).attr('href',url);
-            });
-        });
-    });
-
-</script>
+@await DisplayAsync(await New.ConditionsModal(Thumbnails: Model.Thumbnails, Name: Model.Name))

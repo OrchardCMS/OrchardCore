@@ -29,10 +29,10 @@ namespace OrchardCore.Rules.Drivers
 
         public override IDisplayResult Edit(JavascriptCondition condition)
         {
-            return Initialize<JavascriptConditionViewModel>("JavascriptCondition_Fields_Edit", model =>
+            return Initialize<JavascriptConditionViewModel>("JavascriptCondition_Fields_Edit", m =>
             {
-                model.Script = condition.Script;
-                model.Condition = condition;
+                m.Script = condition.Script;
+                m.Condition = condition;
             }).Location("Content");
         }
 

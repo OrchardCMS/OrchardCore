@@ -1,9 +1,8 @@
-#conditioncontainer {
+.condition-group {
     list-style: none;
     padding-left: 0;
-}
-
-#conditioncontainer li {
-    list-style: none;
-    cursor: move;
+    li {
+        list-style: none;
+        cursor: move;
+    }
 }

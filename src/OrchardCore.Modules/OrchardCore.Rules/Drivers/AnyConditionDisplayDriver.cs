@@ -20,16 +20,17 @@ namespace OrchardCore.Rules.Drivers
                     Initialize<ConditionGroupViewModel>("ConditionGroup_Fields_Summary", m =>
                     {
                         m.Entries = condition.Conditions.Select(x => new ConditionEntry { Condition = x}).ToArray();
+                        m.Condition = condition;
                     }).Location("Summary", "Content")
                 );
         }
 
         public override IDisplayResult Edit(AnyConditionGroup condition)
         {
-            return Initialize<AnyConditionViewModel>("AnyCondition_Fields_Edit", model =>
+            return Initialize<AnyConditionViewModel>("AnyCondition_Fields_Edit", m =>
             {
-                model.DisplayText = condition.DisplayText;
-                model.Condition = condition;
+                m.DisplayText = condition.DisplayText;
+                m.Condition = condition;
             }).Location("Content");
         }
 
