@@ -1,0 +1,16 @@
+@model MetaTagsPartViewModel
+
+<div class="form-group">
+    <div class="row col-lg-8">
+        <label asp-for="Description">@T["Description"]</label>
+        <input asp-for="Description" class="form-control">
+        <span class="hint">@T["The description meta tag value."]</span>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row col-lg-8">
+        <label asp-for="Keywords">@T["Keywords"]</label>
+        <input asp-for="Keywords" class="form-control">
+        <span class="hint">@T["The keywords meta tag value."]</span>
+    </div>
+</div>
