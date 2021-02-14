@@ -27,7 +27,7 @@ namespace OrchardCore.Settings.Services
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
             if (properties.TryGetValue(SetupConstants.SiteName, out var siteName))
             {
-                siteSettings.SiteName = siteName.ToString();
+                siteSettings.SiteName = siteName?.ToString();
             }
             siteSettings.SuperUser = properties[SetupConstants.AdminUserId]?.ToString();
             siteSettings.TimeZoneId = properties[SetupConstants.SiteTimeZone]?.ToString();
