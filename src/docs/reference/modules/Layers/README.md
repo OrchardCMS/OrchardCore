@@ -26,7 +26,7 @@ Here are some available conditions:
 | `Role` | A role condition evaluates the current users roles against a value. |
 | `Url` | A url condition evaluates the current url against a value. |
 | `Culture` | A culture condition evaluates the current ui culture against a value. |
-| `Content Type` | A content type condition evaluates the currently displayed content type names against a value. |
+| `Content Type` | A content type condition evaluates the currently displayed content types against a value. |
 | `Javascript` | A script condition written in javascript. |
 | `All` | An all condition group contains other conditions which are all required to be true. |
 | `Any` | An any condition group contains other conditions but only requires any condition to be true. |
