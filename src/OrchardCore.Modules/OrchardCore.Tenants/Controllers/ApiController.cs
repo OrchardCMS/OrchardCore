@@ -293,8 +293,6 @@ namespace OrchardCore.Tenants.Controllers
             return Ok(executionId);
         }
 
-
-
         private bool IsDefaultShell()
         {
             return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
