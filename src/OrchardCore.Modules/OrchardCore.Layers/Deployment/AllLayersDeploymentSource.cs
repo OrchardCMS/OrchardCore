@@ -44,26 +44,5 @@ namespace OrchardCore.Layers.Deployment
                 new JProperty("LayerSettings", JObject.FromObject(siteSettings.As<LayerSettings>()))
             ));
         }
-    }
-
-    // public class LayerStepModel
-    // {
-    //     public string Name { get; set; }
-    //     public string Rule { get; set; }
-    //     public string Description { get; set; }
-
-    //     public RuleStepModel LayerRule { get; set; }
-    // }
-
-    // public class RuleStepModel
-    // {
-    //     public string ConditionId { get; set; }
-    //     public ConditionStepModel[] Conditions { get; set; }
-    // }
-
-    // public class ConditionStepModel
-    // {
-    //     public string Name { get; set; }
-    //     public Condition Condition { get; set; }
-    // }    
+    }   
 }

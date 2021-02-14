@@ -141,7 +141,6 @@ namespace OrchardCore.Layers.Controllers
             return View(model);
         }
 
-
         public async Task<IActionResult> Edit(string name, string conditionId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
@@ -212,8 +211,6 @@ namespace OrchardCore.Layers.Controllers
             return View(model);
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> Delete(string name, string conditionId)
         {
@@ -231,15 +228,9 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var condition = FindCondition(layer.LayerRule, conditionId);
-
-            if (condition == null)
-            {
-                return NotFound();
-            }
-
             var conditionParent = FindConditionParent(layer.LayerRule, conditionId);
 
-            if (conditionParent == null)
+            if (condition == null || conditionParent == null)
             {
                 return NotFound();
             }
@@ -283,7 +274,6 @@ namespace OrchardCore.Layers.Controllers
 
             return Ok();  
         }
-
 
         private Condition FindCondition(Condition condition, string conditionId)
         {

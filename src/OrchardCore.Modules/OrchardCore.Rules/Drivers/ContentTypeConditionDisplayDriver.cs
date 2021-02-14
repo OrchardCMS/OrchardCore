@@ -18,6 +18,7 @@ namespace OrchardCore.Rules.Drivers
         {
             _options = options.Value;
         }
+        
         public override IDisplayResult Display(ContentTypeCondition condition)
         {
             return

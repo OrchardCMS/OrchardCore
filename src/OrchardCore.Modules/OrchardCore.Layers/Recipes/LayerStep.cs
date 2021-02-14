@@ -40,7 +40,7 @@ namespace OrchardCore.Layers.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<LayersStepModel>();
+            var model = context.Step.ToObject<LayerStepModel>();
 
             var allLayers = await _layerService.LoadLayersAsync();
 
@@ -126,7 +126,7 @@ namespace OrchardCore.Layers.Recipes
         }
     }
 
-    public class LayersStepModel
+    public class LayerStepModel
     {
         public Layer[] Layers { get; set; }
     }

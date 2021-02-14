@@ -7,7 +7,6 @@ namespace OrchardCore.Rules.Drivers
 {
     public class RuleDisplayDriver : DisplayDriver<Rule>
     {
-
         public override IDisplayResult Display(Rule rule)
         {
             return Combine(
