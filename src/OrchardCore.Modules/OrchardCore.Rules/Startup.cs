@@ -1,12 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Modules;
 using OrchardCore.Rules.Drivers;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
-using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
 
 namespace OrchardCore.Rules
 {

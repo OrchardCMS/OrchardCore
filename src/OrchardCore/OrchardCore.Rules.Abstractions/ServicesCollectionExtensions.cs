@@ -15,8 +15,8 @@ namespace OrchardCore.Rules
             // Rules are scoped so that during a request rules like the script rule can build the scripting engine once.
             services.AddScoped(conditionEvaluator);            
 
-            var descriptor = new ServiceDescriptor(typeof(IConditionFactory), conditionFactory, ServiceLifetime.Singleton);
-            services.Add(descriptor);            
+            var factoryDescriptor = new ServiceDescriptor(typeof(IConditionFactory), conditionFactory, ServiceLifetime.Singleton);
+            services.Add(factoryDescriptor); 
 
             return services;
         }

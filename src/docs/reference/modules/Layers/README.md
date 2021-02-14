@@ -8,23 +8,34 @@ When you add a widget into a zone, you must also select a Layer to associate the
 
 You can select the checkbox next to each layer in order to highlight the associated Widgets on the left.
 
-In the rule, you can use a javascript function that will return a boolean, or you could just use a boolean.  
-Ex: The `Always` layer has the rule set to `true`, so widgets on this layer will always be shown.
+In the rule you may specify multiple conditions which must evaluate to true, or you can use condition groups, `All` or `Any` to vary the rule.
 
-## Rules
+!!! note
+    Layer rules have been upgraded from a single javascript rule to conditions during RC2, so this document may differ depending on your version.
+    A migration converts existing javascript rules into either matching conditions, or javascript conditions.
 
-Here are some available functions:
+## Conditions
 
-| Function | Description |
+Here are some available conditions:
+
+| Condition | Description |
 | -------- | ----------- |
-| `isHomepage(): Boolean` | Returns true if the current request Url is the current homepage |
-| `isAnonymous(): Boolean` | Returns true if there is no authenticated user on the current request |
-| `isAuthenticated(): Boolean` | Returns true if there is an authenticated user on the current request |
-| `isInRole(role: String): Boolean` | Returns true if the user is in the provided role |
-| `url(url: String): Boolean` | Returns true if the current url matches the provided url. Add a `*` to the end of the url parameter to match any url that start with  |
-| `culture(name: String): Boolean` | Returns true if the current culture name or the current culture's parent name matches the `name` argument |
+| `Homepage` | Whether the current page is the site homepage |
+| `Is anonymous` | Whether the current user is anonymous, i.e. not authenticated. |
+| `Is authenticated` | Whether the current user is authenticated. |
+| `Role` | A role condition evaluates the current users roles against a value. |
+| `Url` | A url condition evaluates the current url against a value. |
+| `Culture` | A culture condition evaluates the current ui culture against a value. |
+| `Content Type` | A content type condition evaluates the currently displayed content type names against a value. |
+| `Javascript` | A script condition written in javascript. |
+| `All` | An all condition group contains other conditions which are all required to be true. |
+| `Any` | An any condition group contains other conditions but only requires any condition to be true. |
 
-You can add new functions by implementing an `IGlobalMethodProvider`. See [Scripting](../Scripting/README.md#layers-orchardcorelayers)
+Ex: The `Always` layer has a `Boolean Condition` set to `true`, so widgets on this layer will always be shown.
+
+Refer [Rules](../Rules/README.md) for more information about creating custom conditions.
+
+Refer [Scripting](../Scripting/README.md#layers-orchardcorelayers) for more information about the available javascript methods.
 
 ## Zones
 
