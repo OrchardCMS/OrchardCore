@@ -49,7 +49,7 @@ namespace OrchardCore.Recipes
                 // Act
                 var executionId = Guid.NewGuid().ToString("n");
                 var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
-                await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
+                await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
 
                 // Assert
                 var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
