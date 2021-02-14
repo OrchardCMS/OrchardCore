@@ -26,9 +26,9 @@ namespace OrchardCore.Users.Services
         {
             var user = new User
             {
-                UserName = properties[SetupConstants.AdminUsername]?.ToString(),
-                UserId = properties[SetupConstants.AdminUserId]?.ToString(),
-                Email =properties[SetupConstants.AdminEmail]?.ToString(),
+                UserName = properties.TryGetValue(SetupConstants.AdminUsername, out var adminUserName) ? adminUserName?.ToString(): String.Empty,
+                UserId = properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString(): String.Empty,
+                Email =properties.TryGetValue(SetupConstants.AdminEmail, out var adminEmail) ? adminEmail?.ToString(): String.Empty,
                 RoleNames = new string[] { "Administrator" },
                 EmailConfirmed = true
             };
