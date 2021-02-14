@@ -34,7 +34,7 @@ namespace OrchardCore.AutoSetup
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<Microsoft.AspNetCore.Hosting.IStartupFilter, AutoSetupStartupFilter>();
-            var configuration = _shellConfiguration.GetSection("Orchard_AutoSetup");
+            var configuration = _shellConfiguration.GetSection("OrchardCore_AutoSetup");
             services.Configure<AutoSetupOptions>(configuration);
         }
     }
