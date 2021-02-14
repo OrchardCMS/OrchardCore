@@ -20,10 +20,11 @@ namespace OrchardCore.Rules.Services
             var currentCulture = CultureInfo.CurrentCulture;
 
             var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
-            return new ValueTask<bool>(
-                operatorComparer.Compare(condition.Operation, currentCulture.Name, condition.Value) ||
-                operatorComparer.Compare(condition.Operation, currentCulture.Parent.Name, condition.Value)
-            );
+
+            var result = operatorComparer.Compare(condition.Operation, currentCulture.Name, condition.Value) ||
+                operatorComparer.Compare(condition.Operation, currentCulture.Parent.Name, condition.Value);
+
+            return result ? True : False;
         }
     }
 }

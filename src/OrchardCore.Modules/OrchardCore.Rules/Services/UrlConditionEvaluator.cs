@@ -33,7 +33,7 @@ namespace OrchardCore.Rules.Services
             }
 
             var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
-            return new ValueTask<bool>(operatorComparer.Compare(condition.Operation, requestPath, condition.Value));
+            return operatorComparer.Compare(condition.Operation, requestPath, condition.Value) ? True : False;
         }
     }
 }

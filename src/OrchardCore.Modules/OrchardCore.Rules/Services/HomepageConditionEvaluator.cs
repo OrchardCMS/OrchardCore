@@ -18,14 +18,14 @@ namespace OrchardCore.Rules.Services
         {
             var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;
 
-            if (condition.Value)
+            var result = String.Equals("/", requestPath, StringComparison.Ordinal) || String.IsNullOrEmpty(requestPath);
+
+            if (!condition.Value)
             {
-                return new ValueTask<bool>(String.Equals("/", requestPath, StringComparison.Ordinal) || String.IsNullOrEmpty(requestPath));
+                result = !result;
             }
-            else
-            {
-                return new ValueTask<bool>(!String.Equals("/", requestPath, StringComparison.Ordinal) && !String.IsNullOrEmpty(requestPath));
-            }
+
+            return result ? True : False;
         }
     }
 }

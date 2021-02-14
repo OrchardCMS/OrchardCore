@@ -23,8 +23,6 @@ namespace OrchardCore.Rules.Services
             // A javascript condition is automatically created for less well-known rules. 
             switch (existingRule)
             {
-                // TODO should be creating with factory here.
-                // and generating id.
                 case "true":
                     if (factories.TryGetValue(typeof(BooleanCondition).Name, out var booleanFactory))
                     {

@@ -24,8 +24,8 @@ namespace OrchardCore.Rules.Services
         {
             _engine ??= _scriptingManager.GetScriptingEngine("js");
             _scope ??= _engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, null, null);
-            
-            return new ValueTask<bool>(Convert.ToBoolean(_engine.Evaluate(_scope, condition.Script)));
+
+            return Convert.ToBoolean(_engine.Evaluate(_scope, condition.Script)) ? True : False;
         }
     }
 }

@@ -5,6 +5,9 @@ namespace OrchardCore.Rules.Services
 {
     public class RuleService : IRuleService
     {
+        private static readonly ValueTask<bool> False = new ValueTask<bool>(false);
+        private static readonly ValueTask<bool> True = new ValueTask<bool>(true);
+
         private readonly IConditionResolver _conditionResolver;
 
         public RuleService(IConditionResolver conditionResolver)
@@ -12,24 +15,39 @@ namespace OrchardCore.Rules.Services
             _conditionResolver = conditionResolver;
         }
 
-        public async ValueTask<bool> EvaluateAsync(Rule rule)
-        {
+        public ValueTask<bool> EvaluateAsync(Rule rule)
+        {          
+            static async ValueTask<bool> Awaited(ValueTask<bool> task)
+                => await task;
+            
             foreach(var childCondition in rule.Conditions)
             {
                 var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
-                if (!await evaluator.EvaluateAsync(childCondition))
+
+                var task = evaluator.EvaluateAsync(childCondition);
+                if (!task.IsCompletedSuccessfully)
                 {
-                    return false;
+                    if (!Awaited(task).Result)
+                    {
+                        return False;
+                    }
+                }
+                else
+                {
+                    if (!task.Result)
+                    {
+                        return False;
+                    }
                 }
             }
 
             if (rule.Conditions.Any())
             {
-                return true;
+                return True;
             }
 
             // This rule requires all conditions to be evaluated as true.
-            return false;            
+            return False;            
         }
     }
 }

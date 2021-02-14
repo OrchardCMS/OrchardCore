@@ -98,6 +98,9 @@ namespace OrchardCore.Layers.Services
 
                 var layersCache = new Dictionary<string, bool>();
 
+                static async ValueTask<bool> AwaitedRule(ValueTask<bool> task)
+                    => await task;
+
                 foreach (var widget in widgets)
                 {
                     var layer = layers[widget.Layer];
@@ -110,7 +113,15 @@ namespace OrchardCore.Layers.Services
                     bool display;
                     if (!layersCache.TryGetValue(layer.Name, out display))
                     {
-                        display = await _ruleService.EvaluateAsync(layer.LayerRule);
+                        var task = _ruleService.EvaluateAsync(layer.LayerRule);
+                        if (!task.IsCompletedSuccessfully)
+                        {
+                            display = AwaitedRule(task).Result;
+                        }
+                        else
+                        {
+                            display = task.Result;
+                        }
 
                         layersCache[layer.Name] = display;
                     }

@@ -27,11 +27,14 @@ namespace OrchardCore.Rules.Services
         public override ValueTask<bool> EvaluateAsync(RoleCondition condition)
         {
             var roleClaimType = _options.ClaimsIdentity.RoleClaimType;
-
-            var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
             
-            return new ValueTask<bool>((_httpContextAccessor.HttpContext.User?.Claims.Any(claim => claim.Type == roleClaimType && operatorComparer.Compare(condition.Operation, claim.Value, condition.Value))).GetValueOrDefault()); // IsInRole() & HasClaim() are case sensitive
+            // IsInRole() & HasClaim() are case sensitive.
+            var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
 
+            return (_httpContextAccessor.HttpContext.User?.Claims.Any(claim => 
+                claim.Type == roleClaimType && 
+                operatorComparer.Compare(condition.Operation, claim.Value, condition.Value))
+            ).GetValueOrDefault() ? True : False;
         }
     }
 }
