@@ -132,9 +132,9 @@ namespace OrchardCore.Setup.Services
 
             if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
             {
-                shellSettings["DatabaseProvider"] = context.Properties[SetupConstants.DatabaseProvider]?.ToString();
-                shellSettings["ConnectionString"] = context.Properties[SetupConstants.DatabaseConnectionString]?.ToString();
-                shellSettings["TablePrefix"] = context.Properties[SetupConstants.DatabaseTablePrefix]?.ToString();
+                shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider)? databaseProvider?.ToString(): String.Empty ;
+                shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString ) ? databaseConnectionString?.ToString(): String.Empty;
+                shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix)? databaseTablePrefix?.ToString():String.Empty;
             }
 
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
