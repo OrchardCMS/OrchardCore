@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-240-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-242-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -329,6 +329,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.neele.name"><img src="https://avatars.githubusercontent.com/u/1301586?v=4" width="100px;" alt=""/><br /><sub><b>Guido Neele</b></sub></a><br /><a href="#translation-GuidoNeele" title="Translation">🌍</a></td>
     <td align="center"><a href="http://www.qonnect.no"><img src="https://avatars.githubusercontent.com/u/17481522?v=4" width="100px;" alt=""/><br /><sub><b>Jon Agust Reynisson</b></sub></a><br /><a href="#translation-DrProbie" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/lampersky"><img src="https://avatars.githubusercontent.com/u/6403130?v=4" width="100px;" alt=""/><br /><sub><b>lampersky</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=lampersky" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/arnaudroystatcan"><img src="https://avatars.githubusercontent.com/u/66786602?v=4" width="100px;" alt=""/><br /><sub><b>arnaudroystatcan</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=arnaudroystatcan" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/petri-holopainen-tietotalo"><img src="https://avatars.githubusercontent.com/u/51475833?v=4" width="100px;" alt=""/><br /><sub><b>petri-holopainen-tietotalo</b></sub></a><br /><a href="#translation-petri-holopainen-tietotalo" title="Translation">🌍</a></td>
   </tr>
 </table>
 

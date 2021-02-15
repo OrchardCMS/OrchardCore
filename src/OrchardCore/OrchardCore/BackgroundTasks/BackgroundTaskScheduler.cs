@@ -6,15 +6,16 @@ namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundTaskScheduler
     {
-        public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock, string timeZoneId)
+        private readonly IClock _clock;
+
+        public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock)
         {
             Name = name;
             Tenant = tenant;
             ReferenceTime = referenceTime;
             Settings = new BackgroundTaskSettings() { Name = name };
             State = new BackgroundTaskState() { Name = name };
-            Clock = clock;
-            TimeZone = Clock.GetTimeZone(timeZoneId);
+            _clock = clock;
         }
 
         public string Name { get; }
@@ -22,18 +23,24 @@ namespace OrchardCore.BackgroundTasks
         public DateTime ReferenceTime { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
+        public ITimeZone TimeZone { get; set; }
         public bool Released { get; set; }
         public bool Updated { get; set; }
-        public ITimeZone TimeZone { get; set; }
-        private IClock Clock { get; set; }
 
         public bool CanRun()
         {
-            var referenceTimeLocal = Clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;
-            var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTimeLocal);
-            var nowLocal = Clock.ConvertToTimeZone(DateTime.UtcNow, TimeZone).DateTime;
+            var now = DateTime.UtcNow;
+            var referenceTime = ReferenceTime;
 
-            if (nowLocal >= nextStartTime)
+            if (TimeZone != null)
+            {
+                now = _clock.ConvertToTimeZone(DateTime.UtcNow, TimeZone).DateTime;
+                referenceTime = _clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;
+            }
+
+            var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTime);
+
+            if (now >= nextStartTime)
             {
                 if (Settings.Enable && !Released && Updated)
                 {
