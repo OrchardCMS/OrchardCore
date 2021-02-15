@@ -2253,6 +2253,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "petri-holopainen-tietotalo",
+      "name": "petri-holopainen-tietotalo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51475833?v=4",
+      "profile": "https://github.com/petri-holopainen-tietotalo",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
