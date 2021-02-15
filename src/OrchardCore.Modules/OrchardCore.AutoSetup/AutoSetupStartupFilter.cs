@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.AutoSetup
@@ -24,9 +25,7 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSetupStartupFilter"/> class.
         /// </summary>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
+        /// <param name="logger"> The logger. </param>
         public AutoSetupStartupFilter(ILogger<AutoSetupStartupFilter> logger)
         {
             this._logger = logger;
@@ -35,12 +34,8 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// The configure a middleware pipeline
         /// </summary>
-        /// <param name="next">
-        /// The next.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Action"/>.
-        /// </returns>
+        /// <param name="next"> The next middleware in the execution pipeline. </param>
+        /// <returns> The <see cref="Action"/>. </returns>
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             var scopedServices = ShellScope.Services;
@@ -78,9 +73,7 @@ namespace OrchardCore.AutoSetup
                             }
                             else
                             {
-                                builder.Map(
-                                    options.TriggerSetupUrl,
-                                    applicationBuilder => applicationBuilder.UseMiddleware<AutoSetupMiddleware>());
+                                builder.Map(options.TriggerSetupUrl, appBuilder => appBuilder.UseMiddleware<AutoSetupMiddleware>());
                             }
 
                             next(builder);

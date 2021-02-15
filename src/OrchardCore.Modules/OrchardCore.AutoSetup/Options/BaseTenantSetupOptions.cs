@@ -1,4 +1,4 @@
-namespace OrchardCore.AutoSetup
+namespace OrchardCore.AutoSetup.Options
 {
     using System;
     using System.Collections.Generic;
@@ -8,9 +8,9 @@ namespace OrchardCore.AutoSetup
     using Microsoft.Extensions.Localization;
 
     /// <summary>
-    /// The auto setup options.
+    /// The Base tenant setup options.
     /// </summary>
-    public class AutoSetupOptions : IValidatableObject
+    public class BaseTenantSetupOptions : IValidatableObject
     {
         /// <summary>
         /// Gets or sets the site name.
@@ -53,12 +53,6 @@ namespace OrchardCore.AutoSetup
         public string RecipeName { get; set; }
 
         /// <summary>
-        /// Gets or sets the Url which will trigger AutoSetup.
-        /// Leave it Empty if you want to Trigger Setup on any request
-        /// </summary>
-        public string TriggerSetupUrl { get; set; }
-
-        /// <summary>
         /// Gets or sets the site time zone.
         /// </summary>
         public string SiteTimeZone { get; set; }
@@ -66,13 +60,9 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// Options Validation logic.
         /// </summary>
-        /// <param name="validationContext">
-        /// The validation context.
-        /// </param>
-        /// <returns>
-        /// The collection of validation items <see cref="ValidationResult"/>.
-        /// </returns>
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        /// <param name="validationContext"> The validation context. </param>
+        /// <returns> The collection of validation items <see cref="ValidationResult"/>. </returns>
+        public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var T = validationContext.GetService<IStringLocalizer<AutoSetupOptions>>();
 
@@ -114,11 +104,6 @@ namespace OrchardCore.AutoSetup
             if (string.IsNullOrWhiteSpace(SiteTimeZone))
             {
                 yield return new ValidationResult(T["The field {0} is not provided", "Site TimeZone"], new[] { nameof(SiteTimeZone) });
-            }
-
-            if (!string.IsNullOrWhiteSpace(TriggerSetupUrl) && !TriggerSetupUrl.StartsWith("/"))
-            {
-                yield return new ValidationResult(T["The field {0} should be empty or start with /", "Trigger Setup Url"], new[] { nameof(TriggerSetupUrl) });
             }
         }
     }

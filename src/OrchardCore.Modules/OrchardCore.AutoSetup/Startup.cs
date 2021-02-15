@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 

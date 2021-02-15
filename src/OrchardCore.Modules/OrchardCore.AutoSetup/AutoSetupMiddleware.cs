@@ -1,13 +1,14 @@
+using System;
+using OrchardCore.AutoSetup.Options;
+using OrchardCore.Environment.Shell.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Setup.Services;
@@ -20,9 +21,14 @@ namespace OrchardCore.AutoSetup
     public class AutoSetupMiddleware
     {
         /// <summary>
-        /// The _next.
+        /// The next middleware in the execution pipeline.
         /// </summary>
         private readonly RequestDelegate _next;
+
+        /// <summary>
+        /// The Shell settings manager.
+        /// </summary>
+        private readonly IShellSettingsManager _shellSettingsManager;
 
         /// <summary>
         /// The auto-setup options.
@@ -37,19 +43,19 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSetupMiddleware"/> class.
         /// </summary>
-        /// <param name="next">
-        /// The next.
-        /// </param>
-        /// <param name="setupOptions">
-        /// The auto-setup Options.
-        /// </param>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        public AutoSetupMiddleware(RequestDelegate next, IOptions<AutoSetupOptions> setupOptions, ILogger<AutoSetupMiddleware> logger)
+        /// <param name="next"> The next middleware in the execution pipeline. </param>
+        /// <param name="shellSettingsManager">The Shell settings manager</param>
+        /// <param name="setupOptions"> The auto-setup Options. </param>
+        /// <param name="logger"> The logger. </param>
+        public AutoSetupMiddleware(
+            RequestDelegate next,
+            IShellSettingsManager shellSettingsManager,
+            IOptions<AutoSetupOptions> setupOptions,
+            ILogger<AutoSetupMiddleware> logger)
         {
             _logger = logger;
             _next = next;
+            _shellSettingsManager = shellSettingsManager;
             _setupOptions = setupOptions;
         }
 
@@ -64,55 +70,89 @@ namespace OrchardCore.AutoSetup
         /// </returns>
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            var settings = ShellScope.Context.Settings;
-
-            _logger.LogInformation("AutoSetup is initializing the site");
-
+            var currentShellSettings = ShellScope.Context.Settings;
             var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
 
-            var setupContext = GetSetupContext(_setupOptions.Value, setupService, settings);
-
-            await setupService.SetupAsync(setupContext);
-
-            if (setupContext.Errors.Count == 0)
+            _logger.LogInformation("AutoSetup is initializing the site");
+            if (await SetupTenant(setupService, _setupOptions.Value.RootTenant, currentShellSettings))
             {
-                _logger.LogInformation("AutoSetup successfully provisioned the site, redirecting");
-
-                httpContext.Response.Redirect("/");
-
-                // Complete the request
-                // await httpContext.Response.CompleteAsync();
-            }
-            else
-            {
-                var stringBuilder = new StringBuilder();
-                foreach (var error in setupContext.Errors)
+                foreach (var tenant in _setupOptions.Value.SubTenants)
                 {
-                    stringBuilder.Append($"{error.Key} : '{error.Value}'");
+                    if(!await SetupTenant(setupService, tenant, CreateTenantSettings(tenant)))
+                    {
+                        break;
+                    }
                 }
 
-                _logger.LogError("AutoSetup failed with errors: {errors}", stringBuilder.ToString());
+                httpContext.Response.Redirect("/");
             }
 
             await _next.Invoke(httpContext);
         }
 
         /// <summary>
+        /// Setup tenant.
+        /// </summary>
+        /// <param name="setupService"> The setup service. </param>
+        /// <param name="setupOptions"> The tenant setup options. </param>
+        /// <param name="shellSettings"> The tenant shell settings. </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task<bool> SetupTenant(ISetupService setupService, BaseTenantSetupOptions setupOptions, ShellSettings shellSettings)
+        {
+            var setupContext = GetSetupContext(setupOptions, setupService, shellSettings);
+
+            await setupService.SetupAsync(setupContext);
+
+            if (setupContext.Errors.Count == 0)
+            {
+                _logger.LogInformation($"AutoSetup successfully provisioned the site {setupOptions.SiteName}");
+
+                return true;
+            }
+
+            var stringBuilder = new StringBuilder();
+            foreach (var error in setupContext.Errors)
+            {
+                stringBuilder.Append($"{error.Key} : '{error.Value}'");
+            }
+
+            _logger.LogError($"AutoSetup failed installing the site '{setupOptions.SiteName}' with errors: {stringBuilder}");
+            return false;
+        }
+
+        /// <summary>
+        /// Create tenant shell settings.
+        /// </summary>
+        /// <param name="setupOptions"> The setup options. </param>
+        /// <returns> The <see cref="ShellSettings"/>. </returns>
+        public ShellSettings CreateTenantSettings(TenantSetupOptions setupOptions)
+        {
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+
+            shellSettings.Name = setupOptions.SiteName;
+            shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
+            shellSettings.RequestUrlPrefix = setupOptions.RequestUrlPrefix;
+            shellSettings.State = TenantState.Uninitialized;
+
+            shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
+            shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
+            shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider;
+            shellSettings["Secret"] = Guid.NewGuid().ToString();
+            shellSettings["RecipeName"] = setupOptions.RecipeName;
+
+            return shellSettings;
+        }
+
+        /// <summary>
         /// Get setup context from the configuration.
         /// </summary>
-        /// <param name="options">
-        /// The options.
-        /// </param>
-        /// <param name="setupService">
-        /// The setup service.
-        /// </param>
-        /// <param name="shellSettings">
-        /// The shell settings.
-        /// </param>
-        /// <returns>
-        /// The <see cref="SetupContext"/>.
-        /// </returns>
-        private static SetupContext GetSetupContext(AutoSetupOptions options, ISetupService setupService, ShellSettings shellSettings)
+        /// <param name="options"> The tenant setup options. </param>
+        /// <param name="setupService"> The setup service. </param>
+        /// <param name="shellSettings"> The tenant shell settings. </param>
+        /// <returns> The <see cref="SetupContext"/>. to setup the site </returns>
+        private static SetupContext GetSetupContext(BaseTenantSetupOptions options, ISetupService setupService, ShellSettings shellSettings)
         {
             var recipes = setupService.GetSetupRecipesAsync()
                 .GetAwaiter()
