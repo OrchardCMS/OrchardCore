@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Extensions;
@@ -17,20 +16,20 @@ namespace OrchardCore.Layers
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IRuleMigrator _ruleMigrator;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly IExtensionManager _extensionManager;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         public Migrations(
             ILayerService layerService,
             IConditionIdGenerator conditionIdGenerator,
             IRuleMigrator ruleMigrator,
             IShellFeaturesManager shellFeaturesManager,
-            IExtensionManager extensionManager)
+            ITypeFeatureProvider typeFeatureProvider)
         {
             _layerService = layerService;
             _conditionIdGenerator = conditionIdGenerator;
             _ruleMigrator = ruleMigrator;
             _shellFeaturesManager = shellFeaturesManager;
-            _extensionManager = extensionManager;
+            _typeFeatureProvider = typeFeatureProvider;
         }
 
         public int Create()
@@ -73,10 +72,10 @@ namespace OrchardCore.Layers
             }
 
             await _layerService.UpdateAsync(layers);
-
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Id == "OrchardCore.Rules");
             
-            await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
+            var layerFeature = _typeFeatureProvider.GetFeatureForDependency(GetType());
+            
+            await _shellFeaturesManager.EnableFeaturesAsync(new[] { layerFeature }, force: true);
 
             return 3;
         }
