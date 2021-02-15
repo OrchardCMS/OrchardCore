@@ -62,6 +62,7 @@ namespace OrchardCore.Rules.Services
                     {
                         var condition = (JavascriptCondition)javascriptFactory.Create();
                         _conditionIdGenerator.GenerateUniqueId(condition);
+                        condition.Script = existingRule;
                         rule.Conditions.Add(condition);
                     }
                     break;
