@@ -13,26 +13,18 @@ namespace OrchardCore.Rules.Services
             _conditionResolver = conditionResolver;
         }
 
-        public override ValueTask<bool> EvaluateAsync(AnyConditionGroup condition)
+        public async override ValueTask<bool> EvaluateAsync(AnyConditionGroup condition)
         {
             foreach(var childCondition in condition.Conditions)
             {
                 var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
-                var task = evaluator.EvaluateAsync(childCondition);
-                if (!task.IsCompletedSuccessfully)
+                if (await evaluator.EvaluateAsync(childCondition))
                 {
-                    if(Awaited(task).Result)
-                    {
-                        return True;
-                    }
-                }
-                else if (task.Result)
-                {
-                    return True;
+                    return true;
                 }
             }
 
-            return False;
+            return false;
         }
     }
 }
