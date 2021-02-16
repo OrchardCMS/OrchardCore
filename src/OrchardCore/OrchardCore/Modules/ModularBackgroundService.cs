@@ -131,7 +131,7 @@ namespace OrchardCore.Modules
                             }
                             catch (Exception ex) when (!ex.IsFatal())
                             {
-                                _logger.LogError(ex, "Error while getting the site settings of the tenant '{TenantName}'.", tenant);
+                                _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
                             }
                         }
 
@@ -200,7 +200,7 @@ namespace OrchardCore.Modules
                         }
                         catch (Exception ex) when (!ex.IsFatal())
                         {
-                            _logger.LogError(ex, "Error while getting the site settings of the tenant '{TenantName}'.", tenant);
+                            _logger.LogError(ex, "Error while getting the time zone from the site settings of the tenant '{TenantName}'.", tenant);
                         }
                     }
 
