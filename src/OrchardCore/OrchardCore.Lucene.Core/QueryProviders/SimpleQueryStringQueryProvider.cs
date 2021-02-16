@@ -25,10 +25,10 @@ namespace OrchardCore.Lucene.QueryProviders
             {
                 var fieldWeightArray = field.Split("^", 2);
 
-                if(field.Contains('^', StringComparison.Ordinal) && Single.TryParse(fieldWeightArray.Last(), out weight))
+                if(fieldWeightArray.Length > 1 && Single.TryParse(fieldWeightArray[1], out weight))
                 {
                     weights.Remove(field);
-                    weights.Add(fieldWeightArray.First(), weight);
+                    weights.Add(fieldWeightArray[0], weight);
                 }
             }
 
