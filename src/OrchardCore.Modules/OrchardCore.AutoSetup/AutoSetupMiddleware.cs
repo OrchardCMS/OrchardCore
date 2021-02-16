@@ -15,6 +15,8 @@ using OrchardCore.Setup.Services;
 
 namespace OrchardCore.AutoSetup
 {
+    using OrchardCore.Abstractions.Setup;
+
     /// <summary>
     /// The auto setup middleware.
     /// </summary>
@@ -161,19 +163,20 @@ namespace OrchardCore.AutoSetup
             var recipe = recipes.SingleOrDefault(r => r.Name == options.RecipeName);
 
             var setupContext = new SetupContext
-            {
-                AdminEmail = options.AdminEmail,
-                AdminPassword = options.AdminPassword,
-                AdminUsername = options.AdminUsername,
-                DatabaseConnectionString = options.DatabaseConnectionString,
-                DatabaseProvider = options.DatabaseProvider,
-                DatabaseTablePrefix = options.DatabaseTablePrefix,
-                SiteName = options.SiteName,
-                Recipe = recipe,
-                SiteTimeZone = options.SiteTimeZone,
-                Errors = new Dictionary<string, string>(),
-                ShellSettings = shellSettings
-            };
+                               {
+                                   Recipe = recipe,
+                                   ShellSettings = shellSettings,
+                                   Errors = new Dictionary<string,string>()
+                               };
+
+            setupContext.Properties[SetupConstants.AdminEmail] = options.AdminEmail;
+            setupContext.Properties[SetupConstants.AdminPassword] = options.AdminPassword;
+            setupContext.Properties[SetupConstants.AdminUsername] = options.AdminUsername;
+            setupContext.Properties[SetupConstants.DatabaseConnectionString] = options.DatabaseConnectionString;
+            setupContext.Properties[SetupConstants.DatabaseProvider] = options.DatabaseProvider;
+            setupContext.Properties[SetupConstants.DatabaseTablePrefix] = options.DatabaseTablePrefix;
+            setupContext.Properties[SetupConstants.SiteName] = options.SiteName;
+            setupContext.Properties[SetupConstants.SiteTimeZone] = options.SiteTimeZone;
 
             return setupContext;
         }
