@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -63,8 +64,8 @@ namespace OrchardCore.ContentFields.GraphQL
                 var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
-                html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
-                    context => context.SetValue("ContentItem", ctx.Source.ContentItem));
+                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
             }
 
             return await shortcodeService.ProcessAsync(html,

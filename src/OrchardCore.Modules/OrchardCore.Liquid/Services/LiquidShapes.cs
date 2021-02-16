@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
@@ -22,8 +23,8 @@ namespace OrchardCore.Liquid.Services
             var model = shapeDisplayContext.Shape as LiquidPartViewModel;
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
 
-            model.Html = await liquidTemplateManager.RenderAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
-                scope => scope.SetValue("ContentItem", new ObjectValue(model.ContentItem)));
+            model.Html = await liquidTemplateManager.RenderStringAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
+                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
         }
 
         public void Discover(ShapeTableBuilder builder)

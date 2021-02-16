@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -79,8 +80,8 @@ namespace OrchardCore.Markdown.GraphQL
                     PartFieldDefinition = contentPartFieldDefintion
                 };
 
-                html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
-                    context => context.SetValue("ContentItem", new ObjectValue(ctx.Source.ContentItem)));
+                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
             }
 
             html = await shortcodeService.ProcessAsync(html,

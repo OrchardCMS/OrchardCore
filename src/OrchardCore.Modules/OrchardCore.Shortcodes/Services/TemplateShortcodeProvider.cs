@@ -54,27 +54,26 @@ namespace OrchardCore.Shortcodes.Services
                 Context = context
             };
 
-            return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
-                context =>
-                {
-                    // Used for recursion checking.
-                    context.SetValue(identifier, "");
+            var parameters = new Dictionary<string, FluidValue>();
+            parameters[identifier] = new StringValue("");
 
-                    // Don't conflict with the liquid scope 'Content' property.
-                    var content = context.GetValue("Content").ToObjectValue();
-                    if (content is LiquidContentAccessor contentAccessor)
-                    {
-                        contentAccessor.Content = model.Content ?? "";
-                        context.SetValue("Content", contentAccessor);
-                    }
-                    else
-                    {
-                        context.SetValue("Content", model.Content ?? "");
-                    }
+            // TODO: Fix this
 
-                    context.SetValue("Args", model.Args);
-                    context.SetValue("Context", model.Context);
-                });
+            // var c = context.GetValue("Content").ToObjectValue();
+            // if (c is LiquidContentAccessor contentAccessor)
+            // {
+            //     contentAccessor.Content = model.Content ?? "";
+            //     parameters["Content"] = contentAccessor;
+            // }
+            // else
+            // {
+            //     parameters["Content"] = model.Content ?? "";
+            // }
+
+            parameters["Args"] = new ObjectValue(model.Args);
+            parameters["Context"] = new ObjectValue(model.Context);
+
+            return await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
         }
     }
 }

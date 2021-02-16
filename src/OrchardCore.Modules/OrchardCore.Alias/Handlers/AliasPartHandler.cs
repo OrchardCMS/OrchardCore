@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -73,8 +74,8 @@ namespace OrchardCore.Alias.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                    scope => scope.SetValue(nameof(ContentItem), new ObjectValue(model.ContentItem)));
+                part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
+                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
 
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
 

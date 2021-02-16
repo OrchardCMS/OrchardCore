@@ -14,7 +14,7 @@ namespace OrchardCore.Liquid.Filters
             var liquidTemplateManager = context.Services.GetRequiredService<ILiquidTemplateManager>();
             var htmlEncoder = context.Services.GetRequiredService<HtmlEncoder>();
 
-            var content = await liquidTemplateManager.RenderAsync(input.ToStringValue(), htmlEncoder, arguments.At(0));
+            var content = await liquidTemplateManager.RenderStringAsync(input.ToStringValue(), htmlEncoder, arguments.At(0));
             return new StringValue(content, false);
         }
     }

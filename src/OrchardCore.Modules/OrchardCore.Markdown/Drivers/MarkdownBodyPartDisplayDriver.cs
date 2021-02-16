@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
@@ -98,8 +99,8 @@ namespace OrchardCore.Markdown.Drivers
             // The liquid rendering is for backwards compatibility and can be removed in a future version.
             if (!settings.SanitizeHtml)
             {
-                model.Html = await _liquidTemplateManager.RenderAsync(model.Html, _htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", new ObjectValue(model.ContentItem)));
+                model.Html = await _liquidTemplateManager.RenderStringAsync(model.Html, _htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
             }
 
             model.Html = await _shortcodeService.ProcessAsync(model.Html,

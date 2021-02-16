@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -52,8 +53,8 @@ namespace OrchardCore.ContentFields.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
                 if (!settings.SanitizeHtml)
                 {
-                    model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model,
-                        context => context.SetValue("ContentItem", field.ContentItem));
+                    model.Html = await _liquidTemplateManager.RenderStringAsync(field.Html, _htmlEncoder, model,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
                 }
 
                 model.Html = await _shortcodeService.ProcessAsync(model.Html,

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -35,10 +36,10 @@ namespace OrchardCore.Facebook.Widgets.Handlers
                         ContentItem = part.ContentItem
                     };
 
-                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, _htmlEncoder, model,
-                        context => context.SetValue("ContentItem", model.ContentItem));
+                    var result = await _liquidTemplateManager.RenderHtmlContentAsync(part.Liquid, _htmlEncoder, model,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
 
-                    bodyAspect.Body = new HtmlString(result);
+                    bodyAspect.Body = result;
                 }
                 catch
                 {

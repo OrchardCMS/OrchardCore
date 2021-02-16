@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -23,18 +25,21 @@ namespace OrchardCore.Queries.Sql.Controllers
         private readonly IStore _store;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IStringLocalizer S;
+        private readonly TemplateOptions _templateOptions;
 
         public AdminController(
             IAuthorizationService authorizationService,
             IStore store,
             ILiquidTemplateManager liquidTemplateManager,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<AdminController> stringLocalizer,
+            IOptions<TemplateOptions> templateOptions)
 
         {
             _authorizationService = authorizationService;
             _store = store;
             _liquidTemplateManager = liquidTemplateManager;
             S = stringLocalizer;
+            _templateOptions = templateOptions.Value;
         }
 
         public Task<IActionResult> Query(string query)
@@ -73,13 +78,7 @@ namespace OrchardCore.Queries.Sql.Controllers
 
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, NullEncoder.Default, context =>
-            {
-                foreach (var parameter in parameters)
-                {
-                    context.SetValue(parameter.Key, parameter.Value);
-                }
-            });
+            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
             model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
 

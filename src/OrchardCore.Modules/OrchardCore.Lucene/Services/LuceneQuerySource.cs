@@ -3,6 +3,8 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -24,6 +26,7 @@ namespace OrchardCore.Lucene
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
         private readonly JavaScriptEncoder _javaScriptEncoder;
+        private readonly TemplateOptions _templateOptions;
 
         public LuceneQuerySource(
             LuceneIndexManager luceneIndexProvider,
@@ -32,7 +35,8 @@ namespace OrchardCore.Lucene
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             ISession session,
-            JavaScriptEncoder javaScriptEncoder)
+            JavaScriptEncoder javaScriptEncoder,
+            IOptions<TemplateOptions> templateOptions)
         {
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexSettingsService = luceneIndexSettingsService;
@@ -41,6 +45,7 @@ namespace OrchardCore.Lucene
             _liquidTemplateManager = liquidTemplateManager;
             _session = session;
             _javaScriptEncoder = javaScriptEncoder;
+            _templateOptions = templateOptions.Value;
         }
 
         public string Name => "Lucene";
@@ -57,16 +62,7 @@ namespace OrchardCore.Lucene
 
             await _luceneIndexProvider.SearchAsync(luceneQuery.Index, async searcher =>
             {
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, _javaScriptEncoder, context =>
-                {
-                    if (parameters != null)
-                    {
-                        foreach (var parameter in parameters)
-                        {
-                            context.SetValue(parameter.Key, parameter.Value);
-                        }
-                    }
-                });
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(luceneQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
 

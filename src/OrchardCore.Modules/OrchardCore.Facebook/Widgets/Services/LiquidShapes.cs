@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -23,8 +25,8 @@ namespace OrchardCore.Facebook.Widgets.Services
             var model = shapeDisplayContext.Shape as FacebookPluginPartViewModel;
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
 
-            model.Html = await liquidTemplateManager.RenderAsync(model.FacebookPluginPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
-                scope => scope.SetValue("ContentItem", model.ContentItem));
+            model.Html = await liquidTemplateManager.RenderStringAsync(model.FacebookPluginPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
+                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
         }
 
         public void Discover(ShapeTableBuilder builder)

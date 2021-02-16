@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
+using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Liquid;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Liquid.Services
 {
@@ -17,15 +18,22 @@ namespace OrchardCore.Liquid.Services
         private readonly IMemoryCache _memoryCache;
         private readonly LiquidViewParser _liquidViewParser;
         private readonly TemplateOptions _templateOptions;
+        private readonly IServiceProvider _serviceProvider;
 
-        public LiquidTemplateManager(IMemoryCache memoryCache, LiquidViewParser liquidViewParser, IOptions<TemplateOptions> templateOptions)
+        public LiquidTemplateManager(
+            IMemoryCache memoryCache, 
+            LiquidViewParser liquidViewParser, 
+            IOptions<TemplateOptions> templateOptions,
+            IServiceProvider serviceProvider
+            )
         {
             _memoryCache = memoryCache;
             _liquidViewParser = liquidViewParser;
             _templateOptions = templateOptions.Value;
+            _serviceProvider = serviceProvider;
         }
 
-        public Task<string> RenderAsync(string source, TextEncoder encoder, object model, Action<LiquidTemplateContext> action)
+        public Task<string> RenderStringAsync(string source, TextEncoder encoder, object model = null, IEnumerable<KeyValuePair<string, FluidValue>> properties = null)
         {
             if (String.IsNullOrWhiteSpace(source))
             {
@@ -33,12 +41,45 @@ namespace OrchardCore.Liquid.Services
             }
 
             var result = GetCachedTemplate(source);
-            var context = new LiquidTemplateContext(ShellScope.Services, _templateOptions);
+            var context = new LiquidTemplateContext(_serviceProvider, _templateOptions);
 
-            return result.RenderAsync(encoder, context, model, action);
+            if (properties != null)
+            {
+                foreach (var property in properties)
+                {
+                    context.SetValue(property.Key, property.Value);
+                }
+            }
+
+            return result.RenderAsync(encoder, context, model);
         }
 
-        public Task RenderAsync(string source, TextWriter writer, TextEncoder encoder, object model, Action<LiquidTemplateContext> action)
+        public async Task<IHtmlContent> RenderHtmlContentAsync(string source, TextEncoder encoder, object model = null, IEnumerable<KeyValuePair<string, FluidValue>> properties = null)
+        {
+            if (String.IsNullOrWhiteSpace(source))
+            {
+                return HtmlString.Empty;
+            }
+
+            var result = GetCachedTemplate(source);
+            var context = new LiquidTemplateContext(_serviceProvider, _templateOptions);
+
+            if (properties != null)
+            {
+                foreach (var property in properties)
+                {
+                    context.SetValue(property.Key, property.Value);
+                }
+            }
+
+            var htmlContentWriter = new ViewBufferTextWriterContent();
+
+            await result.RenderAsync(htmlContentWriter, encoder, context, model);
+
+            return htmlContentWriter;
+        }
+
+        public Task RenderAsync(string source, TextWriter writer, TextEncoder encoder, object model = null, IEnumerable<KeyValuePair<string, FluidValue>> properties = null)
         {
             if (String.IsNullOrWhiteSpace(source))
             {
@@ -46,12 +87,20 @@ namespace OrchardCore.Liquid.Services
             }
 
             var result = GetCachedTemplate(source);
-            var context = new LiquidTemplateContext(ShellScope.Services, _templateOptions);
+            var context = new LiquidTemplateContext(_serviceProvider, _templateOptions);
 
-            return result.RenderAsync(writer, encoder, context, model, action);
+            if (properties != null)
+            {
+                foreach (var property in properties)
+                {
+                    context.SetValue(property.Key, property.Value);
+                }
+            }
+
+            return result.RenderAsync(writer, encoder, context, model);
         }
 
-        private LiquidViewTemplate GetCachedTemplate(string source)
+        public LiquidViewTemplate GetCachedTemplate(string source)
         {
             var errors = Enumerable.Empty<string>();
 

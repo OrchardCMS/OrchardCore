@@ -40,10 +40,10 @@ namespace OrchardCore.Workflows.Expressions
             await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
 
             // Set WorkflowContext as a local scope property.
-            var result = await _liquidTemplateManager.RenderAsync(
+            var result = await _liquidTemplateManager.RenderStringAsync(
                 expression.Expression,
                 encoder ?? NullEncoder.Default,
-                scope => scope.SetValue("Workflow", workflowContext)
+                new Dictionary<string, FluidValue>() { ["Workflow"] = new ObjectValue(workflowContext) }
                 );
 
             return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Liquid
@@ -86,6 +87,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 writer.Write(fragment);
             }
+        }
+
+        public override Task FlushAsync()
+        {
+            // Override since the base implementation does unnecessary work
+            return Task.CompletedTask;
         }
 
         /// <summary>

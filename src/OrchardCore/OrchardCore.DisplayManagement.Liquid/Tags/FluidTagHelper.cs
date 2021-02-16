@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -18,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
         public static ValueTask<Completion> WriteArgumentsTagHelperAsync(List<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            return WriteToAsync(null, arguments, null, writer, encoder, context);
+            return WriteToAsync(null, arguments, Array.Empty<Statement>(), writer, encoder, context);
         }
 
         public static ValueTask<Completion> WriteArgumentsBlockHelperAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
@@ -63,22 +64,18 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tagHelper = factory.CreateTagHelper(activator, viewContext,
                 filterArguments, out var contextAttributes, out var outputAttributes);
 
-            ViewBufferTextWriterContent content = null;
 
+            ViewBufferTextWriterContent content = null;
+            
             if (statements != null && statements.Count > 0)
             {
                 content = new ViewBufferTextWriterContent();
+                
+                var completion = await statements.RenderStatementsAsync(content, encoder, context);
 
-                var completion = Completion.Break;
-
-                for (var index = 0; index < statements.Count; index++)
+                if (completion != Completion.Normal)
                 {
-                    completion = await statements[index].WriteToAsync(content, encoder, context);
-
-                    if (completion != Completion.Normal)
-                    {
-                        return completion;
-                    }
+                    return completion;
                 }
             }
 

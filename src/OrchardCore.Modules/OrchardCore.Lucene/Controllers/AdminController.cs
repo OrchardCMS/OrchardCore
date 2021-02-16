@@ -383,7 +383,7 @@ namespace OrchardCore.Lucene.Controllers
                     templateContext.SetValue(parameter.Key, parameter.Value);
                 }
 
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, _javaScriptEncoder);
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder);
 
                 try
                 {
