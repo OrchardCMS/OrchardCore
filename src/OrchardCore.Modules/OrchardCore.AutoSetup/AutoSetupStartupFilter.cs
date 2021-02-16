@@ -67,13 +67,13 @@ namespace OrchardCore.AutoSetup
                     {
                         return builder =>
                         {
-                            if (string.IsNullOrEmpty(options.TriggerSetupUrl))
+                            if (string.IsNullOrEmpty(options.AutoSetupPath))
                             {
                                 builder.UseMiddleware<AutoSetupMiddleware>();
                             }
                             else
                             {
-                                builder.Map(options.TriggerSetupUrl, appBuilder => appBuilder.UseMiddleware<AutoSetupMiddleware>());
+                                builder.Map(options.AutoSetupPath, appBuilder => appBuilder.UseMiddleware<AutoSetupMiddleware>());
                             }
 
                             next(builder);

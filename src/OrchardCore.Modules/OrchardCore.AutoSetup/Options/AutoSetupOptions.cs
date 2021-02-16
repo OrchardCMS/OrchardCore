@@ -15,7 +15,7 @@ namespace OrchardCore.AutoSetup.Options
         /// Gets or sets the Url which will trigger AutoSetup.
         /// Leave it Empty if you want to Trigger Setup on any request
         /// </summary>
-        public string TriggerSetupUrl { get; set; }
+        public string AutoSetupPath { get; set; }
 
         /// <summary>
         /// Gets or sets the Root tenant setup options.
@@ -37,9 +37,9 @@ namespace OrchardCore.AutoSetup.Options
                 yield break;
             }
 
-            if (!string.IsNullOrWhiteSpace(TriggerSetupUrl) && !TriggerSetupUrl.StartsWith("/"))
+            if (!string.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith("/"))
             {
-                yield return new ValidationResult(T["The field {0} should be empty or start with /", "Trigger Setup Url"], new[] { nameof(TriggerSetupUrl) });
+                yield return new ValidationResult(T["The field {0} should be empty or start with /", "Auto Setup Path"], new[] { nameof(AutoSetupPath) });
             }
 
             foreach (var validationResult in RootTenant.Validate(validationContext))
