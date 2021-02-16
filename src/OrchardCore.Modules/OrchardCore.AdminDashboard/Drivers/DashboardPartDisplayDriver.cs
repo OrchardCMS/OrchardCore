@@ -44,8 +44,7 @@ namespace OrchardCore.AdminDashboard.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(DashboardPart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Position);
-
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Position, t=> t.Width, t=> t.Height);
             return Edit(model, context);
         }
 
