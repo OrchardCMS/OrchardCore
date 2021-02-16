@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Globalization;
 using Lucene.Net.QueryParsers.Simple;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
