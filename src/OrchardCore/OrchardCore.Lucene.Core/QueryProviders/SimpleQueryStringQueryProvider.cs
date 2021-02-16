@@ -24,12 +24,12 @@ namespace OrchardCore.Lucene.QueryProviders
 
             foreach(var field in fields)
             {
-                var fieldArray = field.Split("^");
+                var fieldWeightArray = field.Split("^");
 
-                if(field.Contains('^', StringComparison.Ordinal) && Single.TryParse(fieldArray.Last(), out weight))
+                if(field.Contains('^', StringComparison.Ordinal) && Single.TryParse(fieldWeightArray.Last(), out weight))
                 {
                     weights.Remove(field);
-                    weights.Add(fieldArray.First(), weight);
+                    weights.Add(fieldWeightArray.First(), weight);
                 }
             }
 
