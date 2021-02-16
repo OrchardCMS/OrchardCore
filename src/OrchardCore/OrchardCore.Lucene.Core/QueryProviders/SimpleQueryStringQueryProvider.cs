@@ -24,7 +24,7 @@ namespace OrchardCore.Lucene.QueryProviders
 
             foreach(var field in fields)
             {
-                if(field.Contains('^') && Single.TryParse(field.Split("^").Last(), out weight))
+                if(field.Contains('^', StringComparison.Ordinal) && Single.TryParse(field.Split("^").Last(), out weight))
                 {
                     weights.Remove(field);
                     weights.Add(field.Split("^").First(), weight);
