@@ -231,5 +231,47 @@ namespace OrchardCore.Deployment.Controllers
 
             return RedirectToAction("Display", "DeploymentPlan", new { id });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrder(int id, int oldIndex, int newIndex)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            {
+                return Forbid();
+            }
+
+            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+
+            if (deploymentPlan == null)
+            {
+                return NotFound();
+            }
+
+            var step = deploymentPlan.DeploymentSteps.ElementAtOrDefault(oldIndex);
+
+            if (step == null)
+            {
+                return NotFound();
+            }    
+
+            deploymentPlan.DeploymentSteps.RemoveAt(oldIndex);
+
+            // The actual index could have shifted due to the removal.
+            if (newIndex > oldIndex) 
+            {
+                newIndex--; 
+            }
+
+            deploymentPlan.DeploymentSteps.Insert(newIndex, step);
+
+            deploymentPlan.DeploymentSteps.Remove(step);
+
+            // TODO this won't quite work right because the indexes have changed.
+            deploymentPlan.DeploymentSteps.Insert(newIndex, step);
+            
+            _session.Save(deploymentPlan);
+
+            return Ok();  
+        }        
     }
 }
