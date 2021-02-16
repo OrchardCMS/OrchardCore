@@ -43,7 +43,7 @@ namespace OrchardCore.Rules.Drivers
         ValueTask<bool> IConditionEvaluator.EvaluateAsync(Condition condition)
             => EvaluateAsync(condition as ContentTypeCondition);
 
-        public ValueTask<bool> EvaluateAsync(ContentTypeCondition condition)
+        private ValueTask<bool> EvaluateAsync(ContentTypeCondition condition)
         {
             var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
             foreach (var contentType in _contentTypes)
