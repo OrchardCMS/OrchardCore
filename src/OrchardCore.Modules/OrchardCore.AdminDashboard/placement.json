@@ -1,0 +1,21 @@
+{
+    "TitlePart": [
+      {        
+        "contentType": [ "DashboardWidget" ],
+        "shape" : "DashboardWidget__TitlePart"        
+      }
+    ],
+    "ContentsMetadata": [
+      {
+        "place": "Meta:10",
+        "contentType": [ "DashboardWidget" ]
+      }
+    ],
+    "ContentPreview_Button": [
+      {
+        "place": "-",
+        "contentType": [ "DashboardWidget" ]
+      }
+    ]
+  }
+  

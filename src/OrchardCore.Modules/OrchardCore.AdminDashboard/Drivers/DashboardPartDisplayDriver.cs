@@ -1,17 +1,13 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AdminDashboard.Models;
 using OrchardCore.AdminDashboard.ViewModels;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.AdminDashboard.Drivers
@@ -56,6 +52,8 @@ namespace OrchardCore.AdminDashboard.Drivers
         private void BuildViewModel(DashboardPartViewModel model, DashboardPart part)
         {
             model.Position = part.Position;
+            model.Width = part.Width;
+            model.Height = part.Height;
             model.DashboardPart = part;
             model.ContentItem = part.ContentItem;
         }
