@@ -20,20 +20,20 @@
             }
         </div>
     }
+    @if (Model.Tags != null || Model.Meta != null)
+    {
+        <div class="px-3">
+            @if (Model.Meta != null)
+            {
+                @await DisplayAsync(Model.Meta)
+            }
+            @if (Model.Tags != null)
+            {
+                @await DisplayAsync(Model.Tags)
+            }
+        </div>
+    }
     <div class="card-body">
-        @if (Model.Tags != null || Model.Meta != null)
-        {
-            <div>
-                @if (Model.Meta != null)
-                {
-                    @await DisplayAsync(Model.Meta)
-                }                    
-                @if (Model.Tags != null)
-                {
-                    @await DisplayAsync(Model.Tags)
-                }                
-            </div>
-        }
         @await DisplayAsync(Model.Content)
     </div>
     @if (Model.Footer != null)
