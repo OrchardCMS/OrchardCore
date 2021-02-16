@@ -4,6 +4,7 @@
     "build": "gulp build",
     "rebuild": "gulp rebuild",
     "watch": " gulp watch",
+    "install:orchardcore.admindashboard": "cd src/OrchardCore.Modules/OrchardCore.AdminDashboard && npm install",
     "install:orchardcore.adminmenu": "cd src/OrchardCore.Modules/OrchardCore.AdminMenu && npm install",
     "install:orchardcore.apis.graphql": "cd src/OrchardCore.Modules/OrchardCore.Apis.GraphQL && npm install",
     "install:orchardcore.markdown": "cd src/OrchardCore.Modules/OrchardCore.Markdown && npm install",
