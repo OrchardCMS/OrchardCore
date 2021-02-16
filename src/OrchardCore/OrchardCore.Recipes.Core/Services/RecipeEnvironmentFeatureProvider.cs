@@ -1,0 +1,41 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using OrchardCore.Recipes.Models;
+
+namespace OrchardCore.Recipes.Services
+{
+    public class RecipeEnvironmentFeatureProvider : IRecipeEnvironmentProvider
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public RecipeEnvironmentFeatureProvider(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public Task SetEnvironmentAsync(IDictionary<string, object> environment)
+        {
+            // When a migration is executed during setup these properties are available on the feature.
+            // They should always override any current values.
+            var feature = _httpContextAccessor.HttpContext.Features.Get<RecipeEnvironmentFeature>();
+            if (feature != null)
+            {
+                if (feature.Properties.TryGetValue("AdminUserId", out object adminUserId))
+                {
+                    environment["AdminUserId"] = adminUserId;
+                }
+                if (feature.Properties.TryGetValue("AdminUsername", out object adminUserName))
+                {
+                    environment["AdminUsername"] = adminUserName;
+                }
+                if (feature.Properties.TryGetValue("SiteName", out object siteName))
+                {
+                    environment["SiteName"] = siteName;
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+    }
+}

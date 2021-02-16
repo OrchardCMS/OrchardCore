@@ -4,8 +4,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Modules;
+using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Recipes.Services
 {
@@ -15,17 +18,23 @@ namespace OrchardCore.Recipes.Services
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
+        private readonly ILogger _logger;
 
         public RecipeMigrator(
             IRecipeReader recipeReader,
             IRecipeExecutor recipeExecutor,
             IHostEnvironment hostingEnvironment,
-            ITypeFeatureProvider typeFeatureProvider)
+            ITypeFeatureProvider typeFeatureProvider,
+            IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
+            ILogger<RecipeMigrator> logger)
         {
             _recipeReader = recipeReader;
             _recipeExecutor = recipeExecutor;
             _hostingEnvironment = hostingEnvironment;
             _typeFeatureProvider = typeFeatureProvider;
+            _environmentProviders = environmentProviders;
+            _logger = logger;
         }
 
         public async Task<string> ExecuteAsync(string recipeFileName, IDataMigration migration)
@@ -38,8 +47,12 @@ namespace OrchardCore.Recipes.Services
             var recipeDescriptor = await _recipeReader.GetRecipeDescriptor(recipeBasePath, recipeFileInfo, _hostingEnvironment.ContentRootFileProvider);
             recipeDescriptor.RequireNewScope = false;
 
+            var environment = new Dictionary<string, object>();
+            await _environmentProviders.InvokeAsync((provider, env) => provider.SetEnvironmentAsync(env), environment, _logger);
+
             var executionId = Guid.NewGuid().ToString("n");
-            return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
+            
+            return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);
         }
     }
 }

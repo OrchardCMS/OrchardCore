@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Recipes.ViewModels;
 using OrchardCore.Security;
@@ -28,6 +29,8 @@ namespace OrchardCore.Recipes.Controllers
         private readonly INotifier _notifier;
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly ISiteService _siteService;
+        private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
+        private readonly ILogger _logger;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
@@ -39,7 +42,9 @@ namespace OrchardCore.Recipes.Controllers
             IAuthorizationService authorizationService,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             IRecipeExecutor recipeExecutor,
-            INotifier notifier)
+            INotifier notifier,
+            IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
+            ILogger<AdminController> logger)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -50,6 +55,8 @@ namespace OrchardCore.Recipes.Controllers
             _recipeHarvesters = recipeHarvesters;
             _notifier = notifier;
             H = localizer;
+            _environmentProviders = environmentProviders;
+            _logger = logger;
         }
 
         public async Task<ActionResult> Index()
@@ -102,6 +109,10 @@ namespace OrchardCore.Recipes.Controllers
             }
 
             var site = await _siteService.GetSiteSettingsAsync();
+
+            var environment = new Dictionary<string, object>();
+            await _environmentProviders.InvokeAsync((provider, env) => provider.SetEnvironmentAsync(env), environment, _logger);
+
             var executionId = Guid.NewGuid().ToString("n");
 
             // Set shell state to "Initializing" so that subsequent HTTP requests
@@ -110,13 +121,7 @@ namespace OrchardCore.Recipes.Controllers
 
             try
             {
-                await _recipeExecutor.ExecuteAsync(executionId, recipe, new Dictionary<string, object>
-                {
-                    { "SiteName", site.SiteName },
-                    { "AdminUsername", User.Identity.Name },
-                    { "AdminUserId", User.FindFirstValue(ClaimTypes.NameIdentifier) }
-                },
-                CancellationToken.None);
+                await _recipeExecutor.ExecuteAsync(executionId, recipe, environment, CancellationToken.None);
             }
             finally
             {
