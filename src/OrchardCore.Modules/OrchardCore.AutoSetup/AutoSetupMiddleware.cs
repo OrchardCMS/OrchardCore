@@ -103,7 +103,7 @@ namespace OrchardCore.AutoSetup
         /// </returns>
         public async Task<bool> SetupTenant(ISetupService setupService, BaseTenantSetupOptions setupOptions, ShellSettings shellSettings)
         {
-            var setupContext = GetSetupContext(setupOptions, setupService, shellSettings);
+            var setupContext = await GetSetupContext(setupOptions, setupService, shellSettings);
 
             await setupService.SetupAsync(setupContext);
 
@@ -154,11 +154,9 @@ namespace OrchardCore.AutoSetup
         /// <param name="setupService"> The setup service. </param>
         /// <param name="shellSettings"> The tenant shell settings. </param>
         /// <returns> The <see cref="SetupContext"/>. to setup the site </returns>
-        private static SetupContext GetSetupContext(BaseTenantSetupOptions options, ISetupService setupService, ShellSettings shellSettings)
+        private static async Task<SetupContext> GetSetupContext(BaseTenantSetupOptions options, ISetupService setupService, ShellSettings shellSettings)
         {
-            var recipes = setupService.GetSetupRecipesAsync()
-                .GetAwaiter()
-                .GetResult();
+            var recipes = await setupService.GetSetupRecipesAsync();
 
             var recipe = recipes.SingleOrDefault(r => r.Name == options.RecipeName);
 
