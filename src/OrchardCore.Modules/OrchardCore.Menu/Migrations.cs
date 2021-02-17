@@ -17,7 +17,7 @@ namespace OrchardCore.Menu
         {
             await _recipeMigrator.ExecuteAsync("menu.recipe.json", this);
 
-            // Return 2 to shortcut the second migration on new content definition schemas.
+            // Shortcut other migration steps on new content definition schemas.
             return 2;
         }
 

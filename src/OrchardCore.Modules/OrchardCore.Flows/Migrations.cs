@@ -20,9 +20,16 @@ namespace OrchardCore.Flows
                 .Attachable()
                 .WithDescription("Provides a customizable body for your content item where you can build a content structure with widgets."));
 
-            return 1;
+            _contentDefinitionManager.AlterPartDefinition("BagPart", builder => builder
+                .Attachable()
+                .Reusable()
+                .WithDescription("Provides a collection behavior for your content item where you can place other content items."));
+
+            // Shortcut other migration steps on new content definition schemas.
+            return 3;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom1()
         {
             _contentDefinitionManager.AlterPartDefinition("BagPart", builder => builder
@@ -30,8 +37,7 @@ namespace OrchardCore.Flows
                 .Reusable()
                 .WithDescription("Provides a collection behavior for your content item where you can place other content items."));
 
-            // Return 3 to shortcut the third migration on new content definition schemas.
-            return 3;
+            return 2;
         }
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.

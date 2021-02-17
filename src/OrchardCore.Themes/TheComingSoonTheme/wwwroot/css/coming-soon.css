@@ -1,6 +1,6 @@
 /*!
  * Start Bootstrap - Coming Soon v5.0.9 (https://startbootstrap.com/theme/coming-soon)
- * Copyright 2013-2020 Start Bootstrap
+ * Copyright 2013-2021 Start Bootstrap
  * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-coming-soon/blob/master/LICENSE)
  */
 
@@ -12,7 +12,7 @@ body {
   height: 100%;
   min-height: 35rem;
   position: relative;
-  font-family: 'Source Sans Pro';
+  font-family: "Source Sans Pro";
   font-weight: 300;
 }
 
@@ -22,7 +22,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Merriweather';
+  font-family: "Merriweather";
   font-weight: 700;
 }
 
@@ -43,11 +43,11 @@ video {
     background: url("../img/bg-mobile-fallback.jpg") #002E66 no-repeat center center scroll;
     background-size: cover;
   }
+
   body video {
     display: none;
   }
 }
-
 .overlay {
   position: absolute;
   top: 0;
@@ -65,7 +65,6 @@ video {
   padding-bottom: 3rem;
   z-index: 2;
 }
-
 .masthead .masthead-bg {
   position: absolute;
   top: 0;
@@ -79,25 +78,20 @@ video {
   transform: skewY(4deg);
   transform-origin: bottom right;
 }
-
 .masthead .masthead-content h1 {
   font-size: 2.5rem;
 }
-
 .masthead .masthead-content p {
   font-size: 1.2rem;
 }
-
 .masthead .masthead-content p strong {
   font-weight: 700;
 }
-
 .masthead .masthead-content .input-group-newsletter input {
   height: auto;
   font-size: 1rem;
   padding: 1rem;
 }
-
 .masthead .masthead-content .input-group-newsletter button {
   font-size: 0.8rem;
   font-weight: 700;
@@ -129,26 +123,22 @@ video {
     font-size: 1.3rem;
   }
 }
-
 .social-icons {
   position: absolute;
   margin-bottom: 2rem;
   width: 100%;
   z-index: 2;
 }
-
 .social-icons ul {
   margin-top: 2rem;
   width: 100%;
   text-align: center;
 }
-
 .social-icons ul > li {
   margin-left: 1rem;
   margin-right: 1rem;
   display: inline-block;
 }
-
 .social-icons ul > li > a {
   display: block;
   color: white;
@@ -192,12 +182,10 @@ video {
     background-color: #002E66;
   }
 }
-
 .btn-secondary {
   background-color: #cd9557;
   border-color: #cd9557;
 }
-
 .btn-secondary:active, .btn-secondary:focus, .btn-secondary:hover {
   background-color: #ba7c37 !important;
   border-color: #ba7c37 !important;
