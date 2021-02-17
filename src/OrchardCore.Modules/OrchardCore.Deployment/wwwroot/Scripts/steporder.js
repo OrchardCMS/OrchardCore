@@ -19,31 +19,12 @@ function updateStepOrders(oldIndex, newIndex) {
       alert($('#stepOrderErrorMessage').data("message"));
     }
   });
-} // $(function () {
-//     var sortableOptions = {
-//       group: {
-//         name: "sortable-list"
-//       },
-//       animation: 250,
-//       forceFallback: true,
-//       fallbackOnBody: true,
-//       swapThreshold: 0.65,
-//       onEnd: function (evt) {
-//         // When nesting groups use onEnd as onSort fires for every group it passes through.
-//         updateRuleOrders($(evt.item).data("conditionid"), $(evt.item).parent().data("conditiongroupid"), evt.newIndex);
-//       }
-//     }; 
-//     var groups = document.querySelectorAll(".condition-group");
-//     for (var i = 0; i < groups.length; i++) {
-//       new Sortable(groups[i], sortableOptions);
-//     }
-// });
-
+}
 
 $(function () {
   var sortable = document.getElementById("stepOrder");
   var sortable = Sortable.create(sortable, {
-    // handle: ".ui-sortable-handle",
+    handle: ".ui-sortable-handle",
     onSort: function onSort(evt) {
       var oldIndex = evt.oldIndex;
       var newIndex = evt.newIndex;

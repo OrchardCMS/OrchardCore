@@ -39,7 +39,10 @@
                 item.DeploymentPlanId = Model.DeploymentPlan.Id;
 
                 <li class="list-group-item">
-                    @await DisplayAsync(item)
+                    <div class="d-flex">
+                        <div class="ui-sortable-handle cursor-pointer mr-2"><i class="fas fa-arrows-alt"></i></div>
+                        @await DisplayAsync(item)
+                    </div>
                 </li>
             }
         </ul>
