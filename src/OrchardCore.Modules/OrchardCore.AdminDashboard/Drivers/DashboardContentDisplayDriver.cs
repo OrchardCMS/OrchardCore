@@ -34,47 +34,46 @@ namespace OrchardCore.AdminDashboard.Drivers
             var httpContext = _httpContextAccessor.HttpContext;
             var dashboardFeature = httpContext.Features.Get<DashboardFeature>();
 
+            // Return if it's not Manage dashboard request 
             if (dashboardFeature == null || !dashboardFeature.IsManageRequest)
             {
                 return null;
             }
 
             var results = new List<IDisplayResult>();
-
             var hasPublished = await _contentManager.HasPublishedVersionAsync(model);
             var hasDraft = model.HasDraft();
             var hasEditPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, model);
             var hasDeletePermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, model);
             var hasPublishPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, model);
 
-            var dragHandle = Dynamic("Dashboard_DragHandle", m =>
+            var dragHandle = Initialize<ContentItemViewModel>("Dashboard_DragHandle", m =>
             {
                 m.ContentItem = model;
             }).Location("Leading:before");
             results.Add(dragHandle);
+
             if (hasEditPermission)
             {
-                var editButton = Dynamic("Dashboard_EditButton", m =>
+                var editButton = Initialize<ContentItemViewModel>("Dashboard_EditButton", m =>
                 {
                     m.ContentItem = model;
                 }).Location("ActionsMenu:after");
                 results.Add(editButton);
-
             }
 
             if (hasDeletePermission)
             {
-                var deleteButton = Dynamic("Dashboard_DeleteButton", m =>
+                var deleteButton = Initialize<ContentItemViewModel>("Dashboard_DeleteButton", m =>
                 {
                     m.ContentItem = model;
                 }).Location("ActionsMenu:after");
                 results.Add(deleteButton);
             }
 
-
             if (hasPublished && hasPublishPermission)
             {
-                var unpublishButton = Dynamic("Dashboard_UnpublishButton", m =>
+                var unpublishButton = Initialize<ContentItemViewModel>("Dashboard_UnpublishButton", m =>
                 {
                     m.ContentItem = model;
                 }).Location("ActionsMenu:after");
@@ -83,24 +82,26 @@ namespace OrchardCore.AdminDashboard.Drivers
 
             if (hasDraft && hasPublishPermission)
             {
-                var publishButton = Dynamic("Dashboard_PublishButton", m =>
+                var publishButton = Initialize<ContentItemViewModel>("Dashboard_PublishButton", m =>
                 {
                     m.ContentItem = model;
                 }).Location("ActionsMenu:after");
                 results.Add(publishButton);
-
             }
 
             if (hasDraft && hasEditPermission)
             {
-                var discardDraftButton = Dynamic("Dashboard_DiscardDraftButton", m =>
+                var discardDraftButton = Initialize<ContentItemViewModel>("Dashboard_DiscardDraftButton", m =>
                 {
                     m.ContentItem = model;
                 }).Location("ActionsMenu:after");
                 results.Add(discardDraftButton);
             }
-            var shapeTag = Shape("DashboardWidget_DetailAdmin__ContentsTags", new ContentItemViewModel(model))
-            .Location("DetailAdmin", "Tags:10");
+
+            var shapeTag = Initialize<ContentItemViewModel>("DashboardWidget_DetailAdmin__ContentsTags", m =>
+            {
+                m.ContentItem = model;
+            }).Location("DetailAdmin", "Tags:10");
             results.Add(shapeTag);
 
             return Combine(results.ToArray());
