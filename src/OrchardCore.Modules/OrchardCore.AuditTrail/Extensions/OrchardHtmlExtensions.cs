@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -9,9 +9,9 @@ namespace OrchardCore.AuditTrail.Extensions
 {
     public static class OrchardHtmlExtensions
     {
-        public async static Task<string> GetItemEditLinkAsync(
-            this IOrchardHelper orchardHelper, 
-            string linkText, 
+        public static async Task<string> GetItemEditLinkAsync(
+            this IOrchardHelper orchardHelper,
+            string linkText,
             ContentItem contentItem)
         {
             var urlHelperFactory = orchardHelper.HttpContext.RequestServices.GetService<IUrlHelperFactory>();

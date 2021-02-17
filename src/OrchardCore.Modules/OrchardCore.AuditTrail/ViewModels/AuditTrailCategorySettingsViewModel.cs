@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 
 namespace OrchardCore.AuditTrail.ViewModels

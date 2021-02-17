@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Providers;
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace OrchardCore.AuditTrail.Services.Models
                 Category = describe.Category
             });
 
-        public DescribeFor For<T>(string category, LocalizedString name) 
+        public DescribeFor For<T>(string category, LocalizedString name)
             where T : IAuditTrailEventProvider
         {
             var providerName = typeof(T).FullName;

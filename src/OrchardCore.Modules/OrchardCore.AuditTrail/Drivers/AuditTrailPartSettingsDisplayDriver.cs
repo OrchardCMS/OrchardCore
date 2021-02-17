@@ -11,33 +11,33 @@ namespace OrchardCore.AuditTrail.Drivers
 {
     public class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
         {
-            if (!string.Equals(nameof(AuditTrailPart), contentTypePartDefinition.PartDefinition.Name)) return null;
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name)) return null;
 
-            return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", model =>
+            return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
             {
-                var settings = contentTypePartDefinition.GetSettings<AuditTrailPartSettings>();
-                model.ShowAuditTrailCommentInput = settings.ShowAuditTrailCommentInput;
-                model.AuditTrailPartSettings = settings;
+                var settings = model.GetSettings<AuditTrailPartSettings>();
+                viewModel.ShowAuditTrailCommentInput = settings.ShowAuditTrailCommentInput;
+                viewModel.AuditTrailPartSettings = settings;
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
         {
-            if (!string.Equals(nameof(AuditTrailPart), contentTypePartDefinition.PartDefinition.Name)) return null;
+            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name)) return null;
 
-            var model = new AuditTrailPartSettingsViewModel();
+            var viewModel = new AuditTrailPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ShowAuditTrailCommentInput))
+            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowAuditTrailCommentInput))
             {
                 context.Builder.WithSettings(new AuditTrailPartSettings
                 {
-                    ShowAuditTrailCommentInput = model.ShowAuditTrailCommentInput
+                    ShowAuditTrailCommentInput = viewModel.ShowAuditTrailCommentInput
                 });
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(model, context.Updater);
         }
     }
 }

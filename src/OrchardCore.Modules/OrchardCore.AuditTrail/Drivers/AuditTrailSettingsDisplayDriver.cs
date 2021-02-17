@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.AuditTrail.Permissions;
@@ -10,9 +13,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Drivers
 {
@@ -42,7 +42,7 @@ namespace OrchardCore.AuditTrail.Drivers
         public override async Task<IDisplayResult> EditAsync(AuditTrailSettings settings, BuildEditorContext context) =>
             !await IsAuthorizedToManageAuditTrailSettingsAsync()
                 ? null
-                : Initialize<AuditTrailSettingsViewModel>($"{nameof(AuditTrailSettings)}_Edit", model =>
+                : Initialize<AuditTrailSettingsViewModel>("AuditTrailSettings_Edit", model =>
                 {
                     var descriptors = _auditTrailManager.DescribeCategories();
                     var eventSettings = settings.EventSettings;

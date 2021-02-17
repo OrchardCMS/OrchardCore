@@ -1,7 +1,7 @@
-using Newtonsoft.Json.Linq;
-using OrchardCore.AuditTrail.Services.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
+using OrchardCore.AuditTrail.Services.Models;
 
 namespace OrchardCore.AuditTrail.Extensions
 {
@@ -9,7 +9,7 @@ namespace OrchardCore.AuditTrail.Extensions
     {
         public static List<DiffNode> GenerateDiffNodes(this JToken token, List<DiffNode> diffNodes = null)
         {
-            if (diffNodes == null) diffNodes = new List<DiffNode>();
+            diffNodes ??= new List<DiffNode>();
 
             var currentObject = token as JObject;
             var keys = currentObject.Properties();
@@ -19,28 +19,24 @@ namespace OrchardCore.AuditTrail.Extensions
 
             foreach (var key in keys)
             {
-                if (key.Name == "+")
+                if (key.Name == "+" && key.IsNotNullOrEmpty())
                 {
-                    if (key.IsNotNullOrEmpty())
-                    {
-                        current = key.Value;
-                    }
+                    current = key.Value;
                 }
-                if (key.Name == "-")
+
+                if (key.Name == "-" && key.IsNotNullOrEmpty())
                 {
-                    if (key.IsNotNullOrEmpty())
-                    {
-                        previous = key.Value;
-                    }
+                    previous = key.Value;
                 }
 
                 if (current.Type != JTokenType.Object && previous.Type != JTokenType.Object)
                 {
-                    diffNodes.Add(new DiffNode 
-                    { 
-                        Type = DiffType.Change, 
-                        Context = key.Parent.Path.Replace('.', '/'), 
-                        Current = current, Previous = previous 
+                    diffNodes.Add(new DiffNode
+                    {
+                        Type = DiffType.Change,
+                        Context = key.Parent.Path.Replace('.', '/'),
+                        Current = current,
+                        Previous = previous
                     });
                 }
 
@@ -103,6 +99,7 @@ namespace OrchardCore.AuditTrail.Extensions
                             diff[potentiallyModifiedKey] = FindDiff(currentObject[potentiallyModifiedKey], previousObject[potentiallyModifiedKey]);
                         }
                     }
+
                     break;
                 case JTokenType.Array:
                     {
@@ -111,6 +108,7 @@ namespace OrchardCore.AuditTrail.Extensions
                         diff["+"] = previousArray != null ? new JArray(currentArray.Except(previousArray)) : new JArray(currentArray);
                         diff["-"] = previousArray != null ? new JArray(previousArray.Except(currentArray)) : new JArray();
                     }
+
                     break;
                 default:
                     diff["+"] = current;

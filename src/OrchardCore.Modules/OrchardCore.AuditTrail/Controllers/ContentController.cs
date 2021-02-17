@@ -61,7 +61,7 @@ namespace OrchardCore.AuditTrail.Controllers
                 .FirstOrDefaultAsync();
 
             var contentItem = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
-           
+
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
             {
                 return Forbid();
@@ -76,7 +76,7 @@ namespace OrchardCore.AuditTrail.Controllers
                 auditTrailPart.ShowComment = true;
             }
 
-            dynamic contentItemEditor = 
+            dynamic contentItemEditor =
                 await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
             contentItemEditor.VersionNumber = versionNumber;
 
@@ -94,7 +94,7 @@ namespace OrchardCore.AuditTrail.Controllers
                 .ToObject<ContentItem>();
 
             var auditTrailEvent = await _session.Query<AuditTrailEvent, ContentAuditTrailEventIndex>()
-                .Where(eventIndex => eventIndex.ContentItemId == contentItemToRestore.ContentItemId && 
+                .Where(eventIndex => eventIndex.ContentItemId == contentItemToRestore.ContentItemId &&
                     eventIndex.EventName != "Saved")
                 .OrderByDescending(eventIndex => eventIndex.VersionNumber)
                 .FirstOrDefaultAsync();

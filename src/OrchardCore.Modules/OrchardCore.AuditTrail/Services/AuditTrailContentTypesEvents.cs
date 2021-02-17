@@ -25,8 +25,8 @@ namespace OrchardCore.AuditTrail.Services
             var contentType = buildingAuditTrailEventContext.ContentItem.ContentType;
 
             if (auditTrailSettings.IgnoredContentTypeNames.Contains(contentType))
-            { 
-                buildingAuditTrailEventContext.IsCanceled = true; 
+            {
+                buildingAuditTrailEventContext.IsCanceled = true;
             }
         }
     }

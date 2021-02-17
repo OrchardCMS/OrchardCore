@@ -24,6 +24,7 @@ namespace OrchardCore.AuditTrail.Drivers
                     }
                 });
             }
+
             return null;
         }
 

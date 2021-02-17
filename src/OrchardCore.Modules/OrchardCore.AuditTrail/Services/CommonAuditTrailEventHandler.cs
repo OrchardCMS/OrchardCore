@@ -33,16 +33,19 @@ namespace OrchardCore.AuditTrail.Services
 
             if (!string.IsNullOrWhiteSpace(userName))
             {
-                context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.UserName.Contains(userName));
+                context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.UserName == userName);
             }
+
             if (!string.IsNullOrWhiteSpace(category))
             {
                 context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.Category == category);
             }
+
             if (from != null)
             {
                 context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.CreatedUtc >= from);
             }
+
             if (to != null)
             {
                 context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.CreatedUtc <= to.Value.AddDays(1));

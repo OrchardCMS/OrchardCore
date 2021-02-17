@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -10,8 +12,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Controllers
 {
@@ -52,7 +52,7 @@ namespace OrchardCore.AuditTrail.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
             var filters = Filters.From(QueryHelpers.ParseQuery(Request.QueryString.Value), _updateModelAccessor.ModelUpdater);
-            var searchResult = 
+            var searchResult =
                 await _auditTrailManager.GetAuditTrailEventsAsync(pager.Page, pager.PageSize, filters, orderBy ?? AuditTrailOrderBy.DateDescending);
 
             if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
@@ -68,8 +68,10 @@ namespace OrchardCore.AuditTrail.Controllers
 
             var auditTrailEventsSummaryViewModel = searchResult.AuditTrailEvents.Select(auditTrailEvent =>
             {
-                var eventDescriptor = eventDescriptors.ContainsKey(auditTrailEvent.FullEventName) ? 
-                    eventDescriptors[auditTrailEvent.FullEventName] : AuditTrailEventDescriptor.Basic(auditTrailEvent);
+                var eventDescriptor = eventDescriptors.ContainsKey(auditTrailEvent.FullEventName)
+                    ? eventDescriptors[auditTrailEvent.FullEventName]
+                    : AuditTrailEventDescriptor.Basic(auditTrailEvent);
+
                 return new AuditTrailEventSummaryViewModel
                 {
                     AuditTrailEvent = auditTrailEvent,

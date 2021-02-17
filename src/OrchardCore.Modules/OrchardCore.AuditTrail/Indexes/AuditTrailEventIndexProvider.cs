@@ -1,4 +1,4 @@
-﻿using OrchardCore.AuditTrail.Models;
+using OrchardCore.AuditTrail.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.AuditTrail.Indexes
@@ -7,7 +7,7 @@ namespace OrchardCore.AuditTrail.Indexes
     {
         public override void Describe(DescribeContext<AuditTrailEvent> context) =>
             context.For<AuditTrailEventIndex>()
-                .Map(auditTrailEvent => 
+                .Map(auditTrailEvent =>
                 {
                     return new AuditTrailEventIndex
                     {

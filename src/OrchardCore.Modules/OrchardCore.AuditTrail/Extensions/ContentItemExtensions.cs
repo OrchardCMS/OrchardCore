@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
 
@@ -8,7 +8,8 @@ namespace OrchardCore.AuditTrail.Extensions
     {
         public static DiffNode LogPropertyChange(
             this ContentItem currentContentItem,
-            ContentItem previousContentItem, string property)
+            ContentItem previousContentItem,
+            string property)
         {
             var currentContentItemProperty = JObject.FromObject(currentContentItem).Property(property);
             var previousContentItemProperty = JObject.FromObject(previousContentItem).Property(property);

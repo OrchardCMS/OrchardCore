@@ -70,8 +70,11 @@ namespace OrchardCore.AuditTrail.Services
         {
             var additionalColumnDisplay = await _shapeFactory.CreateAsync("AuditTrailEventAdditionalColumn");
 
-            await _auditTrailEventHandlers.InvokeAsync((handler, display) => handler.DisplayAdditionalColumnsAsync(display),
-                new DisplayAdditionalColumnsContext(auditTrailEvent, additionalColumnDisplay as Shape), Logger);
+            await _auditTrailEventHandlers.InvokeAsync(
+                (handler, display) =>
+                handler.DisplayAdditionalColumnsAsync(display),
+                new DisplayAdditionalColumnsContext(auditTrailEvent, additionalColumnDisplay as Shape),
+                Logger);
 
             return additionalColumnDisplay;
         }
@@ -88,7 +91,7 @@ namespace OrchardCore.AuditTrail.Services
             dynamic auditTrailEventActionsShape = await _shapeFactory.CreateAsync(shapeType, Arguments.From(new Dictionary<string, object>
             {
                 { "AuditTrailEvent", auditTrailEvent },
-                { "Descriptor", _auditTrailManager.DescribeEvent(auditTrailEvent)},
+                { "Descriptor", _auditTrailManager.DescribeEvent(auditTrailEvent) },
                 { "EventData", auditTrailEvent.Get(auditTrailEvent.EventName) }
             }));
 

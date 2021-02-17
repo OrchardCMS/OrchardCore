@@ -64,11 +64,11 @@ namespace OrchardCore.AuditTrail
 
             services.AddScoped<IAuditTrailEventProvider, ContentAuditTrailEventProvider>();
             services.AddScoped<IAuditTrailEventProvider, UserAuditTrailEventProvider>();
-            
+
             services.AddScoped<IAuditTrailContentEventHandler, AuditTrailContentTypesEvents>();
 
             services.AddSingleton<IBackgroundTask, AuditTrailTrimmingBackgroundTask>();
-            
+
             services.AddScoped<IContentHandler, GlobalContentHandler>();
             services.AddScoped<IUserEventHandler, UserEventHandler>();
             services.AddScoped<ILoginFormEvent, UserEventHandler>();

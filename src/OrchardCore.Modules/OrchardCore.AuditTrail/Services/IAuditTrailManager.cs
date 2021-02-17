@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Providers;
 using OrchardCore.AuditTrail.Services.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -17,7 +17,8 @@ namespace OrchardCore.AuditTrail.Services
         /// </summary>
         /// <typeparam name="TAuditTrailEventProvider">The audit trail event provider type to determine the scope of the event name.</typeparam>
         /// <param name="auditTrailContext">The context used to create a new audit trail event.</param>
-        Task AddAuditTrailEventAsync<TAuditTrailEventProvider>(AuditTrailContext auditTrailContext) where TAuditTrailEventProvider : IAuditTrailEventProvider;
+        Task AddAuditTrailEventAsync<TAuditTrailEventProvider>(AuditTrailContext auditTrailContext)
+            where TAuditTrailEventProvider : IAuditTrailEventProvider;
 
         /// <summary>
         /// Gets a page of events from the audit trail.
@@ -34,7 +35,7 @@ namespace OrchardCore.AuditTrail.Services
             AuditTrailOrderBy orderBy = AuditTrailOrderBy.DateDescending);
 
         /// <summary>
-        /// Gets a single event from the audit trail by the event filter data.
+        /// Gets a single event from the audit trail by ID.
         /// </summary>
         /// <param name="auditTrailEventId">The event ID.</param>
         /// <returns>A single event.</returns>

@@ -5,7 +5,7 @@ namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailCreateContext : AuditTrailContext
     {
-        public string Comment { get; set; } = "";
+        public string Comment { get; set; } = string.Empty;
         public DateTime? CreatedUtc { get; set; }
         public string ClientIpAddress { get; set; }
 
@@ -14,7 +14,7 @@ namespace OrchardCore.AuditTrail.Services.Models
             string userName,
             Dictionary<string, object> eventData,
             string eventFilterKey,
-            string eventFilterData) :
-            base(eventName, userName, eventData, eventFilterKey, eventFilterData) { }
+            string eventFilterData)
+            : base(eventName, userName, eventData, eventFilterKey, eventFilterData) { }
     }
 }

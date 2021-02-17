@@ -24,17 +24,17 @@ namespace OrchardCore.AuditTrail.Drivers
         }
 
 
-        public override async Task<IDisplayResult> EditAsync(AuditTrailTrimmingSettings settings, BuildEditorContext context) =>
+        public override async Task<IDisplayResult> EditAsync(AuditTrailTrimmingSettings section, BuildEditorContext context) =>
             !await IsAuthorizedToManageAuditTrailSettingsAsync()
                 ? null
                 : Initialize<AuditTrailTrimmingSettingsViewModel>("AuditTrailTrimmingSettings_Edit", model =>
                 {
-                    model.RetentionPeriodDays = settings.RetentionPeriodDays;
-                    model.LastRunUtc = settings.LastRunUtc;
-                    model.Disabled = settings.Disabled;
+                    model.RetentionPeriodDays = section.RetentionPeriodDays;
+                    model.LastRunUtc = section.LastRunUtc;
+                    model.Disabled = section.Disabled;
                 }).Location("Content:10").OnGroup(AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId);
 
-        public override async Task<IDisplayResult> UpdateAsync(AuditTrailTrimmingSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(AuditTrailTrimmingSettings section, BuildEditorContext context)
         {
             if (context.GroupId == AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId)
             {
@@ -44,11 +44,11 @@ namespace OrchardCore.AuditTrail.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.RetentionPeriodDays = model.RetentionPeriodDays;
-                settings.Disabled = model.Disabled;
+                section.RetentionPeriodDays = model.RetentionPeriodDays;
+                section.Disabled = model.Disabled;
             }
 
-            return await EditAsync(settings, context);
+            return await EditAsync(section, context);
         }
 
 

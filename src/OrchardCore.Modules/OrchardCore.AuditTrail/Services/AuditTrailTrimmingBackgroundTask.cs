@@ -33,7 +33,7 @@ namespace OrchardCore.AuditTrail.Services
                 var deletedEvents = await auditTrailManager.TrimAsync(TimeSpan.FromDays(auditTrailTrimmingSettings.RetentionPeriodDays));
                 logger.LogDebug("Audit Trail trimming completed. {0} events were deleted.", deletedEvents);
                 auditTrailTrimmingSettings.LastRunUtc = clock.UtcNow;
-                
+
                 var container = await siteService.LoadSiteSettingsAsync();
                 container.Alter<AuditTrailTrimmingSettings>(nameof(AuditTrailTrimmingSettings), settings =>
                 {
@@ -45,7 +45,7 @@ namespace OrchardCore.AuditTrail.Services
             {
                 logger.LogError(ex, "Audit Trail trimming: error during sweep.");
             }
-            finally 
+            finally
             {
                 logger.LogDebug("Audit Trail trimming: ending sweep.");
             }

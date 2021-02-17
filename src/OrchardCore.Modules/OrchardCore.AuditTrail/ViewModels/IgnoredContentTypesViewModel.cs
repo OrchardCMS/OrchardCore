@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.AuditTrail.ViewModels
+namespace OrchardCore.AuditTrail.ViewModels
 {
     public class IgnoredContentTypesViewModel
     {

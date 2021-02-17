@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -74,8 +73,11 @@ namespace OrchardCore.AuditTrail.Services
                     auditTrailContext.EventFilterKey,
                     auditTrailContext.EventFilterData);
 
-                await _auditTrailEventHandlers.InvokeAsync((handler, context)
-                    => handler.CreateAsync(context), auditTrailCreateContext, Logger);
+                await _auditTrailEventHandlers.InvokeAsync(
+                    (handler, context) =>
+                    handler.CreateAsync(context),
+                    auditTrailCreateContext,
+                    Logger);
 
                 var auditTrailEvent = new AuditTrailEvent
                 {
@@ -101,15 +103,6 @@ namespace OrchardCore.AuditTrail.Services
                     => handler.AlterAsync(context, @event), auditTrailCreateContext, auditTrailEvent, Logger);
 
                 _session.Save(auditTrailEvent);
-
-                // This forces the session to not skip the FlushAsync right after. Without that if two threads add documents
-                // at the same time (as can happen with AuditTrailEvents) the second will not be added into the internal
-                // document registry (IdentityMap._documents) corrupting the state and causing an "Incorrect attempt to
-                // update an object that doesn't exist..." exception.
-                typeof(Session)
-                    .GetField("_flushing", BindingFlags.Instance | BindingFlags.NonPublic)!
-                    .SetValue((Session)_session, false);
-                await _session.FlushAsync();
             }
         }
 
@@ -146,7 +139,9 @@ namespace OrchardCore.AuditTrail.Services
                     query.With<AuditTrailEventIndex>().OrderBy(eventIndex => eventIndex.EventName).ThenByDescending(eventIndex => eventIndex.CreatedUtc);
                     break;
                 case AuditTrailOrderBy.DateDescending:
-                    query.With<AuditTrailEventIndex>().OrderByDescending(eventIndex => eventIndex.CreatedUtc);
+                    query.With<AuditTrailEventIndex>().OrderByDescending(eventIndex => eventIndex.CreatedUtc).ThenByDescending(eventIndex => eventIndex.Id);
+                    break;
+                default:
                     break;
             }
 
@@ -223,7 +218,7 @@ namespace OrchardCore.AuditTrail.Services
 
             if (!settings.EnableClientIpAddressLogging) return null;
 
-            return _hca.HttpContext.Connection.RemoteIpAddress.ToString();
+            return _hca?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
         }
 
         private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>

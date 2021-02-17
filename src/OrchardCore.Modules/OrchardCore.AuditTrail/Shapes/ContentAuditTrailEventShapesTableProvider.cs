@@ -109,7 +109,7 @@ namespace OrchardCore.AuditTrail.Shapes
 
                 var contentItem = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
                 var contentEventJToken = auditTrailEvent.Get(nameof(ContentEvent));
-                
+
                 shape.ContentItem = contentItem;
                 shape.VersionNumber = contentEventJToken.Value<int>(nameof(ContentEvent.VersionNumber));
             });
