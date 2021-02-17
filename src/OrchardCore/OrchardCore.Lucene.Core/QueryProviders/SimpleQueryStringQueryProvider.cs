@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Globalization;
 using Lucene.Net.QueryParsers.Simple;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
@@ -17,7 +19,18 @@ namespace OrchardCore.Lucene.QueryProviders
             var queryString = query["query"]?.Value<string>();
             var fields = query["fields"]?.Values<string>() ?? new string[0];
             var defaultOperator = query["default_operator"]?.Value<string>().ToLowerInvariant() ?? "or";
-            var weights = fields.ToDictionary(field => field, field => 1.0f);
+            var weight = 1.0f;
+            var weights = fields.ToDictionary(field => field, field => weight);
+
+            foreach(var field in fields)
+            {
+                if(field.Contains('^', StringComparison.Ordinal) && Single.TryParse(field.Split("^").Last(), out weight))
+                {
+                    weights.Remove(field);
+                    weights.Add(field.Split("^").First(), weight);
+                }
+            }
+
             var queryParser = new SimpleQueryParser(context.DefaultAnalyzer, weights);
             switch (defaultOperator)
             {

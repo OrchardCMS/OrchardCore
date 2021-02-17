@@ -33,7 +33,7 @@ namespace OrchardCore.AdminDashboard
             return 1;
         }
 
-        public async Task<int> UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
             await _recipeMigrator.ExecuteAsync("dashboard-widgets.recipe.json", this);
 
