@@ -103,7 +103,7 @@ namespace OrchardCore.AdminDashboard.Drivers
             .Location("DetailAdmin", "Tags:10");
             results.Add(shapeTag);
 
-            return await Task.FromResult<IDisplayResult>(Combine(results.ToArray()));
+            return Combine(results.ToArray());
         }
     }
 }
