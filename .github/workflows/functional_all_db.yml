@@ -16,11 +16,14 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.405
+        dotnet-version: 3.1.406
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.102
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -43,11 +46,14 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.405
+        dotnet-version: 3.1.406
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.102
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -59,7 +65,7 @@ jobs:
         name: functional-cms-sqlite-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
   
   test_functional_cms_postgresql:
@@ -88,11 +94,14 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.405
+        dotnet-version: 3.1.406
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.102
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -104,7 +113,7 @@ jobs:
         name: functional-cms-postgresql-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
   
   test_functional_cms_mysql:
@@ -129,11 +138,14 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.405
+        dotnet-version: 3.1.406
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.102
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -145,7 +157,7 @@ jobs:
         name: functional-cms-mysql-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
 
   test_functional_cms_mssql:
@@ -169,11 +181,14 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.405
+        dotnet-version: 3.1.406
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.102
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -185,5 +200,5 @@ jobs:
         name: functional-cms-mssql-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3

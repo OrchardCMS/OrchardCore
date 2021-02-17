@@ -1,4 +1,4 @@
-@model dynamic
+@model GroupingViewModel
 @using OrchardCore.Mvc.Utilities
 @{
     TagBuilder tag = Tag(Model, "div");
@@ -6,13 +6,11 @@
     // Morphing this shape to a grouping shape to keep Model untouched
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "CardGrouping";
+    Model.Classes.Clear();
 
-    tag.Attributes["id"] = $"tab-{Model.Grouping.Key}-{Model.ContentItem?.ContentItemId}".HtmlClassify();
+    tag.Attributes["id"] = $"tab-{Model.Grouping.Key}-{Model.Identifier}".HtmlClassify();
     tag.AddCssClass("tab-pane fade");
-    @if (Model.TabIndex == 0)
-    {
-        tag.AddCssClass("show active");
-    }    
+
     tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 }
 @tag

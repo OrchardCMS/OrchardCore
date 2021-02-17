@@ -2235,6 +2235,33 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "lampersky",
+      "name": "lampersky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6403130?v=4",
+      "profile": "https://github.com/lampersky",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "arnaudroystatcan",
+      "name": "arnaudroystatcan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66786602?v=4",
+      "profile": "https://github.com/arnaudroystatcan",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "petri-holopainen-tietotalo",
+      "name": "petri-holopainen-tietotalo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51475833?v=4",
+      "profile": "https://github.com/petri-holopainen-tietotalo",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true

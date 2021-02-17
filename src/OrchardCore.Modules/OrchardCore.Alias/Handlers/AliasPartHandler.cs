@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Alias.Drivers;
-using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
@@ -139,7 +137,7 @@ namespace OrchardCore.Alias.Handlers
             var versionSeparatorPosition = alias.LastIndexOf('-');
             if (versionSeparatorPosition > -1)
             {
-                int.TryParse(alias.Substring(versionSeparatorPosition).TrimStart('-'), out version);
+                Int32.TryParse(alias.Substring(versionSeparatorPosition).TrimStart('-'), out version);
                 unversionedAlias = alias.Substring(0, versionSeparatorPosition);
             }
 
