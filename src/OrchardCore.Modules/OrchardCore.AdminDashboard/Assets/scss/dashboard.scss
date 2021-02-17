@@ -9,28 +9,48 @@
         grid-column: span var(--dashboard-width);
         overflow-x: hidden;
         grid-row: span var(--dashboard-height);
-        overflow-y: hidden;  
+        overflow-y: hidden;
+
         & .card {
             & .card-header {
                 border-bottom: none !important;
             }
+            & .card-footer {
+                border-top: none !important;
+            }
         }
-              
     }
 }
+
+.dashboard-meta {
+    padding-left: 20px;
+    padding-right: 20px;
+
+    &:first-child {
+        padding-top: 12px;
+    }
+}
+
 :root[data-theme='default'] {
     & .dashboard-wrapper {
         & .card {
             & .card-header {
                 background-color: #fff !important;
             }
+            & .card-footer {
+                background-color: #fff !important;
+            }
         }
     }
 }
+
 :root[data-theme='darkmode'] {
     & .dashboard-wrapper {
         & .card {
             & .card-header {
+                background-color: rgb(24, 26, 27) !important;
+            }
+            & .card-footer {
                 background-color: rgb(24, 26, 27) !important;
             }
         }
@@ -40,6 +60,7 @@
 .dashboard-handle {
     display: inline-block;
     margin-right: 0.5rem;
+
     &:hover {
         cursor: move;
     }
@@ -62,4 +83,6 @@
     }
 }
 
-.ui-resizable-helper { border: 1px dashed orange; }
+.ui-resizable-helper {
+    border: 1px dashed orange;
+}

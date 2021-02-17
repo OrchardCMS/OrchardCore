@@ -47,6 +47,7 @@ namespace OrchardCore.Markdown.Drivers
             return Initialize<MarkdownBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, markdownBodyPart, context))
                 .Location("Detail", "Content:10")
                 .Location("Summary", "Content:10")
+                .Location("DetailAdmin", "Content:10") // For dashboard widgets
                 ;
         }
 

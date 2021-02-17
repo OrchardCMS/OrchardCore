@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.ContentManagement.Display.ViewModels;
 
 
 namespace OrchardCore.AdminDashboard.Drivers
@@ -32,85 +32,75 @@ namespace OrchardCore.AdminDashboard.Drivers
         public override async Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var isManageRequest = httpContext.Items.ContainsKey(typeof(DashboardManageAttribute));
+            var dashboardFeature = httpContext.Features.Get<DashboardFeature>();
+
+            if (dashboardFeature == null || !dashboardFeature.IsManageRequest)
+            {
+                return null;
+            }
+
+            var results = new List<IDisplayResult>();
+
             var hasPublished = await _contentManager.HasPublishedVersionAsync(model);
             var hasDraft = model.HasDraft();
-
             var hasEditPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, model);
             var hasDeletePermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, model);
             var hasPublishPermission = await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, model);
-    
-            
-            var results = new List<IDisplayResult>();
 
             var dragHandle = Dynamic("Dashboard_DragHandle", m =>
             {
                 m.ContentItem = model;
-            }).Location("Leading:before")
-            .RenderWhen(() =>
-            {
-                return Task.FromResult(isManageRequest);
-            });
+            }).Location("Leading:before");
             results.Add(dragHandle);
+            if (hasEditPermission)
+            {
+                var editButton = Dynamic("Dashboard_EditButton", m =>
+                {
+                    m.ContentItem = model;
+                }).Location("ActionsMenu:after");
+                results.Add(editButton);
 
-            var editButton = Dynamic("Dashboard_EditButton", m =>
-            {
-                m.ContentItem = model;
-            }).Location("ActionsMenu:after")
-            .RenderWhen(async () =>
-            {
-                return await Task.FromResult(isManageRequest && hasEditPermission);
-            });
-            results.Add(editButton);
+            }
 
-            var deleteButton = Dynamic("Dashboard_DeleteButton", m =>
+            if (hasDeletePermission)
             {
-                m.ContentItem = model;
-            }).Location("ActionsMenu:after")
-            .RenderWhen(async () =>
-            {
-                
-                return await Task.FromResult(isManageRequest && hasDeletePermission);
-            });
-            results.Add(deleteButton);
-
-            var unpublishButton = Dynamic("Dashboard_UnpublishButton", m =>
-            {
-                m.ContentItem = model;
-            }).Location("ActionsMenu:after")
-            .RenderWhen(async () =>
-            {                
-                return await Task.FromResult(isManageRequest && hasPublished && hasPublishPermission);
-            });
-            results.Add(unpublishButton);
-
-            var publishButton = Dynamic("Dashboard_PublishButton", m =>
-            {
-                m.ContentItem = model;
-            }).Location("ActionsMenu:after")
-            .RenderWhen(async () =>
-            {                
-                return await Task.FromResult(isManageRequest && hasDraft && hasPublishPermission);
-            });
-            results.Add(publishButton);
-
-            var discardDraftButton = Dynamic("Dashboard_DiscardDraftButton", m =>
-            {
-                m.ContentItem = model;
-            }).Location("ActionsMenu:after")
-            .RenderWhen(async () =>
-            {                
-                return await Task.FromResult(isManageRequest && hasDraft && hasEditPermission);
-            });
-            results.Add(discardDraftButton);
+                var deleteButton = Dynamic("Dashboard_DeleteButton", m =>
+                {
+                    m.ContentItem = model;
+                }).Location("ActionsMenu:after");
+                results.Add(deleteButton);
+            }
 
 
-            var shapeTag = Shape("DashboardWidget__ContentsTags", new ContentItemViewModel(model))
-            .Location("Detail", "Tags:10")
-            .RenderWhen( () =>
+            if (hasPublished && hasPublishPermission)
             {
-                return Task.FromResult(isManageRequest);
-            });
+                var unpublishButton = Dynamic("Dashboard_UnpublishButton", m =>
+                {
+                    m.ContentItem = model;
+                }).Location("ActionsMenu:after");
+                results.Add(unpublishButton);
+            }
+
+            if (hasDraft && hasPublishPermission)
+            {
+                var publishButton = Dynamic("Dashboard_PublishButton", m =>
+                {
+                    m.ContentItem = model;
+                }).Location("ActionsMenu:after");
+                results.Add(publishButton);
+
+            }
+
+            if (hasDraft && hasEditPermission)
+            {
+                var discardDraftButton = Dynamic("Dashboard_DiscardDraftButton", m =>
+                {
+                    m.ContentItem = model;
+                }).Location("ActionsMenu:after");
+                results.Add(discardDraftButton);
+            }
+            var shapeTag = Shape("DashboardWidget_DetailAdmin__ContentsTags", new ContentItemViewModel(model))
+            .Location("DetailAdmin", "Tags:10");
             results.Add(shapeTag);
 
             return await Task.FromResult<IDisplayResult>(Combine(results.ToArray()));

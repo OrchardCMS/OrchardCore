@@ -85,7 +85,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 wrappers.Add(new DashboardWrapper
                 {
                     Dashboard = item,
-                    Content = await _contentItemDisplayManager.BuildDisplayAsync(item, _updateModelAccessor.ModelUpdater)
+                    Content = await _contentItemDisplayManager.BuildDisplayAsync(item, _updateModelAccessor.ModelUpdater, "DetailAdmin")
                 });
             }
 
@@ -97,13 +97,18 @@ namespace OrchardCore.AdminDashboard.Controllers
             return View(model);
         }
 
-        [DashboardManage]
         public async Task<IActionResult> Manage()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard))
             {
                 return Forbid();
             }
+
+            // Set Manage Dashboard Feature
+            Request.HttpContext.Features.Set(new DashboardFeature()
+            {
+                IsManageRequest = true
+            });
 
             var dashboardCreatable = new List<SelectListItem>();
 
@@ -130,7 +135,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 var wrapper = new DashboardWrapper
                 {
                     Dashboard = item,
-                    Content = await _contentItemDisplayManager.BuildDisplayAsync(item, _updateModelAccessor.ModelUpdater)
+                    Content = await _contentItemDisplayManager.BuildDisplayAsync(item, _updateModelAccessor.ModelUpdater, "DetailAdmin")
                 };
                 wrappers.Add(wrapper);
             }
@@ -144,7 +149,6 @@ namespace OrchardCore.AdminDashboard.Controllers
             return View(model);
         }
         [HttpPost]
-        [Admin]
         public async Task<IActionResult> Update([FromForm] DashboardPartViewModel[] parts)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard))

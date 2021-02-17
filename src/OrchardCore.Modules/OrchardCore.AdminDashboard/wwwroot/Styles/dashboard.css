@@ -16,11 +16,25 @@
     overflow-y: hidden; }
     .dashboard-container .dashboard-wrapper .card .card-header {
       border-bottom: none !important; }
+    .dashboard-container .dashboard-wrapper .card .card-footer {
+      border-top: none !important; }
+
+.dashboard-meta {
+  padding-left: 20px;
+  padding-right: 20px; }
+  .dashboard-meta:first-child {
+    padding-top: 12px; }
 
 :root[data-theme='default'] .dashboard-wrapper .card .card-header {
   background-color: #fff !important; }
 
+:root[data-theme='default'] .dashboard-wrapper .card .card-footer {
+  background-color: #fff !important; }
+
 :root[data-theme='darkmode'] .dashboard-wrapper .card .card-header {
+  background-color: #181a1b !important; }
+
+:root[data-theme='darkmode'] .dashboard-wrapper .card .card-footer {
   background-color: #181a1b !important; }
 
 .dashboard-handle {

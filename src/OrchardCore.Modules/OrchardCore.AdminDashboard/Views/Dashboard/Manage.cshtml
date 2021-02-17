@@ -8,26 +8,27 @@
 
 @{
     // Todo Create Settings for Dashboard
-    var settings =new {
+    var settings = new
+    {
         NoOfRows = 4,
         NoOfCols = 4 // Default is auto fit - 240px
     };
 }
 
 <style asp-name="jQuery-ui" at="Head"></style>
-<style asp-src="~/OrchardCore.AdminDashboard/Styles/dashboard.min.css" 
-    debug-src="~/OrchardCore.AdminDashboard/Styles/dashboard.css" 
-    depends-on="jQuery-ui"
-    at="Head"></style>
+<style asp-src="~/OrchardCore.AdminDashboard/Styles/dashboard.min.css"
+       debug-src="~/OrchardCore.AdminDashboard/Styles/dashboard.css"
+       depends-on="jQuery-ui"
+       at="Head"></style>
 
 <script asp-name="jQuery-ui" at="Foot"></script>
 
-<div class="btn-group float-right mb-3">
-    <a class="btn btn-success btn-sm" asp-action="Index">
-        @T["View"]
+<div class="float-right mb-3 d-inline-flex">
+    <a class="btn btn-success btn-sm  mr-1" asp-action="Index">
+        @T["Go back to Dashboard"]
     </a>
     @if (Model.Creatable.Any())
-    {        
+    {
         <div class="dropdown order-md-1">
             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="new-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 @T["New"]
@@ -35,8 +36,8 @@
             <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="bulk-action-menu-button">
                 @foreach (var item in Model.Creatable)
                 {
-                    <a class="dropdown-item add-list-widget btn-sm" 
-                    href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>
+                    <a class="dropdown-item add-list-widget btn-sm"
+                       href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>
                 }
             </div>
         </div>
@@ -51,15 +52,15 @@
         <span aria-hidden="true">&times;</span>
     </button>
     <form id="dashboard-undo-form" asp-action="Update" method="POST">
-        @for( int index = 0; index < Model.Dashboards.Count(); index++  )
+        @for (int index = 0; index < Model.Dashboards.Count(); index++)
         {
             <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)" name="parts[@(index)].ContentItemId" value="@Model.Dashboards[index].Dashboard.ContentItemId" />
-            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Width" name="parts[@(index)].Width" value=""/>
+            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Width" name="parts[@(index)].Width" value="" />
             <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Height" name="parts[@(index)].Height" value="" />
-            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Position" name="parts[@(index)].Position" value=""/>
-         }
+            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Position" name="parts[@(index)].Position" value="" />
+        }
     </form>
-    @T["Dashboard successfully updated."]<a href="#"><strong>@T["Undo"]</strong></a>.
+    @T["Dashboard successfully updated."]&nbsp;<a href="#"><strong>@T["Undo"]</strong></a>.
 </div>
 
 <div class="dashboard-container" id="container">
@@ -71,22 +72,22 @@
 
 <script depends-on="jQuery-ui" at="Foot">
 
-    
+
     $(document).ready(function(){
         //
-        var _menu = null;        
+        var _menu = null;
         var cellSize = {
             width: 200,
             height: 200
         };
 
         $("#dashboard-undo-message a").on('click', function(e){
-            e.preventDefault();            
-            $("#dashboard-undo-form").submit();            
+            e.preventDefault();
+            $("#dashboard-undo-form").submit();
         });
 
         function Update(metadata) {
-            
+
             var token = $("[name='__RequestVerificationToken']").val();
             var data = {
                 __RequestVerificationToken : token,
@@ -102,7 +103,7 @@
                     $('#dashboard-undo-message').addClass("d-none");
                 }
             });
-        } 
+        }
 
     function snapTo(org, val,gridSize){
 
@@ -114,8 +115,8 @@
         }
         if(snap_X === 0)
             snap_X = 1;
-        
-         
+
+
         var snap_Y =1;
         if(org.height < val.height){
             snap_Y = Math.ceil(val.height/gridSize.height) ;
@@ -125,7 +126,7 @@
 
         if(snap_Y ===0 )
             snap_Y = 1;
-        var snap = { X : snap_X, Y: snap_Y};        
+        var snap = { X : snap_X, Y: snap_Y};
         return snap;
     }
 
@@ -135,13 +136,13 @@
                     $('#undo_' + $(value).attr('id') + '_Position').val(index);
                     $('#undo_' + $(value).attr('id') + '_Height').val(value.style.getPropertyValue('--dashboard-height'));
                     $('#undo_' + $(value).attr('id') + '_Width').val(value.style.getPropertyValue('--dashboard-width'));
-                });        
+                });
         }
-    
+
         function getCurrentValues(){
             var metadata = [];
             $(".dashboard-container .dashboard-wrapper")
-                .each(function (index, value) {            
+                .each(function (index, value) {
                     var position = index;
                     var height = $(this)[0].style.getPropertyValue('--dashboard-height');
                     var width = $(this)[0].style.getPropertyValue('--dashboard-width');
@@ -176,7 +177,7 @@
             };
         }
 
-        var _sortable = $(".dashboard-container").sortable({  
+        var _sortable = $(".dashboard-container").sortable({
             tolerance: "pointer",
             opacity: 0.7,
             handle: ".dashboard-handle",
@@ -187,15 +188,15 @@
                 update: function (container, p) {
                     return;
                 }
-            }, 
+            },
             start: function (e, ui) {
 
                 if(_menu != null){
                     $(document).trigger('click');
                 }
-                
+
                 setUndoValues();
-                
+
                 var dahsboard = ui.item;
                 var classList = dahsboard.attr('class').split(' ');
 
@@ -234,10 +235,10 @@
 
                 ui.helper[0].style.setProperty("--dashboard-width", snap.X);
                 ui.helper[0].style.setProperty("--dashboard-height", snap.Y);
-                               
+
             },
-            stop: function (event, ui) {                
-                
+            stop: function (event, ui) {
+
                 $(this).css("width", '');
                 $(this).css("height", '');
 
@@ -261,7 +262,7 @@
             }
         });
 
-        $(window).on('show.bs.dropdown', function (e) {            
+        $(window).on('show.bs.dropdown', function (e) {
             _menu = $(e.target).find('.dropdown-menu');
             $('body').append(_menu.detach());
             var eOffset = $(e.target).offset();
