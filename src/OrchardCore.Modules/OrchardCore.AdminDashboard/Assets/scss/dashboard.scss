@@ -2,7 +2,6 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     grid-template-rows: repeat(6, 240px);
-    grid-auto-flow: dense;
     grid-gap: 1rem;
 
     .dashboard-wrapper {
@@ -71,16 +70,11 @@
     margin-bottom: 6px;
     min-height: 6px;
     display: inline-block;
-
-    &:before {
-        position: absolute;
-        content: "";
-        width: 0;
-        height: 0;
-        border: 8px solid transparent;
-        border-left-color: orange;
-        border-right: none;
-    }
+    border: 1px dashed orange;
+    grid-column: span var(--dashboard-width);
+    overflow-x: hidden;
+    grid-row: span var(--dashboard-height);
+    overflow-y: hidden;
 }
 
 .ui-resizable-helper {

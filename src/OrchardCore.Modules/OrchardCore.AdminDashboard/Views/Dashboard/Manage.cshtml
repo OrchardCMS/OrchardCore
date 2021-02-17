@@ -77,8 +77,8 @@
         //
         var _menu = null;
         var cellSize = {
-            width: 200,
-            height: 200
+            width: 240,
+            height: 240
         };
 
         $("#dashboard-undo-message a").on('click', function(e){
@@ -197,12 +197,10 @@
 
                 setUndoValues();
 
-                var dahsboard = ui.item;
-                var classList = dahsboard.attr('class').split(' ');
-
-                $.each(classList, function (id, item) {
-                    if (item.indexOf('dashboard-h-') === 0 || item.indexOf('dashboard-w-') === 0) ui.placeholder.addClass(item);
-                });
+                var dahsboard = ui.item[0];
+                ui.placeholder[0].style.setProperty("--dashboard-width", dahsboard.style.getPropertyValue("--dashboard-width"));
+                ui.placeholder[0].style.setProperty("--dashboard-height", dahsboard.style.getPropertyValue("--dashboard-height"));
+                
             },
             update: function (event, ui) {
                 var changed =  getCurrentValues();
