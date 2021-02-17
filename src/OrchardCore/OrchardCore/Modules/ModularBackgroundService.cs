@@ -32,7 +32,7 @@ namespace OrchardCore.Modules
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
-        private readonly IClock _clock;
+        private ILocalClock _localClock;
 
         public ModularBackgroundService(
             IShellHost shellHost,
@@ -43,7 +43,6 @@ namespace OrchardCore.Modules
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
-            _clock = clock;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -178,7 +177,7 @@ namespace OrchardCore.Modules
                 await shellScope.UsingAsync(async scope =>
                 {
                     var tasks = scope.ServiceProvider.GetServices<IBackgroundTask>();
-                    var localClock = shellScope.ServiceProvider.GetService<ILocalClock>();
+                    _localClock ??= scope.ServiceProvider.GetService<ILocalClock>();
 
                     CleanSchedulers(tenant, tasks);
 
@@ -190,31 +189,14 @@ namespace OrchardCore.Modules
                     var settingsProvider = scope.ServiceProvider.GetService<IBackgroundTaskSettingsProvider>();
                     _changeTokens[tenant] = settingsProvider?.ChangeToken ?? NullChangeToken.Singleton;
 
-                    ITimeZone timeZone = null;
-
-                    var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                    if (siteService != null)
-                    {
-                        try
-                        {
-                            timeZone = _clock.GetTimeZone((await siteService.GetSiteSettingsAsync()).TimeZoneId);
-                        }
-                        catch (Exception ex) when (!ex.IsFatal())
-                        {
-                            _logger.LogError(ex, "Error while getting the time zone from the site settings of the tenant '{TenantName}'.", tenant);
-                        }
-                    }
-
                     foreach (var task in tasks)
                     {
                         var taskName = task.GetTaskName();
 
                         if (!_schedulers.TryGetValue(tenant + taskName, out var scheduler))
                         {
-                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, localClock);
+                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _localClock);
                         }
-
-                        scheduler.TimeZone = timeZone;
 
                         if (!scheduler.Released && scheduler.Updated)
                         {

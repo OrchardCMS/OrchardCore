@@ -24,16 +24,14 @@ namespace OrchardCore.BackgroundTasks
         public DateTime ReferenceTime { get; set; }
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
-        public ITimeZone TimeZone { get; set; }
-
         public bool Released { get; set; }
         public bool Updated { get; set; }
 
         public bool CanRun()
         {
-            var referenceTimeLocal = _localClock.ConvertToLocalAsync(ReferenceTime).GetAwaiter().GetResult().DateTime;
+            var referenceTimeLocal = _localClock.ConvertToLocalAsync(ReferenceTime).Result.DateTime;
             var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTimeLocal);
-            var nowLocal = _localClock.LocalNowAsync.GetAwaiter().GetResult().DateTime;
+            var nowLocal = _localClock.LocalNowAsync.Result.DateTime;
 
             if (nowLocal >= nextStartTime)
             {
