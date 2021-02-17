@@ -178,6 +178,7 @@ namespace OrchardCore.Modules
                 await shellScope.UsingAsync(async scope =>
                 {
                     var tasks = scope.ServiceProvider.GetServices<IBackgroundTask>();
+                    var localClock = shellScope.ServiceProvider.GetService<ILocalClock>();
 
                     CleanSchedulers(tenant, tasks);
 
@@ -210,7 +211,7 @@ namespace OrchardCore.Modules
 
                         if (!_schedulers.TryGetValue(tenant + taskName, out var scheduler))
                         {
-                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _clock);
+                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, localClock);
                         }
 
                         scheduler.TimeZone = timeZone;

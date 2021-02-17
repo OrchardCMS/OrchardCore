@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using NCrontab;
 using OrchardCore.Modules;
 
@@ -6,16 +7,16 @@ namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundTaskScheduler
     {
-        private readonly IClock _clock;
+        private ILocalClock _localClock;
 
-        public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock)
+        public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, ILocalClock localClock)
         {
             Name = name;
             Tenant = tenant;
             ReferenceTime = referenceTime;
             Settings = new BackgroundTaskSettings() { Name = name };
             State = new BackgroundTaskState() { Name = name };
-            _clock = clock;
+            _localClock = localClock;
         }
 
         public string Name { get; }
@@ -24,23 +25,17 @@ namespace OrchardCore.BackgroundTasks
         public BackgroundTaskSettings Settings { get; set; }
         public BackgroundTaskState State { get; set; }
         public ITimeZone TimeZone { get; set; }
+
         public bool Released { get; set; }
         public bool Updated { get; set; }
 
         public bool CanRun()
         {
-            var now = DateTime.UtcNow;
-            var referenceTime = ReferenceTime;
+            var referenceTimeLocal = _localClock.ConvertToLocalAsync(ReferenceTime).GetAwaiter().GetResult().DateTime;
+            var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTimeLocal);
+            var nowLocal = _localClock.LocalNowAsync.GetAwaiter().GetResult().DateTime;
 
-            if (TimeZone != null)
-            {
-                now = _clock.ConvertToTimeZone(DateTime.UtcNow, TimeZone).DateTime;
-                referenceTime = _clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;
-            }
-
-            var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTime);
-
-            if (now >= nextStartTime)
+            if (nowLocal >= nextStartTime)
             {
                 if (Settings.Enable && !Released && Updated)
                 {
