@@ -57,7 +57,8 @@ namespace OrchardCore.Facebook.Drivers
                     try
                     {
                         model.AppSecret = protector.Unprotect(settings.AppSecret);
-                    } catch (CryptographicException)
+                    }
+                    catch (CryptographicException)
                     {
                         model.AppSecret = string.Empty;
                         model.CouldNotDecryptSettings = true;

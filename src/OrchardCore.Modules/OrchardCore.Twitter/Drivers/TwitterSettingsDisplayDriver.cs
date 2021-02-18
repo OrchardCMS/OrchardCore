@@ -51,7 +51,8 @@ namespace OrchardCore.Twitter.Drivers
                         {
                             var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
                             model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
-                        } catch (CryptographicException)
+                        }
+                        catch (CryptographicException)
                         {
                             model.APISecretKey = string.Empty;
                             model.CouldNotDecryptSettings = true;
@@ -68,7 +69,8 @@ namespace OrchardCore.Twitter.Drivers
                         {
                             var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
                             model.AccessTokenSecret = protector.Unprotect(settings.AccessTokenSecret);
-                        } catch (CryptographicException)
+                        }
+                        catch (CryptographicException)
                         {
                             model.AccessTokenSecret = string.Empty;
                             model.CouldNotDecryptSettings = true;
