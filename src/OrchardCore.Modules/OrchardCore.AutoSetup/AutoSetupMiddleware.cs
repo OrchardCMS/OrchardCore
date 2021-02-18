@@ -120,7 +120,7 @@ namespace OrchardCore.AutoSetup
                 stringBuilder.Append($"{error.Key} : '{error.Value}'");
             }
 
-            _logger.LogError($"AutoSetup failed installing the site '{setupOptions.SiteName}' with errors: {stringBuilder}");
+            _logger.LogError("AutoSetup failed installing the site '{SiteName}' with errors: {Errors}", setupOptions.SiteName, stringBuilder);
             return false;
         }
 
