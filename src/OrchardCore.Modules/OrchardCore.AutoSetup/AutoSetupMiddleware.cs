@@ -86,7 +86,7 @@ namespace OrchardCore.AutoSetup
                     }
                 }
 
-                httpContext.Response.Redirect("/");
+                httpContext.Response.Redirect("~/");
             }
 
             await _next.Invoke(httpContext);
