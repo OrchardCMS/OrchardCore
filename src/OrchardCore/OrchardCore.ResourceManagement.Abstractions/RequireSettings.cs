@@ -216,6 +216,11 @@ namespace OrchardCore.ResourceManagement
             return mergedAttributes;
         }
 
+        public RequireSettings NewAndCombine(RequireSettings other)
+        {
+            return other;
+        }
+
         public RequireSettings Combine(RequireSettings other)
         {
             var settings = (new RequireSettings
