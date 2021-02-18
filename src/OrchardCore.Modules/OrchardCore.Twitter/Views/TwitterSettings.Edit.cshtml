@@ -4,6 +4,11 @@
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Twitter/#twitter-integration" target="_blank">@T["See documentation"]</a></p>
 
+@if (Model.CouldNotDecryptSettings)
+{
+    <p class="alert alert-danger">@T["An error occurred while decrypting some settings, so they have been left blank. Anything using these settings will not currently work."]</p>
+}
+
 <h3>@T["Twitter Integration Settings"]</h3>
 
 <div class="form-group row" asp-validation-class-for="APIKey">

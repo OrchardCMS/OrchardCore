@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -41,30 +42,43 @@ namespace OrchardCore.Twitter.Drivers
             {
                 return null;
             }
-
-            return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
-            {
-                model.APIKey = settings.ConsumerKey;
-                if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+                return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-                    model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
-                }
-                else
-                {
-                    model.APISecretKey = string.Empty;
-                }
-                model.AccessToken = settings.AccessToken;
-                if (!string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-                    model.AccessTokenSecret = protector.Unprotect(settings.AccessTokenSecret);
-                }
-                else
-                {
-                    model.AccessTokenSecret = string.Empty;
-                }
-            }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
+                    model.APIKey = settings.ConsumerKey;
+                    if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+                    {
+                        try
+                        {
+                            var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+                            model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
+                        } catch (CryptographicException)
+                        {
+                            model.APISecretKey = string.Empty;
+                            model.CouldNotDecryptSettings = true;
+                        }
+                    }
+                    else
+                    {
+                        model.APISecretKey = string.Empty;
+                    }
+                    model.AccessToken = settings.AccessToken;
+                    if (!string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
+                    {
+                        try
+                        {
+                            var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+                            model.AccessTokenSecret = protector.Unprotect(settings.AccessTokenSecret);
+                        } catch (CryptographicException)
+                        {
+                            model.AccessTokenSecret = string.Empty;
+                            model.CouldNotDecryptSettings = true;
+                        }
+                    }
+                    else
+                    {
+                        model.AccessTokenSecret = string.Empty;
+                    }
+                }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, BuildEditorContext context)

@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -53,7 +54,14 @@ namespace OrchardCore.Facebook.Drivers
                 model.SdkJs = settings.SdkJs;
                 if (!string.IsNullOrWhiteSpace(settings.AppSecret))
                 {
-                    model.AppSecret = protector.Unprotect(settings.AppSecret);
+                    try
+                    {
+                        model.AppSecret = protector.Unprotect(settings.AppSecret);
+                    } catch (CryptographicException)
+                    {
+                        model.AppSecret = string.Empty;
+                        model.CouldNotDecryptSettings = true;
+                    }
                 }
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }

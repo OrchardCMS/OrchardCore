@@ -6,6 +6,11 @@
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#core-components" target="_blank">@T["See documentation"]</a>
 </p>
 
+@if (Model.CouldNotDecryptSettings)
+{
+    <p class="alert alert-danger">@T["An error occurred while decrypting the Secret Key, so it has been left blank. Anything using these settings will not currently work."]</p>
+}
+
 <h3>@T["Facebook Integration"]</h3>
 
 <div class="form-group" asp-validation-class-for="AppId">
