@@ -25,22 +25,22 @@
 
 <div class="float-right mb-3 d-inline-flex">
     <a class="btn btn-success btn-sm  mr-1" asp-action="Index">
-        @T["Go back to Dashboard"]
+        @T["Close Editor"]
     </a>
     @if (Model.Creatable.Any())
     {
-        <div class="dropdown order-md-1">
-            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="new-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @T["New"]
-            </button>
-            <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="bulk-action-menu-button">
-                @foreach (var item in Model.Creatable)
-                {
-                    <a class="dropdown-item add-list-widget btn-sm"
-                       href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>
-                }
-            </div>
+    <div class="dropdown order-md-1">
+        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="new-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @T["Add Widget"]
+        </button>
+        <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="bulk-action-menu-button">
+            @foreach (var item in Model.Creatable)
+            {
+            <a class="dropdown-item add-list-widget btn-sm"
+               href="@Url.RouteUrl(new { area = " OrchardCore.Contents", controller="Admin" , action="Create" , id=@item.Value, returnUrl=FullRequestPath })">@T[item.Text]</a>
+            }
         </div>
+    </div>
 
     }
 </div>
@@ -54,10 +54,10 @@
     <form id="dashboard-undo-form" asp-action="Update" method="POST">
         @for (int index = 0; index < Model.Dashboards.Count(); index++)
         {
-            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)" name="parts[@(index)].ContentItemId" value="@Model.Dashboards[index].Dashboard.ContentItemId" />
-            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Width" name="parts[@(index)].Width" value="" />
-            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Height" name="parts[@(index)].Height" value="" />
-            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Position" name="parts[@(index)].Position" value="" />
+        <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)" name="parts[@(index)].ContentItemId" value="@Model.Dashboards[index].Dashboard.ContentItemId" />
+        <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Width" name="parts[@(index)].Width" value="" />
+        <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Height" name="parts[@(index)].Height" value="" />
+        <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Position" name="parts[@(index)].Position" value="" />
         }
     </form>
     @T["Dashboard successfully updated."]&nbsp;<a href="#"><strong>@T["Undo"]</strong></a>.
@@ -66,7 +66,7 @@
 <div class="dashboard-container" id="container">
     @foreach (var dashboard in Model.Dashboards)
     {
-        @await DisplayAsync(dashboard)
+    @await DisplayAsync(dashboard)
     }
 </div>
 
@@ -166,14 +166,18 @@
             var rows = styles.getPropertyValue('grid-template-rows');
             var columns = styles.getPropertyValue('grid-template-columns');
 
-            var rowGap = styles.getPropertyValue('grid-row-gap');
-            var columnGap = styles.getPropertyValue('grid-column-gap');
+            var rowGap = styles.getPropertyValue('grid-row-gap').replace('px','');;
+            var columnGap = styles.getPropertyValue('grid-column-gap').replace('px','');;
             var height = rows.split(' ')[0].replace('px','');
             var width = columns.split(' ')[0].replace('px','');
 
             cellSize = {
                 width: width,
-                height: height
+                height: height,
+                gap : {
+                    width : columnGap,
+                    height : rowGap
+                }
             };
         }
 
@@ -200,15 +204,19 @@
                 var dahsboard = ui.item[0];
                 ui.placeholder[0].style.setProperty("--dashboard-width", dahsboard.style.getPropertyValue("--dashboard-width"));
                 ui.placeholder[0].style.setProperty("--dashboard-height", dahsboard.style.getPropertyValue("--dashboard-height"));
-                
+
             },
             update: function (event, ui) {
-                var changed =  getCurrentValues();
-                Update(changed);
+                var op = $('#undo_' + ui.item.attr('id') + '_Position');
+                // Only update if Position is changed
+                if(op.val() != ui.item.index()){
+                    var changed =  getCurrentValues();
+                    Update(changed);
+                }
             }
         });
         $(".dashboard-wrapper").resizable({
-            handles: "s,e",
+            handles: "s,e,se",
             helper: "ui-resizable-helper"
 ,
             start: function (event, ui) {
@@ -234,6 +242,8 @@
                 ui.helper[0].style.setProperty("--dashboard-width", snap.X);
                 ui.helper[0].style.setProperty("--dashboard-height", snap.Y);
 
+                ui.helper.css("width", (snap.X * cellSize.width) + ((snap.X -1 ) * cellSize.gap.width)  );
+                ui.helper.css("height", (snap.Y * cellSize.height) + ((snap.Y -1 ) * cellSize.gap.height) );
             },
             stop: function (event, ui) {
 
@@ -252,11 +262,18 @@
 
                 var snap = snapTo(original, updated, cellSize);
 
-                ui.element[0].style.setProperty("--dashboard-width", snap.X);
-                ui.element[0].style.setProperty("--dashboard-height", snap.Y);
+                var ow = $('#undo_' + ui.element.attr('id') + '_Width');
+                var oh = $('#undo_' + ui.element.attr('id') + '_Height');
 
-                var changed =  getCurrentValues();
-                Update(changed);
+                // Only update if values have changed
+                if(ow != snap.X || oh != snap.Y)
+                {
+                    ui.element[0].style.setProperty("--dashboard-width", snap.X);
+                    ui.element[0].style.setProperty("--dashboard-height", snap.Y);
+
+                    var changed =  getCurrentValues();
+                    Update(changed);
+                }
             }
         });
 
