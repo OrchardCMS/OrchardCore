@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -47,8 +48,15 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 model.AppId = settings.AppId;
                 if (!string.IsNullOrWhiteSpace(settings.AppSecret))
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
-                    model.AppSecret = protector.Unprotect(settings.AppSecret);
+                    try
+                    {
+                        var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
+                        model.AppSecret = protector.Unprotect(settings.AppSecret);
+                    } catch (CryptographicException)
+                    {
+                        model.AppSecret = string.Empty;
+                        model.CouldNotDecryptSettings = true;
+                    } 
                 }
                 else
                 {

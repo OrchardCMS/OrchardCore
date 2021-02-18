@@ -14,5 +14,7 @@ namespace OrchardCore.GitHub.ViewModels
         public string CallbackUrl { get; set; }
 
         public bool SaveTokens { get; set; }
+
+        public bool CouldNotDecryptSettings { get; set; } = false;
     }
 }

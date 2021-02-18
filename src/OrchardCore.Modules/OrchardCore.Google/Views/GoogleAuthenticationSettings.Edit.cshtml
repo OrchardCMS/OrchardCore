@@ -6,6 +6,10 @@
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Google/#google-authentication" target="_blank">@T["See documentation"]</a>
 </p>
 
+@if (Model.CouldNotDecryptSettings)
+{
+    <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+}
 
 <h3>@T["Google Authentication Settings"]</h3>
 

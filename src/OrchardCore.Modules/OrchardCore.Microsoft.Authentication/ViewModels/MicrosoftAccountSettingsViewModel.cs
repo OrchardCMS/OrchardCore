@@ -14,5 +14,7 @@ namespace OrchardCore.Microsoft.Authentication.ViewModels
         public string CallbackPath { get; set; }
 
         public bool SaveTokens { get; set; }
+
+        public bool CouldNotDecryptSettings { get; set; } = true;
     }
 }

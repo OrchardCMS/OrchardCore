@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -47,8 +48,16 @@ namespace OrchardCore.GitHub.Drivers
                 model.ClientID = settings.ClientID;
                 if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication);
-                    model.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                    try
+                    {
+                        var protector = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication);
+                        model.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                    }
+                    catch (CryptographicException)
+                    {
+                        model.ClientSecret = string.Empty;
+                        model.CouldNotDecryptSettings = true;
+                    }
                 }
                 else
                 {
