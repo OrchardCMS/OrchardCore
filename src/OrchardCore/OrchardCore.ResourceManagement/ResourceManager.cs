@@ -60,7 +60,7 @@ namespace OrchardCore.ResourceManagement
             }
         }
 
-        public ResourceManifest InlineManifest => _dynamicManifest ?? (_dynamicManifest = new ResourceManifest());
+        public ResourceManifest InlineManifest => _dynamicManifest ??= new ResourceManifest();
 
         public RequireSettings RegisterResource(string resourceType, string resourceName)
         {
@@ -259,7 +259,7 @@ namespace OrchardCore.ResourceManagement
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (int.TryParse(minimumVersion, out var major))
+                if (Int32.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major + 1, 0, 0);
                 }
@@ -287,7 +287,7 @@ namespace OrchardCore.ResourceManagement
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (int.TryParse(minimumVersion, out var major))
+                if (Int32.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major, 0, 0);
                 }
@@ -298,7 +298,7 @@ namespace OrchardCore.ResourceManagement
 
         private bool ResolveInlineDefinitions(string resourceType)
         {
-            bool anyWereDefined = false;
+            var anyWereDefined = false;
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
                 if (settings.InlineDefinition == null)
@@ -376,9 +376,7 @@ namespace OrchardCore.ResourceManagement
                 return requiredResources;
             }
 
-            var allResources = new OrderedDictionary();
-            var expandingResources = new Stack<ResourceDefinition>();
-
+            var allResources = new ResourceDictionary();
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
                 var resource = FindResource(settings);
@@ -386,52 +384,50 @@ namespace OrchardCore.ResourceManagement
                 {
                     throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
                 }
-                var position = resource.Position;
-                ExpandDependencies(resource, settings, allResources, expandingResources, ref position);
+
+                ExpandDependencies(resource, settings, allResources);
             }
 
-            var positionedFirst = new List<ResourceRequiredContext>();
-            var positionedByDependency = new List<ResourceRequiredContext>();
-            var positionedLast = new List<ResourceRequiredContext>();
-
+            requiredResources = new ResourceRequiredContext[allResources.Count];
+            int i, first = 0, byDependency = allResources.FirstCount, last = allResources.Count - allResources.LastCount;
             foreach (DictionaryEntry entry in allResources)
             {
-                var item = new ResourceRequiredContext
+                var settings = (RequireSettings)entry.Value;
+                if (settings.Position == ResourcePosition.First)
                 {
+                    i = first++;
+                }
+                else if (settings.Position == ResourcePosition.Last)
+                {
+                    i = last++;
+                }
+                else
+                {
+                    i = byDependency++;
+                }
+
+                requiredResources[i] = new ResourceRequiredContext
+                {
+                    Settings = settings,
                     Resource = (ResourceDefinition)entry.Key,
-                    Settings = ((Tuple<RequireSettings, ResourcePosition>)entry.Value).Item1,
                     FileVersionProvider = _fileVersionProvider
                 };
-                var requestedFromPosition = ((Tuple<RequireSettings, ResourcePosition>)entry.Value).Item2;
-                switch (requestedFromPosition)
-                {
-                    case ResourcePosition.First:
-                        positionedFirst.Add(item);
-                        break;
-                    case ResourcePosition.Last:
-                        positionedLast.Add(item);
-                        break;
-                    case ResourcePosition.ByDependency:
-                        positionedByDependency.Add(item);
-                        break;
-                }
             }
-            requiredResources = positionedFirst.Concat(positionedByDependency).Concat(positionedLast).ToArray();
-            _builtResources[resourceType] = requiredResources;
-            return requiredResources;
+
+            return _builtResources[resourceType] = requiredResources;
         }
 
         protected virtual void ExpandDependencies(
             ResourceDefinition resource,
             RequireSettings settings,
-            OrderedDictionary allResources,
-            Stack<ResourceDefinition> expanding,
-            ref ResourcePosition position)
+            ResourceDictionary allResources)
         {
             if (resource == null)
             {
                 return;
             }
+
+            allResources.AddExpandingResource(resource, settings);
 
             // Use any additional dependencies from the settings without mutating the resource that is held in a singleton collection.
             List<string> dependencies = null;
@@ -449,13 +445,23 @@ namespace OrchardCore.ResourceManagement
             }
 
             // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required
-            // location is Head, so too should Bar's location.
+            // location is Head, so too should Bar's location, similarly, if Foo is First positioned, Bar dependency should be too.
+            //
             // forge the effective require settings for this resource
             // (1) If a require exists for the resource, combine with it. Last settings in gets preference for its specified values.
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
-            settings = allResources.Contains(resource)
-                ? ((Tuple<RequireSettings, ResourcePosition>)allResources[resource]).Item1.Combine(settings)
-                : new RequireSettings(_options) { Type = resource.Type, Name = resource.Name }.Combine(settings);
+
+            var dependencySettings = (((RequireSettings)allResources[resource])
+                    ?.NewAndCombine(settings)
+                ?? new RequireSettings(_options)
+                {
+                    Name = resource.Name,
+                    Type = resource.Type,
+                    Position = resource.Position
+                }
+                    .Combine(settings))
+                    .CombinePosition(settings)
+                    ;
 
             if (dependencies != null)
             {
@@ -471,7 +477,7 @@ namespace OrchardCore.ResourceManagement
                     if (idx != -1)
                     {
                         name = d.Substring(0, idx);
-                        version = d.Substring(idx + 1);
+                        version = d[(idx + 1)..];
                     }
 
                     tempSettings.Type = resource.Type;
@@ -484,42 +490,54 @@ namespace OrchardCore.ResourceManagement
                         continue;
                     }
 
-                    if (expanding.Contains(dependency))
-                    {
-                        throw new InvalidOperationException($"Circular dependency of type '{settings.Type}' detected between {settings.Name} and {dependency.Name}");
-                    }
-
-                    ResourcePosition dependencyPosition;
-                    if (allResources.Contains(dependency))
-                    {
-                        dependencyPosition = ((Tuple<RequireSettings, ResourcePosition>)allResources[dependency]).Item2;
-                    }
-                    else
-                    {
-                        dependencyPosition = dependency.Position;
-                    }
-
-                    //If a First positioned resource depends on a ByDependency resource, position dependency First
-                    if (position == ResourcePosition.First && dependencyPosition == ResourcePosition.ByDependency)
-                    {
-                        dependencyPosition = ResourcePosition.First;
-                    }
-                    expanding.Push(dependency);
-                    ExpandDependencies(dependency, settings, allResources, expanding, ref dependencyPosition);
-                    expanding.Pop();
-                    //A First positioned resource cannot depend to a Last positioned resource
-                    if (position == ResourcePosition.First && dependencyPosition == ResourcePosition.Last)
-                    {
-                        throw new InvalidOperationException($"Invalid dependency position of type '{settings.Type}' for resource '{settings.Name}' positioned at {position} depending on dependency {dependency.Name} positioned at {dependencyPosition}");
-                    }
-                    // If a ByDependency positioned resource depends to a Last positioned resource, position it Last
-                    if (position == ResourcePosition.ByDependency && dependencyPosition == ResourcePosition.Last)
-                    {
-                        position = ResourcePosition.Last;
-                    }
+                    ExpandDependencies(dependency, dependencySettings, allResources);
                 }
             }
-            allResources[resource] = new Tuple<RequireSettings, ResourcePosition>(settings, position);
+
+            settings.UpdatePositionFromDependency(dependencySettings);
+            allResources.AddExpandedResource(resource, dependencySettings);
+        }
+
+        public class ResourceDictionary : OrderedDictionary
+        {
+            private readonly Stack<ResourceDefinition> _expanding = new Stack<ResourceDefinition>();
+
+            public int FirstCount { get; private set; }
+            public int LastCount { get; private set; }
+
+            public void AddExpandingResource(ResourceDefinition resource, RequireSettings settings)
+            {
+                if (_expanding.Contains(resource))
+                {
+                    throw new InvalidOperationException($"Circular dependency of type '{settings.Type}' detected between '{settings.Name}' and '{resource.Name}'");
+                }
+
+                _expanding.Push(resource);
+            }
+
+            public void AddExpandedResource(ResourceDefinition resource, RequireSettings settings)
+            {
+                _expanding.Pop();
+
+                if (settings.Position != ResourcePosition.ByDependency)
+                {
+                    var existing = (RequireSettings)this[resource];
+                    if (existing == null || existing.Position == ResourcePosition.ByDependency)
+                    {
+                        if (settings.Position == ResourcePosition.First)
+                        {
+                            FirstCount++;
+                        }
+
+                        if (settings.Position == ResourcePosition.Last)
+                        {
+                            LastCount++;
+                        }
+                    }
+                }
+
+                this[resource] = settings;
+            }
         }
 
         public void RegisterLink(LinkEntry link)
@@ -806,7 +824,7 @@ namespace OrchardCore.ResourceManagement
 
         private string GetResourceKey(string releasePath, string debugPath)
         {
-            if (_options.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
+            if (_options.DebugMode && !String.IsNullOrWhiteSpace(debugPath))
             {
                 return debugPath;
             }
