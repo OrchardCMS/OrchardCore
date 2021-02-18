@@ -117,7 +117,7 @@ namespace OrchardCore.AutoSetup
             var stringBuilder = new StringBuilder();
             foreach (var error in setupContext.Errors)
             {
-                stringBuilder.Append($"{error.Key} : '{error.Value}'");
+                stringBuilder.AppendLine($"{error.Key} : '{error.Value}'");
             }
 
             _logger.LogError("AutoSetup failed installing the site '{SiteName}' with errors: {Errors}", setupOptions.SiteName, stringBuilder);
