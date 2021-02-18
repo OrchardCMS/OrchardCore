@@ -5,13 +5,16 @@
 @{
     var user = Model.User as User;
     var currentUser = user.UserName == User.Identity.Name;
-    var hasManageUser = !await AuthorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user);
+    var hasManageUser = await AuthorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user);
 }
 <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">@T["Edit"]</a>
 
 @if (hasManageUser) 
 {
-    <a class="btn btn-danger btn-sm @(currentUser ? "disabled" : "")" asp-action="Delete" asp-route-id="@user.UserId" data-url-af="RemoveUrl UnsafeUrl" >@T["Delete"]</a>
+    if (!currentUser)
+    {
+        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.UserId" data-url-af="RemoveUrl UnsafeUrl" >@T["Delete"]</a>
+    }
     <a asp-action="EditPassword" asp-route-id="@user.UserId" class="btn btn-secondary btn-sm">@T["Edit Password"]</a>
 }
 
