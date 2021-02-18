@@ -25,6 +25,12 @@ namespace OrchardCore.AdminDashboard
                .Column<double>("Position")
             );
 
+            SchemaBuilder.AlterIndexTable<DashboardPartIndex>(table => table
+                .CreateIndex("IDX_DashboardPart_DocumentId",
+                    "DocumentId",
+                    nameof(DashboardPartIndex.Position))
+            );
+
             _contentDefinitionManager.AlterPartDefinition("DashboardPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a way to add widgets to a dashboard.")
@@ -37,7 +43,20 @@ namespace OrchardCore.AdminDashboard
         {
             await _recipeMigrator.ExecuteAsync("dashboard-widgets.recipe.json", this);
 
-            return 2;
+            // Shortcut other migration steps on new content definition schemas.
+            return 3;
         }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.AlterIndexTable<DashboardPartIndex>(table => table
+                .CreateIndex("IDX_DashboardPart_DocumentId",
+                    "DocumentId",
+                    nameof(DashboardPartIndex.Position))
+            );
+
+            return 3;
+        }        
     }
 }
