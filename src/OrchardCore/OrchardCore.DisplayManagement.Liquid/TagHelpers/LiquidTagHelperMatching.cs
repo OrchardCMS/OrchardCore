@@ -50,14 +50,17 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
                 name = name.Replace('_', '-');
 
-                if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal) && String.Equals(name, attr.Name.Substring(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
+                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
 
-                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
+                if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal))
                 {
-                    return true;
+                    if (name.AsSpan().Equals(attr.Name.AsSpan(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
                 }
 
                 return false;
