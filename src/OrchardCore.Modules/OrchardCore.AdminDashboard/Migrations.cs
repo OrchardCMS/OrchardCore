@@ -26,7 +26,7 @@ namespace OrchardCore.AdminDashboard
             );
 
             SchemaBuilder.AlterIndexTable<DashboardPartIndex>(table => table
-                .CreateIndex($"IDX_{nameof(DashboardPartIndex)}_{nameof(DashboardPartIndex.Position)}",
+                .CreateIndex("IDX_DashboardPart_DocumentId",
                     "DocumentId",
                     nameof(DashboardPartIndex.Position))
             );
@@ -51,7 +51,7 @@ namespace OrchardCore.AdminDashboard
         public int UpdateFrom2()
         {
             SchemaBuilder.AlterIndexTable<DashboardPartIndex>(table => table
-                .CreateIndex($"IDX_{nameof(DashboardPartIndex)}_{nameof(DashboardPartIndex.Position)}",
+                .CreateIndex("IDX_DashboardPart_DocumentId",
                     "DocumentId",
                     nameof(DashboardPartIndex.Position))
             );
