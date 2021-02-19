@@ -52,7 +52,8 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     {
                         var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
                         model.AppSecret = protector.Unprotect(settings.AppSecret);
-                    } catch (CryptographicException)
+                    } 
+                    catch (CryptographicException)
                     {
                         model.AppSecret = string.Empty;
                         model.CouldNotDecryptSettings = true;
