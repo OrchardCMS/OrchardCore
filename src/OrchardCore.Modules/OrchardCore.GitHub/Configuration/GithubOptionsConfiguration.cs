@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 
@@ -17,15 +20,18 @@ namespace OrchardCore.GitHub.Configuration
     {
         private readonly IGitHubAuthenticationService _githubAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public GitHubOptionsConfiguration(
             IGitHubAuthenticationService githubAuthenticationService,
             IDataProtectionProvider dataProtectionProvider,
+            ShellSettings shellSettings,
             ILogger<GitHubOptionsConfiguration> logger)
         {
             _githubAuthenticationService = githubAuthenticationService;
             _dataProtectionProvider = dataProtectionProvider;
+            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -53,7 +59,7 @@ namespace OrchardCore.GitHub.Configuration
         public void Configure(string name, GitHubOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, GitHubDefaults.AuthenticationScheme))
+            if (!String.Equals(name, GitHubDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -86,10 +92,14 @@ namespace OrchardCore.GitHub.Configuration
             var settings = await _githubAuthenticationService.GetSettingsAsync();
             if ((_githubAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogWarning("The Microsoft Account Authentication is not correctly configured.");
+                if (_shellSettings.State == TenantState.Running)
+                {
+                    _logger.LogWarning("The Microsoft Account Authentication is not correctly configured.");
+                }
 
                 return null;
             }
+
             return settings;
         }
     }

@@ -22,17 +22,25 @@ namespace OrchardCore.Twitter.Signin.Services
             return container.As<TwitterSigninSettings>();
         }
 
+        public async Task<TwitterSigninSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
+            return container.As<TwitterSigninSettings>();
+        }
+
         public async Task UpdateSettingsAsync(TwitterSigninSettings settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
+
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>
             {
                 aspect.CallbackPath = settings.CallbackPath;
             });
+
             await _siteService.UpdateSiteSettingsAsync(container);
         }
     }

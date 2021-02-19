@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 
@@ -18,13 +21,16 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         IConfigureNamedOptions<AzureADOptions>
     {
         private readonly IAzureADService _azureADService;
+        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public AzureADOptionsConfiguration(
             IAzureADService loginService,
+            ShellSettings shellSettings,
             ILogger<AzureADOptionsConfiguration> logger)
         {
             _azureADService = loginService;
+            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -52,7 +58,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, AzureADOptions options)
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
+            if (!String.Equals(name, AzureADDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -62,9 +68,11 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             {
                 return;
             }
+
             options.ClientId = loginSettings.AppId;
             options.TenantId = loginSettings.TenantId;
             options.Instance = "https://login.microsoftonline.com/";
+
             if (loginSettings.CallbackPath.HasValue)
             {
                 options.CallbackPath = loginSettings.CallbackPath;
@@ -75,10 +83,11 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, PolicySchemeOptions options)
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
+            if (!String.Equals(name, AzureADDefaults.AuthenticationScheme))
             {
                 return;
             }
+
             options.ForwardDefault = "Identity.External";
             options.ForwardChallenge = AzureADDefaults.OpenIdScheme;
         }
@@ -89,9 +98,14 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             var settings = await _azureADService.GetSettingsAsync();
             if (_azureADService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
+                if (_shellSettings.State == TenantState.Running)
+                {
+                    _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
+                }
+
                 return null;
             }
+
             return settings;
         }
     }
