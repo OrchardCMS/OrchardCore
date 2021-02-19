@@ -40,7 +40,7 @@ namespace OrchardCore.Rules.Drivers
             return Task.FromResult<IDisplayResult>(null);
         }
 
-        ValueTask<bool> IConditionEvaluator.EvaluateAsync(Condition condition)
+        public ValueTask<bool> EvaluateAsync(Condition condition)
             => EvaluateAsync(condition as ContentTypeCondition);
 
         private ValueTask<bool> EvaluateAsync(ContentTypeCondition condition)
