@@ -16,6 +16,6 @@ namespace OrchardCore.Twitter.ViewModels
         [Required(AllowEmptyStrings = false, ErrorMessage = "Access token secret is required")]
         public string AccessTokenSecret { get; set; }
 
-        public bool HasDecryptionError { get; set; };
+        public bool HasDecryptionError { get; set; }
     }
 }
