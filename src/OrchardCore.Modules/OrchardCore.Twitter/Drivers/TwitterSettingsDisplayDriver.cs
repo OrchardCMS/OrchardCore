@@ -55,7 +55,7 @@ namespace OrchardCore.Twitter.Drivers
                         catch (CryptographicException)
                         {
                             model.APISecretKey = string.Empty;
-                            model.CouldNotDecryptSettings = true;
+                            model.HasDecryptionError = true;
                         }
                     }
                     else
@@ -73,7 +73,7 @@ namespace OrchardCore.Twitter.Drivers
                         catch (CryptographicException)
                         {
                             model.AccessTokenSecret = string.Empty;
-                            model.CouldNotDecryptSettings = true;
+                            model.HasDecryptionError = true;
                         }
                     }
                     else

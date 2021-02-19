@@ -6,7 +6,7 @@
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Microsoft.Authentication/#microsoft-account" target="_blank">@T["See documentation"]</a>
 </p>
 
-@if (Model.CouldNotDecryptSettings)
+@if (Model.HasDecryptionError)
 {
     <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
 }

@@ -55,7 +55,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     } catch (CryptographicException)
                     {
                         model.AppSecret = string.Empty;
-                        model.CouldNotDecryptSettings = true;
+                        model.HasDecryptionError = true;
                     } 
                 }
                 else

@@ -15,6 +15,6 @@ namespace OrchardCore.Google.Authentication.ViewModels
 
         public bool SaveTokens { get; set; }
 
-        public bool CouldNotDecryptSettings { get; set; } = false;
+        public bool HasDecryptionError { get; set; }
     }
 }

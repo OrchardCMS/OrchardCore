@@ -56,7 +56,7 @@ namespace OrchardCore.Google.Authentication.Drivers
                     catch (CryptographicException)
                     {
                         model.ClientSecret = string.Empty;
-                        model.CouldNotDecryptSettings = true;
+                        model.HasDecryptionError = true;
                     }
                 }
                 else

@@ -61,7 +61,7 @@ namespace OrchardCore.Facebook.Drivers
                     catch (CryptographicException)
                     {
                         model.AppSecret = string.Empty;
-                        model.CouldNotDecryptSettings = true;
+                        model.HasDecryptionError = true;
                     }
                 }
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);

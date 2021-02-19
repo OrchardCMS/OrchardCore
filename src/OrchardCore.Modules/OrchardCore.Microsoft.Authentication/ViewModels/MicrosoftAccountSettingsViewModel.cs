@@ -15,6 +15,6 @@ namespace OrchardCore.Microsoft.Authentication.ViewModels
 
         public bool SaveTokens { get; set; }
 
-        public bool CouldNotDecryptSettings { get; set; } = true;
+        public bool HasDecryptionError { get; set; }
     }
 }

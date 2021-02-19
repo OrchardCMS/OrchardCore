@@ -4,7 +4,7 @@
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Twitter/#twitter-integration" target="_blank">@T["See documentation"]</a></p>
 
-@if (Model.CouldNotDecryptSettings)
+@if (Model.HasDecryptionError)
 {
     <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
 }

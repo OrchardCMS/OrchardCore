@@ -19,6 +19,6 @@ namespace OrchardCore.Facebook.ViewModels
         [RegularExpression(@"(v)\d+\.\d+")]
         public string Version { get; set; }
 
-        public bool CouldNotDecryptSettings { get; set; } = false;
+        public bool HasDecryptionError { get; set; }
     }
 }
