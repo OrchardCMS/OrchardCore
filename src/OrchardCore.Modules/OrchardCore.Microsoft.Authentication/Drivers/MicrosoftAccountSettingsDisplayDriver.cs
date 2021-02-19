@@ -56,7 +56,8 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     {
                         var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
                         model.AppSecret = protector.Unprotect(settings.AppSecret);
-                    } catch (CryptographicException)
+                    } 
+                    catch (CryptographicException)
                     {
                         _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
                         model.AppSecret = string.Empty;
