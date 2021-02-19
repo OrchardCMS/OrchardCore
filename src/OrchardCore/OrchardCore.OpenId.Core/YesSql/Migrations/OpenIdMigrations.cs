@@ -1,5 +1,8 @@
 using System;
+using Microsoft.Extensions.Options;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.OpenId.YesSql.Indexes;
 using YesSql.Sql;
 
@@ -7,6 +10,13 @@ namespace OrchardCore.OpenId.YesSql.Migrations
 {
     public class OpenIdMigrations : DataMigration
     {
+        private readonly StoreCollectionOptions _options;
+
+        public OpenIdMigrations(IOptions<StoreCollectionOptions> options)
+        {
+            _options = options.Value;
+        }
+
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable<OpenIdApplicationIndex>(table => table
@@ -72,6 +82,8 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<string>(nameof(OpenIdScopeByResourceIndex.Resource))
                 .Column<int>(nameof(OpenIdScopeByResourceIndex.Count)));
 
+            var tokenCollection = _options.For<OpenIdToken>();
+
             SchemaBuilder.CreateMapIndexTable<OpenIdTokenIndex>(table => table
                 .Column<string>(nameof(OpenIdTokenIndex.TokenId), column => column.WithLength(48))
                 .Column<string>(nameof(OpenIdTokenIndex.ApplicationId), column => column.WithLength(48))
@@ -81,14 +93,16 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<string>(nameof(OpenIdTokenIndex.Status))
                 .Column<string>(nameof(OpenIdTokenIndex.Subject))
                 .Column<string>(nameof(OpenIdTokenIndex.Type))
-                .Column<DateTime>(nameof(OpenIdTokenIndex.CreationDate)));
+                .Column<DateTime>(nameof(OpenIdTokenIndex.CreationDate)),
+                collection: tokenCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
                 .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.ApplicationId),
                     nameof(OpenIdTokenIndex.Status),
-                    nameof(OpenIdTokenIndex.Subject))
+                    nameof(OpenIdTokenIndex.Subject)),
+                collection: tokenCollection
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
@@ -98,14 +112,16 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                     nameof(OpenIdTokenIndex.Status),
                     nameof(OpenIdTokenIndex.Type),
                     nameof(OpenIdTokenIndex.CreationDate),
-                    nameof(OpenIdTokenIndex.ExpirationDate))
+                    nameof(OpenIdTokenIndex.ExpirationDate)),
+                collection: tokenCollection
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
                 .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_TokenId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.TokenId),
-                    nameof(OpenIdTokenIndex.ReferenceId))
+                    nameof(OpenIdTokenIndex.ReferenceId)),
+                collection: tokenCollection
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -116,7 +132,8 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         public int UpdateFrom1()
         {
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .AddColumn<string>(nameof(OpenIdTokenIndex.Type)));
+                .AddColumn<string>(nameof(OpenIdTokenIndex.Type)),
+                collection: _options.For<OpenIdToken>());
 
             return 2;
         }
@@ -154,7 +171,8 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .AddColumn<DateTime>(nameof(OpenIdAuthorizationIndex.CreationDate)));
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .AddColumn<DateTime>(nameof(OpenIdTokenIndex.CreationDate)));
+                .AddColumn<DateTime>(nameof(OpenIdTokenIndex.CreationDate)),
+                collection: _options.For<OpenIdToken>());
 
             return 4;
         }
@@ -193,12 +211,15 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                     nameof(OpenIdScopeIndex.ScopeId))
             );
 
+            var tokenCollection = _options.For<OpenIdToken>();
+
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
                 .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.ApplicationId),
                     nameof(OpenIdTokenIndex.Status),
-                    nameof(OpenIdTokenIndex.Subject))
+                    nameof(OpenIdTokenIndex.Subject)),
+                collection: tokenCollection
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
@@ -208,14 +229,16 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                     nameof(OpenIdTokenIndex.Status),
                     nameof(OpenIdTokenIndex.Type),
                     nameof(OpenIdTokenIndex.CreationDate),
-                    nameof(OpenIdTokenIndex.ExpirationDate))
+                    nameof(OpenIdTokenIndex.ExpirationDate)),
+                collection: tokenCollection
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
                 .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_TokenId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.TokenId),
-                    nameof(OpenIdTokenIndex.ReferenceId))
+                    nameof(OpenIdTokenIndex.ReferenceId)),
+                collection: tokenCollection
             );
 
             return 5;

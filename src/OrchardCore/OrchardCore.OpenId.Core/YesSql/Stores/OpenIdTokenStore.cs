@@ -8,8 +8,10 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
+using OrchardCore.Data;
 using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
@@ -23,10 +25,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
         where TToken : OpenIdToken, new()
     {
         private readonly ISession _session;
+        private readonly string _collection;
 
-        public OpenIdTokenStore(ISession session)
+        public OpenIdTokenStore(ISession session, IOptions<StoreCollectionOptions> options)
         {
-            _session = session;
+            _session = session; 
+            _collection = options.Value.For<OpenIdToken>();
         }
 
         /// <inheritdoc/>
@@ -34,7 +38,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TToken>().CountAsync();
+            return await _session.Query<TToken>(collection: _collection).CountAsync();
         }
 
         /// <inheritdoc/>
@@ -51,7 +55,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(token);
+            _session.Save(token, collection: _collection);
             await _session.CommitAsync();
         }
 
@@ -65,7 +69,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Delete(token);
+            _session.Delete(token, collection: _collection);
             await _session.CommitAsync();
         }
 
@@ -86,7 +90,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TToken, OpenIdTokenIndex>(
-                index => index.ApplicationId == client && index.Subject == subject).ToAsyncEnumerable();
+                index => index.ApplicationId == client && index.Subject == subject, collection: _collection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -111,7 +115,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TToken, OpenIdTokenIndex>(
-                index => index.ApplicationId == client && index.Subject == subject && index.Status == status).ToAsyncEnumerable();
+                index => index.ApplicationId == client && index.Subject == subject && index.Status == status, collection: _collection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -142,7 +146,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             return _session.Query<TToken, OpenIdTokenIndex>(
                 index => index.ApplicationId == client && index.Subject == subject &&
-                         index.Status == status && index.Type == type).ToAsyncEnumerable();
+                         index.Status == status && index.Type == type, collection: _collection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -155,7 +159,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TToken, OpenIdTokenIndex>(index => index.ApplicationId == identifier).ToAsyncEnumerable();
+            return _session.Query<TToken, OpenIdTokenIndex>(index => index.ApplicationId == identifier, collection: _collection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -168,7 +172,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TToken, OpenIdTokenIndex>(index => index.AuthorizationId == identifier).ToAsyncEnumerable();
+            return _session.Query<TToken, OpenIdTokenIndex>(index => index.AuthorizationId == identifier, collection: _collection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -181,7 +185,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TToken, OpenIdTokenIndex>(index => index.ReferenceId == identifier).FirstOrDefaultAsync();
+            return await _session.Query<TToken, OpenIdTokenIndex>(index => index.ReferenceId == identifier, collection: _collection).FirstOrDefaultAsync();
         }
 
         /// <inheritdoc/>
@@ -194,7 +198,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TToken, OpenIdTokenIndex>(index => index.TokenId == identifier).FirstOrDefaultAsync();
+            return await _session.Query<TToken, OpenIdTokenIndex>(index => index.TokenId == identifier, collection: _collection).FirstOrDefaultAsync();
         }
 
         /// <inheritdoc/>
@@ -207,7 +211,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TToken>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return await _session.GetAsync<TToken>(int.Parse(identifier, CultureInfo.InvariantCulture), collection: _collection);
         }
 
         /// <inheritdoc/>
@@ -220,7 +224,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TToken, OpenIdTokenIndex>(index => index.Subject == subject).ToAsyncEnumerable();
+            return _session.Query<TToken, OpenIdTokenIndex>(index => index.Subject == subject, collection: _collection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -400,7 +404,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TToken> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            var query = _session.Query<TToken>();
+            var query = _session.Query<TToken>(collection: _collection);
 
             if (offset.HasValue)
             {
@@ -440,11 +444,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
                              token.AuthorizationId.IsNotIn<OpenIdAuthorizationIndex>(
                                 authorization => authorization.AuthorizationId,
                                 authorization => authorization.Status == Statuses.Valid) ||
-                             token.ExpirationDate < DateTime.UtcNow)).Skip(offset).Take(1_000).ListAsync();
+                             token.ExpirationDate < DateTime.UtcNow), collection: _collection).Skip(offset).Take(1_000).ListAsync();
 
                 foreach (var token in tokens)
                 {
-                    _session.Delete(token);
+                    _session.Delete(token, collection: _collection);
                 }
 
                 try
@@ -661,7 +665,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(token, checkConcurrency: true);
+            _session.Save(token, checkConcurrency: true, collection: _collection);
 
             try
             {
