@@ -19,6 +19,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<LuceneQueryFieldTypeProvider> _logger;
+        private const string QuerySuffix = "Query";
 
         public LuceneQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<LuceneQueryFieldTypeProvider> logger)
         {
@@ -89,7 +90,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             var typetype = new ObjectGraphType<JObject>
             {
-                Name = query.Name + "Query"
+                Name = query.Name + QuerySuffix
             };
 
             foreach (JProperty child in properties.Children())
@@ -133,7 +134,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
-                Name = query.Name + "Query",
+                Name = query.Name + QuerySuffix,
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
@@ -169,12 +170,12 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         new QueryArgument<StringGraphType> { Name = "parameters" }
                     ),
 
-                Name = query.Name,
+                Name = query.Name + QuerySuffix,
                 ResolvedType = typetype.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
                     var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(context.FieldName);
+                    var iquery = await queryManager.GetQueryAsync(context.FieldName[0..^5]);
 
                     var parameters = context.GetArgument<string>("parameters");
 

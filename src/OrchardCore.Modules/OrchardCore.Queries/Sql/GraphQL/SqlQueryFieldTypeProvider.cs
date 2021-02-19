@@ -22,6 +22,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<SqlQueryFieldTypeProvider> _logger;
+        private const string QuerySuffix = "Query";
 
         public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<SqlQueryFieldTypeProvider> logger)
         {
@@ -90,7 +91,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
             var typetype = new ObjectGraphType<JObject>
             {
-                Name = query.Name + "Query"
+                Name = query.Name + QuerySuffix
             };
 
             foreach (JProperty child in properties.Children())
@@ -134,7 +135,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
-                Name = query.Name + "Query",
+                Name = query.Name + QuerySuffix,
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
@@ -170,12 +171,12 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
-                Name = query.Name,
+                Name = query.Name + QuerySuffix,
                 ResolvedType = typetype.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
                     var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(context.FieldName);
+                    var iquery = await queryManager.GetQueryAsync(context.FieldName[0..^5]);
 
                     var parameters = context.GetArgument<string>("parameters");
 
