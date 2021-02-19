@@ -139,7 +139,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
                     var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(context.FieldName.Substring(0, context.FieldName.Length - 5));
+                    var iquery = await queryManager.GetQueryAsync(context.FieldName[0..^5]);
 
                     var parameters = context.GetArgument<string>("parameters");
 

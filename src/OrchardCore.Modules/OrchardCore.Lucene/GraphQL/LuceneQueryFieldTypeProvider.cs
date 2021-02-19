@@ -89,7 +89,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             var typetype = new ObjectGraphType<JObject>
             {
-                Name = query.Name
+                Name = query.Name + "Query"
             };
 
             foreach (JProperty child in properties.Children())
@@ -133,12 +133,12 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
-                Name = query.Name,
+                Name = query.Name + "Query",
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
                     var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(context.FieldName);
+                    var iquery = await queryManager.GetQueryAsync(context.FieldName[0..^5]);
 
                     var parameters = context.GetArgument<string>("parameters");
 
