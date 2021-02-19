@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Models;
@@ -23,13 +24,13 @@ namespace OrchardCore.Workflows.Expressions
             ILiquidTemplateManager liquidTemplateManager,
             IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
             ILogger<LiquidWorkflowExpressionEvaluator> logger,
-            TemplateOptions templateOptions
+            IOptions<TemplateOptions> templateOptions
         )
         {
             _liquidTemplateManager = liquidTemplateManager;
             _workflowContextHandlers = workflowContextHandlers;
             _logger = logger;
-            _templateOptions = templateOptions;
+            _templateOptions = templateOptions.Value;
         }
 
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder)
