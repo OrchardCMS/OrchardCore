@@ -11,6 +11,7 @@ using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -37,17 +38,19 @@ namespace OrchardCore.Alias
                     {
                         var session = context.Services.GetRequiredService<ISession>();
 
-                        var aliasPartIndex = await session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
-                        var contentItemId = aliasPartIndex?.ContentItemId;
+                        var contentItem = await session.Query<ContentItem, AliasPartIndex>(x =>
+                            x.Published && x.Alias == alias.ToLowerInvariant())
+                        .FirstOrDefaultAsync();
 
-                        if (contentItemId == null)
+                        if (contentItem == null)
                         {
                             return NilValue.Instance;
                         }
 
                         var contentManager = context.Services.GetRequiredService<IContentManager>();
+                        contentItem = await contentManager.LoadAsync(contentItem);
 
-                        return FluidValue.Create(await contentManager.GetAsync(contentItemId), context.Options);
+                        return new ObjectValue(contentItem);
                     });
                 });
             });

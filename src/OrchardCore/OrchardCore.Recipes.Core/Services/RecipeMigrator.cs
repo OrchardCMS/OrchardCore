@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,7 +39,7 @@ namespace OrchardCore.Recipes.Services
             recipeDescriptor.RequireNewScope = false;
 
             var executionId = Guid.NewGuid().ToString("n");
-            return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
+            return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
         }
     }
 }

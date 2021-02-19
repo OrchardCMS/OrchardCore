@@ -265,7 +265,10 @@ namespace OrchardCore.Autoroute.Handlers
                             path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
                         }
 
-                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path));
+                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path)
+                        {
+                            DocumentId = contentItem.Id
+                        });
                     }
 
                     var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;

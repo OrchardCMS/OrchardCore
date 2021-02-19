@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
@@ -155,27 +156,30 @@ namespace OrchardCore.Setup.Controllers
             var setupContext = new SetupContext
             {
                 ShellSettings = _shellSettings,
-                SiteName = model.SiteName,
                 EnabledFeatures = null, // default list,
-                AdminUsername = model.UserName,
-                AdminEmail = model.Email,
-                AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
                 Recipe = selectedRecipe,
-                SiteTimeZone = model.SiteTimeZone
+                Properties = new Dictionary<string, object>
+                {
+                    { SetupConstants.SiteName, model.SiteName },
+                    { SetupConstants.AdminUsername, model.UserName },
+                    { SetupConstants.AdminEmail, model.Email },
+                    { SetupConstants.AdminPassword, model.Password },
+                    { SetupConstants.SiteTimeZone, model.SiteTimeZone },
+                }
             };
 
             if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
-                setupContext.DatabaseProvider = _shellSettings["DatabaseProvider"];
-                setupContext.DatabaseConnectionString = _shellSettings["ConnectionString"];
-                setupContext.DatabaseTablePrefix = _shellSettings["TablePrefix"];
+                setupContext.Properties[SetupConstants.DatabaseProvider] = _shellSettings["DatabaseProvider"];
+                setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
+                setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
             }
             else
             {
-                setupContext.DatabaseProvider = model.DatabaseProvider;
-                setupContext.DatabaseConnectionString = model.ConnectionString;
-                setupContext.DatabaseTablePrefix = model.TablePrefix;
+                setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
+                setupContext.Properties[SetupConstants.DatabaseConnectionString] = model.ConnectionString;
+                setupContext.Properties[SetupConstants.DatabaseTablePrefix] = model.TablePrefix;
             }
 
             var executionId = await _setupService.SetupAsync(setupContext);

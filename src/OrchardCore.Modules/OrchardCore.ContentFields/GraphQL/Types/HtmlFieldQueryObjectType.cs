@@ -24,7 +24,7 @@ namespace OrchardCore.ContentFields.GraphQL
     {
         public HtmlFieldQueryObjectType(IStringLocalizer<HtmlFieldQueryObjectType> S)
         {
-            Name = "HtmlBodyPart";
+            Name = nameof(HtmlField);
             Description = S["Content stored as HTML."];
 
             Field<StringGraphType>()
