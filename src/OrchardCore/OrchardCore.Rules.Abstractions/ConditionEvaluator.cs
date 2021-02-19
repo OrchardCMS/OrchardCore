@@ -10,9 +10,7 @@ namespace OrchardCore.Rules
     public abstract class ConditionEvaluator<T> : IConditionEvaluator where T : Condition
     {
         protected static readonly ValueTask<bool> False = new ValueTask<bool>(false);
-        protected static readonly ValueTask<bool> True = new ValueTask<bool>(true);
-        protected static async ValueTask<bool> Awaited(ValueTask<bool> task)
-                => await task;        
+        protected static readonly ValueTask<bool> True = new ValueTask<bool>(true);     
 
         ValueTask<bool> IConditionEvaluator.EvaluateAsync(Condition condition)
             => EvaluateAsync(condition as T);
