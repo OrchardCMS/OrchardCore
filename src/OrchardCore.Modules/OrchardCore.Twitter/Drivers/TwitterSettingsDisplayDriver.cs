@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -20,19 +21,22 @@ namespace OrchardCore.Twitter.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly ILogger _logger;
 
         public TwitterSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            ILogger<TwitterSettingsDisplayDriver> logger)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _logger = logger;
         }
 
         public override async Task<IDisplayResult> EditAsync(TwitterSettings settings, BuildEditorContext context)
@@ -54,6 +58,7 @@ namespace OrchardCore.Twitter.Drivers
                         }
                         catch (CryptographicException)
                         {
+                            _logger.LogError("The API secret key could not be decrypted. It may have been encrypted using a different key.");
                             model.APISecretKey = string.Empty;
                             model.HasDecryptionError = true;
                         }
@@ -72,6 +77,7 @@ namespace OrchardCore.Twitter.Drivers
                         }
                         catch (CryptographicException)
                         {
+                            _logger.LogError("The access token secret could not be decrypted. It may have been encrypted using a different key.");
                             model.AccessTokenSecret = string.Empty;
                             model.HasDecryptionError = true;
                         }
