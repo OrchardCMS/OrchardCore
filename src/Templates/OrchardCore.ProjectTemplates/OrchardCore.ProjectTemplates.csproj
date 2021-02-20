@@ -92,7 +92,7 @@
 
     <!-- Update the OrchardVersion in the templates to reflect the newly built version number -->
     <ReplaceFileText InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateOrchardVersion\}" ReplacementText="$(Version)" />
-    <!-- Replace the default target framework for the template based on which TFM is being built.  The resulting nuget package should have templates with the correct corresponding TFM defaulted in the template. -->
+    <!-- Replace the default target framework for the template based on which TFM is being built. The resulting nuget package should have templates with the correct corresponding TFM defaulted in the template. -->
     <ReplaceFileText InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateTargetFramework\}" ReplacementText="$(TargetFramework)" />
   </Target>
 </Project>
