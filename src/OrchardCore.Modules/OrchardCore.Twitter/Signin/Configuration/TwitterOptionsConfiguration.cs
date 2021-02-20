@@ -78,10 +78,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
             }
             catch
             {
-                if (_shellSettings.State == TenantState.Running)
-                {
-                    _logger.LogError("The Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
-                }
+                _logger.LogError("The Twitter Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
             }
 
             if (settings.Item2.CallbackPath.HasValue)

@@ -65,8 +65,12 @@ namespace OrchardCore.GitHub.Configuration
             }
 
             var loginSettings = GetGitHubAuthenticationSettingsAsync().GetAwaiter().GetResult();
+            if (loginSettings == null)
+            {
+                return;
+            }
 
-            options.ClientId = loginSettings?.ClientID ?? string.Empty;
+            options.ClientId = loginSettings.ClientID;
 
             try
             {
@@ -74,7 +78,7 @@ namespace OrchardCore.GitHub.Configuration
             }
             catch
             {
-                _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The GitHub Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
             }
 
             if (loginSettings.CallbackPath.HasValue)
@@ -94,7 +98,7 @@ namespace OrchardCore.GitHub.Configuration
             {
                 if (_shellSettings.State == TenantState.Running)
                 {
-                    _logger.LogWarning("The Microsoft Account Authentication is not correctly configured.");
+                    _logger.LogWarning("GitHub Authentication is not correctly configured.");
                 }
 
                 return null;
