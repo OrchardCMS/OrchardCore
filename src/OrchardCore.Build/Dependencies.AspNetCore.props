@@ -15,7 +15,7 @@
     <Otherwise>
       <!--
       Fallback when not targetting .net 5.0.
-      At this time, that would mean .net core 3.1.  If there are more target frameworks in the future,
+      At this time, that would mean .net core 3.1. If there are more target frameworks in the future,
       this logic should change slightly.
       -->
       <PropertyGroup>
