@@ -19,8 +19,8 @@
     <!--
       The previous code used a nuget package to allow the "RoslynCodeTaskFactory" (see the ReplaceFileText task definition below) to be used.
       The latest versions of the build tooling have now incorporated the RoslynCodeTaskFactory into its own codebase, and thus no package references are needed now.
-      This led to the NU5128 warning, which is now being ignored.  See the following error message.
-      The error message is not accurate, as it indicates there is no content.  It should say assemblies instead, since we have content but no assemblies.
+      This led to the NU5128 warning, which is now being ignored. See the following error message.
+      The error message is not accurate, as it indicates there is no content. It should say assemblies instead, since we have content but no assemblies.
         NU5128 warning: Ignore since the project template package doesn't contain content or references to other packages
     -->
     <NoWarn>CS8021,CS2008,NU5128</NoWarn>
