@@ -62,7 +62,8 @@ namespace OrchardCore.Recipes.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x);
 
-            recipes = recipes.Where(c => !c.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase));
+            // Do not display the setup recipes and the ones whith the hidden tag
+            recipes = recipes.Where(r => r.IsSetupRecipe == false && !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase));
 
             var features = _extensionManager.GetFeatures();
 
@@ -109,11 +110,11 @@ namespace OrchardCore.Recipes.Controllers
 
             try
             {
-                await _recipeExecutor.ExecuteAsync(executionId, recipe, new
+                await _recipeExecutor.ExecuteAsync(executionId, recipe, new Dictionary<string, object>
                 {
-                    site.SiteName,
-                    AdminUsername = User.Identity.Name,
-                    AdminUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    { "SiteName", site.SiteName },
+                    { "AdminUsername", User.Identity.Name },
+                    { "AdminUserId", User.FindFirstValue(ClaimTypes.NameIdentifier) }
                 },
                 CancellationToken.None);
             }
