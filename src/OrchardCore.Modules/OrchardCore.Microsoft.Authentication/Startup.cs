@@ -58,7 +58,7 @@ namespace OrchardCore.Microsoft.Authentication
                 // Orchard-specific initializers:
 
                 #pragma warning disable CS0618
-                // The net5.0 5.0.3 build obsoletes AzureADOptions and AzureADDefaults.  Microsoft.Identity.Web should be used instead.
+                // The net5.0 5.0.3 build obsoletes 'AzureADOptions' and 'AzureADDefaults', 'Microsoft.Identity.Web' should be used instead.
                 // The build warning is disabled temporarily until the code can be migrated.
 
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, AzureADOptionsConfiguration>(),
