@@ -1,8 +1,8 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.21.2(67b5a8116f3c0bace36b180e524e05bb750a16d8)
+ * Version: 0.22.3(479b2f825538cfa990b511b97574cb96d24a9db4)
  * Released under the MIT license
- * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
+ * https://github.com/microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
 
 /*---------------------------------------------------------
@@ -24,6 +24,9 @@ define("vs/editor/editor.main.nls", {
 		"input",
 		"Preserve Case"
 	],
+	"vs/base/browser/ui/iconLabel/iconLabel": [
+		"Loading..."
+	],
 	"vs/base/browser/ui/inputbox/inputBox": [
 		"Error: {0}",
 		"Warning: {0}",
@@ -41,6 +44,9 @@ define("vs/editor/editor.main.nls", {
 		"Enable Filter on Type",
 		"No elements found",
 		"Matched {0} out of {1} elements"
+	],
+	"vs/base/common/actions": [
+		"(empty)"
 	],
 	"vs/base/common/errorMessage": [
 		"{0}: {1}",
@@ -106,9 +112,14 @@ define("vs/editor/editor.main.nls", {
 		"The number of cursors has been limited to {0}."
 	],
 	"vs/editor/browser/widget/diffEditorWidget": [
+		"Line decoration for inserts in the diff editor.",
+		"Line decoration for removals in the diff editor.",
 		"Cannot compare files because one file is too large."
 	],
 	"vs/editor/browser/widget/diffReview": [
+		"Icon for 'Insert' in diff review.",
+		"Icon for 'Remove' in diff review.",
+		"Icon for 'Close' in diff review.",
 		"Close",
 		"no lines changed",
 		"1 line changed",
@@ -137,6 +148,10 @@ define("vs/editor/editor.main.nls", {
 		"Remove trailing auto inserted whitespace.",
 		"Special handling for large files to disable certain memory intensive features.",
 		"Controls whether completions should be computed based on words in the document.",
+		"Only suggest words from the active document.",
+		"Suggest words from all open documents of the same language.",
+		"Suggest words from all open documents.",
+		"Controls form what documents word based completions are computed.",
 		"Semantic highlighting enabled for all color themes.",
 		"Semantic highlighting disabled for all color themes.",
 		"Semantic highlighting is configured by the current color theme's `semanticHighlighting` setting.",
@@ -147,13 +162,16 @@ define("vs/editor/editor.main.nls", {
 		"Controls whether the diff editor shows the diff side by side or inline.",
 		"When enabled, the diff editor ignores changes in leading or trailing whitespace.",
 		"Controls whether the diff editor shows +/- indicators for added/removed changes.",
-		"Controls whether the editor shows CodeLens."
+		"Controls whether the editor shows CodeLens.",
+		"Lines will never wrap.",
+		"Lines will wrap at the viewport width.",
+		"Lines will wrap according to the `#editor.wordWrap#` setting."
 	],
 	"vs/editor/common/config/editorOptions": [
 		"The editor will use platform APIs to detect when a Screen Reader is attached.",
-		"The editor will be permanently optimized for usage with a Screen Reader.",
+		"The editor will be permanently optimized for usage with a Screen Reader. Word wrapping will be disabled.",
 		"The editor will never be optimized for usage with a Screen Reader.",
-		"Controls whether the editor should run in a mode where it is optimized for screen readers.",
+		"Controls whether the editor should run in a mode where it is optimized for screen readers. Setting to on will disable word wrapping.",
 		"Controls whether a space character is inserted when commenting.",
 		"Controls if empty lines should be ignored with toggle, add or remove actions for line comments.",
 		"Controls whether copying without a selection copies the current line.",
@@ -166,9 +184,9 @@ define("vs/editor/editor.main.nls", {
 		"Controls whether the Find Widget should read or modify the shared find clipboard on macOS.",
 		"Controls whether the Find Widget should add extra lines on top of the editor. When true, you can scroll beyond the first line when the Find Widget is visible.",
 		"Controls whether the search automatically restarts from the beginning (or the end) when no further matches can be found.",
-		"Enables/Disables font ligatures.",
-		"Explicit font-feature-settings.",
-		"Configures font ligatures or font features.",
+		"Enables/Disables font ligatures ('calt' and 'liga' font features). Change this to a string for fine-grained control of the 'font-feature-settings' CSS property.",
+		"Explicit 'font-feature-settings' CSS property. A boolean can be passed instead if one only needs to turn on/off ligatures.",
+		"Configures font ligatures or font features. Can be either a boolean to enable/disable ligatures or a string for the value of the CSS 'font-feature-settings' property.",
 		"Controls the font size in pixels.",
 		"Only \"normal\" and \"bold\" keywords or numbers between 1 and 1000 are allowed.",
 		"Controls the font weight. Accepts \"normal\" and \"bold\" keywords or numbers between 1 and 1000.",
@@ -190,6 +208,9 @@ define("vs/editor/editor.main.nls", {
 		"Controls the delay in milliseconds after which the hover is shown.",
 		"Controls whether the hover should remain visible when mouse is moved over it.",
 		"Enables the code action lightbulb in the editor.",
+		"Enables the inline hints in the editor.",
+		"Controls font size of inline hints in the editor. When set to `0`, the 90% of `#editor.fontSize#` is used.",
+		"Controls font family of inline hints in the editor.",
 		"Controls the line height. Use 0 to compute the line height from the font size.",
 		"Controls whether the minimap is shown.",
 		"The minimap has the same size as the editor contents (and might scroll).",
@@ -225,7 +246,9 @@ define("vs/editor/editor.main.nls", {
 		"Controls whether remembered suggestion selections are shared between multiple workspaces and windows (needs `#editor.suggestSelection#`).",
 		"Controls whether an active snippet prevents quick suggestions.",
 		"Controls whether to show or hide icons in suggestions.",
-		"Controls how many suggestions IntelliSense will show before showing a scrollbar (maximum 15).",
+		"Controls the visibility of the status bar at the bottom of the suggest widget.",
+		"Controls whether suggest details show inline with the label or only in the details widget",
+		"This setting is deprecated. The suggest widget can now be resized.",
 		"This setting is deprecated, please use separate settings like 'editor.suggest.showKeywords' or 'editor.suggest.showSnippets' instead.",
 		"When enabled IntelliSense shows `method`-suggestions.",
 		"When enabled IntelliSense shows `function`-suggestions.",
@@ -255,7 +278,7 @@ define("vs/editor/editor.main.nls", {
 		"When enabled IntelliSense shows `snippet`-suggestions.",
 		"When enabled IntelliSense shows `user`-suggestions.",
 		"When enabled IntelliSense shows `issues`-suggestions.",
-		"Controls the visibility of the status bar at the bottom of the suggest widget.",
+		"Whether leading and trailing whitespace should always be selected.",
 		"Controls whether suggestions should be accepted on commit characters. For example, in JavaScript, the semi-colon (`;`) can be a commit character that accepts a suggestion and types that character.",
 		"Only accept a suggestion with `Enter` when it makes a textual change.",
 		"Controls whether suggestions should be accepted on `Enter`, in addition to `Tab`. Helps to avoid ambiguity between inserting new lines or accepting suggestions.",
@@ -278,15 +301,18 @@ define("vs/editor/editor.main.nls", {
 		"Use language configurations to determine when to automatically surround selections.",
 		"Surround with quotes but not brackets.",
 		"Surround with brackets but not quotes.",
-		"Controls whether the editor should automatically surround selections.",
+		"Controls whether the editor should automatically surround selections when typing quotes or brackets.",
+		"Emulate selection behaviour of tab characters when using spaces for indentation. Selection will stick to tab stops.",
 		"Controls whether the editor shows CodeLens.",
+		"Controls the font family for CodeLens.",
+		"Controls the font size in pixels for CodeLens. When set to `0`, the 90% of `#editor.fontSize#` is used.",
 		"Controls whether the editor should render the inline color decorators and color picker.",
 		"Enable that the selection with the mouse and keys is doing column selection.",
 		"Controls whether syntax highlighting should be copied into the clipboard.",
 		"Control the cursor animation style.",
 		"Controls whether the smooth caret animation should be enabled.",
 		"Controls the cursor style.",
-		"Controls the minimal number of visible leading and trailing lines surrounding the cursor. Known as 'scrollOff' or `scrollOffset` in some other editors.",
+		"Controls the minimal number of visible leading and trailing lines surrounding the cursor. Known as 'scrollOff' or 'scrollOffset' in some other editors.",
 		"`cursorSurroundingLines` is enforced only when triggered via the keyboard or API.",
 		"`cursorSurroundingLines` is enforced always.",
 		"Controls when `cursorSurroundingLines` should be enforced.",
@@ -306,6 +332,7 @@ define("vs/editor/editor.main.nls", {
 		"Controls whether the cursor should be hidden in the overview ruler.",
 		"Controls whether the editor should highlight the active indent guide.",
 		"Controls the letter spacing in pixels.",
+		"Controls whether the editor has linked editing enabled. Depending on the language, related symbols, e.g. HTML tags, are updated while editing.",
 		"Controls whether the editor should detect links and make them clickable.",
 		"Highlight matching brackets.",
 		"A multiplier to be used on the `deltaX` and `deltaY` of mouse wheel scroll events.",
@@ -325,6 +352,7 @@ define("vs/editor/editor.main.nls", {
 		"Controls whether the Go to Definition mouse gesture always opens the peek widget.",
 		"Controls the delay in milliseconds after which quick suggestions will show up.",
 		"Controls whether the editor auto renames on type.",
+		"Deprecated, use `editor.linkedEditing` instead.",
 		"Controls whether the editor should render control characters.",
 		"Controls whether the editor should render indent guides.",
 		"Render last line number when the file ends with a newline.",
@@ -353,7 +381,7 @@ define("vs/editor/editor.main.nls", {
 		"Controls whether snippets are shown with other suggestions and how they are sorted.",
 		"Controls whether the editor will scroll using an animation.",
 		"Font size for the suggest widget. When set to `0`, the value of `#editor.fontSize#` is used.",
-		"Line height for the suggest widget. When set to `0`, the value of `#editor.lineHeight#` is used.",
+		"Line height for the suggest widget. When set to `0`, the value of `#editor.lineHeight#` is used. The minimum value is 8.",
 		"Controls whether suggestions should automatically show up when typing trigger characters.",
 		"Always select the first suggestion.",
 		"Select recent suggestions unless further typing selects one, e.g. `console.| -> console.log` because `log` has been completed recently.",
@@ -363,9 +391,9 @@ define("vs/editor/editor.main.nls", {
 		"Disable tab completions.",
 		"Tab complete snippets when their prefix match. Works best when 'quickSuggestions' aren't enabled.",
 		"Enables tab completions.",
+		"Unusual line terminators are automatically removed.",
 		"Unusual line terminators are ignored.",
 		"Unusual line terminators prompt to be removed.",
-		"Unusual line terminators are automatically removed.",
 		"Remove unusual line terminators that might cause problems.",
 		"Inserting and deleting whitespace follows tab stops.",
 		"Characters that will be used as word separators when doing word related navigations or operations.",
@@ -543,41 +571,6 @@ define("vs/editor/editor.main.nls", {
 		"Cursor Undo",
 		"Cursor Redo"
 	],
-	"vs/editor/contrib/documentSymbols/outlineTree": [
-		"The foreground color for array symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for boolean symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for class symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for color symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for constant symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for constructor symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for enumerator symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for enumerator member symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for event symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for field symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for file symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for folder symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for function symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for interface symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for key symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for keyword symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for method symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for module symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for namespace symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for null symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for number symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for object symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for operator symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for package symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for property symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for reference symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for snippet symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for string symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for struct symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for text symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for type parameter symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for unit symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
-		"The foreground color for variable symbols. These symbols appear in the outline, breadcrumb, and suggest widget."
-	],
 	"vs/editor/contrib/find/findController": [
 		"Find",
 		"&&Find",
@@ -592,6 +585,13 @@ define("vs/editor/editor.main.nls", {
 		"&&Replace"
 	],
 	"vs/editor/contrib/find/findWidget": [
+		"Icon for 'Find in Selection' in the editor find widget.",
+		"Icon to indicate that the editor find widget is collapsed.",
+		"Icon to indicate that the editor find widget is expanded.",
+		"Icon for 'Replace' in the editor find widget.",
+		"Icon for 'Replace All' in the editor find widget.",
+		"Icon for 'Find Previous' in the editor find widget.",
+		"Icon for 'Find Next' in the editor find widget.",
 		"Find",
 		"Find",
 		"Previous match",
@@ -627,6 +627,10 @@ define("vs/editor/editor.main.nls", {
 		"Background color behind folded ranges. The color must not be opaque so as not to hide underlying decorations.",
 		"Color of the folding control in the editor gutter."
 	],
+	"vs/editor/contrib/folding/foldingDecorations": [
+		"Icon for expanded ranges in the editor glyph margin.",
+		"Icon for collapsed ranges in the editor glyph margin."
+	],
 	"vs/editor/contrib/fontZoom/fontZoom": [
 		"Editor Font Zoom In",
 		"Editor Font Zoom Out",
@@ -644,7 +648,9 @@ define("vs/editor/editor.main.nls", {
 	],
 	"vs/editor/contrib/gotoError/gotoError": [
 		"Go to Next Problem (Error, Warning, Info)",
+		"Icon for goto next marker.",
 		"Go to Previous Problem (Error, Warning, Info)",
+		"Icon for goto previous marker.",
 		"Go to Next Problem in Files (Error, Warning, Info)",
 		"Next &&Problem",
 		"Go to Previous Problem in Files (Error, Warning, Info)",
@@ -723,6 +729,7 @@ define("vs/editor/editor.main.nls", {
 	],
 	"vs/editor/contrib/gotoSymbol/referencesModel": [
 		"symbol in {0} on line {1} at column {2}",
+		"symbol in {0} on line {1} at column {2}, {3}",
 		"1 symbol in {0}, full path {1}",
 		"{0} symbols in {1}, full path {2}",
 		"No results found",
@@ -738,9 +745,12 @@ define("vs/editor/editor.main.nls", {
 		"Show Hover",
 		"Show Definition Preview Hover"
 	],
-	"vs/editor/contrib/hover/modesContentHover": [
-		"Loading...",
+	"vs/editor/contrib/hover/markdownHoverParticipant": [
+		"Loading..."
+	],
+	"vs/editor/contrib/hover/markerHoverParticipant": [
 		"Peek Problem",
+		"No quick fixes available",
 		"Checking for quick fixes...",
 		"No quick fixes available",
 		"Quick Fix..."
@@ -785,7 +795,12 @@ define("vs/editor/editor.main.nls", {
 		"Transpose characters around the cursor",
 		"Transform to Uppercase",
 		"Transform to Lowercase",
-		"Transform to Title Case"
+		"Transform to Title Case",
+		"Transform to Snake Case"
+	],
+	"vs/editor/contrib/linkedEditing/linkedEditing": [
+		"Start Linked Editing",
+		"Background color when the editor auto renames on type."
 	],
 	"vs/editor/contrib/links/links": [
 		"Execute command",
@@ -794,6 +809,7 @@ define("vs/editor/editor.main.nls", {
 		"ctrl + click",
 		"option + click",
 		"alt + click",
+		"Execute command {0}",
 		"Failed to open this link because it is not well-formed: {0}",
 		"Failed to open this link because its target is missing.",
 		"Open Link"
@@ -824,6 +840,8 @@ define("vs/editor/editor.main.nls", {
 		"Trigger Parameter Hints"
 	],
 	"vs/editor/contrib/parameterHints/parameterHintsWidget": [
+		"Icon for show next parameter hint.",
+		"Icon for show previous parameter hint.",
 		"{0}, hint"
 	],
 	"vs/editor/contrib/peekView/peekView": [
@@ -884,10 +902,6 @@ define("vs/editor/editor.main.nls", {
 		"keys ({0})",
 		"fields ({0})",
 		"constants ({0})"
-	],
-	"vs/editor/contrib/rename/onTypeRename": [
-		"On Type Rename Symbol",
-		"Background color when the editor auto renames on type."
 	],
 	"vs/editor/contrib/rename/rename": [
 		"No result.",
@@ -953,13 +967,14 @@ define("vs/editor/editor.main.nls", {
 	"vs/editor/contrib/suggest/suggestController": [
 		"Accepting '{0}' made {1} additional edits",
 		"Trigger Suggest",
-		"{0} to insert",
-		"{0} to insert",
-		"{0} to replace",
-		"{0} to replace",
-		"{0} to insert",
+		"Insert",
+		"Insert",
+		"Replace",
+		"Replace",
+		"Insert",
 		"show less",
-		"show more"
+		"show more",
+		"Reset Suggest Widget Size"
 	],
 	"vs/editor/contrib/suggest/suggestWidget": [
 		"Background color of the suggest widget.",
@@ -967,13 +982,56 @@ define("vs/editor/editor.main.nls", {
 		"Foreground color of the suggest widget.",
 		"Background color of the selected entry in the suggest widget.",
 		"Color of the match highlights in the suggest widget.",
-		"Read More ({0})",
-		"Read Less ({0})",
-		"Loading...",
 		"Loading...",
 		"No suggestions.",
 		"{0}, docs: {1}",
 		"Suggest"
+	],
+	"vs/editor/contrib/suggest/suggestWidgetDetails": [
+		"Close",
+		"Loading..."
+	],
+	"vs/editor/contrib/suggest/suggestWidgetRenderer": [
+		"Icon for more information in the suggest widget.",
+		"Read More"
+	],
+	"vs/editor/contrib/suggest/suggestWidgetStatus": [
+		"{0} ({1})"
+	],
+	"vs/editor/contrib/symbolIcons/symbolIcons": [
+		"The foreground color for array symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for boolean symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for class symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for color symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for constant symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for constructor symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for enumerator symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for enumerator member symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for event symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for field symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for file symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for folder symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for function symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for interface symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for key symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for keyword symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for method symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for module symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for namespace symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for null symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for number symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for object symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for operator symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for package symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for property symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for reference symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for snippet symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for string symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for struct symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for text symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for type parameter symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for unit symbols. These symbols appear in the outline, breadcrumb, and suggest widget.",
+		"The foreground color for variable symbols. These symbols appear in the outline, breadcrumb, and suggest widget."
 	],
 	"vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode": [
 		"Toggle Tab Key Moves Focus",
@@ -1001,6 +1059,9 @@ define("vs/editor/editor.main.nls", {
 		"Go to Previous Symbol Highlight",
 		"Trigger Symbol Highlight"
 	],
+	"vs/editor/contrib/wordOperations/wordOperations": [
+		"Delete Word"
+	],
 	"vs/platform/actions/browser/menuEntryActionViewItem": [
 		"{0} ({1})"
 	],
@@ -1008,6 +1069,7 @@ define("vs/editor/editor.main.nls", {
 		"Default Language Configuration Overrides",
 		"Configure editor settings to be overridden for a language.",
 		"This setting does not support per-language configuration.",
+		"Cannot register an empty property",
 		"Cannot register '{0}'. This matches property pattern '\\\\[.*\\\\]$' for describing language specific editor settings. Use 'configurationDefaults' contribution.",
 		"Cannot register '{0}'. This property is already registered."
 	],
@@ -1029,7 +1091,8 @@ define("vs/editor/editor.main.nls", {
 		"Highlight keyboard navigation highlights elements which match the keyboard input. Further up and down navigation will traverse only the highlighted elements.",
 		"Filter keyboard navigation will filter out and hide all the elements which do not match the keyboard input.",
 		"Controls the keyboard navigation style for lists and trees in the workbench. Can be simple, highlight and filter.",
-		"Controls whether keyboard navigation in lists and trees is automatically triggered simply by typing. If set to `false`, keyboard navigation is only triggered when executing the `list.toggleKeyboardNavigation` command, for which you can assign a keyboard shortcut."
+		"Controls whether keyboard navigation in lists and trees is automatically triggered simply by typing. If set to `false`, keyboard navigation is only triggered when executing the `list.toggleKeyboardNavigation` command, for which you can assign a keyboard shortcut.",
+		"Controls how tree folders are expanded when clicking the folder names."
 	],
 	"vs/platform/markers/common/markers": [
 		"Error",
@@ -1084,10 +1147,13 @@ define("vs/editor/editor.main.nls", {
 		"Scrollbar slider background color when hovering.",
 		"Scrollbar slider background color when clicked on.",
 		"Background color of the progress bar that can show for long running operations.",
+		"Background color of error text in the editor. The color must not be opaque so as not to hide underlying decorations.",
 		"Foreground color of error squigglies in the editor.",
 		"Border color of error boxes in the editor.",
+		"Background color of warning text in the editor. The color must not be opaque so as not to hide underlying decorations.",
 		"Foreground color of warning squigglies in the editor.",
 		"Border color of warning boxes in the editor.",
+		"Background color of info text in the editor. The color must not be opaque so as not to hide underlying decorations.",
 		"Foreground color of info squigglies in the editor.",
 		"Border color of info boxes in the editor.",
 		"Foreground color of hint squigglies in the editor.",
@@ -1120,6 +1186,8 @@ define("vs/editor/editor.main.nls", {
 		"Border color of the editor hover.",
 		"Background color of the editor hover status bar.",
 		"Color of active links.",
+		"Foreground color of inline hints",
+		"Background color of inline hints",
 		"The color used for the lightbulb actions icon.",
 		"The color used for the lightbulb auto fix actions icon.",
 		"Background color for text that got inserted. The color must not be opaque so as not to hide underlying decorations.",
@@ -1168,6 +1236,11 @@ define("vs/editor/editor.main.nls", {
 		"The color used for the problems warning icon.",
 		"The color used for the problems info icon."
 	],
+	"vs/platform/theme/common/iconRegistry": [
+		"The id of the font to use. If not set, the font that is defined first is used.",
+		"The font character associated with the icon definition.",
+		"Icon for the close action in widgets."
+	],
 	"vs/platform/undoRedo/common/undoRedoService": [
 		"The following files have been closed and modified on disk: {0}.",
 		"The following files have been modified in an incompatible way: {0}.",
@@ -1181,6 +1254,9 @@ define("vs/editor/editor.main.nls", {
 		"Undo this File",
 		"Cancel",
 		"Could not undo '{0}' because there is already an undo or redo operation running.",
+		"Would you like to undo '{0}'?",
+		"Undo",
+		"Cancel",
 		"Could not redo '{0}' across all files. {1}",
 		"Could not redo '{0}' across all files. {1}",
 		"Could not redo '{0}' across all files because changes were made to {1}",

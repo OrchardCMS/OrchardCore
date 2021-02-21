@@ -1,12 +1,12 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.21.2(67b5a8116f3c0bace36b180e524e05bb750a16d8)
+ * Version: 0.22.3(479b2f825538cfa990b511b97574cb96d24a9db4)
  * Released under the MIT license
- * https://github.com/Microsoft/vscode/blob/master/LICENSE.txt
+ * https://github.com/microsoft/vscode/blob/master/LICENSE.txt
  *-----------------------------------------------------------*/
 
 (function() {
-var __m = ["require","exports","vs/editor/common/core/position","vs/base/common/platform","vs/base/common/errors","vs/editor/common/core/range","vs/base/common/lifecycle","vs/base/common/event","vs/base/common/strings","vs/base/common/diff/diff","vs/base/common/types","vs/base/common/uint","vs/base/common/uri","vs/base/common/arrays","vs/base/common/diff/diffChange","vs/base/common/iterator","vs/base/common/keyCodes","vs/base/common/linkedList","vs/base/common/cancellation","vs/base/common/process","vs/base/common/path","vs/base/common/hash","vs/editor/common/core/characterClassifier","vs/editor/common/core/selection","vs/editor/common/core/token","vs/editor/common/diff/diffComputer","vs/editor/common/model/wordHelper","vs/editor/common/modes/linkComputer","vs/editor/common/modes/supports/inplaceReplaceSupport","vs/editor/common/standalone/standaloneEnums","vs/editor/common/standalone/standaloneBase","vs/editor/common/viewModel/prefixSumComputer","vs/editor/common/model/mirrorTextModel","vs/base/common/worker/simpleWorker","vs/editor/common/services/editorSimpleWorker"];
+var __m = ["require","exports","vs/base/common/platform","vs/editor/common/core/position","vs/base/common/errors","vs/base/common/strings","vs/editor/common/core/range","vs/base/common/lifecycle","vs/base/common/stopwatch","vs/base/common/event","vs/base/common/diff/diff","vs/base/common/types","vs/base/common/uint","vs/base/common/uri","vs/base/common/arrays","vs/base/common/diff/diffChange","vs/base/common/iterator","vs/base/common/keyCodes","vs/base/common/linkedList","vs/base/common/process","vs/base/common/path","vs/base/common/cancellation","vs/base/common/hash","vs/editor/common/core/characterClassifier","vs/editor/common/core/selection","vs/editor/common/core/token","vs/editor/common/diff/diffComputer","vs/editor/common/model/wordHelper","vs/editor/common/modes/linkComputer","vs/editor/common/modes/supports/inplaceReplaceSupport","vs/editor/common/standalone/standaloneEnums","vs/editor/common/standalone/standaloneBase","vs/editor/common/viewModel/prefixSumComputer","vs/editor/common/model/mirrorTextModel","vs/base/common/worker/simpleWorker","vs/editor/common/services/editorSimpleWorker"];
 var __M = function(deps) {
   var result = [];
   for (var i = 0, len = deps.length; i < len; i++) {
@@ -28,7 +28,7 @@ var __M = function(deps) {
  *---------------------------------------------------------------------------------------------
  *---------------------------------------------------------------------------------------------
  *---------------------------------------------------------------------------------------------
- * Please make sure to make edits in the .ts file at https://github.com/Microsoft/vscode-loader/
+ * Please make sure to make edits in the .ts file at https://github.com/microsoft/vscode-loader/
  *---------------------------------------------------------------------------------------------
  *---------------------------------------------------------------------------------------------
  *---------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ var AMDLoader;
                 this._detect();
                 return this._isWindows;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Environment.prototype, "isNode", {
@@ -60,7 +60,7 @@ var AMDLoader;
                 this._detect();
                 return this._isNode;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Environment.prototype, "isElectronRenderer", {
@@ -68,7 +68,7 @@ var AMDLoader;
                 this._detect();
                 return this._isElectronRenderer;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Environment.prototype, "isWebWorker", {
@@ -76,7 +76,7 @@ var AMDLoader;
                 this._detect();
                 return this._isWebWorker;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Environment.prototype._detect = function () {
@@ -212,6 +212,10 @@ var AMDLoader;
         };
         Utilities.recursiveClone = function (obj) {
             if (!obj || typeof obj !== 'object' || obj instanceof RegExp) {
+                return obj;
+            }
+            if (!Array.isArray(obj) && Object.getPrototypeOf(obj) !== Object.prototype) {
+                // only clone "simple" objects
                 return obj;
             }
             var result = Array.isArray(obj) ? [] : {};
@@ -660,7 +664,7 @@ var AMDLoader;
         BrowserScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
             if (/^node\|/.test(scriptSrc)) {
                 var opts = moduleManager.getConfig().getOptionsLiteral();
-                var nodeRequire = (opts.nodeRequire || AMDLoader.global.nodeRequire);
+                var nodeRequire = ensureRecordedNodeRequire(moduleManager.getRecorder(), (opts.nodeRequire || AMDLoader.global.nodeRequire));
                 var pieces = scriptSrc.split('|');
                 var moduleExports_1 = null;
                 try {
@@ -678,6 +682,10 @@ var AMDLoader;
                 script.setAttribute('async', 'async');
                 script.setAttribute('type', 'text/javascript');
                 this.attachListeners(script, callback, errorback);
+                var trustedTypesPolicy = moduleManager.getConfig().getOptionsLiteral().trustedTypesPolicy;
+                if (trustedTypesPolicy) {
+                    scriptSrc = trustedTypesPolicy.createScriptURL(scriptSrc);
+                }
                 script.setAttribute('src', scriptSrc);
                 // Propagate CSP nonce to dynamically created script tag.
                 var cspNonce = moduleManager.getConfig().getOptionsLiteral().cspNonce;
@@ -693,6 +701,10 @@ var AMDLoader;
         function WorkerScriptLoader() {
         }
         WorkerScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
+            var trustedTypesPolicy = moduleManager.getConfig().getOptionsLiteral().trustedTypesPolicy;
+            if (trustedTypesPolicy) {
+                scriptSrc = trustedTypesPolicy.createScriptURL(scriptSrc);
+            }
             try {
                 importScripts(scriptSrc);
                 callback();
@@ -745,8 +757,8 @@ var AMDLoader;
                         // nothing
                     }
                 };
-                require.resolve = function resolve(request) {
-                    return Module._resolveFilename(request, mod);
+                require.resolve = function resolve(request, options) {
+                    return Module._resolveFilename(request, mod, false, options);
                 };
                 require.main = process.mainModule;
                 require.extensions = Module._extensions;
@@ -786,7 +798,7 @@ var AMDLoader;
         NodeScriptLoader.prototype.load = function (moduleManager, scriptSrc, callback, errorback) {
             var _this = this;
             var opts = moduleManager.getConfig().getOptionsLiteral();
-            var nodeRequire = (opts.nodeRequire || AMDLoader.global.nodeRequire);
+            var nodeRequire = ensureRecordedNodeRequire(moduleManager.getRecorder(), (opts.nodeRequire || AMDLoader.global.nodeRequire));
             var nodeInstrumenter = (opts.nodeInstrumenter || function (c) { return c; });
             this._init(nodeRequire);
             this._initNodeRequire(nodeRequire, moduleManager);
@@ -867,7 +879,7 @@ var AMDLoader;
             }
         };
         NodeScriptLoader.prototype._getCachedDataPath = function (config, filename) {
-            var hash = this._crypto.createHash('md5').update(filename, 'utf8').update(config.seed, 'utf8').digest('hex');
+            var hash = this._crypto.createHash('md5').update(filename, 'utf8').update(config.seed, 'utf8').update(process.arch, '').digest('hex');
             var basename = this._path.basename(filename).replace(/\.js$/, '');
             return this._path.join(config.path, basename + "-" + hash + ".code");
         };
@@ -993,6 +1005,24 @@ var AMDLoader;
         NodeScriptLoader._SUFFIX = '\n});';
         return NodeScriptLoader;
     }());
+    function ensureRecordedNodeRequire(recorder, _nodeRequire) {
+        if (_nodeRequire.__$__isRecorded) {
+            // it is already recorded
+            return _nodeRequire;
+        }
+        var nodeRequire = function nodeRequire(what) {
+            recorder.record(33 /* NodeBeginNativeRequire */, what);
+            try {
+                return _nodeRequire(what);
+            }
+            finally {
+                recorder.record(34 /* NodeEndNativeRequire */, what);
+            }
+        };
+        nodeRequire.__$__isRecorded = true;
+        return nodeRequire;
+    }
+    AMDLoader.ensureRecordedNodeRequire = ensureRecordedNodeRequire;
     function createScriptLoader(env) {
         return new OnlyOnceScriptLoader(env);
     }
@@ -1204,6 +1234,7 @@ var AMDLoader;
             this._requireFunc = requireFunc;
             this._moduleIdProvider = new ModuleIdProvider();
             this._config = new AMDLoader.Configuration(this._env);
+            this._hasDependencyCycle = false;
             this._modules2 = [];
             this._knownModules2 = [];
             this._inverseDependencies2 = [];
@@ -1548,6 +1579,9 @@ var AMDLoader;
             result.getStats = function () {
                 return _this.getLoaderEvents();
             };
+            result.hasDependencyCycle = function () {
+                return _this._hasDependencyCycle;
+            };
             result.config = function (params, shouldOverwrite) {
                 if (shouldOverwrite === void 0) { shouldOverwrite = false; }
                 _this.configure(params, shouldOverwrite);
@@ -1653,6 +1687,7 @@ var AMDLoader;
                         continue;
                     }
                     if (this._hasDependencyPath(dependency.id, module.id)) {
+                        this._hasDependencyCycle = true;
                         console.warn('There is a dependency cycle between \'' + this._moduleIdProvider.getStrModuleId(dependency.id) + '\' and \'' + this._moduleIdProvider.getStrModuleId(module.id) + '\'. The cyclic path follows:');
                         var cyclePath = this._findCyclePath(dependency.id, module.id, 0) || [];
                         cyclePath.reverse();
@@ -1824,18 +1859,10 @@ var AMDLoader;
     };
     function init() {
         if (typeof AMDLoader.global.require !== 'undefined' || typeof require !== 'undefined') {
-            var _nodeRequire_1 = (AMDLoader.global.require || require);
-            if (typeof _nodeRequire_1 === 'function' && typeof _nodeRequire_1.resolve === 'function') {
+            var _nodeRequire = (AMDLoader.global.require || require);
+            if (typeof _nodeRequire === 'function' && typeof _nodeRequire.resolve === 'function') {
                 // re-expose node's require function
-                var nodeRequire = function (what) {
-                    moduleManager.getRecorder().record(33 /* NodeBeginNativeRequire */, what);
-                    try {
-                        return _nodeRequire_1(what);
-                    }
-                    finally {
-                        moduleManager.getRecorder().record(34 /* NodeEndNativeRequire */, what);
-                    }
-                };
+                var nodeRequire = AMDLoader.ensureRecordedNodeRequire(moduleManager.getRecorder(), _nodeRequire);
                 AMDLoader.global.nodeRequire = nodeRequire;
                 RequireFunc.nodeRequire = nodeRequire;
                 RequireFunc.__$__nodeRequire = nodeRequire;
@@ -1870,10 +1897,10 @@ var AMDLoader;
     }
 })(AMDLoader || (AMDLoader = {}));
 
-define(__m[13/*vs/base/common/arrays*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[14/*vs/base/common/arrays*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.asArray = exports.pushToEnd = exports.pushToStart = exports.arrayInsert = exports.range = exports.flatten = exports.firstOrDefault = exports.first = exports.firstIndex = exports.distinctES6 = exports.distinct = exports.isNonEmptyArray = exports.isFalsyOrEmpty = exports.coalesce = exports.groupBy = exports.mergeSort = exports.findFirstInSorted = exports.binarySearch = exports.equals = exports.tail2 = exports.tail = void 0;
+    exports.asArray = exports.pushToEnd = exports.pushToStart = exports.arrayInsert = exports.range = exports.flatten = exports.firstOrDefault = exports.distinctES6 = exports.distinct = exports.isNonEmptyArray = exports.isFalsyOrEmpty = exports.coalesce = exports.groupBy = exports.mergeSort = exports.quickSelect = exports.findFirstInSorted = exports.binarySearch = exports.equals = exports.tail2 = exports.tail = void 0;
     /**
      * Returns the last element of an array.
      * @param array The array.
@@ -1948,6 +1975,38 @@ define(__m[13/*vs/base/common/arrays*/], __M([0/*require*/,1/*exports*/]), funct
         return low;
     }
     exports.findFirstInSorted = findFirstInSorted;
+    function quickSelect(nth, data, compare) {
+        nth = nth | 0;
+        if (nth >= data.length) {
+            throw new TypeError('invalid index');
+        }
+        let pivotValue = data[Math.floor(data.length * Math.random())];
+        let lower = [];
+        let higher = [];
+        let pivots = [];
+        for (let value of data) {
+            const val = compare(value, pivotValue);
+            if (val < 0) {
+                lower.push(value);
+            }
+            else if (val > 0) {
+                higher.push(value);
+            }
+            else {
+                pivots.push(value);
+            }
+        }
+        if (nth < lower.length) {
+            return quickSelect(nth, lower, compare);
+        }
+        else if (nth < lower.length + pivots.length) {
+            return pivots[0];
+        }
+        else {
+            return quickSelect(nth - (lower.length + pivots.length), higher, compare);
+        }
+    }
+    exports.quickSelect = quickSelect;
     /**
      * Like `Array#sort` but always stable. Usually runs a little slower `than Array#sort`
      * so only use this when actually needing stable sort.
@@ -2061,24 +2120,6 @@ define(__m[13/*vs/base/common/arrays*/], __M([0/*require*/,1/*exports*/]), funct
         });
     }
     exports.distinctES6 = distinctES6;
-    /**
-     * @deprecated ES6: use `Array.findIndex`
-     */
-    function firstIndex(array, fn) {
-        for (let i = 0; i < array.length; i++) {
-            const element = array[i];
-            if (fn(element)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    exports.firstIndex = firstIndex;
-    function first(array, fn, notFoundValue = undefined) {
-        const index = firstIndex(array, fn);
-        return index < 0 ? notFoundValue : array[index];
-    }
-    exports.first = first;
     function firstOrDefault(array, notFoundValue) {
         return array.length > 0 ? array[0] : notFoundValue;
     }
@@ -2152,7 +2193,7 @@ define(__m[13/*vs/base/common/arrays*/], __M([0/*require*/,1/*exports*/]), funct
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[14/*vs/base/common/diff/diffChange*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[15/*vs/base/common/diff/diffChange*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DiffChange = void 0;
@@ -2296,7 +2337,7 @@ define(__m[4/*vs/base/common/errors*/], __M([0/*require*/,1/*exports*/]), functi
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[15/*vs/base/common/iterator*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[16/*vs/base/common/iterator*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Iterable = void 0;
@@ -2319,6 +2360,10 @@ define(__m[15/*vs/base/common/iterator*/], __M([0/*require*/,1/*exports*/]), fun
             return iterable || _empty;
         }
         Iterable.from = from;
+        function isEmpty(iterable) {
+            return !iterable || iterable[Symbol.iterator]().next().done === true;
+        }
+        Iterable.isEmpty = isEmpty;
         function first(iterable) {
             return iterable[Symbol.iterator]().next().value;
         }
@@ -2354,6 +2399,32 @@ define(__m[15/*vs/base/common/iterator*/], __M([0/*require*/,1/*exports*/]), fun
             }
         }
         Iterable.concat = concat;
+        function* concatNested(iterables) {
+            for (const iterable of iterables) {
+                for (const element of iterable) {
+                    yield element;
+                }
+            }
+        }
+        Iterable.concatNested = concatNested;
+        /**
+         * Returns an iterable slice of the array, with the same semantics as `array.slice()`.
+         */
+        function* slice(iterable, from, to = iterable.length) {
+            if (from < 0) {
+                from += iterable.length;
+            }
+            if (to < 0) {
+                to += iterable.length;
+            }
+            else if (to > iterable.length) {
+                to = iterable.length;
+            }
+            for (; from < to; from++) {
+                yield iterable[from];
+            }
+        }
+        Iterable.slice = slice;
         /**
          * Consumes `atMost` elements from iterable and returns the consumed elements,
          * and an iterable for the rest of the elements.
@@ -2381,7 +2452,7 @@ define(__m[15/*vs/base/common/iterator*/], __M([0/*require*/,1/*exports*/]), fun
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[16/*vs/base/common/keyCodes*/], __M([0/*require*/,1/*exports*/,4/*vs/base/common/errors*/]), function (require, exports, errors_1) {
+define(__m[17/*vs/base/common/keyCodes*/], __M([0/*require*/,1/*exports*/,4/*vs/base/common/errors*/]), function (require, exports, errors_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ResolvedKeybinding = exports.ResolvedKeybindingPart = exports.ChordKeybinding = exports.SimpleKeybinding = exports.createSimpleKeybinding = exports.createKeybinding = exports.KeyChord = exports.KeyCodeUtils = void 0;
@@ -2640,10 +2711,10 @@ define(__m[16/*vs/base/common/keyCodes*/], __M([0/*require*/,1/*exports*/,4/*vs/
     exports.ResolvedKeybinding = ResolvedKeybinding;
 });
 
-define(__m[6/*vs/base/common/lifecycle*/], __M([0/*require*/,1/*exports*/,15/*vs/base/common/iterator*/]), function (require, exports, iterator_1) {
+define(__m[7/*vs/base/common/lifecycle*/], __M([0/*require*/,1/*exports*/,16/*vs/base/common/iterator*/]), function (require, exports, iterator_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ImmortalReference = exports.MutableDisposable = exports.Disposable = exports.DisposableStore = exports.toDisposable = exports.combinedDisposable = exports.dispose = exports.isDisposable = exports.MultiDisposeError = void 0;
+    exports.ImmortalReference = exports.MutableDisposable = exports.Disposable = exports.DisposableStore = exports.toDisposable = exports.combinedDisposable = exports.dispose = exports.isDisposable = exports.MultiDisposeError = exports.trackDisposable = void 0;
     /**
      * Enables logging of potentially leaked disposables.
      *
@@ -2652,32 +2723,44 @@ define(__m[6/*vs/base/common/lifecycle*/], __M([0/*require*/,1/*exports*/,15/*vs
      * extend Disposable or use a DisposableStore. This means there are a lot of false positives.
      */
     const TRACK_DISPOSABLES = false;
-    const __is_disposable_tracked__ = '__is_disposable_tracked__';
+    let disposableTracker = null;
+    if (TRACK_DISPOSABLES) {
+        const __is_disposable_tracked__ = '__is_disposable_tracked__';
+        disposableTracker = new class {
+            trackDisposable(x) {
+                const stack = new Error('Potentially leaked disposable').stack;
+                setTimeout(() => {
+                    if (!x[__is_disposable_tracked__]) {
+                        console.log(stack);
+                    }
+                }, 3000);
+            }
+            markTracked(x) {
+                if (x && x !== Disposable.None) {
+                    try {
+                        x[__is_disposable_tracked__] = true;
+                    }
+                    catch (_a) {
+                        // noop
+                    }
+                }
+            }
+        };
+    }
     function markTracked(x) {
-        if (!TRACK_DISPOSABLES) {
+        if (!disposableTracker) {
             return;
         }
-        if (x && x !== Disposable.None) {
-            try {
-                x[__is_disposable_tracked__] = true;
-            }
-            catch (_a) {
-                // noop
-            }
-        }
+        disposableTracker.markTracked(x);
     }
     function trackDisposable(x) {
-        if (!TRACK_DISPOSABLES) {
+        if (!disposableTracker) {
             return x;
         }
-        const stack = new Error('Potentially leaked disposable').stack;
-        setTimeout(() => {
-            if (!x[__is_disposable_tracked__]) {
-                console.log(stack);
-            }
-        }, 3000);
+        disposableTracker.trackDisposable(x);
         return x;
     }
+    exports.trackDisposable = trackDisposable;
     class MultiDisposeError extends Error {
         constructor(errors) {
             super(`Encounter errors while disposing of store. Errors: [${errors.join(', ')}]`);
@@ -2720,7 +2803,7 @@ define(__m[6/*vs/base/common/lifecycle*/], __M([0/*require*/,1/*exports*/,15/*vs
     exports.dispose = dispose;
     function combinedDisposable(...disposables) {
         disposables.forEach(markTracked);
-        return trackDisposable({ dispose: () => dispose(disposables) });
+        return toDisposable(() => dispose(disposables));
     }
     exports.combinedDisposable = combinedDisposable;
     function toDisposable(fn) {
@@ -2853,7 +2936,7 @@ define(__m[6/*vs/base/common/lifecycle*/], __M([0/*require*/,1/*exports*/,15/*vs
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[17/*vs/base/common/linkedList*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[18/*vs/base/common/linkedList*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LinkedList = void 0;
@@ -2969,13 +3052,6 @@ define(__m[17/*vs/base/common/linkedList*/], __M([0/*require*/,1/*exports*/]), f
                 node = node.next;
             }
         }
-        toArray() {
-            const result = [];
-            for (let node = this._first; node !== Node.Undefined; node = node.next) {
-                result.push(node.element);
-            }
-            return result;
-        }
     }
     exports.LinkedList = LinkedList;
 });
@@ -2984,727 +3060,16 @@ define(__m[17/*vs/base/common/linkedList*/], __M([0/*require*/,1/*exports*/]), f
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[7/*vs/base/common/event*/], __M([0/*require*/,1/*exports*/,4/*vs/base/common/errors*/,6/*vs/base/common/lifecycle*/,17/*vs/base/common/linkedList*/]), function (require, exports, errors_1, lifecycle_1, linkedList_1) {
+define(__m[2/*vs/base/common/platform*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
+    var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Relay = exports.EventBufferer = exports.PauseableEmitter = exports.Emitter = exports.Event = void 0;
-    var Event;
-    (function (Event) {
-        Event.None = () => lifecycle_1.Disposable.None;
-        /**
-         * Given an event, returns another event which only fires once.
-         */
-        function once(event) {
-            return (listener, thisArgs = null, disposables) => {
-                // we need this, in case the event fires during the listener call
-                let didFire = false;
-                let result;
-                result = event(e => {
-                    if (didFire) {
-                        return;
-                    }
-                    else if (result) {
-                        result.dispose();
-                    }
-                    else {
-                        didFire = true;
-                    }
-                    return listener.call(thisArgs, e);
-                }, null, disposables);
-                if (didFire) {
-                    result.dispose();
-                }
-                return result;
-            };
-        }
-        Event.once = once;
-        /**
-         * Given an event and a `map` function, returns another event which maps each element
-         * through the mapping function.
-         */
-        function map(event, map) {
-            return snapshot((listener, thisArgs = null, disposables) => event(i => listener.call(thisArgs, map(i)), null, disposables));
-        }
-        Event.map = map;
-        /**
-         * Given an event and an `each` function, returns another identical event and calls
-         * the `each` function per each element.
-         */
-        function forEach(event, each) {
-            return snapshot((listener, thisArgs = null, disposables) => event(i => { each(i); listener.call(thisArgs, i); }, null, disposables));
-        }
-        Event.forEach = forEach;
-        function filter(event, filter) {
-            return snapshot((listener, thisArgs = null, disposables) => event(e => filter(e) && listener.call(thisArgs, e), null, disposables));
-        }
-        Event.filter = filter;
-        /**
-         * Given an event, returns the same event but typed as `Event<void>`.
-         */
-        function signal(event) {
-            return event;
-        }
-        Event.signal = signal;
-        function any(...events) {
-            return (listener, thisArgs = null, disposables) => lifecycle_1.combinedDisposable(...events.map(event => event(e => listener.call(thisArgs, e), null, disposables)));
-        }
-        Event.any = any;
-        /**
-         * Given an event and a `merge` function, returns another event which maps each element
-         * and the cumulative result through the `merge` function. Similar to `map`, but with memory.
-         */
-        function reduce(event, merge, initial) {
-            let output = initial;
-            return map(event, e => {
-                output = merge(output, e);
-                return output;
-            });
-        }
-        Event.reduce = reduce;
-        /**
-         * Given a chain of event processing functions (filter, map, etc), each
-         * function will be invoked per event & per listener. Snapshotting an event
-         * chain allows each function to be invoked just once per event.
-         */
-        function snapshot(event) {
-            let listener;
-            const emitter = new Emitter({
-                onFirstListenerAdd() {
-                    listener = event(emitter.fire, emitter);
-                },
-                onLastListenerRemove() {
-                    listener.dispose();
-                }
-            });
-            return emitter.event;
-        }
-        Event.snapshot = snapshot;
-        function debounce(event, merge, delay = 100, leading = false, leakWarningThreshold) {
-            let subscription;
-            let output = undefined;
-            let handle = undefined;
-            let numDebouncedCalls = 0;
-            const emitter = new Emitter({
-                leakWarningThreshold,
-                onFirstListenerAdd() {
-                    subscription = event(cur => {
-                        numDebouncedCalls++;
-                        output = merge(output, cur);
-                        if (leading && !handle) {
-                            emitter.fire(output);
-                            output = undefined;
-                        }
-                        clearTimeout(handle);
-                        handle = setTimeout(() => {
-                            const _output = output;
-                            output = undefined;
-                            handle = undefined;
-                            if (!leading || numDebouncedCalls > 1) {
-                                emitter.fire(_output);
-                            }
-                            numDebouncedCalls = 0;
-                        }, delay);
-                    });
-                },
-                onLastListenerRemove() {
-                    subscription.dispose();
-                }
-            });
-            return emitter.event;
-        }
-        Event.debounce = debounce;
-        /**
-         * Given an event, it returns another event which fires only once and as soon as
-         * the input event emits. The event data is the number of millis it took for the
-         * event to fire.
-         */
-        function stopwatch(event) {
-            const start = new Date().getTime();
-            return map(once(event), _ => new Date().getTime() - start);
-        }
-        Event.stopwatch = stopwatch;
-        /**
-         * Given an event, it returns another event which fires only when the event
-         * element changes.
-         */
-        function latch(event) {
-            let firstCall = true;
-            let cache;
-            return filter(event, value => {
-                const shouldEmit = firstCall || value !== cache;
-                firstCall = false;
-                cache = value;
-                return shouldEmit;
-            });
-        }
-        Event.latch = latch;
-        /**
-         * Buffers the provided event until a first listener comes
-         * along, at which point fire all the events at once and
-         * pipe the event from then on.
-         *
-         * ```typescript
-         * const emitter = new Emitter<number>();
-         * const event = emitter.event;
-         * const bufferedEvent = buffer(event);
-         *
-         * emitter.fire(1);
-         * emitter.fire(2);
-         * emitter.fire(3);
-         * // nothing...
-         *
-         * const listener = bufferedEvent(num => console.log(num));
-         * // 1, 2, 3
-         *
-         * emitter.fire(4);
-         * // 4
-         * ```
-         */
-        function buffer(event, nextTick = false, _buffer = []) {
-            let buffer = _buffer.slice();
-            let listener = event(e => {
-                if (buffer) {
-                    buffer.push(e);
-                }
-                else {
-                    emitter.fire(e);
-                }
-            });
-            const flush = () => {
-                if (buffer) {
-                    buffer.forEach(e => emitter.fire(e));
-                }
-                buffer = null;
-            };
-            const emitter = new Emitter({
-                onFirstListenerAdd() {
-                    if (!listener) {
-                        listener = event(e => emitter.fire(e));
-                    }
-                },
-                onFirstListenerDidAdd() {
-                    if (buffer) {
-                        if (nextTick) {
-                            setTimeout(flush);
-                        }
-                        else {
-                            flush();
-                        }
-                    }
-                },
-                onLastListenerRemove() {
-                    if (listener) {
-                        listener.dispose();
-                    }
-                    listener = null;
-                }
-            });
-            return emitter.event;
-        }
-        Event.buffer = buffer;
-        class ChainableEvent {
-            constructor(event) {
-                this.event = event;
-            }
-            map(fn) {
-                return new ChainableEvent(map(this.event, fn));
-            }
-            forEach(fn) {
-                return new ChainableEvent(forEach(this.event, fn));
-            }
-            filter(fn) {
-                return new ChainableEvent(filter(this.event, fn));
-            }
-            reduce(merge, initial) {
-                return new ChainableEvent(reduce(this.event, merge, initial));
-            }
-            latch() {
-                return new ChainableEvent(latch(this.event));
-            }
-            debounce(merge, delay = 100, leading = false, leakWarningThreshold) {
-                return new ChainableEvent(debounce(this.event, merge, delay, leading, leakWarningThreshold));
-            }
-            on(listener, thisArgs, disposables) {
-                return this.event(listener, thisArgs, disposables);
-            }
-            once(listener, thisArgs, disposables) {
-                return once(this.event)(listener, thisArgs, disposables);
-            }
-        }
-        function chain(event) {
-            return new ChainableEvent(event);
-        }
-        Event.chain = chain;
-        function fromNodeEventEmitter(emitter, eventName, map = id => id) {
-            const fn = (...args) => result.fire(map(...args));
-            const onFirstListenerAdd = () => emitter.on(eventName, fn);
-            const onLastListenerRemove = () => emitter.removeListener(eventName, fn);
-            const result = new Emitter({ onFirstListenerAdd, onLastListenerRemove });
-            return result.event;
-        }
-        Event.fromNodeEventEmitter = fromNodeEventEmitter;
-        function fromDOMEventEmitter(emitter, eventName, map = id => id) {
-            const fn = (...args) => result.fire(map(...args));
-            const onFirstListenerAdd = () => emitter.addEventListener(eventName, fn);
-            const onLastListenerRemove = () => emitter.removeEventListener(eventName, fn);
-            const result = new Emitter({ onFirstListenerAdd, onLastListenerRemove });
-            return result.event;
-        }
-        Event.fromDOMEventEmitter = fromDOMEventEmitter;
-        function fromPromise(promise) {
-            const emitter = new Emitter();
-            let shouldEmit = false;
-            promise
-                .then(undefined, () => null)
-                .then(() => {
-                if (!shouldEmit) {
-                    setTimeout(() => emitter.fire(undefined), 0);
-                }
-                else {
-                    emitter.fire(undefined);
-                }
-            });
-            shouldEmit = true;
-            return emitter.event;
-        }
-        Event.fromPromise = fromPromise;
-        function toPromise(event) {
-            return new Promise(c => once(event)(c));
-        }
-        Event.toPromise = toPromise;
-    })(Event = exports.Event || (exports.Event = {}));
-    let _globalLeakWarningThreshold = -1;
-    class LeakageMonitor {
-        constructor(customThreshold, name = Math.random().toString(18).slice(2, 5)) {
-            this.customThreshold = customThreshold;
-            this.name = name;
-            this._warnCountdown = 0;
-        }
-        dispose() {
-            if (this._stacks) {
-                this._stacks.clear();
-            }
-        }
-        check(listenerCount) {
-            let threshold = _globalLeakWarningThreshold;
-            if (typeof this.customThreshold === 'number') {
-                threshold = this.customThreshold;
-            }
-            if (threshold <= 0 || listenerCount < threshold) {
-                return undefined;
-            }
-            if (!this._stacks) {
-                this._stacks = new Map();
-            }
-            const stack = new Error().stack.split('\n').slice(3).join('\n');
-            const count = (this._stacks.get(stack) || 0);
-            this._stacks.set(stack, count + 1);
-            this._warnCountdown -= 1;
-            if (this._warnCountdown <= 0) {
-                // only warn on first exceed and then every time the limit
-                // is exceeded by 50% again
-                this._warnCountdown = threshold * 0.5;
-                // find most frequent listener and print warning
-                let topStack;
-                let topCount = 0;
-                for (const [stack, count] of this._stacks) {
-                    if (!topStack || topCount < count) {
-                        topStack = stack;
-                        topCount = count;
-                    }
-                }
-                console.warn(`[${this.name}] potential listener LEAK detected, having ${listenerCount} listeners already. MOST frequent listener (${topCount}):`);
-                console.warn(topStack);
-            }
-            return () => {
-                const count = (this._stacks.get(stack) || 0);
-                this._stacks.set(stack, count - 1);
-            };
-        }
-    }
-    /**
-     * The Emitter can be used to expose an Event to the public
-     * to fire it from the insides.
-     * Sample:
-        class Document {
-    
-            private readonly _onDidChange = new Emitter<(value:string)=>any>();
-    
-            public onDidChange = this._onDidChange.event;
-    
-            // getter-style
-            // get onDidChange(): Event<(value:string)=>any> {
-            // 	return this._onDidChange.event;
-            // }
-    
-            private _doIt() {
-                //...
-                this._onDidChange.fire(value);
-            }
-        }
-     */
-    class Emitter {
-        constructor(options) {
-            this._disposed = false;
-            this._options = options;
-            this._leakageMon = _globalLeakWarningThreshold > 0
-                ? new LeakageMonitor(this._options && this._options.leakWarningThreshold)
-                : undefined;
-        }
-        /**
-         * For the public to allow to subscribe
-         * to events from this Emitter
-         */
-        get event() {
-            if (!this._event) {
-                this._event = (listener, thisArgs, disposables) => {
-                    if (!this._listeners) {
-                        this._listeners = new linkedList_1.LinkedList();
-                    }
-                    const firstListener = this._listeners.isEmpty();
-                    if (firstListener && this._options && this._options.onFirstListenerAdd) {
-                        this._options.onFirstListenerAdd(this);
-                    }
-                    const remove = this._listeners.push(!thisArgs ? listener : [listener, thisArgs]);
-                    if (firstListener && this._options && this._options.onFirstListenerDidAdd) {
-                        this._options.onFirstListenerDidAdd(this);
-                    }
-                    if (this._options && this._options.onListenerDidAdd) {
-                        this._options.onListenerDidAdd(this, listener, thisArgs);
-                    }
-                    // check and record this emitter for potential leakage
-                    let removeMonitor;
-                    if (this._leakageMon) {
-                        removeMonitor = this._leakageMon.check(this._listeners.size);
-                    }
-                    let result;
-                    result = {
-                        dispose: () => {
-                            if (removeMonitor) {
-                                removeMonitor();
-                            }
-                            result.dispose = Emitter._noop;
-                            if (!this._disposed) {
-                                remove();
-                                if (this._options && this._options.onLastListenerRemove) {
-                                    const hasListeners = (this._listeners && !this._listeners.isEmpty());
-                                    if (!hasListeners) {
-                                        this._options.onLastListenerRemove(this);
-                                    }
-                                }
-                            }
-                        }
-                    };
-                    if (disposables instanceof lifecycle_1.DisposableStore) {
-                        disposables.add(result);
-                    }
-                    else if (Array.isArray(disposables)) {
-                        disposables.push(result);
-                    }
-                    return result;
-                };
-            }
-            return this._event;
-        }
-        /**
-         * To be kept private to fire an event to
-         * subscribers
-         */
-        fire(event) {
-            if (this._listeners) {
-                // put all [listener,event]-pairs into delivery queue
-                // then emit all event. an inner/nested event might be
-                // the driver of this
-                if (!this._deliveryQueue) {
-                    this._deliveryQueue = new linkedList_1.LinkedList();
-                }
-                for (let listener of this._listeners) {
-                    this._deliveryQueue.push([listener, event]);
-                }
-                while (this._deliveryQueue.size > 0) {
-                    const [listener, event] = this._deliveryQueue.shift();
-                    try {
-                        if (typeof listener === 'function') {
-                            listener.call(undefined, event);
-                        }
-                        else {
-                            listener[0].call(listener[1], event);
-                        }
-                    }
-                    catch (e) {
-                        errors_1.onUnexpectedError(e);
-                    }
-                }
-            }
-        }
-        dispose() {
-            if (this._listeners) {
-                this._listeners.clear();
-            }
-            if (this._deliveryQueue) {
-                this._deliveryQueue.clear();
-            }
-            if (this._leakageMon) {
-                this._leakageMon.dispose();
-            }
-            this._disposed = true;
-        }
-    }
-    exports.Emitter = Emitter;
-    Emitter._noop = function () { };
-    class PauseableEmitter extends Emitter {
-        constructor(options) {
-            super(options);
-            this._isPaused = 0;
-            this._eventQueue = new linkedList_1.LinkedList();
-            this._mergeFn = options && options.merge;
-        }
-        pause() {
-            this._isPaused++;
-        }
-        resume() {
-            if (this._isPaused !== 0 && --this._isPaused === 0) {
-                if (this._mergeFn) {
-                    // use the merge function to create a single composite
-                    // event. make a copy in case firing pauses this emitter
-                    const events = this._eventQueue.toArray();
-                    this._eventQueue.clear();
-                    super.fire(this._mergeFn(events));
-                }
-                else {
-                    // no merging, fire each event individually and test
-                    // that this emitter isn't paused halfway through
-                    while (!this._isPaused && this._eventQueue.size !== 0) {
-                        super.fire(this._eventQueue.shift());
-                    }
-                }
-            }
-        }
-        fire(event) {
-            if (this._listeners) {
-                if (this._isPaused !== 0) {
-                    this._eventQueue.push(event);
-                }
-                else {
-                    super.fire(event);
-                }
-            }
-        }
-    }
-    exports.PauseableEmitter = PauseableEmitter;
-    /**
-     * The EventBufferer is useful in situations in which you want
-     * to delay firing your events during some code.
-     * You can wrap that code and be sure that the event will not
-     * be fired during that wrap.
-     *
-     * ```
-     * const emitter: Emitter;
-     * const delayer = new EventDelayer();
-     * const delayedEvent = delayer.wrapEvent(emitter.event);
-     *
-     * delayedEvent(console.log);
-     *
-     * delayer.bufferEvents(() => {
-     *   emitter.fire(); // event will not be fired yet
-     * });
-     *
-     * // event will only be fired at this point
-     * ```
-     */
-    class EventBufferer {
-        constructor() {
-            this.buffers = [];
-        }
-        wrapEvent(event) {
-            return (listener, thisArgs, disposables) => {
-                return event(i => {
-                    const buffer = this.buffers[this.buffers.length - 1];
-                    if (buffer) {
-                        buffer.push(() => listener.call(thisArgs, i));
-                    }
-                    else {
-                        listener.call(thisArgs, i);
-                    }
-                }, undefined, disposables);
-            };
-        }
-        bufferEvents(fn) {
-            const buffer = [];
-            this.buffers.push(buffer);
-            const r = fn();
-            this.buffers.pop();
-            buffer.forEach(flush => flush());
-            return r;
-        }
-    }
-    exports.EventBufferer = EventBufferer;
-    /**
-     * A Relay is an event forwarder which functions as a replugabble event pipe.
-     * Once created, you can connect an input event to it and it will simply forward
-     * events from that input event through its own `event` property. The `input`
-     * can be changed at any point in time.
-     */
-    class Relay {
-        constructor() {
-            this.listening = false;
-            this.inputEvent = Event.None;
-            this.inputEventListener = lifecycle_1.Disposable.None;
-            this.emitter = new Emitter({
-                onFirstListenerDidAdd: () => {
-                    this.listening = true;
-                    this.inputEventListener = this.inputEvent(this.emitter.fire, this.emitter);
-                },
-                onLastListenerRemove: () => {
-                    this.listening = false;
-                    this.inputEventListener.dispose();
-                }
-            });
-            this.event = this.emitter.event;
-        }
-        set input(event) {
-            this.inputEvent = event;
-            if (this.listening) {
-                this.inputEventListener.dispose();
-                this.inputEventListener = event(this.emitter.fire, this.emitter);
-            }
-        }
-        dispose() {
-            this.inputEventListener.dispose();
-            this.emitter.dispose();
-        }
-    }
-    exports.Relay = Relay;
-});
-
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(__m[18/*vs/base/common/cancellation*/], __M([0/*require*/,1/*exports*/,7/*vs/base/common/event*/]), function (require, exports, event_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.CancellationTokenSource = exports.CancellationToken = void 0;
-    const shortcutEvent = Object.freeze(function (callback, context) {
-        const handle = setTimeout(callback.bind(context), 0);
-        return { dispose() { clearTimeout(handle); } };
-    });
-    var CancellationToken;
-    (function (CancellationToken) {
-        function isCancellationToken(thing) {
-            if (thing === CancellationToken.None || thing === CancellationToken.Cancelled) {
-                return true;
-            }
-            if (thing instanceof MutableToken) {
-                return true;
-            }
-            if (!thing || typeof thing !== 'object') {
-                return false;
-            }
-            return typeof thing.isCancellationRequested === 'boolean'
-                && typeof thing.onCancellationRequested === 'function';
-        }
-        CancellationToken.isCancellationToken = isCancellationToken;
-        CancellationToken.None = Object.freeze({
-            isCancellationRequested: false,
-            onCancellationRequested: event_1.Event.None
-        });
-        CancellationToken.Cancelled = Object.freeze({
-            isCancellationRequested: true,
-            onCancellationRequested: shortcutEvent
-        });
-    })(CancellationToken = exports.CancellationToken || (exports.CancellationToken = {}));
-    class MutableToken {
-        constructor() {
-            this._isCancelled = false;
-            this._emitter = null;
-        }
-        cancel() {
-            if (!this._isCancelled) {
-                this._isCancelled = true;
-                if (this._emitter) {
-                    this._emitter.fire(undefined);
-                    this.dispose();
-                }
-            }
-        }
-        get isCancellationRequested() {
-            return this._isCancelled;
-        }
-        get onCancellationRequested() {
-            if (this._isCancelled) {
-                return shortcutEvent;
-            }
-            if (!this._emitter) {
-                this._emitter = new event_1.Emitter();
-            }
-            return this._emitter.event;
-        }
-        dispose() {
-            if (this._emitter) {
-                this._emitter.dispose();
-                this._emitter = null;
-            }
-        }
-    }
-    class CancellationTokenSource {
-        constructor(parent) {
-            this._token = undefined;
-            this._parentListener = undefined;
-            this._parentListener = parent && parent.onCancellationRequested(this.cancel, this);
-        }
-        get token() {
-            if (!this._token) {
-                // be lazy and create the token only when
-                // actually needed
-                this._token = new MutableToken();
-            }
-            return this._token;
-        }
-        cancel() {
-            if (!this._token) {
-                // save an object by returning the default
-                // cancelled token when cancellation happens
-                // before someone asks for the token
-                this._token = CancellationToken.Cancelled;
-            }
-            else if (this._token instanceof MutableToken) {
-                // actually cancel
-                this._token.cancel();
-            }
-        }
-        dispose(cancel = false) {
-            if (cancel) {
-                this.cancel();
-            }
-            if (this._parentListener) {
-                this._parentListener.dispose();
-            }
-            if (!this._token) {
-                // ensure to initialize with an empty token if we had none
-                this._token = CancellationToken.None;
-            }
-            else if (this._token instanceof MutableToken) {
-                // actually dispose
-                this._token.dispose();
-            }
-        }
-    }
-    exports.CancellationTokenSource = CancellationTokenSource;
-});
-
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-define(__m[3/*vs/base/common/platform*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.isLittleEndian = exports.OS = exports.setImmediate = exports.globals = exports.isIOS = exports.isWeb = exports.isNative = exports.isLinux = exports.isMacintosh = exports.isWindows = void 0;
+    exports.isLittleEndian = exports.OS = exports.setImmediate = exports.globals = exports.userAgent = exports.isIOS = exports.isWeb = exports.isNative = exports.isLinux = exports.isMacintosh = exports.isWindows = exports.isPreferringBrowserCodeLoad = exports.browserCodeLoadingCacheStrategy = exports.isElectronSandboxed = void 0;
     const LANGUAGE_DEFAULT = 'en';
     let _isWindows = false;
     let _isMacintosh = false;
     let _isLinux = false;
+    let _isLinuxSnap = false;
     let _isNative = false;
     let _isWeb = false;
     let _isIOS = false;
@@ -3712,8 +3077,35 @@ define(__m[3/*vs/base/common/platform*/], __M([0/*require*/,1/*exports*/]), func
     let _language = LANGUAGE_DEFAULT;
     let _translationsConfigFile = undefined;
     let _userAgent = undefined;
-    const isElectronRenderer = (typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.electron !== 'undefined' && process.type === 'renderer');
-    // OS detection
+    const _globals = (typeof self === 'object' ? self : typeof global === 'object' ? global : {});
+    let nodeProcess = undefined;
+    if (typeof process !== 'undefined') {
+        // Native environment (non-sandboxed)
+        nodeProcess = process;
+    }
+    else if (typeof _globals.vscode !== 'undefined') {
+        // Native environment (sandboxed)
+        nodeProcess = _globals.vscode.process;
+    }
+    const isElectronRenderer = typeof ((_a = nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.versions) === null || _a === void 0 ? void 0 : _a.electron) === 'string' && nodeProcess.type === 'renderer';
+    exports.isElectronSandboxed = isElectronRenderer && (nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.sandboxed);
+    exports.browserCodeLoadingCacheStrategy = (() => {
+        // Always enabled when sandbox is enabled
+        if (exports.isElectronSandboxed) {
+            return 'bypassHeatCheck';
+        }
+        // Otherwise, only enabled conditionally
+        const env = nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.env['ENABLE_VSCODE_BROWSER_CODE_LOADING'];
+        if (typeof env === 'string') {
+            if (env === 'none' || env === 'code' || env === 'bypassHeatCheck' || env === 'bypassHeatCheckAndEagerCompile') {
+                return env;
+            }
+            return 'bypassHeatCheck';
+        }
+        return undefined;
+    })();
+    exports.isPreferringBrowserCodeLoad = typeof exports.browserCodeLoadingCacheStrategy === 'string';
+    // Web environment
     if (typeof navigator === 'object' && !isElectronRenderer) {
         _userAgent = navigator.userAgent;
         _isWindows = _userAgent.indexOf('Windows') >= 0;
@@ -3724,13 +3116,15 @@ define(__m[3/*vs/base/common/platform*/], __M([0/*require*/,1/*exports*/]), func
         _locale = navigator.language;
         _language = _locale;
     }
-    else if (typeof process === 'object') {
-        _isWindows = (process.platform === 'win32');
-        _isMacintosh = (process.platform === 'darwin');
-        _isLinux = (process.platform === 'linux');
+    // Native environment
+    else if (typeof nodeProcess === 'object') {
+        _isWindows = (nodeProcess.platform === 'win32');
+        _isMacintosh = (nodeProcess.platform === 'darwin');
+        _isLinux = (nodeProcess.platform === 'linux');
+        _isLinuxSnap = _isLinux && !!nodeProcess.env['SNAP'] && !!nodeProcess.env['SNAP_REVISION'];
         _locale = LANGUAGE_DEFAULT;
         _language = LANGUAGE_DEFAULT;
-        const rawNlsConfig = process.env['VSCODE_NLS_CONFIG'];
+        const rawNlsConfig = nodeProcess.env['VSCODE_NLS_CONFIG'];
         if (rawNlsConfig) {
             try {
                 const nlsConfig = JSON.parse(rawNlsConfig);
@@ -3744,6 +3138,10 @@ define(__m[3/*vs/base/common/platform*/], __M([0/*require*/,1/*exports*/]), func
             }
         }
         _isNative = true;
+    }
+    // Unknown environment
+    else {
+        console.error('Unable to resolve platform.');
     }
     let _platform = 0 /* Web */;
     if (_isMacintosh) {
@@ -3761,7 +3159,7 @@ define(__m[3/*vs/base/common/platform*/], __M([0/*require*/,1/*exports*/]), func
     exports.isNative = _isNative;
     exports.isWeb = _isWeb;
     exports.isIOS = _isIOS;
-    const _globals = (typeof self === 'object' ? self : typeof global === 'object' ? global : {});
+    exports.userAgent = _userAgent;
     exports.globals = _globals;
     exports.setImmediate = (function defineSetImmediate() {
         if (exports.globals.setImmediate) {
@@ -3791,8 +3189,8 @@ define(__m[3/*vs/base/common/platform*/], __M([0/*require*/,1/*exports*/]), func
                 exports.globals.postMessage({ vscodeSetImmediateId: myId }, '*');
             };
         }
-        if (typeof process !== 'undefined' && typeof process.nextTick === 'function') {
-            return process.nextTick.bind(process);
+        if (nodeProcess && typeof nodeProcess.nextTick === 'function') {
+            return nodeProcess.nextTick.bind(nodeProcess);
         }
         const _promise = Promise.resolve();
         return (callback) => _promise.then(callback);
@@ -3818,16 +3216,37 @@ define(__m[3/*vs/base/common/platform*/], __M([0/*require*/,1/*exports*/]), func
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[19/*vs/base/common/process*/], __M([0/*require*/,1/*exports*/,3/*vs/base/common/platform*/]), function (require, exports, platform_1) {
+define(__m[19/*vs/base/common/process*/], __M([0/*require*/,1/*exports*/,2/*vs/base/common/platform*/]), function (require, exports, platform_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.platform = exports.env = exports.cwd = void 0;
-    const safeProcess = (typeof process === 'undefined') ? {
-        cwd() { return '/'; },
-        env: Object.create(null),
-        get platform() { return platform_1.isWindows ? 'win32' : platform_1.isMacintosh ? 'darwin' : 'linux'; },
-        nextTick(callback) { return platform_1.setImmediate(callback); }
-    } : process;
+    let safeProcess;
+    // Native node.js environment
+    if (typeof process !== 'undefined') {
+        safeProcess = process;
+    }
+    // Native sandbox environment
+    else if (typeof platform_1.globals.vscode !== 'undefined') {
+        safeProcess = {
+            // Supported
+            get platform() { return platform_1.globals.vscode.process.platform; },
+            get env() { return platform_1.globals.vscode.process.env; },
+            nextTick(callback) { return platform_1.setImmediate(callback); },
+            // Unsupported
+            cwd() { return platform_1.globals.vscode.process.env['VSCODE_CWD'] || platform_1.globals.vscode.process.execPath.substr(0, platform_1.globals.vscode.process.execPath.lastIndexOf(platform_1.globals.vscode.process.platform === 'win32' ? '\\' : '/')); }
+        };
+    }
+    // Web environment
+    else {
+        safeProcess = {
+            // Supported
+            get platform() { return platform_1.isWindows ? 'win32' : platform_1.isMacintosh ? 'darwin' : 'linux'; },
+            nextTick(callback) { return platform_1.setImmediate(callback); },
+            // Unsupported
+            get env() { return Object.create(null); },
+            cwd() { return '/'; }
+        };
+    }
     exports.cwd = safeProcess.cwd;
     exports.env = safeProcess.env;
     exports.platform = safeProcess.platform;
@@ -5197,10 +4616,776 @@ define(__m[20/*vs/base/common/path*/], __M([0/*require*/,1/*exports*/,19/*vs/bas
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[8/*vs/base/common/strings*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[8/*vs/base/common/stopwatch*/], __M([0/*require*/,1/*exports*/,2/*vs/base/common/platform*/]), function (require, exports, platform_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.breakBetweenGraphemeBreakType = exports.getGraphemeBreakType = exports.singleLetterHash = exports.containsUppercaseCharacter = exports.startsWithUTF8BOM = exports.UTF8_BOM_CHARACTER = exports.isEmojiImprecise = exports.isFullWidthCharacter = exports.containsFullWidthCharacter = exports.containsUnusualLineTerminators = exports.UNUSUAL_LINE_TERMINATORS = exports.isBasicASCII = exports.containsEmoji = exports.containsRTL = exports.decodeUTF8 = exports.prevCharLength = exports.nextCharLength = exports.getNextCodePoint = exports.computeCodePoint = exports.isLowSurrogate = exports.isHighSurrogate = exports.commonSuffixLength = exports.commonPrefixLength = exports.startsWithIgnoreCase = exports.equalsIgnoreCase = exports.isUpperAsciiLetter = exports.isLowerAsciiLetter = exports.compareSubstringIgnoreCase = exports.compareIgnoreCase = exports.compareSubstring = exports.compare = exports.lastNonWhitespaceIndex = exports.getLeadingWhitespace = exports.firstNonWhitespaceIndex = exports.regExpFlags = exports.regExpLeadsToEndlessLoop = exports.createRegExp = exports.endsWith = exports.startsWith = exports.stripWildcards = exports.convertSimple2RegExpPattern = exports.rtrim = exports.ltrim = exports.trim = exports.escapeRegExpCharacters = exports.escape = exports.format = exports.pad = exports.isFalsyOrWhitespace = void 0;
+    exports.StopWatch = void 0;
+    const hasPerformanceNow = (platform_1.globals.performance && typeof platform_1.globals.performance.now === 'function');
+    class StopWatch {
+        constructor(highResolution) {
+            this._highResolution = hasPerformanceNow && highResolution;
+            this._startTime = this._now();
+            this._stopTime = -1;
+        }
+        static create(highResolution = true) {
+            return new StopWatch(highResolution);
+        }
+        stop() {
+            this._stopTime = this._now();
+        }
+        elapsed() {
+            if (this._stopTime !== -1) {
+                return this._stopTime - this._startTime;
+            }
+            return this._now() - this._startTime;
+        }
+        _now() {
+            return this._highResolution ? platform_1.globals.performance.now() : Date.now();
+        }
+    }
+    exports.StopWatch = StopWatch;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[9/*vs/base/common/event*/], __M([0/*require*/,1/*exports*/,4/*vs/base/common/errors*/,7/*vs/base/common/lifecycle*/,18/*vs/base/common/linkedList*/,8/*vs/base/common/stopwatch*/]), function (require, exports, errors_1, lifecycle_1, linkedList_1, stopwatch_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Relay = exports.EventBufferer = exports.PauseableEmitter = exports.Emitter = exports.Event = void 0;
+    var Event;
+    (function (Event) {
+        Event.None = () => lifecycle_1.Disposable.None;
+        /**
+         * Given an event, returns another event which only fires once.
+         */
+        function once(event) {
+            return (listener, thisArgs = null, disposables) => {
+                // we need this, in case the event fires during the listener call
+                let didFire = false;
+                let result;
+                result = event(e => {
+                    if (didFire) {
+                        return;
+                    }
+                    else if (result) {
+                        result.dispose();
+                    }
+                    else {
+                        didFire = true;
+                    }
+                    return listener.call(thisArgs, e);
+                }, null, disposables);
+                if (didFire) {
+                    result.dispose();
+                }
+                return result;
+            };
+        }
+        Event.once = once;
+        /**
+         * Given an event and a `map` function, returns another event which maps each element
+         * through the mapping function.
+         */
+        function map(event, map) {
+            return snapshot((listener, thisArgs = null, disposables) => event(i => listener.call(thisArgs, map(i)), null, disposables));
+        }
+        Event.map = map;
+        /**
+         * Given an event and an `each` function, returns another identical event and calls
+         * the `each` function per each element.
+         */
+        function forEach(event, each) {
+            return snapshot((listener, thisArgs = null, disposables) => event(i => { each(i); listener.call(thisArgs, i); }, null, disposables));
+        }
+        Event.forEach = forEach;
+        function filter(event, filter) {
+            return snapshot((listener, thisArgs = null, disposables) => event(e => filter(e) && listener.call(thisArgs, e), null, disposables));
+        }
+        Event.filter = filter;
+        /**
+         * Given an event, returns the same event but typed as `Event<void>`.
+         */
+        function signal(event) {
+            return event;
+        }
+        Event.signal = signal;
+        function any(...events) {
+            return (listener, thisArgs = null, disposables) => lifecycle_1.combinedDisposable(...events.map(event => event(e => listener.call(thisArgs, e), null, disposables)));
+        }
+        Event.any = any;
+        /**
+         * Given an event and a `merge` function, returns another event which maps each element
+         * and the cumulative result through the `merge` function. Similar to `map`, but with memory.
+         */
+        function reduce(event, merge, initial) {
+            let output = initial;
+            return map(event, e => {
+                output = merge(output, e);
+                return output;
+            });
+        }
+        Event.reduce = reduce;
+        /**
+         * Given a chain of event processing functions (filter, map, etc), each
+         * function will be invoked per event & per listener. Snapshotting an event
+         * chain allows each function to be invoked just once per event.
+         */
+        function snapshot(event) {
+            let listener;
+            const emitter = new Emitter({
+                onFirstListenerAdd() {
+                    listener = event(emitter.fire, emitter);
+                },
+                onLastListenerRemove() {
+                    listener.dispose();
+                }
+            });
+            return emitter.event;
+        }
+        Event.snapshot = snapshot;
+        function debounce(event, merge, delay = 100, leading = false, leakWarningThreshold) {
+            let subscription;
+            let output = undefined;
+            let handle = undefined;
+            let numDebouncedCalls = 0;
+            const emitter = new Emitter({
+                leakWarningThreshold,
+                onFirstListenerAdd() {
+                    subscription = event(cur => {
+                        numDebouncedCalls++;
+                        output = merge(output, cur);
+                        if (leading && !handle) {
+                            emitter.fire(output);
+                            output = undefined;
+                        }
+                        clearTimeout(handle);
+                        handle = setTimeout(() => {
+                            const _output = output;
+                            output = undefined;
+                            handle = undefined;
+                            if (!leading || numDebouncedCalls > 1) {
+                                emitter.fire(_output);
+                            }
+                            numDebouncedCalls = 0;
+                        }, delay);
+                    });
+                },
+                onLastListenerRemove() {
+                    subscription.dispose();
+                }
+            });
+            return emitter.event;
+        }
+        Event.debounce = debounce;
+        /**
+         * Given an event, it returns another event which fires only once and as soon as
+         * the input event emits. The event data is the number of millis it took for the
+         * event to fire.
+         */
+        function stopwatch(event) {
+            const start = new Date().getTime();
+            return map(once(event), _ => new Date().getTime() - start);
+        }
+        Event.stopwatch = stopwatch;
+        /**
+         * Given an event, it returns another event which fires only when the event
+         * element changes.
+         */
+        function latch(event) {
+            let firstCall = true;
+            let cache;
+            return filter(event, value => {
+                const shouldEmit = firstCall || value !== cache;
+                firstCall = false;
+                cache = value;
+                return shouldEmit;
+            });
+        }
+        Event.latch = latch;
+        /**
+         * Buffers the provided event until a first listener comes
+         * along, at which point fire all the events at once and
+         * pipe the event from then on.
+         *
+         * ```typescript
+         * const emitter = new Emitter<number>();
+         * const event = emitter.event;
+         * const bufferedEvent = buffer(event);
+         *
+         * emitter.fire(1);
+         * emitter.fire(2);
+         * emitter.fire(3);
+         * // nothing...
+         *
+         * const listener = bufferedEvent(num => console.log(num));
+         * // 1, 2, 3
+         *
+         * emitter.fire(4);
+         * // 4
+         * ```
+         */
+        function buffer(event, nextTick = false, _buffer = []) {
+            let buffer = _buffer.slice();
+            let listener = event(e => {
+                if (buffer) {
+                    buffer.push(e);
+                }
+                else {
+                    emitter.fire(e);
+                }
+            });
+            const flush = () => {
+                if (buffer) {
+                    buffer.forEach(e => emitter.fire(e));
+                }
+                buffer = null;
+            };
+            const emitter = new Emitter({
+                onFirstListenerAdd() {
+                    if (!listener) {
+                        listener = event(e => emitter.fire(e));
+                    }
+                },
+                onFirstListenerDidAdd() {
+                    if (buffer) {
+                        if (nextTick) {
+                            setTimeout(flush);
+                        }
+                        else {
+                            flush();
+                        }
+                    }
+                },
+                onLastListenerRemove() {
+                    if (listener) {
+                        listener.dispose();
+                    }
+                    listener = null;
+                }
+            });
+            return emitter.event;
+        }
+        Event.buffer = buffer;
+        class ChainableEvent {
+            constructor(event) {
+                this.event = event;
+            }
+            map(fn) {
+                return new ChainableEvent(map(this.event, fn));
+            }
+            forEach(fn) {
+                return new ChainableEvent(forEach(this.event, fn));
+            }
+            filter(fn) {
+                return new ChainableEvent(filter(this.event, fn));
+            }
+            reduce(merge, initial) {
+                return new ChainableEvent(reduce(this.event, merge, initial));
+            }
+            latch() {
+                return new ChainableEvent(latch(this.event));
+            }
+            debounce(merge, delay = 100, leading = false, leakWarningThreshold) {
+                return new ChainableEvent(debounce(this.event, merge, delay, leading, leakWarningThreshold));
+            }
+            on(listener, thisArgs, disposables) {
+                return this.event(listener, thisArgs, disposables);
+            }
+            once(listener, thisArgs, disposables) {
+                return once(this.event)(listener, thisArgs, disposables);
+            }
+        }
+        function chain(event) {
+            return new ChainableEvent(event);
+        }
+        Event.chain = chain;
+        function fromNodeEventEmitter(emitter, eventName, map = id => id) {
+            const fn = (...args) => result.fire(map(...args));
+            const onFirstListenerAdd = () => emitter.on(eventName, fn);
+            const onLastListenerRemove = () => emitter.removeListener(eventName, fn);
+            const result = new Emitter({ onFirstListenerAdd, onLastListenerRemove });
+            return result.event;
+        }
+        Event.fromNodeEventEmitter = fromNodeEventEmitter;
+        function fromDOMEventEmitter(emitter, eventName, map = id => id) {
+            const fn = (...args) => result.fire(map(...args));
+            const onFirstListenerAdd = () => emitter.addEventListener(eventName, fn);
+            const onLastListenerRemove = () => emitter.removeEventListener(eventName, fn);
+            const result = new Emitter({ onFirstListenerAdd, onLastListenerRemove });
+            return result.event;
+        }
+        Event.fromDOMEventEmitter = fromDOMEventEmitter;
+        function fromPromise(promise) {
+            const emitter = new Emitter();
+            let shouldEmit = false;
+            promise
+                .then(undefined, () => null)
+                .then(() => {
+                if (!shouldEmit) {
+                    setTimeout(() => emitter.fire(undefined), 0);
+                }
+                else {
+                    emitter.fire(undefined);
+                }
+            });
+            shouldEmit = true;
+            return emitter.event;
+        }
+        Event.fromPromise = fromPromise;
+        function toPromise(event) {
+            return new Promise(resolve => once(event)(resolve));
+        }
+        Event.toPromise = toPromise;
+    })(Event = exports.Event || (exports.Event = {}));
+    class EventProfiling {
+        constructor(name) {
+            this._listenerCount = 0;
+            this._invocationCount = 0;
+            this._elapsedOverall = 0;
+            this._name = `${name}_${EventProfiling._idPool++}`;
+        }
+        start(listenerCount) {
+            this._stopWatch = new stopwatch_1.StopWatch(true);
+            this._listenerCount = listenerCount;
+        }
+        stop() {
+            if (this._stopWatch) {
+                const elapsed = this._stopWatch.elapsed();
+                this._elapsedOverall += elapsed;
+                this._invocationCount += 1;
+                console.info(`did FIRE ${this._name}: elapsed_ms: ${elapsed.toFixed(5)}, listener: ${this._listenerCount} (elapsed_overall: ${this._elapsedOverall.toFixed(2)}, invocations: ${this._invocationCount})`);
+                this._stopWatch = undefined;
+            }
+        }
+    }
+    EventProfiling._idPool = 0;
+    let _globalLeakWarningThreshold = -1;
+    class LeakageMonitor {
+        constructor(customThreshold, name = Math.random().toString(18).slice(2, 5)) {
+            this.customThreshold = customThreshold;
+            this.name = name;
+            this._warnCountdown = 0;
+        }
+        dispose() {
+            if (this._stacks) {
+                this._stacks.clear();
+            }
+        }
+        check(listenerCount) {
+            let threshold = _globalLeakWarningThreshold;
+            if (typeof this.customThreshold === 'number') {
+                threshold = this.customThreshold;
+            }
+            if (threshold <= 0 || listenerCount < threshold) {
+                return undefined;
+            }
+            if (!this._stacks) {
+                this._stacks = new Map();
+            }
+            const stack = new Error().stack.split('\n').slice(3).join('\n');
+            const count = (this._stacks.get(stack) || 0);
+            this._stacks.set(stack, count + 1);
+            this._warnCountdown -= 1;
+            if (this._warnCountdown <= 0) {
+                // only warn on first exceed and then every time the limit
+                // is exceeded by 50% again
+                this._warnCountdown = threshold * 0.5;
+                // find most frequent listener and print warning
+                let topStack;
+                let topCount = 0;
+                for (const [stack, count] of this._stacks) {
+                    if (!topStack || topCount < count) {
+                        topStack = stack;
+                        topCount = count;
+                    }
+                }
+                console.warn(`[${this.name}] potential listener LEAK detected, having ${listenerCount} listeners already. MOST frequent listener (${topCount}):`);
+                console.warn(topStack);
+            }
+            return () => {
+                const count = (this._stacks.get(stack) || 0);
+                this._stacks.set(stack, count - 1);
+            };
+        }
+    }
+    /**
+     * The Emitter can be used to expose an Event to the public
+     * to fire it from the insides.
+     * Sample:
+        class Document {
+    
+            private readonly _onDidChange = new Emitter<(value:string)=>any>();
+    
+            public onDidChange = this._onDidChange.event;
+    
+            // getter-style
+            // get onDidChange(): Event<(value:string)=>any> {
+            // 	return this._onDidChange.event;
+            // }
+    
+            private _doIt() {
+                //...
+                this._onDidChange.fire(value);
+            }
+        }
+     */
+    class Emitter {
+        constructor(options) {
+            var _a;
+            this._disposed = false;
+            this._options = options;
+            this._leakageMon = _globalLeakWarningThreshold > 0 ? new LeakageMonitor(this._options && this._options.leakWarningThreshold) : undefined;
+            this._perfMon = ((_a = this._options) === null || _a === void 0 ? void 0 : _a._profName) ? new EventProfiling(this._options._profName) : undefined;
+        }
+        /**
+         * For the public to allow to subscribe
+         * to events from this Emitter
+         */
+        get event() {
+            if (!this._event) {
+                this._event = (listener, thisArgs, disposables) => {
+                    var _a;
+                    if (!this._listeners) {
+                        this._listeners = new linkedList_1.LinkedList();
+                    }
+                    const firstListener = this._listeners.isEmpty();
+                    if (firstListener && this._options && this._options.onFirstListenerAdd) {
+                        this._options.onFirstListenerAdd(this);
+                    }
+                    const remove = this._listeners.push(!thisArgs ? listener : [listener, thisArgs]);
+                    if (firstListener && this._options && this._options.onFirstListenerDidAdd) {
+                        this._options.onFirstListenerDidAdd(this);
+                    }
+                    if (this._options && this._options.onListenerDidAdd) {
+                        this._options.onListenerDidAdd(this, listener, thisArgs);
+                    }
+                    // check and record this emitter for potential leakage
+                    const removeMonitor = (_a = this._leakageMon) === null || _a === void 0 ? void 0 : _a.check(this._listeners.size);
+                    let result;
+                    result = {
+                        dispose: () => {
+                            if (removeMonitor) {
+                                removeMonitor();
+                            }
+                            result.dispose = Emitter._noop;
+                            if (!this._disposed) {
+                                remove();
+                                if (this._options && this._options.onLastListenerRemove) {
+                                    const hasListeners = (this._listeners && !this._listeners.isEmpty());
+                                    if (!hasListeners) {
+                                        this._options.onLastListenerRemove(this);
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    if (disposables instanceof lifecycle_1.DisposableStore) {
+                        disposables.add(result);
+                    }
+                    else if (Array.isArray(disposables)) {
+                        disposables.push(result);
+                    }
+                    return result;
+                };
+            }
+            return this._event;
+        }
+        /**
+         * To be kept private to fire an event to
+         * subscribers
+         */
+        fire(event) {
+            var _a, _b;
+            if (this._listeners) {
+                // put all [listener,event]-pairs into delivery queue
+                // then emit all event. an inner/nested event might be
+                // the driver of this
+                if (!this._deliveryQueue) {
+                    this._deliveryQueue = new linkedList_1.LinkedList();
+                }
+                for (let listener of this._listeners) {
+                    this._deliveryQueue.push([listener, event]);
+                }
+                // start/stop performance insight collection
+                (_a = this._perfMon) === null || _a === void 0 ? void 0 : _a.start(this._deliveryQueue.size);
+                while (this._deliveryQueue.size > 0) {
+                    const [listener, event] = this._deliveryQueue.shift();
+                    try {
+                        if (typeof listener === 'function') {
+                            listener.call(undefined, event);
+                        }
+                        else {
+                            listener[0].call(listener[1], event);
+                        }
+                    }
+                    catch (e) {
+                        errors_1.onUnexpectedError(e);
+                    }
+                }
+                (_b = this._perfMon) === null || _b === void 0 ? void 0 : _b.stop();
+            }
+        }
+        dispose() {
+            var _a, _b, _c;
+            (_a = this._listeners) === null || _a === void 0 ? void 0 : _a.clear();
+            (_b = this._deliveryQueue) === null || _b === void 0 ? void 0 : _b.clear();
+            (_c = this._leakageMon) === null || _c === void 0 ? void 0 : _c.dispose();
+            this._disposed = true;
+        }
+    }
+    exports.Emitter = Emitter;
+    Emitter._noop = function () { };
+    class PauseableEmitter extends Emitter {
+        constructor(options) {
+            super(options);
+            this._isPaused = 0;
+            this._eventQueue = new linkedList_1.LinkedList();
+            this._mergeFn = options === null || options === void 0 ? void 0 : options.merge;
+        }
+        pause() {
+            this._isPaused++;
+        }
+        resume() {
+            if (this._isPaused !== 0 && --this._isPaused === 0) {
+                if (this._mergeFn) {
+                    // use the merge function to create a single composite
+                    // event. make a copy in case firing pauses this emitter
+                    const events = Array.from(this._eventQueue);
+                    this._eventQueue.clear();
+                    super.fire(this._mergeFn(events));
+                }
+                else {
+                    // no merging, fire each event individually and test
+                    // that this emitter isn't paused halfway through
+                    while (!this._isPaused && this._eventQueue.size !== 0) {
+                        super.fire(this._eventQueue.shift());
+                    }
+                }
+            }
+        }
+        fire(event) {
+            if (this._listeners) {
+                if (this._isPaused !== 0) {
+                    this._eventQueue.push(event);
+                }
+                else {
+                    super.fire(event);
+                }
+            }
+        }
+    }
+    exports.PauseableEmitter = PauseableEmitter;
+    /**
+     * The EventBufferer is useful in situations in which you want
+     * to delay firing your events during some code.
+     * You can wrap that code and be sure that the event will not
+     * be fired during that wrap.
+     *
+     * ```
+     * const emitter: Emitter;
+     * const delayer = new EventDelayer();
+     * const delayedEvent = delayer.wrapEvent(emitter.event);
+     *
+     * delayedEvent(console.log);
+     *
+     * delayer.bufferEvents(() => {
+     *   emitter.fire(); // event will not be fired yet
+     * });
+     *
+     * // event will only be fired at this point
+     * ```
+     */
+    class EventBufferer {
+        constructor() {
+            this.buffers = [];
+        }
+        wrapEvent(event) {
+            return (listener, thisArgs, disposables) => {
+                return event(i => {
+                    const buffer = this.buffers[this.buffers.length - 1];
+                    if (buffer) {
+                        buffer.push(() => listener.call(thisArgs, i));
+                    }
+                    else {
+                        listener.call(thisArgs, i);
+                    }
+                }, undefined, disposables);
+            };
+        }
+        bufferEvents(fn) {
+            const buffer = [];
+            this.buffers.push(buffer);
+            const r = fn();
+            this.buffers.pop();
+            buffer.forEach(flush => flush());
+            return r;
+        }
+    }
+    exports.EventBufferer = EventBufferer;
+    /**
+     * A Relay is an event forwarder which functions as a replugabble event pipe.
+     * Once created, you can connect an input event to it and it will simply forward
+     * events from that input event through its own `event` property. The `input`
+     * can be changed at any point in time.
+     */
+    class Relay {
+        constructor() {
+            this.listening = false;
+            this.inputEvent = Event.None;
+            this.inputEventListener = lifecycle_1.Disposable.None;
+            this.emitter = new Emitter({
+                onFirstListenerDidAdd: () => {
+                    this.listening = true;
+                    this.inputEventListener = this.inputEvent(this.emitter.fire, this.emitter);
+                },
+                onLastListenerRemove: () => {
+                    this.listening = false;
+                    this.inputEventListener.dispose();
+                }
+            });
+            this.event = this.emitter.event;
+        }
+        set input(event) {
+            this.inputEvent = event;
+            if (this.listening) {
+                this.inputEventListener.dispose();
+                this.inputEventListener = event(this.emitter.fire, this.emitter);
+            }
+        }
+        dispose() {
+            this.inputEventListener.dispose();
+            this.emitter.dispose();
+        }
+    }
+    exports.Relay = Relay;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[21/*vs/base/common/cancellation*/], __M([0/*require*/,1/*exports*/,9/*vs/base/common/event*/]), function (require, exports, event_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CancellationTokenSource = exports.CancellationToken = void 0;
+    const shortcutEvent = Object.freeze(function (callback, context) {
+        const handle = setTimeout(callback.bind(context), 0);
+        return { dispose() { clearTimeout(handle); } };
+    });
+    var CancellationToken;
+    (function (CancellationToken) {
+        function isCancellationToken(thing) {
+            if (thing === CancellationToken.None || thing === CancellationToken.Cancelled) {
+                return true;
+            }
+            if (thing instanceof MutableToken) {
+                return true;
+            }
+            if (!thing || typeof thing !== 'object') {
+                return false;
+            }
+            return typeof thing.isCancellationRequested === 'boolean'
+                && typeof thing.onCancellationRequested === 'function';
+        }
+        CancellationToken.isCancellationToken = isCancellationToken;
+        CancellationToken.None = Object.freeze({
+            isCancellationRequested: false,
+            onCancellationRequested: event_1.Event.None
+        });
+        CancellationToken.Cancelled = Object.freeze({
+            isCancellationRequested: true,
+            onCancellationRequested: shortcutEvent
+        });
+    })(CancellationToken = exports.CancellationToken || (exports.CancellationToken = {}));
+    class MutableToken {
+        constructor() {
+            this._isCancelled = false;
+            this._emitter = null;
+        }
+        cancel() {
+            if (!this._isCancelled) {
+                this._isCancelled = true;
+                if (this._emitter) {
+                    this._emitter.fire(undefined);
+                    this.dispose();
+                }
+            }
+        }
+        get isCancellationRequested() {
+            return this._isCancelled;
+        }
+        get onCancellationRequested() {
+            if (this._isCancelled) {
+                return shortcutEvent;
+            }
+            if (!this._emitter) {
+                this._emitter = new event_1.Emitter();
+            }
+            return this._emitter.event;
+        }
+        dispose() {
+            if (this._emitter) {
+                this._emitter.dispose();
+                this._emitter = null;
+            }
+        }
+    }
+    class CancellationTokenSource {
+        constructor(parent) {
+            this._token = undefined;
+            this._parentListener = undefined;
+            this._parentListener = parent && parent.onCancellationRequested(this.cancel, this);
+        }
+        get token() {
+            if (!this._token) {
+                // be lazy and create the token only when
+                // actually needed
+                this._token = new MutableToken();
+            }
+            return this._token;
+        }
+        cancel() {
+            if (!this._token) {
+                // save an object by returning the default
+                // cancelled token when cancellation happens
+                // before someone asks for the token
+                this._token = CancellationToken.Cancelled;
+            }
+            else if (this._token instanceof MutableToken) {
+                // actually cancel
+                this._token.cancel();
+            }
+        }
+        dispose(cancel = false) {
+            if (cancel) {
+                this.cancel();
+            }
+            if (this._parentListener) {
+                this._parentListener.dispose();
+            }
+            if (!this._token) {
+                // ensure to initialize with an empty token if we had none
+                this._token = CancellationToken.None;
+            }
+            else if (this._token instanceof MutableToken) {
+                // actually dispose
+                this._token.dispose();
+            }
+        }
+    }
+    exports.CancellationTokenSource = CancellationTokenSource;
+});
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+define(__m[5/*vs/base/common/strings*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.breakBetweenGraphemeBreakType = exports.getGraphemeBreakType = exports.singleLetterHash = exports.containsUppercaseCharacter = exports.startsWithUTF8BOM = exports.UTF8_BOM_CHARACTER = exports.isEmojiImprecise = exports.isFullWidthCharacter = exports.containsFullWidthCharacter = exports.containsUnusualLineTerminators = exports.UNUSUAL_LINE_TERMINATORS = exports.isBasicASCII = exports.containsEmoji = exports.containsRTL = exports.decodeUTF8 = exports.prevCharLength = exports.nextCharLength = exports.getNextCodePoint = exports.computeCodePoint = exports.isLowSurrogate = exports.isHighSurrogate = exports.commonSuffixLength = exports.commonPrefixLength = exports.startsWithIgnoreCase = exports.equalsIgnoreCase = exports.isUpperAsciiLetter = exports.isLowerAsciiLetter = exports.compareSubstringIgnoreCase = exports.compareIgnoreCase = exports.compareSubstring = exports.compare = exports.lastNonWhitespaceIndex = exports.getLeadingWhitespace = exports.firstNonWhitespaceIndex = exports.splitLines = exports.regExpFlags = exports.regExpLeadsToEndlessLoop = exports.createRegExp = exports.stripWildcards = exports.convertSimple2RegExpPattern = exports.rtrim = exports.ltrim = exports.trim = exports.escapeRegExpCharacters = exports.escape = exports.format = exports.isFalsyOrWhitespace = void 0;
     function isFalsyOrWhitespace(str) {
         if (!str || typeof str !== 'string') {
             return true;
@@ -5208,18 +5393,6 @@ define(__m[8/*vs/base/common/strings*/], __M([0/*require*/,1/*exports*/]), funct
         return str.trim().length === 0;
     }
     exports.isFalsyOrWhitespace = isFalsyOrWhitespace;
-    /**
-     * @deprecated ES6: use `String.padStart`
-     */
-    function pad(n, l, char = '0') {
-        const str = '' + n;
-        const r = [str];
-        for (let i = str.length; i < l; i++) {
-            r.push(char);
-        }
-        return r.reverse().join('');
-    }
-    exports.pad = pad;
     const _formatRegexp = /{(\d+)}/g;
     /**
      * Helper to produce a string with a variable number of arguments. Insert variable segments
@@ -5326,40 +5499,6 @@ define(__m[8/*vs/base/common/strings*/], __M([0/*require*/,1/*exports*/]), funct
         return pattern.replace(/\*/g, '');
     }
     exports.stripWildcards = stripWildcards;
-    /**
-     * @deprecated ES6: use `String.startsWith`
-     */
-    function startsWith(haystack, needle) {
-        if (haystack.length < needle.length) {
-            return false;
-        }
-        if (haystack === needle) {
-            return true;
-        }
-        for (let i = 0; i < needle.length; i++) {
-            if (haystack[i] !== needle[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-    exports.startsWith = startsWith;
-    /**
-     * @deprecated ES6: use `String.endsWith`
-     */
-    function endsWith(haystack, needle) {
-        const diff = haystack.length - needle.length;
-        if (diff > 0) {
-            return haystack.indexOf(needle, diff) === diff;
-        }
-        else if (diff === 0) {
-            return haystack === needle;
-        }
-        else {
-            return false;
-        }
-    }
-    exports.endsWith = endsWith;
     function createRegExp(searchString, isRegex, options = {}) {
         if (!searchString) {
             throw new Error('Cannot create regex from empty string');
@@ -5410,6 +5549,10 @@ define(__m[8/*vs/base/common/strings*/], __M([0/*require*/,1/*exports*/]), funct
             + (regexp /* standalone editor compilation */.unicode ? 'u' : '');
     }
     exports.regExpFlags = regExpFlags;
+    function splitLines(str) {
+        return str.split(/\r\n|\r|\n/);
+    }
+    exports.splitLines = splitLines;
     /**
      * Returns first index of the string that is not whitespace.
      * If string is empty or contains only whitespaces, returns -1
@@ -5999,10 +6142,10 @@ define(__m[8/*vs/base/common/strings*/], __M([0/*require*/,1/*exports*/]), funct
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[21/*vs/base/common/hash*/], __M([0/*require*/,1/*exports*/,8/*vs/base/common/strings*/]), function (require, exports, strings) {
+define(__m[22/*vs/base/common/hash*/], __M([0/*require*/,1/*exports*/,5/*vs/base/common/strings*/]), function (require, exports, strings) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.StringSHA1 = exports.stringHash = exports.doHash = exports.hash = void 0;
+    exports.StringSHA1 = exports.toHexString = exports.stringHash = exports.doHash = exports.hash = void 0;
     /**
      * Return a hash value for an object.
      */
@@ -6077,9 +6220,13 @@ define(__m[21/*vs/base/common/hash*/], __M([0/*require*/,1/*exports*/,8/*vs/base
         }
         return value;
     }
-    function toHexString(value, bitsize = 32) {
-        return leftPad((value >>> 0).toString(16), bitsize / 4);
+    function toHexString(bufferOrValue, bitsize = 32) {
+        if (bufferOrValue instanceof ArrayBuffer) {
+            return Array.from(new Uint8Array(bufferOrValue)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        return leftPad((bufferOrValue >>> 0).toString(16), bitsize / 4);
     }
+    exports.toHexString = toHexString;
     /**
      * A SHA1 implementation that works with strings and does not allocate.
      */
@@ -6263,7 +6410,7 @@ define(__m[21/*vs/base/common/hash*/], __M([0/*require*/,1/*exports*/,8/*vs/base
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[9/*vs/base/common/diff/diff*/], __M([0/*require*/,1/*exports*/,14/*vs/base/common/diff/diffChange*/,21/*vs/base/common/hash*/]), function (require, exports, diffChange_1, hash_1) {
+define(__m[10/*vs/base/common/diff/diff*/], __M([0/*require*/,1/*exports*/,15/*vs/base/common/diff/diffChange*/,22/*vs/base/common/hash*/]), function (require, exports, diffChange_1, hash_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LcsDiff = exports.MyArray = exports.Debug = exports.stringDiff = exports.StringDiffSequence = void 0;
@@ -6937,7 +7084,72 @@ define(__m[9/*vs/base/common/diff/diff*/], __M([0/*require*/,1/*exports*/,14/*vs
                 change.originalStart -= bestDelta;
                 change.modifiedStart -= bestDelta;
             }
+            // There could be multiple longest common substrings.
+            // Give preference to the ones containing longer lines
+            if (this._hasStrings) {
+                for (let i = 1, len = changes.length; i < len; i++) {
+                    const aChange = changes[i - 1];
+                    const bChange = changes[i];
+                    const matchedLength = bChange.originalStart - aChange.originalStart - aChange.originalLength;
+                    const aOriginalStart = aChange.originalStart;
+                    const bOriginalEnd = bChange.originalStart + bChange.originalLength;
+                    const abOriginalLength = bOriginalEnd - aOriginalStart;
+                    const aModifiedStart = aChange.modifiedStart;
+                    const bModifiedEnd = bChange.modifiedStart + bChange.modifiedLength;
+                    const abModifiedLength = bModifiedEnd - aModifiedStart;
+                    // Avoid wasting a lot of time with these searches
+                    if (matchedLength < 5 && abOriginalLength < 20 && abModifiedLength < 20) {
+                        const t = this._findBetterContiguousSequence(aOriginalStart, abOriginalLength, aModifiedStart, abModifiedLength, matchedLength);
+                        if (t) {
+                            const [originalMatchStart, modifiedMatchStart] = t;
+                            if (originalMatchStart !== aChange.originalStart + aChange.originalLength || modifiedMatchStart !== aChange.modifiedStart + aChange.modifiedLength) {
+                                // switch to another sequence that has a better score
+                                aChange.originalLength = originalMatchStart - aChange.originalStart;
+                                aChange.modifiedLength = modifiedMatchStart - aChange.modifiedStart;
+                                bChange.originalStart = originalMatchStart + matchedLength;
+                                bChange.modifiedStart = modifiedMatchStart + matchedLength;
+                                bChange.originalLength = bOriginalEnd - bChange.originalStart;
+                                bChange.modifiedLength = bModifiedEnd - bChange.modifiedStart;
+                            }
+                        }
+                    }
+                }
+            }
             return changes;
+        }
+        _findBetterContiguousSequence(originalStart, originalLength, modifiedStart, modifiedLength, desiredLength) {
+            if (originalLength < desiredLength || modifiedLength < desiredLength) {
+                return null;
+            }
+            const originalMax = originalStart + originalLength - desiredLength + 1;
+            const modifiedMax = modifiedStart + modifiedLength - desiredLength + 1;
+            let bestScore = 0;
+            let bestOriginalStart = 0;
+            let bestModifiedStart = 0;
+            for (let i = originalStart; i < originalMax; i++) {
+                for (let j = modifiedStart; j < modifiedMax; j++) {
+                    const score = this._contiguousSequenceScore(i, j, desiredLength);
+                    if (score > 0 && score > bestScore) {
+                        bestScore = score;
+                        bestOriginalStart = i;
+                        bestModifiedStart = j;
+                    }
+                }
+            }
+            if (bestScore > 0) {
+                return [bestOriginalStart, bestModifiedStart];
+            }
+            return null;
+        }
+        _contiguousSequenceScore(originalStart, modifiedStart, length) {
+            let score = 0;
+            for (let l = 0; l < length; l++) {
+                if (!this.ElementsAreEqual(originalStart + l, modifiedStart + l)) {
+                    return 0;
+                }
+                score += this._originalStringElements[originalStart + l].length;
+            }
+            return score;
         }
         _OriginalIsBoundary(index) {
             if (index <= 0 || index >= this._originalElementsOrHash.length - 1) {
@@ -7075,7 +7287,7 @@ define(__m[9/*vs/base/common/diff/diff*/], __M([0/*require*/,1/*exports*/,14/*vs
     exports.LcsDiff = LcsDiff;
 });
 
-define(__m[10/*vs/base/common/types*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[11/*vs/base/common/types*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.withNullAsUndefined = exports.createProxyObject = exports.getAllMethodNames = exports.getAllPropertyNames = exports.validateConstraint = exports.validateConstraints = exports.isFunction = exports.assertIsDefined = exports.assertType = exports.isUndefinedOrNull = exports.isUndefined = exports.isBoolean = exports.isNumber = exports.isObject = exports.isString = exports.isArray = void 0;
@@ -7240,7 +7452,7 @@ define(__m[10/*vs/base/common/types*/], __M([0/*require*/,1/*exports*/]), functi
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[11/*vs/base/common/uint*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[12/*vs/base/common/uint*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.toUint32 = exports.toUint8 = void 0;
@@ -7270,7 +7482,7 @@ define(__m[11/*vs/base/common/uint*/], __M([0/*require*/,1/*exports*/]), functio
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[12/*vs/base/common/uri*/], __M([0/*require*/,1/*exports*/,3/*vs/base/common/platform*/,20/*vs/base/common/path*/]), function (require, exports, platform_1, paths) {
+define(__m[13/*vs/base/common/uri*/], __M([0/*require*/,1/*exports*/,2/*vs/base/common/platform*/,20/*vs/base/common/path*/]), function (require, exports, platform_1, paths) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.uriToFsPath = exports.URI = void 0;
@@ -7390,7 +7602,7 @@ define(__m[12/*vs/base/common/uri*/], __M([0/*require*/,1/*exports*/,3/*vs/base/
                 && typeof thing.path === 'string'
                 && typeof thing.query === 'string'
                 && typeof thing.scheme === 'string'
-                && typeof thing.fsPath === 'function'
+                && typeof thing.fsPath === 'string'
                 && typeof thing.with === 'function'
                 && typeof thing.toString === 'function';
         }
@@ -7540,7 +7752,7 @@ define(__m[12/*vs/base/common/uri*/], __M([0/*require*/,1/*exports*/,3/*vs/base/
          */
         static joinPath(uri, ...pathFragment) {
             if (!uri.path) {
-                throw new Error(`[UriError]: cannot call joinPaths on URI without path`);
+                throw new Error(`[UriError]: cannot call joinPath on URI without path`);
             }
             let newPath;
             if (platform_1.isWindows && uri.scheme === 'file') {
@@ -7863,7 +8075,7 @@ define(__m[12/*vs/base/common/uri*/], __M([0/*require*/,1/*exports*/,3/*vs/base/
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[33/*vs/base/common/worker/simpleWorker*/], __M([0/*require*/,1/*exports*/,4/*vs/base/common/errors*/,6/*vs/base/common/lifecycle*/,3/*vs/base/common/platform*/,10/*vs/base/common/types*/]), function (require, exports, errors_1, lifecycle_1, platform_1, types) {
+define(__m[34/*vs/base/common/worker/simpleWorker*/], __M([0/*require*/,1/*exports*/,4/*vs/base/common/errors*/,7/*vs/base/common/lifecycle*/,2/*vs/base/common/platform*/,11/*vs/base/common/types*/]), function (require, exports, errors_1, lifecycle_1, platform_1, types) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.create = exports.SimpleWorkerServer = exports.SimpleWorkerClient = exports.logOnceWebWorkerWarning = void 0;
@@ -7876,7 +8088,7 @@ define(__m[33/*vs/base/common/worker/simpleWorker*/], __M([0/*require*/,1/*expor
         }
         if (!webWorkerWarningLogged) {
             webWorkerWarningLogged = true;
-            console.warn('Could not create web worker(s). Falling back to loading web worker code in main thread, which might cause UI freezes. Please see https://github.com/Microsoft/monaco-editor#faq');
+            console.warn('Could not create web worker(s). Falling back to loading web worker code in main thread, which might cause UI freezes. Please see https://github.com/microsoft/monaco-editor#faq');
         }
         console.warn(err.message);
     }
@@ -8113,6 +8325,10 @@ define(__m[33/*vs/base/common/worker/simpleWorker*/], __M([0/*require*/,1/*expor
                         delete loaderConfig.paths['vs'];
                     }
                 }
+                if (typeof loaderConfig.trustedTypesPolicy !== undefined) {
+                    // don't use, it has been destroyed during serialize
+                    delete loaderConfig['trustedTypesPolicy'];
+                }
                 // Since this is in a web worker, enable catching errors
                 loaderConfig.catchError = true;
                 self.require.config(loaderConfig);
@@ -8144,7 +8360,7 @@ define(__m[33/*vs/base/common/worker/simpleWorker*/], __M([0/*require*/,1/*expor
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[22/*vs/editor/common/core/characterClassifier*/], __M([0/*require*/,1/*exports*/,11/*vs/base/common/uint*/]), function (require, exports, uint_1) {
+define(__m[23/*vs/editor/common/core/characterClassifier*/], __M([0/*require*/,1/*exports*/,12/*vs/base/common/uint*/]), function (require, exports, uint_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CharacterSet = exports.CharacterClassifier = void 0;
@@ -8202,7 +8418,7 @@ define(__m[22/*vs/editor/common/core/characterClassifier*/], __M([0/*require*/,1
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[2/*vs/editor/common/core/position*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[3/*vs/editor/common/core/position*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Position = void 0;
@@ -8343,7 +8559,7 @@ define(__m[2/*vs/editor/common/core/position*/], __M([0/*require*/,1/*exports*/]
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[5/*vs/editor/common/core/range*/], __M([0/*require*/,1/*exports*/,2/*vs/editor/common/core/position*/]), function (require, exports, position_1) {
+define(__m[6/*vs/editor/common/core/range*/], __M([0/*require*/,1/*exports*/,3/*vs/editor/common/core/position*/]), function (require, exports, position_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Range = void 0;
@@ -8709,7 +8925,7 @@ define(__m[5/*vs/editor/common/core/range*/], __M([0/*require*/,1/*exports*/,2/*
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[23/*vs/editor/common/core/selection*/], __M([0/*require*/,1/*exports*/,2/*vs/editor/common/core/position*/,5/*vs/editor/common/core/range*/]), function (require, exports, position_1, range_1) {
+define(__m[24/*vs/editor/common/core/selection*/], __M([0/*require*/,1/*exports*/,3/*vs/editor/common/core/position*/,6/*vs/editor/common/core/range*/]), function (require, exports, position_1, range_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Selection = void 0;
@@ -8839,7 +9055,7 @@ define(__m[23/*vs/editor/common/core/selection*/], __M([0/*require*/,1/*exports*
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[24/*vs/editor/common/core/token*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[25/*vs/editor/common/core/token*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TokenizationResult2 = exports.TokenizationResult = exports.Token = void 0;
@@ -8874,7 +9090,7 @@ define(__m[24/*vs/editor/common/core/token*/], __M([0/*require*/,1/*exports*/]),
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[25/*vs/editor/common/diff/diffComputer*/], __M([0/*require*/,1/*exports*/,9/*vs/base/common/diff/diff*/,8/*vs/base/common/strings*/]), function (require, exports, diff_1, strings) {
+define(__m[26/*vs/editor/common/diff/diffComputer*/], __M([0/*require*/,1/*exports*/,10/*vs/base/common/diff/diff*/,5/*vs/base/common/strings*/]), function (require, exports, diff_1, strings) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DiffComputer = void 0;
@@ -9083,6 +9299,12 @@ define(__m[25/*vs/editor/common/diff/diffComputer*/], __M([0/*require*/,1/*expor
         computeDiff() {
             if (this.original.lines.length === 1 && this.original.lines[0].length === 0) {
                 // empty original => fast path
+                if (this.modified.lines.length === 1 && this.modified.lines[0].length === 0) {
+                    return {
+                        quitEarly: false,
+                        changes: []
+                    };
+                }
                 return {
                     quitEarly: false,
                     changes: [{
@@ -9268,7 +9490,7 @@ define(__m[25/*vs/editor/common/diff/diffComputer*/], __M([0/*require*/,1/*expor
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[26/*vs/editor/common/model/wordHelper*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[27/*vs/editor/common/model/wordHelper*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getWordAtText = exports.ensureValidWordDefinition = exports.DEFAULT_WORD_REGEXP = exports.USUAL_WORD_SEPARATORS = void 0;
@@ -9328,7 +9550,6 @@ define(__m[26/*vs/editor/common/model/wordHelper*/], __M([0/*require*/,1/*export
             // but use a sub-string in which a word must occur
             let start = column - config.maxLen / 2;
             if (start < 0) {
-                textOffset += column;
                 start = 0;
             }
             else {
@@ -9344,7 +9565,7 @@ define(__m[26/*vs/editor/common/model/wordHelper*/], __M([0/*require*/,1/*export
         for (let i = 1;; i++) {
             // check time budget
             if (Date.now() - t1 >= config.timeBudget) {
-                // break;
+                break;
             }
             // reset the index at which the regexp should start matching, also know where it
             // should stop so that subsequent search don't repeat previous searches
@@ -9393,7 +9614,7 @@ define(__m[26/*vs/editor/common/model/wordHelper*/], __M([0/*require*/,1/*export
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[27/*vs/editor/common/modes/linkComputer*/], __M([0/*require*/,1/*exports*/,22/*vs/editor/common/core/characterClassifier*/]), function (require, exports, characterClassifier_1) {
+define(__m[28/*vs/editor/common/modes/linkComputer*/], __M([0/*require*/,1/*exports*/,23/*vs/editor/common/core/characterClassifier*/]), function (require, exports, characterClassifier_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.computeLinks = exports.LinkComputer = exports.StateMachine = exports.Uint8Matrix = void 0;
@@ -9666,7 +9887,7 @@ define(__m[27/*vs/editor/common/modes/linkComputer*/], __M([0/*require*/,1/*expo
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[28/*vs/editor/common/modes/supports/inplaceReplaceSupport*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[29/*vs/editor/common/modes/supports/inplaceReplaceSupport*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BasicInplaceReplace = void 0;
@@ -9758,7 +9979,7 @@ define(__m[28/*vs/editor/common/modes/supports/inplaceReplaceSupport*/], __M([0/
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[29/*vs/editor/common/standalone/standaloneEnums*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
+define(__m[30/*vs/editor/common/standalone/standaloneEnums*/], __M([0/*require*/,1/*exports*/]), function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WrappingIndent = exports.TrackedRangeStickiness = exports.TextEditorCursorStyle = exports.TextEditorCursorBlinkingStyle = exports.SymbolTag = exports.SymbolKind = exports.SignatureHelpTriggerKind = exports.SelectionDirection = exports.ScrollbarVisibility = exports.ScrollType = exports.RenderMinimap = exports.RenderLineNumbersType = exports.OverviewRulerLane = exports.OverlayWidgetPositionPreference = exports.MouseTargetType = exports.MinimapPosition = exports.MarkerTag = exports.MarkerSeverity = exports.KeyCode = exports.IndentAction = exports.EndOfLineSequence = exports.EndOfLinePreference = exports.EditorOption = exports.EditorAutoIndentStrategy = exports.DocumentHighlightKind = exports.DefaultEndOfLine = exports.CursorChangeReason = exports.ContentWidgetPositionPreference = exports.CompletionTriggerKind = exports.CompletionItemTag = exports.CompletionItemKind = exports.CompletionItemInsertTextRule = exports.AccessibilitySupport = void 0;
@@ -9937,113 +10158,120 @@ define(__m[29/*vs/editor/common/standalone/standaloneEnums*/], __M([0/*require*/
         EditorOption[EditorOption["automaticLayout"] = 9] = "automaticLayout";
         EditorOption[EditorOption["autoSurround"] = 10] = "autoSurround";
         EditorOption[EditorOption["codeLens"] = 11] = "codeLens";
-        EditorOption[EditorOption["colorDecorators"] = 12] = "colorDecorators";
-        EditorOption[EditorOption["columnSelection"] = 13] = "columnSelection";
-        EditorOption[EditorOption["comments"] = 14] = "comments";
-        EditorOption[EditorOption["contextmenu"] = 15] = "contextmenu";
-        EditorOption[EditorOption["copyWithSyntaxHighlighting"] = 16] = "copyWithSyntaxHighlighting";
-        EditorOption[EditorOption["cursorBlinking"] = 17] = "cursorBlinking";
-        EditorOption[EditorOption["cursorSmoothCaretAnimation"] = 18] = "cursorSmoothCaretAnimation";
-        EditorOption[EditorOption["cursorStyle"] = 19] = "cursorStyle";
-        EditorOption[EditorOption["cursorSurroundingLines"] = 20] = "cursorSurroundingLines";
-        EditorOption[EditorOption["cursorSurroundingLinesStyle"] = 21] = "cursorSurroundingLinesStyle";
-        EditorOption[EditorOption["cursorWidth"] = 22] = "cursorWidth";
-        EditorOption[EditorOption["disableLayerHinting"] = 23] = "disableLayerHinting";
-        EditorOption[EditorOption["disableMonospaceOptimizations"] = 24] = "disableMonospaceOptimizations";
-        EditorOption[EditorOption["dragAndDrop"] = 25] = "dragAndDrop";
-        EditorOption[EditorOption["emptySelectionClipboard"] = 26] = "emptySelectionClipboard";
-        EditorOption[EditorOption["extraEditorClassName"] = 27] = "extraEditorClassName";
-        EditorOption[EditorOption["fastScrollSensitivity"] = 28] = "fastScrollSensitivity";
-        EditorOption[EditorOption["find"] = 29] = "find";
-        EditorOption[EditorOption["fixedOverflowWidgets"] = 30] = "fixedOverflowWidgets";
-        EditorOption[EditorOption["folding"] = 31] = "folding";
-        EditorOption[EditorOption["foldingStrategy"] = 32] = "foldingStrategy";
-        EditorOption[EditorOption["foldingHighlight"] = 33] = "foldingHighlight";
-        EditorOption[EditorOption["unfoldOnClickAfterEndOfLine"] = 34] = "unfoldOnClickAfterEndOfLine";
-        EditorOption[EditorOption["fontFamily"] = 35] = "fontFamily";
-        EditorOption[EditorOption["fontInfo"] = 36] = "fontInfo";
-        EditorOption[EditorOption["fontLigatures"] = 37] = "fontLigatures";
-        EditorOption[EditorOption["fontSize"] = 38] = "fontSize";
-        EditorOption[EditorOption["fontWeight"] = 39] = "fontWeight";
-        EditorOption[EditorOption["formatOnPaste"] = 40] = "formatOnPaste";
-        EditorOption[EditorOption["formatOnType"] = 41] = "formatOnType";
-        EditorOption[EditorOption["glyphMargin"] = 42] = "glyphMargin";
-        EditorOption[EditorOption["gotoLocation"] = 43] = "gotoLocation";
-        EditorOption[EditorOption["hideCursorInOverviewRuler"] = 44] = "hideCursorInOverviewRuler";
-        EditorOption[EditorOption["highlightActiveIndentGuide"] = 45] = "highlightActiveIndentGuide";
-        EditorOption[EditorOption["hover"] = 46] = "hover";
-        EditorOption[EditorOption["inDiffEditor"] = 47] = "inDiffEditor";
-        EditorOption[EditorOption["letterSpacing"] = 48] = "letterSpacing";
-        EditorOption[EditorOption["lightbulb"] = 49] = "lightbulb";
-        EditorOption[EditorOption["lineDecorationsWidth"] = 50] = "lineDecorationsWidth";
-        EditorOption[EditorOption["lineHeight"] = 51] = "lineHeight";
-        EditorOption[EditorOption["lineNumbers"] = 52] = "lineNumbers";
-        EditorOption[EditorOption["lineNumbersMinChars"] = 53] = "lineNumbersMinChars";
-        EditorOption[EditorOption["links"] = 54] = "links";
-        EditorOption[EditorOption["matchBrackets"] = 55] = "matchBrackets";
-        EditorOption[EditorOption["minimap"] = 56] = "minimap";
-        EditorOption[EditorOption["mouseStyle"] = 57] = "mouseStyle";
-        EditorOption[EditorOption["mouseWheelScrollSensitivity"] = 58] = "mouseWheelScrollSensitivity";
-        EditorOption[EditorOption["mouseWheelZoom"] = 59] = "mouseWheelZoom";
-        EditorOption[EditorOption["multiCursorMergeOverlapping"] = 60] = "multiCursorMergeOverlapping";
-        EditorOption[EditorOption["multiCursorModifier"] = 61] = "multiCursorModifier";
-        EditorOption[EditorOption["multiCursorPaste"] = 62] = "multiCursorPaste";
-        EditorOption[EditorOption["occurrencesHighlight"] = 63] = "occurrencesHighlight";
-        EditorOption[EditorOption["overviewRulerBorder"] = 64] = "overviewRulerBorder";
-        EditorOption[EditorOption["overviewRulerLanes"] = 65] = "overviewRulerLanes";
-        EditorOption[EditorOption["padding"] = 66] = "padding";
-        EditorOption[EditorOption["parameterHints"] = 67] = "parameterHints";
-        EditorOption[EditorOption["peekWidgetDefaultFocus"] = 68] = "peekWidgetDefaultFocus";
-        EditorOption[EditorOption["definitionLinkOpensInPeek"] = 69] = "definitionLinkOpensInPeek";
-        EditorOption[EditorOption["quickSuggestions"] = 70] = "quickSuggestions";
-        EditorOption[EditorOption["quickSuggestionsDelay"] = 71] = "quickSuggestionsDelay";
-        EditorOption[EditorOption["readOnly"] = 72] = "readOnly";
-        EditorOption[EditorOption["renameOnType"] = 73] = "renameOnType";
-        EditorOption[EditorOption["renderControlCharacters"] = 74] = "renderControlCharacters";
-        EditorOption[EditorOption["renderIndentGuides"] = 75] = "renderIndentGuides";
-        EditorOption[EditorOption["renderFinalNewline"] = 76] = "renderFinalNewline";
-        EditorOption[EditorOption["renderLineHighlight"] = 77] = "renderLineHighlight";
-        EditorOption[EditorOption["renderLineHighlightOnlyWhenFocus"] = 78] = "renderLineHighlightOnlyWhenFocus";
-        EditorOption[EditorOption["renderValidationDecorations"] = 79] = "renderValidationDecorations";
-        EditorOption[EditorOption["renderWhitespace"] = 80] = "renderWhitespace";
-        EditorOption[EditorOption["revealHorizontalRightPadding"] = 81] = "revealHorizontalRightPadding";
-        EditorOption[EditorOption["roundedSelection"] = 82] = "roundedSelection";
-        EditorOption[EditorOption["rulers"] = 83] = "rulers";
-        EditorOption[EditorOption["scrollbar"] = 84] = "scrollbar";
-        EditorOption[EditorOption["scrollBeyondLastColumn"] = 85] = "scrollBeyondLastColumn";
-        EditorOption[EditorOption["scrollBeyondLastLine"] = 86] = "scrollBeyondLastLine";
-        EditorOption[EditorOption["scrollPredominantAxis"] = 87] = "scrollPredominantAxis";
-        EditorOption[EditorOption["selectionClipboard"] = 88] = "selectionClipboard";
-        EditorOption[EditorOption["selectionHighlight"] = 89] = "selectionHighlight";
-        EditorOption[EditorOption["selectOnLineNumbers"] = 90] = "selectOnLineNumbers";
-        EditorOption[EditorOption["showFoldingControls"] = 91] = "showFoldingControls";
-        EditorOption[EditorOption["showUnused"] = 92] = "showUnused";
-        EditorOption[EditorOption["snippetSuggestions"] = 93] = "snippetSuggestions";
-        EditorOption[EditorOption["smoothScrolling"] = 94] = "smoothScrolling";
-        EditorOption[EditorOption["stopRenderingLineAfter"] = 95] = "stopRenderingLineAfter";
-        EditorOption[EditorOption["suggest"] = 96] = "suggest";
-        EditorOption[EditorOption["suggestFontSize"] = 97] = "suggestFontSize";
-        EditorOption[EditorOption["suggestLineHeight"] = 98] = "suggestLineHeight";
-        EditorOption[EditorOption["suggestOnTriggerCharacters"] = 99] = "suggestOnTriggerCharacters";
-        EditorOption[EditorOption["suggestSelection"] = 100] = "suggestSelection";
-        EditorOption[EditorOption["tabCompletion"] = 101] = "tabCompletion";
-        EditorOption[EditorOption["tabIndex"] = 102] = "tabIndex";
-        EditorOption[EditorOption["unusualLineTerminators"] = 103] = "unusualLineTerminators";
-        EditorOption[EditorOption["useTabStops"] = 104] = "useTabStops";
-        EditorOption[EditorOption["wordSeparators"] = 105] = "wordSeparators";
-        EditorOption[EditorOption["wordWrap"] = 106] = "wordWrap";
-        EditorOption[EditorOption["wordWrapBreakAfterCharacters"] = 107] = "wordWrapBreakAfterCharacters";
-        EditorOption[EditorOption["wordWrapBreakBeforeCharacters"] = 108] = "wordWrapBreakBeforeCharacters";
-        EditorOption[EditorOption["wordWrapColumn"] = 109] = "wordWrapColumn";
-        EditorOption[EditorOption["wordWrapMinified"] = 110] = "wordWrapMinified";
-        EditorOption[EditorOption["wrappingIndent"] = 111] = "wrappingIndent";
-        EditorOption[EditorOption["wrappingStrategy"] = 112] = "wrappingStrategy";
-        EditorOption[EditorOption["showDeprecated"] = 113] = "showDeprecated";
-        EditorOption[EditorOption["editorClassName"] = 114] = "editorClassName";
-        EditorOption[EditorOption["pixelRatio"] = 115] = "pixelRatio";
-        EditorOption[EditorOption["tabFocusMode"] = 116] = "tabFocusMode";
-        EditorOption[EditorOption["layoutInfo"] = 117] = "layoutInfo";
-        EditorOption[EditorOption["wrappingInfo"] = 118] = "wrappingInfo";
+        EditorOption[EditorOption["codeLensFontFamily"] = 12] = "codeLensFontFamily";
+        EditorOption[EditorOption["codeLensFontSize"] = 13] = "codeLensFontSize";
+        EditorOption[EditorOption["colorDecorators"] = 14] = "colorDecorators";
+        EditorOption[EditorOption["columnSelection"] = 15] = "columnSelection";
+        EditorOption[EditorOption["comments"] = 16] = "comments";
+        EditorOption[EditorOption["contextmenu"] = 17] = "contextmenu";
+        EditorOption[EditorOption["copyWithSyntaxHighlighting"] = 18] = "copyWithSyntaxHighlighting";
+        EditorOption[EditorOption["cursorBlinking"] = 19] = "cursorBlinking";
+        EditorOption[EditorOption["cursorSmoothCaretAnimation"] = 20] = "cursorSmoothCaretAnimation";
+        EditorOption[EditorOption["cursorStyle"] = 21] = "cursorStyle";
+        EditorOption[EditorOption["cursorSurroundingLines"] = 22] = "cursorSurroundingLines";
+        EditorOption[EditorOption["cursorSurroundingLinesStyle"] = 23] = "cursorSurroundingLinesStyle";
+        EditorOption[EditorOption["cursorWidth"] = 24] = "cursorWidth";
+        EditorOption[EditorOption["disableLayerHinting"] = 25] = "disableLayerHinting";
+        EditorOption[EditorOption["disableMonospaceOptimizations"] = 26] = "disableMonospaceOptimizations";
+        EditorOption[EditorOption["dragAndDrop"] = 27] = "dragAndDrop";
+        EditorOption[EditorOption["emptySelectionClipboard"] = 28] = "emptySelectionClipboard";
+        EditorOption[EditorOption["extraEditorClassName"] = 29] = "extraEditorClassName";
+        EditorOption[EditorOption["fastScrollSensitivity"] = 30] = "fastScrollSensitivity";
+        EditorOption[EditorOption["find"] = 31] = "find";
+        EditorOption[EditorOption["fixedOverflowWidgets"] = 32] = "fixedOverflowWidgets";
+        EditorOption[EditorOption["folding"] = 33] = "folding";
+        EditorOption[EditorOption["foldingStrategy"] = 34] = "foldingStrategy";
+        EditorOption[EditorOption["foldingHighlight"] = 35] = "foldingHighlight";
+        EditorOption[EditorOption["unfoldOnClickAfterEndOfLine"] = 36] = "unfoldOnClickAfterEndOfLine";
+        EditorOption[EditorOption["fontFamily"] = 37] = "fontFamily";
+        EditorOption[EditorOption["fontInfo"] = 38] = "fontInfo";
+        EditorOption[EditorOption["fontLigatures"] = 39] = "fontLigatures";
+        EditorOption[EditorOption["fontSize"] = 40] = "fontSize";
+        EditorOption[EditorOption["fontWeight"] = 41] = "fontWeight";
+        EditorOption[EditorOption["formatOnPaste"] = 42] = "formatOnPaste";
+        EditorOption[EditorOption["formatOnType"] = 43] = "formatOnType";
+        EditorOption[EditorOption["glyphMargin"] = 44] = "glyphMargin";
+        EditorOption[EditorOption["gotoLocation"] = 45] = "gotoLocation";
+        EditorOption[EditorOption["hideCursorInOverviewRuler"] = 46] = "hideCursorInOverviewRuler";
+        EditorOption[EditorOption["highlightActiveIndentGuide"] = 47] = "highlightActiveIndentGuide";
+        EditorOption[EditorOption["hover"] = 48] = "hover";
+        EditorOption[EditorOption["inDiffEditor"] = 49] = "inDiffEditor";
+        EditorOption[EditorOption["letterSpacing"] = 50] = "letterSpacing";
+        EditorOption[EditorOption["lightbulb"] = 51] = "lightbulb";
+        EditorOption[EditorOption["lineDecorationsWidth"] = 52] = "lineDecorationsWidth";
+        EditorOption[EditorOption["lineHeight"] = 53] = "lineHeight";
+        EditorOption[EditorOption["lineNumbers"] = 54] = "lineNumbers";
+        EditorOption[EditorOption["lineNumbersMinChars"] = 55] = "lineNumbersMinChars";
+        EditorOption[EditorOption["linkedEditing"] = 56] = "linkedEditing";
+        EditorOption[EditorOption["links"] = 57] = "links";
+        EditorOption[EditorOption["matchBrackets"] = 58] = "matchBrackets";
+        EditorOption[EditorOption["minimap"] = 59] = "minimap";
+        EditorOption[EditorOption["mouseStyle"] = 60] = "mouseStyle";
+        EditorOption[EditorOption["mouseWheelScrollSensitivity"] = 61] = "mouseWheelScrollSensitivity";
+        EditorOption[EditorOption["mouseWheelZoom"] = 62] = "mouseWheelZoom";
+        EditorOption[EditorOption["multiCursorMergeOverlapping"] = 63] = "multiCursorMergeOverlapping";
+        EditorOption[EditorOption["multiCursorModifier"] = 64] = "multiCursorModifier";
+        EditorOption[EditorOption["multiCursorPaste"] = 65] = "multiCursorPaste";
+        EditorOption[EditorOption["occurrencesHighlight"] = 66] = "occurrencesHighlight";
+        EditorOption[EditorOption["overviewRulerBorder"] = 67] = "overviewRulerBorder";
+        EditorOption[EditorOption["overviewRulerLanes"] = 68] = "overviewRulerLanes";
+        EditorOption[EditorOption["padding"] = 69] = "padding";
+        EditorOption[EditorOption["parameterHints"] = 70] = "parameterHints";
+        EditorOption[EditorOption["peekWidgetDefaultFocus"] = 71] = "peekWidgetDefaultFocus";
+        EditorOption[EditorOption["definitionLinkOpensInPeek"] = 72] = "definitionLinkOpensInPeek";
+        EditorOption[EditorOption["quickSuggestions"] = 73] = "quickSuggestions";
+        EditorOption[EditorOption["quickSuggestionsDelay"] = 74] = "quickSuggestionsDelay";
+        EditorOption[EditorOption["readOnly"] = 75] = "readOnly";
+        EditorOption[EditorOption["renameOnType"] = 76] = "renameOnType";
+        EditorOption[EditorOption["renderControlCharacters"] = 77] = "renderControlCharacters";
+        EditorOption[EditorOption["renderIndentGuides"] = 78] = "renderIndentGuides";
+        EditorOption[EditorOption["renderFinalNewline"] = 79] = "renderFinalNewline";
+        EditorOption[EditorOption["renderLineHighlight"] = 80] = "renderLineHighlight";
+        EditorOption[EditorOption["renderLineHighlightOnlyWhenFocus"] = 81] = "renderLineHighlightOnlyWhenFocus";
+        EditorOption[EditorOption["renderValidationDecorations"] = 82] = "renderValidationDecorations";
+        EditorOption[EditorOption["renderWhitespace"] = 83] = "renderWhitespace";
+        EditorOption[EditorOption["revealHorizontalRightPadding"] = 84] = "revealHorizontalRightPadding";
+        EditorOption[EditorOption["roundedSelection"] = 85] = "roundedSelection";
+        EditorOption[EditorOption["rulers"] = 86] = "rulers";
+        EditorOption[EditorOption["scrollbar"] = 87] = "scrollbar";
+        EditorOption[EditorOption["scrollBeyondLastColumn"] = 88] = "scrollBeyondLastColumn";
+        EditorOption[EditorOption["scrollBeyondLastLine"] = 89] = "scrollBeyondLastLine";
+        EditorOption[EditorOption["scrollPredominantAxis"] = 90] = "scrollPredominantAxis";
+        EditorOption[EditorOption["selectionClipboard"] = 91] = "selectionClipboard";
+        EditorOption[EditorOption["selectionHighlight"] = 92] = "selectionHighlight";
+        EditorOption[EditorOption["selectOnLineNumbers"] = 93] = "selectOnLineNumbers";
+        EditorOption[EditorOption["showFoldingControls"] = 94] = "showFoldingControls";
+        EditorOption[EditorOption["showUnused"] = 95] = "showUnused";
+        EditorOption[EditorOption["snippetSuggestions"] = 96] = "snippetSuggestions";
+        EditorOption[EditorOption["smartSelect"] = 97] = "smartSelect";
+        EditorOption[EditorOption["smoothScrolling"] = 98] = "smoothScrolling";
+        EditorOption[EditorOption["stickyTabStops"] = 99] = "stickyTabStops";
+        EditorOption[EditorOption["stopRenderingLineAfter"] = 100] = "stopRenderingLineAfter";
+        EditorOption[EditorOption["suggest"] = 101] = "suggest";
+        EditorOption[EditorOption["suggestFontSize"] = 102] = "suggestFontSize";
+        EditorOption[EditorOption["suggestLineHeight"] = 103] = "suggestLineHeight";
+        EditorOption[EditorOption["suggestOnTriggerCharacters"] = 104] = "suggestOnTriggerCharacters";
+        EditorOption[EditorOption["suggestSelection"] = 105] = "suggestSelection";
+        EditorOption[EditorOption["tabCompletion"] = 106] = "tabCompletion";
+        EditorOption[EditorOption["tabIndex"] = 107] = "tabIndex";
+        EditorOption[EditorOption["unusualLineTerminators"] = 108] = "unusualLineTerminators";
+        EditorOption[EditorOption["useTabStops"] = 109] = "useTabStops";
+        EditorOption[EditorOption["wordSeparators"] = 110] = "wordSeparators";
+        EditorOption[EditorOption["wordWrap"] = 111] = "wordWrap";
+        EditorOption[EditorOption["wordWrapBreakAfterCharacters"] = 112] = "wordWrapBreakAfterCharacters";
+        EditorOption[EditorOption["wordWrapBreakBeforeCharacters"] = 113] = "wordWrapBreakBeforeCharacters";
+        EditorOption[EditorOption["wordWrapColumn"] = 114] = "wordWrapColumn";
+        EditorOption[EditorOption["wordWrapOverride1"] = 115] = "wordWrapOverride1";
+        EditorOption[EditorOption["wordWrapOverride2"] = 116] = "wordWrapOverride2";
+        EditorOption[EditorOption["wrappingIndent"] = 117] = "wrappingIndent";
+        EditorOption[EditorOption["wrappingStrategy"] = 118] = "wrappingStrategy";
+        EditorOption[EditorOption["showDeprecated"] = 119] = "showDeprecated";
+        EditorOption[EditorOption["inlineHints"] = 120] = "inlineHints";
+        EditorOption[EditorOption["editorClassName"] = 121] = "editorClassName";
+        EditorOption[EditorOption["pixelRatio"] = 122] = "pixelRatio";
+        EditorOption[EditorOption["tabFocusMode"] = 123] = "tabFocusMode";
+        EditorOption[EditorOption["layoutInfo"] = 124] = "layoutInfo";
+        EditorOption[EditorOption["wrappingInfo"] = 125] = "wrappingInfo";
     })(EditorOption = exports.EditorOption || (exports.EditorOption = {}));
     /**
      * End of line character preference.
@@ -10572,7 +10800,7 @@ define(__m[29/*vs/editor/common/standalone/standaloneEnums*/], __M([0/*require*/
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[30/*vs/editor/common/standalone/standaloneBase*/], __M([0/*require*/,1/*exports*/,18/*vs/base/common/cancellation*/,7/*vs/base/common/event*/,16/*vs/base/common/keyCodes*/,12/*vs/base/common/uri*/,2/*vs/editor/common/core/position*/,5/*vs/editor/common/core/range*/,23/*vs/editor/common/core/selection*/,24/*vs/editor/common/core/token*/,29/*vs/editor/common/standalone/standaloneEnums*/]), function (require, exports, cancellation_1, event_1, keyCodes_1, uri_1, position_1, range_1, selection_1, token_1, standaloneEnums) {
+define(__m[31/*vs/editor/common/standalone/standaloneBase*/], __M([0/*require*/,1/*exports*/,21/*vs/base/common/cancellation*/,9/*vs/base/common/event*/,17/*vs/base/common/keyCodes*/,13/*vs/base/common/uri*/,3/*vs/editor/common/core/position*/,6/*vs/editor/common/core/range*/,24/*vs/editor/common/core/selection*/,25/*vs/editor/common/core/token*/,30/*vs/editor/common/standalone/standaloneEnums*/]), function (require, exports, cancellation_1, event_1, keyCodes_1, uri_1, position_1, range_1, selection_1, token_1, standaloneEnums) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.createMonacoBaseAPI = exports.KeyMod = void 0;
@@ -10611,7 +10839,7 @@ define(__m[30/*vs/editor/common/standalone/standaloneBase*/], __M([0/*require*/,
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[31/*vs/editor/common/viewModel/prefixSumComputer*/], __M([0/*require*/,1/*exports*/,11/*vs/base/common/uint*/]), function (require, exports, uint_1) {
+define(__m[32/*vs/editor/common/viewModel/prefixSumComputer*/], __M([0/*require*/,1/*exports*/,12/*vs/base/common/uint*/]), function (require, exports, uint_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.PrefixSumComputer = exports.PrefixSumIndexOfResult = void 0;
@@ -10753,7 +10981,7 @@ define(__m[31/*vs/editor/common/viewModel/prefixSumComputer*/], __M([0/*require*
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(__m[32/*vs/editor/common/model/mirrorTextModel*/], __M([0/*require*/,1/*exports*/,2/*vs/editor/common/core/position*/,31/*vs/editor/common/viewModel/prefixSumComputer*/]), function (require, exports, position_1, prefixSumComputer_1) {
+define(__m[33/*vs/editor/common/model/mirrorTextModel*/], __M([0/*require*/,1/*exports*/,5/*vs/base/common/strings*/,3/*vs/editor/common/core/position*/,32/*vs/editor/common/viewModel/prefixSumComputer*/]), function (require, exports, strings_1, position_1, prefixSumComputer_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.MirrorTextModel = void 0;
@@ -10836,7 +11064,7 @@ define(__m[32/*vs/editor/common/model/mirrorTextModel*/], __M([0/*require*/,1/*e
                 // Nothing to insert
                 return;
             }
-            let insertLines = insertText.split(/\r\n|\r|\n/);
+            let insertLines = strings_1.splitLines(insertText);
             if (insertLines.length === 1) {
                 // Inserting text on one line
                 this._setLineText(position.lineNumber - 1, this._lines[position.lineNumber - 1].substring(0, position.column - 1)
@@ -10877,7 +11105,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-define(__m[34/*vs/editor/common/services/editorSimpleWorker*/], __M([0/*require*/,1/*exports*/,13/*vs/base/common/arrays*/,9/*vs/base/common/diff/diff*/,3/*vs/base/common/platform*/,12/*vs/base/common/uri*/,2/*vs/editor/common/core/position*/,5/*vs/editor/common/core/range*/,25/*vs/editor/common/diff/diffComputer*/,32/*vs/editor/common/model/mirrorTextModel*/,26/*vs/editor/common/model/wordHelper*/,27/*vs/editor/common/modes/linkComputer*/,28/*vs/editor/common/modes/supports/inplaceReplaceSupport*/,30/*vs/editor/common/standalone/standaloneBase*/,10/*vs/base/common/types*/]), function (require, exports, arrays_1, diff_1, platform_1, uri_1, position_1, range_1, diffComputer_1, mirrorTextModel_1, wordHelper_1, linkComputer_1, inplaceReplaceSupport_1, standaloneBase_1, types) {
+define(__m[35/*vs/editor/common/services/editorSimpleWorker*/], __M([0/*require*/,1/*exports*/,14/*vs/base/common/arrays*/,10/*vs/base/common/diff/diff*/,2/*vs/base/common/platform*/,13/*vs/base/common/uri*/,3/*vs/editor/common/core/position*/,6/*vs/editor/common/core/range*/,26/*vs/editor/common/diff/diffComputer*/,33/*vs/editor/common/model/mirrorTextModel*/,27/*vs/editor/common/model/wordHelper*/,28/*vs/editor/common/modes/linkComputer*/,29/*vs/editor/common/modes/supports/inplaceReplaceSupport*/,31/*vs/editor/common/standalone/standaloneBase*/,11/*vs/base/common/types*/,8/*vs/base/common/stopwatch*/]), function (require, exports, arrays_1, diff_1, platform_1, uri_1, position_1, range_1, diffComputer_1, mirrorTextModel_1, wordHelper_1, linkComputer_1, inplaceReplaceSupport_1, standaloneBase_1, types, stopwatch_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.create = exports.EditorSimpleWorker = void 0;
@@ -11198,33 +11426,27 @@ define(__m[34/*vs/editor/common/services/editorSimpleWorker*/], __M([0/*require*
                 return linkComputer_1.computeLinks(model);
             });
         }
-        textualSuggest(modelUrl, position, wordDef, wordDefFlags) {
+        textualSuggest(modelUrls, leadingWord, wordDef, wordDefFlags) {
             return __awaiter(this, void 0, void 0, function* () {
-                const model = this._getModel(modelUrl);
-                if (!model) {
-                    return null;
-                }
-                const words = [];
-                const seen = new Set();
+                const sw = new stopwatch_1.StopWatch(true);
                 const wordDefRegExp = new RegExp(wordDef, wordDefFlags);
-                const wordAt = model.getWordAtPosition(position, wordDefRegExp);
-                if (wordAt) {
-                    seen.add(model.getValueInRange(wordAt));
-                }
-                for (let word of model.words(wordDefRegExp)) {
-                    if (seen.has(word)) {
+                const seen = new Set();
+                outer: for (let url of modelUrls) {
+                    const model = this._getModel(url);
+                    if (!model) {
                         continue;
                     }
-                    seen.add(word);
-                    if (!isNaN(Number(word))) {
-                        continue;
-                    }
-                    words.push(word);
-                    if (seen.size > EditorSimpleWorker._suggestionsLimit) {
-                        break;
+                    for (let word of model.words(wordDefRegExp)) {
+                        if (word === leadingWord || !isNaN(Number(word))) {
+                            continue;
+                        }
+                        seen.add(word);
+                        if (seen.size > EditorSimpleWorker._suggestionsLimit) {
+                            break outer;
+                        }
                     }
                 }
-                return words;
+                return { words: Array.from(seen), duration: sw.elapsed() };
             });
         }
         // ---- END suggest --------------------------------------------------------------------------
@@ -11353,14 +11575,21 @@ define(__m[34/*vs/editor/common/services/editorSimpleWorker*/], __M([0/*require*
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 (function () {
+    var _a;
     let MonacoEnvironment = self.MonacoEnvironment;
     let monacoBaseUrl = MonacoEnvironment && MonacoEnvironment.baseUrl ? MonacoEnvironment.baseUrl : '../../../';
+    const trustedTypesPolicy = (_a = self.trustedTypes) === null || _a === void 0 ? void 0 : _a.createPolicy('amdLoader', { createScriptURL: value => value });
     if (typeof self.define !== 'function' || !self.define.amd) {
-        importScripts(monacoBaseUrl + 'vs/loader.js');
+        let loaderSrc = monacoBaseUrl + 'vs/loader.js';
+        if (trustedTypesPolicy) {
+            loaderSrc = trustedTypesPolicy.createScriptURL(loaderSrc);
+        }
+        importScripts(loaderSrc);
     }
     require.config({
         baseUrl: monacoBaseUrl,
-        catchError: true
+        catchError: true,
+        trustedTypesPolicy,
     });
     let loadCode = function (moduleId) {
         require([moduleId], function (ws) {

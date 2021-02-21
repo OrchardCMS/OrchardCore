@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define('vs/basic-languages/xml/xml',["require", "exports"], function (require, exports) {
+define('vs/basic-languages/xml/xml',["require", "exports", "../fillers/monaco-editor-core"], function (require, exports, monaco_editor_core_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.language = exports.conf = void 0;
@@ -20,6 +20,19 @@ define('vs/basic-languages/xml/xml',["require", "exports"], function (require, e
             { open: '<', close: '>' },
             { open: "'", close: "'" },
             { open: '"', close: '"' }
+        ],
+        onEnterRules: [
+            {
+                beforeText: new RegExp("<([_:\\w][_:\\w-.\\d]*)([^/>]*(?!/)>)[^<]*$", 'i'),
+                afterText: /^<\/([_:\w][_:\w-.\d]*)\s*>$/i,
+                action: {
+                    indentAction: monaco_editor_core_1.languages.IndentAction.IndentOutdent
+                }
+            },
+            {
+                beforeText: new RegExp("<(\\w[\\w\\d]*)([^/>]*(?!/)>)[^<]*$", 'i'),
+                action: { indentAction: monaco_editor_core_1.languages.IndentAction.Indent }
+            }
         ]
     };
     exports.language = {

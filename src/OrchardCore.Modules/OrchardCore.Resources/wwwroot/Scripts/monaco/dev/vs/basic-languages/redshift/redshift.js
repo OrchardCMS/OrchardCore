@@ -57,6 +57,7 @@ define('vs/basic-languages/redshift/redshift',["require", "exports"], function (
             'BINARY',
             'BLANKSASNULL',
             'BOTH',
+            'BY',
             'BYTEDICT',
             'BZIP2',
             'CASE',

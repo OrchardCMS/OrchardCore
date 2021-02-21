@@ -140,7 +140,7 @@ define('vs/basic-languages/hcl/hcl',["require", "exports"], function (require, e
             ],
             heredocBody: [
                 [
-                    /^([\w\-]+)$/,
+                    /([\w\-]+)$/,
                     {
                         cases: {
                             '$1==$S2': [

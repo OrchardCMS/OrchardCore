@@ -90,6 +90,7 @@ define('vs/language/css/workerManager',["require", "exports", "./fillers/monaco-
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Scanner = exports.MultiLineStream = exports.TokenType = void 0;
     var TokenType;
     (function (TokenType) {
         TokenType[TokenType["Ident"] = 0] = "Ident";
@@ -665,6 +666,7 @@ define('vs/language/css/workerManager',["require", "exports", "./fillers/monaco-
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.trim = exports.getLimitedString = exports.difference = exports.endsWith = exports.startsWith = void 0;
     function startsWith(haystack, needle) {
         if (haystack.length < needle.length) {
             return false;
@@ -764,7 +766,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -788,6 +790,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ParseErrorCollector = exports.Marker = exports.Level = exports.Module = exports.GuardCondition = exports.LessGuard = exports.ListEntry = exports.UnknownAtRule = exports.MixinDeclaration = exports.MixinReference = exports.MixinContentDeclaration = exports.MixinContentReference = exports.ExtendsReference = exports.Variable = exports.Interpolation = exports.VariableDeclaration = exports.NumericValue = exports.HexColorValue = exports.Operator = exports.AttributeSelector = exports.Term = exports.BinaryExpression = exports.Expression = exports.PageBoxMarginBox = exports.Page = exports.SupportsCondition = exports.MediaQuery = exports.Medialist = exports.Document = exports.Supports = exports.Media = exports.Namespace = exports.ForwardVisibility = exports.Forward = exports.ModuleConfiguration = exports.Use = exports.Import = exports.KeyframeSelector = exports.Keyframe = exports.NestedProperties = exports.FontFace = exports.ViewPort = exports.FunctionDeclaration = exports.ElseStatement = exports.WhileStatement = exports.EachStatement = exports.ForStatement = exports.IfStatement = exports.FunctionArgument = exports.FunctionParameter = exports.Function = exports.Invocation = exports.Property = exports.CustomPropertyDeclaration = exports.Declaration = exports.CustomPropertySet = exports.AbstractDeclaration = exports.AtApplyRule = exports.SimpleSelector = exports.Selector = exports.RuleSet = exports.BodyDeclaration = exports.Declarations = exports.Stylesheet = exports.Identifier = exports.Nodelist = exports.Node = exports.getParentDeclaration = exports.getNodePath = exports.getNodeAtOffset = exports.ReferenceType = exports.NodeType = void 0;
     var strings_1 = require("../utils/strings");
     /// <summary>
     /// Nodes for the css 2.1 specification. See for reference:
@@ -943,7 +946,7 @@ var __extends = (this && this.__extends) || (function () {
         }
         Object.defineProperty(Node.prototype, "end", {
             get: function () { return this.offset + this.length; },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(Node.prototype, "type", {
@@ -953,7 +956,7 @@ var __extends = (this && this.__extends) || (function () {
             set: function (type) {
                 this.nodeType = type;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Node.prototype.getTextProvider = function () {
@@ -1175,7 +1178,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Identifier;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Identifier.prototype.containsInterpolation = function () {
@@ -1193,7 +1196,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Stylesheet;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Stylesheet;
@@ -1208,7 +1211,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Declarations;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Declarations;
@@ -1237,7 +1240,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Ruleset;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         RuleSet.prototype.getSelectors = function () {
@@ -1261,7 +1264,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Selector;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Selector;
@@ -1276,7 +1279,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.SimpleSelector;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return SimpleSelector;
@@ -1291,7 +1294,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.AtApplyRule;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         AtApplyRule.prototype.setIdentifier = function (node) {
@@ -1314,39 +1317,6 @@ var __extends = (this && this.__extends) || (function () {
         return AbstractDeclaration;
     }(Node));
     exports.AbstractDeclaration = AbstractDeclaration;
-    var CustomPropertyDeclaration = /** @class */ (function (_super) {
-        __extends(CustomPropertyDeclaration, _super);
-        function CustomPropertyDeclaration(offset, length) {
-            return _super.call(this, offset, length) || this;
-        }
-        Object.defineProperty(CustomPropertyDeclaration.prototype, "type", {
-            get: function () {
-                return NodeType.CustomPropertyDeclaration;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        CustomPropertyDeclaration.prototype.setProperty = function (node) {
-            return this.setNode('property', node);
-        };
-        CustomPropertyDeclaration.prototype.getProperty = function () {
-            return this.property;
-        };
-        CustomPropertyDeclaration.prototype.setValue = function (value) {
-            return this.setNode('value', value);
-        };
-        CustomPropertyDeclaration.prototype.getValue = function () {
-            return this.value;
-        };
-        CustomPropertyDeclaration.prototype.setPropertySet = function (value) {
-            return this.setNode('propertySet', value);
-        };
-        CustomPropertyDeclaration.prototype.getPropertySet = function () {
-            return this.propertySet;
-        };
-        return CustomPropertyDeclaration;
-    }(AbstractDeclaration));
-    exports.CustomPropertyDeclaration = CustomPropertyDeclaration;
     var CustomPropertySet = /** @class */ (function (_super) {
         __extends(CustomPropertySet, _super);
         function CustomPropertySet(offset, length) {
@@ -1356,7 +1326,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.CustomPropertySet;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return CustomPropertySet;
@@ -1373,7 +1343,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Declaration;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Declaration.prototype.setProperty = function (node) {
@@ -1417,6 +1387,27 @@ var __extends = (this && this.__extends) || (function () {
         return Declaration;
     }(AbstractDeclaration));
     exports.Declaration = Declaration;
+    var CustomPropertyDeclaration = /** @class */ (function (_super) {
+        __extends(CustomPropertyDeclaration, _super);
+        function CustomPropertyDeclaration(offset, length) {
+            return _super.call(this, offset, length) || this;
+        }
+        Object.defineProperty(CustomPropertyDeclaration.prototype, "type", {
+            get: function () {
+                return NodeType.CustomPropertyDeclaration;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        CustomPropertyDeclaration.prototype.setPropertySet = function (value) {
+            return this.setNode('propertySet', value);
+        };
+        CustomPropertyDeclaration.prototype.getPropertySet = function () {
+            return this.propertySet;
+        };
+        return CustomPropertyDeclaration;
+    }(Declaration));
+    exports.CustomPropertyDeclaration = CustomPropertyDeclaration;
     var Property = /** @class */ (function (_super) {
         __extends(Property, _super);
         function Property(offset, length) {
@@ -1426,7 +1417,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Property;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Property.prototype.setIdentifier = function (value) {
@@ -1453,7 +1444,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Invocation;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Invocation.prototype.getArguments = function () {
@@ -1474,7 +1465,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Function;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Function.prototype.setIdentifier = function (node) {
@@ -1498,7 +1489,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.FunctionParameter;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         FunctionParameter.prototype.setIdentifier = function (node) {
@@ -1528,7 +1519,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.FunctionArgument;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         FunctionArgument.prototype.setIdentifier = function (node) {
@@ -1558,7 +1549,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.If;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         IfStatement.prototype.setExpression = function (node) {
@@ -1579,7 +1570,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.For;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         ForStatement.prototype.setVariable = function (node) {
@@ -1597,7 +1588,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Each;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         EachStatement.prototype.getVariables = function () {
@@ -1618,7 +1609,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.While;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return WhileStatement;
@@ -1633,7 +1624,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Else;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return ElseStatement;
@@ -1648,7 +1639,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.FunctionDeclaration;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         FunctionDeclaration.prototype.setIdentifier = function (node) {
@@ -1678,7 +1669,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.ViewPort;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return ViewPort;
@@ -1693,7 +1684,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.FontFace;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return FontFace;
@@ -1708,7 +1699,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.NestedProperties;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return NestedProperties;
@@ -1723,7 +1714,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Keyframe;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Keyframe.prototype.setKeyword = function (keyword) {
@@ -1753,7 +1744,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.KeyframeSelector;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return KeyframeSelector;
@@ -1768,7 +1759,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Import;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Import.prototype.setMedialist = function (node) {
@@ -1790,7 +1781,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Use;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Use.prototype.getParameters = function () {
@@ -1817,7 +1808,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.ModuleConfiguration;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         ModuleConfiguration.prototype.setIdentifier = function (node) {
@@ -1847,7 +1838,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Forward;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Forward.prototype.setIdentifier = function (node) {
@@ -1855,6 +1846,18 @@ var __extends = (this && this.__extends) || (function () {
         };
         Forward.prototype.getIdentifier = function () {
             return this.identifier;
+        };
+        Forward.prototype.getMembers = function () {
+            if (!this.members) {
+                this.members = new Nodelist(this);
+            }
+            return this.members;
+        };
+        Forward.prototype.getParameters = function () {
+            if (!this.parameters) {
+                this.parameters = new Nodelist(this);
+            }
+            return this.parameters;
         };
         return Forward;
     }(Node));
@@ -1868,7 +1871,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.ForwardVisibility;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         ForwardVisibility.prototype.setIdentifier = function (node) {
@@ -1889,7 +1892,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Namespace;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Namespace;
@@ -1904,7 +1907,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Media;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Media;
@@ -1919,7 +1922,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Supports;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Supports;
@@ -1934,7 +1937,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Document;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Document;
@@ -1963,7 +1966,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.MediaQuery;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return MediaQuery;
@@ -1978,7 +1981,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.SupportsCondition;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return SupportsCondition;
@@ -1993,7 +1996,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Page;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Page;
@@ -2008,7 +2011,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.PageBoxMarginBox;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return PageBoxMarginBox;
@@ -2023,7 +2026,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Expression;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Expression;
@@ -2038,7 +2041,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.BinaryExpression;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         BinaryExpression.prototype.setLeft = function (left) {
@@ -2071,7 +2074,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Term;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Term.prototype.setOperator = function (value) {
@@ -2098,7 +2101,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.AttributeSelector;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         AttributeSelector.prototype.setNamespacePrefix = function (value) {
@@ -2137,7 +2140,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Operator;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Operator;
@@ -2152,7 +2155,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.HexColorValue;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return HexColorValue;
@@ -2168,7 +2171,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.NumericValue;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         NumericValue.prototype.getValue = function () {
@@ -2203,7 +2206,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.VariableDeclaration;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         VariableDeclaration.prototype.setVariable = function (node) {
@@ -2244,7 +2247,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Interpolation;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return Interpolation;
@@ -2259,7 +2262,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.VariableName;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Variable.prototype.getName = function () {
@@ -2277,7 +2280,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.ExtendsReference;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         ExtendsReference.prototype.getSelectors = function () {
@@ -2298,7 +2301,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.MixinContentReference;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         MixinContentReference.prototype.getArguments = function () {
@@ -2319,7 +2322,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.MixinContentReference;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         MixinContentDeclaration.prototype.getParameters = function () {
@@ -2340,7 +2343,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.MixinReference;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         MixinReference.prototype.getNamespaces = function () {
@@ -2382,7 +2385,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.MixinDeclaration;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         MixinDeclaration.prototype.setIdentifier = function (node) {
@@ -2419,7 +2422,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.UnknownAtRule;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         UnknownAtRule.prototype.setAtRuleName = function (atRuleName) {
@@ -2440,7 +2443,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.ListEntry;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         ListEntry.prototype.setKey = function (node) {
@@ -2486,7 +2489,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return NodeType.Module;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Module.prototype.setIdentifier = function (node) {
@@ -2771,6 +2774,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ParseError = exports.CSSIssueType = void 0;
     var nls = require("vscode-nls");
     var localize = nls.loadMessageBundle();
     var CSSIssueType = /** @class */ (function () {
@@ -2833,6 +2837,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getBrowserLabel = exports.textToMarkedString = exports.getEntryDescription = exports.browserNames = void 0;
     exports.browserNames = {
         E: 'Edge',
         FF: 'Firefox',
@@ -2853,18 +2858,18 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
                 return '';
         }
     }
-    function getEntryDescription(entry, doesSupportMarkdown) {
+    function getEntryDescription(entry, doesSupportMarkdown, settings) {
         var result;
         if (doesSupportMarkdown) {
             result = {
                 kind: 'markdown',
-                value: getEntryMarkdownDescription(entry)
+                value: getEntryMarkdownDescription(entry, settings)
             };
         }
         else {
             result = {
                 kind: 'plaintext',
-                value: getEntryStringDescription(entry)
+                value: getEntryStringDescription(entry, settings)
             };
         }
         if (result.value === '') {
@@ -2878,7 +2883,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
     exports.textToMarkedString = textToMarkedString;
-    function getEntryStringDescription(entry) {
+    function getEntryStringDescription(entry, settings) {
         if (!entry.description || entry.description === '') {
             return '';
         }
@@ -2886,44 +2891,52 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
             return entry.description.value;
         }
         var result = '';
-        if (entry.status) {
-            result += getEntryStatus(entry.status);
+        if ((settings === null || settings === void 0 ? void 0 : settings.documentation) !== false) {
+            if (entry.status) {
+                result += getEntryStatus(entry.status);
+            }
+            result += entry.description;
+            var browserLabel = getBrowserLabel(entry.browsers);
+            if (browserLabel) {
+                result += '\n(' + browserLabel + ')';
+            }
+            if ('syntax' in entry) {
+                result += "\n\nSyntax: " + entry.syntax;
+            }
         }
-        result += entry.description;
-        var browserLabel = getBrowserLabel(entry.browsers);
-        if (browserLabel) {
-            result += '\n(' + browserLabel + ')';
-        }
-        if ('syntax' in entry) {
-            result += "\n\nSyntax: " + entry.syntax;
-        }
-        if (entry.references && entry.references.length > 0) {
-            result += '\n\n';
+        if (entry.references && entry.references.length > 0 && (settings === null || settings === void 0 ? void 0 : settings.references) !== false) {
+            if (result.length > 0) {
+                result += '\n\n';
+            }
             result += entry.references.map(function (r) {
                 return r.name + ": " + r.url;
             }).join(' | ');
         }
         return result;
     }
-    function getEntryMarkdownDescription(entry) {
+    function getEntryMarkdownDescription(entry, settings) {
         if (!entry.description || entry.description === '') {
             return '';
         }
         var result = '';
-        if (entry.status) {
-            result += getEntryStatus(entry.status);
+        if ((settings === null || settings === void 0 ? void 0 : settings.documentation) !== false) {
+            if (entry.status) {
+                result += getEntryStatus(entry.status);
+            }
+            var description = typeof entry.description === 'string' ? entry.description : entry.description.value;
+            result += textToMarkedString(description);
+            var browserLabel = getBrowserLabel(entry.browsers);
+            if (browserLabel) {
+                result += '\n\n(' + textToMarkedString(browserLabel) + ')';
+            }
+            if ('syntax' in entry && entry.syntax) {
+                result += "\n\nSyntax: " + textToMarkedString(entry.syntax);
+            }
         }
-        var description = typeof entry.description === 'string' ? entry.description : entry.description.value;
-        result += textToMarkedString(description);
-        var browserLabel = getBrowserLabel(entry.browsers);
-        if (browserLabel) {
-            result += '\n\n(' + textToMarkedString(browserLabel) + ')';
-        }
-        if ('syntax' in entry && entry.syntax) {
-            result += "\n\nSyntax: " + textToMarkedString(entry.syntax);
-        }
-        if (entry.references && entry.references.length > 0) {
-            result += '\n\n';
+        if (entry.references && entry.references.length > 0 && (settings === null || settings === void 0 ? void 0 : settings.references) !== false) {
+            if (result.length > 0) {
+                result += '\n\n';
+            }
             result += entry.references.map(function (r) {
                 return "[" + r.name + "](" + r.url + ")";
             }).join(' | ');
@@ -2973,6 +2986,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getColorValue = exports.hslFromColor = exports.colorFromHSL = exports.colorFrom256RGB = exports.colorFromHex = exports.hexDigit = exports.isColorValue = exports.isColorConstructor = exports.colorKeywords = exports.colors = exports.colorFunctions = void 0;
     var nodes = require("../parser/cssNodes");
     var nls = require("vscode-nls");
     var localize = nls.loadMessageBundle();
@@ -3397,6 +3411,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.pageBoxDirectives = exports.svgElements = exports.html5Tags = exports.units = exports.basicShapeFunctions = exports.transitionTimingFunctions = exports.imageFunctions = exports.cssWideKeywords = exports.geometryBoxKeywords = exports.boxKeywords = exports.lineWidthKeywords = exports.lineStyleKeywords = exports.repeatStyleKeywords = exports.positionKeywords = void 0;
     exports.positionKeywords = {
         'bottom': 'Computes to ‘100%’ for the vertical position if one or two values are given, otherwise specifies the bottom edge as the origin for the next offset.',
         'center': 'Computes to ‘50%’ (‘left 50%’) for the horizontal position if the horizontal position is not otherwise specified, or ‘50%’ (‘top 50%’) for the vertical position if it is.',
@@ -3532,6 +3547,16 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
     ];
 });
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -3546,13 +3571,10 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    function __export(m) {
-        for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-    }
     Object.defineProperty(exports, "__esModule", { value: true });
-    __export(require("./entry"));
-    __export(require("./colors"));
-    __export(require("./builtinData"));
+    __exportStar(require("./entry"), exports);
+    __exportStar(require("./colors"), exports);
+    __exportStar(require("./builtinData"), exports);
 });
 
 (function (factory) {
@@ -3570,6 +3592,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isDefined = exports.values = void 0;
     function values(obj) {
         return Object.keys(obj).map(function (key) { return obj[key]; });
     }
@@ -3580,13 +3603,6 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
     exports.isDefined = isDefined;
 });
 
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -3602,6 +3618,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Parser = void 0;
     var cssScanner_1 = require("./cssScanner");
     var nodes = require("./cssNodes");
     var cssErrors_1 = require("./cssErrors");
@@ -3631,6 +3648,9 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
         };
         Parser.prototype.peek = function (type) {
             return type === this.token.type;
+        };
+        Parser.prototype.peekOne = function (types) {
+            return types.indexOf(this.token.type) !== -1;
         };
         Parser.prototype.peekRegExp = function (type, regEx) {
             if (type !== this.token.type) {
@@ -3904,8 +3924,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
             if (this.peek(cssScanner_1.TokenType.AtKeyword)) {
                 return this._parseRuleSetDeclarationAtStatement();
             }
-            return this._tryParseCustomPropertyDeclaration()
-                || this._parseDeclaration();
+            return this._parseDeclaration();
         };
         /**
          * Parses declarations like:
@@ -4003,14 +4022,17 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
             }
             return hasContent ? this.finish(node) : null;
         };
-        Parser.prototype._parseDeclaration = function (resyncStopTokens) {
+        Parser.prototype._parseDeclaration = function (stopTokens) {
+            var custonProperty = this._tryParseCustomPropertyDeclaration(stopTokens);
+            if (custonProperty) {
+                return custonProperty;
+            }
             var node = this.create(nodes.Declaration);
             if (!node.setProperty(this._parseProperty())) {
                 return null;
             }
             if (!this.accept(cssScanner_1.TokenType.Colon)) {
-                var stopTokens = resyncStopTokens ? __spreadArrays(resyncStopTokens, [cssScanner_1.TokenType.SemiColon]) : [cssScanner_1.TokenType.SemiColon];
-                return this.finish(node, cssErrors_1.ParseError.ColonExpected, [cssScanner_1.TokenType.Colon], stopTokens);
+                return this.finish(node, cssErrors_1.ParseError.ColonExpected, [cssScanner_1.TokenType.Colon], stopTokens || [cssScanner_1.TokenType.SemiColon]);
             }
             if (this.prevToken) {
                 node.colonPosition = this.prevToken.offset;
@@ -4024,7 +4046,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
             }
             return this.finish(node);
         };
-        Parser.prototype._tryParseCustomPropertyDeclaration = function () {
+        Parser.prototype._tryParseCustomPropertyDeclaration = function (stopTokens) {
             if (!this.peekRegExp(cssScanner_1.TokenType.Ident, /^--/)) {
                 return null;
             }
@@ -4058,14 +4080,14 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
             var expression = this._parseExpr();
             if (expression && !expression.isErroneous(true)) {
                 this._parsePrio();
-                if (this.peek(cssScanner_1.TokenType.SemiColon)) {
+                if (this.peekOne(stopTokens || [cssScanner_1.TokenType.SemiColon])) {
                     node.setValue(expression);
                     node.semicolonPosition = this.token.offset; // not part of the declaration, but useful information for code assist
                     return this.finish(node);
                 }
             }
             this.restoreAtMark(mark);
-            node.addChild(this._parseCustomPropertyValue());
+            node.addChild(this._parseCustomPropertyValue(stopTokens));
             node.addChild(this._parsePrio());
             if (objects_1.isDefined(node.colonPosition) && this.token.offset === node.colonPosition + 1) {
                 return this.finish(node, cssErrors_1.ParseError.PropertyValueExpected);
@@ -4083,9 +4105,12 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
          * terminators like semicolons and !important directives (when not inside
          * of delimitors).
          */
-        Parser.prototype._parseCustomPropertyValue = function () {
+        Parser.prototype._parseCustomPropertyValue = function (stopTokens) {
+            var _this = this;
+            if (stopTokens === void 0) { stopTokens = [cssScanner_1.TokenType.CurlyR]; }
             var node = this.create(nodes.Node);
             var isTopLevel = function () { return curlyDepth === 0 && parensDepth === 0 && bracketsDepth === 0; };
+            var onStopToken = function () { return stopTokens.indexOf(_this.token.type) !== -1; };
             var curlyDepth = 0;
             var parensDepth = 0;
             var bracketsDepth = 0;
@@ -4111,7 +4136,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
                         if (curlyDepth < 0) {
                             // The property value has been terminated without a semicolon, and
                             // this is the last declaration in the ruleset.
-                            if (parensDepth === 0 && bracketsDepth === 0) {
+                            if (onStopToken() && parensDepth === 0 && bracketsDepth === 0) {
                                 break done;
                             }
                             return this.finish(node, cssErrors_1.ParseError.LeftCurlyExpected);
@@ -4123,6 +4148,9 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
                     case cssScanner_1.TokenType.ParenthesisR:
                         parensDepth--;
                         if (parensDepth < 0) {
+                            if (onStopToken() && bracketsDepth === 0 && curlyDepth === 0) {
+                                break done;
+                            }
                             return this.finish(node, cssErrors_1.ParseError.LeftParenthesisExpected);
                         }
                         break;
@@ -4153,12 +4181,12 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
             }
             return this.finish(node);
         };
-        Parser.prototype._tryToParseDeclaration = function () {
+        Parser.prototype._tryToParseDeclaration = function (stopTokens) {
             var mark = this.mark();
             if (this._parseProperty() && this.accept(cssScanner_1.TokenType.Colon)) {
                 // looks like a declaration, go ahead
                 this.restoreAtMark(mark);
-                return this._parseDeclaration();
+                return this._parseDeclaration(stopTokens);
             }
             this.restoreAtMark(mark);
             return null;
@@ -4345,7 +4373,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
                 if (this.prevToken) {
                     node.lParent = this.prevToken.offset;
                 }
-                if (!node.addChild(this._tryToParseDeclaration())) {
+                if (!node.addChild(this._tryToParseDeclaration([cssScanner_1.TokenType.ParenthesisR]))) {
                     if (!this._parseSupportsCondition()) {
                         return this.finish(node, cssErrors_1.ParseError.ConditionExpected);
                     }
@@ -4817,13 +4845,11 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
                 return null;
             }
             // optional, support ::
-            if (this.accept(cssScanner_1.TokenType.Colon) && this.hasWhitespace()) {
-                this.markError(node, cssErrors_1.ParseError.IdentifierExpected);
+            this.accept(cssScanner_1.TokenType.Colon);
+            if (this.hasWhitespace() || !node.addChild(this._parseIdent())) {
+                return this.finish(node, cssErrors_1.ParseError.IdentifierExpected);
             }
-            if (!node.addChild(this._parseIdent())) {
-                this.markError(node, cssErrors_1.ParseError.IdentifierExpected);
-            }
-            return node;
+            return this.finish(node);
         };
         Parser.prototype._tryParsePrio = function () {
             var mark = this.mark();
@@ -5071,6 +5097,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.union = exports.includes = exports.findFirst = void 0;
     /**
      * Takes a sorted array and a function p. The array is sorted in such a way that all elements where p(x) is false
      * are located before all elements where p(x) is true.
@@ -5121,7 +5148,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -5145,6 +5172,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Symbols = exports.ScopeBuilder = exports.Symbol = exports.GlobalScope = exports.Scope = void 0;
     var nodes = require("./cssNodes");
     var arrays_1 = require("../utils/arrays");
     var Scope = /** @class */ (function () {
@@ -5483,6 +5511,17 @@ var __extends = (this && this.__extends) || (function () {
      * ------------------------------------------------------------------------------------------ */
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.TextDocument = exports.EOL = exports.SelectionRange = exports.DocumentLink = exports.FormattingOptions = exports.CodeLens = exports.CodeAction = exports.CodeActionContext = exports.CodeActionKind = exports.DocumentSymbol = exports.SymbolInformation = exports.SymbolTag = exports.SymbolKind = exports.DocumentHighlight = exports.DocumentHighlightKind = exports.SignatureInformation = exports.ParameterInformation = exports.Hover = exports.MarkedString = exports.CompletionList = exports.CompletionItem = exports.InsertTextMode = exports.InsertReplaceEdit = exports.CompletionItemTag = exports.InsertTextFormat = exports.CompletionItemKind = exports.MarkupContent = exports.MarkupKind = exports.TextDocumentItem = exports.OptionalVersionedTextDocumentIdentifier = exports.VersionedTextDocumentIdentifier = exports.TextDocumentIdentifier = exports.WorkspaceChange = exports.WorkspaceEdit = exports.DeleteFile = exports.RenameFile = exports.CreateFile = exports.TextDocumentEdit = exports.AnnotatedTextEdit = exports.ChangeAnnotationIdentifier = exports.ChangeAnnotation = exports.TextEdit = exports.Command = exports.Diagnostic = exports.CodeDescription = exports.DiagnosticTag = exports.DiagnosticSeverity = exports.DiagnosticRelatedInformation = exports.FoldingRange = exports.FoldingRangeKind = exports.ColorPresentation = exports.ColorInformation = exports.Color = exports.LocationLink = exports.Location = exports.Range = exports.Position = exports.uinteger = exports.integer = void 0;
+    var integer;
+    (function (integer) {
+        integer.MIN_VALUE = -2147483648;
+        integer.MAX_VALUE = 2147483647;
+    })(integer = exports.integer || (exports.integer = {}));
+    var uinteger;
+    (function (uinteger) {
+        uinteger.MIN_VALUE = 0;
+        uinteger.MAX_VALUE = 2147483647;
+    })(uinteger = exports.uinteger || (exports.uinteger = {}));
     /**
      * The Position namespace provides helper functions to work with
      * [Position](#Position) literals.
@@ -5495,15 +5534,21 @@ var __extends = (this && this.__extends) || (function () {
          * @param character The position's character.
          */
         function create(line, character) {
+            if (line === Number.MAX_VALUE) {
+                line = uinteger.MAX_VALUE;
+            }
+            if (character === Number.MAX_VALUE) {
+                character = uinteger.MAX_VALUE;
+            }
             return { line: line, character: character };
         }
         Position.create = create;
         /**
-         * Checks whether the given liternal conforms to the [Position](#Position) interface.
+         * Checks whether the given literal conforms to the [Position](#Position) interface.
          */
         function is(value) {
             var candidate = value;
-            return Is.objectLiteral(candidate) && Is.number(candidate.line) && Is.number(candidate.character);
+            return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
         }
         Position.is = is;
     })(Position = exports.Position || (exports.Position = {}));
@@ -5514,7 +5559,7 @@ var __extends = (this && this.__extends) || (function () {
     var Range;
     (function (Range) {
         function create(one, two, three, four) {
-            if (Is.number(one) && Is.number(two) && Is.number(three) && Is.number(four)) {
+            if (Is.uinteger(one) && Is.uinteger(two) && Is.uinteger(three) && Is.uinteger(four)) {
                 return { start: Position.create(one, two), end: Position.create(three, four) };
             }
             else if (Position.is(one) && Position.is(two)) {
@@ -5609,10 +5654,10 @@ var __extends = (this && this.__extends) || (function () {
          */
         function is(value) {
             var candidate = value;
-            return Is.number(candidate.red)
-                && Is.number(candidate.green)
-                && Is.number(candidate.blue)
-                && Is.number(candidate.alpha);
+            return Is.numberRange(candidate.red, 0, 1)
+                && Is.numberRange(candidate.green, 0, 1)
+                && Is.numberRange(candidate.blue, 0, 1)
+                && Is.numberRange(candidate.alpha, 0, 1);
         }
         Color.is = is;
     })(Color = exports.Color || (exports.Color = {}));
@@ -5718,9 +5763,9 @@ var __extends = (this && this.__extends) || (function () {
          */
         function is(value) {
             var candidate = value;
-            return Is.number(candidate.startLine) && Is.number(candidate.startLine)
-                && (Is.undefined(candidate.startCharacter) || Is.number(candidate.startCharacter))
-                && (Is.undefined(candidate.endCharacter) || Is.number(candidate.endCharacter))
+            return Is.uinteger(candidate.startLine) && Is.uinteger(candidate.startLine)
+                && (Is.undefined(candidate.startCharacter) || Is.uinteger(candidate.startCharacter))
+                && (Is.undefined(candidate.endCharacter) || Is.uinteger(candidate.endCharacter))
                 && (Is.undefined(candidate.kind) || Is.string(candidate.kind));
         }
         FoldingRange.is = is;
@@ -5794,6 +5839,19 @@ var __extends = (this && this.__extends) || (function () {
         DiagnosticTag.Deprecated = 2;
     })(DiagnosticTag = exports.DiagnosticTag || (exports.DiagnosticTag = {}));
     /**
+     * The CodeDescription namespace provides functions to deal with descriptions for diagnostic codes.
+     *
+     * @since 3.16.0
+     */
+    var CodeDescription;
+    (function (CodeDescription) {
+        function is(value) {
+            var candidate = value;
+            return candidate !== undefined && candidate !== null && Is.string(candidate.href);
+        }
+        CodeDescription.is = is;
+    })(CodeDescription = exports.CodeDescription || (exports.CodeDescription = {}));
+    /**
      * The Diagnostic namespace provides helper functions to work with
      * [Diagnostic](#Diagnostic) literals.
      */
@@ -5823,12 +5881,14 @@ var __extends = (this && this.__extends) || (function () {
          * Checks whether the given literal conforms to the [Diagnostic](#Diagnostic) interface.
          */
         function is(value) {
+            var _a;
             var candidate = value;
             return Is.defined(candidate)
                 && Range.is(candidate.range)
                 && Is.string(candidate.message)
                 && (Is.number(candidate.severity) || Is.undefined(candidate.severity))
-                && (Is.number(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code))
+                && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code))
+                && (Is.undefined(candidate.codeDescription) || (Is.string((_a = candidate.codeDescription) === null || _a === void 0 ? void 0 : _a.href)))
                 && (Is.string(candidate.source) || Is.undefined(candidate.source))
                 && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
         }
@@ -5904,6 +5964,75 @@ var __extends = (this && this.__extends) || (function () {
         }
         TextEdit.is = is;
     })(TextEdit = exports.TextEdit || (exports.TextEdit = {}));
+    var ChangeAnnotation;
+    (function (ChangeAnnotation) {
+        function create(label, needsConfirmation, description) {
+            var result = { label: label };
+            if (needsConfirmation !== undefined) {
+                result.needsConfirmation = needsConfirmation;
+            }
+            if (description !== undefined) {
+                result.description = description;
+            }
+            return result;
+        }
+        ChangeAnnotation.create = create;
+        function is(value) {
+            var candidate = value;
+            return candidate !== undefined && Is.objectLiteral(candidate) && Is.string(candidate.label) &&
+                (Is.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === undefined) &&
+                (Is.string(candidate.description) || candidate.description === undefined);
+        }
+        ChangeAnnotation.is = is;
+    })(ChangeAnnotation = exports.ChangeAnnotation || (exports.ChangeAnnotation = {}));
+    var ChangeAnnotationIdentifier;
+    (function (ChangeAnnotationIdentifier) {
+        function is(value) {
+            var candidate = value;
+            return typeof candidate === 'string';
+        }
+        ChangeAnnotationIdentifier.is = is;
+    })(ChangeAnnotationIdentifier = exports.ChangeAnnotationIdentifier || (exports.ChangeAnnotationIdentifier = {}));
+    var AnnotatedTextEdit;
+    (function (AnnotatedTextEdit) {
+        /**
+         * Creates an annotated replace text edit.
+         *
+         * @param range The range of text to be replaced.
+         * @param newText The new text.
+         * @param annotation The annotation.
+         */
+        function replace(range, newText, annotation) {
+            return { range: range, newText: newText, annotationId: annotation };
+        }
+        AnnotatedTextEdit.replace = replace;
+        /**
+         * Creates an annotated insert text edit.
+         *
+         * @param position The position to insert the text at.
+         * @param newText The text to be inserted.
+         * @param annotation The annotation.
+         */
+        function insert(position, newText, annotation) {
+            return { range: { start: position, end: position }, newText: newText, annotationId: annotation };
+        }
+        AnnotatedTextEdit.insert = insert;
+        /**
+         * Creates an annotated delete text edit.
+         *
+         * @param range The range of text to be deleted.
+         * @param annotation The annotation.
+         */
+        function del(range, annotation) {
+            return { range: range, newText: '', annotationId: annotation };
+        }
+        AnnotatedTextEdit.del = del;
+        function is(value) {
+            var candidate = value;
+            return TextEdit.is(candidate) && (ChangeAnnotation.is(candidate.annotationId) || ChangeAnnotationIdentifier.is(candidate.annotationId));
+        }
+        AnnotatedTextEdit.is = is;
+    })(AnnotatedTextEdit = exports.AnnotatedTextEdit || (exports.AnnotatedTextEdit = {}));
     /**
      * The TextDocumentEdit namespace provides helper function to create
      * an edit that manipulates a text document.
@@ -5920,72 +6049,78 @@ var __extends = (this && this.__extends) || (function () {
         function is(value) {
             var candidate = value;
             return Is.defined(candidate)
-                && VersionedTextDocumentIdentifier.is(candidate.textDocument)
+                && OptionalVersionedTextDocumentIdentifier.is(candidate.textDocument)
                 && Array.isArray(candidate.edits);
         }
         TextDocumentEdit.is = is;
     })(TextDocumentEdit = exports.TextDocumentEdit || (exports.TextDocumentEdit = {}));
     var CreateFile;
     (function (CreateFile) {
-        function create(uri, options) {
+        function create(uri, options, annotation) {
             var result = {
                 kind: 'create',
                 uri: uri
             };
-            if (options !== void 0 && (options.overwrite !== void 0 || options.ignoreIfExists !== void 0)) {
+            if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
                 result.options = options;
+            }
+            if (annotation !== undefined) {
+                result.annotationId = annotation;
             }
             return result;
         }
         CreateFile.create = create;
         function is(value) {
             var candidate = value;
-            return candidate && candidate.kind === 'create' && Is.string(candidate.uri) &&
-                (candidate.options === void 0 ||
-                    ((candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))));
+            return candidate && candidate.kind === 'create' && Is.string(candidate.uri) && (candidate.options === undefined ||
+                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
         }
         CreateFile.is = is;
     })(CreateFile = exports.CreateFile || (exports.CreateFile = {}));
     var RenameFile;
     (function (RenameFile) {
-        function create(oldUri, newUri, options) {
+        function create(oldUri, newUri, options, annotation) {
             var result = {
                 kind: 'rename',
                 oldUri: oldUri,
                 newUri: newUri
             };
-            if (options !== void 0 && (options.overwrite !== void 0 || options.ignoreIfExists !== void 0)) {
+            if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
                 result.options = options;
+            }
+            if (annotation !== undefined) {
+                result.annotationId = annotation;
             }
             return result;
         }
         RenameFile.create = create;
         function is(value) {
             var candidate = value;
-            return candidate && candidate.kind === 'rename' && Is.string(candidate.oldUri) && Is.string(candidate.newUri) &&
-                (candidate.options === void 0 ||
-                    ((candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))));
+            return candidate && candidate.kind === 'rename' && Is.string(candidate.oldUri) && Is.string(candidate.newUri) && (candidate.options === undefined ||
+                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
         }
         RenameFile.is = is;
     })(RenameFile = exports.RenameFile || (exports.RenameFile = {}));
     var DeleteFile;
     (function (DeleteFile) {
-        function create(uri, options) {
+        function create(uri, options, annotation) {
             var result = {
                 kind: 'delete',
                 uri: uri
             };
-            if (options !== void 0 && (options.recursive !== void 0 || options.ignoreIfNotExists !== void 0)) {
+            if (options !== undefined && (options.recursive !== undefined || options.ignoreIfNotExists !== undefined)) {
                 result.options = options;
+            }
+            if (annotation !== undefined) {
+                result.annotationId = annotation;
             }
             return result;
         }
         DeleteFile.create = create;
         function is(value) {
             var candidate = value;
-            return candidate && candidate.kind === 'delete' && Is.string(candidate.uri) &&
-                (candidate.options === void 0 ||
-                    ((candidate.options.recursive === void 0 || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is.boolean(candidate.options.ignoreIfNotExists))));
+            return candidate && candidate.kind === 'delete' && Is.string(candidate.uri) && (candidate.options === undefined ||
+                ((candidate.options.recursive === undefined || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === undefined || Is.boolean(candidate.options.ignoreIfNotExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
         }
         DeleteFile.is = is;
     })(DeleteFile = exports.DeleteFile || (exports.DeleteFile = {}));
@@ -5994,8 +6129,8 @@ var __extends = (this && this.__extends) || (function () {
         function is(value) {
             var candidate = value;
             return candidate &&
-                (candidate.changes !== void 0 || candidate.documentChanges !== void 0) &&
-                (candidate.documentChanges === void 0 || candidate.documentChanges.every(function (change) {
+                (candidate.changes !== undefined || candidate.documentChanges !== undefined) &&
+                (candidate.documentChanges === undefined || candidate.documentChanges.every(function (change) {
                     if (Is.string(change.kind)) {
                         return CreateFile.is(change) || RenameFile.is(change) || DeleteFile.is(change);
                     }
@@ -6007,17 +6142,69 @@ var __extends = (this && this.__extends) || (function () {
         WorkspaceEdit.is = is;
     })(WorkspaceEdit = exports.WorkspaceEdit || (exports.WorkspaceEdit = {}));
     var TextEditChangeImpl = /** @class */ (function () {
-        function TextEditChangeImpl(edits) {
+        function TextEditChangeImpl(edits, changeAnnotations) {
             this.edits = edits;
+            this.changeAnnotations = changeAnnotations;
         }
-        TextEditChangeImpl.prototype.insert = function (position, newText) {
-            this.edits.push(TextEdit.insert(position, newText));
+        TextEditChangeImpl.prototype.insert = function (position, newText, annotation) {
+            var edit;
+            var id;
+            if (annotation === undefined) {
+                edit = TextEdit.insert(position, newText);
+            }
+            else if (ChangeAnnotationIdentifier.is(annotation)) {
+                id = annotation;
+                edit = AnnotatedTextEdit.insert(position, newText, annotation);
+            }
+            else {
+                this.assertChangeAnnotations(this.changeAnnotations);
+                id = this.changeAnnotations.manage(annotation);
+                edit = AnnotatedTextEdit.insert(position, newText, id);
+            }
+            this.edits.push(edit);
+            if (id !== undefined) {
+                return id;
+            }
         };
-        TextEditChangeImpl.prototype.replace = function (range, newText) {
-            this.edits.push(TextEdit.replace(range, newText));
+        TextEditChangeImpl.prototype.replace = function (range, newText, annotation) {
+            var edit;
+            var id;
+            if (annotation === undefined) {
+                edit = TextEdit.replace(range, newText);
+            }
+            else if (ChangeAnnotationIdentifier.is(annotation)) {
+                id = annotation;
+                edit = AnnotatedTextEdit.replace(range, newText, annotation);
+            }
+            else {
+                this.assertChangeAnnotations(this.changeAnnotations);
+                id = this.changeAnnotations.manage(annotation);
+                edit = AnnotatedTextEdit.replace(range, newText, id);
+            }
+            this.edits.push(edit);
+            if (id !== undefined) {
+                return id;
+            }
         };
-        TextEditChangeImpl.prototype.delete = function (range) {
-            this.edits.push(TextEdit.del(range));
+        TextEditChangeImpl.prototype.delete = function (range, annotation) {
+            var edit;
+            var id;
+            if (annotation === undefined) {
+                edit = TextEdit.del(range);
+            }
+            else if (ChangeAnnotationIdentifier.is(annotation)) {
+                id = annotation;
+                edit = AnnotatedTextEdit.del(range, annotation);
+            }
+            else {
+                this.assertChangeAnnotations(this.changeAnnotations);
+                id = this.changeAnnotations.manage(annotation);
+                edit = AnnotatedTextEdit.del(range, id);
+            }
+            this.edits.push(edit);
+            if (id !== undefined) {
+                return id;
+            }
         };
         TextEditChangeImpl.prototype.add = function (edit) {
             this.edits.push(edit);
@@ -6028,7 +6215,56 @@ var __extends = (this && this.__extends) || (function () {
         TextEditChangeImpl.prototype.clear = function () {
             this.edits.splice(0, this.edits.length);
         };
+        TextEditChangeImpl.prototype.assertChangeAnnotations = function (value) {
+            if (value === undefined) {
+                throw new Error("Text edit change is not configured to manage change annotations.");
+            }
+        };
         return TextEditChangeImpl;
+    }());
+    /**
+     * A helper class
+     */
+    var ChangeAnnotations = /** @class */ (function () {
+        function ChangeAnnotations(annotations) {
+            this._annotations = annotations === undefined ? Object.create(null) : annotations;
+            this._counter = 0;
+            this._size = 0;
+        }
+        ChangeAnnotations.prototype.all = function () {
+            return this._annotations;
+        };
+        Object.defineProperty(ChangeAnnotations.prototype, "size", {
+            get: function () {
+                return this._size;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        ChangeAnnotations.prototype.manage = function (idOrAnnotation, annotation) {
+            var id;
+            if (ChangeAnnotationIdentifier.is(idOrAnnotation)) {
+                id = idOrAnnotation;
+            }
+            else {
+                id = this.nextId();
+                annotation = idOrAnnotation;
+            }
+            if (this._annotations[id] !== undefined) {
+                throw new Error("Id " + id + " is already in use.");
+            }
+            if (annotation === undefined) {
+                throw new Error("No annotation provided for id " + id);
+            }
+            this._annotations[id] = annotation;
+            this._size++;
+            return id;
+        };
+        ChangeAnnotations.prototype.nextId = function () {
+            this._counter++;
+            return this._counter.toString();
+        };
+        return ChangeAnnotations;
     }());
     /**
      * A workspace change helps constructing changes to a workspace.
@@ -6037,12 +6273,14 @@ var __extends = (this && this.__extends) || (function () {
         function WorkspaceChange(workspaceEdit) {
             var _this = this;
             this._textEditChanges = Object.create(null);
-            if (workspaceEdit) {
+            if (workspaceEdit !== undefined) {
                 this._workspaceEdit = workspaceEdit;
                 if (workspaceEdit.documentChanges) {
+                    this._changeAnnotations = new ChangeAnnotations(workspaceEdit.changeAnnotations);
+                    workspaceEdit.changeAnnotations = this._changeAnnotations.all();
                     workspaceEdit.documentChanges.forEach(function (change) {
                         if (TextDocumentEdit.is(change)) {
-                            var textEditChange = new TextEditChangeImpl(change.edits);
+                            var textEditChange = new TextEditChangeImpl(change.edits, _this._changeAnnotations);
                             _this._textEditChanges[change.textDocument.uri] = textEditChange;
                         }
                     });
@@ -6054,6 +6292,9 @@ var __extends = (this && this.__extends) || (function () {
                     });
                 }
             }
+            else {
+                this._workspaceEdit = {};
+            }
         }
         Object.defineProperty(WorkspaceChange.prototype, "edit", {
             /**
@@ -6061,22 +6302,27 @@ var __extends = (this && this.__extends) || (function () {
              * use to be returned from a workspace edit operation like rename.
              */
             get: function () {
+                this.initDocumentChanges();
+                if (this._changeAnnotations !== undefined) {
+                    if (this._changeAnnotations.size === 0) {
+                        this._workspaceEdit.changeAnnotations = undefined;
+                    }
+                    else {
+                        this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+                    }
+                }
                 return this._workspaceEdit;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         WorkspaceChange.prototype.getTextEditChange = function (key) {
-            if (VersionedTextDocumentIdentifier.is(key)) {
-                if (!this._workspaceEdit) {
-                    this._workspaceEdit = {
-                        documentChanges: []
-                    };
-                }
-                if (!this._workspaceEdit.documentChanges) {
+            if (OptionalVersionedTextDocumentIdentifier.is(key)) {
+                this.initDocumentChanges();
+                if (this._workspaceEdit.documentChanges === undefined) {
                     throw new Error('Workspace edit is not configured for document changes.');
                 }
-                var textDocument = key;
+                var textDocument = { uri: key.uri, version: key.version };
                 var result = this._textEditChanges[textDocument.uri];
                 if (!result) {
                     var edits = [];
@@ -6085,18 +6331,14 @@ var __extends = (this && this.__extends) || (function () {
                         edits: edits
                     };
                     this._workspaceEdit.documentChanges.push(textDocumentEdit);
-                    result = new TextEditChangeImpl(edits);
+                    result = new TextEditChangeImpl(edits, this._changeAnnotations);
                     this._textEditChanges[textDocument.uri] = result;
                 }
                 return result;
             }
             else {
-                if (!this._workspaceEdit) {
-                    this._workspaceEdit = {
-                        changes: Object.create(null)
-                    };
-                }
-                if (!this._workspaceEdit.changes) {
+                this.initChanges();
+                if (this._workspaceEdit.changes === undefined) {
                     throw new Error('Workspace edit is not configured for normal text edit changes.');
                 }
                 var result = this._textEditChanges[key];
@@ -6109,21 +6351,94 @@ var __extends = (this && this.__extends) || (function () {
                 return result;
             }
         };
-        WorkspaceChange.prototype.createFile = function (uri, options) {
-            this.checkDocumentChanges();
-            this._workspaceEdit.documentChanges.push(CreateFile.create(uri, options));
+        WorkspaceChange.prototype.initDocumentChanges = function () {
+            if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+                this._changeAnnotations = new ChangeAnnotations();
+                this._workspaceEdit.documentChanges = [];
+                this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+            }
         };
-        WorkspaceChange.prototype.renameFile = function (oldUri, newUri, options) {
-            this.checkDocumentChanges();
-            this._workspaceEdit.documentChanges.push(RenameFile.create(oldUri, newUri, options));
+        WorkspaceChange.prototype.initChanges = function () {
+            if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+                this._workspaceEdit.changes = Object.create(null);
+            }
         };
-        WorkspaceChange.prototype.deleteFile = function (uri, options) {
-            this.checkDocumentChanges();
-            this._workspaceEdit.documentChanges.push(DeleteFile.create(uri, options));
-        };
-        WorkspaceChange.prototype.checkDocumentChanges = function () {
-            if (!this._workspaceEdit || !this._workspaceEdit.documentChanges) {
+        WorkspaceChange.prototype.createFile = function (uri, optionsOrAnnotation, options) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
                 throw new Error('Workspace edit is not configured for document changes.');
+            }
+            var annotation;
+            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+                annotation = optionsOrAnnotation;
+            }
+            else {
+                options = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === undefined) {
+                operation = CreateFile.create(uri, options);
+            }
+            else {
+                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+                operation = CreateFile.create(uri, options, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== undefined) {
+                return id;
+            }
+        };
+        WorkspaceChange.prototype.renameFile = function (oldUri, newUri, optionsOrAnnotation, options) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
+                throw new Error('Workspace edit is not configured for document changes.');
+            }
+            var annotation;
+            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+                annotation = optionsOrAnnotation;
+            }
+            else {
+                options = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === undefined) {
+                operation = RenameFile.create(oldUri, newUri, options);
+            }
+            else {
+                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+                operation = RenameFile.create(oldUri, newUri, options, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== undefined) {
+                return id;
+            }
+        };
+        WorkspaceChange.prototype.deleteFile = function (uri, optionsOrAnnotation, options) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
+                throw new Error('Workspace edit is not configured for document changes.');
+            }
+            var annotation;
+            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+                annotation = optionsOrAnnotation;
+            }
+            else {
+                options = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === undefined) {
+                operation = DeleteFile.create(uri, options);
+            }
+            else {
+                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+                operation = DeleteFile.create(uri, options, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== undefined) {
+                return id;
             }
         };
         return WorkspaceChange;
@@ -6172,10 +6487,34 @@ var __extends = (this && this.__extends) || (function () {
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.number(candidate.version));
+            return Is.defined(candidate) && Is.string(candidate.uri) && Is.integer(candidate.version);
         }
         VersionedTextDocumentIdentifier.is = is;
     })(VersionedTextDocumentIdentifier = exports.VersionedTextDocumentIdentifier || (exports.VersionedTextDocumentIdentifier = {}));
+    /**
+     * The OptionalVersionedTextDocumentIdentifier namespace provides helper functions to work with
+     * [OptionalVersionedTextDocumentIdentifier](#OptionalVersionedTextDocumentIdentifier) literals.
+     */
+    var OptionalVersionedTextDocumentIdentifier;
+    (function (OptionalVersionedTextDocumentIdentifier) {
+        /**
+         * Creates a new OptionalVersionedTextDocumentIdentifier literal.
+         * @param uri The document's uri.
+         * @param uri The document's text.
+         */
+        function create(uri, version) {
+            return { uri: uri, version: version };
+        }
+        OptionalVersionedTextDocumentIdentifier.create = create;
+        /**
+         * Checks whether the given literal conforms to the [OptionalVersionedTextDocumentIdentifier](#OptionalVersionedTextDocumentIdentifier) interface.
+         */
+        function is(value) {
+            var candidate = value;
+            return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.integer(candidate.version));
+        }
+        OptionalVersionedTextDocumentIdentifier.is = is;
+    })(OptionalVersionedTextDocumentIdentifier = exports.OptionalVersionedTextDocumentIdentifier || (exports.OptionalVersionedTextDocumentIdentifier = {}));
     /**
      * The TextDocumentItem namespace provides helper functions to work with
      * [TextDocumentItem](#TextDocumentItem) literals.
@@ -6198,7 +6537,7 @@ var __extends = (this && this.__extends) || (function () {
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.number(candidate.version) && Is.string(candidate.text);
+            return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.integer(candidate.version) && Is.string(candidate.text);
         }
         TextDocumentItem.is = is;
     })(TextDocumentItem = exports.TextDocumentItem || (exports.TextDocumentItem = {}));
@@ -6290,7 +6629,7 @@ var __extends = (this && this.__extends) || (function () {
          * the end of the snippet. Placeholders with equal identifiers are linked,
          * that is typing in one will update others too.
          *
-         * See also: https://github.com/Microsoft/vscode/blob/master/src/vs/editor/contrib/snippet/common/snippet.md
+         * See also: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#snippet_syntax
          */
         InsertTextFormat.Snippet = 2;
     })(InsertTextFormat = exports.InsertTextFormat || (exports.InsertTextFormat = {}));
@@ -6307,6 +6646,56 @@ var __extends = (this && this.__extends) || (function () {
          */
         CompletionItemTag.Deprecated = 1;
     })(CompletionItemTag = exports.CompletionItemTag || (exports.CompletionItemTag = {}));
+    /**
+     * The InsertReplaceEdit namespace provides functions to deal with insert / replace edits.
+     *
+     * @since 3.16.0
+     */
+    var InsertReplaceEdit;
+    (function (InsertReplaceEdit) {
+        /**
+         * Creates a new insert / replace edit
+         */
+        function create(newText, insert, replace) {
+            return { newText: newText, insert: insert, replace: replace };
+        }
+        InsertReplaceEdit.create = create;
+        /**
+         * Checks whether the given literal conforms to the [InsertReplaceEdit](#InsertReplaceEdit) interface.
+         */
+        function is(value) {
+            var candidate = value;
+            return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
+        }
+        InsertReplaceEdit.is = is;
+    })(InsertReplaceEdit = exports.InsertReplaceEdit || (exports.InsertReplaceEdit = {}));
+    /**
+     * How whitespace and indentation is handled during completion
+     * item insertion.
+     *
+     * @since 3.16.0
+     */
+    var InsertTextMode;
+    (function (InsertTextMode) {
+        /**
+         * The insertion or replace strings is taken as it is. If the
+         * value is multi line the lines below the cursor will be
+         * inserted using the indentation defined in the string value.
+         * The client will not apply any kind of adjustments to the
+         * string.
+         */
+        InsertTextMode.asIs = 1;
+        /**
+         * The editor adjusts leading whitespace of new lines so that
+         * they match the indentation up to the cursor of the line for
+         * which the item is accepted.
+         *
+         * Consider a line like this: <2tabs><cursor><3tabs>foo. Accepting a
+         * multi line completion item is indented using 2 tabs and all
+         * following lines inserted will be indented using 2 tabs as well.
+         */
+        InsertTextMode.adjustIndentation = 2;
+    })(InsertTextMode = exports.InsertTextMode || (exports.InsertTextMode = {}));
     /**
      * The CompletionItem namespace provides functions to deal with
      * completion items.
@@ -6368,7 +6757,7 @@ var __extends = (this && this.__extends) || (function () {
             var candidate = value;
             return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) ||
                 MarkedString.is(candidate.contents) ||
-                Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === void 0 || Range.is(value.range));
+                Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === undefined || Range.is(value.range));
         }
         Hover.is = is;
     })(Hover = exports.Hover || (exports.Hover = {}));
@@ -6485,7 +6874,7 @@ var __extends = (this && this.__extends) || (function () {
     })(SymbolKind = exports.SymbolKind || (exports.SymbolKind = {}));
     /**
      * Symbol tags are extra annotations that tweak the rendering of a symbol.
-     * @since 3.15
+     * @since 3.16
      */
     var SymbolTag;
     (function (SymbolTag) {
@@ -6538,7 +6927,7 @@ var __extends = (this && this.__extends) || (function () {
                 range: range,
                 selectionRange: selectionRange
             };
-            if (children !== void 0) {
+            if (children !== undefined) {
                 result.children = children;
             }
             return result;
@@ -6552,9 +6941,10 @@ var __extends = (this && this.__extends) || (function () {
             return candidate &&
                 Is.string(candidate.name) && Is.number(candidate.kind) &&
                 Range.is(candidate.range) && Range.is(candidate.selectionRange) &&
-                (candidate.detail === void 0 || Is.string(candidate.detail)) &&
-                (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) &&
-                (candidate.children === void 0 || Array.isArray(candidate.children));
+                (candidate.detail === undefined || Is.string(candidate.detail)) &&
+                (candidate.deprecated === undefined || Is.boolean(candidate.deprecated)) &&
+                (candidate.children === undefined || Array.isArray(candidate.children)) &&
+                (candidate.tags === undefined || Array.isArray(candidate.tags));
         }
         DocumentSymbol.is = is;
     })(DocumentSymbol = exports.DocumentSymbol || (exports.DocumentSymbol = {}));
@@ -6642,7 +7032,7 @@ var __extends = (this && this.__extends) || (function () {
          */
         function create(diagnostics, only) {
             var result = { diagnostics: diagnostics };
-            if (only !== void 0 && only !== null) {
+            if (only !== undefined && only !== null) {
                 result.only = only;
             }
             return result;
@@ -6653,21 +7043,26 @@ var __extends = (this && this.__extends) || (function () {
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === void 0 || Is.typedArray(candidate.only, Is.string));
+            return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === undefined || Is.typedArray(candidate.only, Is.string));
         }
         CodeActionContext.is = is;
     })(CodeActionContext = exports.CodeActionContext || (exports.CodeActionContext = {}));
     var CodeAction;
     (function (CodeAction) {
-        function create(title, commandOrEdit, kind) {
+        function create(title, kindOrCommandOrEdit, kind) {
             var result = { title: title };
-            if (Command.is(commandOrEdit)) {
-                result.command = commandOrEdit;
+            var checkKind = true;
+            if (typeof kindOrCommandOrEdit === 'string') {
+                checkKind = false;
+                result.kind = kindOrCommandOrEdit;
+            }
+            else if (Command.is(kindOrCommandOrEdit)) {
+                result.command = kindOrCommandOrEdit;
             }
             else {
-                result.edit = commandOrEdit;
+                result.edit = kindOrCommandOrEdit;
             }
-            if (kind !== void 0) {
+            if (checkKind && kind !== undefined) {
                 result.kind = kind;
             }
             return result;
@@ -6676,12 +7071,12 @@ var __extends = (this && this.__extends) || (function () {
         function is(value) {
             var candidate = value;
             return candidate && Is.string(candidate.title) &&
-                (candidate.diagnostics === void 0 || Is.typedArray(candidate.diagnostics, Diagnostic.is)) &&
-                (candidate.kind === void 0 || Is.string(candidate.kind)) &&
-                (candidate.edit !== void 0 || candidate.command !== void 0) &&
-                (candidate.command === void 0 || Command.is(candidate.command)) &&
-                (candidate.isPreferred === void 0 || Is.boolean(candidate.isPreferred)) &&
-                (candidate.edit === void 0 || WorkspaceEdit.is(candidate.edit));
+                (candidate.diagnostics === undefined || Is.typedArray(candidate.diagnostics, Diagnostic.is)) &&
+                (candidate.kind === undefined || Is.string(candidate.kind)) &&
+                (candidate.edit !== undefined || candidate.command !== undefined) &&
+                (candidate.command === undefined || Command.is(candidate.command)) &&
+                (candidate.isPreferred === undefined || Is.boolean(candidate.isPreferred)) &&
+                (candidate.edit === undefined || WorkspaceEdit.is(candidate.edit));
         }
         CodeAction.is = is;
     })(CodeAction = exports.CodeAction || (exports.CodeAction = {}));
@@ -6729,7 +7124,7 @@ var __extends = (this && this.__extends) || (function () {
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.number(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
+            return Is.defined(candidate) && Is.uinteger(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
         }
         FormattingOptions.is = is;
     })(FormattingOptions = exports.FormattingOptions || (exports.FormattingOptions = {}));
@@ -6797,7 +7192,7 @@ var __extends = (this && this.__extends) || (function () {
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.number(candidate.lineCount)
+            return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.uinteger(candidate.lineCount)
                 && Is.func(candidate.getText) && Is.func(candidate.positionAt) && Is.func(candidate.offsetAt) ? true : false;
         }
         TextDocument.is = is;
@@ -6859,6 +7254,9 @@ var __extends = (this && this.__extends) || (function () {
             return data;
         }
     })(TextDocument = exports.TextDocument || (exports.TextDocument = {}));
+    /**
+     * @deprecated Use the text document from the new vscode-languageserver-textdocument package.
+     */
     var FullTextDocument = /** @class */ (function () {
         function FullTextDocument(uri, languageId, version, content) {
             this._uri = uri;
@@ -6871,21 +7269,21 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return this._uri;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(FullTextDocument.prototype, "languageId", {
             get: function () {
                 return this._languageId;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(FullTextDocument.prototype, "version", {
             get: function () {
                 return this._version;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         FullTextDocument.prototype.getText = function (range) {
@@ -6961,7 +7359,7 @@ var __extends = (this && this.__extends) || (function () {
             get: function () {
                 return this.getLineOffsets().length;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return FullTextDocument;
@@ -6989,6 +7387,18 @@ var __extends = (this && this.__extends) || (function () {
             return toString.call(value) === '[object Number]';
         }
         Is.number = number;
+        function numberRange(value, min, max) {
+            return toString.call(value) === '[object Number]' && min <= value && value <= max;
+        }
+        Is.numberRange = numberRange;
+        function integer(value) {
+            return toString.call(value) === '[object Number]' && -2147483648 <= value && value <= 2147483647;
+        }
+        Is.integer = integer;
+        function uinteger(value) {
+            return toString.call(value) === '[object Number]' && 0 <= value && value <= 2147483647;
+        }
+        Is.uinteger = uinteger;
         function func(value) {
             return toString.call(value) === '[object Function]';
         }
@@ -7006,7 +7416,7 @@ var __extends = (this && this.__extends) || (function () {
         Is.typedArray = typedArray;
     })(Is || (Is = {}));
 });
-
+//# sourceMappingURL=main.js.map;
 define('vscode-languageserver-types', ['vscode-languageserver-types/main'], function (main) { return main; });
 
 (function (factory) {
@@ -7292,6 +7702,16 @@ define('vscode-languageserver-types', ['vscode-languageserver-types/main'], func
 
 define('vscode-languageserver-textdocument', ['vscode-languageserver-textdocument/main'], function (main) { return main; });
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -7306,14 +7726,12 @@ define('vscode-languageserver-textdocument', ['vscode-languageserver-textdocumen
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    function __export(m) {
-        for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-    }
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.FileType = exports.ClientCapabilities = exports.TextDocument = void 0;
     var vscode_languageserver_types_1 = require("vscode-languageserver-types");
     var vscode_languageserver_textdocument_1 = require("vscode-languageserver-textdocument");
-    exports.TextDocument = vscode_languageserver_textdocument_1.TextDocument;
-    __export(require("vscode-languageserver-types"));
+    Object.defineProperty(exports, "TextDocument", { enumerable: true, get: function () { return vscode_languageserver_textdocument_1.TextDocument; } });
+    __exportStar(require("vscode-languageserver-types"), exports);
     var ClientCapabilities;
     (function (ClientCapabilities) {
         ClientCapabilities.LATEST = {
@@ -7350,668 +7768,21 @@ define('vscode-languageserver-textdocument', ['vscode-languageserver-textdocumen
     })(FileType = exports.FileType || (exports.FileType = {}));
 });
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-(function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === "function" && define.amd) {
-        define('vscode-uri/index',["require", "exports"], factory);
-    }
-})(function (require, exports) {
-    /*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var _a;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var isWindows;
-    if (typeof process === 'object') {
-        isWindows = process.platform === 'win32';
-    }
-    else if (typeof navigator === 'object') {
-        var userAgent = navigator.userAgent;
-        isWindows = userAgent.indexOf('Windows') >= 0;
-    }
-    function isHighSurrogate(charCode) {
-        return (0xD800 <= charCode && charCode <= 0xDBFF);
-    }
-    function isLowSurrogate(charCode) {
-        return (0xDC00 <= charCode && charCode <= 0xDFFF);
-    }
-    function isLowerAsciiHex(code) {
-        return code >= 97 /* a */ && code <= 102 /* f */;
-    }
-    function isLowerAsciiLetter(code) {
-        return code >= 97 /* a */ && code <= 122 /* z */;
-    }
-    function isUpperAsciiLetter(code) {
-        return code >= 65 /* A */ && code <= 90 /* Z */;
-    }
-    function isAsciiLetter(code) {
-        return isLowerAsciiLetter(code) || isUpperAsciiLetter(code);
-    }
-    //#endregion
-    var _schemePattern = /^\w[\w\d+.-]*$/;
-    var _singleSlashStart = /^\//;
-    var _doubleSlashStart = /^\/\//;
-    function _validateUri(ret, _strict) {
-        // scheme, must be set
-        if (!ret.scheme && _strict) {
-            throw new Error("[UriError]: Scheme is missing: {scheme: \"\", authority: \"" + ret.authority + "\", path: \"" + ret.path + "\", query: \"" + ret.query + "\", fragment: \"" + ret.fragment + "\"}");
-        }
-        // scheme, https://tools.ietf.org/html/rfc3986#section-3.1
-        // ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-        if (ret.scheme && !_schemePattern.test(ret.scheme)) {
-            throw new Error('[UriError]: Scheme contains illegal characters.');
-        }
-        // path, http://tools.ietf.org/html/rfc3986#section-3.3
-        // If a URI contains an authority component, then the path component
-        // must either be empty or begin with a slash ("/") character.  If a URI
-        // does not contain an authority component, then the path cannot begin
-        // with two slash characters ("//").
-        if (ret.path) {
-            if (ret.authority) {
-                if (!_singleSlashStart.test(ret.path)) {
-                    throw new Error('[UriError]: If a URI contains an authority component, then the path component must either be empty or begin with a slash ("/") character');
-                }
-            }
-            else {
-                if (_doubleSlashStart.test(ret.path)) {
-                    throw new Error('[UriError]: If a URI does not contain an authority component, then the path cannot begin with two slash characters ("//")');
-                }
-            }
-        }
-    }
-    // for a while we allowed uris *without* schemes and this is the migration
-    // for them, e.g. an uri without scheme and without strict-mode warns and falls
-    // back to the file-scheme. that should cause the least carnage and still be a
-    // clear warning
-    function _schemeFix(scheme, _strict) {
-        if (!scheme && !_strict) {
-            return 'file';
-        }
-        return scheme;
-    }
-    // implements a bit of https://tools.ietf.org/html/rfc3986#section-5
-    function _referenceResolution(scheme, path) {
-        // the slash-character is our 'default base' as we don't
-        // support constructing URIs relative to other URIs. This
-        // also means that we alter and potentially break paths.
-        // see https://tools.ietf.org/html/rfc3986#section-5.1.4
-        switch (scheme) {
-            case 'https':
-            case 'http':
-            case 'file':
-                if (!path) {
-                    path = _slash;
-                }
-                else if (path[0] !== _slash) {
-                    path = _slash + path;
-                }
-                break;
-        }
-        return path;
-    }
-    var _empty = '';
-    var _slash = '/';
-    var _regexp = /^(([^:/?#]+?):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
-    /**
-     * Uniform Resource Identifier (URI) http://tools.ietf.org/html/rfc3986.
-     * This class is a simple parser which creates the basic component parts
-     * (http://tools.ietf.org/html/rfc3986#section-3) with minimal validation
-     * and encoding.
-     *
-     * ```txt
-     *       foo://example.com:8042/over/there?name=ferret#nose
-     *       \_/   \______________/\_________/ \_________/ \__/
-     *        |           |            |            |        |
-     *     scheme     authority       path        query   fragment
-     *        |   _____________________|__
-     *       / \ /                        \
-     *       urn:example:animal:ferret:nose
-     * ```
-     */
-    var URI = /** @class */ (function () {
-        /**
-         * @internal
-         */
-        function URI(schemeOrData, authority, path, query, fragment, _strict) {
-            if (_strict === void 0) { _strict = false; }
-            if (typeof schemeOrData === 'object') {
-                this.scheme = schemeOrData.scheme || _empty;
-                this.authority = schemeOrData.authority || _empty;
-                this.path = schemeOrData.path || _empty;
-                this.query = schemeOrData.query || _empty;
-                this.fragment = schemeOrData.fragment || _empty;
-                // no validation because it's this URI
-                // that creates uri components.
-                // _validateUri(this);
-            }
-            else {
-                this.scheme = _schemeFix(schemeOrData, _strict);
-                this.authority = authority || _empty;
-                this.path = _referenceResolution(this.scheme, path || _empty);
-                this.query = query || _empty;
-                this.fragment = fragment || _empty;
-                _validateUri(this, _strict);
-            }
-        }
-        URI.isUri = function (thing) {
-            if (thing instanceof URI) {
-                return true;
-            }
-            if (!thing) {
-                return false;
-            }
-            return typeof thing.authority === 'string'
-                && typeof thing.fragment === 'string'
-                && typeof thing.path === 'string'
-                && typeof thing.query === 'string'
-                && typeof thing.scheme === 'string'
-                && typeof thing.fsPath === 'function'
-                && typeof thing.with === 'function'
-                && typeof thing.toString === 'function';
-        };
-        Object.defineProperty(URI.prototype, "fsPath", {
-            // ---- filesystem path -----------------------
-            /**
-             * Returns a string representing the corresponding file system path of this URI.
-             * Will handle UNC paths, normalizes windows drive letters to lower-case, and uses the
-             * platform specific path separator.
-             *
-             * * Will *not* validate the path for invalid characters and semantics.
-             * * Will *not* look at the scheme of this URI.
-             * * The result shall *not* be used for display purposes but for accessing a file on disk.
-             *
-             *
-             * The *difference* to `URI#path` is the use of the platform specific separator and the handling
-             * of UNC paths. See the below sample of a file-uri with an authority (UNC path).
-             *
-             * ```ts
-                const u = URI.parse('file://server/c$/folder/file.txt')
-                u.authority === 'server'
-                u.path === '/shares/c$/file.txt'
-                u.fsPath === '\\server\c$\folder\file.txt'
-            ```
-             *
-             * Using `URI#path` to read a file (using fs-apis) would not be enough because parts of the path,
-             * namely the server name, would be missing. Therefore `URI#fsPath` exists - it's sugar to ease working
-             * with URIs that represent files on disk (`file` scheme).
-             */
-            get: function () {
-                // if (this.scheme !== 'file') {
-                // 	console.warn(`[UriError] calling fsPath with scheme ${this.scheme}`);
-                // }
-                return uriToFsPath(this, false);
-            },
-            enumerable: true,
-            configurable: true
-        });
-        // ---- modify to new -------------------------
-        URI.prototype.with = function (change) {
-            if (!change) {
-                return this;
-            }
-            var scheme = change.scheme, authority = change.authority, path = change.path, query = change.query, fragment = change.fragment;
-            if (scheme === undefined) {
-                scheme = this.scheme;
-            }
-            else if (scheme === null) {
-                scheme = _empty;
-            }
-            if (authority === undefined) {
-                authority = this.authority;
-            }
-            else if (authority === null) {
-                authority = _empty;
-            }
-            if (path === undefined) {
-                path = this.path;
-            }
-            else if (path === null) {
-                path = _empty;
-            }
-            if (query === undefined) {
-                query = this.query;
-            }
-            else if (query === null) {
-                query = _empty;
-            }
-            if (fragment === undefined) {
-                fragment = this.fragment;
-            }
-            else if (fragment === null) {
-                fragment = _empty;
-            }
-            if (scheme === this.scheme
-                && authority === this.authority
-                && path === this.path
-                && query === this.query
-                && fragment === this.fragment) {
-                return this;
-            }
-            return new _URI(scheme, authority, path, query, fragment);
-        };
-        // ---- parse & validate ------------------------
-        /**
-         * Creates a new URI from a string, e.g. `http://www.msft.com/some/path`,
-         * `file:///usr/home`, or `scheme:with/path`.
-         *
-         * @param value A string which represents an URI (see `URI#toString`).
-         */
-        URI.parse = function (value, _strict) {
-            if (_strict === void 0) { _strict = false; }
-            var match = _regexp.exec(value);
-            if (!match) {
-                return new _URI(_empty, _empty, _empty, _empty, _empty);
-            }
-            return new _URI(match[2] || _empty, percentDecode(match[4] || _empty), percentDecode(match[5] || _empty), percentDecode(match[7] || _empty), percentDecode(match[9] || _empty), _strict);
-        };
-        /**
-         * Creates a new URI from a file system path, e.g. `c:\my\files`,
-         * `/usr/home`, or `\\server\share\some\path`.
-         *
-         * The *difference* between `URI#parse` and `URI#file` is that the latter treats the argument
-         * as path, not as stringified-uri. E.g. `URI.file(path)` is **not the same as**
-         * `URI.parse('file://' + path)` because the path might contain characters that are
-         * interpreted (# and ?). See the following sample:
-         * ```ts
-        const good = URI.file('/coding/c#/project1');
-        good.scheme === 'file';
-        good.path === '/coding/c#/project1';
-        good.fragment === '';
-        const bad = URI.parse('file://' + '/coding/c#/project1');
-        bad.scheme === 'file';
-        bad.path === '/coding/c'; // path is now broken
-        bad.fragment === '/project1';
-        ```
-         *
-         * @param path A file system path (see `URI#fsPath`)
-         */
-        URI.file = function (path) {
-            var authority = _empty;
-            // normalize to fwd-slashes on windows,
-            // on other systems bwd-slashes are valid
-            // filename character, eg /f\oo/ba\r.txt
-            if (isWindows) {
-                path = path.replace(/\\/g, _slash);
-            }
-            // check for authority as used in UNC shares
-            // or use the path as given
-            if (path[0] === _slash && path[1] === _slash) {
-                var idx = path.indexOf(_slash, 2);
-                if (idx === -1) {
-                    authority = path.substring(2);
-                    path = _slash;
-                }
-                else {
-                    authority = path.substring(2, idx);
-                    path = path.substring(idx) || _slash;
-                }
-            }
-            return new _URI('file', authority, path, _empty, _empty);
-        };
-        URI.from = function (components) {
-            return new _URI(components.scheme, components.authority, components.path, components.query, components.fragment);
-        };
-        // /**
-        //  * Join a URI path with path fragments and normalizes the resulting path.
-        //  *
-        //  * @param uri The input URI.
-        //  * @param pathFragment The path fragment to add to the URI path.
-        //  * @returns The resulting URI.
-        //  */
-        // static joinPath(uri: URI, ...pathFragment: string[]): URI {
-        // 	if (!uri.path) {
-        // 		throw new Error(`[UriError]: cannot call joinPaths on URI without path`);
-        // 	}
-        // 	let newPath: string;
-        // 	if (isWindows && uri.scheme === 'file') {
-        // 		newPath = URI.file(paths.win32.join(uriToFsPath(uri, true), ...pathFragment)).path;
-        // 	} else {
-        // 		newPath = paths.posix.join(uri.path, ...pathFragment);
-        // 	}
-        // 	return uri.with({ path: newPath });
-        // }
-        // ---- printing/externalize ---------------------------
-        /**
-         * Creates a string representation for this URI. It's guaranteed that calling
-         * `URI.parse` with the result of this function creates an URI which is equal
-         * to this URI.
-         *
-         * * The result shall *not* be used for display purposes but for externalization or transport.
-         * * The result will be encoded using the percentage encoding and encoding happens mostly
-         * ignore the scheme-specific encoding rules.
-         *
-         * @param skipEncoding Do not encode the result, default is `false`
-         */
-        URI.prototype.toString = function (skipEncoding) {
-            if (skipEncoding === void 0) { skipEncoding = false; }
-            return _asFormatted(this, skipEncoding);
-        };
-        URI.prototype.toJSON = function () {
-            return this;
-        };
-        URI.revive = function (data) {
-            if (!data) {
-                return data;
-            }
-            else if (data instanceof URI) {
-                return data;
-            }
-            else {
-                var result = new _URI(data);
-                result._formatted = data.external;
-                result._fsPath = data._sep === _pathSepMarker ? data.fsPath : null;
-                return result;
-            }
-        };
-        return URI;
-    }());
-    exports.URI = URI;
-    var _pathSepMarker = isWindows ? 1 : undefined;
-    // eslint-disable-next-line @typescript-eslint/class-name-casing
-    var _URI = /** @class */ (function (_super) {
-        __extends(_URI, _super);
-        function _URI() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this._formatted = null;
-            _this._fsPath = null;
-            return _this;
-        }
-        Object.defineProperty(_URI.prototype, "fsPath", {
-            get: function () {
-                if (!this._fsPath) {
-                    this._fsPath = uriToFsPath(this, false);
-                }
-                return this._fsPath;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        _URI.prototype.toString = function (skipEncoding) {
-            if (skipEncoding === void 0) { skipEncoding = false; }
-            if (!skipEncoding) {
-                if (!this._formatted) {
-                    this._formatted = _asFormatted(this, false);
-                }
-                return this._formatted;
-            }
-            else {
-                // we don't cache that
-                return _asFormatted(this, true);
-            }
-        };
-        _URI.prototype.toJSON = function () {
-            var res = {
-                $mid: 1
-            };
-            // cached state
-            if (this._fsPath) {
-                res.fsPath = this._fsPath;
-                res._sep = _pathSepMarker;
-            }
-            if (this._formatted) {
-                res.external = this._formatted;
-            }
-            // uri components
-            if (this.path) {
-                res.path = this.path;
-            }
-            if (this.scheme) {
-                res.scheme = this.scheme;
-            }
-            if (this.authority) {
-                res.authority = this.authority;
-            }
-            if (this.query) {
-                res.query = this.query;
-            }
-            if (this.fragment) {
-                res.fragment = this.fragment;
-            }
-            return res;
-        };
-        return _URI;
-    }(URI));
-    // reserved characters: https://tools.ietf.org/html/rfc3986#section-2.2
-    var encodeTable = (_a = {},
-        _a[58 /* Colon */] = '%3A',
-        _a[47 /* Slash */] = '%2F',
-        _a[63 /* QuestionMark */] = '%3F',
-        _a[35 /* Hash */] = '%23',
-        _a[91 /* OpenSquareBracket */] = '%5B',
-        _a[93 /* CloseSquareBracket */] = '%5D',
-        _a[64 /* AtSign */] = '%40',
-        _a[33 /* ExclamationMark */] = '%21',
-        _a[36 /* DollarSign */] = '%24',
-        _a[38 /* Ampersand */] = '%26',
-        _a[39 /* SingleQuote */] = '%27',
-        _a[40 /* OpenParen */] = '%28',
-        _a[41 /* CloseParen */] = '%29',
-        _a[42 /* Asterisk */] = '%2A',
-        _a[43 /* Plus */] = '%2B',
-        _a[44 /* Comma */] = '%2C',
-        _a[59 /* Semicolon */] = '%3B',
-        _a[61 /* Equals */] = '%3D',
-        _a[32 /* Space */] = '%20',
-        _a);
-    function encodeURIComponentFast(uriComponent, allowSlash) {
-        var res = undefined;
-        var nativeEncodePos = -1;
-        for (var pos = 0; pos < uriComponent.length; pos++) {
-            var code = uriComponent.charCodeAt(pos);
-            // unreserved characters: https://tools.ietf.org/html/rfc3986#section-2.3
-            if ((code >= 97 /* a */ && code <= 122 /* z */)
-                || (code >= 65 /* A */ && code <= 90 /* Z */)
-                || (code >= 48 /* Digit0 */ && code <= 57 /* Digit9 */)
-                || code === 45 /* Dash */
-                || code === 46 /* Period */
-                || code === 95 /* Underline */
-                || code === 126 /* Tilde */
-                || (allowSlash && code === 47 /* Slash */)) {
-                // check if we are delaying native encode
-                if (nativeEncodePos !== -1) {
-                    res += encodeURIComponent(uriComponent.substring(nativeEncodePos, pos));
-                    nativeEncodePos = -1;
-                }
-                // check if we write into a new string (by default we try to return the param)
-                if (res !== undefined) {
-                    res += uriComponent.charAt(pos);
-                }
-            }
-            else {
-                // encoding needed, we need to allocate a new string
-                if (res === undefined) {
-                    res = uriComponent.substr(0, pos);
-                }
-                // check with default table first
-                var escaped = encodeTable[code];
-                if (escaped !== undefined) {
-                    // check if we are delaying native encode
-                    if (nativeEncodePos !== -1) {
-                        res += encodeURIComponent(uriComponent.substring(nativeEncodePos, pos));
-                        nativeEncodePos = -1;
-                    }
-                    // append escaped variant to result
-                    res += escaped;
-                }
-                else if (nativeEncodePos === -1) {
-                    // use native encode only when needed
-                    nativeEncodePos = pos;
-                }
-            }
-        }
-        if (nativeEncodePos !== -1) {
-            res += encodeURIComponent(uriComponent.substring(nativeEncodePos));
-        }
-        return res !== undefined ? res : uriComponent;
-    }
-    function encodeURIComponentMinimal(path) {
-        var res = undefined;
-        for (var pos = 0; pos < path.length; pos++) {
-            var code = path.charCodeAt(pos);
-            if (code === 35 /* Hash */ || code === 63 /* QuestionMark */) {
-                if (res === undefined) {
-                    res = path.substr(0, pos);
-                }
-                res += encodeTable[code];
-            }
-            else {
-                if (res !== undefined) {
-                    res += path[pos];
-                }
-            }
-        }
-        return res !== undefined ? res : path;
-    }
-    /**
-     * Compute `fsPath` for the given uri
-     */
-    function uriToFsPath(uri, keepDriveLetterCasing) {
-        var value;
-        if (uri.authority && uri.path.length > 1 && uri.scheme === 'file') {
-            // unc path: file://shares/c$/far/boo
-            value = "//" + uri.authority + uri.path;
-        }
-        else if (uri.path.charCodeAt(0) === 47 /* Slash */
-            && (uri.path.charCodeAt(1) >= 65 /* A */ && uri.path.charCodeAt(1) <= 90 /* Z */ || uri.path.charCodeAt(1) >= 97 /* a */ && uri.path.charCodeAt(1) <= 122 /* z */)
-            && uri.path.charCodeAt(2) === 58 /* Colon */) {
-            if (!keepDriveLetterCasing) {
-                // windows drive letter: file:///c:/far/boo
-                value = uri.path[1].toLowerCase() + uri.path.substr(2);
-            }
-            else {
-                value = uri.path.substr(1);
-            }
-        }
-        else {
-            // other path
-            value = uri.path;
-        }
-        if (isWindows) {
-            value = value.replace(/\//g, '\\');
-        }
-        return value;
-    }
-    exports.uriToFsPath = uriToFsPath;
-    /**
-     * Create the external version of a uri
-     */
-    function _asFormatted(uri, skipEncoding) {
-        var encoder = !skipEncoding
-            ? encodeURIComponentFast
-            : encodeURIComponentMinimal;
-        var res = '';
-        var scheme = uri.scheme, authority = uri.authority, path = uri.path, query = uri.query, fragment = uri.fragment;
-        if (scheme) {
-            res += scheme;
-            res += ':';
-        }
-        if (authority || scheme === 'file') {
-            res += _slash;
-            res += _slash;
-        }
-        if (authority) {
-            var idx = authority.indexOf('@');
-            if (idx !== -1) {
-                // <user>@<auth>
-                var userinfo = authority.substr(0, idx);
-                authority = authority.substr(idx + 1);
-                idx = userinfo.indexOf(':');
-                if (idx === -1) {
-                    res += encoder(userinfo, false);
-                }
-                else {
-                    // <user>:<pass>@<auth>
-                    res += encoder(userinfo.substr(0, idx), false);
-                    res += ':';
-                    res += encoder(userinfo.substr(idx + 1), false);
-                }
-                res += '@';
-            }
-            authority = authority.toLowerCase();
-            idx = authority.indexOf(':');
-            if (idx === -1) {
-                res += encoder(authority, false);
-            }
-            else {
-                // <auth>:<port>
-                res += encoder(authority.substr(0, idx), false);
-                res += authority.substr(idx);
-            }
-        }
-        if (path) {
-            // lower-case windows drive letters in /C:/fff or C:/fff
-            if (path.length >= 3 && path.charCodeAt(0) === 47 /* Slash */ && path.charCodeAt(2) === 58 /* Colon */) {
-                var code = path.charCodeAt(1);
-                if (code >= 65 /* A */ && code <= 90 /* Z */) {
-                    path = "/" + String.fromCharCode(code + 32) + ":" + path.substr(3); // "/c:".length === 3
-                }
-            }
-            else if (path.length >= 2 && path.charCodeAt(1) === 58 /* Colon */) {
-                var code = path.charCodeAt(0);
-                if (code >= 65 /* A */ && code <= 90 /* Z */) {
-                    path = String.fromCharCode(code + 32) + ":" + path.substr(2); // "/c:".length === 3
-                }
-            }
-            // encode the rest of the path
-            res += encoder(path, true);
-        }
-        if (query) {
-            res += '?';
-            res += encoder(query, false);
-        }
-        if (fragment) {
-            res += '#';
-            res += !skipEncoding ? encodeURIComponentFast(fragment, false) : fragment;
-        }
-        return res;
-    }
-    // --- decode
-    function decodeURIComponentGraceful(str) {
-        try {
-            return decodeURIComponent(str);
-        }
-        catch (_a) {
-            if (str.length > 3) {
-                return str.substr(0, 3) + decodeURIComponentGraceful(str.substr(3));
-            }
-            else {
-                return str;
-            }
-        }
-    }
-    var _rEncodedAsHex = /(%[0-9A-Za-z][0-9A-Za-z])+/g;
-    function percentDecode(str) {
-        if (!str.match(_rEncodedAsHex)) {
-            return str;
-        }
-        return str.replace(_rEncodedAsHex, function (match) { return decodeURIComponentGraceful(match); });
-    }
-});
-
+!function(t,e){if("object"==typeof exports&&"object"==typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define('vscode-uri/index',[],e);else{var r=e();for(var n in r)("object"==typeof exports?exports:t)[n]=r[n]}}(this,(function(){return(()=>{"use strict";var t={470:t=>{function e(t){if("string"!=typeof t)throw new TypeError("Path must be a string. Received "+JSON.stringify(t))}function r(t,e){for(var r,n="",i=0,o=-1,a=0,h=0;h<=t.length;++h){if(h<t.length)r=t.charCodeAt(h);else{if(47===r)break;r=47}if(47===r){if(o===h-1||1===a);else if(o!==h-1&&2===a){if(n.length<2||2!==i||46!==n.charCodeAt(n.length-1)||46!==n.charCodeAt(n.length-2))if(n.length>2){var s=n.lastIndexOf("/");if(s!==n.length-1){-1===s?(n="",i=0):i=(n=n.slice(0,s)).length-1-n.lastIndexOf("/"),o=h,a=0;continue}}else if(2===n.length||1===n.length){n="",i=0,o=h,a=0;continue}e&&(n.length>0?n+="/..":n="..",i=2)}else n.length>0?n+="/"+t.slice(o+1,h):n=t.slice(o+1,h),i=h-o-1;o=h,a=0}else 46===r&&-1!==a?++a:a=-1}return n}var n={resolve:function(){for(var t,n="",i=!1,o=arguments.length-1;o>=-1&&!i;o--){var a;o>=0?a=arguments[o]:(void 0===t&&(t=process.cwd()),a=t),e(a),0!==a.length&&(n=a+"/"+n,i=47===a.charCodeAt(0))}return n=r(n,!i),i?n.length>0?"/"+n:"/":n.length>0?n:"."},normalize:function(t){if(e(t),0===t.length)return".";var n=47===t.charCodeAt(0),i=47===t.charCodeAt(t.length-1);return 0!==(t=r(t,!n)).length||n||(t="."),t.length>0&&i&&(t+="/"),n?"/"+t:t},isAbsolute:function(t){return e(t),t.length>0&&47===t.charCodeAt(0)},join:function(){if(0===arguments.length)return".";for(var t,r=0;r<arguments.length;++r){var i=arguments[r];e(i),i.length>0&&(void 0===t?t=i:t+="/"+i)}return void 0===t?".":n.normalize(t)},relative:function(t,r){if(e(t),e(r),t===r)return"";if((t=n.resolve(t))===(r=n.resolve(r)))return"";for(var i=1;i<t.length&&47===t.charCodeAt(i);++i);for(var o=t.length,a=o-i,h=1;h<r.length&&47===r.charCodeAt(h);++h);for(var s=r.length-h,f=a<s?a:s,u=-1,c=0;c<=f;++c){if(c===f){if(s>f){if(47===r.charCodeAt(h+c))return r.slice(h+c+1);if(0===c)return r.slice(h+c)}else a>f&&(47===t.charCodeAt(i+c)?u=c:0===c&&(u=0));break}var l=t.charCodeAt(i+c);if(l!==r.charCodeAt(h+c))break;47===l&&(u=c)}var p="";for(c=i+u+1;c<=o;++c)c!==o&&47!==t.charCodeAt(c)||(0===p.length?p+="..":p+="/..");return p.length>0?p+r.slice(h+u):(h+=u,47===r.charCodeAt(h)&&++h,r.slice(h))},_makeLong:function(t){return t},dirname:function(t){if(e(t),0===t.length)return".";for(var r=t.charCodeAt(0),n=47===r,i=-1,o=!0,a=t.length-1;a>=1;--a)if(47===(r=t.charCodeAt(a))){if(!o){i=a;break}}else o=!1;return-1===i?n?"/":".":n&&1===i?"//":t.slice(0,i)},basename:function(t,r){if(void 0!==r&&"string"!=typeof r)throw new TypeError('"ext" argument must be a string');e(t);var n,i=0,o=-1,a=!0;if(void 0!==r&&r.length>0&&r.length<=t.length){if(r.length===t.length&&r===t)return"";var h=r.length-1,s=-1;for(n=t.length-1;n>=0;--n){var f=t.charCodeAt(n);if(47===f){if(!a){i=n+1;break}}else-1===s&&(a=!1,s=n+1),h>=0&&(f===r.charCodeAt(h)?-1==--h&&(o=n):(h=-1,o=s))}return i===o?o=s:-1===o&&(o=t.length),t.slice(i,o)}for(n=t.length-1;n>=0;--n)if(47===t.charCodeAt(n)){if(!a){i=n+1;break}}else-1===o&&(a=!1,o=n+1);return-1===o?"":t.slice(i,o)},extname:function(t){e(t);for(var r=-1,n=0,i=-1,o=!0,a=0,h=t.length-1;h>=0;--h){var s=t.charCodeAt(h);if(47!==s)-1===i&&(o=!1,i=h+1),46===s?-1===r?r=h:1!==a&&(a=1):-1!==r&&(a=-1);else if(!o){n=h+1;break}}return-1===r||-1===i||0===a||1===a&&r===i-1&&r===n+1?"":t.slice(r,i)},format:function(t){if(null===t||"object"!=typeof t)throw new TypeError('The "pathObject" argument must be of type Object. Received type '+typeof t);return function(t,e){var r=e.dir||e.root,n=e.base||(e.name||"")+(e.ext||"");return r?r===e.root?r+n:r+"/"+n:n}(0,t)},parse:function(t){e(t);var r={root:"",dir:"",base:"",ext:"",name:""};if(0===t.length)return r;var n,i=t.charCodeAt(0),o=47===i;o?(r.root="/",n=1):n=0;for(var a=-1,h=0,s=-1,f=!0,u=t.length-1,c=0;u>=n;--u)if(47!==(i=t.charCodeAt(u)))-1===s&&(f=!1,s=u+1),46===i?-1===a?a=u:1!==c&&(c=1):-1!==a&&(c=-1);else if(!f){h=u+1;break}return-1===a||-1===s||0===c||1===c&&a===s-1&&a===h+1?-1!==s&&(r.base=r.name=0===h&&o?t.slice(1,s):t.slice(h,s)):(0===h&&o?(r.name=t.slice(1,a),r.base=t.slice(1,s)):(r.name=t.slice(h,a),r.base=t.slice(h,s)),r.ext=t.slice(a,s)),h>0?r.dir=t.slice(0,h-1):o&&(r.dir="/"),r},sep:"/",delimiter:":",win32:null,posix:null};n.posix=n,t.exports=n},465:(t,e,r)=>{Object.defineProperty(e,"__esModule",{value:!0}),e.Utils=e.URI=void 0;var n=r(796);Object.defineProperty(e,"URI",{enumerable:!0,get:function(){return n.URI}});var i=r(679);Object.defineProperty(e,"Utils",{enumerable:!0,get:function(){return i.Utils}})},674:(t,e)=>{if(Object.defineProperty(e,"__esModule",{value:!0}),e.isWindows=void 0,"object"==typeof process)e.isWindows="win32"===process.platform;else if("object"==typeof navigator){var r=navigator.userAgent;e.isWindows=r.indexOf("Windows")>=0}},796:function(t,e,r){var n,i,o=this&&this.__extends||(n=function(t,e){return(n=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var r in e)Object.prototype.hasOwnProperty.call(e,r)&&(t[r]=e[r])})(t,e)},function(t,e){function r(){this.constructor=t}n(t,e),t.prototype=null===e?Object.create(e):(r.prototype=e.prototype,new r)});Object.defineProperty(e,"__esModule",{value:!0}),e.uriToFsPath=e.URI=void 0;var a=r(674),h=/^\w[\w\d+.-]*$/,s=/^\//,f=/^\/\//,u="",c="/",l=/^(([^:/?#]+?):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/,p=function(){function t(t,e,r,n,i,o){void 0===o&&(o=!1),"object"==typeof t?(this.scheme=t.scheme||u,this.authority=t.authority||u,this.path=t.path||u,this.query=t.query||u,this.fragment=t.fragment||u):(this.scheme=function(t,e){return t||e?t:"file"}(t,o),this.authority=e||u,this.path=function(t,e){switch(t){case"https":case"http":case"file":e?e[0]!==c&&(e=c+e):e=c}return e}(this.scheme,r||u),this.query=n||u,this.fragment=i||u,function(t,e){if(!t.scheme&&e)throw new Error('[UriError]: Scheme is missing: {scheme: "", authority: "'+t.authority+'", path: "'+t.path+'", query: "'+t.query+'", fragment: "'+t.fragment+'"}');if(t.scheme&&!h.test(t.scheme))throw new Error("[UriError]: Scheme contains illegal characters.");if(t.path)if(t.authority){if(!s.test(t.path))throw new Error('[UriError]: If a URI contains an authority component, then the path component must either be empty or begin with a slash ("/") character')}else if(f.test(t.path))throw new Error('[UriError]: If a URI does not contain an authority component, then the path cannot begin with two slash characters ("//")')}(this,o))}return t.isUri=function(e){return e instanceof t||!!e&&"string"==typeof e.authority&&"string"==typeof e.fragment&&"string"==typeof e.path&&"string"==typeof e.query&&"string"==typeof e.scheme&&"function"==typeof e.fsPath&&"function"==typeof e.with&&"function"==typeof e.toString},Object.defineProperty(t.prototype,"fsPath",{get:function(){return b(this,!1)},enumerable:!1,configurable:!0}),t.prototype.with=function(t){if(!t)return this;var e=t.scheme,r=t.authority,n=t.path,i=t.query,o=t.fragment;return void 0===e?e=this.scheme:null===e&&(e=u),void 0===r?r=this.authority:null===r&&(r=u),void 0===n?n=this.path:null===n&&(n=u),void 0===i?i=this.query:null===i&&(i=u),void 0===o?o=this.fragment:null===o&&(o=u),e===this.scheme&&r===this.authority&&n===this.path&&i===this.query&&o===this.fragment?this:new g(e,r,n,i,o)},t.parse=function(t,e){void 0===e&&(e=!1);var r=l.exec(t);return r?new g(r[2]||u,_(r[4]||u),_(r[5]||u),_(r[7]||u),_(r[9]||u),e):new g(u,u,u,u,u)},t.file=function(t){var e=u;if(a.isWindows&&(t=t.replace(/\\/g,c)),t[0]===c&&t[1]===c){var r=t.indexOf(c,2);-1===r?(e=t.substring(2),t=c):(e=t.substring(2,r),t=t.substring(r)||c)}return new g("file",e,t,u,u)},t.from=function(t){return new g(t.scheme,t.authority,t.path,t.query,t.fragment)},t.prototype.toString=function(t){return void 0===t&&(t=!1),C(this,t)},t.prototype.toJSON=function(){return this},t.revive=function(e){if(e){if(e instanceof t)return e;var r=new g(e);return r._formatted=e.external,r._fsPath=e._sep===d?e.fsPath:null,r}return e},t}();e.URI=p;var d=a.isWindows?1:void 0,g=function(t){function e(){var e=null!==t&&t.apply(this,arguments)||this;return e._formatted=null,e._fsPath=null,e}return o(e,t),Object.defineProperty(e.prototype,"fsPath",{get:function(){return this._fsPath||(this._fsPath=b(this,!1)),this._fsPath},enumerable:!1,configurable:!0}),e.prototype.toString=function(t){return void 0===t&&(t=!1),t?C(this,!0):(this._formatted||(this._formatted=C(this,!1)),this._formatted)},e.prototype.toJSON=function(){var t={$mid:1};return this._fsPath&&(t.fsPath=this._fsPath,t._sep=d),this._formatted&&(t.external=this._formatted),this.path&&(t.path=this.path),this.scheme&&(t.scheme=this.scheme),this.authority&&(t.authority=this.authority),this.query&&(t.query=this.query),this.fragment&&(t.fragment=this.fragment),t},e}(p),v=((i={})[58]="%3A",i[47]="%2F",i[63]="%3F",i[35]="%23",i[91]="%5B",i[93]="%5D",i[64]="%40",i[33]="%21",i[36]="%24",i[38]="%26",i[39]="%27",i[40]="%28",i[41]="%29",i[42]="%2A",i[43]="%2B",i[44]="%2C",i[59]="%3B",i[61]="%3D",i[32]="%20",i);function m(t,e){for(var r=void 0,n=-1,i=0;i<t.length;i++){var o=t.charCodeAt(i);if(o>=97&&o<=122||o>=65&&o<=90||o>=48&&o<=57||45===o||46===o||95===o||126===o||e&&47===o)-1!==n&&(r+=encodeURIComponent(t.substring(n,i)),n=-1),void 0!==r&&(r+=t.charAt(i));else{void 0===r&&(r=t.substr(0,i));var a=v[o];void 0!==a?(-1!==n&&(r+=encodeURIComponent(t.substring(n,i)),n=-1),r+=a):-1===n&&(n=i)}}return-1!==n&&(r+=encodeURIComponent(t.substring(n))),void 0!==r?r:t}function y(t){for(var e=void 0,r=0;r<t.length;r++){var n=t.charCodeAt(r);35===n||63===n?(void 0===e&&(e=t.substr(0,r)),e+=v[n]):void 0!==e&&(e+=t[r])}return void 0!==e?e:t}function b(t,e){var r;return r=t.authority&&t.path.length>1&&"file"===t.scheme?"//"+t.authority+t.path:47===t.path.charCodeAt(0)&&(t.path.charCodeAt(1)>=65&&t.path.charCodeAt(1)<=90||t.path.charCodeAt(1)>=97&&t.path.charCodeAt(1)<=122)&&58===t.path.charCodeAt(2)?e?t.path.substr(1):t.path[1].toLowerCase()+t.path.substr(2):t.path,a.isWindows&&(r=r.replace(/\//g,"\\")),r}function C(t,e){var r=e?y:m,n="",i=t.scheme,o=t.authority,a=t.path,h=t.query,s=t.fragment;if(i&&(n+=i,n+=":"),(o||"file"===i)&&(n+=c,n+=c),o){var f=o.indexOf("@");if(-1!==f){var u=o.substr(0,f);o=o.substr(f+1),-1===(f=u.indexOf(":"))?n+=r(u,!1):(n+=r(u.substr(0,f),!1),n+=":",n+=r(u.substr(f+1),!1)),n+="@"}-1===(f=(o=o.toLowerCase()).indexOf(":"))?n+=r(o,!1):(n+=r(o.substr(0,f),!1),n+=o.substr(f))}if(a){if(a.length>=3&&47===a.charCodeAt(0)&&58===a.charCodeAt(2))(l=a.charCodeAt(1))>=65&&l<=90&&(a="/"+String.fromCharCode(l+32)+":"+a.substr(3));else if(a.length>=2&&58===a.charCodeAt(1)){var l;(l=a.charCodeAt(0))>=65&&l<=90&&(a=String.fromCharCode(l+32)+":"+a.substr(2))}n+=r(a,!0)}return h&&(n+="?",n+=r(h,!1)),s&&(n+="#",n+=e?s:m(s,!1)),n}function A(t){try{return decodeURIComponent(t)}catch(e){return t.length>3?t.substr(0,3)+A(t.substr(3)):t}}e.uriToFsPath=b;var w=/(%[0-9A-Za-z][0-9A-Za-z])+/g;function _(t){return t.match(w)?t.replace(w,(function(t){return A(t)})):t}},679:function(t,e,r){var n=this&&this.__spreadArrays||function(){for(var t=0,e=0,r=arguments.length;e<r;e++)t+=arguments[e].length;var n=Array(t),i=0;for(e=0;e<r;e++)for(var o=arguments[e],a=0,h=o.length;a<h;a++,i++)n[i]=o[a];return n};Object.defineProperty(e,"__esModule",{value:!0}),e.Utils=void 0;var i,o=r(470),a=o.posix||o;(i=e.Utils||(e.Utils={})).joinPath=function(t){for(var e=[],r=1;r<arguments.length;r++)e[r-1]=arguments[r];return t.with({path:a.join.apply(a,n([t.path],e))})},i.resolvePath=function(t){for(var e=[],r=1;r<arguments.length;r++)e[r-1]=arguments[r];var i=t.path||"/";return t.with({path:a.resolve.apply(a,n([i],e))})},i.dirname=function(t){var e=a.dirname(t.path);return 1===e.length&&46===e.charCodeAt(0)?t:t.with({path:e})},i.basename=function(t){return a.basename(t.path)},i.extname=function(t){return a.extname(t.path)}}},e={};return function r(n){if(e[n])return e[n].exports;var i=e[n]={exports:{}};return t[n].call(i.exports,i,i.exports,r),i.exports}(465)})()}));
+//# sourceMappingURL=index.js.map;
 define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
 
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -8023,86 +7794,18 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.joinPath = exports.dirname = void 0;
     var vscode_uri_1 = require("vscode-uri");
-    var Slash = '/'.charCodeAt(0);
-    var Dot = '.'.charCodeAt(0);
-    function isAbsolutePath(path) {
-        return path.charCodeAt(0) === Slash;
-    }
-    exports.isAbsolutePath = isAbsolutePath;
-    function dirname(uri) {
-        var lastIndexOfSlash = uri.lastIndexOf('/');
-        return lastIndexOfSlash !== -1 ? uri.substr(0, lastIndexOfSlash) : '';
+    function dirname(uriString) {
+        return vscode_uri_1.Utils.dirname(vscode_uri_1.URI.parse(uriString)).toString();
     }
     exports.dirname = dirname;
-    function basename(uri) {
-        var lastIndexOfSlash = uri.lastIndexOf('/');
-        return uri.substr(lastIndexOfSlash + 1);
-    }
-    exports.basename = basename;
-    function extname(uri) {
-        for (var i = uri.length - 1; i >= 0; i--) {
-            var ch = uri.charCodeAt(i);
-            if (ch === Dot) {
-                if (i > 0 && uri.charCodeAt(i - 1) !== Slash) {
-                    return uri.substr(i);
-                }
-                else {
-                    break;
-                }
-            }
-            else if (ch === Slash) {
-                break;
-            }
-        }
-        return '';
-    }
-    exports.extname = extname;
-    function resolvePath(uriString, path) {
-        if (isAbsolutePath(path)) {
-            var uri = vscode_uri_1.URI.parse(uriString);
-            var parts = path.split('/');
-            return uri.with({ path: normalizePath(parts) }).toString();
-        }
-        return joinPath(uriString, path);
-    }
-    exports.resolvePath = resolvePath;
-    function normalizePath(parts) {
-        var newParts = [];
-        for (var _i = 0, parts_1 = parts; _i < parts_1.length; _i++) {
-            var part = parts_1[_i];
-            if (part.length === 0 || part.length === 1 && part.charCodeAt(0) === Dot) {
-                // ignore
-            }
-            else if (part.length === 2 && part.charCodeAt(0) === Dot && part.charCodeAt(1) === Dot) {
-                newParts.pop();
-            }
-            else {
-                newParts.push(part);
-            }
-        }
-        if (parts.length > 1 && parts[parts.length - 1].length === 0) {
-            newParts.push('');
-        }
-        var res = newParts.join('/');
-        if (parts[0].length === 0) {
-            res = '/' + res;
-        }
-        return res;
-    }
-    exports.normalizePath = normalizePath;
     function joinPath(uriString) {
         var paths = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             paths[_i - 1] = arguments[_i];
         }
-        var uri = vscode_uri_1.URI.parse(uriString);
-        var parts = uri.path.split('/');
-        for (var _a = 0, paths_1 = paths; _a < paths_1.length; _a++) {
-            var path = paths_1[_a];
-            parts.push.apply(parts, path.split('/'));
-        }
-        return uri.with({ path: normalizePath(parts) }).toString();
+        return vscode_uri_1.Utils.joinPath.apply(vscode_uri_1.Utils, __spreadArrays([vscode_uri_1.URI.parse(uriString)], paths)).toString();
     }
     exports.joinPath = joinPath;
 });
@@ -8158,6 +7861,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.PathCompletionParticipant = void 0;
     var cssLanguageTypes_1 = require("../cssLanguageTypes");
     var strings_1 = require("../utils/strings");
     var resources_1 = require("../utils/resources");
@@ -8402,6 +8106,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CSSCompletion = void 0;
     var nodes = require("../parser/cssNodes");
     var cssSymbolScope_1 = require("../parser/cssSymbolScope");
     var languageFacts = require("../languageFacts/facts");
@@ -8673,7 +8378,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 }
                 return this.settings.completion.triggerPropertyValueCompletion;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(CSSCompletion.prototype, "isCompletePropertyWithSemicolonEnabled", {
@@ -8685,7 +8390,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 }
                 return this.settings.completion.completePropertyWithSemicolon;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         CSSCompletion.prototype.getCompletionsForDeclarationValue = function (node, result) {
@@ -9093,9 +8798,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         CSSCompletion.prototype.getCompletionsForSelector = function (ruleSet, isNested, result) {
             var _this = this;
             var existingNode = this.findInNodePath(nodes.NodeType.PseudoSelector, nodes.NodeType.IdentifierSelector, nodes.NodeType.ClassSelector, nodes.NodeType.ElementNameSelector);
-            if (!existingNode && this.offset - this.currentWord.length > 0 && this.textDocument.getText()[this.offset - this.currentWord.length - 1] === ':') {
+            if (!existingNode && this.hasCharacterAtPosition(this.offset - this.currentWord.length - 1, ':')) {
                 // after the ':' of a pseudo selector, no node generated for just ':'
                 this.currentWord = ':' + this.currentWord;
+                if (this.hasCharacterAtPosition(this.offset - this.currentWord.length - 1, ':')) {
+                    this.currentWord = ':' + this.currentWord; // for '::'
+                }
                 this.defaultReplaceRange = cssLanguageTypes_1.Range.create(cssLanguageTypes_1.Position.create(this.position.line, this.position.character - this.currentWord.length), this.position);
             }
             var pseudoClasses = this.cssDataManager.getPseudoClasses();
@@ -9374,6 +9082,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             });
             return result;
         };
+        CSSCompletion.prototype.hasCharacterAtPosition = function (offset, char) {
+            var text = this.textDocument.getText();
+            return (offset >= 0 && offset < text.length) && text.charAt(offset) === char;
+        };
         CSSCompletion.prototype.doesSupportMarkdown = function () {
             var _a, _b, _c;
             if (!objects_1.isDefined(this.supportsMarkdown)) {
@@ -9489,7 +9201,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -9513,6 +9225,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.selectorToElement = exports.SelectorPrinting = exports.toElement = exports.LabelElement = exports.RootElement = exports.Element = void 0;
     var nodes = require("../parser/cssNodes");
     var cssScanner_1 = require("../parser/cssScanner");
     var nls = require("vscode-nls");
@@ -9931,7 +9644,6 @@ var __extends = (this && this.__extends) || (function () {
                         this.element = this.element.parent;
                     }
                     if (this.prev && this.prev.matches('~')) {
-                        this.element.addChild(toElement(selectorChild));
                         this.element.addChild(new LabelElement('\u22EE'));
                     }
                     var thisElement = toElement(selectorChild, parentElement);
@@ -10005,6 +9717,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CSSHover = void 0;
     var nodes = require("../parser/cssNodes");
     var languageFacts = require("../languageFacts/facts");
     var selectorPrinting_1 = require("./selectorPrinting");
@@ -10017,7 +9730,7 @@ var __extends = (this && this.__extends) || (function () {
             this.cssDataManager = cssDataManager;
             this.selectorPrinting = new selectorPrinting_1.SelectorPrinting(cssDataManager);
         }
-        CSSHover.prototype.doHover = function (document, position, stylesheet) {
+        CSSHover.prototype.doHover = function (document, position, stylesheet, settings) {
             function getRange(node) {
                 return cssLanguageTypes_1.Range.create(document.positionAt(node.offset), document.positionAt(node.end));
             }
@@ -10053,7 +9766,7 @@ var __extends = (this && this.__extends) || (function () {
                     var propertyName = node.getFullPropertyName();
                     var entry = this.cssDataManager.getProperty(propertyName);
                     if (entry) {
-                        var contents = languageFacts.getEntryDescription(entry, this.doesSupportMarkdown());
+                        var contents = languageFacts.getEntryDescription(entry, this.doesSupportMarkdown(), settings);
                         if (contents) {
                             hover = {
                                 contents: contents,
@@ -10070,7 +9783,7 @@ var __extends = (this && this.__extends) || (function () {
                     var atRuleName = node.getText();
                     var entry = this.cssDataManager.getAtDirective(atRuleName);
                     if (entry) {
-                        var contents = languageFacts.getEntryDescription(entry, this.doesSupportMarkdown());
+                        var contents = languageFacts.getEntryDescription(entry, this.doesSupportMarkdown(), settings);
                         if (contents) {
                             hover = {
                                 contents: contents,
@@ -10089,7 +9802,7 @@ var __extends = (this && this.__extends) || (function () {
                         ? this.cssDataManager.getPseudoElement(selectorName)
                         : this.cssDataManager.getPseudoClass(selectorName);
                     if (entry) {
-                        var contents = languageFacts.getEntryDescription(entry, this.doesSupportMarkdown());
+                        var contents = languageFacts.getEntryDescription(entry, this.doesSupportMarkdown(), settings);
                         if (contents) {
                             hover = {
                                 contents: contents,
@@ -10200,6 +9913,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CSSNavigation = void 0;
     var cssLanguageTypes_1 = require("../cssLanguageTypes");
     var nls = require("vscode-nls");
     var nodes = require("../parser/cssNodes");
@@ -10595,6 +10309,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.LintConfigurationSettings = exports.Settings = exports.Rules = exports.Setting = exports.Rule = void 0;
     var nodes = require("../parser/cssNodes");
     var nls = require("vscode-nls");
     var localize = nls.loadMessageBundle();
@@ -10690,6 +10405,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CSSCodeActions = void 0;
     var nodes = require("../parser/cssNodes");
     var strings_1 = require("../utils/strings");
     var lintRules_1 = require("../services/lintRules");
@@ -10783,6 +10499,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.Element = void 0;
     var arrays_1 = require("../utils/arrays");
     var Element = /** @class */ (function () {
         function Element(decl) {
@@ -10992,7 +10709,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-css-languageservice/services/lint',["require", "exports", "../languageFacts/facts", "./lintRules", "../parser/cssNodes", "./lintUtil", "../utils/arrays", "vscode-nls"], factory);
+        define('vscode-css-languageservice/services/lint',["require", "exports", "vscode-nls", "../languageFacts/facts", "../parser/cssNodes", "../utils/arrays", "./lintRules", "./lintUtil"], factory);
     }
 })(function (require, exports) {
     /*---------------------------------------------------------------------------------------------
@@ -11001,12 +10718,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
-    var languageFacts = require("../languageFacts/facts");
-    var lintRules_1 = require("./lintRules");
-    var nodes = require("../parser/cssNodes");
-    var lintUtil_1 = require("./lintUtil");
-    var arrays_1 = require("../utils/arrays");
+    exports.LintVisitor = void 0;
     var nls = require("vscode-nls");
+    var languageFacts = require("../languageFacts/facts");
+    var nodes = require("../parser/cssNodes");
+    var arrays_1 = require("../utils/arrays");
+    var lintRules_1 = require("./lintRules");
+    var lintUtil_1 = require("./lintUtil");
     var localize = nls.loadMessageBundle();
     var NodesByRootMap = /** @class */ (function () {
         function NodesByRootMap() {
@@ -11143,6 +10861,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     return this.visitHexColorValue(node);
                 case nodes.NodeType.Prio:
                     return this.visitPrio(node);
+                case nodes.NodeType.IdentifierSelector:
+                    return this.visitIdentifierSelector(node);
             }
             return true;
         };
@@ -11198,19 +10918,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             return true;
         };
         LintVisitor.prototype.visitSimpleSelector = function (node) {
-            var firstChar = this.documentText.charAt(node.offset);
             /////////////////////////////////////////////////////////////
             //	Lint - The universal selector (*) is known to be slow.
             /////////////////////////////////////////////////////////////
+            var firstChar = this.documentText.charAt(node.offset);
             if (node.length === 1 && firstChar === '*') {
                 this.addEntry(node, lintRules_1.Rules.UniversalSelector);
             }
+            return true;
+        };
+        LintVisitor.prototype.visitIdentifierSelector = function (node) {
             /////////////////////////////////////////////////////////////
             //	Lint - Avoid id selectors
             /////////////////////////////////////////////////////////////
-            if (firstChar === '#') {
-                this.addEntry(node, lintRules_1.Rules.AvoidIdSelector);
-            }
+            this.addEntry(node, lintRules_1.Rules.AvoidIdSelector);
             return true;
         };
         LintVisitor.prototype.visitImport = function (node) {
@@ -11282,31 +11003,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             /////////////////////////////////////////////////////////////
             //	Properties ignored due to display
             /////////////////////////////////////////////////////////////
-            // With 'display: inline', the width, height, margin-top, margin-bottom, and float properties have no effect
-            var displayElems = this.fetchWithValue(propertyTable, 'display', 'inline');
-            if (displayElems.length > 0) {
-                for (var _d = 0, _e = ['width', 'height', 'margin-top', 'margin-bottom', 'float']; _d < _e.length; _d++) {
-                    var prop = _e[_d];
-                    var elem = this.fetch(propertyTable, prop);
-                    for (var index = 0; index < elem.length; index++) {
-                        var node_1 = elem[index].node;
-                        var value = node_1.getValue();
-                        if (prop === 'float' && (!value || value.matches('none'))) {
-                            continue;
-                        }
-                        this.addEntry(node_1, lintRules_1.Rules.PropertyIgnoredDueToDisplay, localize('rule.propertyIgnoredDueToDisplayInline', "Property is ignored due to the display. With 'display: inline', the width, height, margin-top, margin-bottom, and float properties have no effect."));
-                    }
-                }
-            }
             // With 'display: inline-block', 'float' has no effect
-            displayElems = this.fetchWithValue(propertyTable, 'display', 'inline-block');
+            var displayElems = this.fetchWithValue(propertyTable, 'display', 'inline-block');
             if (displayElems.length > 0) {
                 var elem = this.fetch(propertyTable, 'float');
                 for (var index = 0; index < elem.length; index++) {
-                    var node_2 = elem[index].node;
-                    var value = node_2.getValue();
+                    var node_1 = elem[index].node;
+                    var value = node_1.getValue();
                     if (value && !value.matches('none')) {
-                        this.addEntry(node_2, lintRules_1.Rules.PropertyIgnoredDueToDisplay, localize('rule.propertyIgnoredDueToDisplayInlineBlock', "inline-block is ignored due to the float. If 'float' has a value other than 'none', the box is floated and 'display' is treated as 'block'"));
+                        this.addEntry(node_1, lintRules_1.Rules.PropertyIgnoredDueToDisplay, localize('rule.propertyIgnoredDueToDisplayInlineBlock', "inline-block is ignored due to the float. If 'float' has a value other than 'none', the box is floated and 'display' is treated as 'block'"));
                     }
                 }
             }
@@ -11355,8 +11060,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             if (!isExportBlock) {
                 var propertiesBySuffix = new NodesByRootMap();
                 var containsUnknowns = false;
-                for (var _f = 0, propertyTable_1 = propertyTable; _f < propertyTable_1.length; _f++) {
-                    var element = propertyTable_1[_f];
+                for (var _d = 0, propertyTable_1 = propertyTable; _d < propertyTable_1.length; _d++) {
+                    var element = propertyTable_1[_d];
                     var decl = element.node;
                     if (this.isCSSDeclaration(decl)) {
                         var name = element.fullPropertyName;
@@ -11406,15 +11111,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                         }
                         var missingVendorSpecific = this.getMissingNames(expected, actual);
                         if (missingVendorSpecific || needsStandard) {
-                            for (var _g = 0, _h = entry.nodes; _g < _h.length; _g++) {
-                                var node_3 = _h[_g];
+                            for (var _e = 0, _f = entry.nodes; _e < _f.length; _e++) {
+                                var node_2 = _f[_e];
                                 if (needsStandard) {
                                     var message = localize('property.standard.missing', "Also define the standard property '{0}' for compatibility", suffix);
-                                    this.addEntry(node_3, lintRules_1.Rules.IncludeStandardPropertyWhenUsingVendorPrefix, message);
+                                    this.addEntry(node_2, lintRules_1.Rules.IncludeStandardPropertyWhenUsingVendorPrefix, message);
                                 }
                                 if (missingVendorSpecific) {
                                     var message = localize('property.vendorspecific.missing', "Always include all vendor specific properties: Missing: {0}", missingVendorSpecific);
-                                    this.addEntry(node_3, lintRules_1.Rules.AllVendorPrefixes, message);
+                                    this.addEntry(node_2, lintRules_1.Rules.AllVendorPrefixes, message);
                                 }
                             }
                         }
@@ -11462,9 +11167,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             var definesSrc = false, definesFontFamily = false;
             var containsUnknowns = false;
             for (var _i = 0, _a = declarations.getChildren(); _i < _a.length; _i++) {
-                var node_4 = _a[_i];
-                if (this.isCSSDeclaration(node_4)) {
-                    var name = node_4.getProperty().getName().toLowerCase();
+                var node_3 = _a[_i];
+                if (this.isCSSDeclaration(node_3)) {
+                    var name = node_3.getProperty().getName().toLowerCase();
                     if (name === 'src') {
                         definesSrc = true;
                     }
@@ -11557,6 +11262,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CSSValidation = void 0;
     var nodes = require("../parser/cssNodes");
     var lintRules_1 = require("./lintRules");
     var lint_1 = require("./lint");
@@ -11602,7 +11308,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -11626,6 +11332,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SCSSScanner = exports.Module = exports.Ellipsis = exports.SmallerEqualsOperator = exports.GreaterEqualsOperator = exports.NotEqualsOperator = exports.EqualsOperator = exports.Default = exports.InterpolationFunction = exports.VariableName = void 0;
     var cssScanner_1 = require("./cssScanner");
     var _FSL = '/'.charCodeAt(0);
     var _NWL = '\n'.charCodeAt(0);
@@ -11739,6 +11446,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SCSSParseError = exports.SCSSIssueType = void 0;
     var nls = require("vscode-nls");
     var localize = nls.loadMessageBundle();
     var SCSSIssueType = /** @class */ (function () {
@@ -11760,7 +11468,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -11784,6 +11492,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SCSSParser = void 0;
     var scssScanner = require("./scssScanner");
     var cssScanner_1 = require("./cssScanner");
     var cssParser = require("./cssParser");
@@ -11932,7 +11641,7 @@ var __extends = (this && this.__extends) || (function () {
                 }
                 return _this._parseInterpolation();
             };
-            while (this.accept(cssScanner_1.TokenType.Ident) || node.addChild(indentInterpolation()) || (hasContent && this.acceptRegexp(/[\w-]/))) {
+            while (this.accept(cssScanner_1.TokenType.Ident) || node.addChild(indentInterpolation()) || (hasContent && this.acceptRegexp(/^[\w-]/))) {
                 hasContent = true;
                 if (this.hasWhitespace()) {
                     break;
@@ -12005,13 +11714,17 @@ var __extends = (this && this.__extends) || (function () {
                 || this._tryParseRuleset(true) // nested ruleset
                 || _super.prototype._parseRuleSetDeclaration.call(this); // try css ruleset declaration as last so in the error case, the ast will contain a declaration
         };
-        SCSSParser.prototype._parseDeclaration = function (resyncStopTokens) {
+        SCSSParser.prototype._parseDeclaration = function (stopTokens) {
+            var custonProperty = this._tryParseCustomPropertyDeclaration(stopTokens);
+            if (custonProperty) {
+                return custonProperty;
+            }
             var node = this.create(nodes.Declaration);
             if (!node.setProperty(this._parseProperty())) {
                 return null;
             }
             if (!this.accept(cssScanner_1.TokenType.Colon)) {
-                return this.finish(node, cssErrors_1.ParseError.ColonExpected, [cssScanner_1.TokenType.Colon], resyncStopTokens);
+                return this.finish(node, cssErrors_1.ParseError.ColonExpected, [cssScanner_1.TokenType.Colon], stopTokens || [cssScanner_1.TokenType.SemiColon]);
             }
             if (this.prevToken) {
                 node.colonPosition = this.prevToken.offset;
@@ -12500,6 +12213,11 @@ var __extends = (this && this.__extends) || (function () {
             if (!this.accept(cssScanner_1.TokenType.Colon) || !node.setValue(this._parseExpr(true))) {
                 return this.finish(node, cssErrors_1.ParseError.VariableValueExpected, [], [cssScanner_1.TokenType.Comma, cssScanner_1.TokenType.ParenthesisR]);
             }
+            if (this.accept(cssScanner_1.TokenType.Exclamation)) {
+                if (this.hasWhitespace() || !this.acceptIdent('default')) {
+                    return this.finish(node, cssErrors_1.ParseError.UnknownKeyword);
+                }
+            }
             return this.finish(node);
         };
         SCSSParser.prototype._parseForward = function () {
@@ -12510,6 +12228,26 @@ var __extends = (this && this.__extends) || (function () {
             this.consumeToken();
             if (!node.addChild(this._parseStringLiteral())) {
                 return this.finish(node, cssErrors_1.ParseError.StringLiteralExpected);
+            }
+            if (this.acceptIdent('with')) {
+                if (!this.accept(cssScanner_1.TokenType.ParenthesisL)) {
+                    return this.finish(node, cssErrors_1.ParseError.LeftParenthesisExpected, [cssScanner_1.TokenType.ParenthesisR]);
+                }
+                // First variable statement, no comma.
+                if (!node.getParameters().addChild(this._parseModuleConfigDeclaration())) {
+                    return this.finish(node, cssErrors_1.ParseError.VariableNameExpected);
+                }
+                while (this.accept(cssScanner_1.TokenType.Comma)) {
+                    if (this.peek(cssScanner_1.TokenType.ParenthesisR)) {
+                        break;
+                    }
+                    if (!node.getParameters().addChild(this._parseModuleConfigDeclaration())) {
+                        return this.finish(node, cssErrors_1.ParseError.VariableNameExpected);
+                    }
+                }
+                if (!this.accept(cssScanner_1.TokenType.ParenthesisR)) {
+                    return this.finish(node, cssErrors_1.ParseError.RightParenthesisExpected);
+                }
             }
             if (!this.peek(cssScanner_1.TokenType.SemiColon) && !this.peek(cssScanner_1.TokenType.EOF)) {
                 if (!this.peekRegExp(cssScanner_1.TokenType.Ident, /as|hide|show/)) {
@@ -12542,6 +12280,7 @@ var __extends = (this && this.__extends) || (function () {
             node.setIdentifier(this._parseIdent());
             while (node.addChild(this._parseVariable() || this._parseIdent())) {
                 // Consume all variables and idents ahead.
+                this.accept(cssScanner_1.TokenType.Comma);
             }
             // More than just identifier 
             return node.getChildren().length > 1 ? node : null;
@@ -12558,7 +12297,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -12582,6 +12321,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SCSSCompletion = void 0;
     var cssCompletion_1 = require("./cssCompletion");
     var nodes = require("../parser/cssNodes");
     var cssLanguageTypes_1 = require("../cssLanguageTypes");
@@ -12868,7 +12608,7 @@ var __extends = (this && this.__extends) || (function () {
                 label: "@use",
                 documentation: localize("scss.builtin.@use", "Loads mixins, functions, and variables from other Sass stylesheets as 'modules', and combines CSS from multiple stylesheets together."),
                 references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/at-rules/use' }],
-                insertText: "@use '$0';",
+                insertText: "@use $0;",
                 insertTextFormat: cssLanguageTypes_1.InsertTextFormat.Snippet,
                 kind: cssLanguageTypes_1.CompletionItemKind.Keyword
             },
@@ -12876,7 +12616,7 @@ var __extends = (this && this.__extends) || (function () {
                 label: "@forward",
                 documentation: localize("scss.builtin.@forward", "Loads a Sass stylesheet and makes its mixins, functions, and variables available when this stylesheet is loaded with the @use rule."),
                 references: [{ name: 'Sass documentation', url: 'https://sass-lang.com/documentation/at-rules/forward' }],
-                insertText: "@forward '$0';",
+                insertText: "@forward $0;",
                 insertTextFormat: cssLanguageTypes_1.InsertTextFormat.Snippet,
                 kind: cssLanguageTypes_1.CompletionItemKind.Keyword
             },
@@ -12946,7 +12686,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -12970,6 +12710,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.LESSScanner = exports.Ellipsis = void 0;
     var scanner = require("./cssScanner");
     var _FSL = '/'.charCodeAt(0);
     var _NWL = '\n'.charCodeAt(0);
@@ -13034,7 +12775,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -13058,6 +12799,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.LESSParser = void 0;
     var lessScanner = require("./lessScanner");
     var cssScanner_1 = require("./cssScanner");
     var cssParser = require("./cssParser");
@@ -13784,7 +13526,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -13808,6 +13550,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.LESSCompletion = void 0;
     var cssCompletion_1 = require("./cssCompletion");
     var cssLanguageTypes_1 = require("../cssLanguageTypes");
     var nls = require("vscode-nls");
@@ -14202,6 +13945,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getFoldingRanges = void 0;
     var cssScanner_1 = require("../parser/cssScanner");
     var scssScanner_1 = require("../parser/scssScanner");
     var lessScanner_1 = require("../parser/lessScanner");
@@ -14409,6 +14153,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.cssData = void 0;
     exports.cssData = {
         "version": 1.1,
         "properties": [
@@ -14456,7 +14201,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position>",
-                "relevance": 59,
+                "relevance": 60,
                 "description": "Aligns a flex container’s lines within the flex container when there is extra space in the cross-axis, similar to how 'justify-content' aligns individual items within the main-axis.",
                 "restrictions": [
                     "enum"
@@ -14487,7 +14232,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | stretch | <baseline-position> | [ <overflow-position>? <self-position> ]",
-                "relevance": 81,
+                "relevance": 83,
                 "description": "Aligns flex items along the cross axis of the current line of the flex container.",
                 "restrictions": [
                     "enum"
@@ -14558,7 +14303,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | stretch | <baseline-position> | <overflow-position>? [ <self-position> | left | right ] | legacy | legacy && [ left | right | center ]",
-                "relevance": 50,
+                "relevance": 51,
                 "description": "Defines the default justify-self for all items of the box, giving them the default way of justifying each box along the appropriate axis",
                 "restrictions": [
                     "enum"
@@ -14566,13 +14311,6 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "justify-self",
-                "browsers": [
-                    "E16",
-                    "FF45",
-                    "S10.1",
-                    "C57",
-                    "O44"
-                ],
                 "values": [
                     {
                         "name": "auto"
@@ -14668,7 +14406,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | normal | stretch | <baseline-position> | <overflow-position>? <self-position>",
-                "relevance": 69,
+                "relevance": 70,
                 "description": "Allows the default alignment along the cross axis to be overridden for individual flex items.",
                 "restrictions": [
                     "enum"
@@ -14685,7 +14423,7 @@ var __extends = (this && this.__extends) || (function () {
                 ],
                 "values": [],
                 "syntax": "initial | inherit | unset | revert",
-                "relevance": 51,
+                "relevance": 52,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -14757,7 +14495,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<single-animation>#",
-                "relevance": 79,
+                "relevance": 80,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -14809,7 +14547,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<single-animation-direction>#",
-                "relevance": 55,
+                "relevance": 56,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -14824,7 +14562,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "animation-duration",
                 "syntax": "<time>#",
-                "relevance": 64,
+                "relevance": 65,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -14857,7 +14595,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<single-animation-fill-mode>#",
-                "relevance": 61,
+                "relevance": 62,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -14900,7 +14638,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "[ none | <keyframes-name> ]#",
-                "relevance": 64,
+                "relevance": 65,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -14940,7 +14678,7 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "animation-timing-function",
-                "syntax": "<timing-function>#",
+                "syntax": "<easing-function>#",
                 "relevance": 68,
                 "references": [
                     {
@@ -15035,7 +14773,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<attachment>#",
-                "relevance": 53,
+                "relevance": 54,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15202,7 +14940,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<bg-image>#",
-                "relevance": 88,
+                "relevance": 89,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15233,7 +14971,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "background-position",
                 "syntax": "<bg-position>#",
-                "relevance": 87,
+                "relevance": 88,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15265,7 +15003,7 @@ var __extends = (this && this.__extends) || (function () {
                 ],
                 "status": "experimental",
                 "syntax": "[ center | [ [ left | right | x-start | x-end ]? <length-percentage>? ]! ]#",
-                "relevance": 54,
+                "relevance": 53,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15313,7 +15051,7 @@ var __extends = (this && this.__extends) || (function () {
                 "name": "background-repeat",
                 "values": [],
                 "syntax": "<repeat-style>#",
-                "relevance": 85,
+                "relevance": 86,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15342,7 +15080,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<bg-size>#",
-                "relevance": 85,
+                "relevance": 86,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15398,7 +15136,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border",
                 "syntax": "<line-width> || <line-style> || <color>",
-                "relevance": 95,
+                "relevance": 96,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15422,7 +15160,7 @@ var __extends = (this && this.__extends) || (function () {
                     "C69",
                     "O56"
                 ],
-                "syntax": "<'border-top-width'> || <'border-top-style'> || <'color'>",
+                "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
                 "relevance": 50,
                 "references": [
                     {
@@ -15447,7 +15185,7 @@ var __extends = (this && this.__extends) || (function () {
                     "C69",
                     "O56"
                 ],
-                "syntax": "<'border-top-width'> || <'border-top-style'> || <'color'>",
+                "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
                 "relevance": 50,
                 "references": [
                     {
@@ -15600,7 +15338,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-bottom",
                 "syntax": "<line-width> || <line-style> || <color>",
-                "relevance": 88,
+                "relevance": 89,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15633,7 +15371,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-bottom-left-radius",
                 "syntax": "<length-percentage>{1,2}",
-                "relevance": 74,
+                "relevance": 75,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15649,7 +15387,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-bottom-right-radius",
                 "syntax": "<length-percentage>{1,2}",
-                "relevance": 73,
+                "relevance": 74,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15722,7 +15460,7 @@ var __extends = (this && this.__extends) || (function () {
                 "name": "border-color",
                 "values": [],
                 "syntax": "<color>{1,4}",
-                "relevance": 86,
+                "relevance": 87,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15789,7 +15527,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-image-outset",
                 "syntax": "[ <length> | <number> ]{1,4}",
-                "relevance": 50,
+                "relevance": 51,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -15910,7 +15648,7 @@ var __extends = (this && this.__extends) || (function () {
                     "C69",
                     "O56"
                 ],
-                "syntax": "<'border-top-width'> || <'border-top-style'> || <'color'>",
+                "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
                 "relevance": 50,
                 "references": [
                     {
@@ -15935,7 +15673,7 @@ var __extends = (this && this.__extends) || (function () {
                     "C69",
                     "O56"
                 ],
-                "syntax": "<'border-top-width'> || <'border-top-style'> || <'color'>",
+                "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
                 "relevance": 50,
                 "references": [
                     {
@@ -16088,7 +15826,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-left",
                 "syntax": "<line-width> || <line-style> || <color>",
-                "relevance": 82,
+                "relevance": 83,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16152,7 +15890,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-radius",
                 "syntax": "<length-percentage>{1,4} [ / <length-percentage>{1,4} ]?",
-                "relevance": 91,
+                "relevance": 92,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16248,7 +15986,7 @@ var __extends = (this && this.__extends) || (function () {
                 "name": "border-style",
                 "values": [],
                 "syntax": "<line-style>{1,4}",
-                "relevance": 79,
+                "relevance": 80,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16263,7 +16001,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-top",
                 "syntax": "<line-width> || <line-style> || <color>",
-                "relevance": 87,
+                "relevance": 88,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16281,7 +16019,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-top-color",
                 "syntax": "<color>",
-                "relevance": 71,
+                "relevance": 72,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16296,7 +16034,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-top-left-radius",
                 "syntax": "<length-percentage>{1,2}",
-                "relevance": 74,
+                "relevance": 75,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16312,7 +16050,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "border-top-right-radius",
                 "syntax": "<length-percentage>{1,2}",
-                "relevance": 72,
+                "relevance": 73,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16360,7 +16098,7 @@ var __extends = (this && this.__extends) || (function () {
                 "name": "border-width",
                 "values": [],
                 "syntax": "<line-width>{1,4}",
-                "relevance": 81,
+                "relevance": 82,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16382,7 +16120,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<length> | <percentage> | auto",
-                "relevance": 89,
+                "relevance": 90,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16440,7 +16178,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | <shadow>#",
-                "relevance": 89,
+                "relevance": 90,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16675,7 +16413,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | left | right | both | inline-start | inline-end",
-                "relevance": 84,
+                "relevance": 85,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -16769,7 +16507,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "color",
                 "syntax": "<color>",
-                "relevance": 94,
+                "relevance": 95,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17325,7 +17063,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "[ [ <url> [ <x> <y> ]? , ]* [ auto | default | none | context-menu | help | pointer | progress | wait | cell | crosshair | text | vertical-text | alias | copy | move | no-drop | not-allowed | e-resize | n-resize | ne-resize | nw-resize | s-resize | se-resize | sw-resize | w-resize | ew-resize | ns-resize | nesw-resize | nwse-resize | col-resize | row-resize | all-scroll | zoom-in | zoom-out | grab | grabbing ] ]",
-                "relevance": 91,
+                "relevance": 92,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17352,7 +17090,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "ltr | rtl",
-                "relevance": 68,
+                "relevance": 69,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17624,7 +17362,7 @@ var __extends = (this && this.__extends) || (function () {
                         "description": "No paint is applied in this layer."
                     }
                 ],
-                "relevance": 74,
+                "relevance": 75,
                 "description": "Paints the interior of the given graphical element.",
                 "restrictions": [
                     "color",
@@ -17725,7 +17463,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | <filter-function-list>",
-                "relevance": 64,
+                "relevance": 65,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17755,7 +17493,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | [ <'flex-grow'> <'flex-shrink'>? || <'flex-basis'> ]",
-                "relevance": 77,
+                "relevance": 78,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17782,7 +17520,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "content | <'width'>",
-                "relevance": 62,
+                "relevance": 63,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17817,7 +17555,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "row | row-reverse | column | column-reverse",
-                "relevance": 78,
+                "relevance": 80,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17862,7 +17600,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<'flex-direction'> || <'flex-wrap'>",
-                "relevance": 58,
+                "relevance": 59,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17877,7 +17615,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "flex-grow",
                 "syntax": "<number>",
-                "relevance": 71,
+                "relevance": 73,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17892,7 +17630,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "flex-shrink",
                 "syntax": "<number>",
-                "relevance": 69,
+                "relevance": 71,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -17921,7 +17659,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "nowrap | wrap | wrap-reverse",
-                "relevance": 74,
+                "relevance": 76,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -18194,7 +17932,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<family-name>",
-                "relevance": 92,
+                "relevance": 93,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -18691,7 +18429,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | <feature-tag-value>#",
-                "relevance": 55,
+                "relevance": 54,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -18728,7 +18466,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | normal | none",
-                "relevance": 51,
+                "relevance": 50,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -18963,7 +18701,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | none | [ <common-lig-values> || <discretionary-lig-values> || <historical-lig-values> || <contextual-alt-values> || stylistic(<feature-value-name>) || historical-forms || styleset(<feature-value-name>#) || character-variant(<feature-value-name>#) || swash(<feature-value-name>) || ornaments(<feature-value-name>) || annotation(<feature-value-name>) || [ small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps ] || <numeric-figure-values> || <numeric-spacing-values> || <numeric-fraction-values> || ordinal || slashed-zero || <east-asian-variant-values> || <east-asian-width-values> || ruby ]",
-                "relevance": 63,
+                "relevance": 64,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -19537,7 +19275,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "[ row | column ] || dense",
-                "relevance": 50,
+                "relevance": 51,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -19570,7 +19308,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<track-size>+",
-                "relevance": 50,
+                "relevance": 51,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -19603,7 +19341,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<grid-line> [ / <grid-line> ]?",
-                "relevance": 51,
+                "relevance": 52,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -19711,7 +19449,7 @@ var __extends = (this && this.__extends) || (function () {
                 ],
                 "status": "obsolete",
                 "syntax": "<'grid-row-gap'> <'grid-column-gap'>?",
-                "relevance": 1,
+                "relevance": 2,
                 "description": "Shorthand that specifies the gutters between grid columns and grid rows in one declaration. Replaced by 'gap' property.",
                 "restrictions": [
                     "length"
@@ -19921,13 +19659,6 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "grid-template-columns",
-                "browsers": [
-                    "E16",
-                    "FF52",
-                    "S10.1",
-                    "C57",
-                    "O44"
-                ],
                 "values": [
                     {
                         "name": "none",
@@ -19959,7 +19690,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | <track-list> | <auto-track-list> | subgrid <line-name-list>?",
-                "relevance": 55,
+                "relevance": 56,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -19976,13 +19707,6 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "grid-template-rows",
-                "browsers": [
-                    "E16",
-                    "FF52",
-                    "S10.1",
-                    "C57",
-                    "O44"
-                ],
                 "values": [
                     {
                         "name": "none",
@@ -20352,7 +20076,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ]",
-                "relevance": 82,
+                "relevance": 84,
                 "description": "Aligns flex items along the main axis of the current line of the flex container.",
                 "restrictions": [
                     "enum"
@@ -20404,7 +20128,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | <length>",
-                "relevance": 79,
+                "relevance": 80,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -20474,7 +20198,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | <number> | <length> | <percentage>",
-                "relevance": 92,
+                "relevance": 93,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -20556,7 +20280,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<'list-style-type'> || <'list-style-position'> || <'list-style-image'>",
-                "relevance": 84,
+                "relevance": 85,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -20685,7 +20409,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<counter-style> | <string> | none",
-                "relevance": 74,
+                "relevance": 75,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -20881,7 +20605,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<length> | <percentage> | auto",
-                "relevance": 90,
+                "relevance": 91,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -21244,7 +20968,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<viewport-length>",
-                "relevance": 84,
+                "relevance": 85,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -21262,7 +20986,7 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF41",
-                    "S10.1",
+                    "S12.1",
                     "C57",
                     "O44"
                 ],
@@ -21307,7 +21031,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<viewport-length>",
-                "relevance": 89,
+                "relevance": 90,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -21363,7 +21087,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<viewport-length>",
-                "relevance": 88,
+                "relevance": 89,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -21419,7 +21143,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<viewport-length>",
-                "relevance": 87,
+                "relevance": 88,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -23596,10 +23320,12 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "-ms-grid-columns",
                 "browsers": [
-                    "E12",
+                    "E",
                     "IE10"
                 ],
-                "relevance": 50,
+                "status": "nonstandard",
+                "syntax": "none | <track-list> | <auto-track-list>",
+                "relevance": 0,
                 "description": "Lays out the columns of the grid."
             },
             {
@@ -23684,10 +23410,12 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "-ms-grid-rows",
                 "browsers": [
-                    "E12",
+                    "E",
                     "IE10"
                 ],
-                "relevance": 50,
+                "status": "nonstandard",
+                "syntax": "none | <track-list> | <auto-track-list>",
+                "relevance": 0,
                 "description": "Lays out the columns of the grid."
             },
             {
@@ -25561,7 +25289,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "fill | contain | cover | none | scale-down",
-                "relevance": 61,
+                "relevance": 64,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -25583,7 +25311,7 @@ var __extends = (this && this.__extends) || (function () {
                     "O19"
                 ],
                 "syntax": "<position>",
-                "relevance": 52,
+                "relevance": 53,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -25705,7 +25433,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "order",
                 "syntax": "<integer>",
-                "relevance": 61,
+                "relevance": 62,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26055,7 +25783,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "[ <'outline-color'> || <'outline-style'> || <'outline-width'> ]",
-                "relevance": 87,
+                "relevance": 88,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26103,7 +25831,7 @@ var __extends = (this && this.__extends) || (function () {
                     "O9.5"
                 ],
                 "syntax": "<length>",
-                "relevance": 59,
+                "relevance": 65,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26124,7 +25852,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | <'border-style'>",
-                "relevance": 60,
+                "relevance": 61,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26140,7 +25868,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "outline-width",
                 "syntax": "<line-width>",
-                "relevance": 60,
+                "relevance": 61,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26178,7 +25906,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "[ visible | hidden | clip | scroll | auto ]{1,2}",
-                "relevance": 92,
+                "relevance": 93,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26236,7 +25964,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "visible | hidden | clip | scroll | auto",
-                "relevance": 79,
+                "relevance": 80,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26316,7 +26044,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "padding-bottom",
                 "syntax": "<length> | <percentage>",
-                "relevance": 88,
+                "relevance": 89,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26385,7 +26113,7 @@ var __extends = (this && this.__extends) || (function () {
                     "O56"
                 ],
                 "syntax": "<'padding-left'>",
-                "relevance": 51,
+                "relevance": 53,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26440,7 +26168,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "padding-right",
                 "syntax": "<length> | <percentage>",
-                "relevance": 88,
+                "relevance": 89,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26494,7 +26222,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | always | avoid | left | right | recto | verso",
-                "relevance": 52,
+                "relevance": 51,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26614,7 +26342,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | <length>",
-                "relevance": 55,
+                "relevance": 56,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26685,7 +26413,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit",
-                "relevance": 80,
+                "relevance": 81,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26849,7 +26577,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<length> | <percentage> | auto",
-                "relevance": 90,
+                "relevance": 91,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -26980,8 +26708,11 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "ruby-position",
                 "browsers": [
-                    "E12",
-                    "FF38"
+                    "E84",
+                    "FF38",
+                    "S6.1",
+                    "C84",
+                    "O70"
                 ],
                 "values": [
                     {
@@ -27170,6 +26901,7 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF36",
+                    "S14",
                     "C61",
                     "O48"
                 ],
@@ -27322,7 +27054,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | [ x | y | block | inline | both ] [ mandatory | proximity ]?",
-                "relevance": 50,
+                "relevance": 51,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -27471,7 +27203,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "[ <url> [ format( <string># ) ]? | local( <family-name> ) ]#",
-                "relevance": 67,
+                "relevance": 65,
                 "description": "@font-face descriptor. Specifies the resource containing font data. It is required, whether the font is downloadable or locally installed.",
                 "restrictions": [
                     "enum",
@@ -27507,7 +27239,7 @@ var __extends = (this && this.__extends) || (function () {
                         "description": "No paint is applied in this layer."
                     }
                 ],
-                "relevance": 63,
+                "relevance": 64,
                 "description": "Paints along the outline of the given graphical element.",
                 "restrictions": [
                     "color",
@@ -27523,7 +27255,7 @@ var __extends = (this && this.__extends) || (function () {
                         "description": "Indicates that no dashing is used."
                     }
                 ],
-                "relevance": 58,
+                "relevance": 59,
                 "description": "Controls the pattern of dashes and gaps used to stroke paths.",
                 "restrictions": [
                     "length",
@@ -27595,7 +27327,7 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "stroke-opacity",
-                "relevance": 51,
+                "relevance": 52,
                 "description": "Specifies the opacity of the painting operation used to stroke the current object.",
                 "restrictions": [
                     "number(0-1)"
@@ -27603,7 +27335,7 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "stroke-width",
-                "relevance": 60,
+                "relevance": 61,
                 "description": "Specifies the width of the stroke on the current object.",
                 "restrictions": [
                     "percentage",
@@ -27694,7 +27426,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | fixed",
-                "relevance": 61,
+                "relevance": 60,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -27758,7 +27490,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "start | end | left | right | center | justify | match-parent",
-                "relevance": 93,
+                "relevance": 94,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -27802,7 +27534,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | start | end | left | right | center | justify",
-                "relevance": 50,
+                "relevance": 51,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -27877,7 +27609,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<'text-decoration-line'> || <'text-decoration-style'> || <'text-decoration-color'> || <'text-decoration-thickness'>",
-                "relevance": 91,
+                "relevance": 92,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -27940,7 +27672,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | [ underline || overline || line-through || blink ] | spelling-error | grammar-error",
-                "relevance": 50,
+                "relevance": 51,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28076,7 +27808,7 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF41",
-                    "S5.1",
+                    "S14",
                     "C48",
                     "O15"
                 ],
@@ -28086,7 +27818,7 @@ var __extends = (this && this.__extends) || (function () {
                         "browsers": [
                             "E79",
                             "FF41",
-                            "S5.1",
+                            "S14",
                             "C48",
                             "O15"
                         ],
@@ -28097,7 +27829,7 @@ var __extends = (this && this.__extends) || (function () {
                         "browsers": [
                             "E79",
                             "FF41",
-                            "S5.1",
+                            "S14",
                             "C48",
                             "O15"
                         ],
@@ -28134,7 +27866,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "[ clip | ellipsis | <string> ]{1,2}",
-                "relevance": 81,
+                "relevance": 82,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28195,7 +27927,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | <shadow-t>#",
-                "relevance": 74,
+                "relevance": 75,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28229,7 +27961,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | capitalize | uppercase | lowercase | full-width | full-size-kana",
-                "relevance": 84,
+                "relevance": 85,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28328,7 +28060,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | none | [ [ pan-x | pan-left | pan-right ] || [ pan-y | pan-up | pan-down ] || pinch-zoom ] | manipulation",
-                "relevance": 65,
+                "relevance": 66,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28432,7 +28164,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "none | <transform-list>",
-                "relevance": 88,
+                "relevance": 89,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28447,7 +28179,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "transform-origin",
                 "syntax": "[ <length-percentage> | left | center | right | top | bottom ] | [ [ <length-percentage> | left | center | right ] && [ <length-percentage> | top | center | bottom ] ] <length>?",
-                "relevance": 74,
+                "relevance": 75,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28488,7 +28220,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "flat | preserve-3d",
-                "relevance": 54,
+                "relevance": 55,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28513,7 +28245,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "<single-transition>#",
-                "relevance": 87,
+                "relevance": 88,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28531,7 +28263,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "transition-delay",
                 "syntax": "<time>#",
-                "relevance": 62,
+                "relevance": 63,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28585,8 +28317,8 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "transition-timing-function",
-                "syntax": "<timing-function>#",
-                "relevance": 60,
+                "syntax": "<easing-function>#",
+                "relevance": 61,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28627,7 +28359,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | embed | isolate | bidi-override | isolate-override | plaintext",
-                "relevance": 57,
+                "relevance": 58,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -28981,9 +28713,8 @@ var __extends = (this && this.__extends) || (function () {
                         "description": "The element imposes no constraint on the selection."
                     }
                 ],
-                "status": "nonstandard",
                 "syntax": "auto | text | none | contain | all",
-                "relevance": 24,
+                "relevance": 75,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -29039,7 +28770,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "baseline | sub | super | text-top | text-bottom | middle | top | bottom | <percentage> | <length>",
-                "relevance": 91,
+                "relevance": 92,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -29432,7 +29163,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "status": "nonstandard",
-                "syntax": "none | button | button-bevel | caret | checkbox | default-button | inner-spin-button | listbox | listitem | media-controls-background | media-controls-fullscreen-background | media-current-time-display | media-enter-fullscreen-button | media-exit-fullscreen-button | media-fullscreen-button | media-mute-button | media-overlay-play-button | media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | media-sliderthumb | media-time-remaining-display | media-toggle-closed-captions-button | media-volume-slider | media-volume-slider-container | media-volume-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | meter | progress-bar | progress-bar-value | push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | textarea | textfield",
+                "syntax": "none | button | button-bevel | caret | checkbox | default-button | inner-spin-button | listbox | listitem | media-controls-background | media-controls-fullscreen-background | media-current-time-display | media-enter-fullscreen-button | media-exit-fullscreen-button | media-fullscreen-button | media-mute-button | media-overlay-play-button | media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | media-sliderthumb | media-time-remaining-display | media-toggle-closed-captions-button | media-volume-slider | media-volume-slider-container | media-volume-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | meter | progress-bar | progress-bar-value | push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | textarea | textfield | -apple-pay-button",
                 "relevance": 0,
                 "description": "Changes the appearance of buttons and other controls to resemble native controls.",
                 "restrictions": [
@@ -31256,7 +30987,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | pre | nowrap | pre-wrap | pre-line | break-spaces",
-                "relevance": 88,
+                "relevance": 89,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -31378,7 +31109,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | break-all | keep-all | break-word",
-                "relevance": 72,
+                "relevance": 74,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -31399,7 +31130,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | <length-percentage>",
-                "relevance": 57,
+                "relevance": 58,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -31425,13 +31156,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "normal | break-word",
-                "relevance": 77,
-                "references": [
-                    {
-                        "name": "MDN Reference",
-                        "url": "https://developer.mozilla.org/docs/Web/CSS/overflow-wrap"
-                    }
-                ],
+                "relevance": 78,
                 "description": "Specifies whether the UA may break within a word to prevent overflow when an otherwise-unbreakable string is too long to fit.",
                 "restrictions": [
                     "enum"
@@ -31483,7 +31208,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | <integer>",
-                "relevance": 91,
+                "relevance": 92,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -31510,7 +31235,7 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "syntax": "auto | <number> | <percentage>",
-                "relevance": 74,
+                "relevance": 70,
                 "references": [
                     {
                         "name": "MDN Reference",
@@ -31583,7 +31308,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "-moz-force-broken-image-icon",
                 "status": "nonstandard",
-                "syntax": "<integer>",
+                "syntax": "<integer [0,1]>",
                 "relevance": 0,
                 "browsers": [
                     "FF1"
@@ -31762,7 +31487,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "-webkit-border-before",
                 "status": "nonstandard",
-                "syntax": "<'border-width'> || <'border-style'> || <'color'>",
+                "syntax": "<'border-width'> || <'border-style'> || <color>",
                 "relevance": 0,
                 "browsers": [
                     "E79",
@@ -31781,7 +31506,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "-webkit-border-before-color",
                 "status": "nonstandard",
-                "syntax": "<'color'>",
+                "syntax": "<color>",
                 "relevance": 0,
                 "description": "The -webkit-border-before-color CSS property sets the color of the individual logical block start border in a single place in the style sheet."
             },
@@ -31948,13 +31673,29 @@ var __extends = (this && this.__extends) || (function () {
                 "description": "The -webkit-mask-repeat-y property specifies whether and how a mask image is repeated (tiled) vertically."
             },
             {
+                "name": "align-tracks",
+                "status": "experimental",
+                "syntax": "[ normal | <baseline-position> | <content-distribution> | <overflow-position>? <content-position> ]#",
+                "relevance": 50,
+                "browsers": [
+                    "FF77"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/align-tracks"
+                    }
+                ],
+                "description": "The align-tracks CSS property sets the alignment in the masonry axis for grid containers that have masonry in their block axis."
+            },
+            {
                 "name": "appearance",
                 "status": "experimental",
-                "syntax": "none | auto | button | textfield | menulist-button | <compat-auto>",
+                "syntax": "none | auto | textfield | menulist-button | <compat-auto>",
                 "relevance": 60,
                 "browsers": [
                     "E84",
-                    "FF1",
+                    "FF80",
                     "S3",
                     "C84",
                     "O70"
@@ -31971,11 +31712,11 @@ var __extends = (this && this.__extends) || (function () {
                 "name": "aspect-ratio",
                 "status": "experimental",
                 "syntax": "auto | <ratio>",
-                "relevance": 50,
+                "relevance": 52,
                 "browsers": [
-                    "E79",
-                    "FF71",
-                    "C79"
+                    "E88",
+                    "FF83",
+                    "C88"
                 ],
                 "references": [
                     {
@@ -31990,12 +31731,6 @@ var __extends = (this && this.__extends) || (function () {
                 "status": "obsolete",
                 "syntax": "<angle> | [ [ left-side | far-left | left | center-left | center | center-right | right | far-right | right-side ] || behind ] | leftwards | rightwards",
                 "relevance": 0,
-                "references": [
-                    {
-                        "name": "MDN Reference",
-                        "url": "https://developer.mozilla.org/docs/Web/CSS/azimuth"
-                    }
-                ],
                 "description": "In combination with elevation, the azimuth CSS property enables different audio sources to be positioned spatially for aural presentation. This is important in that it provides a natural way to tell several voices apart, as each can be positioned to originate at a different location on the sound stage. Stereo output produce a lateral sound stage, while binaural headphones and multi-speaker setups allow for a fully three-dimensional stage."
             },
             {
@@ -32019,13 +31754,13 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "border-block",
-                "syntax": "<'border-top-width'> || <'border-top-style'> || <'color'>",
+                "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
                 "relevance": 50,
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32042,8 +31777,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32060,8 +31795,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32078,8 +31813,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32094,7 +31829,8 @@ var __extends = (this && this.__extends) || (function () {
                 "syntax": "<length-percentage>{1,2}",
                 "relevance": 50,
                 "browsers": [
-                    "FF66"
+                    "FF66",
+                    "C89"
                 ],
                 "references": [
                     {
@@ -32109,7 +31845,8 @@ var __extends = (this && this.__extends) || (function () {
                 "syntax": "<length-percentage>{1,2}",
                 "relevance": 50,
                 "browsers": [
-                    "FF66"
+                    "FF66",
+                    "C89"
                 ],
                 "references": [
                     {
@@ -32121,13 +31858,13 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "border-inline",
-                "syntax": "<'border-top-width'> || <'border-top-style'> || <'color'>",
+                "syntax": "<'border-top-width'> || <'border-top-style'> || <color>",
                 "relevance": 50,
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32144,8 +31881,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32162,8 +31899,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32180,8 +31917,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32196,7 +31933,8 @@ var __extends = (this && this.__extends) || (function () {
                 "syntax": "<length-percentage>{1,2}",
                 "relevance": 50,
                 "browsers": [
-                    "FF66"
+                    "FF66",
+                    "C89"
                 ],
                 "references": [
                     {
@@ -32211,7 +31949,8 @@ var __extends = (this && this.__extends) || (function () {
                 "syntax": "<length-percentage>{1,2}",
                 "relevance": 50,
                 "browsers": [
-                    "FF66"
+                    "FF66",
+                    "C89"
                 ],
                 "references": [
                     {
@@ -32397,11 +32136,31 @@ var __extends = (this && this.__extends) || (function () {
                 "description": "The color-adjust property is a non-standard CSS extension that can be used to force printing of background colors and images in browsers based on the WebKit engine."
             },
             {
+                "name": "content-visibility",
+                "syntax": "visible | auto | hidden",
+                "relevance": 50,
+                "browsers": [
+                    "E85",
+                    "C85",
+                    "O71"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/content-visibility"
+                    }
+                ],
+                "description": "Controls whether or not an element renders its contents at all, along with forcing a strong set of containments, allowing user agents to potentially omit large swathes of layout and rendering work until it becomes needed."
+            },
+            {
                 "name": "counter-set",
                 "syntax": "[ <custom-ident> <integer>? ]+ | none",
                 "relevance": 50,
                 "browsers": [
-                    "FF68"
+                    "E85",
+                    "FF68",
+                    "C85",
+                    "O71"
                 ],
                 "references": [
                     {
@@ -32467,7 +32226,25 @@ var __extends = (this && this.__extends) || (function () {
                         "url": "https://developer.mozilla.org/docs/Web/CSS/font-smooth"
                     }
                 ],
-                "description": ""
+                "description": "The font-smooth CSS property controls the application of anti-aliasing when fonts are rendered."
+            },
+            {
+                "name": "forced-color-adjust",
+                "status": "experimental",
+                "syntax": "auto | none",
+                "relevance": 50,
+                "browsers": [
+                    "E79",
+                    "C79",
+                    "IE10"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/forced-color-adjust"
+                    }
+                ],
+                "description": "Allows authors to opt certain elements out of forced colors mode. This then restores the control of those values to CSS"
             },
             {
                 "name": "gap",
@@ -32538,7 +32315,10 @@ var __extends = (this && this.__extends) || (function () {
                 "syntax": "<'top'>{1,4}",
                 "relevance": 50,
                 "browsers": [
-                    "FF66"
+                    "E79",
+                    "FF66",
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32555,8 +32335,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF63",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32573,8 +32353,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF63",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32591,8 +32371,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF63",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32609,8 +32389,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF63",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32627,8 +32407,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF63",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32645,8 +32425,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF63",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32655,6 +32435,22 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "description": "The inset-inline-start CSS property defines the logical inline start inset of an element, which maps to a physical offset depending on the element's writing mode, directionality, and text orientation. It corresponds to the top, right, bottom, or left property depending on the values defined for writing-mode, direction, and text-orientation."
+            },
+            {
+                "name": "justify-tracks",
+                "status": "experimental",
+                "syntax": "[ normal | <content-distribution> | <overflow-position>? [ <content-position> | left | right ] ]#",
+                "relevance": 50,
+                "browsers": [
+                    "FF77"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/justify-tracks"
+                    }
+                ],
+                "description": "The justify-tracks CSS property sets the alignment in the masonry axis for grid containers that have masonry in their inline axis"
             },
             {
                 "name": "line-clamp",
@@ -32688,8 +32484,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32706,8 +32502,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -32753,6 +32549,18 @@ var __extends = (this && this.__extends) || (function () {
                 "name": "mask-border",
                 "syntax": "<'mask-border-source'> || <'mask-border-slice'> [ / <'mask-border-width'>? [ / <'mask-border-outset'> ]? ]? || <'mask-border-repeat'> || <'mask-border-mode'>",
                 "relevance": 50,
+                "browsers": [
+                    "E79",
+                    "S3.1",
+                    "C1",
+                    "O15"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/mask-border"
+                    }
+                ],
                 "description": "The mask-border CSS property lets you create a mask along the edge of an element's border.\n\nThis property is a shorthand for mask-border-source, mask-border-slice, mask-border-width, mask-border-outset, mask-border-repeat, and mask-border-mode. As with all shorthand properties, any omitted sub-values will be set to their initial value."
             },
             {
@@ -32765,30 +32573,90 @@ var __extends = (this && this.__extends) || (function () {
                 "name": "mask-border-outset",
                 "syntax": "[ <length> | <number> ]{1,4}",
                 "relevance": 50,
+                "browsers": [
+                    "E79",
+                    "S3.1",
+                    "C1",
+                    "O15"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/mask-border-outset"
+                    }
+                ],
                 "description": "The mask-border-outset CSS property specifies the distance by which an element's mask border is set out from its border box."
             },
             {
                 "name": "mask-border-repeat",
                 "syntax": "[ stretch | repeat | round | space ]{1,2}",
                 "relevance": 50,
+                "browsers": [
+                    "E79",
+                    "S3.1",
+                    "C1",
+                    "O15"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/mask-border-repeat"
+                    }
+                ],
                 "description": "The mask-border-repeat CSS property defines how the edge regions of a source image are adjusted to fit the dimensions of an element's mask border."
             },
             {
                 "name": "mask-border-slice",
                 "syntax": "<number-percentage>{1,4} fill?",
                 "relevance": 50,
+                "browsers": [
+                    "E79",
+                    "S3.1",
+                    "C1",
+                    "O15"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/mask-border-slice"
+                    }
+                ],
                 "description": "The mask-border-slice CSS property divides the image specified by mask-border-source into regions. These regions are used to form the components of an element's mask border."
             },
             {
                 "name": "mask-border-source",
                 "syntax": "none | <image>",
                 "relevance": 50,
+                "browsers": [
+                    "E79",
+                    "S3.1",
+                    "C1",
+                    "O15"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/mask-border-source"
+                    }
+                ],
                 "description": "The mask-border-source CSS property specifies the source image used to create an element's mask border.\n\nThe mask-border-slice property is used to divide the source image into regions, which are then dynamically applied to the final mask border."
             },
             {
                 "name": "mask-border-width",
                 "syntax": "[ <length-percentage> | <number> | auto ]{1,4}",
                 "relevance": 50,
+                "browsers": [
+                    "E79",
+                    "S3.1",
+                    "C1",
+                    "O15"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/mask-border-width"
+                    }
+                ],
                 "description": "The mask-border-width CSS property specifies the width of an element's mask border."
             },
             {
@@ -32825,6 +32693,35 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "description": "The mask-composite CSS property represents a compositing operation used on the current mask layer with the mask layers below it."
+            },
+            {
+                "name": "masonry-auto-flow",
+                "status": "experimental",
+                "syntax": "[ pack | next ] || [ definite-first | ordered ]",
+                "relevance": 50,
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/masonry-auto-flow"
+                    }
+                ],
+                "description": "The masonry-auto-flow CSS property modifies how items are placed when using masonry in CSS Grid Layout."
+            },
+            {
+                "name": "math-style",
+                "syntax": "normal | compact",
+                "relevance": 50,
+                "browsers": [
+                    "FF83",
+                    "C83"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/math-style"
+                    }
+                ],
+                "description": "The math-style property indicates whether MathML equations should render with normal or compact height."
             },
             {
                 "name": "max-lines",
@@ -32888,7 +32785,7 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": "offset-path",
-                "syntax": "none | ray( [ <angle> && <size>? && contain? ] ) | <path()> | <url> | [ <basic-shape> || <geometry-box> ]",
+                "syntax": "none | ray( [ <angle> && <size> && contain? ] ) | <path()> | <url> | [ <basic-shape> || <geometry-box> ]",
                 "relevance": 50,
                 "browsers": [
                     "E79",
@@ -32938,7 +32835,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "overflow-anchor",
                 "syntax": "auto | none",
-                "relevance": 51,
+                "relevance": 52,
                 "browsers": [
                     "E79",
                     "FF66",
@@ -33096,8 +32993,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -33114,8 +33011,8 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF66",
-                    "C69",
-                    "O56"
+                    "C87",
+                    "O73"
                 ],
                 "references": [
                     {
@@ -33158,6 +33055,7 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF45",
+                    "S11",
                     "C59",
                     "O46"
                 ],
@@ -33185,7 +33083,7 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E84",
                     "FF63",
-                    "S10.1",
+                    "S12.1",
                     "C84",
                     "O70"
                 ],
@@ -33227,6 +33125,21 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "description": "The scrollbar-color CSS property sets the color of the scrollbar track and thumb."
+            },
+            {
+                "name": "scrollbar-gutter",
+                "syntax": "auto | [ stable | always ] && both? && force?",
+                "relevance": 50,
+                "browsers": [
+                    "C88"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/scrollbar-gutter"
+                    }
+                ],
+                "description": "The scrollbar-gutter CSS property allows authors to reserve space for the scrollbar, preventing unwanted layout changes as the content grows while also avoiding unnecessary visuals when scrolling isn't needed."
             },
             {
                 "name": "scrollbar-width",
@@ -33649,7 +33562,7 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "scroll-snap-align",
                 "syntax": "[ none | start | end | center ]{1,2}",
-                "relevance": 50,
+                "relevance": 51,
                 "browsers": [
                     "E79",
                     "FF68",
@@ -33731,7 +33644,7 @@ var __extends = (this && this.__extends) || (function () {
                 "name": "text-decoration-skip",
                 "status": "experimental",
                 "syntax": "none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]",
-                "relevance": 52,
+                "relevance": 53,
                 "browsers": [
                     "S12.1",
                     "C57",
@@ -33768,8 +33681,10 @@ var __extends = (this && this.__extends) || (function () {
                 "syntax": "auto | from-font | <length> | <percentage> ",
                 "relevance": 50,
                 "browsers": [
+                    "E87",
                     "FF70",
-                    "S12.1"
+                    "S12.1",
+                    "C87"
                 ],
                 "references": [
                     {
@@ -33878,8 +33793,10 @@ var __extends = (this && this.__extends) || (function () {
                 "syntax": "auto | <length> | <percentage> ",
                 "relevance": 50,
                 "browsers": [
+                    "E87",
                     "FF70",
-                    "S12.1"
+                    "S12.1",
+                    "C87"
                 ],
                 "references": [
                     {
@@ -33947,6 +33864,27 @@ var __extends = (this && this.__extends) || (function () {
                 "syntax": "none | [ crop || cross ]",
                 "relevance": 50,
                 "description": "The marks CSS at-rule descriptor, used with the @page at-rule, adds crop and/or cross marks to the presentation of the document. Crop marks indicate where the page should be cut. Cross marks are used to align sheets."
+            },
+            {
+                "name": "syntax",
+                "status": "experimental",
+                "syntax": "<string>",
+                "relevance": 50,
+                "description": "Specifies the syntax of the custom property registration represented by the @property rule, controlling how the property’s value is parsed at computed value time."
+            },
+            {
+                "name": "inherits",
+                "status": "experimental",
+                "syntax": "true | false",
+                "relevance": 50,
+                "description": "Specifies the inherit flag of the custom property registration represented by the @property rule, controlling whether or not the property inherits by default."
+            },
+            {
+                "name": "initial-value",
+                "status": "experimental",
+                "syntax": "<string>",
+                "relevance": 50,
+                "description": "Specifies the initial value of the custom property registration represented by the @property rule, controlling the property’s initial value."
             },
             {
                 "name": "max-zoom",
@@ -34605,12 +34543,6 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "FF4"
                 ],
-                "references": [
-                    {
-                        "name": "MDN Reference",
-                        "url": "https://developer.mozilla.org/docs/Web/CSS/:-moz-ui-invalid"
-                    }
-                ],
                 "description": "Non-standard. Represents any validated form element whose value isn't valid "
             },
             {
@@ -34966,6 +34898,11 @@ var __extends = (this && this.__extends) || (function () {
                 "description": "Non-standard. Applies to all scrollbar pieces. Indicates whether or not the window containing the scrollbar is currently active."
             },
             {
+                "name": ":current",
+                "status": "experimental",
+                "description": "The :current CSS pseudo-class selector is a time-dimensional pseudo-class that represents the element, or an ancestor of the element, that is currently being displayed"
+            },
+            {
                 "name": ":blank",
                 "status": "experimental",
                 "references": [
@@ -35009,11 +34946,10 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": ":focus-visible",
-                "status": "experimental",
                 "browsers": [
                     "E79",
-                    "FF4",
-                    "C67",
+                    "FF85",
+                    "C86",
                     "O54"
                 ],
                 "references": [
@@ -35026,7 +34962,6 @@ var __extends = (this && this.__extends) || (function () {
             },
             {
                 "name": ":focus-within",
-                "status": "experimental",
                 "browsers": [
                     "E79",
                     "FF52",
@@ -35059,7 +34994,7 @@ var __extends = (this && this.__extends) || (function () {
                 "browsers": [
                     "E79",
                     "FF78",
-                    "S9",
+                    "S14",
                     "C68",
                     "O55"
                 ],
@@ -35070,6 +35005,26 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "description": "The :is() CSS pseudo-class function takes a selector list as its argument, and selects any element that can be selected by one of the selectors in that list. This is useful for writing large selectors in a more compact form."
+            },
+            {
+                "name": ":local-link",
+                "status": "experimental",
+                "description": "The :local-link CSS pseudo-class represents an link to the same document"
+            },
+            {
+                "name": ":nth-col",
+                "status": "experimental",
+                "description": "The :nth-col() CSS pseudo-class is designed for tables and grids. It accepts the An+B notation such as used with the :nth-child selector, using this to target every nth column. "
+            },
+            {
+                "name": ":nth-last-col",
+                "status": "experimental",
+                "description": "The :nth-last-col() CSS pseudo-class is designed for tables and grids. It accepts the An+B notation such as used with the :nth-child selector, using this to target every nth column before it, therefore counting back from the end of the set of columns."
+            },
+            {
+                "name": ":paused",
+                "status": "experimental",
+                "description": "The :paused CSS pseudo-class selector is a resource state pseudo-class that will match an audio, video, or similar resource that is capable of being “played” or “paused”, when that element is “paused”."
             },
             {
                 "name": ":placeholder-shown",
@@ -35083,10 +35038,41 @@ var __extends = (this && this.__extends) || (function () {
                 "description": "The :placeholder-shown CSS pseudo-class represents any <input> or <textarea> element that is currently displaying placeholder text."
             },
             {
+                "name": ":playing",
+                "status": "experimental",
+                "description": "The :playing CSS pseudo-class selector is a resource state pseudo-class that will match an audio, video, or similar resource that is capable of being “played” or “paused”, when that element is “playing”. "
+            },
+            {
+                "name": ":target-within",
+                "status": "experimental",
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/:target-within"
+                    }
+                ],
+                "description": "The :target-within CSS pseudo-class represents an element that is a target element or contains an element that is a target. A target element is a unique element with an id matching the URL's fragment."
+            },
+            {
+                "name": ":user-invalid",
+                "status": "experimental",
+                "browsers": [
+                    "FF4"
+                ],
+                "references": [
+                    {
+                        "name": "MDN Reference",
+                        "url": "https://developer.mozilla.org/docs/Web/CSS/:user-invalid"
+                    }
+                ],
+                "description": "The :user-invalid CSS pseudo-class represents any validated form element whose value isn't valid based on their validation constraints, after the user has interacted with it."
+            },
+            {
                 "name": ":where",
                 "status": "experimental",
                 "browsers": [
                     "FF78",
+                    "S14",
                     "C72"
                 ],
                 "references": [
@@ -35096,6 +35082,11 @@ var __extends = (this && this.__extends) || (function () {
                     }
                 ],
                 "description": "The :where() CSS pseudo-class function takes a selector list as its argument, and selects any element that can be selected by one of the selectors in that list."
+            },
+            {
+                "name": ":picture-in-picture",
+                "status": "experimental",
+                "description": "The :picture-in-picture CSS pseudo-class matches the element which is currently in picture-in-picture mode."
             }
         ],
         "pseudoElements": [
@@ -35391,16 +35382,9 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "::-webkit-file-upload-button",
                 "browsers": [
-                    "E79",
-                    "S3",
-                    "C1",
-                    "O15"
-                ],
-                "references": [
-                    {
-                        "name": "MDN Reference",
-                        "url": "https://developer.mozilla.org/docs/Web/CSS/::-webkit-file-upload-button"
-                    }
+                    "C",
+                    "O",
+                    "S6"
                 ]
             },
             {
@@ -35833,10 +35817,10 @@ var __extends = (this && this.__extends) || (function () {
             {
                 "name": "::marker",
                 "browsers": [
-                    "E80",
+                    "E86",
                     "FF68",
                     "S11.1",
-                    "C80"
+                    "C86"
                 ],
                 "references": [
                     {
@@ -35928,6 +35912,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CSSDataProvider = void 0;
     var CSSDataProvider = /** @class */ (function () {
         /**
          * Currently, unversioned data uses the V1 implementation
@@ -36019,6 +36004,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.CSSDataManager = void 0;
     var objects = require("../utils/objects");
     var webCustomData_1 = require("../data/webCustomData");
     var dataProvider_1 = require("./dataProvider");
@@ -36123,6 +36109,7 @@ var __extends = (this && this.__extends) || (function () {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getSelectionRanges = void 0;
     var cssLanguageTypes_1 = require("../cssLanguageTypes");
     var cssNodes_1 = require("../parser/cssNodes");
     function getSelectionRanges(document, positions, stylesheet) {
@@ -36172,7 +36159,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -36223,7 +36210,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-css-languageservice/services/scssNavigation',["require", "exports", "./cssNavigation", "../parser/cssNodes", "vscode-uri", "../utils/strings", "../utils/resources"], factory);
+        define('vscode-css-languageservice/services/scssNavigation',["require", "exports", "./cssNavigation", "../parser/cssNodes", "vscode-uri", "../utils/strings"], factory);
     }
 })(function (require, exports) {
     /*---------------------------------------------------------------------------------------------
@@ -36232,11 +36219,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.SCSSNavigation = void 0;
     var cssNavigation_1 = require("./cssNavigation");
     var nodes = require("../parser/cssNodes");
     var vscode_uri_1 = require("vscode-uri");
     var strings_1 = require("../utils/strings");
-    var resources_1 = require("../utils/resources");
     var SCSSNavigation = /** @class */ (function (_super) {
         __extends(SCSSNavigation, _super);
         function SCSSNavigation(fileSystemProvider) {
@@ -36299,11 +36286,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                             return [4 /*yield*/, _super.prototype.resolveRelativeReference.call(this, ref, documentUri, documentContext)];
                         case 1:
                             target = _a.sent();
-                            if (!(this.fileSystemProvider && target && resources_1.extname(target).length === 0)) return [3 /*break*/, 8];
+                            if (!(this.fileSystemProvider && target)) return [3 /*break*/, 8];
+                            parsedUri = vscode_uri_1.URI.parse(target);
+                            if (!(parsedUri.path && vscode_uri_1.Utils.extname(parsedUri).length === 0)) return [3 /*break*/, 8];
                             _a.label = 2;
                         case 2:
                             _a.trys.push([2, 7, , 8]);
-                            parsedUri = vscode_uri_1.URI.parse(target);
                             pathVariations = toPathVariations(parsedUri);
                             if (!pathVariations) return [3 /*break*/, 6];
                             j = 0;
@@ -36333,6 +36321,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     exports.SCSSNavigation = SCSSNavigation;
 });
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -36347,10 +36345,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
      *  Licensed under the MIT License. See License.txt in the project root for license information.
      *--------------------------------------------------------------------------------------------*/
     'use strict';
-    function __export(m) {
-        for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-    }
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getLESSLanguageService = exports.getSCSSLanguageService = exports.getCSSLanguageService = exports.newCSSDataProvider = exports.getDefaultCSSDataProvider = void 0;
     var cssParser_1 = require("./parser/cssParser");
     var cssCompletion_1 = require("./services/cssCompletion");
     var cssHover_1 = require("./services/cssHover");
@@ -36367,7 +36363,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     var cssSelectionRange_1 = require("./services/cssSelectionRange");
     var scssNavigation_1 = require("./services/scssNavigation");
     var webCustomData_1 = require("./data/webCustomData");
-    __export(require("./cssLanguageTypes"));
+    __exportStar(require("./cssLanguageTypes"), exports);
     function getDefaultCSSDataProvider() {
         return newCSSDataProvider(webCustomData_1.cssData);
     }
@@ -36397,7 +36393,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             findDocumentSymbols: navigation.findDocumentSymbols.bind(navigation),
             doCodeActions: codeActions.doCodeActions.bind(codeActions),
             doCodeActions2: codeActions.doCodeActions2.bind(codeActions),
-            findColorSymbols: function (d, s) { return navigation.findDocumentColors(d, s).map(function (s) { return s.range; }); },
             findDocumentColors: navigation.findDocumentColors.bind(navigation),
             getColorPresentations: navigation.getColorPresentations.bind(navigation),
             doRename: navigation.doRename.bind(navigation),
@@ -36500,7 +36495,7 @@ define('vs/language/css/languageFeatures',["require", "exports", "vscode-css-lan
                 .then(function (diagnostics) {
                 var markers = diagnostics.map(function (d) { return toDiagnostics(resource, d); });
                 var model = monaco_editor_core_1.editor.getModel(resource);
-                if (model.getModeId() === languageId) {
+                if (model && model.getModeId() === languageId) {
                     monaco_editor_core_1.editor.setModelMarkers(model, languageId, markers);
                 }
             })

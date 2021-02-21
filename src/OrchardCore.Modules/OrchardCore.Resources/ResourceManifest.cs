@@ -408,7 +408,7 @@ namespace OrchardCore.Resources
                 .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min/vs/loader.js", "~/OrchardCore.Resources/Scripts/monaco/dev/vs/loader.js")
                 .SetCdn(monacoEditorUrl + "min/vs/loader.js")
                 .SetCdnIntegrity("sha512-fSLVGpTrvZYhUtBCsrJFYvg6CXQ6bt082MjIGrYsTQCbsmsi/iA9/gH8x15+pv3nP+QNPyuXWEftuJgo3d3dww==")
-                .SetDependencies("*")
+                .SetPosition(ResourcePosition.Last)
                 .SetVersion(monacoEditorVersion);
 
             manifest

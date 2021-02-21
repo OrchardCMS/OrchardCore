@@ -446,7 +446,7 @@
         }
         var editOperations = [];
         function addEdit(text, startOffset, endOffset) {
-            if (!hasError && startOffset < rangeEnd && endOffset > rangeStart && documentText.substring(startOffset, endOffset) !== text) {
+            if (!hasError && (!range || (startOffset < rangeEnd && endOffset > rangeStart)) && documentText.substring(startOffset, endOffset) !== text) {
                 editOperations.push({ offset: startOffset, length: endOffset - startOffset, content: text });
             }
         }
@@ -460,12 +460,14 @@
             var firstTokenEnd = scanner.getTokenOffset() + scanner.getTokenLength() + formatTextStart;
             var secondToken = scanNext();
             var replaceContent = '';
+            var needsLineBreak = false;
             while (!lineBreak && (secondToken === 12 /* LineCommentTrivia */ || secondToken === 13 /* BlockCommentTrivia */)) {
                 // comments on the same line: keep them on the same line, but ignore them otherwise
                 var commentTokenStart = scanner.getTokenOffset() + formatTextStart;
                 addEdit(' ', firstTokenEnd, commentTokenStart);
                 firstTokenEnd = scanner.getTokenOffset() + scanner.getTokenLength() + formatTextStart;
-                replaceContent = secondToken === 12 /* LineCommentTrivia */ ? newLineAndIndent() : '';
+                needsLineBreak = secondToken === 12 /* LineCommentTrivia */;
+                replaceContent = needsLineBreak ? newLineAndIndent() : '';
                 secondToken = scanNext();
             }
             if (secondToken === 2 /* CloseBraceToken */) {
@@ -495,17 +497,21 @@
                         if (lineBreak) {
                             replaceContent = newLineAndIndent();
                         }
-                        else {
+                        else if (!needsLineBreak) {
                             // symbol following comment on the same line: keep on same line, separate with ' '
                             replaceContent = ' ';
                         }
                         break;
                     case 6 /* ColonToken */:
-                        replaceContent = ' ';
+                        if (!needsLineBreak) {
+                            replaceContent = ' ';
+                        }
                         break;
                     case 10 /* StringLiteral */:
                         if (secondToken === 6 /* ColonToken */) {
-                            replaceContent = '';
+                            if (!needsLineBreak) {
+                                replaceContent = '';
+                            }
                             break;
                         }
                     // fall through
@@ -516,7 +522,9 @@
                     case 2 /* CloseBraceToken */:
                     case 4 /* CloseBracketToken */:
                         if (secondToken === 12 /* LineCommentTrivia */ || secondToken === 13 /* BlockCommentTrivia */) {
-                            replaceContent = ' ';
+                            if (!needsLineBreak) {
+                                replaceContent = ' ';
+                            }
                         }
                         else if (secondToken !== 5 /* CommaToken */ && secondToken !== 17 /* EOF */) {
                             hasError = true;
@@ -529,6 +537,9 @@
                 if (lineBreak && (secondToken === 12 /* LineCommentTrivia */ || secondToken === 13 /* BlockCommentTrivia */)) {
                     replaceContent = newLineAndIndent();
                 }
+            }
+            if (secondToken === 17 /* EOF */) {
+                replaceContent = options.insertFinalNewline ? eol : '';
             }
             var secondTokenStart = scanner.getTokenOffset() + formatTextStart;
             addEdit(replaceContent, firstTokenEnd, secondTokenStart);
@@ -1047,16 +1058,11 @@
         function parseLiteral() {
             switch (_scanner.getToken()) {
                 case 11 /* NumericLiteral */:
-                    var value = 0;
-                    try {
-                        value = JSON.parse(_scanner.getTokenValue());
-                        if (typeof value !== 'number') {
-                            handleError(2 /* InvalidNumberFormat */);
-                            value = 0;
-                        }
-                    }
-                    catch (e) {
+                    var tokenValue = _scanner.getTokenValue();
+                    var value = Number(tokenValue);
+                    if (isNaN(value)) {
                         handleError(2 /* InvalidNumberFormat */);
+                        value = 0;
                     }
                     onLiteralValue(value);
                     break;
@@ -1671,6 +1677,17 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
      * ------------------------------------------------------------------------------------------ */
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.TextDocument = exports.EOL = exports.SelectionRange = exports.DocumentLink = exports.FormattingOptions = exports.CodeLens = exports.CodeAction = exports.CodeActionContext = exports.CodeActionKind = exports.DocumentSymbol = exports.SymbolInformation = exports.SymbolTag = exports.SymbolKind = exports.DocumentHighlight = exports.DocumentHighlightKind = exports.SignatureInformation = exports.ParameterInformation = exports.Hover = exports.MarkedString = exports.CompletionList = exports.CompletionItem = exports.InsertTextMode = exports.InsertReplaceEdit = exports.CompletionItemTag = exports.InsertTextFormat = exports.CompletionItemKind = exports.MarkupContent = exports.MarkupKind = exports.TextDocumentItem = exports.OptionalVersionedTextDocumentIdentifier = exports.VersionedTextDocumentIdentifier = exports.TextDocumentIdentifier = exports.WorkspaceChange = exports.WorkspaceEdit = exports.DeleteFile = exports.RenameFile = exports.CreateFile = exports.TextDocumentEdit = exports.AnnotatedTextEdit = exports.ChangeAnnotationIdentifier = exports.ChangeAnnotation = exports.TextEdit = exports.Command = exports.Diagnostic = exports.CodeDescription = exports.DiagnosticTag = exports.DiagnosticSeverity = exports.DiagnosticRelatedInformation = exports.FoldingRange = exports.FoldingRangeKind = exports.ColorPresentation = exports.ColorInformation = exports.Color = exports.LocationLink = exports.Location = exports.Range = exports.Position = exports.uinteger = exports.integer = void 0;
+    var integer;
+    (function (integer) {
+        integer.MIN_VALUE = -2147483648;
+        integer.MAX_VALUE = 2147483647;
+    })(integer = exports.integer || (exports.integer = {}));
+    var uinteger;
+    (function (uinteger) {
+        uinteger.MIN_VALUE = 0;
+        uinteger.MAX_VALUE = 2147483647;
+    })(uinteger = exports.uinteger || (exports.uinteger = {}));
     /**
      * The Position namespace provides helper functions to work with
      * [Position](#Position) literals.
@@ -1683,15 +1700,21 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          * @param character The position's character.
          */
         function create(line, character) {
+            if (line === Number.MAX_VALUE) {
+                line = uinteger.MAX_VALUE;
+            }
+            if (character === Number.MAX_VALUE) {
+                character = uinteger.MAX_VALUE;
+            }
             return { line: line, character: character };
         }
         Position.create = create;
         /**
-         * Checks whether the given liternal conforms to the [Position](#Position) interface.
+         * Checks whether the given literal conforms to the [Position](#Position) interface.
          */
         function is(value) {
             var candidate = value;
-            return Is.objectLiteral(candidate) && Is.number(candidate.line) && Is.number(candidate.character);
+            return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
         }
         Position.is = is;
     })(Position = exports.Position || (exports.Position = {}));
@@ -1702,7 +1725,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
     var Range;
     (function (Range) {
         function create(one, two, three, four) {
-            if (Is.number(one) && Is.number(two) && Is.number(three) && Is.number(four)) {
+            if (Is.uinteger(one) && Is.uinteger(two) && Is.uinteger(three) && Is.uinteger(four)) {
                 return { start: Position.create(one, two), end: Position.create(three, four) };
             }
             else if (Position.is(one) && Position.is(two)) {
@@ -1797,10 +1820,10 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          */
         function is(value) {
             var candidate = value;
-            return Is.number(candidate.red)
-                && Is.number(candidate.green)
-                && Is.number(candidate.blue)
-                && Is.number(candidate.alpha);
+            return Is.numberRange(candidate.red, 0, 1)
+                && Is.numberRange(candidate.green, 0, 1)
+                && Is.numberRange(candidate.blue, 0, 1)
+                && Is.numberRange(candidate.alpha, 0, 1);
         }
         Color.is = is;
     })(Color = exports.Color || (exports.Color = {}));
@@ -1906,9 +1929,9 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          */
         function is(value) {
             var candidate = value;
-            return Is.number(candidate.startLine) && Is.number(candidate.startLine)
-                && (Is.undefined(candidate.startCharacter) || Is.number(candidate.startCharacter))
-                && (Is.undefined(candidate.endCharacter) || Is.number(candidate.endCharacter))
+            return Is.uinteger(candidate.startLine) && Is.uinteger(candidate.startLine)
+                && (Is.undefined(candidate.startCharacter) || Is.uinteger(candidate.startCharacter))
+                && (Is.undefined(candidate.endCharacter) || Is.uinteger(candidate.endCharacter))
                 && (Is.undefined(candidate.kind) || Is.string(candidate.kind));
         }
         FoldingRange.is = is;
@@ -1982,6 +2005,19 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
         DiagnosticTag.Deprecated = 2;
     })(DiagnosticTag = exports.DiagnosticTag || (exports.DiagnosticTag = {}));
     /**
+     * The CodeDescription namespace provides functions to deal with descriptions for diagnostic codes.
+     *
+     * @since 3.16.0
+     */
+    var CodeDescription;
+    (function (CodeDescription) {
+        function is(value) {
+            var candidate = value;
+            return candidate !== undefined && candidate !== null && Is.string(candidate.href);
+        }
+        CodeDescription.is = is;
+    })(CodeDescription = exports.CodeDescription || (exports.CodeDescription = {}));
+    /**
      * The Diagnostic namespace provides helper functions to work with
      * [Diagnostic](#Diagnostic) literals.
      */
@@ -2011,12 +2047,14 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          * Checks whether the given literal conforms to the [Diagnostic](#Diagnostic) interface.
          */
         function is(value) {
+            var _a;
             var candidate = value;
             return Is.defined(candidate)
                 && Range.is(candidate.range)
                 && Is.string(candidate.message)
                 && (Is.number(candidate.severity) || Is.undefined(candidate.severity))
-                && (Is.number(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code))
+                && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code))
+                && (Is.undefined(candidate.codeDescription) || (Is.string((_a = candidate.codeDescription) === null || _a === void 0 ? void 0 : _a.href)))
                 && (Is.string(candidate.source) || Is.undefined(candidate.source))
                 && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
         }
@@ -2092,6 +2130,75 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
         }
         TextEdit.is = is;
     })(TextEdit = exports.TextEdit || (exports.TextEdit = {}));
+    var ChangeAnnotation;
+    (function (ChangeAnnotation) {
+        function create(label, needsConfirmation, description) {
+            var result = { label: label };
+            if (needsConfirmation !== undefined) {
+                result.needsConfirmation = needsConfirmation;
+            }
+            if (description !== undefined) {
+                result.description = description;
+            }
+            return result;
+        }
+        ChangeAnnotation.create = create;
+        function is(value) {
+            var candidate = value;
+            return candidate !== undefined && Is.objectLiteral(candidate) && Is.string(candidate.label) &&
+                (Is.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === undefined) &&
+                (Is.string(candidate.description) || candidate.description === undefined);
+        }
+        ChangeAnnotation.is = is;
+    })(ChangeAnnotation = exports.ChangeAnnotation || (exports.ChangeAnnotation = {}));
+    var ChangeAnnotationIdentifier;
+    (function (ChangeAnnotationIdentifier) {
+        function is(value) {
+            var candidate = value;
+            return typeof candidate === 'string';
+        }
+        ChangeAnnotationIdentifier.is = is;
+    })(ChangeAnnotationIdentifier = exports.ChangeAnnotationIdentifier || (exports.ChangeAnnotationIdentifier = {}));
+    var AnnotatedTextEdit;
+    (function (AnnotatedTextEdit) {
+        /**
+         * Creates an annotated replace text edit.
+         *
+         * @param range The range of text to be replaced.
+         * @param newText The new text.
+         * @param annotation The annotation.
+         */
+        function replace(range, newText, annotation) {
+            return { range: range, newText: newText, annotationId: annotation };
+        }
+        AnnotatedTextEdit.replace = replace;
+        /**
+         * Creates an annotated insert text edit.
+         *
+         * @param position The position to insert the text at.
+         * @param newText The text to be inserted.
+         * @param annotation The annotation.
+         */
+        function insert(position, newText, annotation) {
+            return { range: { start: position, end: position }, newText: newText, annotationId: annotation };
+        }
+        AnnotatedTextEdit.insert = insert;
+        /**
+         * Creates an annotated delete text edit.
+         *
+         * @param range The range of text to be deleted.
+         * @param annotation The annotation.
+         */
+        function del(range, annotation) {
+            return { range: range, newText: '', annotationId: annotation };
+        }
+        AnnotatedTextEdit.del = del;
+        function is(value) {
+            var candidate = value;
+            return TextEdit.is(candidate) && (ChangeAnnotation.is(candidate.annotationId) || ChangeAnnotationIdentifier.is(candidate.annotationId));
+        }
+        AnnotatedTextEdit.is = is;
+    })(AnnotatedTextEdit = exports.AnnotatedTextEdit || (exports.AnnotatedTextEdit = {}));
     /**
      * The TextDocumentEdit namespace provides helper function to create
      * an edit that manipulates a text document.
@@ -2108,72 +2215,78 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
         function is(value) {
             var candidate = value;
             return Is.defined(candidate)
-                && VersionedTextDocumentIdentifier.is(candidate.textDocument)
+                && OptionalVersionedTextDocumentIdentifier.is(candidate.textDocument)
                 && Array.isArray(candidate.edits);
         }
         TextDocumentEdit.is = is;
     })(TextDocumentEdit = exports.TextDocumentEdit || (exports.TextDocumentEdit = {}));
     var CreateFile;
     (function (CreateFile) {
-        function create(uri, options) {
+        function create(uri, options, annotation) {
             var result = {
                 kind: 'create',
                 uri: uri
             };
-            if (options !== void 0 && (options.overwrite !== void 0 || options.ignoreIfExists !== void 0)) {
+            if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
                 result.options = options;
+            }
+            if (annotation !== undefined) {
+                result.annotationId = annotation;
             }
             return result;
         }
         CreateFile.create = create;
         function is(value) {
             var candidate = value;
-            return candidate && candidate.kind === 'create' && Is.string(candidate.uri) &&
-                (candidate.options === void 0 ||
-                    ((candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))));
+            return candidate && candidate.kind === 'create' && Is.string(candidate.uri) && (candidate.options === undefined ||
+                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
         }
         CreateFile.is = is;
     })(CreateFile = exports.CreateFile || (exports.CreateFile = {}));
     var RenameFile;
     (function (RenameFile) {
-        function create(oldUri, newUri, options) {
+        function create(oldUri, newUri, options, annotation) {
             var result = {
                 kind: 'rename',
                 oldUri: oldUri,
                 newUri: newUri
             };
-            if (options !== void 0 && (options.overwrite !== void 0 || options.ignoreIfExists !== void 0)) {
+            if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
                 result.options = options;
+            }
+            if (annotation !== undefined) {
+                result.annotationId = annotation;
             }
             return result;
         }
         RenameFile.create = create;
         function is(value) {
             var candidate = value;
-            return candidate && candidate.kind === 'rename' && Is.string(candidate.oldUri) && Is.string(candidate.newUri) &&
-                (candidate.options === void 0 ||
-                    ((candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))));
+            return candidate && candidate.kind === 'rename' && Is.string(candidate.oldUri) && Is.string(candidate.newUri) && (candidate.options === undefined ||
+                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
         }
         RenameFile.is = is;
     })(RenameFile = exports.RenameFile || (exports.RenameFile = {}));
     var DeleteFile;
     (function (DeleteFile) {
-        function create(uri, options) {
+        function create(uri, options, annotation) {
             var result = {
                 kind: 'delete',
                 uri: uri
             };
-            if (options !== void 0 && (options.recursive !== void 0 || options.ignoreIfNotExists !== void 0)) {
+            if (options !== undefined && (options.recursive !== undefined || options.ignoreIfNotExists !== undefined)) {
                 result.options = options;
+            }
+            if (annotation !== undefined) {
+                result.annotationId = annotation;
             }
             return result;
         }
         DeleteFile.create = create;
         function is(value) {
             var candidate = value;
-            return candidate && candidate.kind === 'delete' && Is.string(candidate.uri) &&
-                (candidate.options === void 0 ||
-                    ((candidate.options.recursive === void 0 || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is.boolean(candidate.options.ignoreIfNotExists))));
+            return candidate && candidate.kind === 'delete' && Is.string(candidate.uri) && (candidate.options === undefined ||
+                ((candidate.options.recursive === undefined || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === undefined || Is.boolean(candidate.options.ignoreIfNotExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
         }
         DeleteFile.is = is;
     })(DeleteFile = exports.DeleteFile || (exports.DeleteFile = {}));
@@ -2182,8 +2295,8 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
         function is(value) {
             var candidate = value;
             return candidate &&
-                (candidate.changes !== void 0 || candidate.documentChanges !== void 0) &&
-                (candidate.documentChanges === void 0 || candidate.documentChanges.every(function (change) {
+                (candidate.changes !== undefined || candidate.documentChanges !== undefined) &&
+                (candidate.documentChanges === undefined || candidate.documentChanges.every(function (change) {
                     if (Is.string(change.kind)) {
                         return CreateFile.is(change) || RenameFile.is(change) || DeleteFile.is(change);
                     }
@@ -2195,17 +2308,69 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
         WorkspaceEdit.is = is;
     })(WorkspaceEdit = exports.WorkspaceEdit || (exports.WorkspaceEdit = {}));
     var TextEditChangeImpl = /** @class */ (function () {
-        function TextEditChangeImpl(edits) {
+        function TextEditChangeImpl(edits, changeAnnotations) {
             this.edits = edits;
+            this.changeAnnotations = changeAnnotations;
         }
-        TextEditChangeImpl.prototype.insert = function (position, newText) {
-            this.edits.push(TextEdit.insert(position, newText));
+        TextEditChangeImpl.prototype.insert = function (position, newText, annotation) {
+            var edit;
+            var id;
+            if (annotation === undefined) {
+                edit = TextEdit.insert(position, newText);
+            }
+            else if (ChangeAnnotationIdentifier.is(annotation)) {
+                id = annotation;
+                edit = AnnotatedTextEdit.insert(position, newText, annotation);
+            }
+            else {
+                this.assertChangeAnnotations(this.changeAnnotations);
+                id = this.changeAnnotations.manage(annotation);
+                edit = AnnotatedTextEdit.insert(position, newText, id);
+            }
+            this.edits.push(edit);
+            if (id !== undefined) {
+                return id;
+            }
         };
-        TextEditChangeImpl.prototype.replace = function (range, newText) {
-            this.edits.push(TextEdit.replace(range, newText));
+        TextEditChangeImpl.prototype.replace = function (range, newText, annotation) {
+            var edit;
+            var id;
+            if (annotation === undefined) {
+                edit = TextEdit.replace(range, newText);
+            }
+            else if (ChangeAnnotationIdentifier.is(annotation)) {
+                id = annotation;
+                edit = AnnotatedTextEdit.replace(range, newText, annotation);
+            }
+            else {
+                this.assertChangeAnnotations(this.changeAnnotations);
+                id = this.changeAnnotations.manage(annotation);
+                edit = AnnotatedTextEdit.replace(range, newText, id);
+            }
+            this.edits.push(edit);
+            if (id !== undefined) {
+                return id;
+            }
         };
-        TextEditChangeImpl.prototype.delete = function (range) {
-            this.edits.push(TextEdit.del(range));
+        TextEditChangeImpl.prototype.delete = function (range, annotation) {
+            var edit;
+            var id;
+            if (annotation === undefined) {
+                edit = TextEdit.del(range);
+            }
+            else if (ChangeAnnotationIdentifier.is(annotation)) {
+                id = annotation;
+                edit = AnnotatedTextEdit.del(range, annotation);
+            }
+            else {
+                this.assertChangeAnnotations(this.changeAnnotations);
+                id = this.changeAnnotations.manage(annotation);
+                edit = AnnotatedTextEdit.del(range, id);
+            }
+            this.edits.push(edit);
+            if (id !== undefined) {
+                return id;
+            }
         };
         TextEditChangeImpl.prototype.add = function (edit) {
             this.edits.push(edit);
@@ -2216,7 +2381,56 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
         TextEditChangeImpl.prototype.clear = function () {
             this.edits.splice(0, this.edits.length);
         };
+        TextEditChangeImpl.prototype.assertChangeAnnotations = function (value) {
+            if (value === undefined) {
+                throw new Error("Text edit change is not configured to manage change annotations.");
+            }
+        };
         return TextEditChangeImpl;
+    }());
+    /**
+     * A helper class
+     */
+    var ChangeAnnotations = /** @class */ (function () {
+        function ChangeAnnotations(annotations) {
+            this._annotations = annotations === undefined ? Object.create(null) : annotations;
+            this._counter = 0;
+            this._size = 0;
+        }
+        ChangeAnnotations.prototype.all = function () {
+            return this._annotations;
+        };
+        Object.defineProperty(ChangeAnnotations.prototype, "size", {
+            get: function () {
+                return this._size;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        ChangeAnnotations.prototype.manage = function (idOrAnnotation, annotation) {
+            var id;
+            if (ChangeAnnotationIdentifier.is(idOrAnnotation)) {
+                id = idOrAnnotation;
+            }
+            else {
+                id = this.nextId();
+                annotation = idOrAnnotation;
+            }
+            if (this._annotations[id] !== undefined) {
+                throw new Error("Id " + id + " is already in use.");
+            }
+            if (annotation === undefined) {
+                throw new Error("No annotation provided for id " + id);
+            }
+            this._annotations[id] = annotation;
+            this._size++;
+            return id;
+        };
+        ChangeAnnotations.prototype.nextId = function () {
+            this._counter++;
+            return this._counter.toString();
+        };
+        return ChangeAnnotations;
     }());
     /**
      * A workspace change helps constructing changes to a workspace.
@@ -2225,12 +2439,14 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
         function WorkspaceChange(workspaceEdit) {
             var _this = this;
             this._textEditChanges = Object.create(null);
-            if (workspaceEdit) {
+            if (workspaceEdit !== undefined) {
                 this._workspaceEdit = workspaceEdit;
                 if (workspaceEdit.documentChanges) {
+                    this._changeAnnotations = new ChangeAnnotations(workspaceEdit.changeAnnotations);
+                    workspaceEdit.changeAnnotations = this._changeAnnotations.all();
                     workspaceEdit.documentChanges.forEach(function (change) {
                         if (TextDocumentEdit.is(change)) {
-                            var textEditChange = new TextEditChangeImpl(change.edits);
+                            var textEditChange = new TextEditChangeImpl(change.edits, _this._changeAnnotations);
                             _this._textEditChanges[change.textDocument.uri] = textEditChange;
                         }
                     });
@@ -2242,6 +2458,9 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
                     });
                 }
             }
+            else {
+                this._workspaceEdit = {};
+            }
         }
         Object.defineProperty(WorkspaceChange.prototype, "edit", {
             /**
@@ -2249,22 +2468,27 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
              * use to be returned from a workspace edit operation like rename.
              */
             get: function () {
+                this.initDocumentChanges();
+                if (this._changeAnnotations !== undefined) {
+                    if (this._changeAnnotations.size === 0) {
+                        this._workspaceEdit.changeAnnotations = undefined;
+                    }
+                    else {
+                        this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+                    }
+                }
                 return this._workspaceEdit;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         WorkspaceChange.prototype.getTextEditChange = function (key) {
-            if (VersionedTextDocumentIdentifier.is(key)) {
-                if (!this._workspaceEdit) {
-                    this._workspaceEdit = {
-                        documentChanges: []
-                    };
-                }
-                if (!this._workspaceEdit.documentChanges) {
+            if (OptionalVersionedTextDocumentIdentifier.is(key)) {
+                this.initDocumentChanges();
+                if (this._workspaceEdit.documentChanges === undefined) {
                     throw new Error('Workspace edit is not configured for document changes.');
                 }
-                var textDocument = key;
+                var textDocument = { uri: key.uri, version: key.version };
                 var result = this._textEditChanges[textDocument.uri];
                 if (!result) {
                     var edits = [];
@@ -2273,18 +2497,14 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
                         edits: edits
                     };
                     this._workspaceEdit.documentChanges.push(textDocumentEdit);
-                    result = new TextEditChangeImpl(edits);
+                    result = new TextEditChangeImpl(edits, this._changeAnnotations);
                     this._textEditChanges[textDocument.uri] = result;
                 }
                 return result;
             }
             else {
-                if (!this._workspaceEdit) {
-                    this._workspaceEdit = {
-                        changes: Object.create(null)
-                    };
-                }
-                if (!this._workspaceEdit.changes) {
+                this.initChanges();
+                if (this._workspaceEdit.changes === undefined) {
                     throw new Error('Workspace edit is not configured for normal text edit changes.');
                 }
                 var result = this._textEditChanges[key];
@@ -2297,21 +2517,94 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
                 return result;
             }
         };
-        WorkspaceChange.prototype.createFile = function (uri, options) {
-            this.checkDocumentChanges();
-            this._workspaceEdit.documentChanges.push(CreateFile.create(uri, options));
+        WorkspaceChange.prototype.initDocumentChanges = function () {
+            if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+                this._changeAnnotations = new ChangeAnnotations();
+                this._workspaceEdit.documentChanges = [];
+                this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+            }
         };
-        WorkspaceChange.prototype.renameFile = function (oldUri, newUri, options) {
-            this.checkDocumentChanges();
-            this._workspaceEdit.documentChanges.push(RenameFile.create(oldUri, newUri, options));
+        WorkspaceChange.prototype.initChanges = function () {
+            if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+                this._workspaceEdit.changes = Object.create(null);
+            }
         };
-        WorkspaceChange.prototype.deleteFile = function (uri, options) {
-            this.checkDocumentChanges();
-            this._workspaceEdit.documentChanges.push(DeleteFile.create(uri, options));
-        };
-        WorkspaceChange.prototype.checkDocumentChanges = function () {
-            if (!this._workspaceEdit || !this._workspaceEdit.documentChanges) {
+        WorkspaceChange.prototype.createFile = function (uri, optionsOrAnnotation, options) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
                 throw new Error('Workspace edit is not configured for document changes.');
+            }
+            var annotation;
+            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+                annotation = optionsOrAnnotation;
+            }
+            else {
+                options = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === undefined) {
+                operation = CreateFile.create(uri, options);
+            }
+            else {
+                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+                operation = CreateFile.create(uri, options, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== undefined) {
+                return id;
+            }
+        };
+        WorkspaceChange.prototype.renameFile = function (oldUri, newUri, optionsOrAnnotation, options) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
+                throw new Error('Workspace edit is not configured for document changes.');
+            }
+            var annotation;
+            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+                annotation = optionsOrAnnotation;
+            }
+            else {
+                options = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === undefined) {
+                operation = RenameFile.create(oldUri, newUri, options);
+            }
+            else {
+                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+                operation = RenameFile.create(oldUri, newUri, options, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== undefined) {
+                return id;
+            }
+        };
+        WorkspaceChange.prototype.deleteFile = function (uri, optionsOrAnnotation, options) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
+                throw new Error('Workspace edit is not configured for document changes.');
+            }
+            var annotation;
+            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+                annotation = optionsOrAnnotation;
+            }
+            else {
+                options = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === undefined) {
+                operation = DeleteFile.create(uri, options);
+            }
+            else {
+                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+                operation = DeleteFile.create(uri, options, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== undefined) {
+                return id;
             }
         };
         return WorkspaceChange;
@@ -2360,10 +2653,34 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.number(candidate.version));
+            return Is.defined(candidate) && Is.string(candidate.uri) && Is.integer(candidate.version);
         }
         VersionedTextDocumentIdentifier.is = is;
     })(VersionedTextDocumentIdentifier = exports.VersionedTextDocumentIdentifier || (exports.VersionedTextDocumentIdentifier = {}));
+    /**
+     * The OptionalVersionedTextDocumentIdentifier namespace provides helper functions to work with
+     * [OptionalVersionedTextDocumentIdentifier](#OptionalVersionedTextDocumentIdentifier) literals.
+     */
+    var OptionalVersionedTextDocumentIdentifier;
+    (function (OptionalVersionedTextDocumentIdentifier) {
+        /**
+         * Creates a new OptionalVersionedTextDocumentIdentifier literal.
+         * @param uri The document's uri.
+         * @param uri The document's text.
+         */
+        function create(uri, version) {
+            return { uri: uri, version: version };
+        }
+        OptionalVersionedTextDocumentIdentifier.create = create;
+        /**
+         * Checks whether the given literal conforms to the [OptionalVersionedTextDocumentIdentifier](#OptionalVersionedTextDocumentIdentifier) interface.
+         */
+        function is(value) {
+            var candidate = value;
+            return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.integer(candidate.version));
+        }
+        OptionalVersionedTextDocumentIdentifier.is = is;
+    })(OptionalVersionedTextDocumentIdentifier = exports.OptionalVersionedTextDocumentIdentifier || (exports.OptionalVersionedTextDocumentIdentifier = {}));
     /**
      * The TextDocumentItem namespace provides helper functions to work with
      * [TextDocumentItem](#TextDocumentItem) literals.
@@ -2386,7 +2703,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.number(candidate.version) && Is.string(candidate.text);
+            return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.integer(candidate.version) && Is.string(candidate.text);
         }
         TextDocumentItem.is = is;
     })(TextDocumentItem = exports.TextDocumentItem || (exports.TextDocumentItem = {}));
@@ -2478,7 +2795,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          * the end of the snippet. Placeholders with equal identifiers are linked,
          * that is typing in one will update others too.
          *
-         * See also: https://github.com/Microsoft/vscode/blob/master/src/vs/editor/contrib/snippet/common/snippet.md
+         * See also: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#snippet_syntax
          */
         InsertTextFormat.Snippet = 2;
     })(InsertTextFormat = exports.InsertTextFormat || (exports.InsertTextFormat = {}));
@@ -2495,6 +2812,56 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          */
         CompletionItemTag.Deprecated = 1;
     })(CompletionItemTag = exports.CompletionItemTag || (exports.CompletionItemTag = {}));
+    /**
+     * The InsertReplaceEdit namespace provides functions to deal with insert / replace edits.
+     *
+     * @since 3.16.0
+     */
+    var InsertReplaceEdit;
+    (function (InsertReplaceEdit) {
+        /**
+         * Creates a new insert / replace edit
+         */
+        function create(newText, insert, replace) {
+            return { newText: newText, insert: insert, replace: replace };
+        }
+        InsertReplaceEdit.create = create;
+        /**
+         * Checks whether the given literal conforms to the [InsertReplaceEdit](#InsertReplaceEdit) interface.
+         */
+        function is(value) {
+            var candidate = value;
+            return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
+        }
+        InsertReplaceEdit.is = is;
+    })(InsertReplaceEdit = exports.InsertReplaceEdit || (exports.InsertReplaceEdit = {}));
+    /**
+     * How whitespace and indentation is handled during completion
+     * item insertion.
+     *
+     * @since 3.16.0
+     */
+    var InsertTextMode;
+    (function (InsertTextMode) {
+        /**
+         * The insertion or replace strings is taken as it is. If the
+         * value is multi line the lines below the cursor will be
+         * inserted using the indentation defined in the string value.
+         * The client will not apply any kind of adjustments to the
+         * string.
+         */
+        InsertTextMode.asIs = 1;
+        /**
+         * The editor adjusts leading whitespace of new lines so that
+         * they match the indentation up to the cursor of the line for
+         * which the item is accepted.
+         *
+         * Consider a line like this: <2tabs><cursor><3tabs>foo. Accepting a
+         * multi line completion item is indented using 2 tabs and all
+         * following lines inserted will be indented using 2 tabs as well.
+         */
+        InsertTextMode.adjustIndentation = 2;
+    })(InsertTextMode = exports.InsertTextMode || (exports.InsertTextMode = {}));
     /**
      * The CompletionItem namespace provides functions to deal with
      * completion items.
@@ -2556,7 +2923,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
             var candidate = value;
             return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) ||
                 MarkedString.is(candidate.contents) ||
-                Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === void 0 || Range.is(value.range));
+                Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === undefined || Range.is(value.range));
         }
         Hover.is = is;
     })(Hover = exports.Hover || (exports.Hover = {}));
@@ -2673,7 +3040,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
     })(SymbolKind = exports.SymbolKind || (exports.SymbolKind = {}));
     /**
      * Symbol tags are extra annotations that tweak the rendering of a symbol.
-     * @since 3.15
+     * @since 3.16
      */
     var SymbolTag;
     (function (SymbolTag) {
@@ -2726,7 +3093,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
                 range: range,
                 selectionRange: selectionRange
             };
-            if (children !== void 0) {
+            if (children !== undefined) {
                 result.children = children;
             }
             return result;
@@ -2740,9 +3107,10 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
             return candidate &&
                 Is.string(candidate.name) && Is.number(candidate.kind) &&
                 Range.is(candidate.range) && Range.is(candidate.selectionRange) &&
-                (candidate.detail === void 0 || Is.string(candidate.detail)) &&
-                (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) &&
-                (candidate.children === void 0 || Array.isArray(candidate.children));
+                (candidate.detail === undefined || Is.string(candidate.detail)) &&
+                (candidate.deprecated === undefined || Is.boolean(candidate.deprecated)) &&
+                (candidate.children === undefined || Array.isArray(candidate.children)) &&
+                (candidate.tags === undefined || Array.isArray(candidate.tags));
         }
         DocumentSymbol.is = is;
     })(DocumentSymbol = exports.DocumentSymbol || (exports.DocumentSymbol = {}));
@@ -2830,7 +3198,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          */
         function create(diagnostics, only) {
             var result = { diagnostics: diagnostics };
-            if (only !== void 0 && only !== null) {
+            if (only !== undefined && only !== null) {
                 result.only = only;
             }
             return result;
@@ -2841,21 +3209,26 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === void 0 || Is.typedArray(candidate.only, Is.string));
+            return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === undefined || Is.typedArray(candidate.only, Is.string));
         }
         CodeActionContext.is = is;
     })(CodeActionContext = exports.CodeActionContext || (exports.CodeActionContext = {}));
     var CodeAction;
     (function (CodeAction) {
-        function create(title, commandOrEdit, kind) {
+        function create(title, kindOrCommandOrEdit, kind) {
             var result = { title: title };
-            if (Command.is(commandOrEdit)) {
-                result.command = commandOrEdit;
+            var checkKind = true;
+            if (typeof kindOrCommandOrEdit === 'string') {
+                checkKind = false;
+                result.kind = kindOrCommandOrEdit;
+            }
+            else if (Command.is(kindOrCommandOrEdit)) {
+                result.command = kindOrCommandOrEdit;
             }
             else {
-                result.edit = commandOrEdit;
+                result.edit = kindOrCommandOrEdit;
             }
-            if (kind !== void 0) {
+            if (checkKind && kind !== undefined) {
                 result.kind = kind;
             }
             return result;
@@ -2864,12 +3237,12 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
         function is(value) {
             var candidate = value;
             return candidate && Is.string(candidate.title) &&
-                (candidate.diagnostics === void 0 || Is.typedArray(candidate.diagnostics, Diagnostic.is)) &&
-                (candidate.kind === void 0 || Is.string(candidate.kind)) &&
-                (candidate.edit !== void 0 || candidate.command !== void 0) &&
-                (candidate.command === void 0 || Command.is(candidate.command)) &&
-                (candidate.isPreferred === void 0 || Is.boolean(candidate.isPreferred)) &&
-                (candidate.edit === void 0 || WorkspaceEdit.is(candidate.edit));
+                (candidate.diagnostics === undefined || Is.typedArray(candidate.diagnostics, Diagnostic.is)) &&
+                (candidate.kind === undefined || Is.string(candidate.kind)) &&
+                (candidate.edit !== undefined || candidate.command !== undefined) &&
+                (candidate.command === undefined || Command.is(candidate.command)) &&
+                (candidate.isPreferred === undefined || Is.boolean(candidate.isPreferred)) &&
+                (candidate.edit === undefined || WorkspaceEdit.is(candidate.edit));
         }
         CodeAction.is = is;
     })(CodeAction = exports.CodeAction || (exports.CodeAction = {}));
@@ -2917,7 +3290,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.number(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
+            return Is.defined(candidate) && Is.uinteger(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
         }
         FormattingOptions.is = is;
     })(FormattingOptions = exports.FormattingOptions || (exports.FormattingOptions = {}));
@@ -2985,7 +3358,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.number(candidate.lineCount)
+            return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.uinteger(candidate.lineCount)
                 && Is.func(candidate.getText) && Is.func(candidate.positionAt) && Is.func(candidate.offsetAt) ? true : false;
         }
         TextDocument.is = is;
@@ -3047,6 +3420,9 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
             return data;
         }
     })(TextDocument = exports.TextDocument || (exports.TextDocument = {}));
+    /**
+     * @deprecated Use the text document from the new vscode-languageserver-textdocument package.
+     */
     var FullTextDocument = /** @class */ (function () {
         function FullTextDocument(uri, languageId, version, content) {
             this._uri = uri;
@@ -3059,21 +3435,21 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
             get: function () {
                 return this._uri;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(FullTextDocument.prototype, "languageId", {
             get: function () {
                 return this._languageId;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(FullTextDocument.prototype, "version", {
             get: function () {
                 return this._version;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         FullTextDocument.prototype.getText = function (range) {
@@ -3149,7 +3525,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
             get: function () {
                 return this.getLineOffsets().length;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return FullTextDocument;
@@ -3177,6 +3553,18 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
             return toString.call(value) === '[object Number]';
         }
         Is.number = number;
+        function numberRange(value, min, max) {
+            return toString.call(value) === '[object Number]' && min <= value && value <= max;
+        }
+        Is.numberRange = numberRange;
+        function integer(value) {
+            return toString.call(value) === '[object Number]' && -2147483648 <= value && value <= 2147483647;
+        }
+        Is.integer = integer;
+        function uinteger(value) {
+            return toString.call(value) === '[object Number]' && 0 <= value && value <= 2147483647;
+        }
+        Is.uinteger = uinteger;
         function func(value) {
             return toString.call(value) === '[object Function]';
         }
@@ -3194,7 +3582,7 @@ define('jsonc-parser', ['jsonc-parser/main'], function (main) { return main; });
         Is.typedArray = typedArray;
     })(Is || (Is = {}));
 });
-
+//# sourceMappingURL=main.js.map;
 define('vscode-languageserver-types', ['vscode-languageserver-types/main'], function (main) { return main; });
 
 (function (factory) {
@@ -3495,7 +3883,7 @@ define('vscode-languageserver-textdocument', ['vscode-languageserver-textdocumen
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ClientCapabilities = exports.ErrorCode = exports.FormattingOptions = exports.MarkedString = exports.Hover = exports.Location = exports.DocumentSymbol = exports.SymbolKind = exports.SymbolInformation = exports.MarkupKind = exports.MarkupContent = exports.InsertTextFormat = exports.Position = exports.CompletionList = exports.CompletionItemKind = exports.CompletionItem = exports.DiagnosticSeverity = exports.Diagnostic = exports.SelectionRange = exports.FoldingRangeKind = exports.FoldingRange = exports.ColorPresentation = exports.ColorInformation = exports.Color = exports.TextEdit = exports.Range = exports.TextDocument = void 0;
+    exports.ClientCapabilities = exports.ErrorCode = exports.MarkedString = exports.Hover = exports.Location = exports.DocumentSymbol = exports.SymbolKind = exports.SymbolInformation = exports.MarkupKind = exports.MarkupContent = exports.InsertTextFormat = exports.Position = exports.CompletionList = exports.CompletionItemKind = exports.CompletionItem = exports.DiagnosticSeverity = exports.Diagnostic = exports.SelectionRange = exports.FoldingRangeKind = exports.FoldingRange = exports.ColorPresentation = exports.ColorInformation = exports.Color = exports.TextEdit = exports.Range = exports.TextDocument = void 0;
     var vscode_languageserver_types_1 = require("vscode-languageserver-types");
     Object.defineProperty(exports, "Range", { enumerable: true, get: function () { return vscode_languageserver_types_1.Range; } });
     Object.defineProperty(exports, "TextEdit", { enumerable: true, get: function () { return vscode_languageserver_types_1.TextEdit; } });
@@ -3520,7 +3908,6 @@ define('vscode-languageserver-textdocument', ['vscode-languageserver-textdocumen
     Object.defineProperty(exports, "Location", { enumerable: true, get: function () { return vscode_languageserver_types_1.Location; } });
     Object.defineProperty(exports, "Hover", { enumerable: true, get: function () { return vscode_languageserver_types_1.Hover; } });
     Object.defineProperty(exports, "MarkedString", { enumerable: true, get: function () { return vscode_languageserver_types_1.MarkedString; } });
-    Object.defineProperty(exports, "FormattingOptions", { enumerable: true, get: function () { return vscode_languageserver_types_1.FormattingOptions; } });
     var vscode_languageserver_textdocument_1 = require("vscode-languageserver-textdocument");
     Object.defineProperty(exports, "TextDocument", { enumerable: true, get: function () { return vscode_languageserver_textdocument_1.TextDocument; } });
     /**
@@ -3530,6 +3917,7 @@ define('vscode-languageserver-textdocument', ['vscode-languageserver-textdocumen
     (function (ErrorCode) {
         ErrorCode[ErrorCode["Undefined"] = 0] = "Undefined";
         ErrorCode[ErrorCode["EnumValueMismatch"] = 1] = "EnumValueMismatch";
+        ErrorCode[ErrorCode["Deprecated"] = 2] = "Deprecated";
         ErrorCode[ErrorCode["UnexpectedEndOfComment"] = 257] = "UnexpectedEndOfComment";
         ErrorCode[ErrorCode["UnexpectedEndOfString"] = 258] = "UnexpectedEndOfString";
         ErrorCode[ErrorCode["UnexpectedEndOfNumber"] = 259] = "UnexpectedEndOfNumber";
@@ -3610,7 +3998,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -3920,13 +4308,15 @@ var __extends = (this && this.__extends) || (function () {
                 doVisit_1(this.root);
             }
         };
-        JSONDocument.prototype.validate = function (textDocument, schema) {
+        JSONDocument.prototype.validate = function (textDocument, schema, severity) {
+            if (severity === void 0) { severity = jsonLanguageTypes_1.DiagnosticSeverity.Warning; }
             if (this.root && schema) {
                 var validationResult = new ValidationResult();
                 validate(this.root, schema, validationResult, NoOpSchemaCollector.instance);
                 return validationResult.problems.map(function (p) {
+                    var _a;
                     var range = jsonLanguageTypes_1.Range.create(textDocument.positionAt(p.location.offset), textDocument.positionAt(p.location.offset + p.location.length));
-                    return jsonLanguageTypes_1.Diagnostic.create(range, p.message, p.severity, p.code);
+                    return jsonLanguageTypes_1.Diagnostic.create(range, p.message, (_a = p.severity) !== null && _a !== void 0 ? _a : severity, p.code);
                 });
             }
             return undefined;
@@ -3973,7 +4363,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (!schema.type.some(matchesType)) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: schema.errorMessage || localize('typeArrayMismatchWarning', 'Incorrect type. Expected one of {0}.', schema.type.join(', '))
                     });
                 }
@@ -3982,7 +4371,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (!matchesType(schema.type)) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: schema.errorMessage || localize('typeMismatchWarning', 'Incorrect type. Expected "{0}".', schema.type)
                     });
                 }
@@ -4001,7 +4389,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (!subValidationResult.hasProblems()) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: localize('notSchemaWarning', "Matches a schema that is not allowed.")
                     });
                 }
@@ -4051,7 +4438,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (matches.length > 1 && maxOneMatch) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: 1 },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: localize('oneOfWarning', "Matches multiple schemas when only one must validate.")
                     });
                 }
@@ -4112,7 +4498,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (!enumValueMatch) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         code: jsonLanguageTypes_1.ErrorCode.EnumValueMismatch,
                         message: schema.errorMessage || localize('enumWarning', 'Value is not accepted. Valid values: {0}.', schema.enum.map(function (v) { return JSON.stringify(v); }).join(', '))
                     });
@@ -4123,7 +4508,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (!objects_1.equals(val, schema.const)) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         code: jsonLanguageTypes_1.ErrorCode.EnumValueMismatch,
                         message: schema.errorMessage || localize('constWarning', 'Value must be {0}.', JSON.stringify(schema.const))
                     });
@@ -4138,7 +4522,8 @@ var __extends = (this && this.__extends) || (function () {
                 validationResult.problems.push({
                     location: { offset: node.parent.offset, length: node.parent.length },
                     severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
-                    message: schema.deprecationMessage
+                    message: schema.deprecationMessage,
+                    code: jsonLanguageTypes_1.ErrorCode.Deprecated
                 });
             }
         }
@@ -4175,7 +4560,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (remainder !== 0) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: localize('multipleOfWarning', 'Value is not divisible by {0}.', schema.multipleOf)
                     });
                 }
@@ -4199,7 +4583,6 @@ var __extends = (this && this.__extends) || (function () {
             if (objects_1.isNumber(exclusiveMinimum) && val <= exclusiveMinimum) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                     message: localize('exclusiveMinimumWarning', 'Value is below the exclusive minimum of {0}.', exclusiveMinimum)
                 });
             }
@@ -4207,7 +4590,6 @@ var __extends = (this && this.__extends) || (function () {
             if (objects_1.isNumber(exclusiveMaximum) && val >= exclusiveMaximum) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                     message: localize('exclusiveMaximumWarning', 'Value is above the exclusive maximum of {0}.', exclusiveMaximum)
                 });
             }
@@ -4215,7 +4597,6 @@ var __extends = (this && this.__extends) || (function () {
             if (objects_1.isNumber(minimum) && val < minimum) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                     message: localize('minimumWarning', 'Value is below the minimum of {0}.', minimum)
                 });
             }
@@ -4223,7 +4604,6 @@ var __extends = (this && this.__extends) || (function () {
             if (objects_1.isNumber(maximum) && val > maximum) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                     message: localize('maximumWarning', 'Value is above the maximum of {0}.', maximum)
                 });
             }
@@ -4232,14 +4612,12 @@ var __extends = (this && this.__extends) || (function () {
             if (objects_1.isNumber(schema.minLength) && node.value.length < schema.minLength) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                     message: localize('minLengthWarning', 'String is shorter than the minimum length of {0}.', schema.minLength)
                 });
             }
             if (objects_1.isNumber(schema.maxLength) && node.value.length > schema.maxLength) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                     message: localize('maxLengthWarning', 'String is longer than the maximum length of {0}.', schema.maxLength)
                 });
             }
@@ -4248,7 +4626,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (!regex.test(node.value)) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: schema.patternErrorMessage || schema.errorMessage || localize('patternWarning', 'String does not match the pattern of "{0}".', schema.pattern)
                     });
                 }
@@ -4274,7 +4651,6 @@ var __extends = (this && this.__extends) || (function () {
                             if (errorMessage) {
                                 validationResult.problems.push({
                                     location: { offset: node.offset, length: node.length },
-                                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                                     message: schema.patternErrorMessage || schema.errorMessage || localize('uriFormatWarning', 'String is not a URI: {0}', errorMessage)
                                 });
                             }
@@ -4289,7 +4665,6 @@ var __extends = (this && this.__extends) || (function () {
                         if (!node.value || !format.pattern.exec(node.value)) {
                             validationResult.problems.push({
                                 location: { offset: node.offset, length: node.length },
-                                severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                                 message: schema.patternErrorMessage || schema.errorMessage || format.errorMessage
                             });
                         }
@@ -4324,7 +4699,6 @@ var __extends = (this && this.__extends) || (function () {
                     else if (schema.additionalItems === false) {
                         validationResult.problems.push({
                             location: { offset: node.offset, length: node.length },
-                            severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                             message: localize('additionalItemsWarning', 'Array has too many items according to schema. Expected {0} or fewer.', subSchemas.length)
                         });
                     }
@@ -4351,7 +4725,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (!doesContain) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: schema.errorMessage || localize('requiredItemMissingWarning', 'Array does not contain required item.')
                     });
                 }
@@ -4359,14 +4732,12 @@ var __extends = (this && this.__extends) || (function () {
             if (objects_1.isNumber(schema.minItems) && node.items.length < schema.minItems) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                     message: localize('minItemsWarning', 'Array has too few items. Expected {0} or more.', schema.minItems)
                 });
             }
             if (objects_1.isNumber(schema.maxItems) && node.items.length > schema.maxItems) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                     message: localize('maxItemsWarning', 'Array has too many items. Expected {0} or fewer.', schema.maxItems)
                 });
             }
@@ -4378,7 +4749,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (duplicates) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: localize('uniqueItemsWarning', 'Array has duplicate items.')
                     });
                 }
@@ -4401,7 +4771,6 @@ var __extends = (this && this.__extends) || (function () {
                         var location = keyNode ? { offset: keyNode.offset, length: keyNode.length } : { offset: node.offset, length: 1 };
                         validationResult.problems.push({
                             location: location,
-                            severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                             message: localize('MissingRequiredPropWarning', 'Missing property "{0}".', propertyName)
                         });
                     }
@@ -4426,7 +4795,6 @@ var __extends = (this && this.__extends) || (function () {
                                 var propertyNode = child.parent;
                                 validationResult.problems.push({
                                     location: { offset: propertyNode.keyNode.offset, length: propertyNode.keyNode.length },
-                                    severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                                     message: schema.errorMessage || localize('DisallowedExtraPropWarning', 'Property {0} is not allowed.', propertyName)
                                 });
                             }
@@ -4459,7 +4827,6 @@ var __extends = (this && this.__extends) || (function () {
                                         var propertyNode = child.parent;
                                         validationResult.problems.push({
                                             location: { offset: propertyNode.keyNode.offset, length: propertyNode.keyNode.length },
-                                            severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                                             message: schema.errorMessage || localize('DisallowedExtraPropWarning', 'Property {0} is not allowed.', propertyName)
                                         });
                                     }
@@ -4498,7 +4865,6 @@ var __extends = (this && this.__extends) || (function () {
                             var propertyNode = child.parent;
                             validationResult.problems.push({
                                 location: { offset: propertyNode.keyNode.offset, length: propertyNode.keyNode.length },
-                                severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                                 message: schema.errorMessage || localize('DisallowedExtraPropWarning', 'Property {0} is not allowed.', propertyName)
                             });
                         }
@@ -4509,7 +4875,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (node.properties.length > schema.maxProperties) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: localize('MaxPropWarning', 'Object has more properties than limit of {0}.', schema.maxProperties)
                     });
                 }
@@ -4518,7 +4883,6 @@ var __extends = (this && this.__extends) || (function () {
                 if (node.properties.length < schema.minProperties) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                         message: localize('MinPropWarning', 'Object has fewer properties than the required number of {0}', schema.minProperties)
                     });
                 }
@@ -4535,7 +4899,6 @@ var __extends = (this && this.__extends) || (function () {
                                 if (!seenKeys[requiredProp]) {
                                     validationResult.problems.push({
                                         location: { offset: node.offset, length: node.length },
-                                        severity: jsonLanguageTypes_1.DiagnosticSeverity.Warning,
                                         message: localize('RequiredDependentPropWarning', 'Object is missing property {0} required by property {1}.', requiredProp, key)
                                     });
                                 }
@@ -5078,8 +5441,13 @@ var __extends = (this && this.__extends) || (function () {
                         proposed[label] = suggestion;
                         result.items.push(suggestion);
                     }
-                    else if (!existing.documentation) {
-                        existing.documentation = suggestion.documentation;
+                    else {
+                        if (!existing.documentation) {
+                            existing.documentation = suggestion.documentation;
+                        }
+                        if (!existing.detail) {
+                            existing.detail = suggestion.detail;
+                        }
                     }
                 },
                 setAsIncomplete: function () {
@@ -6044,662 +6412,8 @@ var __extends = (this && this.__extends) || (function () {
     }
 });
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-(function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === "function" && define.amd) {
-        define('vscode-uri/index',["require", "exports"], factory);
-    }
-})(function (require, exports) {
-    /*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var _a;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var isWindows;
-    if (typeof process === 'object') {
-        isWindows = process.platform === 'win32';
-    }
-    else if (typeof navigator === 'object') {
-        var userAgent = navigator.userAgent;
-        isWindows = userAgent.indexOf('Windows') >= 0;
-    }
-    function isHighSurrogate(charCode) {
-        return (0xD800 <= charCode && charCode <= 0xDBFF);
-    }
-    function isLowSurrogate(charCode) {
-        return (0xDC00 <= charCode && charCode <= 0xDFFF);
-    }
-    function isLowerAsciiHex(code) {
-        return code >= 97 /* a */ && code <= 102 /* f */;
-    }
-    function isLowerAsciiLetter(code) {
-        return code >= 97 /* a */ && code <= 122 /* z */;
-    }
-    function isUpperAsciiLetter(code) {
-        return code >= 65 /* A */ && code <= 90 /* Z */;
-    }
-    function isAsciiLetter(code) {
-        return isLowerAsciiLetter(code) || isUpperAsciiLetter(code);
-    }
-    //#endregion
-    var _schemePattern = /^\w[\w\d+.-]*$/;
-    var _singleSlashStart = /^\//;
-    var _doubleSlashStart = /^\/\//;
-    function _validateUri(ret, _strict) {
-        // scheme, must be set
-        if (!ret.scheme && _strict) {
-            throw new Error("[UriError]: Scheme is missing: {scheme: \"\", authority: \"" + ret.authority + "\", path: \"" + ret.path + "\", query: \"" + ret.query + "\", fragment: \"" + ret.fragment + "\"}");
-        }
-        // scheme, https://tools.ietf.org/html/rfc3986#section-3.1
-        // ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-        if (ret.scheme && !_schemePattern.test(ret.scheme)) {
-            throw new Error('[UriError]: Scheme contains illegal characters.');
-        }
-        // path, http://tools.ietf.org/html/rfc3986#section-3.3
-        // If a URI contains an authority component, then the path component
-        // must either be empty or begin with a slash ("/") character.  If a URI
-        // does not contain an authority component, then the path cannot begin
-        // with two slash characters ("//").
-        if (ret.path) {
-            if (ret.authority) {
-                if (!_singleSlashStart.test(ret.path)) {
-                    throw new Error('[UriError]: If a URI contains an authority component, then the path component must either be empty or begin with a slash ("/") character');
-                }
-            }
-            else {
-                if (_doubleSlashStart.test(ret.path)) {
-                    throw new Error('[UriError]: If a URI does not contain an authority component, then the path cannot begin with two slash characters ("//")');
-                }
-            }
-        }
-    }
-    // for a while we allowed uris *without* schemes and this is the migration
-    // for them, e.g. an uri without scheme and without strict-mode warns and falls
-    // back to the file-scheme. that should cause the least carnage and still be a
-    // clear warning
-    function _schemeFix(scheme, _strict) {
-        if (!scheme && !_strict) {
-            return 'file';
-        }
-        return scheme;
-    }
-    // implements a bit of https://tools.ietf.org/html/rfc3986#section-5
-    function _referenceResolution(scheme, path) {
-        // the slash-character is our 'default base' as we don't
-        // support constructing URIs relative to other URIs. This
-        // also means that we alter and potentially break paths.
-        // see https://tools.ietf.org/html/rfc3986#section-5.1.4
-        switch (scheme) {
-            case 'https':
-            case 'http':
-            case 'file':
-                if (!path) {
-                    path = _slash;
-                }
-                else if (path[0] !== _slash) {
-                    path = _slash + path;
-                }
-                break;
-        }
-        return path;
-    }
-    var _empty = '';
-    var _slash = '/';
-    var _regexp = /^(([^:/?#]+?):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
-    /**
-     * Uniform Resource Identifier (URI) http://tools.ietf.org/html/rfc3986.
-     * This class is a simple parser which creates the basic component parts
-     * (http://tools.ietf.org/html/rfc3986#section-3) with minimal validation
-     * and encoding.
-     *
-     * ```txt
-     *       foo://example.com:8042/over/there?name=ferret#nose
-     *       \_/   \______________/\_________/ \_________/ \__/
-     *        |           |            |            |        |
-     *     scheme     authority       path        query   fragment
-     *        |   _____________________|__
-     *       / \ /                        \
-     *       urn:example:animal:ferret:nose
-     * ```
-     */
-    var URI = /** @class */ (function () {
-        /**
-         * @internal
-         */
-        function URI(schemeOrData, authority, path, query, fragment, _strict) {
-            if (_strict === void 0) { _strict = false; }
-            if (typeof schemeOrData === 'object') {
-                this.scheme = schemeOrData.scheme || _empty;
-                this.authority = schemeOrData.authority || _empty;
-                this.path = schemeOrData.path || _empty;
-                this.query = schemeOrData.query || _empty;
-                this.fragment = schemeOrData.fragment || _empty;
-                // no validation because it's this URI
-                // that creates uri components.
-                // _validateUri(this);
-            }
-            else {
-                this.scheme = _schemeFix(schemeOrData, _strict);
-                this.authority = authority || _empty;
-                this.path = _referenceResolution(this.scheme, path || _empty);
-                this.query = query || _empty;
-                this.fragment = fragment || _empty;
-                _validateUri(this, _strict);
-            }
-        }
-        URI.isUri = function (thing) {
-            if (thing instanceof URI) {
-                return true;
-            }
-            if (!thing) {
-                return false;
-            }
-            return typeof thing.authority === 'string'
-                && typeof thing.fragment === 'string'
-                && typeof thing.path === 'string'
-                && typeof thing.query === 'string'
-                && typeof thing.scheme === 'string'
-                && typeof thing.fsPath === 'function'
-                && typeof thing.with === 'function'
-                && typeof thing.toString === 'function';
-        };
-        Object.defineProperty(URI.prototype, "fsPath", {
-            // ---- filesystem path -----------------------
-            /**
-             * Returns a string representing the corresponding file system path of this URI.
-             * Will handle UNC paths, normalizes windows drive letters to lower-case, and uses the
-             * platform specific path separator.
-             *
-             * * Will *not* validate the path for invalid characters and semantics.
-             * * Will *not* look at the scheme of this URI.
-             * * The result shall *not* be used for display purposes but for accessing a file on disk.
-             *
-             *
-             * The *difference* to `URI#path` is the use of the platform specific separator and the handling
-             * of UNC paths. See the below sample of a file-uri with an authority (UNC path).
-             *
-             * ```ts
-                const u = URI.parse('file://server/c$/folder/file.txt')
-                u.authority === 'server'
-                u.path === '/shares/c$/file.txt'
-                u.fsPath === '\\server\c$\folder\file.txt'
-            ```
-             *
-             * Using `URI#path` to read a file (using fs-apis) would not be enough because parts of the path,
-             * namely the server name, would be missing. Therefore `URI#fsPath` exists - it's sugar to ease working
-             * with URIs that represent files on disk (`file` scheme).
-             */
-            get: function () {
-                // if (this.scheme !== 'file') {
-                // 	console.warn(`[UriError] calling fsPath with scheme ${this.scheme}`);
-                // }
-                return uriToFsPath(this, false);
-            },
-            enumerable: true,
-            configurable: true
-        });
-        // ---- modify to new -------------------------
-        URI.prototype.with = function (change) {
-            if (!change) {
-                return this;
-            }
-            var scheme = change.scheme, authority = change.authority, path = change.path, query = change.query, fragment = change.fragment;
-            if (scheme === undefined) {
-                scheme = this.scheme;
-            }
-            else if (scheme === null) {
-                scheme = _empty;
-            }
-            if (authority === undefined) {
-                authority = this.authority;
-            }
-            else if (authority === null) {
-                authority = _empty;
-            }
-            if (path === undefined) {
-                path = this.path;
-            }
-            else if (path === null) {
-                path = _empty;
-            }
-            if (query === undefined) {
-                query = this.query;
-            }
-            else if (query === null) {
-                query = _empty;
-            }
-            if (fragment === undefined) {
-                fragment = this.fragment;
-            }
-            else if (fragment === null) {
-                fragment = _empty;
-            }
-            if (scheme === this.scheme
-                && authority === this.authority
-                && path === this.path
-                && query === this.query
-                && fragment === this.fragment) {
-                return this;
-            }
-            return new _URI(scheme, authority, path, query, fragment);
-        };
-        // ---- parse & validate ------------------------
-        /**
-         * Creates a new URI from a string, e.g. `http://www.msft.com/some/path`,
-         * `file:///usr/home`, or `scheme:with/path`.
-         *
-         * @param value A string which represents an URI (see `URI#toString`).
-         */
-        URI.parse = function (value, _strict) {
-            if (_strict === void 0) { _strict = false; }
-            var match = _regexp.exec(value);
-            if (!match) {
-                return new _URI(_empty, _empty, _empty, _empty, _empty);
-            }
-            return new _URI(match[2] || _empty, percentDecode(match[4] || _empty), percentDecode(match[5] || _empty), percentDecode(match[7] || _empty), percentDecode(match[9] || _empty), _strict);
-        };
-        /**
-         * Creates a new URI from a file system path, e.g. `c:\my\files`,
-         * `/usr/home`, or `\\server\share\some\path`.
-         *
-         * The *difference* between `URI#parse` and `URI#file` is that the latter treats the argument
-         * as path, not as stringified-uri. E.g. `URI.file(path)` is **not the same as**
-         * `URI.parse('file://' + path)` because the path might contain characters that are
-         * interpreted (# and ?). See the following sample:
-         * ```ts
-        const good = URI.file('/coding/c#/project1');
-        good.scheme === 'file';
-        good.path === '/coding/c#/project1';
-        good.fragment === '';
-        const bad = URI.parse('file://' + '/coding/c#/project1');
-        bad.scheme === 'file';
-        bad.path === '/coding/c'; // path is now broken
-        bad.fragment === '/project1';
-        ```
-         *
-         * @param path A file system path (see `URI#fsPath`)
-         */
-        URI.file = function (path) {
-            var authority = _empty;
-            // normalize to fwd-slashes on windows,
-            // on other systems bwd-slashes are valid
-            // filename character, eg /f\oo/ba\r.txt
-            if (isWindows) {
-                path = path.replace(/\\/g, _slash);
-            }
-            // check for authority as used in UNC shares
-            // or use the path as given
-            if (path[0] === _slash && path[1] === _slash) {
-                var idx = path.indexOf(_slash, 2);
-                if (idx === -1) {
-                    authority = path.substring(2);
-                    path = _slash;
-                }
-                else {
-                    authority = path.substring(2, idx);
-                    path = path.substring(idx) || _slash;
-                }
-            }
-            return new _URI('file', authority, path, _empty, _empty);
-        };
-        URI.from = function (components) {
-            return new _URI(components.scheme, components.authority, components.path, components.query, components.fragment);
-        };
-        // /**
-        //  * Join a URI path with path fragments and normalizes the resulting path.
-        //  *
-        //  * @param uri The input URI.
-        //  * @param pathFragment The path fragment to add to the URI path.
-        //  * @returns The resulting URI.
-        //  */
-        // static joinPath(uri: URI, ...pathFragment: string[]): URI {
-        // 	if (!uri.path) {
-        // 		throw new Error(`[UriError]: cannot call joinPaths on URI without path`);
-        // 	}
-        // 	let newPath: string;
-        // 	if (isWindows && uri.scheme === 'file') {
-        // 		newPath = URI.file(paths.win32.join(uriToFsPath(uri, true), ...pathFragment)).path;
-        // 	} else {
-        // 		newPath = paths.posix.join(uri.path, ...pathFragment);
-        // 	}
-        // 	return uri.with({ path: newPath });
-        // }
-        // ---- printing/externalize ---------------------------
-        /**
-         * Creates a string representation for this URI. It's guaranteed that calling
-         * `URI.parse` with the result of this function creates an URI which is equal
-         * to this URI.
-         *
-         * * The result shall *not* be used for display purposes but for externalization or transport.
-         * * The result will be encoded using the percentage encoding and encoding happens mostly
-         * ignore the scheme-specific encoding rules.
-         *
-         * @param skipEncoding Do not encode the result, default is `false`
-         */
-        URI.prototype.toString = function (skipEncoding) {
-            if (skipEncoding === void 0) { skipEncoding = false; }
-            return _asFormatted(this, skipEncoding);
-        };
-        URI.prototype.toJSON = function () {
-            return this;
-        };
-        URI.revive = function (data) {
-            if (!data) {
-                return data;
-            }
-            else if (data instanceof URI) {
-                return data;
-            }
-            else {
-                var result = new _URI(data);
-                result._formatted = data.external;
-                result._fsPath = data._sep === _pathSepMarker ? data.fsPath : null;
-                return result;
-            }
-        };
-        return URI;
-    }());
-    exports.URI = URI;
-    var _pathSepMarker = isWindows ? 1 : undefined;
-    // eslint-disable-next-line @typescript-eslint/class-name-casing
-    var _URI = /** @class */ (function (_super) {
-        __extends(_URI, _super);
-        function _URI() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this._formatted = null;
-            _this._fsPath = null;
-            return _this;
-        }
-        Object.defineProperty(_URI.prototype, "fsPath", {
-            get: function () {
-                if (!this._fsPath) {
-                    this._fsPath = uriToFsPath(this, false);
-                }
-                return this._fsPath;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        _URI.prototype.toString = function (skipEncoding) {
-            if (skipEncoding === void 0) { skipEncoding = false; }
-            if (!skipEncoding) {
-                if (!this._formatted) {
-                    this._formatted = _asFormatted(this, false);
-                }
-                return this._formatted;
-            }
-            else {
-                // we don't cache that
-                return _asFormatted(this, true);
-            }
-        };
-        _URI.prototype.toJSON = function () {
-            var res = {
-                $mid: 1
-            };
-            // cached state
-            if (this._fsPath) {
-                res.fsPath = this._fsPath;
-                res._sep = _pathSepMarker;
-            }
-            if (this._formatted) {
-                res.external = this._formatted;
-            }
-            // uri components
-            if (this.path) {
-                res.path = this.path;
-            }
-            if (this.scheme) {
-                res.scheme = this.scheme;
-            }
-            if (this.authority) {
-                res.authority = this.authority;
-            }
-            if (this.query) {
-                res.query = this.query;
-            }
-            if (this.fragment) {
-                res.fragment = this.fragment;
-            }
-            return res;
-        };
-        return _URI;
-    }(URI));
-    // reserved characters: https://tools.ietf.org/html/rfc3986#section-2.2
-    var encodeTable = (_a = {},
-        _a[58 /* Colon */] = '%3A',
-        _a[47 /* Slash */] = '%2F',
-        _a[63 /* QuestionMark */] = '%3F',
-        _a[35 /* Hash */] = '%23',
-        _a[91 /* OpenSquareBracket */] = '%5B',
-        _a[93 /* CloseSquareBracket */] = '%5D',
-        _a[64 /* AtSign */] = '%40',
-        _a[33 /* ExclamationMark */] = '%21',
-        _a[36 /* DollarSign */] = '%24',
-        _a[38 /* Ampersand */] = '%26',
-        _a[39 /* SingleQuote */] = '%27',
-        _a[40 /* OpenParen */] = '%28',
-        _a[41 /* CloseParen */] = '%29',
-        _a[42 /* Asterisk */] = '%2A',
-        _a[43 /* Plus */] = '%2B',
-        _a[44 /* Comma */] = '%2C',
-        _a[59 /* Semicolon */] = '%3B',
-        _a[61 /* Equals */] = '%3D',
-        _a[32 /* Space */] = '%20',
-        _a);
-    function encodeURIComponentFast(uriComponent, allowSlash) {
-        var res = undefined;
-        var nativeEncodePos = -1;
-        for (var pos = 0; pos < uriComponent.length; pos++) {
-            var code = uriComponent.charCodeAt(pos);
-            // unreserved characters: https://tools.ietf.org/html/rfc3986#section-2.3
-            if ((code >= 97 /* a */ && code <= 122 /* z */)
-                || (code >= 65 /* A */ && code <= 90 /* Z */)
-                || (code >= 48 /* Digit0 */ && code <= 57 /* Digit9 */)
-                || code === 45 /* Dash */
-                || code === 46 /* Period */
-                || code === 95 /* Underline */
-                || code === 126 /* Tilde */
-                || (allowSlash && code === 47 /* Slash */)) {
-                // check if we are delaying native encode
-                if (nativeEncodePos !== -1) {
-                    res += encodeURIComponent(uriComponent.substring(nativeEncodePos, pos));
-                    nativeEncodePos = -1;
-                }
-                // check if we write into a new string (by default we try to return the param)
-                if (res !== undefined) {
-                    res += uriComponent.charAt(pos);
-                }
-            }
-            else {
-                // encoding needed, we need to allocate a new string
-                if (res === undefined) {
-                    res = uriComponent.substr(0, pos);
-                }
-                // check with default table first
-                var escaped = encodeTable[code];
-                if (escaped !== undefined) {
-                    // check if we are delaying native encode
-                    if (nativeEncodePos !== -1) {
-                        res += encodeURIComponent(uriComponent.substring(nativeEncodePos, pos));
-                        nativeEncodePos = -1;
-                    }
-                    // append escaped variant to result
-                    res += escaped;
-                }
-                else if (nativeEncodePos === -1) {
-                    // use native encode only when needed
-                    nativeEncodePos = pos;
-                }
-            }
-        }
-        if (nativeEncodePos !== -1) {
-            res += encodeURIComponent(uriComponent.substring(nativeEncodePos));
-        }
-        return res !== undefined ? res : uriComponent;
-    }
-    function encodeURIComponentMinimal(path) {
-        var res = undefined;
-        for (var pos = 0; pos < path.length; pos++) {
-            var code = path.charCodeAt(pos);
-            if (code === 35 /* Hash */ || code === 63 /* QuestionMark */) {
-                if (res === undefined) {
-                    res = path.substr(0, pos);
-                }
-                res += encodeTable[code];
-            }
-            else {
-                if (res !== undefined) {
-                    res += path[pos];
-                }
-            }
-        }
-        return res !== undefined ? res : path;
-    }
-    /**
-     * Compute `fsPath` for the given uri
-     */
-    function uriToFsPath(uri, keepDriveLetterCasing) {
-        var value;
-        if (uri.authority && uri.path.length > 1 && uri.scheme === 'file') {
-            // unc path: file://shares/c$/far/boo
-            value = "//" + uri.authority + uri.path;
-        }
-        else if (uri.path.charCodeAt(0) === 47 /* Slash */
-            && (uri.path.charCodeAt(1) >= 65 /* A */ && uri.path.charCodeAt(1) <= 90 /* Z */ || uri.path.charCodeAt(1) >= 97 /* a */ && uri.path.charCodeAt(1) <= 122 /* z */)
-            && uri.path.charCodeAt(2) === 58 /* Colon */) {
-            if (!keepDriveLetterCasing) {
-                // windows drive letter: file:///c:/far/boo
-                value = uri.path[1].toLowerCase() + uri.path.substr(2);
-            }
-            else {
-                value = uri.path.substr(1);
-            }
-        }
-        else {
-            // other path
-            value = uri.path;
-        }
-        if (isWindows) {
-            value = value.replace(/\//g, '\\');
-        }
-        return value;
-    }
-    exports.uriToFsPath = uriToFsPath;
-    /**
-     * Create the external version of a uri
-     */
-    function _asFormatted(uri, skipEncoding) {
-        var encoder = !skipEncoding
-            ? encodeURIComponentFast
-            : encodeURIComponentMinimal;
-        var res = '';
-        var scheme = uri.scheme, authority = uri.authority, path = uri.path, query = uri.query, fragment = uri.fragment;
-        if (scheme) {
-            res += scheme;
-            res += ':';
-        }
-        if (authority || scheme === 'file') {
-            res += _slash;
-            res += _slash;
-        }
-        if (authority) {
-            var idx = authority.indexOf('@');
-            if (idx !== -1) {
-                // <user>@<auth>
-                var userinfo = authority.substr(0, idx);
-                authority = authority.substr(idx + 1);
-                idx = userinfo.indexOf(':');
-                if (idx === -1) {
-                    res += encoder(userinfo, false);
-                }
-                else {
-                    // <user>:<pass>@<auth>
-                    res += encoder(userinfo.substr(0, idx), false);
-                    res += ':';
-                    res += encoder(userinfo.substr(idx + 1), false);
-                }
-                res += '@';
-            }
-            authority = authority.toLowerCase();
-            idx = authority.indexOf(':');
-            if (idx === -1) {
-                res += encoder(authority, false);
-            }
-            else {
-                // <auth>:<port>
-                res += encoder(authority.substr(0, idx), false);
-                res += authority.substr(idx);
-            }
-        }
-        if (path) {
-            // lower-case windows drive letters in /C:/fff or C:/fff
-            if (path.length >= 3 && path.charCodeAt(0) === 47 /* Slash */ && path.charCodeAt(2) === 58 /* Colon */) {
-                var code = path.charCodeAt(1);
-                if (code >= 65 /* A */ && code <= 90 /* Z */) {
-                    path = "/" + String.fromCharCode(code + 32) + ":" + path.substr(3); // "/c:".length === 3
-                }
-            }
-            else if (path.length >= 2 && path.charCodeAt(1) === 58 /* Colon */) {
-                var code = path.charCodeAt(0);
-                if (code >= 65 /* A */ && code <= 90 /* Z */) {
-                    path = String.fromCharCode(code + 32) + ":" + path.substr(2); // "/c:".length === 3
-                }
-            }
-            // encode the rest of the path
-            res += encoder(path, true);
-        }
-        if (query) {
-            res += '?';
-            res += encoder(query, false);
-        }
-        if (fragment) {
-            res += '#';
-            res += !skipEncoding ? encodeURIComponentFast(fragment, false) : fragment;
-        }
-        return res;
-    }
-    // --- decode
-    function decodeURIComponentGraceful(str) {
-        try {
-            return decodeURIComponent(str);
-        }
-        catch (_a) {
-            if (str.length > 3) {
-                return str.substr(0, 3) + decodeURIComponentGraceful(str.substr(3));
-            }
-            else {
-                return str;
-            }
-        }
-    }
-    var _rEncodedAsHex = /(%[0-9A-Za-z][0-9A-Za-z])+/g;
-    function percentDecode(str) {
-        if (!str.match(_rEncodedAsHex)) {
-            return str;
-        }
-        return str.replace(_rEncodedAsHex, function (match) { return decodeURIComponentGraceful(match); });
-    }
-});
-
+!function(t,e){if("object"==typeof exports&&"object"==typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define('vscode-uri/index',[],e);else{var r=e();for(var n in r)("object"==typeof exports?exports:t)[n]=r[n]}}(this,(function(){return(()=>{"use strict";var t={470:t=>{function e(t){if("string"!=typeof t)throw new TypeError("Path must be a string. Received "+JSON.stringify(t))}function r(t,e){for(var r,n="",i=0,o=-1,a=0,h=0;h<=t.length;++h){if(h<t.length)r=t.charCodeAt(h);else{if(47===r)break;r=47}if(47===r){if(o===h-1||1===a);else if(o!==h-1&&2===a){if(n.length<2||2!==i||46!==n.charCodeAt(n.length-1)||46!==n.charCodeAt(n.length-2))if(n.length>2){var s=n.lastIndexOf("/");if(s!==n.length-1){-1===s?(n="",i=0):i=(n=n.slice(0,s)).length-1-n.lastIndexOf("/"),o=h,a=0;continue}}else if(2===n.length||1===n.length){n="",i=0,o=h,a=0;continue}e&&(n.length>0?n+="/..":n="..",i=2)}else n.length>0?n+="/"+t.slice(o+1,h):n=t.slice(o+1,h),i=h-o-1;o=h,a=0}else 46===r&&-1!==a?++a:a=-1}return n}var n={resolve:function(){for(var t,n="",i=!1,o=arguments.length-1;o>=-1&&!i;o--){var a;o>=0?a=arguments[o]:(void 0===t&&(t=process.cwd()),a=t),e(a),0!==a.length&&(n=a+"/"+n,i=47===a.charCodeAt(0))}return n=r(n,!i),i?n.length>0?"/"+n:"/":n.length>0?n:"."},normalize:function(t){if(e(t),0===t.length)return".";var n=47===t.charCodeAt(0),i=47===t.charCodeAt(t.length-1);return 0!==(t=r(t,!n)).length||n||(t="."),t.length>0&&i&&(t+="/"),n?"/"+t:t},isAbsolute:function(t){return e(t),t.length>0&&47===t.charCodeAt(0)},join:function(){if(0===arguments.length)return".";for(var t,r=0;r<arguments.length;++r){var i=arguments[r];e(i),i.length>0&&(void 0===t?t=i:t+="/"+i)}return void 0===t?".":n.normalize(t)},relative:function(t,r){if(e(t),e(r),t===r)return"";if((t=n.resolve(t))===(r=n.resolve(r)))return"";for(var i=1;i<t.length&&47===t.charCodeAt(i);++i);for(var o=t.length,a=o-i,h=1;h<r.length&&47===r.charCodeAt(h);++h);for(var s=r.length-h,f=a<s?a:s,u=-1,c=0;c<=f;++c){if(c===f){if(s>f){if(47===r.charCodeAt(h+c))return r.slice(h+c+1);if(0===c)return r.slice(h+c)}else a>f&&(47===t.charCodeAt(i+c)?u=c:0===c&&(u=0));break}var l=t.charCodeAt(i+c);if(l!==r.charCodeAt(h+c))break;47===l&&(u=c)}var p="";for(c=i+u+1;c<=o;++c)c!==o&&47!==t.charCodeAt(c)||(0===p.length?p+="..":p+="/..");return p.length>0?p+r.slice(h+u):(h+=u,47===r.charCodeAt(h)&&++h,r.slice(h))},_makeLong:function(t){return t},dirname:function(t){if(e(t),0===t.length)return".";for(var r=t.charCodeAt(0),n=47===r,i=-1,o=!0,a=t.length-1;a>=1;--a)if(47===(r=t.charCodeAt(a))){if(!o){i=a;break}}else o=!1;return-1===i?n?"/":".":n&&1===i?"//":t.slice(0,i)},basename:function(t,r){if(void 0!==r&&"string"!=typeof r)throw new TypeError('"ext" argument must be a string');e(t);var n,i=0,o=-1,a=!0;if(void 0!==r&&r.length>0&&r.length<=t.length){if(r.length===t.length&&r===t)return"";var h=r.length-1,s=-1;for(n=t.length-1;n>=0;--n){var f=t.charCodeAt(n);if(47===f){if(!a){i=n+1;break}}else-1===s&&(a=!1,s=n+1),h>=0&&(f===r.charCodeAt(h)?-1==--h&&(o=n):(h=-1,o=s))}return i===o?o=s:-1===o&&(o=t.length),t.slice(i,o)}for(n=t.length-1;n>=0;--n)if(47===t.charCodeAt(n)){if(!a){i=n+1;break}}else-1===o&&(a=!1,o=n+1);return-1===o?"":t.slice(i,o)},extname:function(t){e(t);for(var r=-1,n=0,i=-1,o=!0,a=0,h=t.length-1;h>=0;--h){var s=t.charCodeAt(h);if(47!==s)-1===i&&(o=!1,i=h+1),46===s?-1===r?r=h:1!==a&&(a=1):-1!==r&&(a=-1);else if(!o){n=h+1;break}}return-1===r||-1===i||0===a||1===a&&r===i-1&&r===n+1?"":t.slice(r,i)},format:function(t){if(null===t||"object"!=typeof t)throw new TypeError('The "pathObject" argument must be of type Object. Received type '+typeof t);return function(t,e){var r=e.dir||e.root,n=e.base||(e.name||"")+(e.ext||"");return r?r===e.root?r+n:r+"/"+n:n}(0,t)},parse:function(t){e(t);var r={root:"",dir:"",base:"",ext:"",name:""};if(0===t.length)return r;var n,i=t.charCodeAt(0),o=47===i;o?(r.root="/",n=1):n=0;for(var a=-1,h=0,s=-1,f=!0,u=t.length-1,c=0;u>=n;--u)if(47!==(i=t.charCodeAt(u)))-1===s&&(f=!1,s=u+1),46===i?-1===a?a=u:1!==c&&(c=1):-1!==a&&(c=-1);else if(!f){h=u+1;break}return-1===a||-1===s||0===c||1===c&&a===s-1&&a===h+1?-1!==s&&(r.base=r.name=0===h&&o?t.slice(1,s):t.slice(h,s)):(0===h&&o?(r.name=t.slice(1,a),r.base=t.slice(1,s)):(r.name=t.slice(h,a),r.base=t.slice(h,s)),r.ext=t.slice(a,s)),h>0?r.dir=t.slice(0,h-1):o&&(r.dir="/"),r},sep:"/",delimiter:":",win32:null,posix:null};n.posix=n,t.exports=n},465:(t,e,r)=>{Object.defineProperty(e,"__esModule",{value:!0}),e.Utils=e.URI=void 0;var n=r(796);Object.defineProperty(e,"URI",{enumerable:!0,get:function(){return n.URI}});var i=r(679);Object.defineProperty(e,"Utils",{enumerable:!0,get:function(){return i.Utils}})},674:(t,e)=>{if(Object.defineProperty(e,"__esModule",{value:!0}),e.isWindows=void 0,"object"==typeof process)e.isWindows="win32"===process.platform;else if("object"==typeof navigator){var r=navigator.userAgent;e.isWindows=r.indexOf("Windows")>=0}},796:function(t,e,r){var n,i,o=this&&this.__extends||(n=function(t,e){return(n=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var r in e)Object.prototype.hasOwnProperty.call(e,r)&&(t[r]=e[r])})(t,e)},function(t,e){function r(){this.constructor=t}n(t,e),t.prototype=null===e?Object.create(e):(r.prototype=e.prototype,new r)});Object.defineProperty(e,"__esModule",{value:!0}),e.uriToFsPath=e.URI=void 0;var a=r(674),h=/^\w[\w\d+.-]*$/,s=/^\//,f=/^\/\//,u="",c="/",l=/^(([^:/?#]+?):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/,p=function(){function t(t,e,r,n,i,o){void 0===o&&(o=!1),"object"==typeof t?(this.scheme=t.scheme||u,this.authority=t.authority||u,this.path=t.path||u,this.query=t.query||u,this.fragment=t.fragment||u):(this.scheme=function(t,e){return t||e?t:"file"}(t,o),this.authority=e||u,this.path=function(t,e){switch(t){case"https":case"http":case"file":e?e[0]!==c&&(e=c+e):e=c}return e}(this.scheme,r||u),this.query=n||u,this.fragment=i||u,function(t,e){if(!t.scheme&&e)throw new Error('[UriError]: Scheme is missing: {scheme: "", authority: "'+t.authority+'", path: "'+t.path+'", query: "'+t.query+'", fragment: "'+t.fragment+'"}');if(t.scheme&&!h.test(t.scheme))throw new Error("[UriError]: Scheme contains illegal characters.");if(t.path)if(t.authority){if(!s.test(t.path))throw new Error('[UriError]: If a URI contains an authority component, then the path component must either be empty or begin with a slash ("/") character')}else if(f.test(t.path))throw new Error('[UriError]: If a URI does not contain an authority component, then the path cannot begin with two slash characters ("//")')}(this,o))}return t.isUri=function(e){return e instanceof t||!!e&&"string"==typeof e.authority&&"string"==typeof e.fragment&&"string"==typeof e.path&&"string"==typeof e.query&&"string"==typeof e.scheme&&"function"==typeof e.fsPath&&"function"==typeof e.with&&"function"==typeof e.toString},Object.defineProperty(t.prototype,"fsPath",{get:function(){return b(this,!1)},enumerable:!1,configurable:!0}),t.prototype.with=function(t){if(!t)return this;var e=t.scheme,r=t.authority,n=t.path,i=t.query,o=t.fragment;return void 0===e?e=this.scheme:null===e&&(e=u),void 0===r?r=this.authority:null===r&&(r=u),void 0===n?n=this.path:null===n&&(n=u),void 0===i?i=this.query:null===i&&(i=u),void 0===o?o=this.fragment:null===o&&(o=u),e===this.scheme&&r===this.authority&&n===this.path&&i===this.query&&o===this.fragment?this:new g(e,r,n,i,o)},t.parse=function(t,e){void 0===e&&(e=!1);var r=l.exec(t);return r?new g(r[2]||u,_(r[4]||u),_(r[5]||u),_(r[7]||u),_(r[9]||u),e):new g(u,u,u,u,u)},t.file=function(t){var e=u;if(a.isWindows&&(t=t.replace(/\\/g,c)),t[0]===c&&t[1]===c){var r=t.indexOf(c,2);-1===r?(e=t.substring(2),t=c):(e=t.substring(2,r),t=t.substring(r)||c)}return new g("file",e,t,u,u)},t.from=function(t){return new g(t.scheme,t.authority,t.path,t.query,t.fragment)},t.prototype.toString=function(t){return void 0===t&&(t=!1),C(this,t)},t.prototype.toJSON=function(){return this},t.revive=function(e){if(e){if(e instanceof t)return e;var r=new g(e);return r._formatted=e.external,r._fsPath=e._sep===d?e.fsPath:null,r}return e},t}();e.URI=p;var d=a.isWindows?1:void 0,g=function(t){function e(){var e=null!==t&&t.apply(this,arguments)||this;return e._formatted=null,e._fsPath=null,e}return o(e,t),Object.defineProperty(e.prototype,"fsPath",{get:function(){return this._fsPath||(this._fsPath=b(this,!1)),this._fsPath},enumerable:!1,configurable:!0}),e.prototype.toString=function(t){return void 0===t&&(t=!1),t?C(this,!0):(this._formatted||(this._formatted=C(this,!1)),this._formatted)},e.prototype.toJSON=function(){var t={$mid:1};return this._fsPath&&(t.fsPath=this._fsPath,t._sep=d),this._formatted&&(t.external=this._formatted),this.path&&(t.path=this.path),this.scheme&&(t.scheme=this.scheme),this.authority&&(t.authority=this.authority),this.query&&(t.query=this.query),this.fragment&&(t.fragment=this.fragment),t},e}(p),v=((i={})[58]="%3A",i[47]="%2F",i[63]="%3F",i[35]="%23",i[91]="%5B",i[93]="%5D",i[64]="%40",i[33]="%21",i[36]="%24",i[38]="%26",i[39]="%27",i[40]="%28",i[41]="%29",i[42]="%2A",i[43]="%2B",i[44]="%2C",i[59]="%3B",i[61]="%3D",i[32]="%20",i);function m(t,e){for(var r=void 0,n=-1,i=0;i<t.length;i++){var o=t.charCodeAt(i);if(o>=97&&o<=122||o>=65&&o<=90||o>=48&&o<=57||45===o||46===o||95===o||126===o||e&&47===o)-1!==n&&(r+=encodeURIComponent(t.substring(n,i)),n=-1),void 0!==r&&(r+=t.charAt(i));else{void 0===r&&(r=t.substr(0,i));var a=v[o];void 0!==a?(-1!==n&&(r+=encodeURIComponent(t.substring(n,i)),n=-1),r+=a):-1===n&&(n=i)}}return-1!==n&&(r+=encodeURIComponent(t.substring(n))),void 0!==r?r:t}function y(t){for(var e=void 0,r=0;r<t.length;r++){var n=t.charCodeAt(r);35===n||63===n?(void 0===e&&(e=t.substr(0,r)),e+=v[n]):void 0!==e&&(e+=t[r])}return void 0!==e?e:t}function b(t,e){var r;return r=t.authority&&t.path.length>1&&"file"===t.scheme?"//"+t.authority+t.path:47===t.path.charCodeAt(0)&&(t.path.charCodeAt(1)>=65&&t.path.charCodeAt(1)<=90||t.path.charCodeAt(1)>=97&&t.path.charCodeAt(1)<=122)&&58===t.path.charCodeAt(2)?e?t.path.substr(1):t.path[1].toLowerCase()+t.path.substr(2):t.path,a.isWindows&&(r=r.replace(/\//g,"\\")),r}function C(t,e){var r=e?y:m,n="",i=t.scheme,o=t.authority,a=t.path,h=t.query,s=t.fragment;if(i&&(n+=i,n+=":"),(o||"file"===i)&&(n+=c,n+=c),o){var f=o.indexOf("@");if(-1!==f){var u=o.substr(0,f);o=o.substr(f+1),-1===(f=u.indexOf(":"))?n+=r(u,!1):(n+=r(u.substr(0,f),!1),n+=":",n+=r(u.substr(f+1),!1)),n+="@"}-1===(f=(o=o.toLowerCase()).indexOf(":"))?n+=r(o,!1):(n+=r(o.substr(0,f),!1),n+=o.substr(f))}if(a){if(a.length>=3&&47===a.charCodeAt(0)&&58===a.charCodeAt(2))(l=a.charCodeAt(1))>=65&&l<=90&&(a="/"+String.fromCharCode(l+32)+":"+a.substr(3));else if(a.length>=2&&58===a.charCodeAt(1)){var l;(l=a.charCodeAt(0))>=65&&l<=90&&(a=String.fromCharCode(l+32)+":"+a.substr(2))}n+=r(a,!0)}return h&&(n+="?",n+=r(h,!1)),s&&(n+="#",n+=e?s:m(s,!1)),n}function A(t){try{return decodeURIComponent(t)}catch(e){return t.length>3?t.substr(0,3)+A(t.substr(3)):t}}e.uriToFsPath=b;var w=/(%[0-9A-Za-z][0-9A-Za-z])+/g;function _(t){return t.match(w)?t.replace(w,(function(t){return A(t)})):t}},679:function(t,e,r){var n=this&&this.__spreadArrays||function(){for(var t=0,e=0,r=arguments.length;e<r;e++)t+=arguments[e].length;var n=Array(t),i=0;for(e=0;e<r;e++)for(var o=arguments[e],a=0,h=o.length;a<h;a++,i++)n[i]=o[a];return n};Object.defineProperty(e,"__esModule",{value:!0}),e.Utils=void 0;var i,o=r(470),a=o.posix||o;(i=e.Utils||(e.Utils={})).joinPath=function(t){for(var e=[],r=1;r<arguments.length;r++)e[r-1]=arguments[r];return t.with({path:a.join.apply(a,n([t.path],e))})},i.resolvePath=function(t){for(var e=[],r=1;r<arguments.length;r++)e[r-1]=arguments[r];var i=t.path||"/";return t.with({path:a.resolve.apply(a,n([i],e))})},i.dirname=function(t){var e=a.dirname(t.path);return 1===e.length&&46===e.charCodeAt(0)?t:t.with({path:e})},i.basename=function(t){return a.basename(t.path)},i.extname=function(t){return a.extname(t.path)}}},e={};return function r(n){if(e[n])return e[n].exports;var i=e[n]={exports:{}};return t[n].call(i.exports,i,i.exports,r),i.exports}(465)})()}));
+//# sourceMappingURL=index.js.map;
 define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
 
 /*---------------------------------------------------------------------------------------------
@@ -7161,9 +6875,10 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
             }
             var seen = Object.create(null);
             var schemas = [];
+            var normalizedResource = normalizeResourceForMatching(resource);
             for (var _i = 0, _a = this.filePatternAssociations; _i < _a.length; _i++) {
                 var entry = _a[_i];
-                if (entry.matchesPattern(resource)) {
+                if (entry.matchesPattern(normalizedResource)) {
                     for (var _b = 0, _c = entry.getURIs(); _b < _c.length; _b++) {
                         var schemaId = _c[_b];
                         if (!seen[schemaId]) {
@@ -7216,6 +6931,15 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
             return id;
         }
     }
+    function normalizeResourceForMatching(resource) {
+        // remove querues and fragments, normalize drive capitalization
+        try {
+            return vscode_uri_1.URI.parse(resource).with({ fragment: null, query: null }).toString();
+        }
+        catch (e) {
+            return resource;
+        }
+    }
     function toDisplayString(url) {
         try {
             var uri = vscode_uri_1.URI.parse(url);
@@ -7259,7 +6983,7 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
         }
         JSONValidation.prototype.configure = function (raw) {
             if (raw) {
-                this.validationEnabled = raw.validate;
+                this.validationEnabled = raw.validate !== false;
                 this.commentSeverity = raw.allowComments ? undefined : jsonLanguageTypes_1.DiagnosticSeverity.Error;
             }
         };
@@ -7281,22 +7005,24 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
             var getDiagnostics = function (schema) {
                 var trailingCommaSeverity = documentSettings ? toDiagnosticSeverity(documentSettings.trailingCommas) : jsonLanguageTypes_1.DiagnosticSeverity.Error;
                 var commentSeverity = documentSettings ? toDiagnosticSeverity(documentSettings.comments) : _this.commentSeverity;
+                var schemaValidation = (documentSettings === null || documentSettings === void 0 ? void 0 : documentSettings.schemaValidation) ? toDiagnosticSeverity(documentSettings.schemaValidation) : jsonLanguageTypes_1.DiagnosticSeverity.Warning;
+                var schemaRequest = (documentSettings === null || documentSettings === void 0 ? void 0 : documentSettings.schemaRequest) ? toDiagnosticSeverity(documentSettings.schemaRequest) : jsonLanguageTypes_1.DiagnosticSeverity.Warning;
                 if (schema) {
-                    if (schema.errors.length && jsonDocument.root) {
+                    if (schema.errors.length && jsonDocument.root && schemaRequest) {
                         var astRoot = jsonDocument.root;
                         var property = astRoot.type === 'object' ? astRoot.properties[0] : undefined;
                         if (property && property.keyNode.value === '$schema') {
                             var node = property.valueNode || property;
                             var range = jsonLanguageTypes_1.Range.create(textDocument.positionAt(node.offset), textDocument.positionAt(node.offset + node.length));
-                            addProblem(jsonLanguageTypes_1.Diagnostic.create(range, schema.errors[0], jsonLanguageTypes_1.DiagnosticSeverity.Warning, jsonLanguageTypes_1.ErrorCode.SchemaResolveError));
+                            addProblem(jsonLanguageTypes_1.Diagnostic.create(range, schema.errors[0], schemaRequest, jsonLanguageTypes_1.ErrorCode.SchemaResolveError));
                         }
                         else {
                             var range = jsonLanguageTypes_1.Range.create(textDocument.positionAt(astRoot.offset), textDocument.positionAt(astRoot.offset + 1));
-                            addProblem(jsonLanguageTypes_1.Diagnostic.create(range, schema.errors[0], jsonLanguageTypes_1.DiagnosticSeverity.Warning, jsonLanguageTypes_1.ErrorCode.SchemaResolveError));
+                            addProblem(jsonLanguageTypes_1.Diagnostic.create(range, schema.errors[0], schemaRequest, jsonLanguageTypes_1.ErrorCode.SchemaResolveError));
                         }
                     }
-                    else {
-                        var semanticErrors = jsonDocument.validate(textDocument, schema.schema);
+                    else if (schemaValidation) {
+                        var semanticErrors = jsonDocument.validate(textDocument, schema.schema, schemaValidation);
                         if (semanticErrors) {
                             semanticErrors.forEach(addProblem);
                         }
@@ -7644,9 +7370,10 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
                                 limit--;
                                 var range = getRange(document, property);
                                 var selectionRange = getRange(document, property.keyNode);
-                                var symbol = { name: _this.getKeyLabel(property), kind: _this.getSymbolKind(valueNode.type), range: range, selectionRange: selectionRange, children: [] };
+                                var children = [];
+                                var symbol = { name: _this.getKeyLabel(property), kind: _this.getSymbolKind(valueNode.type), range: range, selectionRange: selectionRange, children: children, detail: _this.getDetail(valueNode) };
                                 result.push(symbol);
-                                toVisit.push({ result: symbol.children, node: valueNode });
+                                toVisit.push({ result: children, node: valueNode });
                             }
                             else {
                                 limitExceeded = true;
@@ -7690,6 +7417,23 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
                 return name;
             }
             return "\"" + name + "\"";
+        };
+        JSONDocumentSymbols.prototype.getDetail = function (node) {
+            if (!node) {
+                return undefined;
+            }
+            if (node.type === 'boolean' || node.type === 'number' || node.type === 'null' || node.type === 'string') {
+                return String(node.value);
+            }
+            else {
+                if (node.type === 'array') {
+                    return node.children.length ? undefined : '[]';
+                }
+                else if (node.type === 'object') {
+                    return node.children.length ? undefined : '{}';
+                }
+            }
+            return undefined;
         };
         JSONDocumentSymbols.prototype.findDocumentColors = function (document, doc, context) {
             return this.schemaService.getSchemaForResource(document.uri, doc).then(function (schema) {
@@ -8514,45 +8258,35 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-json-languageservice/services/jsonDefinition',["require", "exports", "../jsonLanguageTypes"], factory);
+        define('vscode-json-languageservice/services/jsonLinks',["require", "exports", "../jsonLanguageTypes"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.findDefinition = void 0;
+    exports.findLinks = void 0;
     var jsonLanguageTypes_1 = require("../jsonLanguageTypes");
-    function findDefinition(document, position, doc) {
-        var offset = document.offsetAt(position);
-        var node = doc.getNodeFromOffset(offset, true);
-        if (!node || !isRef(node)) {
-            return Promise.resolve([]);
-        }
-        var propertyNode = node.parent;
-        var valueNode = propertyNode.valueNode;
-        var path = valueNode.value;
-        var targetNode = findTargetNode(doc, path);
-        if (!targetNode) {
-            return Promise.resolve([]);
-        }
-        var definition = {
-            targetUri: document.uri,
-            originSelectionRange: createRange(document, valueNode),
-            targetRange: createRange(document, targetNode),
-            targetSelectionRange: createRange(document, targetNode)
-        };
-        return Promise.resolve([definition]);
+    function findLinks(document, doc) {
+        var links = [];
+        doc.visit(function (node) {
+            var _a;
+            if (node.type === "property" && node.keyNode.value === "$ref" && ((_a = node.valueNode) === null || _a === void 0 ? void 0 : _a.type) === 'string') {
+                var path = node.valueNode.value;
+                var targetNode = findTargetNode(doc, path);
+                if (targetNode) {
+                    var targetPos = document.positionAt(targetNode.offset);
+                    links.push({
+                        target: document.uri + "#" + (targetPos.line + 1) + "," + (targetPos.character + 1),
+                        range: createRange(document, node.valueNode)
+                    });
+                }
+            }
+            return true;
+        });
+        return Promise.resolve(links);
     }
-    exports.findDefinition = findDefinition;
+    exports.findLinks = findLinks;
     function createRange(document, node) {
-        return jsonLanguageTypes_1.Range.create(document.positionAt(node.offset), document.positionAt(node.offset + node.length));
-    }
-    function isRef(node) {
-        return node.type === 'string' &&
-            node.parent &&
-            node.parent.type === 'property' &&
-            node.parent.valueNode === node &&
-            node.parent.keyNode.value === "$ref" ||
-            false;
+        return jsonLanguageTypes_1.Range.create(document.positionAt(node.offset + 1), document.positionAt(node.offset + node.length - 1));
     }
     function findTargetNode(doc, path) {
         var tokens = parseJSONPointer(path);
@@ -8614,7 +8348,7 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     o[k2] = m[k];
 }));
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -8622,7 +8356,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-json-languageservice/jsonLanguageService',["require", "exports", "./services/jsonCompletion", "./services/jsonHover", "./services/jsonValidation", "./services/jsonDocumentSymbols", "./parser/jsonParser", "./services/configuration", "./services/jsonSchemaService", "./services/jsonFolding", "./services/jsonSelectionRanges", "jsonc-parser", "./jsonLanguageTypes", "./services/jsonDefinition", "./jsonLanguageTypes"], factory);
+        define('vscode-json-languageservice/jsonLanguageService',["require", "exports", "./services/jsonCompletion", "./services/jsonHover", "./services/jsonValidation", "./services/jsonDocumentSymbols", "./parser/jsonParser", "./services/configuration", "./services/jsonSchemaService", "./services/jsonFolding", "./services/jsonSelectionRanges", "jsonc-parser", "./jsonLanguageTypes", "./services/jsonLinks", "./jsonLanguageTypes"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -8639,7 +8373,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     var jsonSelectionRanges_1 = require("./services/jsonSelectionRanges");
     var jsonc_parser_1 = require("jsonc-parser");
     var jsonLanguageTypes_1 = require("./jsonLanguageTypes");
-    var jsonDefinition_1 = require("./services/jsonDefinition");
+    var jsonLinks_1 = require("./services/jsonLinks");
     __exportStar(require("./jsonLanguageTypes"), exports);
     function getLanguageService(params) {
         var promise = params.promiseConstructor || Promise;
@@ -8668,13 +8402,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
             doComplete: jsonCompletion.doComplete.bind(jsonCompletion),
             findDocumentSymbols: jsonDocumentSymbols.findDocumentSymbols.bind(jsonDocumentSymbols),
             findDocumentSymbols2: jsonDocumentSymbols.findDocumentSymbols2.bind(jsonDocumentSymbols),
-            findColorSymbols: function (d, s) { return jsonDocumentSymbols.findDocumentColors(d, s).then(function (s) { return s.map(function (s) { return s.range; }); }); },
             findDocumentColors: jsonDocumentSymbols.findDocumentColors.bind(jsonDocumentSymbols),
             getColorPresentations: jsonDocumentSymbols.getColorPresentations.bind(jsonDocumentSymbols),
             doHover: jsonHover.doHover.bind(jsonHover),
             getFoldingRanges: jsonFolding_1.getFoldingRanges,
             getSelectionRanges: jsonSelectionRanges_1.getSelectionRanges,
-            findDefinition: jsonDefinition_1.findDefinition,
+            findDefinition: function () { return Promise.resolve([]); },
+            findLinks: jsonLinks_1.findLinks,
             format: function (d, r, o) {
                 var range = undefined;
                 if (r) {
@@ -8682,7 +8416,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
                     var length = d.offsetAt(r.end) - offset;
                     range = { offset: offset, length: length };
                 }
-                var options = { tabSize: o ? o.tabSize : 4, insertSpaces: o ? o.insertSpaces : true, eol: '\n' };
+                var options = { tabSize: o ? o.tabSize : 4, insertSpaces: (o === null || o === void 0 ? void 0 : o.insertSpaces) === true, insertFinalNewline: (o === null || o === void 0 ? void 0 : o.insertFinalNewline) === true, eol: '\n' };
                 return jsonc_parser_1.format(d.getText(), range, options).map(function (e) {
                     return jsonLanguageTypes_1.TextEdit.replace(jsonLanguageTypes_1.Range.create(d.positionAt(e.offset), d.positionAt(e.offset + e.length)), e.content);
                 });
@@ -8767,7 +8501,7 @@ define('vs/language/json/jsonWorker',["require", "exports", "vscode-json-languag
                     document = this._getTextDocument(uri);
                     if (document) {
                         jsonDocument = this._languageService.parseJSONDocument(document);
-                        return [2 /*return*/, this._languageService.doValidation(document, jsonDocument)];
+                        return [2 /*return*/, this._languageService.doValidation(document, jsonDocument, this._languageSettings)];
                     }
                     return [2 /*return*/, Promise.resolve([])];
                 });

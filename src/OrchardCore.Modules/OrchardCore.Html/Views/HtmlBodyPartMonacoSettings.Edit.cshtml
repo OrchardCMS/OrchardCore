@@ -1,4 +1,9 @@
 @model OrchardCore.Html.ViewModels.MonacoSettingsViewModel
+@inject OrchardCore.Environment.Shell.ShellSettings shellSettings;
+@{
+    var IStandaloneEditorConstructionOptionsSchemaPath =
+            $"/{shellSettings.RequestUrlPrefix}OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json";
+}
 
 <div id="@Html.IdFor(m => m)" class="type-part-editor type-part-editor-monaco">
     <div class="form-group">
@@ -32,8 +37,9 @@ $(document).ready(function () {
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
             validate: true,
             enableSchemaRequest: true,
+            allowComments: true,
             schemas: [{
-                uri: "https://localhost:5001/OrchardCore.Resources/Scripts/monaco/monaco.json",
+                uri: "@IStandaloneEditorConstructionOptionsSchemaPath",
                 fileMatch: ['*']
             }]
         });

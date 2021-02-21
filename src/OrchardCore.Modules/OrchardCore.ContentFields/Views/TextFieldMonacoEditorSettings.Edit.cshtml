@@ -1,4 +1,9 @@
 @model OrchardCore.ContentFields.ViewModels.MonacoSettingsViewModel
+@inject OrchardCore.Environment.Shell.ShellSettings shellSettings;
+@{
+    var IStandaloneEditorConstructionOptionsSchemaPath =
+            $"/{shellSettings.RequestUrlPrefix}OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json";
+}
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-monaco">
     <div class="form-group">
@@ -8,7 +13,6 @@
         <textarea asp-for="Options" hidden>@Html.Raw(Model.Options)</textarea>
     </div>
 </div>
-
 <script asp-name="monaco" depends-on="admin" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
 $(document).ready(function () {
@@ -29,13 +33,13 @@ $(document).ready(function () {
 
         setTheme();
 
-        debugger;
         // configure the JSON language support with schemas and schema associations
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
             validate: true,
             enableSchemaRequest: true,
+            allowComments: true,
             schemas: [{
-                uri: "/OrchardCore.Resources/Scripts/monaco/monaco.json",
+                uri: "@IStandaloneEditorConstructionOptionsSchemaPath",
                 fileMatch: ['*']
             }]
         });

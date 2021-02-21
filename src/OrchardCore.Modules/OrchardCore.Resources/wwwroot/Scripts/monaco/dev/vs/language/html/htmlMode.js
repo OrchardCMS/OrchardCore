@@ -130,6 +130,17 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
      * ------------------------------------------------------------------------------------------ */
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.TextDocument = exports.EOL = exports.SelectionRange = exports.DocumentLink = exports.FormattingOptions = exports.CodeLens = exports.CodeAction = exports.CodeActionContext = exports.CodeActionKind = exports.DocumentSymbol = exports.SymbolInformation = exports.SymbolTag = exports.SymbolKind = exports.DocumentHighlight = exports.DocumentHighlightKind = exports.SignatureInformation = exports.ParameterInformation = exports.Hover = exports.MarkedString = exports.CompletionList = exports.CompletionItem = exports.InsertTextMode = exports.InsertReplaceEdit = exports.CompletionItemTag = exports.InsertTextFormat = exports.CompletionItemKind = exports.MarkupContent = exports.MarkupKind = exports.TextDocumentItem = exports.OptionalVersionedTextDocumentIdentifier = exports.VersionedTextDocumentIdentifier = exports.TextDocumentIdentifier = exports.WorkspaceChange = exports.WorkspaceEdit = exports.DeleteFile = exports.RenameFile = exports.CreateFile = exports.TextDocumentEdit = exports.AnnotatedTextEdit = exports.ChangeAnnotationIdentifier = exports.ChangeAnnotation = exports.TextEdit = exports.Command = exports.Diagnostic = exports.CodeDescription = exports.DiagnosticTag = exports.DiagnosticSeverity = exports.DiagnosticRelatedInformation = exports.FoldingRange = exports.FoldingRangeKind = exports.ColorPresentation = exports.ColorInformation = exports.Color = exports.LocationLink = exports.Location = exports.Range = exports.Position = exports.uinteger = exports.integer = void 0;
+    var integer;
+    (function (integer) {
+        integer.MIN_VALUE = -2147483648;
+        integer.MAX_VALUE = 2147483647;
+    })(integer = exports.integer || (exports.integer = {}));
+    var uinteger;
+    (function (uinteger) {
+        uinteger.MIN_VALUE = 0;
+        uinteger.MAX_VALUE = 2147483647;
+    })(uinteger = exports.uinteger || (exports.uinteger = {}));
     /**
      * The Position namespace provides helper functions to work with
      * [Position](#Position) literals.
@@ -142,15 +153,21 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          * @param character The position's character.
          */
         function create(line, character) {
+            if (line === Number.MAX_VALUE) {
+                line = uinteger.MAX_VALUE;
+            }
+            if (character === Number.MAX_VALUE) {
+                character = uinteger.MAX_VALUE;
+            }
             return { line: line, character: character };
         }
         Position.create = create;
         /**
-         * Checks whether the given liternal conforms to the [Position](#Position) interface.
+         * Checks whether the given literal conforms to the [Position](#Position) interface.
          */
         function is(value) {
             var candidate = value;
-            return Is.objectLiteral(candidate) && Is.number(candidate.line) && Is.number(candidate.character);
+            return Is.objectLiteral(candidate) && Is.uinteger(candidate.line) && Is.uinteger(candidate.character);
         }
         Position.is = is;
     })(Position = exports.Position || (exports.Position = {}));
@@ -161,7 +178,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
     var Range;
     (function (Range) {
         function create(one, two, three, four) {
-            if (Is.number(one) && Is.number(two) && Is.number(three) && Is.number(four)) {
+            if (Is.uinteger(one) && Is.uinteger(two) && Is.uinteger(three) && Is.uinteger(four)) {
                 return { start: Position.create(one, two), end: Position.create(three, four) };
             }
             else if (Position.is(one) && Position.is(two)) {
@@ -256,10 +273,10 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          */
         function is(value) {
             var candidate = value;
-            return Is.number(candidate.red)
-                && Is.number(candidate.green)
-                && Is.number(candidate.blue)
-                && Is.number(candidate.alpha);
+            return Is.numberRange(candidate.red, 0, 1)
+                && Is.numberRange(candidate.green, 0, 1)
+                && Is.numberRange(candidate.blue, 0, 1)
+                && Is.numberRange(candidate.alpha, 0, 1);
         }
         Color.is = is;
     })(Color = exports.Color || (exports.Color = {}));
@@ -365,9 +382,9 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          */
         function is(value) {
             var candidate = value;
-            return Is.number(candidate.startLine) && Is.number(candidate.startLine)
-                && (Is.undefined(candidate.startCharacter) || Is.number(candidate.startCharacter))
-                && (Is.undefined(candidate.endCharacter) || Is.number(candidate.endCharacter))
+            return Is.uinteger(candidate.startLine) && Is.uinteger(candidate.startLine)
+                && (Is.undefined(candidate.startCharacter) || Is.uinteger(candidate.startCharacter))
+                && (Is.undefined(candidate.endCharacter) || Is.uinteger(candidate.endCharacter))
                 && (Is.undefined(candidate.kind) || Is.string(candidate.kind));
         }
         FoldingRange.is = is;
@@ -441,6 +458,19 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         DiagnosticTag.Deprecated = 2;
     })(DiagnosticTag = exports.DiagnosticTag || (exports.DiagnosticTag = {}));
     /**
+     * The CodeDescription namespace provides functions to deal with descriptions for diagnostic codes.
+     *
+     * @since 3.16.0
+     */
+    var CodeDescription;
+    (function (CodeDescription) {
+        function is(value) {
+            var candidate = value;
+            return candidate !== undefined && candidate !== null && Is.string(candidate.href);
+        }
+        CodeDescription.is = is;
+    })(CodeDescription = exports.CodeDescription || (exports.CodeDescription = {}));
+    /**
      * The Diagnostic namespace provides helper functions to work with
      * [Diagnostic](#Diagnostic) literals.
      */
@@ -470,12 +500,14 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          * Checks whether the given literal conforms to the [Diagnostic](#Diagnostic) interface.
          */
         function is(value) {
+            var _a;
             var candidate = value;
             return Is.defined(candidate)
                 && Range.is(candidate.range)
                 && Is.string(candidate.message)
                 && (Is.number(candidate.severity) || Is.undefined(candidate.severity))
-                && (Is.number(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code))
+                && (Is.integer(candidate.code) || Is.string(candidate.code) || Is.undefined(candidate.code))
+                && (Is.undefined(candidate.codeDescription) || (Is.string((_a = candidate.codeDescription) === null || _a === void 0 ? void 0 : _a.href)))
                 && (Is.string(candidate.source) || Is.undefined(candidate.source))
                 && (Is.undefined(candidate.relatedInformation) || Is.typedArray(candidate.relatedInformation, DiagnosticRelatedInformation.is));
         }
@@ -551,6 +583,75 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         }
         TextEdit.is = is;
     })(TextEdit = exports.TextEdit || (exports.TextEdit = {}));
+    var ChangeAnnotation;
+    (function (ChangeAnnotation) {
+        function create(label, needsConfirmation, description) {
+            var result = { label: label };
+            if (needsConfirmation !== undefined) {
+                result.needsConfirmation = needsConfirmation;
+            }
+            if (description !== undefined) {
+                result.description = description;
+            }
+            return result;
+        }
+        ChangeAnnotation.create = create;
+        function is(value) {
+            var candidate = value;
+            return candidate !== undefined && Is.objectLiteral(candidate) && Is.string(candidate.label) &&
+                (Is.boolean(candidate.needsConfirmation) || candidate.needsConfirmation === undefined) &&
+                (Is.string(candidate.description) || candidate.description === undefined);
+        }
+        ChangeAnnotation.is = is;
+    })(ChangeAnnotation = exports.ChangeAnnotation || (exports.ChangeAnnotation = {}));
+    var ChangeAnnotationIdentifier;
+    (function (ChangeAnnotationIdentifier) {
+        function is(value) {
+            var candidate = value;
+            return typeof candidate === 'string';
+        }
+        ChangeAnnotationIdentifier.is = is;
+    })(ChangeAnnotationIdentifier = exports.ChangeAnnotationIdentifier || (exports.ChangeAnnotationIdentifier = {}));
+    var AnnotatedTextEdit;
+    (function (AnnotatedTextEdit) {
+        /**
+         * Creates an annotated replace text edit.
+         *
+         * @param range The range of text to be replaced.
+         * @param newText The new text.
+         * @param annotation The annotation.
+         */
+        function replace(range, newText, annotation) {
+            return { range: range, newText: newText, annotationId: annotation };
+        }
+        AnnotatedTextEdit.replace = replace;
+        /**
+         * Creates an annotated insert text edit.
+         *
+         * @param position The position to insert the text at.
+         * @param newText The text to be inserted.
+         * @param annotation The annotation.
+         */
+        function insert(position, newText, annotation) {
+            return { range: { start: position, end: position }, newText: newText, annotationId: annotation };
+        }
+        AnnotatedTextEdit.insert = insert;
+        /**
+         * Creates an annotated delete text edit.
+         *
+         * @param range The range of text to be deleted.
+         * @param annotation The annotation.
+         */
+        function del(range, annotation) {
+            return { range: range, newText: '', annotationId: annotation };
+        }
+        AnnotatedTextEdit.del = del;
+        function is(value) {
+            var candidate = value;
+            return TextEdit.is(candidate) && (ChangeAnnotation.is(candidate.annotationId) || ChangeAnnotationIdentifier.is(candidate.annotationId));
+        }
+        AnnotatedTextEdit.is = is;
+    })(AnnotatedTextEdit = exports.AnnotatedTextEdit || (exports.AnnotatedTextEdit = {}));
     /**
      * The TextDocumentEdit namespace provides helper function to create
      * an edit that manipulates a text document.
@@ -567,72 +668,78 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         function is(value) {
             var candidate = value;
             return Is.defined(candidate)
-                && VersionedTextDocumentIdentifier.is(candidate.textDocument)
+                && OptionalVersionedTextDocumentIdentifier.is(candidate.textDocument)
                 && Array.isArray(candidate.edits);
         }
         TextDocumentEdit.is = is;
     })(TextDocumentEdit = exports.TextDocumentEdit || (exports.TextDocumentEdit = {}));
     var CreateFile;
     (function (CreateFile) {
-        function create(uri, options) {
+        function create(uri, options, annotation) {
             var result = {
                 kind: 'create',
                 uri: uri
             };
-            if (options !== void 0 && (options.overwrite !== void 0 || options.ignoreIfExists !== void 0)) {
+            if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
                 result.options = options;
+            }
+            if (annotation !== undefined) {
+                result.annotationId = annotation;
             }
             return result;
         }
         CreateFile.create = create;
         function is(value) {
             var candidate = value;
-            return candidate && candidate.kind === 'create' && Is.string(candidate.uri) &&
-                (candidate.options === void 0 ||
-                    ((candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))));
+            return candidate && candidate.kind === 'create' && Is.string(candidate.uri) && (candidate.options === undefined ||
+                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
         }
         CreateFile.is = is;
     })(CreateFile = exports.CreateFile || (exports.CreateFile = {}));
     var RenameFile;
     (function (RenameFile) {
-        function create(oldUri, newUri, options) {
+        function create(oldUri, newUri, options, annotation) {
             var result = {
                 kind: 'rename',
                 oldUri: oldUri,
                 newUri: newUri
             };
-            if (options !== void 0 && (options.overwrite !== void 0 || options.ignoreIfExists !== void 0)) {
+            if (options !== undefined && (options.overwrite !== undefined || options.ignoreIfExists !== undefined)) {
                 result.options = options;
+            }
+            if (annotation !== undefined) {
+                result.annotationId = annotation;
             }
             return result;
         }
         RenameFile.create = create;
         function is(value) {
             var candidate = value;
-            return candidate && candidate.kind === 'rename' && Is.string(candidate.oldUri) && Is.string(candidate.newUri) &&
-                (candidate.options === void 0 ||
-                    ((candidate.options.overwrite === void 0 || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === void 0 || Is.boolean(candidate.options.ignoreIfExists))));
+            return candidate && candidate.kind === 'rename' && Is.string(candidate.oldUri) && Is.string(candidate.newUri) && (candidate.options === undefined ||
+                ((candidate.options.overwrite === undefined || Is.boolean(candidate.options.overwrite)) && (candidate.options.ignoreIfExists === undefined || Is.boolean(candidate.options.ignoreIfExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
         }
         RenameFile.is = is;
     })(RenameFile = exports.RenameFile || (exports.RenameFile = {}));
     var DeleteFile;
     (function (DeleteFile) {
-        function create(uri, options) {
+        function create(uri, options, annotation) {
             var result = {
                 kind: 'delete',
                 uri: uri
             };
-            if (options !== void 0 && (options.recursive !== void 0 || options.ignoreIfNotExists !== void 0)) {
+            if (options !== undefined && (options.recursive !== undefined || options.ignoreIfNotExists !== undefined)) {
                 result.options = options;
+            }
+            if (annotation !== undefined) {
+                result.annotationId = annotation;
             }
             return result;
         }
         DeleteFile.create = create;
         function is(value) {
             var candidate = value;
-            return candidate && candidate.kind === 'delete' && Is.string(candidate.uri) &&
-                (candidate.options === void 0 ||
-                    ((candidate.options.recursive === void 0 || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === void 0 || Is.boolean(candidate.options.ignoreIfNotExists))));
+            return candidate && candidate.kind === 'delete' && Is.string(candidate.uri) && (candidate.options === undefined ||
+                ((candidate.options.recursive === undefined || Is.boolean(candidate.options.recursive)) && (candidate.options.ignoreIfNotExists === undefined || Is.boolean(candidate.options.ignoreIfNotExists)))) && (candidate.annotationId === undefined || ChangeAnnotationIdentifier.is(candidate.annotationId));
         }
         DeleteFile.is = is;
     })(DeleteFile = exports.DeleteFile || (exports.DeleteFile = {}));
@@ -641,8 +748,8 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         function is(value) {
             var candidate = value;
             return candidate &&
-                (candidate.changes !== void 0 || candidate.documentChanges !== void 0) &&
-                (candidate.documentChanges === void 0 || candidate.documentChanges.every(function (change) {
+                (candidate.changes !== undefined || candidate.documentChanges !== undefined) &&
+                (candidate.documentChanges === undefined || candidate.documentChanges.every(function (change) {
                     if (Is.string(change.kind)) {
                         return CreateFile.is(change) || RenameFile.is(change) || DeleteFile.is(change);
                     }
@@ -654,17 +761,69 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         WorkspaceEdit.is = is;
     })(WorkspaceEdit = exports.WorkspaceEdit || (exports.WorkspaceEdit = {}));
     var TextEditChangeImpl = /** @class */ (function () {
-        function TextEditChangeImpl(edits) {
+        function TextEditChangeImpl(edits, changeAnnotations) {
             this.edits = edits;
+            this.changeAnnotations = changeAnnotations;
         }
-        TextEditChangeImpl.prototype.insert = function (position, newText) {
-            this.edits.push(TextEdit.insert(position, newText));
+        TextEditChangeImpl.prototype.insert = function (position, newText, annotation) {
+            var edit;
+            var id;
+            if (annotation === undefined) {
+                edit = TextEdit.insert(position, newText);
+            }
+            else if (ChangeAnnotationIdentifier.is(annotation)) {
+                id = annotation;
+                edit = AnnotatedTextEdit.insert(position, newText, annotation);
+            }
+            else {
+                this.assertChangeAnnotations(this.changeAnnotations);
+                id = this.changeAnnotations.manage(annotation);
+                edit = AnnotatedTextEdit.insert(position, newText, id);
+            }
+            this.edits.push(edit);
+            if (id !== undefined) {
+                return id;
+            }
         };
-        TextEditChangeImpl.prototype.replace = function (range, newText) {
-            this.edits.push(TextEdit.replace(range, newText));
+        TextEditChangeImpl.prototype.replace = function (range, newText, annotation) {
+            var edit;
+            var id;
+            if (annotation === undefined) {
+                edit = TextEdit.replace(range, newText);
+            }
+            else if (ChangeAnnotationIdentifier.is(annotation)) {
+                id = annotation;
+                edit = AnnotatedTextEdit.replace(range, newText, annotation);
+            }
+            else {
+                this.assertChangeAnnotations(this.changeAnnotations);
+                id = this.changeAnnotations.manage(annotation);
+                edit = AnnotatedTextEdit.replace(range, newText, id);
+            }
+            this.edits.push(edit);
+            if (id !== undefined) {
+                return id;
+            }
         };
-        TextEditChangeImpl.prototype.delete = function (range) {
-            this.edits.push(TextEdit.del(range));
+        TextEditChangeImpl.prototype.delete = function (range, annotation) {
+            var edit;
+            var id;
+            if (annotation === undefined) {
+                edit = TextEdit.del(range);
+            }
+            else if (ChangeAnnotationIdentifier.is(annotation)) {
+                id = annotation;
+                edit = AnnotatedTextEdit.del(range, annotation);
+            }
+            else {
+                this.assertChangeAnnotations(this.changeAnnotations);
+                id = this.changeAnnotations.manage(annotation);
+                edit = AnnotatedTextEdit.del(range, id);
+            }
+            this.edits.push(edit);
+            if (id !== undefined) {
+                return id;
+            }
         };
         TextEditChangeImpl.prototype.add = function (edit) {
             this.edits.push(edit);
@@ -675,7 +834,56 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         TextEditChangeImpl.prototype.clear = function () {
             this.edits.splice(0, this.edits.length);
         };
+        TextEditChangeImpl.prototype.assertChangeAnnotations = function (value) {
+            if (value === undefined) {
+                throw new Error("Text edit change is not configured to manage change annotations.");
+            }
+        };
         return TextEditChangeImpl;
+    }());
+    /**
+     * A helper class
+     */
+    var ChangeAnnotations = /** @class */ (function () {
+        function ChangeAnnotations(annotations) {
+            this._annotations = annotations === undefined ? Object.create(null) : annotations;
+            this._counter = 0;
+            this._size = 0;
+        }
+        ChangeAnnotations.prototype.all = function () {
+            return this._annotations;
+        };
+        Object.defineProperty(ChangeAnnotations.prototype, "size", {
+            get: function () {
+                return this._size;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        ChangeAnnotations.prototype.manage = function (idOrAnnotation, annotation) {
+            var id;
+            if (ChangeAnnotationIdentifier.is(idOrAnnotation)) {
+                id = idOrAnnotation;
+            }
+            else {
+                id = this.nextId();
+                annotation = idOrAnnotation;
+            }
+            if (this._annotations[id] !== undefined) {
+                throw new Error("Id " + id + " is already in use.");
+            }
+            if (annotation === undefined) {
+                throw new Error("No annotation provided for id " + id);
+            }
+            this._annotations[id] = annotation;
+            this._size++;
+            return id;
+        };
+        ChangeAnnotations.prototype.nextId = function () {
+            this._counter++;
+            return this._counter.toString();
+        };
+        return ChangeAnnotations;
     }());
     /**
      * A workspace change helps constructing changes to a workspace.
@@ -684,12 +892,14 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         function WorkspaceChange(workspaceEdit) {
             var _this = this;
             this._textEditChanges = Object.create(null);
-            if (workspaceEdit) {
+            if (workspaceEdit !== undefined) {
                 this._workspaceEdit = workspaceEdit;
                 if (workspaceEdit.documentChanges) {
+                    this._changeAnnotations = new ChangeAnnotations(workspaceEdit.changeAnnotations);
+                    workspaceEdit.changeAnnotations = this._changeAnnotations.all();
                     workspaceEdit.documentChanges.forEach(function (change) {
                         if (TextDocumentEdit.is(change)) {
-                            var textEditChange = new TextEditChangeImpl(change.edits);
+                            var textEditChange = new TextEditChangeImpl(change.edits, _this._changeAnnotations);
                             _this._textEditChanges[change.textDocument.uri] = textEditChange;
                         }
                     });
@@ -701,6 +911,9 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
                     });
                 }
             }
+            else {
+                this._workspaceEdit = {};
+            }
         }
         Object.defineProperty(WorkspaceChange.prototype, "edit", {
             /**
@@ -708,22 +921,27 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
              * use to be returned from a workspace edit operation like rename.
              */
             get: function () {
+                this.initDocumentChanges();
+                if (this._changeAnnotations !== undefined) {
+                    if (this._changeAnnotations.size === 0) {
+                        this._workspaceEdit.changeAnnotations = undefined;
+                    }
+                    else {
+                        this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+                    }
+                }
                 return this._workspaceEdit;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         WorkspaceChange.prototype.getTextEditChange = function (key) {
-            if (VersionedTextDocumentIdentifier.is(key)) {
-                if (!this._workspaceEdit) {
-                    this._workspaceEdit = {
-                        documentChanges: []
-                    };
-                }
-                if (!this._workspaceEdit.documentChanges) {
+            if (OptionalVersionedTextDocumentIdentifier.is(key)) {
+                this.initDocumentChanges();
+                if (this._workspaceEdit.documentChanges === undefined) {
                     throw new Error('Workspace edit is not configured for document changes.');
                 }
-                var textDocument = key;
+                var textDocument = { uri: key.uri, version: key.version };
                 var result = this._textEditChanges[textDocument.uri];
                 if (!result) {
                     var edits = [];
@@ -732,18 +950,14 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
                         edits: edits
                     };
                     this._workspaceEdit.documentChanges.push(textDocumentEdit);
-                    result = new TextEditChangeImpl(edits);
+                    result = new TextEditChangeImpl(edits, this._changeAnnotations);
                     this._textEditChanges[textDocument.uri] = result;
                 }
                 return result;
             }
             else {
-                if (!this._workspaceEdit) {
-                    this._workspaceEdit = {
-                        changes: Object.create(null)
-                    };
-                }
-                if (!this._workspaceEdit.changes) {
+                this.initChanges();
+                if (this._workspaceEdit.changes === undefined) {
                     throw new Error('Workspace edit is not configured for normal text edit changes.');
                 }
                 var result = this._textEditChanges[key];
@@ -756,21 +970,94 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
                 return result;
             }
         };
-        WorkspaceChange.prototype.createFile = function (uri, options) {
-            this.checkDocumentChanges();
-            this._workspaceEdit.documentChanges.push(CreateFile.create(uri, options));
+        WorkspaceChange.prototype.initDocumentChanges = function () {
+            if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+                this._changeAnnotations = new ChangeAnnotations();
+                this._workspaceEdit.documentChanges = [];
+                this._workspaceEdit.changeAnnotations = this._changeAnnotations.all();
+            }
         };
-        WorkspaceChange.prototype.renameFile = function (oldUri, newUri, options) {
-            this.checkDocumentChanges();
-            this._workspaceEdit.documentChanges.push(RenameFile.create(oldUri, newUri, options));
+        WorkspaceChange.prototype.initChanges = function () {
+            if (this._workspaceEdit.documentChanges === undefined && this._workspaceEdit.changes === undefined) {
+                this._workspaceEdit.changes = Object.create(null);
+            }
         };
-        WorkspaceChange.prototype.deleteFile = function (uri, options) {
-            this.checkDocumentChanges();
-            this._workspaceEdit.documentChanges.push(DeleteFile.create(uri, options));
-        };
-        WorkspaceChange.prototype.checkDocumentChanges = function () {
-            if (!this._workspaceEdit || !this._workspaceEdit.documentChanges) {
+        WorkspaceChange.prototype.createFile = function (uri, optionsOrAnnotation, options) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
                 throw new Error('Workspace edit is not configured for document changes.');
+            }
+            var annotation;
+            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+                annotation = optionsOrAnnotation;
+            }
+            else {
+                options = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === undefined) {
+                operation = CreateFile.create(uri, options);
+            }
+            else {
+                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+                operation = CreateFile.create(uri, options, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== undefined) {
+                return id;
+            }
+        };
+        WorkspaceChange.prototype.renameFile = function (oldUri, newUri, optionsOrAnnotation, options) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
+                throw new Error('Workspace edit is not configured for document changes.');
+            }
+            var annotation;
+            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+                annotation = optionsOrAnnotation;
+            }
+            else {
+                options = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === undefined) {
+                operation = RenameFile.create(oldUri, newUri, options);
+            }
+            else {
+                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+                operation = RenameFile.create(oldUri, newUri, options, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== undefined) {
+                return id;
+            }
+        };
+        WorkspaceChange.prototype.deleteFile = function (uri, optionsOrAnnotation, options) {
+            this.initDocumentChanges();
+            if (this._workspaceEdit.documentChanges === undefined) {
+                throw new Error('Workspace edit is not configured for document changes.');
+            }
+            var annotation;
+            if (ChangeAnnotation.is(optionsOrAnnotation) || ChangeAnnotationIdentifier.is(optionsOrAnnotation)) {
+                annotation = optionsOrAnnotation;
+            }
+            else {
+                options = optionsOrAnnotation;
+            }
+            var operation;
+            var id;
+            if (annotation === undefined) {
+                operation = DeleteFile.create(uri, options);
+            }
+            else {
+                id = ChangeAnnotationIdentifier.is(annotation) ? annotation : this._changeAnnotations.manage(annotation);
+                operation = DeleteFile.create(uri, options, id);
+            }
+            this._workspaceEdit.documentChanges.push(operation);
+            if (id !== undefined) {
+                return id;
             }
         };
         return WorkspaceChange;
@@ -819,10 +1106,34 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.number(candidate.version));
+            return Is.defined(candidate) && Is.string(candidate.uri) && Is.integer(candidate.version);
         }
         VersionedTextDocumentIdentifier.is = is;
     })(VersionedTextDocumentIdentifier = exports.VersionedTextDocumentIdentifier || (exports.VersionedTextDocumentIdentifier = {}));
+    /**
+     * The OptionalVersionedTextDocumentIdentifier namespace provides helper functions to work with
+     * [OptionalVersionedTextDocumentIdentifier](#OptionalVersionedTextDocumentIdentifier) literals.
+     */
+    var OptionalVersionedTextDocumentIdentifier;
+    (function (OptionalVersionedTextDocumentIdentifier) {
+        /**
+         * Creates a new OptionalVersionedTextDocumentIdentifier literal.
+         * @param uri The document's uri.
+         * @param uri The document's text.
+         */
+        function create(uri, version) {
+            return { uri: uri, version: version };
+        }
+        OptionalVersionedTextDocumentIdentifier.create = create;
+        /**
+         * Checks whether the given literal conforms to the [OptionalVersionedTextDocumentIdentifier](#OptionalVersionedTextDocumentIdentifier) interface.
+         */
+        function is(value) {
+            var candidate = value;
+            return Is.defined(candidate) && Is.string(candidate.uri) && (candidate.version === null || Is.integer(candidate.version));
+        }
+        OptionalVersionedTextDocumentIdentifier.is = is;
+    })(OptionalVersionedTextDocumentIdentifier = exports.OptionalVersionedTextDocumentIdentifier || (exports.OptionalVersionedTextDocumentIdentifier = {}));
     /**
      * The TextDocumentItem namespace provides helper functions to work with
      * [TextDocumentItem](#TextDocumentItem) literals.
@@ -845,7 +1156,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.number(candidate.version) && Is.string(candidate.text);
+            return Is.defined(candidate) && Is.string(candidate.uri) && Is.string(candidate.languageId) && Is.integer(candidate.version) && Is.string(candidate.text);
         }
         TextDocumentItem.is = is;
     })(TextDocumentItem = exports.TextDocumentItem || (exports.TextDocumentItem = {}));
@@ -937,7 +1248,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          * the end of the snippet. Placeholders with equal identifiers are linked,
          * that is typing in one will update others too.
          *
-         * See also: https://github.com/Microsoft/vscode/blob/master/src/vs/editor/contrib/snippet/common/snippet.md
+         * See also: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#snippet_syntax
          */
         InsertTextFormat.Snippet = 2;
     })(InsertTextFormat = exports.InsertTextFormat || (exports.InsertTextFormat = {}));
@@ -954,6 +1265,56 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          */
         CompletionItemTag.Deprecated = 1;
     })(CompletionItemTag = exports.CompletionItemTag || (exports.CompletionItemTag = {}));
+    /**
+     * The InsertReplaceEdit namespace provides functions to deal with insert / replace edits.
+     *
+     * @since 3.16.0
+     */
+    var InsertReplaceEdit;
+    (function (InsertReplaceEdit) {
+        /**
+         * Creates a new insert / replace edit
+         */
+        function create(newText, insert, replace) {
+            return { newText: newText, insert: insert, replace: replace };
+        }
+        InsertReplaceEdit.create = create;
+        /**
+         * Checks whether the given literal conforms to the [InsertReplaceEdit](#InsertReplaceEdit) interface.
+         */
+        function is(value) {
+            var candidate = value;
+            return candidate && Is.string(candidate.newText) && Range.is(candidate.insert) && Range.is(candidate.replace);
+        }
+        InsertReplaceEdit.is = is;
+    })(InsertReplaceEdit = exports.InsertReplaceEdit || (exports.InsertReplaceEdit = {}));
+    /**
+     * How whitespace and indentation is handled during completion
+     * item insertion.
+     *
+     * @since 3.16.0
+     */
+    var InsertTextMode;
+    (function (InsertTextMode) {
+        /**
+         * The insertion or replace strings is taken as it is. If the
+         * value is multi line the lines below the cursor will be
+         * inserted using the indentation defined in the string value.
+         * The client will not apply any kind of adjustments to the
+         * string.
+         */
+        InsertTextMode.asIs = 1;
+        /**
+         * The editor adjusts leading whitespace of new lines so that
+         * they match the indentation up to the cursor of the line for
+         * which the item is accepted.
+         *
+         * Consider a line like this: <2tabs><cursor><3tabs>foo. Accepting a
+         * multi line completion item is indented using 2 tabs and all
+         * following lines inserted will be indented using 2 tabs as well.
+         */
+        InsertTextMode.adjustIndentation = 2;
+    })(InsertTextMode = exports.InsertTextMode || (exports.InsertTextMode = {}));
     /**
      * The CompletionItem namespace provides functions to deal with
      * completion items.
@@ -1015,7 +1376,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
             var candidate = value;
             return !!candidate && Is.objectLiteral(candidate) && (MarkupContent.is(candidate.contents) ||
                 MarkedString.is(candidate.contents) ||
-                Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === void 0 || Range.is(value.range));
+                Is.typedArray(candidate.contents, MarkedString.is)) && (value.range === undefined || Range.is(value.range));
         }
         Hover.is = is;
     })(Hover = exports.Hover || (exports.Hover = {}));
@@ -1132,7 +1493,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
     })(SymbolKind = exports.SymbolKind || (exports.SymbolKind = {}));
     /**
      * Symbol tags are extra annotations that tweak the rendering of a symbol.
-     * @since 3.15
+     * @since 3.16
      */
     var SymbolTag;
     (function (SymbolTag) {
@@ -1185,7 +1546,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
                 range: range,
                 selectionRange: selectionRange
             };
-            if (children !== void 0) {
+            if (children !== undefined) {
                 result.children = children;
             }
             return result;
@@ -1199,9 +1560,10 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
             return candidate &&
                 Is.string(candidate.name) && Is.number(candidate.kind) &&
                 Range.is(candidate.range) && Range.is(candidate.selectionRange) &&
-                (candidate.detail === void 0 || Is.string(candidate.detail)) &&
-                (candidate.deprecated === void 0 || Is.boolean(candidate.deprecated)) &&
-                (candidate.children === void 0 || Array.isArray(candidate.children));
+                (candidate.detail === undefined || Is.string(candidate.detail)) &&
+                (candidate.deprecated === undefined || Is.boolean(candidate.deprecated)) &&
+                (candidate.children === undefined || Array.isArray(candidate.children)) &&
+                (candidate.tags === undefined || Array.isArray(candidate.tags));
         }
         DocumentSymbol.is = is;
     })(DocumentSymbol = exports.DocumentSymbol || (exports.DocumentSymbol = {}));
@@ -1289,7 +1651,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          */
         function create(diagnostics, only) {
             var result = { diagnostics: diagnostics };
-            if (only !== void 0 && only !== null) {
+            if (only !== undefined && only !== null) {
                 result.only = only;
             }
             return result;
@@ -1300,21 +1662,26 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === void 0 || Is.typedArray(candidate.only, Is.string));
+            return Is.defined(candidate) && Is.typedArray(candidate.diagnostics, Diagnostic.is) && (candidate.only === undefined || Is.typedArray(candidate.only, Is.string));
         }
         CodeActionContext.is = is;
     })(CodeActionContext = exports.CodeActionContext || (exports.CodeActionContext = {}));
     var CodeAction;
     (function (CodeAction) {
-        function create(title, commandOrEdit, kind) {
+        function create(title, kindOrCommandOrEdit, kind) {
             var result = { title: title };
-            if (Command.is(commandOrEdit)) {
-                result.command = commandOrEdit;
+            var checkKind = true;
+            if (typeof kindOrCommandOrEdit === 'string') {
+                checkKind = false;
+                result.kind = kindOrCommandOrEdit;
+            }
+            else if (Command.is(kindOrCommandOrEdit)) {
+                result.command = kindOrCommandOrEdit;
             }
             else {
-                result.edit = commandOrEdit;
+                result.edit = kindOrCommandOrEdit;
             }
-            if (kind !== void 0) {
+            if (checkKind && kind !== undefined) {
                 result.kind = kind;
             }
             return result;
@@ -1323,12 +1690,12 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         function is(value) {
             var candidate = value;
             return candidate && Is.string(candidate.title) &&
-                (candidate.diagnostics === void 0 || Is.typedArray(candidate.diagnostics, Diagnostic.is)) &&
-                (candidate.kind === void 0 || Is.string(candidate.kind)) &&
-                (candidate.edit !== void 0 || candidate.command !== void 0) &&
-                (candidate.command === void 0 || Command.is(candidate.command)) &&
-                (candidate.isPreferred === void 0 || Is.boolean(candidate.isPreferred)) &&
-                (candidate.edit === void 0 || WorkspaceEdit.is(candidate.edit));
+                (candidate.diagnostics === undefined || Is.typedArray(candidate.diagnostics, Diagnostic.is)) &&
+                (candidate.kind === undefined || Is.string(candidate.kind)) &&
+                (candidate.edit !== undefined || candidate.command !== undefined) &&
+                (candidate.command === undefined || Command.is(candidate.command)) &&
+                (candidate.isPreferred === undefined || Is.boolean(candidate.isPreferred)) &&
+                (candidate.edit === undefined || WorkspaceEdit.is(candidate.edit));
         }
         CodeAction.is = is;
     })(CodeAction = exports.CodeAction || (exports.CodeAction = {}));
@@ -1376,7 +1743,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.number(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
+            return Is.defined(candidate) && Is.uinteger(candidate.tabSize) && Is.boolean(candidate.insertSpaces);
         }
         FormattingOptions.is = is;
     })(FormattingOptions = exports.FormattingOptions || (exports.FormattingOptions = {}));
@@ -1444,7 +1811,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
          */
         function is(value) {
             var candidate = value;
-            return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.number(candidate.lineCount)
+            return Is.defined(candidate) && Is.string(candidate.uri) && (Is.undefined(candidate.languageId) || Is.string(candidate.languageId)) && Is.uinteger(candidate.lineCount)
                 && Is.func(candidate.getText) && Is.func(candidate.positionAt) && Is.func(candidate.offsetAt) ? true : false;
         }
         TextDocument.is = is;
@@ -1506,6 +1873,9 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
             return data;
         }
     })(TextDocument = exports.TextDocument || (exports.TextDocument = {}));
+    /**
+     * @deprecated Use the text document from the new vscode-languageserver-textdocument package.
+     */
     var FullTextDocument = /** @class */ (function () {
         function FullTextDocument(uri, languageId, version, content) {
             this._uri = uri;
@@ -1518,21 +1888,21 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
             get: function () {
                 return this._uri;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(FullTextDocument.prototype, "languageId", {
             get: function () {
                 return this._languageId;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(FullTextDocument.prototype, "version", {
             get: function () {
                 return this._version;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         FullTextDocument.prototype.getText = function (range) {
@@ -1608,7 +1978,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
             get: function () {
                 return this.getLineOffsets().length;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         return FullTextDocument;
@@ -1636,6 +2006,18 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
             return toString.call(value) === '[object Number]';
         }
         Is.number = number;
+        function numberRange(value, min, max) {
+            return toString.call(value) === '[object Number]' && min <= value && value <= max;
+        }
+        Is.numberRange = numberRange;
+        function integer(value) {
+            return toString.call(value) === '[object Number]' && -2147483648 <= value && value <= 2147483647;
+        }
+        Is.integer = integer;
+        function uinteger(value) {
+            return toString.call(value) === '[object Number]' && 0 <= value && value <= 2147483647;
+        }
+        Is.uinteger = uinteger;
         function func(value) {
             return toString.call(value) === '[object Function]';
         }
@@ -1653,7 +2035,7 @@ define('vscode-nls', ['vscode-nls/vscode-nls'], function (main) { return main; }
         Is.typedArray = typedArray;
     })(Is || (Is = {}));
 });
-
+//# sourceMappingURL=main.js.map;
 define('vscode-languageserver-types', ['vscode-languageserver-types/main'], function (main) { return main; });
 
 (function (factory) {
@@ -5068,6 +5450,10 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     exports.isLetterOrDigit = isLetterOrDigit;
 });
 
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -5077,11 +5463,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
         define('vscode-html-languageservice/utils/object',["require", "exports"], factory);
     }
 })(function (require, exports) {
-    /*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-    'use strict';
+    "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.isDefined = void 0;
     function isDefined(obj) {
@@ -5222,19 +5604,22 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
      * Generate Documentation used in hover/complete
      * From `documentation` and `references`
      */
-    function generateDocumentation(item, doesSupportMarkdown) {
+    function generateDocumentation(item, settings, doesSupportMarkdown) {
+        if (settings === void 0) { settings = {}; }
         var result = {
             kind: doesSupportMarkdown ? 'markdown' : 'plaintext',
             value: ''
         };
-        if (item.description) {
+        if (item.description && settings.documentation !== false) {
             var normalizedDescription = markup_1.normalizeMarkupContent(item.description);
             if (normalizedDescription) {
                 result.value += normalizedDescription.value;
             }
         }
-        if (item.references && item.references.length > 0) {
-            result.value += "\n\n";
+        if (item.references && item.references.length > 0 && settings.references !== false) {
+            if (result.value.length) {
+                result.value += "\n\n";
+            }
             if (doesSupportMarkdown) {
                 result.value += item.references.map(function (r) {
                     return "[" + r.name + "](" + r.url + ")";
@@ -5542,13 +5927,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/services/htmlCompletion',["require", "exports", "vscode-languageserver-types", "../parser/htmlScanner", "../htmlLanguageTypes", "../parser/htmlEntities", "vscode-nls", "../utils/strings", "../languageFacts/fact", "../utils/object", "../languageFacts/dataProvider", "./pathCompletion"], factory);
+        define('vscode-html-languageservice/services/htmlCompletion',["require", "exports", "../parser/htmlScanner", "../htmlLanguageTypes", "../parser/htmlEntities", "vscode-nls", "../utils/strings", "../languageFacts/fact", "../utils/object", "../languageFacts/dataProvider", "./pathCompletion"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.HTMLCompletion = void 0;
-    var vscode_languageserver_types_1 = require("vscode-languageserver-types");
     var htmlScanner_1 = require("../parser/htmlScanner");
     var htmlLanguageTypes_1 = require("../htmlLanguageTypes");
     var htmlEntities_1 = require("../parser/htmlEntities");
@@ -5633,10 +6017,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     provider.provideTags().forEach(function (tag) {
                         result.items.push({
                             label: tag.name,
-                            kind: vscode_languageserver_types_1.CompletionItemKind.Property,
-                            documentation: dataProvider_1.generateDocumentation(tag, doesSupportMarkdown),
-                            textEdit: vscode_languageserver_types_1.TextEdit.replace(range, tag.name),
-                            insertTextFormat: vscode_languageserver_types_1.InsertTextFormat.PlainText
+                            kind: htmlLanguageTypes_1.CompletionItemKind.Property,
+                            documentation: dataProvider_1.generateDocumentation(tag, undefined, doesSupportMarkdown),
+                            textEdit: htmlLanguageTypes_1.TextEdit.replace(range, tag.name),
+                            insertTextFormat: htmlLanguageTypes_1.InsertTextFormat.PlainText
                         });
                     });
                 });
@@ -5669,16 +6053,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     if (tag && (!curr.closed || curr.endTagStart && (curr.endTagStart > offset))) {
                         var item = {
                             label: '/' + tag,
-                            kind: vscode_languageserver_types_1.CompletionItemKind.Property,
+                            kind: htmlLanguageTypes_1.CompletionItemKind.Property,
                             filterText: '/' + tag,
-                            textEdit: vscode_languageserver_types_1.TextEdit.replace(range, '/' + tag + closeTag),
-                            insertTextFormat: vscode_languageserver_types_1.InsertTextFormat.PlainText
+                            textEdit: htmlLanguageTypes_1.TextEdit.replace(range, '/' + tag + closeTag),
+                            insertTextFormat: htmlLanguageTypes_1.InsertTextFormat.PlainText
                         };
                         var startIndent = getLineIndent(curr.start);
                         var endIndent = getLineIndent(afterOpenBracket - 1);
                         if (startIndent !== null && endIndent !== null && startIndent !== endIndent) {
                             var insertText = startIndent + '</' + tag + closeTag;
-                            item.textEdit = vscode_languageserver_types_1.TextEdit.replace(getReplaceRange(afterOpenBracket - 1 - endIndent.length), insertText);
+                            item.textEdit = htmlLanguageTypes_1.TextEdit.replace(getReplaceRange(afterOpenBracket - 1 - endIndent.length), insertText);
                             item.filterText = endIndent + '</' + tag;
                         }
                         result.items.push(item);
@@ -5693,11 +6077,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     provider.provideTags().forEach(function (tag) {
                         result.items.push({
                             label: '/' + tag.name,
-                            kind: vscode_languageserver_types_1.CompletionItemKind.Property,
-                            documentation: dataProvider_1.generateDocumentation(tag, doesSupportMarkdown),
-                            filterText: '/' + tag + closeTag,
-                            textEdit: vscode_languageserver_types_1.TextEdit.replace(range, '/' + tag + closeTag),
-                            insertTextFormat: vscode_languageserver_types_1.InsertTextFormat.PlainText
+                            kind: htmlLanguageTypes_1.CompletionItemKind.Property,
+                            documentation: dataProvider_1.generateDocumentation(tag, undefined, doesSupportMarkdown),
+                            filterText: '/' + tag.name + closeTag,
+                            textEdit: htmlLanguageTypes_1.TextEdit.replace(range, '/' + tag.name + closeTag),
+                            insertTextFormat: htmlLanguageTypes_1.InsertTextFormat.PlainText
                         });
                     });
                 });
@@ -5711,10 +6095,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     var pos = document.positionAt(tagCloseEnd);
                     result.items.push({
                         label: '</' + tag + '>',
-                        kind: vscode_languageserver_types_1.CompletionItemKind.Property,
+                        kind: htmlLanguageTypes_1.CompletionItemKind.Property,
                         filterText: '</' + tag + '>',
-                        textEdit: vscode_languageserver_types_1.TextEdit.insert(pos, '$0</' + tag + '>'),
-                        insertTextFormat: vscode_languageserver_types_1.InsertTextFormat.Snippet
+                        textEdit: htmlLanguageTypes_1.TextEdit.insert(pos, '$0</' + tag + '>'),
+                        insertTextFormat: htmlLanguageTypes_1.InsertTextFormat.Snippet
                     });
                 }
                 return result;
@@ -5752,10 +6136,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                         }
                         result.items.push({
                             label: attr.name,
-                            kind: attr.valueSet === 'handler' ? vscode_languageserver_types_1.CompletionItemKind.Function : vscode_languageserver_types_1.CompletionItemKind.Value,
-                            documentation: dataProvider_1.generateDocumentation(attr, doesSupportMarkdown),
-                            textEdit: vscode_languageserver_types_1.TextEdit.replace(range, codeSnippet),
-                            insertTextFormat: vscode_languageserver_types_1.InsertTextFormat.Snippet,
+                            kind: attr.valueSet === 'handler' ? htmlLanguageTypes_1.CompletionItemKind.Function : htmlLanguageTypes_1.CompletionItemKind.Value,
+                            documentation: dataProvider_1.generateDocumentation(attr, undefined, doesSupportMarkdown),
+                            textEdit: htmlLanguageTypes_1.TextEdit.replace(range, codeSnippet),
+                            insertTextFormat: htmlLanguageTypes_1.InsertTextFormat.Snippet,
                             command: command
                         });
                     });
@@ -5780,9 +6164,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 }
                 Object.keys(dataAttributes).forEach(function (attr) { return result.items.push({
                     label: attr,
-                    kind: vscode_languageserver_types_1.CompletionItemKind.Value,
-                    textEdit: vscode_languageserver_types_1.TextEdit.replace(range, dataAttributes[attr]),
-                    insertTextFormat: vscode_languageserver_types_1.InsertTextFormat.Snippet
+                    kind: htmlLanguageTypes_1.CompletionItemKind.Value,
+                    textEdit: htmlLanguageTypes_1.TextEdit.replace(range, dataAttributes[attr]),
+                    insertTextFormat: htmlLanguageTypes_1.InsertTextFormat.Snippet
                 }); });
             }
             function collectAttributeValueSuggestions(valueStart, valueEnd) {
@@ -5826,10 +6210,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                         result.items.push({
                             label: value.name,
                             filterText: insertText,
-                            kind: vscode_languageserver_types_1.CompletionItemKind.Unit,
-                            documentation: dataProvider_1.generateDocumentation(value, doesSupportMarkdown),
-                            textEdit: vscode_languageserver_types_1.TextEdit.replace(range, insertText),
-                            insertTextFormat: vscode_languageserver_types_1.InsertTextFormat.PlainText
+                            kind: htmlLanguageTypes_1.CompletionItemKind.Unit,
+                            documentation: dataProvider_1.generateDocumentation(value, undefined, doesSupportMarkdown),
+                            textEdit: htmlLanguageTypes_1.TextEdit.replace(range, insertText),
+                            insertTextFormat: htmlLanguageTypes_1.InsertTextFormat.PlainText
                         });
                     });
                 });
@@ -5863,16 +6247,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     characterStart--;
                 }
                 if (k >= 0 && text[k] === '&') {
-                    var range = vscode_languageserver_types_1.Range.create(vscode_languageserver_types_1.Position.create(position.line, characterStart - 1), position);
+                    var range = htmlLanguageTypes_1.Range.create(htmlLanguageTypes_1.Position.create(position.line, characterStart - 1), position);
                     for (var entity in htmlEntities_1.entities) {
                         if (strings_1.endsWith(entity, ';')) {
                             var label = '&' + entity;
                             result.items.push({
                                 label: label,
-                                kind: vscode_languageserver_types_1.CompletionItemKind.Keyword,
+                                kind: htmlLanguageTypes_1.CompletionItemKind.Keyword,
                                 documentation: localize('entity.propose', "Character entity representing '" + htmlEntities_1.entities[entity] + "'"),
-                                textEdit: vscode_languageserver_types_1.TextEdit.replace(range, label),
-                                insertTextFormat: vscode_languageserver_types_1.InsertTextFormat.PlainText
+                                textEdit: htmlLanguageTypes_1.TextEdit.replace(range, label),
+                                insertTextFormat: htmlLanguageTypes_1.InsertTextFormat.PlainText
                             });
                         }
                     }
@@ -5883,10 +6267,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 var range = getReplaceRange(replaceStart, replaceEnd);
                 result.items.push({
                     label: '!DOCTYPE',
-                    kind: vscode_languageserver_types_1.CompletionItemKind.Property,
+                    kind: htmlLanguageTypes_1.CompletionItemKind.Property,
                     documentation: 'A preamble for an HTML document.',
-                    textEdit: vscode_languageserver_types_1.TextEdit.replace(range, '!DOCTYPE html>'),
-                    insertTextFormat: vscode_languageserver_types_1.InsertTextFormat.PlainText
+                    textEdit: htmlLanguageTypes_1.TextEdit.replace(range, '!DOCTYPE html>'),
+                    insertTextFormat: htmlLanguageTypes_1.InsertTextFormat.PlainText
                 });
             }
             var token = scanner.scan();
@@ -6045,7 +6429,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     return this.supportsMarkdown;
                 }
                 var documentationFormat = (_c = (_b = (_a = this.lsOptions.clientCapabilities.textDocument) === null || _a === void 0 ? void 0 : _a.completion) === null || _b === void 0 ? void 0 : _b.completionItem) === null || _c === void 0 ? void 0 : _c.documentationFormat;
-                this.supportsMarkdown = Array.isArray(documentationFormat) && documentationFormat.indexOf(vscode_languageserver_types_1.MarkupKind.Markdown) !== -1;
+                this.supportsMarkdown = Array.isArray(documentationFormat) && documentationFormat.indexOf(htmlLanguageTypes_1.MarkupKind.Markdown) !== -1;
             }
             return this.supportsMarkdown;
         };
@@ -6090,27 +6474,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/services/htmlHover',["require", "exports", "../parser/htmlScanner", "vscode-languageserver-types", "../htmlLanguageTypes", "../utils/object", "../languageFacts/dataProvider"], factory);
+        define('vscode-html-languageservice/services/htmlHover',["require", "exports", "../parser/htmlScanner", "../htmlLanguageTypes", "../utils/object", "../languageFacts/dataProvider", "../parser/htmlEntities", "../utils/strings", "vscode-nls"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.HTMLHover = void 0;
     var htmlScanner_1 = require("../parser/htmlScanner");
-    var vscode_languageserver_types_1 = require("vscode-languageserver-types");
     var htmlLanguageTypes_1 = require("../htmlLanguageTypes");
     var object_1 = require("../utils/object");
     var dataProvider_1 = require("../languageFacts/dataProvider");
+    var htmlEntities_1 = require("../parser/htmlEntities");
+    var strings_1 = require("../utils/strings");
+    var nls = require("vscode-nls");
+    var localize = nls.loadMessageBundle();
     var HTMLHover = /** @class */ (function () {
         function HTMLHover(lsOptions, dataManager) {
             this.lsOptions = lsOptions;
             this.dataManager = dataManager;
         }
-        HTMLHover.prototype.doHover = function (document, position, htmlDocument) {
+        HTMLHover.prototype.doHover = function (document, position, htmlDocument, options) {
             var convertContents = this.convertContents.bind(this);
             var doesSupportMarkdown = this.doesSupportMarkdown();
             var offset = document.offsetAt(position);
             var node = htmlDocument.findNodeAt(offset);
+            var text = document.getText();
             if (!node || !node.tag) {
                 return null;
             }
@@ -6120,7 +6508,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     var hover = null;
                     provider.provideTags().forEach(function (tag) {
                         if (tag.name.toLowerCase() === currTag.toLowerCase()) {
-                            var markupContent = dataProvider_1.generateDocumentation(tag, doesSupportMarkdown);
+                            var markupContent = dataProvider_1.generateDocumentation(tag, options, doesSupportMarkdown);
                             if (!markupContent) {
                                 markupContent = {
                                     kind: doesSupportMarkdown ? 'markdown' : 'plaintext',
@@ -6148,7 +6536,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     var hover = null;
                     provider.provideAttributes(currTag).forEach(function (attr) {
                         if (currAttr === attr.name && attr.description) {
-                            var contentsDoc = dataProvider_1.generateDocumentation(attr, doesSupportMarkdown);
+                            var contentsDoc = dataProvider_1.generateDocumentation(attr, options, doesSupportMarkdown);
                             if (contentsDoc) {
                                 hover = { contents: contentsDoc, range: range };
                             }
@@ -6175,7 +6563,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     var hover = null;
                     provider.provideValues(currTag, currAttr).forEach(function (attrValue) {
                         if (currAttrValue === attrValue.name && attrValue.description) {
-                            var contentsDoc = dataProvider_1.generateDocumentation(attrValue, doesSupportMarkdown);
+                            var contentsDoc = dataProvider_1.generateDocumentation(attrValue, options, doesSupportMarkdown);
                             if (contentsDoc) {
                                 hover = { contents: contentsDoc, range: range };
                             }
@@ -6197,6 +6585,38 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 }
                 return null;
             }
+            function getEntityHover(text, range) {
+                var currEntity = filterEntity(text);
+                for (var entity in htmlEntities_1.entities) {
+                    var hover = null;
+                    var label = '&' + entity;
+                    if (currEntity === label) {
+                        var code = htmlEntities_1.entities[entity].charCodeAt(0).toString(16).toUpperCase();
+                        var hex = 'U+';
+                        if (code.length < 4) {
+                            var zeroes = 4 - code.length;
+                            var k = 0;
+                            while (k < zeroes) {
+                                hex += '0';
+                                k += 1;
+                            }
+                        }
+                        hex += code;
+                        var contentsDoc = localize('entity.propose', "Character entity representing '" + htmlEntities_1.entities[entity] + "', unicode equivalent '" + hex + "'");
+                        if (contentsDoc) {
+                            hover = { contents: contentsDoc, range: range };
+                        }
+                        else {
+                            hover = null;
+                        }
+                    }
+                    if (hover) {
+                        hover.contents = convertContents(hover.contents);
+                        return hover;
+                    }
+                }
+                return null;
+            }
             function getTagNameRange(tokenType, startOffset) {
                 var scanner = htmlScanner_1.createScanner(document.getText(), startOffset);
                 var token = scanner.scan();
@@ -6207,6 +6627,45 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     return { start: document.positionAt(scanner.getTokenOffset()), end: document.positionAt(scanner.getTokenEnd()) };
                 }
                 return null;
+            }
+            function getEntityRange() {
+                var k = offset - 1;
+                var characterStart = position.character;
+                while (k >= 0 && strings_1.isLetterOrDigit(text, k)) {
+                    k--;
+                    characterStart--;
+                }
+                var n = k + 1;
+                var characterEnd = characterStart;
+                while (strings_1.isLetterOrDigit(text, n)) {
+                    n++;
+                    characterEnd++;
+                }
+                if (k >= 0 && text[k] === '&') {
+                    var range = null;
+                    if (text[n] === ';') {
+                        range = htmlLanguageTypes_1.Range.create(htmlLanguageTypes_1.Position.create(position.line, characterStart), htmlLanguageTypes_1.Position.create(position.line, characterEnd + 1));
+                    }
+                    else {
+                        range = htmlLanguageTypes_1.Range.create(htmlLanguageTypes_1.Position.create(position.line, characterStart), htmlLanguageTypes_1.Position.create(position.line, characterEnd));
+                    }
+                    return range;
+                }
+                return null;
+            }
+            function filterEntity(text) {
+                var k = offset - 1;
+                var newText = '&';
+                while (k >= 0 && strings_1.isLetterOrDigit(text, k)) {
+                    k--;
+                }
+                k = k + 1;
+                while (strings_1.isLetterOrDigit(text, k)) {
+                    newText += text[k];
+                    k += 1;
+                }
+                newText += ';';
+                return newText;
             }
             if (node.endTagStart && offset >= node.endTagStart) {
                 var tagRange_1 = getTagNameRange(htmlLanguageTypes_1.TokenType.EndTag, node.endTagStart);
@@ -6224,6 +6683,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 var tag = node.tag;
                 var attr = document.getText(attrRange);
                 return getAttrHover(tag, attr, attrRange);
+            }
+            var entityRange = getEntityRange();
+            if (entityRange) {
+                return getEntityHover(text, entityRange);
             }
             function scanAttrAndAttrValue(nodeStart, attrValueStart) {
                 var scanner = htmlScanner_1.createScanner(document.getText(), nodeStart);
@@ -6281,7 +6744,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                     return this.supportsMarkdown;
                 }
                 var contentFormat = (_c = (_b = (_a = this.lsOptions.clientCapabilities) === null || _a === void 0 ? void 0 : _a.textDocument) === null || _b === void 0 ? void 0 : _b.hover) === null || _c === void 0 ? void 0 : _c.contentFormat;
-                this.supportsMarkdown = Array.isArray(contentFormat) && contentFormat.indexOf(vscode_languageserver_types_1.MarkupKind.Markdown) !== -1;
+                this.supportsMarkdown = Array.isArray(contentFormat) && contentFormat.indexOf(htmlLanguageTypes_1.MarkupKind.Markdown) !== -1;
             }
             return this.supportsMarkdown;
         };
@@ -6329,7 +6792,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 });
 
 // copied from js-beautify/js/lib/beautify-css.js
-// version: 1.11.0
+// version: 1.13.4
 /* AUTO-GENERATED. DO NOT MODIFY. */
 /*
 
@@ -6989,10 +7452,10 @@ function Options(options, merge_child_field) {
 
   this.indent_empty_lines = this._get_boolean('indent_empty_lines');
 
-  // valid templating languages ['django', 'erb', 'handlebars', 'php']
+  // valid templating languages ['django', 'erb', 'handlebars', 'php', 'smarty']
   // For now, 'auto' = all off for javascript, all on for html (and inline javascript).
   // other values ignored
-  this.templating = this._get_selection_list('templating', ['auto', 'none', 'django', 'erb', 'handlebars', 'php'], ['auto']);
+  this.templating = this._get_selection_list('templating', ['auto', 'none', 'django', 'erb', 'handlebars', 'php', 'smarty'], ['auto']);
 }
 
 Options.prototype._get_array = function(name, default_value) {
@@ -7536,13 +7999,12 @@ Beautifier.prototype.eatString = function(endChars) {
 // the first newline will be output
 Beautifier.prototype.eatWhitespace = function(allowAtLeastOneNewLine) {
   var result = whitespaceChar.test(this._input.peek());
-  var isFirstNewLine = true;
-
+  var newline_count = 0;
   while (whitespaceChar.test(this._input.peek())) {
     this._ch = this._input.next();
     if (allowAtLeastOneNewLine && this._ch === '\n') {
-      if (this._options.preserve_newlines || isFirstNewLine) {
-        isFirstNewLine = false;
+      if (newline_count === 0 || newline_count < this._options.max_preserve_newlines) {
+        newline_count++;
         this._output.add_new_line(true);
       }
     }
@@ -7736,23 +8198,34 @@ Beautifier.prototype.beautify = function() {
         insidePropertyValue = false;
         this.outdent();
       }
-      this.indent();
-      this._output.space_before_token = true;
-      this.print_string(this._ch);
 
       // when entering conditional groups, only rulesets are allowed
       if (enteringConditionalGroup) {
         enteringConditionalGroup = false;
-        insideRule = (this._indentLevel > this._nestedLevel);
+        insideRule = (this._indentLevel >= this._nestedLevel);
       } else {
         // otherwise, declarations are also allowed
-        insideRule = (this._indentLevel >= this._nestedLevel);
+        insideRule = (this._indentLevel >= this._nestedLevel - 1);
       }
       if (this._options.newline_between_rules && insideRule) {
         if (this._output.previous_line && this._output.previous_line.item(-1) !== '{') {
           this._output.ensure_empty_line_above('/', ',');
         }
       }
+
+      this._output.space_before_token = true;
+
+      // The difference in print_string and indent order is necessary to indent the '{' correctly
+      if (this._options.brace_style === 'expand') {
+        this._output.add_new_line();
+        this.print_string(this._ch);
+        this.indent();
+        this._output.set_indent(this._indentLevel);
+      } else {
+        this.indent();
+        this.print_string(this._ch);
+      }
+
       this.eatWhitespace(true);
       this._output.add_new_line();
     } else if (this._ch === '}') {
@@ -7960,6 +8433,16 @@ function Options(options) {
   var space_around_selector_separator = this._get_boolean('space_around_selector_separator');
   this.space_around_combinator = this._get_boolean('space_around_combinator') || space_around_selector_separator;
 
+  var brace_style_split = this._get_selection_list('brace_style', ['collapse', 'expand', 'end-expand', 'none', 'preserve-inline']);
+  this.brace_style = 'collapse';
+  for (var bs = 0; bs < brace_style_split.length; bs++) {
+    if (brace_style_split[bs] !== 'expand') {
+      // default to collapse, as only collapse|expand is implemented for now
+      this.brace_style = 'collapse';
+    } else {
+      this.brace_style = brace_style_split[bs];
+    }
+  }
 }
 Options.prototype = new BaseOptions();
 
@@ -7994,7 +8477,7 @@ if (typeof define === "function" && define.amd) {
 }());
 
 // copied from js-beautify/js/lib/beautify-html.js
-// version: 1.11.0
+// version: 1.13.4
 /* AUTO-GENERATED. DO NOT MODIFY. */
 /*
 
@@ -8724,10 +9207,10 @@ function Options(options, merge_child_field) {
 
   this.indent_empty_lines = this._get_boolean('indent_empty_lines');
 
-  // valid templating languages ['django', 'erb', 'handlebars', 'php']
+  // valid templating languages ['django', 'erb', 'handlebars', 'php', 'smarty']
   // For now, 'auto' = all off for javascript, all on for html (and inline javascript).
   // other values ignored
-  this.templating = this._get_selection_list('templating', ['auto', 'none', 'django', 'erb', 'handlebars', 'php'], ['auto']);
+  this.templating = this._get_selection_list('templating', ['auto', 'none', 'django', 'erb', 'handlebars', 'php', 'smarty'], ['auto']);
 }
 
 Options.prototype._get_array = function(name, default_value) {
@@ -9606,7 +10089,8 @@ var template_names = {
   django: false,
   erb: false,
   handlebars: false,
-  php: false
+  php: false,
+  smarty: false
 };
 
 // This lets templates appear anywhere we would do a readUntil
@@ -9632,7 +10116,10 @@ function TemplatablePattern(input_scanner, parent) {
     // django coflicts with handlebars a bit.
     django: pattern.starting_with(/{%/).until_after(/%}/),
     django_value: pattern.starting_with(/{{/).until_after(/}}/),
-    django_comment: pattern.starting_with(/{#/).until_after(/#}/)
+    django_comment: pattern.starting_with(/{#/).until_after(/#}/),
+    smarty: pattern.starting_with(/{(?=[^}{\s\n])/).until_after(/[^\s\n]}/),
+    smarty_comment: pattern.starting_with(/{\*/).until_after(/\*}/),
+    smarty_literal: pattern.starting_with(/{literal}/).until_after(/{\/literal}/)
   };
 }
 TemplatablePattern.prototype = new Pattern();
@@ -9706,8 +10193,13 @@ TemplatablePattern.prototype.__set_templated_pattern = function() {
   }
   if (!this._disabled.django) {
     items.push(this.__patterns.django._starting_pattern.source);
+    // The starting pattern for django is more complex because it has different
+    // patterns for value, comment, and other sections
     items.push(this.__patterns.django_value._starting_pattern.source);
     items.push(this.__patterns.django_comment._starting_pattern.source);
+  }
+  if (!this._disabled.smarty) {
+    items.push(this.__patterns.smarty._starting_pattern.source);
   }
 
   if (this._until_pattern) {
@@ -9752,6 +10244,17 @@ TemplatablePattern.prototype._read_template = function() {
           this.__patterns.django_comment.read();
         resulting_string = resulting_string ||
           this.__patterns.django.read();
+      }
+    }
+    if (!this._disabled.smarty) {
+      // smarty cannot be enabled with django or handlebars enabled
+      if (this._disabled.django && this._disabled.handlebars) {
+        resulting_string = resulting_string ||
+          this.__patterns.smarty_comment.read();
+        resulting_string = resulting_string ||
+          this.__patterns.smarty_literal.read();
+        resulting_string = resulting_string ||
+          this.__patterns.smarty.read();
       }
     }
   }
@@ -10367,6 +10870,7 @@ Beautifier.prototype._handle_tag_open = function(printer, raw_token, last_tag_to
   var parser_token = this._get_tag_open_token(raw_token);
 
   if ((last_tag_token.is_unformatted || last_tag_token.is_content_unformatted) &&
+    !last_tag_token.is_empty_element &&
     raw_token.type === TOKEN.TAG_OPEN && raw_token.text.indexOf('</') === 0) {
     // End element tags for unformatted or content_unformatted elements
     // are printed raw to keep any newlines inside them exactly the same.
@@ -10480,12 +10984,8 @@ Beautifier.prototype._set_tag_position = function(printer, raw_token, parser_tok
       // and do an ending needed
       if (this._do_optional_end_element(parser_token)) {
         if (!parser_token.is_inline_element) {
-          if (parser_token.parent) {
-            parser_token.parent.multiline_content = true;
-          }
           printer.print_newline(false);
         }
-
       }
 
       this._tag_stack.record_tag(parser_token); //push it on the tag stack
@@ -10522,21 +11022,28 @@ Beautifier.prototype._set_tag_position = function(printer, raw_token, parser_tok
     if (parser_token.tag_name === '!--' && last_token.type === TOKEN.TAG_CLOSE &&
       last_tag_token.is_end_tag && parser_token.text.indexOf('\n') === -1) {
       //Do nothing. Leave comments on same line.
-    } else if (!parser_token.is_inline_element && !parser_token.is_unformatted) {
-      printer.print_newline(false);
-    }
-  } else if (parser_token.is_unformatted || parser_token.is_content_unformatted) {
-    if (!parser_token.is_inline_element && !parser_token.is_unformatted) {
-      printer.print_newline(false);
+    } else {
+      if (!(parser_token.is_inline_element || parser_token.is_unformatted)) {
+        printer.print_newline(false);
+      }
+      this._calcluate_parent_multiline(printer, parser_token);
     }
   } else if (parser_token.is_end_tag) { //this tag is a double tag so check for tag-ending
-    if ((parser_token.start_tag_token && parser_token.start_tag_token.multiline_content) ||
-      !(parser_token.is_inline_element ||
-        (last_tag_token.is_inline_element) ||
-        (last_token.type === TOKEN.TAG_CLOSE &&
-          parser_token.start_tag_token === last_tag_token) ||
-        (last_token.type === 'TK_CONTENT')
-      )) {
+    var do_end_expand = false;
+
+    // deciding whether a block is multiline should not be this hard
+    do_end_expand = parser_token.start_tag_token && parser_token.start_tag_token.multiline_content;
+    do_end_expand = do_end_expand || (!parser_token.is_inline_element &&
+      !(last_tag_token.is_inline_element || last_tag_token.is_unformatted) &&
+      !(last_token.type === TOKEN.TAG_CLOSE && parser_token.start_tag_token === last_tag_token) &&
+      last_token.type !== 'TK_CONTENT'
+    );
+
+    if (parser_token.is_content_unformatted || parser_token.is_unformatted) {
+      do_end_expand = false;
+    }
+
+    if (do_end_expand) {
       printer.print_newline(false);
     }
   } else { // it's a start-tag
@@ -10552,12 +11059,19 @@ Beautifier.prototype._set_tag_position = function(printer, raw_token, parser_tok
       }
     }
 
-    if (!parser_token.is_inline_element && last_token.type !== 'TK_CONTENT') {
-      if (parser_token.parent) {
-        parser_token.parent.multiline_content = true;
-      }
+    if (!(parser_token.is_inline_element || parser_token.is_unformatted) &&
+      (last_token.type !== 'TK_CONTENT' || parser_token.is_content_unformatted)) {
       printer.print_newline(false);
     }
+
+    this._calcluate_parent_multiline(printer, parser_token);
+  }
+};
+
+Beautifier.prototype._calcluate_parent_multiline = function(printer, parser_token) {
+  if (parser_token.parent && printer._output.just_added_newline() &&
+    !((parser_token.is_inline_element || parser_token.is_unformatted) && parser_token.parent.is_inline_element)) {
+    parser_token.parent.multiline_content = true;
   }
 };
 
@@ -10902,8 +11416,8 @@ Tokenizer.prototype._get_next_token = function(previous_token, open_token) { // 
 
   token = token || this._read_open_handlebars(c, open_token);
   token = token || this._read_attribute(c, previous_token, open_token);
-  token = token || this._read_raw_content(c, previous_token, open_token);
   token = token || this._read_close(c, open_token);
+  token = token || this._read_raw_content(c, previous_token, open_token);
   token = token || this._read_content_word(c);
   token = token || this._read_comment_or_cdata(c);
   token = token || this._read_processing(c);
@@ -11066,7 +11580,9 @@ Tokenizer.prototype._read_raw_content = function(c, previous_token, open_token) 
   var resulting_string = '';
   if (open_token && open_token.text[0] === '{') {
     resulting_string = this.__patterns.handlebars_raw_close.read();
-  } else if (previous_token.type === TOKEN.TAG_CLOSE && (previous_token.opened.text[0] === '<')) {
+  } else if (previous_token.type === TOKEN.TAG_CLOSE &&
+    previous_token.opened.text[0] === '<' && previous_token.text[0] !== '/') {
+    // ^^ empty tag has no content 
     var tag_name = previous_token.opened.text.substr(1).toLowerCase();
     if (tag_name === 'script' || tag_name === 'style') {
       // Script and style tags are allowed to have comments wrapping their content
@@ -11078,6 +11594,7 @@ Tokenizer.prototype._read_raw_content = function(c, previous_token, open_token) 
       }
       resulting_string = this._input.readUntil(new RegExp('</' + tag_name + '[\\n\\r\\t ]*?>', 'ig'));
     } else if (this._is_content_unformatted(tag_name)) {
+
       resulting_string = this._input.readUntil(new RegExp('</' + tag_name + '[\\n\\r\\t ]*?>', 'ig'));
     }
   }
@@ -11158,13 +11675,13 @@ if (typeof define === "function" && define.amd) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/services/htmlFormatter',["require", "exports", "vscode-languageserver-types", "../beautify/beautify-html", "../utils/strings"], factory);
+        define('vscode-html-languageservice/services/htmlFormatter',["require", "exports", "../htmlLanguageTypes", "../beautify/beautify-html", "../utils/strings"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.format = void 0;
-    var vscode_languageserver_types_1 = require("vscode-languageserver-types");
+    var htmlLanguageTypes_1 = require("../htmlLanguageTypes");
     var beautify_html_1 = require("../beautify/beautify-html");
     var strings_1 = require("../utils/strings");
     function format(document, range, options) {
@@ -11197,7 +11714,7 @@ if (typeof define === "function" && define.amd) {
             if (extendedEnd === value.length || isEOL(value, extendedEnd)) {
                 endOffset = extendedEnd;
             }
-            range = vscode_languageserver_types_1.Range.create(document.positionAt(startOffset), document.positionAt(endOffset));
+            range = htmlLanguageTypes_1.Range.create(document.positionAt(startOffset), document.positionAt(endOffset));
             // Do not modify if substring starts in inside an element
             // Ending inside an element is fine as it doesn't cause formatting errors
             var firstHalf = value.substring(0, startOffset);
@@ -11212,12 +11729,12 @@ if (typeof define === "function" && define.amd) {
             includesEnd = endOffset === value.length;
             value = value.substring(startOffset, endOffset);
             if (startOffset !== 0) {
-                var startOfLineOffset = document.offsetAt(vscode_languageserver_types_1.Position.create(range.start.line, 0));
+                var startOfLineOffset = document.offsetAt(htmlLanguageTypes_1.Position.create(range.start.line, 0));
                 initialIndentLevel = computeIndentLevel(document.getText(), startOfLineOffset, options);
             }
         }
         else {
-            range = vscode_languageserver_types_1.Range.create(vscode_languageserver_types_1.Position.create(0, 0), document.positionAt(value.length));
+            range = htmlLanguageTypes_1.Range.create(htmlLanguageTypes_1.Position.create(0, 0), document.positionAt(value.length));
         }
         var htmlOptions = {
             indent_size: tabSize,
@@ -11234,7 +11751,10 @@ if (typeof define === "function" && define.amd) {
             extra_liners: getTagsFormatOption(options, 'extraLiners', void 0),
             wrap_attributes: getFormatOption(options, 'wrapAttributes', 'auto'),
             wrap_attributes_indent_size: getFormatOption(options, 'wrapAttributesIndentSize', void 0),
-            eol: '\n'
+            eol: '\n',
+            indent_scripts: getFormatOption(options, 'indentScripts', 'normal'),
+            templating: getTemplatingFormatOption(options, 'all'),
+            unformatted_content_delimiter: getFormatOption(options, 'unformattedContentDelimiter', ''),
         };
         var result = beautify_html_1.html_beautify(trimLeft(value), htmlOptions);
         if (initialIndentLevel > 0) {
@@ -11272,6 +11792,13 @@ if (typeof define === "function" && define.amd) {
         }
         return dflt;
     }
+    function getTemplatingFormatOption(options, dflt) {
+        var value = getFormatOption(options, 'templating', dflt);
+        if (value === true) {
+            return ['auto'];
+        }
+        return ['none'];
+    }
     function computeIndentLevel(content, offset, options) {
         var i = offset;
         var nChars = 0;
@@ -11294,7 +11821,7 @@ if (typeof define === "function" && define.amd) {
     function getEOL(document) {
         var text = document.getText();
         if (document.lineCount > 1) {
-            var to = document.offsetAt(vscode_languageserver_types_1.Position.create(1, 0));
+            var to = document.offsetAt(htmlLanguageTypes_1.Position.create(1, 0));
             var from = to;
             while (from > 0 && isEOL(text, from - 1)) {
                 from--;
@@ -11311,662 +11838,8 @@ if (typeof define === "function" && define.amd) {
     }
 });
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-(function (factory) {
-    if (typeof module === "object" && typeof module.exports === "object") {
-        var v = factory(require, exports);
-        if (v !== undefined) module.exports = v;
-    }
-    else if (typeof define === "function" && define.amd) {
-        define('vscode-uri/index',["require", "exports"], factory);
-    }
-})(function (require, exports) {
-    /*---------------------------------------------------------------------------------------------
-     *  Copyright (c) Microsoft Corporation. All rights reserved.
-     *  Licensed under the MIT License. See License.txt in the project root for license information.
-     *--------------------------------------------------------------------------------------------*/
-    'use strict';
-    var _a;
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var isWindows;
-    if (typeof process === 'object') {
-        isWindows = process.platform === 'win32';
-    }
-    else if (typeof navigator === 'object') {
-        var userAgent = navigator.userAgent;
-        isWindows = userAgent.indexOf('Windows') >= 0;
-    }
-    function isHighSurrogate(charCode) {
-        return (0xD800 <= charCode && charCode <= 0xDBFF);
-    }
-    function isLowSurrogate(charCode) {
-        return (0xDC00 <= charCode && charCode <= 0xDFFF);
-    }
-    function isLowerAsciiHex(code) {
-        return code >= 97 /* a */ && code <= 102 /* f */;
-    }
-    function isLowerAsciiLetter(code) {
-        return code >= 97 /* a */ && code <= 122 /* z */;
-    }
-    function isUpperAsciiLetter(code) {
-        return code >= 65 /* A */ && code <= 90 /* Z */;
-    }
-    function isAsciiLetter(code) {
-        return isLowerAsciiLetter(code) || isUpperAsciiLetter(code);
-    }
-    //#endregion
-    var _schemePattern = /^\w[\w\d+.-]*$/;
-    var _singleSlashStart = /^\//;
-    var _doubleSlashStart = /^\/\//;
-    function _validateUri(ret, _strict) {
-        // scheme, must be set
-        if (!ret.scheme && _strict) {
-            throw new Error("[UriError]: Scheme is missing: {scheme: \"\", authority: \"" + ret.authority + "\", path: \"" + ret.path + "\", query: \"" + ret.query + "\", fragment: \"" + ret.fragment + "\"}");
-        }
-        // scheme, https://tools.ietf.org/html/rfc3986#section-3.1
-        // ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-        if (ret.scheme && !_schemePattern.test(ret.scheme)) {
-            throw new Error('[UriError]: Scheme contains illegal characters.');
-        }
-        // path, http://tools.ietf.org/html/rfc3986#section-3.3
-        // If a URI contains an authority component, then the path component
-        // must either be empty or begin with a slash ("/") character.  If a URI
-        // does not contain an authority component, then the path cannot begin
-        // with two slash characters ("//").
-        if (ret.path) {
-            if (ret.authority) {
-                if (!_singleSlashStart.test(ret.path)) {
-                    throw new Error('[UriError]: If a URI contains an authority component, then the path component must either be empty or begin with a slash ("/") character');
-                }
-            }
-            else {
-                if (_doubleSlashStart.test(ret.path)) {
-                    throw new Error('[UriError]: If a URI does not contain an authority component, then the path cannot begin with two slash characters ("//")');
-                }
-            }
-        }
-    }
-    // for a while we allowed uris *without* schemes and this is the migration
-    // for them, e.g. an uri without scheme and without strict-mode warns and falls
-    // back to the file-scheme. that should cause the least carnage and still be a
-    // clear warning
-    function _schemeFix(scheme, _strict) {
-        if (!scheme && !_strict) {
-            return 'file';
-        }
-        return scheme;
-    }
-    // implements a bit of https://tools.ietf.org/html/rfc3986#section-5
-    function _referenceResolution(scheme, path) {
-        // the slash-character is our 'default base' as we don't
-        // support constructing URIs relative to other URIs. This
-        // also means that we alter and potentially break paths.
-        // see https://tools.ietf.org/html/rfc3986#section-5.1.4
-        switch (scheme) {
-            case 'https':
-            case 'http':
-            case 'file':
-                if (!path) {
-                    path = _slash;
-                }
-                else if (path[0] !== _slash) {
-                    path = _slash + path;
-                }
-                break;
-        }
-        return path;
-    }
-    var _empty = '';
-    var _slash = '/';
-    var _regexp = /^(([^:/?#]+?):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
-    /**
-     * Uniform Resource Identifier (URI) http://tools.ietf.org/html/rfc3986.
-     * This class is a simple parser which creates the basic component parts
-     * (http://tools.ietf.org/html/rfc3986#section-3) with minimal validation
-     * and encoding.
-     *
-     * ```txt
-     *       foo://example.com:8042/over/there?name=ferret#nose
-     *       \_/   \______________/\_________/ \_________/ \__/
-     *        |           |            |            |        |
-     *     scheme     authority       path        query   fragment
-     *        |   _____________________|__
-     *       / \ /                        \
-     *       urn:example:animal:ferret:nose
-     * ```
-     */
-    var URI = /** @class */ (function () {
-        /**
-         * @internal
-         */
-        function URI(schemeOrData, authority, path, query, fragment, _strict) {
-            if (_strict === void 0) { _strict = false; }
-            if (typeof schemeOrData === 'object') {
-                this.scheme = schemeOrData.scheme || _empty;
-                this.authority = schemeOrData.authority || _empty;
-                this.path = schemeOrData.path || _empty;
-                this.query = schemeOrData.query || _empty;
-                this.fragment = schemeOrData.fragment || _empty;
-                // no validation because it's this URI
-                // that creates uri components.
-                // _validateUri(this);
-            }
-            else {
-                this.scheme = _schemeFix(schemeOrData, _strict);
-                this.authority = authority || _empty;
-                this.path = _referenceResolution(this.scheme, path || _empty);
-                this.query = query || _empty;
-                this.fragment = fragment || _empty;
-                _validateUri(this, _strict);
-            }
-        }
-        URI.isUri = function (thing) {
-            if (thing instanceof URI) {
-                return true;
-            }
-            if (!thing) {
-                return false;
-            }
-            return typeof thing.authority === 'string'
-                && typeof thing.fragment === 'string'
-                && typeof thing.path === 'string'
-                && typeof thing.query === 'string'
-                && typeof thing.scheme === 'string'
-                && typeof thing.fsPath === 'function'
-                && typeof thing.with === 'function'
-                && typeof thing.toString === 'function';
-        };
-        Object.defineProperty(URI.prototype, "fsPath", {
-            // ---- filesystem path -----------------------
-            /**
-             * Returns a string representing the corresponding file system path of this URI.
-             * Will handle UNC paths, normalizes windows drive letters to lower-case, and uses the
-             * platform specific path separator.
-             *
-             * * Will *not* validate the path for invalid characters and semantics.
-             * * Will *not* look at the scheme of this URI.
-             * * The result shall *not* be used for display purposes but for accessing a file on disk.
-             *
-             *
-             * The *difference* to `URI#path` is the use of the platform specific separator and the handling
-             * of UNC paths. See the below sample of a file-uri with an authority (UNC path).
-             *
-             * ```ts
-                const u = URI.parse('file://server/c$/folder/file.txt')
-                u.authority === 'server'
-                u.path === '/shares/c$/file.txt'
-                u.fsPath === '\\server\c$\folder\file.txt'
-            ```
-             *
-             * Using `URI#path` to read a file (using fs-apis) would not be enough because parts of the path,
-             * namely the server name, would be missing. Therefore `URI#fsPath` exists - it's sugar to ease working
-             * with URIs that represent files on disk (`file` scheme).
-             */
-            get: function () {
-                // if (this.scheme !== 'file') {
-                // 	console.warn(`[UriError] calling fsPath with scheme ${this.scheme}`);
-                // }
-                return uriToFsPath(this, false);
-            },
-            enumerable: true,
-            configurable: true
-        });
-        // ---- modify to new -------------------------
-        URI.prototype.with = function (change) {
-            if (!change) {
-                return this;
-            }
-            var scheme = change.scheme, authority = change.authority, path = change.path, query = change.query, fragment = change.fragment;
-            if (scheme === undefined) {
-                scheme = this.scheme;
-            }
-            else if (scheme === null) {
-                scheme = _empty;
-            }
-            if (authority === undefined) {
-                authority = this.authority;
-            }
-            else if (authority === null) {
-                authority = _empty;
-            }
-            if (path === undefined) {
-                path = this.path;
-            }
-            else if (path === null) {
-                path = _empty;
-            }
-            if (query === undefined) {
-                query = this.query;
-            }
-            else if (query === null) {
-                query = _empty;
-            }
-            if (fragment === undefined) {
-                fragment = this.fragment;
-            }
-            else if (fragment === null) {
-                fragment = _empty;
-            }
-            if (scheme === this.scheme
-                && authority === this.authority
-                && path === this.path
-                && query === this.query
-                && fragment === this.fragment) {
-                return this;
-            }
-            return new _URI(scheme, authority, path, query, fragment);
-        };
-        // ---- parse & validate ------------------------
-        /**
-         * Creates a new URI from a string, e.g. `http://www.msft.com/some/path`,
-         * `file:///usr/home`, or `scheme:with/path`.
-         *
-         * @param value A string which represents an URI (see `URI#toString`).
-         */
-        URI.parse = function (value, _strict) {
-            if (_strict === void 0) { _strict = false; }
-            var match = _regexp.exec(value);
-            if (!match) {
-                return new _URI(_empty, _empty, _empty, _empty, _empty);
-            }
-            return new _URI(match[2] || _empty, percentDecode(match[4] || _empty), percentDecode(match[5] || _empty), percentDecode(match[7] || _empty), percentDecode(match[9] || _empty), _strict);
-        };
-        /**
-         * Creates a new URI from a file system path, e.g. `c:\my\files`,
-         * `/usr/home`, or `\\server\share\some\path`.
-         *
-         * The *difference* between `URI#parse` and `URI#file` is that the latter treats the argument
-         * as path, not as stringified-uri. E.g. `URI.file(path)` is **not the same as**
-         * `URI.parse('file://' + path)` because the path might contain characters that are
-         * interpreted (# and ?). See the following sample:
-         * ```ts
-        const good = URI.file('/coding/c#/project1');
-        good.scheme === 'file';
-        good.path === '/coding/c#/project1';
-        good.fragment === '';
-        const bad = URI.parse('file://' + '/coding/c#/project1');
-        bad.scheme === 'file';
-        bad.path === '/coding/c'; // path is now broken
-        bad.fragment === '/project1';
-        ```
-         *
-         * @param path A file system path (see `URI#fsPath`)
-         */
-        URI.file = function (path) {
-            var authority = _empty;
-            // normalize to fwd-slashes on windows,
-            // on other systems bwd-slashes are valid
-            // filename character, eg /f\oo/ba\r.txt
-            if (isWindows) {
-                path = path.replace(/\\/g, _slash);
-            }
-            // check for authority as used in UNC shares
-            // or use the path as given
-            if (path[0] === _slash && path[1] === _slash) {
-                var idx = path.indexOf(_slash, 2);
-                if (idx === -1) {
-                    authority = path.substring(2);
-                    path = _slash;
-                }
-                else {
-                    authority = path.substring(2, idx);
-                    path = path.substring(idx) || _slash;
-                }
-            }
-            return new _URI('file', authority, path, _empty, _empty);
-        };
-        URI.from = function (components) {
-            return new _URI(components.scheme, components.authority, components.path, components.query, components.fragment);
-        };
-        // /**
-        //  * Join a URI path with path fragments and normalizes the resulting path.
-        //  *
-        //  * @param uri The input URI.
-        //  * @param pathFragment The path fragment to add to the URI path.
-        //  * @returns The resulting URI.
-        //  */
-        // static joinPath(uri: URI, ...pathFragment: string[]): URI {
-        // 	if (!uri.path) {
-        // 		throw new Error(`[UriError]: cannot call joinPaths on URI without path`);
-        // 	}
-        // 	let newPath: string;
-        // 	if (isWindows && uri.scheme === 'file') {
-        // 		newPath = URI.file(paths.win32.join(uriToFsPath(uri, true), ...pathFragment)).path;
-        // 	} else {
-        // 		newPath = paths.posix.join(uri.path, ...pathFragment);
-        // 	}
-        // 	return uri.with({ path: newPath });
-        // }
-        // ---- printing/externalize ---------------------------
-        /**
-         * Creates a string representation for this URI. It's guaranteed that calling
-         * `URI.parse` with the result of this function creates an URI which is equal
-         * to this URI.
-         *
-         * * The result shall *not* be used for display purposes but for externalization or transport.
-         * * The result will be encoded using the percentage encoding and encoding happens mostly
-         * ignore the scheme-specific encoding rules.
-         *
-         * @param skipEncoding Do not encode the result, default is `false`
-         */
-        URI.prototype.toString = function (skipEncoding) {
-            if (skipEncoding === void 0) { skipEncoding = false; }
-            return _asFormatted(this, skipEncoding);
-        };
-        URI.prototype.toJSON = function () {
-            return this;
-        };
-        URI.revive = function (data) {
-            if (!data) {
-                return data;
-            }
-            else if (data instanceof URI) {
-                return data;
-            }
-            else {
-                var result = new _URI(data);
-                result._formatted = data.external;
-                result._fsPath = data._sep === _pathSepMarker ? data.fsPath : null;
-                return result;
-            }
-        };
-        return URI;
-    }());
-    exports.URI = URI;
-    var _pathSepMarker = isWindows ? 1 : undefined;
-    // eslint-disable-next-line @typescript-eslint/class-name-casing
-    var _URI = /** @class */ (function (_super) {
-        __extends(_URI, _super);
-        function _URI() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this._formatted = null;
-            _this._fsPath = null;
-            return _this;
-        }
-        Object.defineProperty(_URI.prototype, "fsPath", {
-            get: function () {
-                if (!this._fsPath) {
-                    this._fsPath = uriToFsPath(this, false);
-                }
-                return this._fsPath;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        _URI.prototype.toString = function (skipEncoding) {
-            if (skipEncoding === void 0) { skipEncoding = false; }
-            if (!skipEncoding) {
-                if (!this._formatted) {
-                    this._formatted = _asFormatted(this, false);
-                }
-                return this._formatted;
-            }
-            else {
-                // we don't cache that
-                return _asFormatted(this, true);
-            }
-        };
-        _URI.prototype.toJSON = function () {
-            var res = {
-                $mid: 1
-            };
-            // cached state
-            if (this._fsPath) {
-                res.fsPath = this._fsPath;
-                res._sep = _pathSepMarker;
-            }
-            if (this._formatted) {
-                res.external = this._formatted;
-            }
-            // uri components
-            if (this.path) {
-                res.path = this.path;
-            }
-            if (this.scheme) {
-                res.scheme = this.scheme;
-            }
-            if (this.authority) {
-                res.authority = this.authority;
-            }
-            if (this.query) {
-                res.query = this.query;
-            }
-            if (this.fragment) {
-                res.fragment = this.fragment;
-            }
-            return res;
-        };
-        return _URI;
-    }(URI));
-    // reserved characters: https://tools.ietf.org/html/rfc3986#section-2.2
-    var encodeTable = (_a = {},
-        _a[58 /* Colon */] = '%3A',
-        _a[47 /* Slash */] = '%2F',
-        _a[63 /* QuestionMark */] = '%3F',
-        _a[35 /* Hash */] = '%23',
-        _a[91 /* OpenSquareBracket */] = '%5B',
-        _a[93 /* CloseSquareBracket */] = '%5D',
-        _a[64 /* AtSign */] = '%40',
-        _a[33 /* ExclamationMark */] = '%21',
-        _a[36 /* DollarSign */] = '%24',
-        _a[38 /* Ampersand */] = '%26',
-        _a[39 /* SingleQuote */] = '%27',
-        _a[40 /* OpenParen */] = '%28',
-        _a[41 /* CloseParen */] = '%29',
-        _a[42 /* Asterisk */] = '%2A',
-        _a[43 /* Plus */] = '%2B',
-        _a[44 /* Comma */] = '%2C',
-        _a[59 /* Semicolon */] = '%3B',
-        _a[61 /* Equals */] = '%3D',
-        _a[32 /* Space */] = '%20',
-        _a);
-    function encodeURIComponentFast(uriComponent, allowSlash) {
-        var res = undefined;
-        var nativeEncodePos = -1;
-        for (var pos = 0; pos < uriComponent.length; pos++) {
-            var code = uriComponent.charCodeAt(pos);
-            // unreserved characters: https://tools.ietf.org/html/rfc3986#section-2.3
-            if ((code >= 97 /* a */ && code <= 122 /* z */)
-                || (code >= 65 /* A */ && code <= 90 /* Z */)
-                || (code >= 48 /* Digit0 */ && code <= 57 /* Digit9 */)
-                || code === 45 /* Dash */
-                || code === 46 /* Period */
-                || code === 95 /* Underline */
-                || code === 126 /* Tilde */
-                || (allowSlash && code === 47 /* Slash */)) {
-                // check if we are delaying native encode
-                if (nativeEncodePos !== -1) {
-                    res += encodeURIComponent(uriComponent.substring(nativeEncodePos, pos));
-                    nativeEncodePos = -1;
-                }
-                // check if we write into a new string (by default we try to return the param)
-                if (res !== undefined) {
-                    res += uriComponent.charAt(pos);
-                }
-            }
-            else {
-                // encoding needed, we need to allocate a new string
-                if (res === undefined) {
-                    res = uriComponent.substr(0, pos);
-                }
-                // check with default table first
-                var escaped = encodeTable[code];
-                if (escaped !== undefined) {
-                    // check if we are delaying native encode
-                    if (nativeEncodePos !== -1) {
-                        res += encodeURIComponent(uriComponent.substring(nativeEncodePos, pos));
-                        nativeEncodePos = -1;
-                    }
-                    // append escaped variant to result
-                    res += escaped;
-                }
-                else if (nativeEncodePos === -1) {
-                    // use native encode only when needed
-                    nativeEncodePos = pos;
-                }
-            }
-        }
-        if (nativeEncodePos !== -1) {
-            res += encodeURIComponent(uriComponent.substring(nativeEncodePos));
-        }
-        return res !== undefined ? res : uriComponent;
-    }
-    function encodeURIComponentMinimal(path) {
-        var res = undefined;
-        for (var pos = 0; pos < path.length; pos++) {
-            var code = path.charCodeAt(pos);
-            if (code === 35 /* Hash */ || code === 63 /* QuestionMark */) {
-                if (res === undefined) {
-                    res = path.substr(0, pos);
-                }
-                res += encodeTable[code];
-            }
-            else {
-                if (res !== undefined) {
-                    res += path[pos];
-                }
-            }
-        }
-        return res !== undefined ? res : path;
-    }
-    /**
-     * Compute `fsPath` for the given uri
-     */
-    function uriToFsPath(uri, keepDriveLetterCasing) {
-        var value;
-        if (uri.authority && uri.path.length > 1 && uri.scheme === 'file') {
-            // unc path: file://shares/c$/far/boo
-            value = "//" + uri.authority + uri.path;
-        }
-        else if (uri.path.charCodeAt(0) === 47 /* Slash */
-            && (uri.path.charCodeAt(1) >= 65 /* A */ && uri.path.charCodeAt(1) <= 90 /* Z */ || uri.path.charCodeAt(1) >= 97 /* a */ && uri.path.charCodeAt(1) <= 122 /* z */)
-            && uri.path.charCodeAt(2) === 58 /* Colon */) {
-            if (!keepDriveLetterCasing) {
-                // windows drive letter: file:///c:/far/boo
-                value = uri.path[1].toLowerCase() + uri.path.substr(2);
-            }
-            else {
-                value = uri.path.substr(1);
-            }
-        }
-        else {
-            // other path
-            value = uri.path;
-        }
-        if (isWindows) {
-            value = value.replace(/\//g, '\\');
-        }
-        return value;
-    }
-    exports.uriToFsPath = uriToFsPath;
-    /**
-     * Create the external version of a uri
-     */
-    function _asFormatted(uri, skipEncoding) {
-        var encoder = !skipEncoding
-            ? encodeURIComponentFast
-            : encodeURIComponentMinimal;
-        var res = '';
-        var scheme = uri.scheme, authority = uri.authority, path = uri.path, query = uri.query, fragment = uri.fragment;
-        if (scheme) {
-            res += scheme;
-            res += ':';
-        }
-        if (authority || scheme === 'file') {
-            res += _slash;
-            res += _slash;
-        }
-        if (authority) {
-            var idx = authority.indexOf('@');
-            if (idx !== -1) {
-                // <user>@<auth>
-                var userinfo = authority.substr(0, idx);
-                authority = authority.substr(idx + 1);
-                idx = userinfo.indexOf(':');
-                if (idx === -1) {
-                    res += encoder(userinfo, false);
-                }
-                else {
-                    // <user>:<pass>@<auth>
-                    res += encoder(userinfo.substr(0, idx), false);
-                    res += ':';
-                    res += encoder(userinfo.substr(idx + 1), false);
-                }
-                res += '@';
-            }
-            authority = authority.toLowerCase();
-            idx = authority.indexOf(':');
-            if (idx === -1) {
-                res += encoder(authority, false);
-            }
-            else {
-                // <auth>:<port>
-                res += encoder(authority.substr(0, idx), false);
-                res += authority.substr(idx);
-            }
-        }
-        if (path) {
-            // lower-case windows drive letters in /C:/fff or C:/fff
-            if (path.length >= 3 && path.charCodeAt(0) === 47 /* Slash */ && path.charCodeAt(2) === 58 /* Colon */) {
-                var code = path.charCodeAt(1);
-                if (code >= 65 /* A */ && code <= 90 /* Z */) {
-                    path = "/" + String.fromCharCode(code + 32) + ":" + path.substr(3); // "/c:".length === 3
-                }
-            }
-            else if (path.length >= 2 && path.charCodeAt(1) === 58 /* Colon */) {
-                var code = path.charCodeAt(0);
-                if (code >= 65 /* A */ && code <= 90 /* Z */) {
-                    path = String.fromCharCode(code + 32) + ":" + path.substr(2); // "/c:".length === 3
-                }
-            }
-            // encode the rest of the path
-            res += encoder(path, true);
-        }
-        if (query) {
-            res += '?';
-            res += encoder(query, false);
-        }
-        if (fragment) {
-            res += '#';
-            res += !skipEncoding ? encodeURIComponentFast(fragment, false) : fragment;
-        }
-        return res;
-    }
-    // --- decode
-    function decodeURIComponentGraceful(str) {
-        try {
-            return decodeURIComponent(str);
-        }
-        catch (_a) {
-            if (str.length > 3) {
-                return str.substr(0, 3) + decodeURIComponentGraceful(str.substr(3));
-            }
-            else {
-                return str;
-            }
-        }
-    }
-    var _rEncodedAsHex = /(%[0-9A-Za-z][0-9A-Za-z])+/g;
-    function percentDecode(str) {
-        if (!str.match(_rEncodedAsHex)) {
-            return str;
-        }
-        return str.replace(_rEncodedAsHex, function (match) { return decodeURIComponentGraceful(match); });
-    }
-});
-
+!function(t,e){if("object"==typeof exports&&"object"==typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define('vscode-uri/index',[],e);else{var r=e();for(var n in r)("object"==typeof exports?exports:t)[n]=r[n]}}(this,(function(){return(()=>{"use strict";var t={470:t=>{function e(t){if("string"!=typeof t)throw new TypeError("Path must be a string. Received "+JSON.stringify(t))}function r(t,e){for(var r,n="",i=0,o=-1,a=0,h=0;h<=t.length;++h){if(h<t.length)r=t.charCodeAt(h);else{if(47===r)break;r=47}if(47===r){if(o===h-1||1===a);else if(o!==h-1&&2===a){if(n.length<2||2!==i||46!==n.charCodeAt(n.length-1)||46!==n.charCodeAt(n.length-2))if(n.length>2){var s=n.lastIndexOf("/");if(s!==n.length-1){-1===s?(n="",i=0):i=(n=n.slice(0,s)).length-1-n.lastIndexOf("/"),o=h,a=0;continue}}else if(2===n.length||1===n.length){n="",i=0,o=h,a=0;continue}e&&(n.length>0?n+="/..":n="..",i=2)}else n.length>0?n+="/"+t.slice(o+1,h):n=t.slice(o+1,h),i=h-o-1;o=h,a=0}else 46===r&&-1!==a?++a:a=-1}return n}var n={resolve:function(){for(var t,n="",i=!1,o=arguments.length-1;o>=-1&&!i;o--){var a;o>=0?a=arguments[o]:(void 0===t&&(t=process.cwd()),a=t),e(a),0!==a.length&&(n=a+"/"+n,i=47===a.charCodeAt(0))}return n=r(n,!i),i?n.length>0?"/"+n:"/":n.length>0?n:"."},normalize:function(t){if(e(t),0===t.length)return".";var n=47===t.charCodeAt(0),i=47===t.charCodeAt(t.length-1);return 0!==(t=r(t,!n)).length||n||(t="."),t.length>0&&i&&(t+="/"),n?"/"+t:t},isAbsolute:function(t){return e(t),t.length>0&&47===t.charCodeAt(0)},join:function(){if(0===arguments.length)return".";for(var t,r=0;r<arguments.length;++r){var i=arguments[r];e(i),i.length>0&&(void 0===t?t=i:t+="/"+i)}return void 0===t?".":n.normalize(t)},relative:function(t,r){if(e(t),e(r),t===r)return"";if((t=n.resolve(t))===(r=n.resolve(r)))return"";for(var i=1;i<t.length&&47===t.charCodeAt(i);++i);for(var o=t.length,a=o-i,h=1;h<r.length&&47===r.charCodeAt(h);++h);for(var s=r.length-h,f=a<s?a:s,u=-1,c=0;c<=f;++c){if(c===f){if(s>f){if(47===r.charCodeAt(h+c))return r.slice(h+c+1);if(0===c)return r.slice(h+c)}else a>f&&(47===t.charCodeAt(i+c)?u=c:0===c&&(u=0));break}var l=t.charCodeAt(i+c);if(l!==r.charCodeAt(h+c))break;47===l&&(u=c)}var p="";for(c=i+u+1;c<=o;++c)c!==o&&47!==t.charCodeAt(c)||(0===p.length?p+="..":p+="/..");return p.length>0?p+r.slice(h+u):(h+=u,47===r.charCodeAt(h)&&++h,r.slice(h))},_makeLong:function(t){return t},dirname:function(t){if(e(t),0===t.length)return".";for(var r=t.charCodeAt(0),n=47===r,i=-1,o=!0,a=t.length-1;a>=1;--a)if(47===(r=t.charCodeAt(a))){if(!o){i=a;break}}else o=!1;return-1===i?n?"/":".":n&&1===i?"//":t.slice(0,i)},basename:function(t,r){if(void 0!==r&&"string"!=typeof r)throw new TypeError('"ext" argument must be a string');e(t);var n,i=0,o=-1,a=!0;if(void 0!==r&&r.length>0&&r.length<=t.length){if(r.length===t.length&&r===t)return"";var h=r.length-1,s=-1;for(n=t.length-1;n>=0;--n){var f=t.charCodeAt(n);if(47===f){if(!a){i=n+1;break}}else-1===s&&(a=!1,s=n+1),h>=0&&(f===r.charCodeAt(h)?-1==--h&&(o=n):(h=-1,o=s))}return i===o?o=s:-1===o&&(o=t.length),t.slice(i,o)}for(n=t.length-1;n>=0;--n)if(47===t.charCodeAt(n)){if(!a){i=n+1;break}}else-1===o&&(a=!1,o=n+1);return-1===o?"":t.slice(i,o)},extname:function(t){e(t);for(var r=-1,n=0,i=-1,o=!0,a=0,h=t.length-1;h>=0;--h){var s=t.charCodeAt(h);if(47!==s)-1===i&&(o=!1,i=h+1),46===s?-1===r?r=h:1!==a&&(a=1):-1!==r&&(a=-1);else if(!o){n=h+1;break}}return-1===r||-1===i||0===a||1===a&&r===i-1&&r===n+1?"":t.slice(r,i)},format:function(t){if(null===t||"object"!=typeof t)throw new TypeError('The "pathObject" argument must be of type Object. Received type '+typeof t);return function(t,e){var r=e.dir||e.root,n=e.base||(e.name||"")+(e.ext||"");return r?r===e.root?r+n:r+"/"+n:n}(0,t)},parse:function(t){e(t);var r={root:"",dir:"",base:"",ext:"",name:""};if(0===t.length)return r;var n,i=t.charCodeAt(0),o=47===i;o?(r.root="/",n=1):n=0;for(var a=-1,h=0,s=-1,f=!0,u=t.length-1,c=0;u>=n;--u)if(47!==(i=t.charCodeAt(u)))-1===s&&(f=!1,s=u+1),46===i?-1===a?a=u:1!==c&&(c=1):-1!==a&&(c=-1);else if(!f){h=u+1;break}return-1===a||-1===s||0===c||1===c&&a===s-1&&a===h+1?-1!==s&&(r.base=r.name=0===h&&o?t.slice(1,s):t.slice(h,s)):(0===h&&o?(r.name=t.slice(1,a),r.base=t.slice(1,s)):(r.name=t.slice(h,a),r.base=t.slice(h,s)),r.ext=t.slice(a,s)),h>0?r.dir=t.slice(0,h-1):o&&(r.dir="/"),r},sep:"/",delimiter:":",win32:null,posix:null};n.posix=n,t.exports=n},465:(t,e,r)=>{Object.defineProperty(e,"__esModule",{value:!0}),e.Utils=e.URI=void 0;var n=r(796);Object.defineProperty(e,"URI",{enumerable:!0,get:function(){return n.URI}});var i=r(679);Object.defineProperty(e,"Utils",{enumerable:!0,get:function(){return i.Utils}})},674:(t,e)=>{if(Object.defineProperty(e,"__esModule",{value:!0}),e.isWindows=void 0,"object"==typeof process)e.isWindows="win32"===process.platform;else if("object"==typeof navigator){var r=navigator.userAgent;e.isWindows=r.indexOf("Windows")>=0}},796:function(t,e,r){var n,i,o=this&&this.__extends||(n=function(t,e){return(n=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var r in e)Object.prototype.hasOwnProperty.call(e,r)&&(t[r]=e[r])})(t,e)},function(t,e){function r(){this.constructor=t}n(t,e),t.prototype=null===e?Object.create(e):(r.prototype=e.prototype,new r)});Object.defineProperty(e,"__esModule",{value:!0}),e.uriToFsPath=e.URI=void 0;var a=r(674),h=/^\w[\w\d+.-]*$/,s=/^\//,f=/^\/\//,u="",c="/",l=/^(([^:/?#]+?):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/,p=function(){function t(t,e,r,n,i,o){void 0===o&&(o=!1),"object"==typeof t?(this.scheme=t.scheme||u,this.authority=t.authority||u,this.path=t.path||u,this.query=t.query||u,this.fragment=t.fragment||u):(this.scheme=function(t,e){return t||e?t:"file"}(t,o),this.authority=e||u,this.path=function(t,e){switch(t){case"https":case"http":case"file":e?e[0]!==c&&(e=c+e):e=c}return e}(this.scheme,r||u),this.query=n||u,this.fragment=i||u,function(t,e){if(!t.scheme&&e)throw new Error('[UriError]: Scheme is missing: {scheme: "", authority: "'+t.authority+'", path: "'+t.path+'", query: "'+t.query+'", fragment: "'+t.fragment+'"}');if(t.scheme&&!h.test(t.scheme))throw new Error("[UriError]: Scheme contains illegal characters.");if(t.path)if(t.authority){if(!s.test(t.path))throw new Error('[UriError]: If a URI contains an authority component, then the path component must either be empty or begin with a slash ("/") character')}else if(f.test(t.path))throw new Error('[UriError]: If a URI does not contain an authority component, then the path cannot begin with two slash characters ("//")')}(this,o))}return t.isUri=function(e){return e instanceof t||!!e&&"string"==typeof e.authority&&"string"==typeof e.fragment&&"string"==typeof e.path&&"string"==typeof e.query&&"string"==typeof e.scheme&&"function"==typeof e.fsPath&&"function"==typeof e.with&&"function"==typeof e.toString},Object.defineProperty(t.prototype,"fsPath",{get:function(){return b(this,!1)},enumerable:!1,configurable:!0}),t.prototype.with=function(t){if(!t)return this;var e=t.scheme,r=t.authority,n=t.path,i=t.query,o=t.fragment;return void 0===e?e=this.scheme:null===e&&(e=u),void 0===r?r=this.authority:null===r&&(r=u),void 0===n?n=this.path:null===n&&(n=u),void 0===i?i=this.query:null===i&&(i=u),void 0===o?o=this.fragment:null===o&&(o=u),e===this.scheme&&r===this.authority&&n===this.path&&i===this.query&&o===this.fragment?this:new g(e,r,n,i,o)},t.parse=function(t,e){void 0===e&&(e=!1);var r=l.exec(t);return r?new g(r[2]||u,_(r[4]||u),_(r[5]||u),_(r[7]||u),_(r[9]||u),e):new g(u,u,u,u,u)},t.file=function(t){var e=u;if(a.isWindows&&(t=t.replace(/\\/g,c)),t[0]===c&&t[1]===c){var r=t.indexOf(c,2);-1===r?(e=t.substring(2),t=c):(e=t.substring(2,r),t=t.substring(r)||c)}return new g("file",e,t,u,u)},t.from=function(t){return new g(t.scheme,t.authority,t.path,t.query,t.fragment)},t.prototype.toString=function(t){return void 0===t&&(t=!1),C(this,t)},t.prototype.toJSON=function(){return this},t.revive=function(e){if(e){if(e instanceof t)return e;var r=new g(e);return r._formatted=e.external,r._fsPath=e._sep===d?e.fsPath:null,r}return e},t}();e.URI=p;var d=a.isWindows?1:void 0,g=function(t){function e(){var e=null!==t&&t.apply(this,arguments)||this;return e._formatted=null,e._fsPath=null,e}return o(e,t),Object.defineProperty(e.prototype,"fsPath",{get:function(){return this._fsPath||(this._fsPath=b(this,!1)),this._fsPath},enumerable:!1,configurable:!0}),e.prototype.toString=function(t){return void 0===t&&(t=!1),t?C(this,!0):(this._formatted||(this._formatted=C(this,!1)),this._formatted)},e.prototype.toJSON=function(){var t={$mid:1};return this._fsPath&&(t.fsPath=this._fsPath,t._sep=d),this._formatted&&(t.external=this._formatted),this.path&&(t.path=this.path),this.scheme&&(t.scheme=this.scheme),this.authority&&(t.authority=this.authority),this.query&&(t.query=this.query),this.fragment&&(t.fragment=this.fragment),t},e}(p),v=((i={})[58]="%3A",i[47]="%2F",i[63]="%3F",i[35]="%23",i[91]="%5B",i[93]="%5D",i[64]="%40",i[33]="%21",i[36]="%24",i[38]="%26",i[39]="%27",i[40]="%28",i[41]="%29",i[42]="%2A",i[43]="%2B",i[44]="%2C",i[59]="%3B",i[61]="%3D",i[32]="%20",i);function m(t,e){for(var r=void 0,n=-1,i=0;i<t.length;i++){var o=t.charCodeAt(i);if(o>=97&&o<=122||o>=65&&o<=90||o>=48&&o<=57||45===o||46===o||95===o||126===o||e&&47===o)-1!==n&&(r+=encodeURIComponent(t.substring(n,i)),n=-1),void 0!==r&&(r+=t.charAt(i));else{void 0===r&&(r=t.substr(0,i));var a=v[o];void 0!==a?(-1!==n&&(r+=encodeURIComponent(t.substring(n,i)),n=-1),r+=a):-1===n&&(n=i)}}return-1!==n&&(r+=encodeURIComponent(t.substring(n))),void 0!==r?r:t}function y(t){for(var e=void 0,r=0;r<t.length;r++){var n=t.charCodeAt(r);35===n||63===n?(void 0===e&&(e=t.substr(0,r)),e+=v[n]):void 0!==e&&(e+=t[r])}return void 0!==e?e:t}function b(t,e){var r;return r=t.authority&&t.path.length>1&&"file"===t.scheme?"//"+t.authority+t.path:47===t.path.charCodeAt(0)&&(t.path.charCodeAt(1)>=65&&t.path.charCodeAt(1)<=90||t.path.charCodeAt(1)>=97&&t.path.charCodeAt(1)<=122)&&58===t.path.charCodeAt(2)?e?t.path.substr(1):t.path[1].toLowerCase()+t.path.substr(2):t.path,a.isWindows&&(r=r.replace(/\//g,"\\")),r}function C(t,e){var r=e?y:m,n="",i=t.scheme,o=t.authority,a=t.path,h=t.query,s=t.fragment;if(i&&(n+=i,n+=":"),(o||"file"===i)&&(n+=c,n+=c),o){var f=o.indexOf("@");if(-1!==f){var u=o.substr(0,f);o=o.substr(f+1),-1===(f=u.indexOf(":"))?n+=r(u,!1):(n+=r(u.substr(0,f),!1),n+=":",n+=r(u.substr(f+1),!1)),n+="@"}-1===(f=(o=o.toLowerCase()).indexOf(":"))?n+=r(o,!1):(n+=r(o.substr(0,f),!1),n+=o.substr(f))}if(a){if(a.length>=3&&47===a.charCodeAt(0)&&58===a.charCodeAt(2))(l=a.charCodeAt(1))>=65&&l<=90&&(a="/"+String.fromCharCode(l+32)+":"+a.substr(3));else if(a.length>=2&&58===a.charCodeAt(1)){var l;(l=a.charCodeAt(0))>=65&&l<=90&&(a=String.fromCharCode(l+32)+":"+a.substr(2))}n+=r(a,!0)}return h&&(n+="?",n+=r(h,!1)),s&&(n+="#",n+=e?s:m(s,!1)),n}function A(t){try{return decodeURIComponent(t)}catch(e){return t.length>3?t.substr(0,3)+A(t.substr(3)):t}}e.uriToFsPath=b;var w=/(%[0-9A-Za-z][0-9A-Za-z])+/g;function _(t){return t.match(w)?t.replace(w,(function(t){return A(t)})):t}},679:function(t,e,r){var n=this&&this.__spreadArrays||function(){for(var t=0,e=0,r=arguments.length;e<r;e++)t+=arguments[e].length;var n=Array(t),i=0;for(e=0;e<r;e++)for(var o=arguments[e],a=0,h=o.length;a<h;a++,i++)n[i]=o[a];return n};Object.defineProperty(e,"__esModule",{value:!0}),e.Utils=void 0;var i,o=r(470),a=o.posix||o;(i=e.Utils||(e.Utils={})).joinPath=function(t){for(var e=[],r=1;r<arguments.length;r++)e[r-1]=arguments[r];return t.with({path:a.join.apply(a,n([t.path],e))})},i.resolvePath=function(t){for(var e=[],r=1;r<arguments.length;r++)e[r-1]=arguments[r];var i=t.path||"/";return t.with({path:a.resolve.apply(a,n([i],e))})},i.dirname=function(t){var e=a.dirname(t.path);return 1===e.length&&46===e.charCodeAt(0)?t:t.with({path:e})},i.basename=function(t){return a.basename(t.path)},i.extname=function(t){return a.extname(t.path)}}},e={};return function r(n){if(e[n])return e[n].exports;var i=e[n]={exports:{}};return t[n].call(i.exports,i,i.exports,r),i.exports}(465)})()}));
+//# sourceMappingURL=index.js.map;
 define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
 
 /*---------------------------------------------------------------------------------------------
@@ -11979,14 +11852,13 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/services/htmlLinks',["require", "exports", "../parser/htmlScanner", "vscode-languageserver-types", "../utils/strings", "vscode-uri", "../htmlLanguageTypes"], factory);
+        define('vscode-html-languageservice/services/htmlLinks',["require", "exports", "../parser/htmlScanner", "../utils/strings", "vscode-uri", "../htmlLanguageTypes"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.findDocumentLinks = void 0;
     var htmlScanner_1 = require("../parser/htmlScanner");
-    var vscode_languageserver_types_1 = require("vscode-languageserver-types");
     var strings = require("../utils/strings");
     var vscode_uri_1 = require("vscode-uri");
     var htmlLanguageTypes_1 = require("../htmlLanguageTypes");
@@ -12043,7 +11915,7 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
             return undefined;
         }
         return {
-            range: vscode_languageserver_types_1.Range.create(document.positionAt(startOffset), document.positionAt(endOffset)),
+            range: htmlLanguageTypes_1.Range.create(document.positionAt(startOffset), document.positionAt(endOffset)),
             target: workspaceUrl
         };
     }
@@ -12129,14 +12001,13 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/services/htmlHighlighting',["require", "exports", "../parser/htmlScanner", "vscode-languageserver-types", "../htmlLanguageTypes"], factory);
+        define('vscode-html-languageservice/services/htmlHighlighting',["require", "exports", "../parser/htmlScanner", "../htmlLanguageTypes"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.findDocumentHighlights = void 0;
     var htmlScanner_1 = require("../parser/htmlScanner");
-    var vscode_languageserver_types_1 = require("vscode-languageserver-types");
     var htmlLanguageTypes_1 = require("../htmlLanguageTypes");
     function findDocumentHighlights(document, position, htmlDocument) {
         var offset = document.offsetAt(position);
@@ -12149,10 +12020,10 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
         var endTagRange = typeof node.endTagStart === 'number' && getTagNameRange(htmlLanguageTypes_1.TokenType.EndTag, document, node.endTagStart);
         if (startTagRange && covers(startTagRange, position) || endTagRange && covers(endTagRange, position)) {
             if (startTagRange) {
-                result.push({ kind: vscode_languageserver_types_1.DocumentHighlightKind.Read, range: startTagRange });
+                result.push({ kind: htmlLanguageTypes_1.DocumentHighlightKind.Read, range: startTagRange });
             }
             if (endTagRange) {
-                result.push({ kind: vscode_languageserver_types_1.DocumentHighlightKind.Read, range: endTagRange });
+                result.push({ kind: htmlLanguageTypes_1.DocumentHighlightKind.Read, range: endTagRange });
             }
         }
         return result;
@@ -12187,13 +12058,13 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/services/htmlSymbolsProvider',["require", "exports", "vscode-languageserver-types"], factory);
+        define('vscode-html-languageservice/services/htmlSymbolsProvider',["require", "exports", "../htmlLanguageTypes"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.findDocumentSymbols = void 0;
-    var vscode_languageserver_types_1 = require("vscode-languageserver-types");
+    var htmlLanguageTypes_1 = require("../htmlLanguageTypes");
     function findDocumentSymbols(document, htmlDocument) {
         var symbols = [];
         htmlDocument.roots.forEach(function (node) {
@@ -12204,12 +12075,12 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
     exports.findDocumentSymbols = findDocumentSymbols;
     function provideFileSymbolsInternal(document, node, container, symbols) {
         var name = nodeToName(node);
-        var location = vscode_languageserver_types_1.Location.create(document.uri, vscode_languageserver_types_1.Range.create(document.positionAt(node.start), document.positionAt(node.end)));
+        var location = htmlLanguageTypes_1.Location.create(document.uri, htmlLanguageTypes_1.Range.create(document.positionAt(node.start), document.positionAt(node.end)));
         var symbol = {
             name: name,
             location: location,
             containerName: container,
-            kind: vscode_languageserver_types_1.SymbolKind.Field
+            kind: htmlLanguageTypes_1.SymbolKind.Field
         };
         symbols.push(symbol);
         node.children.forEach(function (child) {
@@ -12349,14 +12220,14 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/services/htmlSyncedRegions',["require", "exports", "vscode-languageserver-types"], factory);
+        define('vscode-html-languageservice/services/htmlLinkedEditing',["require", "exports", "../htmlLanguageTypes"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.findOnTypeRenameRanges = void 0;
-    var vscode_languageserver_types_1 = require("vscode-languageserver-types");
-    function findOnTypeRenameRanges(document, position, htmlDocument) {
+    exports.findLinkedEditingRanges = void 0;
+    var htmlLanguageTypes_1 = require("../htmlLanguageTypes");
+    function findLinkedEditingRanges(document, position, htmlDocument) {
         var offset = document.offsetAt(position);
         var node = htmlDocument.findNodeAt(offset);
         var tagLength = node.tag ? node.tag.length : 0;
@@ -12369,13 +12240,13 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
             // Within closing tag, compute open tag
             node.endTagStart + '</'.length <= offset && offset <= node.endTagStart + '</'.length + tagLength) {
             return [
-                vscode_languageserver_types_1.Range.create(document.positionAt(node.start + '<'.length), document.positionAt(node.start + '<'.length + tagLength)),
-                vscode_languageserver_types_1.Range.create(document.positionAt(node.endTagStart + '</'.length), document.positionAt(node.endTagStart + '</'.length + tagLength))
+                htmlLanguageTypes_1.Range.create(document.positionAt(node.start + '<'.length), document.positionAt(node.start + '<'.length + tagLength)),
+                htmlLanguageTypes_1.Range.create(document.positionAt(node.endTagStart + '</'.length), document.positionAt(node.endTagStart + '</'.length + tagLength))
             ];
         }
         return null;
     }
-    exports.findOnTypeRenameRanges = findOnTypeRenameRanges;
+    exports.findLinkedEditingRanges = findLinkedEditingRanges;
 });
 
 /*---------------------------------------------------------------------------------------------
@@ -12388,13 +12259,12 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/services/htmlFolding',["require", "exports", "vscode-languageserver-types", "../htmlLanguageTypes", "../parser/htmlScanner", "../languageFacts/fact"], factory);
+        define('vscode-html-languageservice/services/htmlFolding',["require", "exports", "../htmlLanguageTypes", "../parser/htmlScanner", "../languageFacts/fact"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getFoldingRanges = void 0;
-    var vscode_languageserver_types_1 = require("vscode-languageserver-types");
     var htmlLanguageTypes_1 = require("../htmlLanguageTypes");
     var htmlScanner_1 = require("../parser/htmlScanner");
     var fact_1 = require("../languageFacts/fact");
@@ -12534,7 +12404,7 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
                                 var endLine = startLine;
                                 startLine = stackElement.startLine;
                                 if (endLine > startLine && prevStart !== startLine) {
-                                    addRange({ startLine: startLine, endLine: endLine, kind: vscode_languageserver_types_1.FoldingRangeKind.Region });
+                                    addRange({ startLine: startLine, endLine: endLine, kind: htmlLanguageTypes_1.FoldingRangeKind.Region });
                                 }
                             }
                         }
@@ -12542,7 +12412,7 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
                     else {
                         var endLine = document.positionAt(scanner.getTokenOffset() + scanner.getTokenLength()).line;
                         if (startLine < endLine) {
-                            addRange({ startLine: startLine, endLine: endLine, kind: vscode_languageserver_types_1.FoldingRangeKind.Comment });
+                            addRange({ startLine: startLine, endLine: endLine, kind: htmlLanguageTypes_1.FoldingRangeKind.Comment });
                         }
                     }
                     break;
@@ -12559,23 +12429,22 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
     exports.getFoldingRanges = getFoldingRanges;
 });
 
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/services/htmlSelectionRange',["require", "exports", "vscode-languageserver-types", "../parser/htmlScanner", "../parser/htmlParser", "../htmlLanguageTypes"], factory);
+        define('vscode-html-languageservice/services/htmlSelectionRange',["require", "exports", "../parser/htmlScanner", "../parser/htmlParser", "../htmlLanguageTypes"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSelectionRanges = void 0;
-    /**
-     * Until SelectionRange lands in LSP, we'll return Range from server and convert it to
-     * SelectionRange on client side
-     */
-    var vscode_languageserver_types_1 = require("vscode-languageserver-types");
     var htmlScanner_1 = require("../parser/htmlScanner");
     var htmlParser_1 = require("../parser/htmlParser");
     var htmlLanguageTypes_1 = require("../htmlLanguageTypes");
@@ -12587,12 +12456,12 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
             for (var index = applicableRanges.length - 1; index >= 0; index--) {
                 var range = applicableRanges[index];
                 if (!prev || range[0] !== prev[0] || range[1] !== prev[1]) {
-                    current = vscode_languageserver_types_1.SelectionRange.create(vscode_languageserver_types_1.Range.create(document.positionAt(applicableRanges[index][0]), document.positionAt(applicableRanges[index][1])), current);
+                    current = htmlLanguageTypes_1.SelectionRange.create(htmlLanguageTypes_1.Range.create(document.positionAt(applicableRanges[index][0]), document.positionAt(applicableRanges[index][1])), current);
                 }
                 prev = range;
             }
             if (!current) {
-                current = vscode_languageserver_types_1.SelectionRange.create(vscode_languageserver_types_1.Range.create(position, position));
+                current = htmlLanguageTypes_1.SelectionRange.create(htmlLanguageTypes_1.Range.create(position, position));
             }
             return current;
         }
@@ -12610,7 +12479,7 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
             if (currNode.startTagEnd !== currNode.end) {
                 return [[currNode.start, currNode.end]];
             }
-            var closeRange = vscode_languageserver_types_1.Range.create(document.positionAt(currNode.startTagEnd - 2), document.positionAt(currNode.startTagEnd));
+            var closeRange = htmlLanguageTypes_1.Range.create(document.positionAt(currNode.startTagEnd - 2), document.positionAt(currNode.startTagEnd));
             var closeText = document.getText(closeRange);
             // Self-closing element
             if (closeText === '/>') {
@@ -12680,7 +12549,7 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
         return result;
     }
     function getAttributeLevelRanges(document, currNode, currOffset) {
-        var currNodeRange = vscode_languageserver_types_1.Range.create(document.positionAt(currNode.start), document.positionAt(currNode.end));
+        var currNodeRange = htmlLanguageTypes_1.Range.create(document.positionAt(currNode.start), document.positionAt(currNode.end));
         var currNodeText = document.getText(currNodeRange);
         var relativeOffset = currOffset - currNode.start;
         /**
@@ -16252,13 +16121,7 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
                 "description": {
                     "kind": "markdown",
                     "value": "An enumerated attribute indicating what types of content can be dropped on an element, using the [Drag and Drop API](/en-US/docs/DragDrop/Drag_and_Drop). It can have the following values:\n\n*   `copy`, which indicates that dropping will create a copy of the element that was dragged\n*   `move`, which indicates that the element that was dragged will be moved to this new location.\n*   `link`, will create a link to the dragged data."
-                },
-                "references": [
-                    {
-                        "name": "MDN Reference",
-                        "url": "https://developer.mozilla.org/docs/Web/HTML/Global_attributes/dropzone"
-                    }
-                ]
+                }
             },
             {
                 "name": "exportparts",
@@ -17123,7 +16986,7 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
             },
             {
                 "name": "aria-haspopup",
-                "valueSet": "b",
+                "valueSet": "haspopup",
                 "references": [
                     {
                         "name": "WAI-ARIA Reference",
@@ -18667,6 +18530,60 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
                         "name": "viewport"
                     }
                 ]
+            },
+            {
+                "name": "haspopup",
+                "values": [
+                    {
+                        "name": "false",
+                        "description": {
+                            "kind": "markdown",
+                            "value": "(default) Indicates the element does not have a popup."
+                        }
+                    },
+                    {
+                        "name": "true",
+                        "description": {
+                            "kind": "markdown",
+                            "value": "Indicates the popup is a menu."
+                        }
+                    },
+                    {
+                        "name": "menu",
+                        "description": {
+                            "kind": "markdown",
+                            "value": "Indicates the popup is a menu."
+                        }
+                    },
+                    {
+                        "name": "listbox",
+                        "description": {
+                            "kind": "markdown",
+                            "value": "Indicates the popup is a listbox."
+                        }
+                    },
+                    {
+                        "name": "tree",
+                        "description": {
+                            "kind": "markdown",
+                            "value": "Indicates the popup is a tree."
+                        }
+                    },
+                    {
+                        "name": "grid",
+                        "description": {
+                            "kind": "markdown",
+                            "value": "Indicates the popup is a grid."
+                        }
+                    },
+                    {
+                        "name": "dialog",
+                        "description": {
+                            "kind": "markdown",
+                            "value": "Indicates the popup is a dialog."
+                        }
+                    }
+                ]
             }
         ]
     };
@@ -18731,7 +18648,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-html-languageservice/htmlLanguageService',["require", "exports", "./parser/htmlScanner", "./parser/htmlParser", "./services/htmlCompletion", "./services/htmlHover", "./services/htmlFormatter", "./services/htmlLinks", "./services/htmlHighlighting", "./services/htmlSymbolsProvider", "./services/htmlRename", "./services/htmlMatchingTagPosition", "./services/htmlSyncedRegions", "./services/htmlFolding", "./services/htmlSelectionRange", "./languageFacts/dataProvider", "./languageFacts/dataManager", "./languageFacts/data/webCustomData", "./htmlLanguageTypes"], factory);
+        define('vscode-html-languageservice/htmlLanguageService',["require", "exports", "./parser/htmlScanner", "./parser/htmlParser", "./services/htmlCompletion", "./services/htmlHover", "./services/htmlFormatter", "./services/htmlLinks", "./services/htmlHighlighting", "./services/htmlSymbolsProvider", "./services/htmlRename", "./services/htmlMatchingTagPosition", "./services/htmlLinkedEditing", "./services/htmlFolding", "./services/htmlSelectionRange", "./languageFacts/dataProvider", "./languageFacts/dataManager", "./languageFacts/data/webCustomData", "./htmlLanguageTypes"], factory);
     }
 })(function (require, exports) {
     "use strict";
@@ -18747,7 +18664,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     var htmlSymbolsProvider_1 = require("./services/htmlSymbolsProvider");
     var htmlRename_1 = require("./services/htmlRename");
     var htmlMatchingTagPosition_1 = require("./services/htmlMatchingTagPosition");
-    var htmlSyncedRegions_1 = require("./services/htmlSyncedRegions");
+    var htmlLinkedEditing_1 = require("./services/htmlLinkedEditing");
     var htmlFolding_1 = require("./services/htmlFolding");
     var htmlSelectionRange_1 = require("./services/htmlSelectionRange");
     var dataProvider_1 = require("./languageFacts/dataProvider");
@@ -18777,7 +18694,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
             doTagComplete: htmlCompletion.doTagComplete.bind(htmlCompletion),
             doRename: htmlRename_1.doRename,
             findMatchingTagPosition: htmlMatchingTagPosition_1.findMatchingTagPosition,
-            findOnTypeRenameRanges: htmlSyncedRegions_1.findOnTypeRenameRanges
+            findOnTypeRenameRanges: htmlLinkedEditing_1.findLinkedEditingRanges,
+            findLinkedEditingRanges: htmlLinkedEditing_1.findLinkedEditingRanges
         };
     }
     exports.getLanguageService = getLanguageService;
@@ -18864,7 +18782,10 @@ define('vs/language/html/languageFeatures',["require", "exports", "vscode-html-l
                 .then(function (worker) {
                 return worker.doValidation(resource.toString()).then(function (diagnostics) {
                     var markers = diagnostics.map(function (d) { return toDiagnostics(resource, d); });
-                    monaco_editor_core_1.editor.setModelMarkers(monaco_editor_core_1.editor.getModel(resource), languageId, markers);
+                    var model = monaco_editor_core_1.editor.getModel(resource);
+                    if (model && model.getModeId() === languageId) {
+                        monaco_editor_core_1.editor.setModelMarkers(model, languageId, markers);
+                    }
                 });
             })
                 .then(undefined, function (err) {
