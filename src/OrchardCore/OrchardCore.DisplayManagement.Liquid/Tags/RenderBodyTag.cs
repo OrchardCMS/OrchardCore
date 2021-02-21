@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync() as ZoneHolding;
             var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-            var htmlContent = await displayHelper.ShapeExecuteAsync(layout["Content"]);
+            var htmlContent = await displayHelper.ShapeExecuteAsync(layout.Zones["Content"]);
 
             htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;

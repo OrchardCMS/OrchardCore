@@ -34,7 +34,7 @@ namespace OrchardCore.MiniProfiler
                 (_options.AllowOnAdmin || !AdminAttribute.IsApplied(context.HttpContext)))
             {
                 var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
-                var footerZone = layout["Footer"];
+                var footerZone = layout.Zones["Footer"];
 
                 if (footerZone is ZoneOnDemand zoneOnDemand)
                 {

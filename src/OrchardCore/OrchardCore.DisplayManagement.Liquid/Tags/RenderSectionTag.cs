@@ -30,7 +30,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var requiredExpression = arguments["required", 1];
             var required = requiredExpression == null ? false : (await requiredExpression.EvaluateAsync(context)).ToBooleanValue();
 
-            var zone = layout[name];
+            var zone = layout.Zones[name];
 
             if (required && zone != null && zone is ZoneOnDemand)
             {

@@ -36,7 +36,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             var childContent = await output.GetChildContentAsync();
             var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
 
-            var zone = layout[Name];
+            var zone = layout.Zones[Name];
 
             if (zone is ZoneOnDemand zoneOnDemand)
             {

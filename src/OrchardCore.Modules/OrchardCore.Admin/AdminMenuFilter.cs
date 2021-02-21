@@ -66,7 +66,7 @@ namespace OrchardCore.Admin
 
             var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
 
-            var navigation = layout["Navigation"];
+            var navigation = layout.Zones["Navigation"];
 
             if (navigation is ZoneOnDemand zoneOnDemand)
             {

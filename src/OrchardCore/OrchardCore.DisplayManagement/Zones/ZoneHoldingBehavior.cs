@@ -31,22 +31,6 @@ namespace OrchardCore.DisplayManagement.Zones
 
         public Zones Zones => _zones ??= new Zones(_zoneFactory, this);
 
-        public object this[string name]
-        {
-            get
-            {
-                if (!base.TryGetMemberImpl(name, out var result) || (null == result))
-                {
-                    // substitute nil results with a robot that turns adds a zone on
-                    // the parent when .Add is invoked
-                    result = new ZoneOnDemand(_zoneFactory, this, name);
-                    TrySetMemberImpl(name, result);
-                }
-
-                return result;
-            }
-        }
-
         public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
         {
             var name = binder.Name;
@@ -76,6 +60,15 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             _zoneFactory = zoneFactory;
             _parent = parent;
+        }
+
+        public object this[string name]
+        {
+            get
+            {
+                TryGetMemberImpl(name, out var result);
+                return result;
+            }
         }
 
         public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)

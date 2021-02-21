@@ -123,7 +123,7 @@ namespace OrchardCore.DisplayManagement.Notify
             }
 
             var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
-            var messagesZone = layout["Messages"];
+            var messagesZone = layout.Zones["Messages"];
 
             if (messagesZone is ZoneOnDemand zoneOnDemand)
             {

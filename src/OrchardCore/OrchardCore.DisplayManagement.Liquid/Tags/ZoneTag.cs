@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var layout = await layoutAccessor.GetLayoutAsync() as ZoneHolding;
 
-            var zone = layout[name];
+            var zone = layout.Zones[name];
 
             if (zone is ZoneOnDemand zoneOnDemand)
             {

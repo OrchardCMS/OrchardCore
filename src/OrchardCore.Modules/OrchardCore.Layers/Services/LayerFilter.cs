@@ -144,7 +144,7 @@ namespace OrchardCore.Layers.Services
                     wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
                     wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
 
-                    var contentZone = layout[widget.Zone];
+                    var contentZone = layout.Zones[widget.Zone];
 
                     if (contentZone is ZoneOnDemand zoneOnDemand)
                     {
