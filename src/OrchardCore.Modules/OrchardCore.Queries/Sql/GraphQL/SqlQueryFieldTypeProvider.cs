@@ -22,7 +22,6 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<SqlQueryFieldTypeProvider> _logger;
-        private const string QuerySuffix = "Query";
 
         public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<SqlQueryFieldTypeProvider> logger)
         {
@@ -59,14 +58,16 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     var type = querySchema["type"].ToString();
                     FieldType fieldType;
 
+                    var fieldName = querySchema["fieldName"]?.ToString() ?? query.Name;
+
                     if (type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
-                        fieldType = BuildContentTypeFieldType(schema, contentType, query);
+                        fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldName);
                     }
                     else
                     {
-                        fieldType = BuildSchemaBasedFieldType(query, querySchema);
+                        fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldName);
                     }
 
                     if (fieldType != null)
@@ -81,7 +82,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             }
         }
 
-        private FieldType BuildSchemaBasedFieldType(SqlQuery query, JToken querySchema)
+        private FieldType BuildSchemaBasedFieldType(SqlQuery query, JToken querySchema, string fieldName)
         {
             var properties = querySchema["properties"];
             if (properties == null)
@@ -91,7 +92,8 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
             var typetype = new ObjectGraphType<JObject>
             {
-                Name = query.Name + QuerySuffix
+                Name = fieldName,
+                DeprecationReason = "Moved to a different Object Graph Type"
             };
 
             foreach (JProperty child in properties.Children())
@@ -107,11 +109,12 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         typeof(StringGraphType),
                         nameLower,
                         description: description,
+                        new QueryArguments(),
                         resolve: context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
-                        });
+                        }, "Moved to a different Field");
                     field.Metadata.Add("Name", name);
                 }
                 else if (type == "integer")
@@ -120,27 +123,30 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         typeof(IntGraphType),
                         nameLower,
                         description: description,
+                        new QueryArguments(),
                         resolve: context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
-                        });
+                        }, "Moved to a different Field");
                     field.Metadata.Add("Name", name);
                 }
             }
 
             var fieldType = new FieldType
             {
+                DeprecationReason = "Moved to a different FieldType",
                 Arguments = new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
-                Name = query.Name + QuerySuffix,
+                Name = fieldName,
+                Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
                     var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(context.FieldName[0..^5]);
+                    var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");
 
@@ -157,7 +163,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query)
+        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
             if (typetype == null)
@@ -171,12 +177,13 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
-                Name = query.Name + QuerySuffix,
+                Name = fieldName,
+                Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = typetype.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
                     var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(context.FieldName[0..^5]);
+                    var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");
 
