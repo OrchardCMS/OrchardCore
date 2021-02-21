@@ -19,7 +19,6 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<LuceneQueryFieldTypeProvider> _logger;
-        private const string QuerySuffix = "Query";
 
         public LuceneQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<LuceneQueryFieldTypeProvider> logger)
         {
@@ -57,17 +56,17 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     var type = querySchema["type"].ToString();
                     FieldType fieldType;
 
-                    var fieldName = querySchema["fieldName"]?.ToString() ?? query.Name;
+                    var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
                     if (query.ReturnContentItems &&
                         type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
-                        fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldName);
+                        fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
                     }
                     else
                     {
-                        fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldName);
+                        fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
                     }
 
                     if (fieldType != null)
@@ -82,7 +81,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             }
         }
 
-        private FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken querySchema, string fieldName)
+        private FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"];
             if (properties == null)
@@ -92,7 +91,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             var typetype = new ObjectGraphType<JObject>
             {
-                Name = fieldName
+                Name = fieldTypeName
             };
 
             foreach (JProperty child in properties.Children())
@@ -136,7 +135,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
-                Name = fieldName,
+                Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
@@ -159,7 +158,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query, string fieldName)
+        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
             if (typetype == null)
@@ -173,7 +172,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         new QueryArgument<StringGraphType> { Name = "parameters" }
                     ),
 
-                Name = fieldName,
+                Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = typetype.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>

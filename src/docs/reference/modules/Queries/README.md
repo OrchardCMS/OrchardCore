@@ -100,6 +100,33 @@ For Lucene queries with custom object schema, you are limited to elements stored
 
 For SQL queries, you can expose any column where property name is a column alias from the query.
 
+```json
+{
+    "type": "object",
+    "properties": {  
+        "Name" : {
+            "type" : "string",
+            "description" : "This is your custom table 'Name' column."
+        }
+    }
+}
+```
+
+For SQL and Lucene queries you can define a custom name for the GraphQL field type.
+
+```json
+{
+    "type": "object",
+    "fieldTypeName": "customGraphQLFieldTypeName",
+    "properties": {  
+        "Name" : {
+            "type" : "string",
+            "description" : "This is your custom table 'Name' column."
+        }
+    }
+}
+```
+
 
 ## SQL Queries (`OrchardCore.Queries.Sql`)
 

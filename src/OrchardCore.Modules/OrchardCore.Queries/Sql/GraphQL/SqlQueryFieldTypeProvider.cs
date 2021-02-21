@@ -58,16 +58,16 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     var type = querySchema["type"].ToString();
                     FieldType fieldType;
 
-                    var fieldName = querySchema["fieldName"]?.ToString() ?? query.Name;
+                    var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
                     if (type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
-                        fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldName);
+                        fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
                     }
                     else
                     {
-                        fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldName);
+                        fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
                     }
 
                     if (fieldType != null)
@@ -82,7 +82,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             }
         }
 
-        private FieldType BuildSchemaBasedFieldType(SqlQuery query, JToken querySchema, string fieldName)
+        private FieldType BuildSchemaBasedFieldType(SqlQuery query, JToken querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"];
             if (properties == null)
@@ -92,8 +92,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
             var typetype = new ObjectGraphType<JObject>
             {
-                Name = fieldName,
-                DeprecationReason = "Moved to a different Object Graph Type"
+                Name = fieldTypeName
             };
 
             foreach (JProperty child in properties.Children())
@@ -135,12 +134,11 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
             var fieldType = new FieldType
             {
-                DeprecationReason = "Moved to a different FieldType",
                 Arguments = new QueryArguments(
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
-                Name = fieldName,
+                Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
@@ -163,7 +161,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldName)
+        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
             if (typetype == null)
@@ -177,7 +175,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     new QueryArgument<StringGraphType> { Name = "parameters" }
                 ),
 
-                Name = fieldName,
+                Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = typetype.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>

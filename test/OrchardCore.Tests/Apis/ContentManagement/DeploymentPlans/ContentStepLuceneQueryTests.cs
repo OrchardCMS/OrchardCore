@@ -41,13 +41,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 var result = await context
                     .GraphQLClient
                     .Content
-                    .Query("recentBlogPostsQuery", builder =>
+                    .Query("recentBlogPosts", builder =>
                     {
                         builder
                             .WithField("displayText");
                     });
 
-                var nodes = result["data"]["recentBlogPostsQuery"];
+                var nodes = result["data"]["recentBlogPosts"];
 
                 Assert.Equal(2, nodes.Count());
                 Assert.Equal("new version", nodes[0]["displayText"].ToString());
