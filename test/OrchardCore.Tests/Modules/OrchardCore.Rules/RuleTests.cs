@@ -6,10 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Moq;
+using OrchardCore.Layers;
+using OrchardCore.Layers.Services;
 using OrchardCore.Localization;
 using OrchardCore.Rules;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
+using OrchardCore.Scripting;
+using OrchardCore.Scripting.JavaScript;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Rules
@@ -21,7 +25,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         {
             var rule = new Rule();
 
-            var services = CreateServiceCollection();
+            var services = CreateRuleServiceCollection();
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -48,7 +52,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
                 }
             };
 
-            var services = CreateServiceCollection()
+            var services = CreateRuleServiceCollection()
                 .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>();
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
@@ -78,7 +82,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
                 }
             };
 
-            var services = CreateServiceCollection()
+            var services = CreateRuleServiceCollection()
                 .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
 
             var serviceProvider = services.BuildServiceProvider();
@@ -109,7 +113,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
                 }
             };
 
-            var services = CreateServiceCollection()
+            var services = CreateRuleServiceCollection()
                 .AddCondition<AnyConditionGroup, AnyConditionEvaluator, ConditionFactory<AnyConditionGroup>>()
                 .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
 
@@ -137,7 +141,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
                 }
             };
 
-            var services = CreateServiceCollection()
+            var services = CreateRuleServiceCollection()
                 .AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
@@ -154,7 +158,43 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
             Assert.Equal(expected, await ruleService.EvaluateAsync(rule));
         }
 
-        private ServiceCollection CreateServiceCollection()
+        [Theory]
+        [InlineData("isHomepage()", "/", true)]
+        [InlineData("isHomepage()", "/foo", false)]
+        public async Task ShouldEvaluateJavascriptCondition(string script, string requestPath, bool expected)
+        {
+            var rule = new Rule
+            {
+                Conditions = new List<Condition>
+                {
+                    new JavascriptCondition
+                    {
+                        Script = script
+                    }
+                }
+            };
+
+            var services = CreateRuleServiceCollection()
+                .AddCondition<JavascriptCondition, JavascriptConditionEvaluator, ConditionFactory<JavascriptCondition>>()
+                .AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>()
+                .AddMemoryCache()
+                .AddScripting()
+                .AddJavaScriptEngine();
+
+            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            var context = new DefaultHttpContext();
+            context.Request.Path = new PathString(requestPath);
+            mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+
+            services.AddSingleton<IHttpContextAccessor>(mockHttpContextAccessor.Object);
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var ruleService = serviceProvider.GetRequiredService<IRuleService>();
+            Assert.Equal(expected, await ruleService.EvaluateAsync(rule));
+        }
+
+        public static ServiceCollection CreateRuleServiceCollection()
         {
             var services = new ServiceCollection();
             services.AddOptions<ConditionOptions>();
