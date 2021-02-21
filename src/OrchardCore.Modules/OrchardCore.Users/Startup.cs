@@ -209,44 +209,44 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
-           {
-               o.Filters.AddFilter("has_permission", UserFilters.HasPermission);
-               o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
-               o.Filters.AddFilter("is_in_role", UserFilters.IsInRole);
-               o.Filters.AddFilter("user_email", UserFilters.UserEmail);
-               o.Filters.AddFilter("user_id", UserFilters.UserId);
-               o.Filters.AddFilter("users_by_id", UserFilters.UsersById);
+            {
+                o.Filters.AddFilter("has_permission", UserFilters.HasPermission);
+                o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
+                o.Filters.AddFilter("is_in_role", UserFilters.IsInRole);
+                o.Filters.AddFilter("user_email", UserFilters.UserEmail);
+                o.Filters.AddFilter("user_id", UserFilters.UserId);
+                o.Filters.AddFilter("users_by_id", UserFilters.UsersById);
 
 
                 o.MemberAccessStrategy.Register<ClaimsPrincipal>();
                 o.MemberAccessStrategy.Register<ClaimsIdentity>();
 
-               o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
+                o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
 
-               o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, context) =>
-               {
-                   var liquidTemplateContext = (LiquidTemplateContext)context;
+                o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, context) =>
+                {
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
 
-                   var httpContextAccessor = liquidTemplateContext.Services.GetRequiredService<IHttpContextAccessor>();
-                   var user = httpContextAccessor.HttpContext.User;
+                    var httpContextAccessor = liquidTemplateContext.Services.GetRequiredService<IHttpContextAccessor>();
+                    var user = httpContextAccessor.HttpContext.User;
 
-               //    FluidValue result = name switch
-               //    {
-               //    nameof(User.UserId) => user.UserId,
-               //    nameof(User.UserName),
-               //    nameof(User.NormalizedUserName),
-               //    nameof(User.Email),
-               //    nameof(User.NormalizedEmail),
-               //    nameof(User.EmailConfirmed),
-               //    nameof(User.IsEnabled),
-               //    nameof(User.RoleNames),
-               //    nameof(User.Properties)
-               //_ => NilValue.Instance
-               //    };
+                   //    FluidValue result = name switch
+                   //    {
+                   //    nameof(User.UserId) => user.UserId,
+                   //    nameof(User.UserName),
+                   //    nameof(User.NormalizedUserName),
+                   //    nameof(User.Email),
+                   //    nameof(User.NormalizedEmail),
+                   //    nameof(User.EmailConfirmed),
+                   //    nameof(User.IsEnabled),
+                   //    nameof(User.RoleNames),
+                   //    nameof(User.Properties)
+                   //_ => NilValue.Instance
+                   //    };
 
                    return NilValue.Instance;
-               });
-           });
+                });
+            });
         }
     }
 

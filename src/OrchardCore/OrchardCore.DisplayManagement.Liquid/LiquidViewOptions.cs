@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 
@@ -17,5 +18,6 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// rooted at the application root.
         /// </remarks>
         public List<IFileProvider> FileProviders { get; } = new List<IFileProvider>();
+        public List<Action<LiquidViewParser>> LiquidViewParserConfiguration { get; } = new List<Action<LiquidViewParser>>();
     }
 }

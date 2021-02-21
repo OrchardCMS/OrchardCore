@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using Fluid;
+using Fluid.Ast;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DynamicCache.Liquid;
 using Parlot.Fluent;
@@ -13,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             FluidTagHelper.DefaultArgumentsMapping["zone"] = "name";
         }
 
-        public LiquidViewParser()
+        public LiquidViewParser(IOptions<LiquidViewOptions> liquidViewOptions)
         {
             RegisterEmptyTag("render_body", RenderBodyTag.WriteToAsync);
             RegisterParserTag("render_section", ArgumentsList, RenderSectionTag.WriteToAsync);
@@ -45,11 +48,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             RegisterParserTag("helper", ArgumentsList, FluidTagHelper.WriteArgumentsTagHelperAsync);
             RegisterParserTag("shape", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("shape", list, null, writer, encoder, context));
             RegisterParserTag("contentitem", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("contentitem", list, null, writer, encoder, context));
-            RegisterParserTag("link", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("link", list, null, writer, encoder, context));
+
+            //RegisterParserTag("link", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("link", list, null, writer, encoder, context));
             RegisterParserTag("meta", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("meta", list, null, writer, encoder, context));
-            RegisterParserTag("resources", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("resources", list, null, writer, encoder, context));
-            RegisterParserTag("script", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("script", list, null, writer, encoder, context));
-            RegisterParserTag("style", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("style", list, null, writer, encoder, context));
+            //RegisterParserTag("resources", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("resources", list, null, writer, encoder, context));
+            //RegisterParserTag("script", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("script", list, null, writer, encoder, context));
+            //RegisterParserTag("style", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("style", list, null, writer, encoder, context));
 
             RegisterParserBlock("block", ArgumentsList, FluidTagHelper.WriteArgumentsBlockHelperAsync);
             RegisterParserBlock("a", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("a", list, statements, writer, encoder, context));
@@ -64,6 +68,13 @@ namespace OrchardCore.DisplayManagement.Liquid
             RegisterParserTag("cache_expires_on", Primary, CacheExpiresOnTag.WriteToAsync);
             RegisterParserTag("cache_expires_after", Primary, CacheExpiresAfterTag.WriteToAsync);
             RegisterParserTag("cache_expires_sliding", Primary, CacheExpiresSlidingTag.WriteToAsync);
+
+            foreach(var configuration in liquidViewOptions.Value.LiquidViewParserConfiguration)
+            {
+                configuration(this);
+            }
         }
+
+        public Parser<List<FilterArgument>> ArgumentsListParser => ArgumentsList;
     }
 }
