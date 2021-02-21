@@ -46,18 +46,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             RegisterParserTag("httpcontext_remove_items", Primary, HttpContextRemoveItemTag.WriteToAsync);
 
             RegisterParserTag("helper", ArgumentsList, FluidTagHelper.WriteArgumentsTagHelperAsync);
-            RegisterParserTag("shape", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("shape", list, null, writer, encoder, context));
-            RegisterParserTag("contentitem", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("contentitem", list, null, writer, encoder, context));
 
-            //RegisterParserTag("link", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("link", list, null, writer, encoder, context));
-            RegisterParserTag("meta", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("meta", list, null, writer, encoder, context));
-            //RegisterParserTag("resources", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("resources", list, null, writer, encoder, context));
-            //RegisterParserTag("script", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("script", list, null, writer, encoder, context));
-            //RegisterParserTag("style", ArgumentsList, async (list, writer, encoder, context) => await FluidTagHelper.WriteToAsync("style", list, null, writer, encoder, context));
+            RegisterParserTag("shape", ArgumentsList, new ShapeTag().WriteToAsync);
+            RegisterParserBlock("zone", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("zone", list, statements, writer, encoder, context));
 
             RegisterParserBlock("block", ArgumentsList, FluidTagHelper.WriteArgumentsBlockHelperAsync);
             RegisterParserBlock("a", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("a", list, statements, writer, encoder, context));
-            RegisterParserBlock("zone", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("zone", list, statements, writer, encoder, context));
             RegisterParserBlock("form", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("form", list, statements, writer, encoder, context));
             RegisterParserBlock("scriptblock", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("scriptblock", list, statements, writer, encoder, context));
             RegisterParserBlock("styleblock", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("styleblock", list, statements, writer, encoder, context));

@@ -37,6 +37,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
@@ -66,6 +67,11 @@ namespace OrchardCore.Contents
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<LiquidViewOptions>(o =>
+            {
+                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, new ContentItemTag().WriteToAsync));
+            });
+
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<ContentItem>();

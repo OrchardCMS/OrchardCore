@@ -24,7 +24,7 @@ namespace OrchardCore.Resources.Liquid
             string type = null;
             bool? appendVersion = null;
 
-            var customAttributes = new Dictionary<string, string>();
+            Dictionary<string, string> customAttributes = null;
 
             foreach (var argument in argumentsList)
             {
@@ -36,7 +36,7 @@ namespace OrchardCore.Resources.Liquid
                     case "title": title = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "type": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                    default: customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
 
@@ -72,9 +72,12 @@ namespace OrchardCore.Resources.Liquid
                 linkEntry.AppendVersion = appendVersion.Value;
             }
 
-            foreach (var attribute in customAttributes)
+            if (customAttributes != null)
             {
-                linkEntry.SetAttribute(attribute.Key, attribute.Value);
+                foreach (var attribute in customAttributes)
+                {
+                    linkEntry.SetAttribute(attribute.Key, attribute.Value);
+                }
             }
 
             resourceManager.RegisterLink(linkEntry);

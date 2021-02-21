@@ -1,45 +1,58 @@
-//using System;
-//using System.Collections.Generic;
-//using System.IO;
-//using System.Text.Encodings.Web;
-//using System.Threading.Tasks;
-//using Fluid;
-//using Fluid.Ast;
-//using Microsoft.Extensions.DependencyInjection;
-//using OrchardCore.Liquid;
-//using OrchardCore.ResourceManagement;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Fluid;
+using Fluid.Ast;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Liquid;
+using OrchardCore.ResourceManagement;
 
-//namespace OrchardCore.Resources.Liquid
-//{
-//    public class MetaTag
-//    {
-//        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
-//        {
-//            var services = ((LiquidTemplateContext)context).Services;
-//            var resourceManager = services.GetRequiredService<IResourceManager>();
+namespace OrchardCore.Resources.Liquid
+{
+    public class MetaTag
+    {
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        {
+            var services = ((LiquidTemplateContext)context).Services;
+            var resourceManager = services.GetRequiredService<IResourceManager>();
 
-//            var arguments = new FilterArguments();
+            string name = null;
+            string property = null;
+            string content = null;
+            string httpEquiv = null;
+            string charset = null;
+            string separator = null;
 
-//            foreach (var argument in argumentsList)
-//            {
-//                arguments.Add(argument.Name, await argument.Expression.EvaluateAsync(context));
-//            }
+            Dictionary<string, string> customAttributes = null;
 
-//            var metaEntry = new MetaEntry(Name, Property, Content, HttpEquiv, Charset);
+            foreach (var argument in argumentsList)
+            {
+                switch (argument.Name)
+                {
+                    case "name": name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "property": property = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "content": content = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "http_equiv": httpEquiv = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "charset": charset = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "separator": separator = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                }
+            }
 
-//            foreach (var attribute in output.Attributes)
-//            {
-//                if (String.Equals(attribute.Name, "name", StringComparison.OrdinalIgnoreCase) || String.Equals(attribute.Name, "property", StringComparison.OrdinalIgnoreCase))
-//                {
-//                    continue;
-//                }
+            var metaEntry = new MetaEntry(name, property, content, httpEquiv, charset);
 
-//                metaEntry.SetAttribute(attribute.Name, attribute.Value.ToString());
-//            }
+            if (customAttributes != null)
+            {
+                foreach (var attribute in customAttributes)
+                {
+                    metaEntry.SetAttribute(attribute.Key, attribute.Value);
+                }
+            }
 
-//            _resourceManager.AppendMeta(metaEntry, Separator ?? ", ");
+            resourceManager.AppendMeta(metaEntry, separator ?? ", ");
 
-//            return Completion.Normal;
-//        }
-//    }
-//}
+            return Completion.Normal;
+        }
+    }
+}

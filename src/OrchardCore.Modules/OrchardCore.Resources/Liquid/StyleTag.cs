@@ -33,7 +33,7 @@ namespace OrchardCore.Resources.Liquid
             string version = null;
             var at = ResourceLocation.Unspecified;
 
-            var customAttributes = new Dictionary<string, string>();
+            Dictionary<string, string> customAttributes = null;
 
             foreach (var argument in argumentsList)
             {
@@ -52,7 +52,7 @@ namespace OrchardCore.Resources.Liquid
                     case "depends_on": dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "version": version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out at); break;
-                    default: customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
 
@@ -61,9 +61,12 @@ namespace OrchardCore.Resources.Liquid
                 // Include custom style
                 var setting = resourceManager.RegisterUrl("stylesheet", src, debugSrc);
 
-                foreach (var attribute in customAttributes)
+                if (customAttributes != null)
                 {
-                    setting.SetAttribute(attribute.Key, attribute.Value);
+                    foreach (var attribute in customAttributes)
+                    {
+                        setting.SetAttribute(attribute.Key, attribute.Value);
+                    }
                 }
 
                 if (at != ResourceLocation.Unspecified)
@@ -115,9 +118,12 @@ namespace OrchardCore.Resources.Liquid
 
                 var setting = resourceManager.RegisterResource("stylesheet", name);
 
-                foreach (var attribute in customAttributes)
+                if (customAttributes != null)
                 {
-                    setting.SetAttribute(attribute.Key, attribute.Value);
+                    foreach (var attribute in customAttributes)
+                    {
+                        setting.SetAttribute(attribute.Key, attribute.Value);
+                    }
                 }
 
                 if (at != ResourceLocation.Unspecified)
@@ -191,9 +197,12 @@ namespace OrchardCore.Resources.Liquid
                 var definition = resourceManager.InlineManifest.DefineStyle(name);
                 definition.SetUrl(src, debugSrc);
 
-                foreach (var attribute in customAttributes)
+                if (customAttributes != null)
                 {
-                    definition.SetAttribute(attribute.Key, attribute.Value);
+                    foreach (var attribute in customAttributes)
+                    {
+                        definition.SetAttribute(attribute.Key, attribute.Value);
+                    }
                 }
 
                 if (!String.IsNullOrEmpty(version))

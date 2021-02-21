@@ -22,14 +22,11 @@ namespace OrchardCore.Resources.Liquid
 
             var type = ResourceType.Footer;
 
-            var customAttributes = new Dictionary<string, string>();
-
             foreach (var argument in argumentsList)
             {
                 switch (argument.Name)
                 {
                     case "type": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out type); break;
-                    default: customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
 
