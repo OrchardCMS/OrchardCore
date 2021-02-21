@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Helpers;
@@ -10,12 +9,17 @@ using YesSql;
 
 namespace OrchardCore.Lists.Liquid
 {
-    public static class ListItemsFilter
+    public class ListItemsFilter : ILiquidFilter
     {
-        public static async ValueTask<FluidValue> ListItems(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
-            var context = (LiquidTemplateContext)ctx;
+        private readonly ISession _session;
 
+        public ListItemsFilter(ISession session)
+        {
+            _session = session;
+        }
+
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
             string listContentItemId = null;
 
             if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
@@ -27,9 +31,7 @@ namespace OrchardCore.Lists.Liquid
                 listContentItemId = input.ToStringValue();
             }
 
-            var session = context.Services.GetRequiredService<ISession>();
-
-            var listItems = await ListQueryHelpers.QueryListItemsAsync(session, listContentItemId);
+            var listItems = await ListQueryHelpers.QueryListItemsAsync(_session, listContentItemId);
 
             return FluidValue.Create(listItems, ctx.Options);
         }

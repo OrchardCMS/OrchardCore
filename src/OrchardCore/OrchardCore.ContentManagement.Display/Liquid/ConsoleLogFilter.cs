@@ -1,8 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,17 +9,20 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentManagement.Display.Liquid
 {
-    public static class ConsoleLogFilter
+    public class ConsoleLogFilter : ILiquidFilter
     {
-        public static ValueTask<FluidValue> ConsoleLog(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IHostEnvironment _hostEnvironment;
+
+        public ConsoleLogFilter(IHostEnvironment hostEnvironment)
         {
-            var context = (LiquidTemplateContext)ctx;
+            _hostEnvironment = hostEnvironment;
+        }
 
-            var env = context.Services.GetRequiredService<IHostEnvironment>();
-
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
             var content = input.ToObjectValue();
 
-            if (content == null || env.IsProduction())
+            if (content == null || _hostEnvironment.IsProduction())
             {
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }

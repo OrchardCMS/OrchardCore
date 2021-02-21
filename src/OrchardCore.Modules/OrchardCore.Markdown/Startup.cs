@@ -39,8 +39,8 @@ namespace OrchardCore.Markdown
             {
                 o.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
                 o.MemberAccessStrategy.Register<MarkdownFieldViewModel>();
-                o.Filters.AddFilter("markdownify", Markdownify.Markdown);
-            });
+            })
+            .AddLiquidFilter<Markdownify>("markdownify");
 
             // Markdown Part
             services.AddContentPart<MarkdownBodyPart>()

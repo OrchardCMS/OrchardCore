@@ -66,10 +66,10 @@ namespace OrchardCore.Media
                 o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
                 o.MemberAccessStrategy.Register<Anchor>();
 
-                o.Filters.AddFilter("asset_url", MediaFilters.AssetUrl);
-                o.Filters.AddFilter("resize_url", MediaFilters.ResizeUrl);
                 o.Filters.AddFilter("img_tag", MediaFilters.ImgTag);
-            });
+            })
+            .AddLiquidFilter<AssetUrlFilter>("asset_url")
+            .AddLiquidFilter<ResizeUrlFilter>("resize_url");
 
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 

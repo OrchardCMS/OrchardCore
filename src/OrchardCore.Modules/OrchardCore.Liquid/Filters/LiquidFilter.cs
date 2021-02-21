@@ -2,19 +2,23 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public static class LiquidFilter
+    public class LiquidFilter : ILiquidFilter
     {
-        public static async ValueTask<FluidValue> Liquid(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
-            var context = (LiquidTemplateContext)ctx;
-            var liquidTemplateManager = context.Services.GetRequiredService<ILiquidTemplateManager>();
-            var htmlEncoder = context.Services.GetRequiredService<HtmlEncoder>();
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly HtmlEncoder _htmlEncoder;
 
-            var content = await liquidTemplateManager.RenderStringAsync(input.ToStringValue(), htmlEncoder, arguments.At(0));
+        public LiquidFilter(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
+        {
+            _liquidTemplateManager = liquidTemplateManager;
+            _htmlEncoder = htmlEncoder;
+        }
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
+            var content = await _liquidTemplateManager.RenderStringAsync(input.ToStringValue(), _htmlEncoder, arguments.At(0));
+
             return new StringValue(content, false);
         }
     }

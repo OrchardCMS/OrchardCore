@@ -9,14 +9,17 @@ using Shortcodes;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public static class ShortcodeFilter
+    public class ShortcodeFilter : ILiquidFilter
     {
-        public static async ValueTask<FluidValue> Shortcode(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IShortcodeService _shortcodeService;
+
+        public ShortcodeFilter(IShortcodeService shortcodeService)
         {
-            var context = (LiquidTemplateContext)ctx;
+            _shortcodeService = shortcodeService;
+        }
 
-            var shortcodeService = context.Services.GetRequiredService<IShortcodeService>();
-
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
             var shortcodeContext = new Context();
 
             // Retrieve the 'ContentItem' from the ambient liquid scope.
@@ -30,7 +33,7 @@ namespace OrchardCore.Liquid.Filters
                 shortcodeContext["ContentItem"] = null;
             }
 
-            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue(), shortcodeContext));
+            return new StringValue(await _shortcodeService.ProcessAsync(input.ToStringValue(), shortcodeContext));
         }
     }
 }

@@ -2,19 +2,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentLocalization.Liquid
 {
-    public static class ContentLocalizationFilter
+    public class ContentLocalizationFilter : ILiquidFilter
     {
-        public static async ValueTask<FluidValue> LocalizationSet(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IContentLocalizationManager _contentLocalizationManager;
+
+        public ContentLocalizationFilter(IContentLocalizationManager contentLocalizationManager)
         {
-            var context = (LiquidTemplateContext)ctx;
+            _contentLocalizationManager = contentLocalizationManager;
+        }
 
-            var innoFieldsService = context.Services.GetRequiredService<IContentLocalizationManager>();
-
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
             var locale = arguments.At(0).ToStringValue();
 
             if (arguments.At(0).IsNil())
@@ -28,13 +30,13 @@ namespace OrchardCore.ContentLocalization.Liquid
 
                 var localizationSets = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
 
-                return FluidValue.Create(await innoFieldsService.GetItemsForSetsAsync(localizationSets, locale), ctx.Options);
+                return FluidValue.Create(await _contentLocalizationManager.GetItemsForSetsAsync(localizationSets, locale), ctx.Options);
             }
             else
             {
                 var localizationSet = input.ToStringValue();
 
-                return FluidValue.Create(await innoFieldsService.GetContentItemAsync(localizationSet, locale), ctx.Options);
+                return FluidValue.Create(await _contentLocalizationManager.GetContentItemAsync(localizationSet, locale), ctx.Options);
             }
         }
     }

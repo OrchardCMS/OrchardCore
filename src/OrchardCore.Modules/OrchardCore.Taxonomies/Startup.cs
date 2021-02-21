@@ -19,6 +19,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -55,11 +56,9 @@ namespace OrchardCore.Taxonomies
                 o.MemberAccessStrategy.Register<TaxonomyField>();
                 o.MemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
                 o.MemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
-
-                o.Filters.AddFilter("taxonomy_terms", TaxonomyTermsFilter.TaxonomyTerms);
-                o.Filters.AddFilter("inherited_terms", InheritedTermsFilter.InheritedTerms);
-
-            });
+            })
+            .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
+            .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
 
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IShapeTableProvider, TermShapes>();

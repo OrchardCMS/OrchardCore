@@ -50,11 +50,10 @@ namespace OrchardCore.Lists
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<ListPartViewModel>();
-
-                o.Filters.AddFilter("list_count", ListCountFilter.ListCount);
-                o.Filters.AddFilter("list_items", ListItemsFilter.ListItems);
-                o.Filters.AddFilter("container", ContainerFilter.Container);
-            });
+            })
+            .AddLiquidFilter<ListCountFilter>("list_count")
+            .AddLiquidFilter<ListItemsFilter>("list_items")
+            .AddLiquidFilter<ContainerFilter>("container");
 
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();

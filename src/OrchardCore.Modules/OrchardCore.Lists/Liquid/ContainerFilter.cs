@@ -2,19 +2,23 @@ using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Models;
 
 namespace OrchardCore.Lists.Liquid
 {
-    public static class ContainerFilter
+    public class ContainerFilter : ILiquidFilter
     {
-        public static async ValueTask<FluidValue> Container(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
-            var context = (LiquidTemplateContext)ctx;
+        private readonly IContentManager _contentManager;
 
+        public ContainerFilter(IContentManager contentManager)
+        {
+            _contentManager = contentManager;
+        }
+
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
             var contentItem = input.ToObjectValue() as ContentItem;
 
             if (contentItem == null)
@@ -26,9 +30,7 @@ namespace OrchardCore.Lists.Liquid
 
             if (containerId != null)
             {
-                var contentManager = context.Services.GetRequiredService<IContentManager>();
-
-                var container = await contentManager.GetAsync(containerId);
+                var container = await _contentManager.GetAsync(containerId);
 
                 if (container != null)
                 {

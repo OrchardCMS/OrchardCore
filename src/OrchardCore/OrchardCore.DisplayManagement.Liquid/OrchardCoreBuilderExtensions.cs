@@ -61,11 +61,6 @@ namespace Microsoft.Extensions.DependencyInjection
                         }
                     });
 
-
-                    o.Filters.AddFilter("append_version", AppendVersionFilter.AppendVersion);
-                    o.Filters.AddFilter("resource_url", ResourceUrlFilter.ResourceUrl);
-                    o.Filters.AddFilter("sanitize_html", SanitizeHtmlFilter.SanitizeHtml);
-
                     o.ValueConverters.Add(o => o is Shape s ? new ObjectValue(s) : null);
                     o.ValueConverters.Add(o => o is ZoneHolding z ? new ObjectValue(z) : null);
 
@@ -122,7 +117,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     o.MemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());
                     o.MemberAccessStrategy.Register<RouteValueDictionaryWrapper, object>((headers, name) => headers.RouteValueDictionary[name]);
 
-                });
+                })
+                .AddLiquidFilter<AppendVersionFilter>("append_version")
+                .AddLiquidFilter<ResourceUrlFilter>("resource_url")
+                .AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html");
             });
 
             return builder;

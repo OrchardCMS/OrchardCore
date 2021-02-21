@@ -54,9 +54,6 @@ namespace OrchardCore.Queries
 
             services.Configure<TemplateOptions>(o =>
             {
-
-                o.Filters.AddFilter("query", QueryFilter.Query);
-
                 o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
 
                 o.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
@@ -68,7 +65,8 @@ namespace OrchardCore.Queries
 
                     return FluidValue.Create(await queryManager.GetQueryAsync(name), context.Options);
                 });
-            });
+            })
+            .AddLiquidFilter<QueryFilter>("query");
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -2,32 +2,34 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    public static class ContentItemFilter
+    public class ContentItemFilter : ILiquidFilter
     {
-        public static async ValueTask<FluidValue> ContentItemId(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IContentManager _contentManager;
+
+        public ContentItemFilter(IContentManager contentManager)
         {
-            var context = (LiquidTemplateContext)ctx;
+            _contentManager = contentManager;
+        }
 
-            var contentManager = context.Services.GetRequiredService<IContentManager>();
-
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
             if (input.Type == FluidValues.Array)
             {
                 // List of content item ids
                 var contentItemIds = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
 
-                return FluidValue.Create(await contentManager.GetAsync(contentItemIds), ctx.Options);
+                return FluidValue.Create(await _contentManager.GetAsync(contentItemIds), ctx.Options);
             }
             else
             {
                 var contentItemId = input.ToStringValue();
 
-                return FluidValue.Create(await contentManager.GetAsync(contentItemId), ctx.Options);
+                return FluidValue.Create(await _contentManager.GetAsync(contentItemId), ctx.Options);
             }
         }
     }

@@ -24,11 +24,7 @@ namespace OrchardCore.ContentManagement.Display
 
             services.AddOptions<ContentDisplayOptions>();
 
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.Filters.AddFilter("console_log", ConsoleLogFilter.ConsoleLog);
-            });
-            
+            services.AddLiquidFilter<ConsoleLogFilter>("console_log");
 
             return services;
         }

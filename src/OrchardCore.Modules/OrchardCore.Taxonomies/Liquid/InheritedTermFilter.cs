@@ -3,23 +3,25 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Taxonomies.Liquid
 {
-    public static class InheritedTermsFilter
+    public class InheritedTermsFilter : ILiquidFilter
     {
-        public static async ValueTask<FluidValue> InheritedTerms(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
-            var context = (LiquidTemplateContext)ctx;
+        private readonly IContentManager _contentManager;
 
+        public InheritedTermsFilter(IContentManager contentManager)
+        {
+            _contentManager = contentManager;
+        }
+
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
             ContentItem taxonomy = null;
             string termContentItemId = null;
-
-            var contentManager = context.Services.GetRequiredService<IContentManager>();
 
             if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem term)
             {
@@ -38,7 +40,7 @@ namespace OrchardCore.Taxonomies.Liquid
             }
             else
             {
-                taxonomy = await contentManager.GetAsync(firstArg.ToStringValue());
+                taxonomy = await _contentManager.GetAsync(firstArg.ToStringValue());
             }
 
             if (taxonomy == null)

@@ -12,11 +12,24 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    public class BuildDisplayFilter
+    public class BuildDisplayFilter : ILiquidFilter
     {
         private const int DefaultMaxContentItemRecursions = 20;
 
-        public static ValueTask<FluidValue> ShapeBuildDisplay(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IContentItemRecursionHelper<BuildDisplayFilter> _buildDisplayRecursionHelper;
+        private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+
+        public BuildDisplayFilter(IContentItemRecursionHelper<BuildDisplayFilter> buildDisplayRecursionHelper,
+            IContentItemDisplayManager contentItemDisplayManager,
+            IUpdateModelAccessor updateModelAccessor)
+        {
+            _buildDisplayRecursionHelper = buildDisplayRecursionHelper;
+            _contentItemDisplayManager = contentItemDisplayManager;
+            _updateModelAccessor = updateModelAccessor;
+        }
+
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             static async ValueTask<FluidValue> Awaited(Task<IShape> task, TemplateOptions options)
             {
@@ -42,24 +55,18 @@ namespace OrchardCore.Contents.Liquid
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }
 
-            var context = (LiquidTemplateContext)ctx;
-
-            var buildDisplayRecursionHelper = context.Services.GetRequiredService<IContentItemRecursionHelper<BuildDisplayFilter>>();
-
             // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent unlimited recursions.
             // max_recursions is an optional argument to override the default limit of 20.
             var maxRecursions = arguments["max_recursions"];
             var recursionLimit = maxRecursions.Type == FluidValues.Number ? Convert.ToInt32(maxRecursions.ToNumberValue()) : DefaultMaxContentItemRecursions;
-            if (buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
+            if (_buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
             {
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }
 
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
-            var displayManager = context.Services.GetRequiredService<IContentItemDisplayManager>();
-            var updateModelAccessor = context.Services.GetRequiredService<IUpdateModelAccessor>();
 
-            var task = displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
+            var task = _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, displayType);
             if (task.IsCompletedSuccessfully)
             {
                 return new ValueTask<FluidValue>(FluidValue.Create(task.Result, ctx.Options));

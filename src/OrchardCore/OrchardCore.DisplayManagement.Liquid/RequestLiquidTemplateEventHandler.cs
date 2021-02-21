@@ -7,6 +7,7 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
+    // TODO this code remains for backwards compatability. It can be removed in a futre release.
     /// <summary>
     /// Provides access to <see cref="HttpRequest"/> properties if the template is running in
     /// a web request.

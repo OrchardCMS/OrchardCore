@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
@@ -12,14 +11,17 @@ using OrchardCore.Taxonomies.Fields;
 
 namespace OrchardCore.Taxonomies.Liquid
 {
-    public static class TaxonomyTermsFilter
+    public class TaxonomyTermsFilter : ILiquidFilter
     {
-        public static async ValueTask<FluidValue> TaxonomyTerms(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IContentManager _contentManager;
+
+        public TaxonomyTermsFilter(IContentManager contentManager)
         {
-            var context = (LiquidTemplateContext)ctx;
+            _contentManager = contentManager;
+        }
 
-            var contentManager = context.Services.GetRequiredService<IContentManager>();
-
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
             string taxonomyContentItemId = null;
             string[] termContentItemIds = null;
 
@@ -46,7 +48,7 @@ namespace OrchardCore.Taxonomies.Liquid
                 return NilValue.Instance;
             }
 
-            var taxonomy = await contentManager.GetAsync(taxonomyContentItemId);
+            var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId);
 
             if (taxonomy == null)
             {

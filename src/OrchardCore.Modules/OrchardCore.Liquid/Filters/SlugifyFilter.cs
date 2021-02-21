@@ -1,19 +1,22 @@
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public static class SlugifyFilter
+    public class SlugifyFilter : ILiquidFilter
     {
-        public static ValueTask<FluidValue> Slugify(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly ISlugService _slugService;
+
+        public SlugifyFilter(ISlugService slugService)
         {
-            var orchardContext = (LiquidTemplateContext)ctx;
-            var slugService = orchardContext.Services.GetRequiredService<ISlugService>();
+            _slugService = slugService;
+        }
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
             var text = input.ToStringValue();
 
-            return new StringValue(slugService.Slugify(text));
+            return new StringValue(_slugService.Slugify(text));
         }
     }
 }

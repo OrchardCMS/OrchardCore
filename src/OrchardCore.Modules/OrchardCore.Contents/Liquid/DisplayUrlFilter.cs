@@ -5,7 +5,6 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
@@ -13,36 +12,43 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    public static class DisplayUrlFilter
+    public class DisplayUrlFilter : ILiquidFilter
     {
-        public static async ValueTask<FluidValue> DisplayUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly AutorouteOptions _autorouteOptions;
+        private readonly IContentManager _contentManager;
+        private readonly IUrlHelperFactory _urlHelperFactory;
+
+        public DisplayUrlFilter(IOptions<AutorouteOptions> autorouteOptions, IContentManager contentManager, IUrlHelperFactory urlHelperFactory)
+        {
+            _autorouteOptions = autorouteOptions.Value;
+            _contentManager = contentManager;
+            _urlHelperFactory = urlHelperFactory;
+        }
+
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var context = (LiquidTemplateContext)ctx;
-
             var contentItem = input.ToObjectValue() as ContentItem;
             RouteValueDictionary routeValues;
 
             if (contentItem == null)
             {
-                var autoRouteOption = context.Services.GetRequiredService<IOptions<AutorouteOptions>>()?.Value;
-                routeValues = new RouteValueDictionary(autoRouteOption.GlobalRouteValues);
+                routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues);
                 if (string.IsNullOrEmpty(input.ToStringValue()))
                 {
                     throw new ArgumentException("content_item_id is empty while invoking 'display_url'");
                 }
-                routeValues[autoRouteOption.ContentItemIdKey] = input.ToStringValue();
+                routeValues[_autorouteOptions.ContentItemIdKey] = input.ToStringValue();
             }
             else
             {
-                var contentManager = context.Services.GetRequiredService<IContentManager>();
-                var contentItemMetadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+                var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
                 routeValues = contentItemMetadata.DisplayRouteValues;
             }
 
-            var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
-            var urlHelper = urlHelperFactory.GetUrlHelper(context.ViewContext);
+            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-            var linkUrl = ((IUrlHelper)urlHelper).RouteUrl(routeValues);
+            var linkUrl = urlHelper.RouteUrl(routeValues);
 
             return new StringValue(linkUrl);
         }

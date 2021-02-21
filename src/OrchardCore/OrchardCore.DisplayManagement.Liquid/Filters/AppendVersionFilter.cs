@@ -3,23 +3,26 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
-    public static class AppendVersionFilter
+    public class AppendVersionFilter : ILiquidFilter
     {
-        public static ValueTask<FluidValue> AppendVersion(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IFileVersionProvider _fileVersionProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public AppendVersionFilter(IFileVersionProvider fileVersionProvider, IHttpContextAccessor httpContextAccessor)
         {
-            var context = (LiquidTemplateContext)ctx;
+            _fileVersionProvider = fileVersionProvider;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
-            var fileVersionProvider = context.Services.GetRequiredService<IFileVersionProvider>();
-            var httpContextAccessor = context.Services.GetRequiredService<IHttpContextAccessor>();
-
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
             var url = input.ToStringValue();
 
-            var imageUrl = fileVersionProvider.AddFileVersionToPath(httpContextAccessor.HttpContext.Request.PathBase, url);
+            var imageUrl = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, url);
 
             return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
         }

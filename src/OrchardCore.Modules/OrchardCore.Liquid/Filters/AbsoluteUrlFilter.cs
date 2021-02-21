@@ -2,14 +2,19 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public static class AbsoluteUrlFilter
+    public class AbsoluteUrlFilter : ILiquidFilter
     {
-        public static ValueTask<FluidValue> AbsoluteUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IUrlHelperFactory _urlHelperFactory;
+
+        public AbsoluteUrlFilter(IUrlHelperFactory urlHelperFactory)
+        {
+            _urlHelperFactory = urlHelperFactory;
+        }
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var relativePath = input.ToStringValue();
 
@@ -19,8 +24,7 @@ namespace OrchardCore.Liquid.Filters
             }
 
             var context = (LiquidTemplateContext)ctx;
-            var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
-            var urlHelper = urlHelperFactory.GetUrlHelper(context.ViewContext);
+            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
             var result = new StringValue(urlHelper.ToAbsoluteUrl(relativePath));
             return new ValueTask<FluidValue>(result);

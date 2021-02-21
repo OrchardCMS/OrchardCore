@@ -5,20 +5,28 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentLocalization.Liquid
 {
-    public static class SwitchCultureUrlFilter
+    public class SwitchCultureUrlFilter : ILiquidFilter
     {
-        public static ValueTask<FluidValue> SwitchCultureUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IUrlHelperFactory _urlHelperFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public SwitchCultureUrlFilter(IUrlHelperFactory urlHelperFactory, IHttpContextAccessor httpContextAccessor)
+        {
+            _urlHelperFactory = urlHelperFactory;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var context = (LiquidTemplateContext)ctx;
-            var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
-            var urlHelper = urlHelperFactory.GetUrlHelper(context.ViewContext);
+            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-            var request = (HttpRequest)ctx.GetValue("Request")?.ToObjectValue();
+            var request = _httpContextAccessor.HttpContext?.Request;
+
             if (request == null)
             {
                 throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");

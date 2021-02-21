@@ -12,15 +12,21 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Liquid
 {
-    public static class SignalUrlFilter
+    public class SignalUrlFilter : ILiquidFilter
     {
-        public static ValueTask<FluidValue> SignalUrl(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IUrlHelperFactory _urlHelperFactory;
+        private readonly ISecurityTokenService _securityTokenService;
+
+        public SignalUrlFilter(IUrlHelperFactory urlHelperFactory, ISecurityTokenService securityTokenService)
+        {
+            _urlHelperFactory = urlHelperFactory;
+            _securityTokenService = securityTokenService;
+        }
+
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var context = (LiquidTemplateContext)ctx;
-            var urlHelperFactory = context.Services.GetRequiredService<IUrlHelperFactory>();
-            var urlHelper = urlHelperFactory.GetUrlHelper(context.ViewContext);
-
-            var signalService = context.Services.GetRequiredService<ISecurityTokenService>();
+            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
             var workflowContextValue = context.GetValue("Workflow");
 
@@ -35,8 +41,9 @@ namespace OrchardCore.Workflows.Http.Liquid
                 ? SignalPayload.ForWorkflow(signalName, workflowContext.WorkflowId)
                 : SignalPayload.ForCorrelation(signalName, workflowContext.CorrelationId);
 
-            var token = signalService.CreateToken(payload, TimeSpan.FromDays(7));
+            var token = _securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
             var urlValue = new StringValue(urlHelper.Action("Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token }));
+
             return new ValueTask<FluidValue>(urlValue);
         }
     }

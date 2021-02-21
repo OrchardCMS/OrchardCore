@@ -76,11 +76,7 @@ namespace OrchardCore.Contents
                 o.MemberAccessStrategy.Register<ContentFieldDefinition>();
                 o.MemberAccessStrategy.Register<ContentPartDefinition>();
 
-                o.Filters.AddFilter("shape_build_display", BuildDisplayFilter.ShapeBuildDisplay);
-                o.Filters.AddFilter("content_item_id", ContentItemFilter.ContentItemId);
                 o.Filters.AddFilter("display_text", DisplayTextFilter.DisplayText);
-                o.Filters.AddFilter("display_url", DisplayUrlFilter.DisplayUrl);
-                o.Filters.AddFilter("full_text", FullTextFilter.FullText);
 
                 o.Scope.SetValue("Content", new ObjectValue(new LiquidContentAccessor()));
 
@@ -119,7 +115,7 @@ namespace OrchardCore.Contents
                         return GetContentByHandleAsync(context, name, true);
                     });
                 });
-            
+
                 o.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name, context) => GetContentByHandleAsync((LiquidTemplateContext)context, name));
 
                 async Task<FluidValue> GetContentByHandleAsync(LiquidTemplateContext context, string handle, bool latest = false)
@@ -138,7 +134,11 @@ namespace OrchardCore.Contents
                     var contentItem = await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
                     return FluidValue.Create(contentItem, context.Options);
                 }
-            });
+            })
+            .AddLiquidFilter<DisplayUrlFilter>("display_url")
+            .AddLiquidFilter<BuildDisplayFilter>("shape_build_display")
+            .AddLiquidFilter<ContentItemFilter>("content_item_id")
+            .AddLiquidFilter<FullTextFilter>("full_text");
 
             services.AddContentManagement();
             services.AddContentManagementDisplay();

@@ -21,6 +21,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -47,10 +48,9 @@ namespace OrchardCore.ContentLocalization
             {
                 o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
                 o.MemberAccessStrategy.Register<CultureInfo>();
-                o.Filters.AddFilter("localization_set", ContentLocalizationFilter.LocalizationSet);
-                o.Filters.AddFilter("switch_culture_url", SwitchCultureUrlFilter.SwitchCultureUrl);
-
-            });
+            })
+            .AddLiquidFilter<ContentLocalizationFilter>("localization_set")
+            .AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
 
             services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
 
