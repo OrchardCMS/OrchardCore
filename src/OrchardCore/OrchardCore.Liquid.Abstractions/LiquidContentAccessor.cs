@@ -7,8 +7,8 @@ namespace OrchardCore.Liquid
     {
         // TODO: Fix 'Content' property conflict differently, see #8259
 
-        //public string Content { get; set; }
+        // public string Content { get; set; }
 
-        //public override string ToString() => Content;
+        // public override string ToString() => Content;
     }
 }
