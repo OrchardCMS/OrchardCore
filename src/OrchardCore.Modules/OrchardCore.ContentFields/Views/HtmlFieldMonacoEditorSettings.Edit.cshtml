@@ -1,8 +1,8 @@
 @model OrchardCore.ContentFields.ViewModels.MonacoSettingsViewModel
 @inject OrchardCore.Environment.Shell.ShellSettings shellSettings;
 @{ 
-    var IStandaloneEditorConstructionOptionsSchemaPath = 
-            $"/{shellSettings.RequestUrlPrefix}OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json";
+    var urlPrefix = String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix) ? string.Empty : String.Concat(shellSettings.RequestUrlPrefix, '/');
+    var IStandaloneEditorConstructionOptionsSchemaPath = $"/{urlPrefix}OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json";
 }
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-monaco">
