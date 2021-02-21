@@ -71,7 +71,7 @@ namespace OrchardCore.Shortcodes.Services
             // }
 
             parameters["Args"] = new ObjectValue(model.Args);
-            parameters["Content"] = new ObjectValue(model.Content);
+            parameters["Content"] = new StringValue(model.Content);
             parameters["Context"] = new ObjectValue(model.Context);
 
             return await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
