@@ -10,12 +10,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewParser : FluidParser
     {
-        static LiquidViewParser()
-        {
-            FluidTagHelper.DefaultArgumentsMapping["shape"] = "type";
-            FluidTagHelper.DefaultArgumentsMapping["zone"] = "name";
-        }
-
         public LiquidViewParser(IOptions<LiquidViewOptions> liquidViewOptions)
         {
             RegisterEmptyTag("render_body", RenderBodyTag.WriteToAsync);
@@ -48,7 +42,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             RegisterParserTag("helper", ArgumentsList, FluidTagHelper.WriteArgumentsTagHelperAsync);
 
             RegisterParserTag("shape", ArgumentsList, new ShapeTag().WriteToAsync);
-            RegisterParserBlock("zone", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("zone", list, statements, writer, encoder, context));
+            RegisterParserBlock("zone", ArgumentsList, ZoneTag.WriteToAsync);
 
             RegisterParserBlock("block", ArgumentsList, FluidTagHelper.WriteArgumentsBlockHelperAsync);
             RegisterParserBlock("a", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("a", list, statements, writer, encoder, context));

@@ -63,6 +63,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     case "wrapper": wrapper = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
 
                     case null:
+                    case "type":
                     case "": Type ??= (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
 
                     default: (customAttributes ??= new Dictionary<string, object>())[argument.Name.ToPascalCaseDash()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(); break;
