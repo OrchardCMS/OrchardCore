@@ -66,6 +66,9 @@ namespace OrchardCore.Forms
             services.AddContentPart<ValidationPart>()
                     .UseDisplayDriver<ValidationPartDisplayDriver>();
 
+            services.AddContentPart<ValidationRulePart>()
+                 .UseDisplayDriver<ValidationRulePartDisplayDriver>();
+
             services.AddScoped<IDataMigration, Migrations>();
         }
     }

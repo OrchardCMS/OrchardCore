@@ -53,6 +53,12 @@ namespace OrchardCore.Forms
                 .WithPart("LabelPart")
                 .Stereotype("Widget"));
 
+
+
+            //ValidationRule
+            _contentDefinitionManager.AlterPartDefinition("ValidationRulePart", part => part
+                .WithDescription("Provides Validate Rule property."));
+
             // Input
             _contentDefinitionManager.AlterPartDefinition("InputPart", part => part
                 .WithDescription("Provides input field properties."));
@@ -61,6 +67,7 @@ namespace OrchardCore.Forms
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("InputPart")
+                .WithPart("ValidationRulePart")
                 .Stereotype("Widget"));
 
             // TextArea
@@ -71,6 +78,7 @@ namespace OrchardCore.Forms
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("TextAreaPart")
+                .WithPart("ValidationRulePart")
                 .Stereotype("Widget"));
 
             // Select
