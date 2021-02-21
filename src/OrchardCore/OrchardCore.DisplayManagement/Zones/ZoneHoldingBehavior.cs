@@ -29,16 +29,21 @@ namespace OrchardCore.DisplayManagement.Zones
 
         private Zones _zones;
 
-        public Zones Zones
+        public Zones Zones => _zones ??= new Zones(_zoneFactory, this);
+
+        public object this[string name]
         {
             get
             {
-                if (_zones == null)
+                if (!base.TryGetMemberImpl(name, out var result) || (null == result))
                 {
-                    return _zones = new Zones(_zoneFactory, this);
+                    // substitute nil results with a robot that turns adds a zone on
+                    // the parent when .Add is invoked
+                    result = new ZoneOnDemand(_zoneFactory, this, name);
+                    TrySetMemberImpl(name, result);
                 }
 
-                return _zones;
+                return result;
             }
         }
 

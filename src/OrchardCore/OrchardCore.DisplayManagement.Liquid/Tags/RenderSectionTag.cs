@@ -8,7 +8,7 @@ using Fluid.Ast;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         {
             var services = ((LiquidTemplateContext)context).Services;
 
-            dynamic layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync();
+            var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync() as ZoneHolding;
             var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
             var arguments = new NamedExpressionList(argumentsList);
@@ -32,7 +32,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var zone = layout[name];
 
-            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
+            if (required && zone != null && zone is ZoneOnDemand)
             {
                 throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
             }

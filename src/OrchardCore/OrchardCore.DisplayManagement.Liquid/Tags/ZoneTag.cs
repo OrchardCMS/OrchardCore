@@ -50,8 +50,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            dynamic layout = await layoutAccessor.GetLayoutAsync();
-            var zone = layout.Zones[name];
+            var layout = await layoutAccessor.GetLayoutAsync() as ZoneHolding;
+
+            var zone = layout[name];
 
             if (zone is ZoneOnDemand zoneOnDemand)
             {

@@ -1,12 +1,11 @@
-using System;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -17,10 +16,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         {
             var services = ((LiquidTemplateContext)context).Services;
 
-            dynamic layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync();
+            var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync() as ZoneHolding;
             var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-            IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(layout.Content);
+            var htmlContent = await displayHelper.ShapeExecuteAsync(layout["Content"]);
 
             htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;

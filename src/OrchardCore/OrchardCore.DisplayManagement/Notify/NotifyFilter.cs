@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.DisplayManagement.Notify
@@ -120,13 +122,23 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            dynamic layout = await _layoutAccessor.GetLayoutAsync();
-            var messagesZone = layout.Zones["Messages"];
+            var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
+            var messagesZone = layout["Messages"];
 
-            foreach (var messageEntry in _existingEntries)
+            if (messagesZone is ZoneOnDemand zoneOnDemand)
             {
-                messagesZone = messagesZone.Add(await _shapeFactory.Message(messageEntry));
+                foreach (var messageEntry in _existingEntries)
+                {
+                    await zoneOnDemand.AddAsync(await _shapeFactory.Message(messageEntry));
+                }
             }
+            else if (messagesZone is Shape shape)
+            {
+                foreach (var messageEntry in _existingEntries)
+                {
+                    shape.Add(await _shapeFactory.Message(messageEntry));
+                }
+            }            
 
             DeleteCookies(filterContext);
 

@@ -210,9 +210,12 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            var name = binder.Name;
+            return TryGetMemberImpl(binder.Name, out result);
+        }
 
-            if (!base.TryGetMember(binder, out result) || (null == result))
+        protected override bool TryGetMemberImpl(string name, out object result)
+        {
+            if (!base.TryGetMemberImpl(name, out result) || (null == result))
             {
                 // Try to get a Named shape
                 result = Named(name);
@@ -229,21 +232,20 @@ namespace OrchardCore.DisplayManagement.Shapes
         protected override bool TrySetMemberImpl(string name, object value)
         {
             // We set the Shape real properties for Razor
+
             if (name == "Id")
             {
                 Id = value as string;
 
                 return true;
             }
-
-            if (name == "TagName")
+            else if (name == "TagName")
             {
                 TagName = value as string;
 
                 return true;
             }
-
-            if (name == "Attributes")
+            else if (name == "Attributes")
             {
                 if (value is Dictionary<string, string> attributes)
                 {
@@ -263,8 +265,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                     }
                 }
             }
-
-            if (name == "Classes")
+            else if (name == "Classes")
             {
                 if (value is List<string> classes)
                 {
