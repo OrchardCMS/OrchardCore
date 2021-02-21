@@ -57,7 +57,7 @@ namespace OrchardCore.Shortcodes.Services
             var parameters = new Dictionary<string, FluidValue>();
             parameters[identifier] = new StringValue("");
 
-            // TODO: Fix this
+            // TODO: Fix 'Content' property conflict differently, see #8259
 
             // var c = context.GetValue("Content").ToObjectValue();
             // if (c is LiquidContentAccessor contentAccessor)
@@ -71,6 +71,7 @@ namespace OrchardCore.Shortcodes.Services
             // }
 
             parameters["Args"] = new ObjectValue(model.Args);
+            parameters["Content"] = new ObjectValue(model.Content);
             parameters["Context"] = new ObjectValue(model.Context);
 
             return await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
