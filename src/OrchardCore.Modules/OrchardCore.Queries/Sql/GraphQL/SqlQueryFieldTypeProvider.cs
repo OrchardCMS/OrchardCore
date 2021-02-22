@@ -108,12 +108,11 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         typeof(StringGraphType),
                         nameLower,
                         description: description,
-                        new QueryArguments(),
                         resolve: context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
-                        }, "Moved to a different Field");
+                        });
                     field.Metadata.Add("Name", name);
                 }
                 else if (type == "integer")
@@ -122,12 +121,11 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         typeof(IntGraphType),
                         nameLower,
                         description: description,
-                        new QueryArguments(),
                         resolve: context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
-                        }, "Moved to a different Field");
+                        });
                     field.Metadata.Add("Name", name);
                 }
             }
