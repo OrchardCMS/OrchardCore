@@ -9,7 +9,7 @@ namespace OrchardCore.Liquid
         {
             // services.Configure<TemplateOptions>(o => o.Filters.AddFilter(name, new LiquidFilterResolver(typeof(T)).ResolveThenProcessAsync));
             services.Configure<TemplateOptions>(o => o.Filters.AddFilter(name, new LiquidFilterResolver<TLiquidFilter>().ResolveThenProcessAsync));
-            services.AddTransient<TLiquidFilter>();
+            services.AddScoped<TLiquidFilter>();
 
             return services;
         }
