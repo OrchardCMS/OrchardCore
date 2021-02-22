@@ -49,12 +49,12 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
         public void PopulateSettings<T>(T target)
         {
-            var typeName = typeof(T).Name;
-
             if (Settings == null)
             {
                 return;
             }
+
+            var typeName = typeof(T).Name;
 
             JToken value;
             if (Settings.TryGetValue(typeName, out value))
