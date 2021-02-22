@@ -122,7 +122,7 @@ Here is how you would define a Schema for this Query to add it to the GraphQL en
 ```
 
 If your Query has the same name as a content type name it could lead into having them colliding in the GraphQL endpoint.
-For SQL and Lucene queries you can then define a custom field type name for the GraphQL endpoint.
+For SQL and Lucene queries you can then define a custom field type name in their schema.
 
 ```json
 {
