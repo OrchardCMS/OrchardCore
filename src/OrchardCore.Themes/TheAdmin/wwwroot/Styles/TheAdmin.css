@@ -6,9 +6,9 @@
 @charset "UTF-8";
 :root[data-theme=default] {
   /*!
-   * Bootstrap v4.5.3 (https://getbootstrap.com/)
-   * Copyright 2011-2020 The Bootstrap Authors
-   * Copyright 2011-2020 Twitter, Inc.
+   * Bootstrap v4.6.0 (https://getbootstrap.com/)
+   * Copyright 2011-2021 The Bootstrap Authors
+   * Copyright 2011-2021 Twitter, Inc.
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    */
   /*! =========================================================
@@ -78,7 +78,7 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
-  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 :root[data-theme=default] *,
@@ -96,7 +96,7 @@
   display: block;
 }
 :root[data-theme=default] body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -264,9 +264,8 @@
 [dir]:root[data-theme=default] button {
   border-radius: 0;
 }
-:root[data-theme=default] button:focus {
-  outline: 1px dotted;
-  outline: 5px auto -webkit-focus-ring-color;
+:root[data-theme=default] button:focus:not(:focus-visible) {
+  outline: 0;
 }
 :root[data-theme=default] input,
 :root[data-theme=default] button,
@@ -2124,6 +2123,12 @@ a > :root[data-theme=default] code {
 [dir=rtl]:root[data-theme=default] .valid-tooltip {
   right: 0;
 }
+.form-row > .col > [dir=ltr]:root[data-theme=default] .valid-tooltip, .form-row > [class*=col-] > [dir=ltr]:root[data-theme=default] .valid-tooltip {
+  left: 5px;
+}
+.form-row > .col > [dir=rtl]:root[data-theme=default] .valid-tooltip, .form-row > [class*=col-] > [dir=rtl]:root[data-theme=default] .valid-tooltip {
+  right: 5px;
+}
 .was-validated :root[data-theme=default]:valid ~ .valid-feedback,
 .was-validated :root[data-theme=default]:valid ~ .valid-tooltip, :root[data-theme=default].is-valid ~ .valid-feedback,
 :root[data-theme=default].is-valid ~ .valid-tooltip {
@@ -2160,11 +2165,11 @@ a > :root[data-theme=default] code {
 }
 .was-validated [dir=ltr]:root[data-theme=default] .custom-select:valid, [dir=ltr]:root[data-theme=default] .custom-select.is-valid {
   padding-right: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") #fff no-repeat center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat, #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated [dir=rtl]:root[data-theme=default] .custom-select:valid, [dir=rtl]:root[data-theme=default] .custom-select.is-valid {
   padding-left: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat left 0.75rem center/8px 10px, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") #fff no-repeat center left 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") left 0.75rem center/8px 10px no-repeat, #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") center left 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated [dir]:root[data-theme=default] .custom-select:valid:focus, [dir]:root[data-theme=default] .custom-select.is-valid:focus {
   border-color: #28a745;
@@ -2232,6 +2237,12 @@ a > :root[data-theme=default] code {
 [dir=rtl]:root[data-theme=default] .invalid-tooltip {
   right: 0;
 }
+.form-row > .col > [dir=ltr]:root[data-theme=default] .invalid-tooltip, .form-row > [class*=col-] > [dir=ltr]:root[data-theme=default] .invalid-tooltip {
+  left: 5px;
+}
+.form-row > .col > [dir=rtl]:root[data-theme=default] .invalid-tooltip, .form-row > [class*=col-] > [dir=rtl]:root[data-theme=default] .invalid-tooltip {
+  right: 5px;
+}
 .was-validated :root[data-theme=default]:invalid ~ .invalid-feedback,
 .was-validated :root[data-theme=default]:invalid ~ .invalid-tooltip, :root[data-theme=default].is-invalid ~ .invalid-feedback, :root[data-theme=darkmode] .has-validation-error:root[data-theme=default] ~ .invalid-feedback, :root[data-theme=darkmode] .input-validation-error:root[data-theme=default] ~ .invalid-feedback, :root[data-theme=default] .has-validation-error:root[data-theme=default] ~ .invalid-feedback, :root[data-theme=default] .input-validation-error:root[data-theme=default] ~ .invalid-feedback,
 :root[data-theme=default].is-invalid ~ .invalid-tooltip,
@@ -2272,11 +2283,11 @@ a > :root[data-theme=default] code {
 }
 .was-validated [dir=ltr]:root[data-theme=default] .custom-select:invalid, [dir=ltr]:root[data-theme=default] .custom-select.is-invalid, [dir=ltr]:root[data-theme=default] .custom-select.has-validation-error, [dir=ltr]:root[data-theme=default] .custom-select.input-validation-error {
   padding-right: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") #fff no-repeat center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat, #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated [dir=rtl]:root[data-theme=default] .custom-select:invalid, [dir=rtl]:root[data-theme=default] .custom-select.is-invalid, [dir=rtl]:root[data-theme=default] .custom-select.has-validation-error, [dir=rtl]:root[data-theme=default] .custom-select.input-validation-error {
   padding-left: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat left 0.75rem center/8px 10px, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") #fff no-repeat center left 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") left 0.75rem center/8px 10px no-repeat, #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") center left 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated [dir]:root[data-theme=default] .custom-select:invalid:focus, [dir]:root[data-theme=default] .custom-select.is-invalid:focus, [dir]:root[data-theme=default] .custom-select.has-validation-error:focus, [dir]:root[data-theme=default] .custom-select.input-validation-error:focus {
   border-color: #dc3545;
@@ -3387,7 +3398,7 @@ a > :root[data-theme=default] code {
   text-decoration: none;
 }
 [dir]:root[data-theme=default] .dropdown-item:hover, [dir]:root[data-theme=default] .dropdown-item:focus {
-  background-color: #f8f9fa;
+  background-color: #e9ecef;
 }
 :root[data-theme=default] .dropdown-item.active, :root[data-theme=default] .dropdown-item:active {
   color: #fff;
@@ -3397,7 +3408,7 @@ a > :root[data-theme=default] code {
   background-color: #007bff;
 }
 :root[data-theme=default] .dropdown-item.disabled, :root[data-theme=default] .dropdown-item:disabled {
-  color: #6c757d;
+  color: #adb5bd;
   pointer-events: none;
 }
 [dir]:root[data-theme=default] .dropdown-item.disabled, [dir]:root[data-theme=default] .dropdown-item:disabled {
@@ -3588,14 +3599,6 @@ a > :root[data-theme=default] code {
 :root[data-theme=default] .input-group > .custom-file .custom-file-input:focus {
   z-index: 4;
 }
-[dir=ltr]:root[data-theme=default] .input-group > .form-control:not(:last-child), [dir=ltr]:root[data-theme=default] .input-group > .custom-select:not(:last-child) {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-[dir=rtl]:root[data-theme=default] .input-group > .form-control:not(:last-child), [dir=rtl]:root[data-theme=default] .input-group > .custom-select:not(:last-child) {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
 [dir=ltr]:root[data-theme=default] .input-group > .form-control:not(:first-child), [dir=ltr]:root[data-theme=default] .input-group > .custom-select:not(:first-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -3608,21 +3611,29 @@ a > :root[data-theme=default] code {
   display: flex;
   align-items: center;
 }
-[dir=ltr]:root[data-theme=default] .input-group > .custom-file:not(:last-child) .custom-file-label, [dir=ltr]:root[data-theme=default] .input-group > .custom-file:not(:last-child) .custom-file-label::after {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-[dir=rtl]:root[data-theme=default] .input-group > .custom-file:not(:last-child) .custom-file-label, [dir=rtl]:root[data-theme=default] .input-group > .custom-file:not(:last-child) .custom-file-label::after {
+[dir=ltr]:root[data-theme=default] .input-group > .custom-file:not(:last-child) .custom-file-label, [dir=ltr]:root[data-theme=default] .input-group > .custom-file:not(:first-child) .custom-file-label {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-[dir=ltr]:root[data-theme=default] .input-group > .custom-file:not(:first-child) .custom-file-label {
+[dir=rtl]:root[data-theme=default] .input-group > .custom-file:not(:last-child) .custom-file-label, [dir=rtl]:root[data-theme=default] .input-group > .custom-file:not(:first-child) .custom-file-label {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+[dir=ltr]:root[data-theme=default] .input-group:not(.has-validation) > .form-control:not(:last-child), [dir=ltr]:root[data-theme=default] .input-group:not(.has-validation) > .custom-select:not(:last-child), [dir=ltr]:root[data-theme=default] .input-group:not(.has-validation) > .custom-file:not(:last-child) .custom-file-label::after {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+[dir=rtl]:root[data-theme=default] .input-group:not(.has-validation) > .form-control:not(:last-child), [dir=rtl]:root[data-theme=default] .input-group:not(.has-validation) > .custom-select:not(:last-child), [dir=rtl]:root[data-theme=default] .input-group:not(.has-validation) > .custom-file:not(:last-child) .custom-file-label::after {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-[dir=rtl]:root[data-theme=default] .input-group > .custom-file:not(:first-child) .custom-file-label {
+[dir=ltr]:root[data-theme=default] .input-group.has-validation > .form-control:nth-last-child(n+3), [dir=ltr]:root[data-theme=default] .input-group.has-validation > .custom-select:nth-last-child(n+3), [dir=ltr]:root[data-theme=default] .input-group.has-validation > .custom-file:nth-last-child(n+3) .custom-file-label::after {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+[dir=rtl]:root[data-theme=default] .input-group.has-validation > .form-control:nth-last-child(n+3), [dir=rtl]:root[data-theme=default] .input-group.has-validation > .custom-select:nth-last-child(n+3), [dir=rtl]:root[data-theme=default] .input-group.has-validation > .custom-file:nth-last-child(n+3) .custom-file-label::after {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 :root[data-theme=default] .input-group-prepend,
 :root[data-theme=default] .input-group-append {
@@ -3721,11 +3732,11 @@ a > :root[data-theme=default] code {
 [dir=rtl]:root[data-theme=default] .input-group-lg > .custom-select, [dir=rtl]:root[data-theme=default] .input-group-sm > .custom-select {
   padding-left: 1.75rem;
 }
-[dir=ltr]:root[data-theme=default] .input-group > .input-group-prepend > .btn, [dir=ltr]:root[data-theme=default] .input-group > .input-group-prepend > .button, [dir=ltr]:root[data-theme=default] .input-group > .input-group-prepend > .input-group-text, [dir=ltr]:root[data-theme=default] .input-group > .input-group-append:not(:last-child) > .btn, [dir=ltr]:root[data-theme=default] .input-group > .input-group-append:not(:last-child) > .button, [dir=ltr]:root[data-theme=default] .input-group > .input-group-append:not(:last-child) > .input-group-text, [dir=ltr]:root[data-theme=default] .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle), [dir=ltr]:root[data-theme=default] .input-group > .input-group-append:last-child > .button:not(:last-child):not(.dropdown-toggle), [dir=ltr]:root[data-theme=default] .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
+[dir=ltr]:root[data-theme=default] .input-group > .input-group-prepend > .btn, [dir=ltr]:root[data-theme=default] .input-group > .input-group-prepend > .button, [dir=ltr]:root[data-theme=default] .input-group > .input-group-prepend > .input-group-text, [dir=ltr]:root[data-theme=default] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .btn, [dir=ltr]:root[data-theme=default] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .button, [dir=ltr]:root[data-theme=default] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .input-group-text, [dir=ltr]:root[data-theme=default] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .btn, [dir=ltr]:root[data-theme=default] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .button, [dir=ltr]:root[data-theme=default] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .input-group-text, [dir=ltr]:root[data-theme=default] .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle), [dir=ltr]:root[data-theme=default] .input-group > .input-group-append:last-child > .button:not(:last-child):not(.dropdown-toggle), [dir=ltr]:root[data-theme=default] .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-[dir=rtl]:root[data-theme=default] .input-group > .input-group-prepend > .btn, [dir=rtl]:root[data-theme=default] .input-group > .input-group-prepend > .button, [dir=rtl]:root[data-theme=default] .input-group > .input-group-prepend > .input-group-text, [dir=rtl]:root[data-theme=default] .input-group > .input-group-append:not(:last-child) > .btn, [dir=rtl]:root[data-theme=default] .input-group > .input-group-append:not(:last-child) > .button, [dir=rtl]:root[data-theme=default] .input-group > .input-group-append:not(:last-child) > .input-group-text, [dir=rtl]:root[data-theme=default] .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle), [dir=rtl]:root[data-theme=default] .input-group > .input-group-append:last-child > .button:not(:last-child):not(.dropdown-toggle), [dir=rtl]:root[data-theme=default] .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
+[dir=rtl]:root[data-theme=default] .input-group > .input-group-prepend > .btn, [dir=rtl]:root[data-theme=default] .input-group > .input-group-prepend > .button, [dir=rtl]:root[data-theme=default] .input-group > .input-group-prepend > .input-group-text, [dir=rtl]:root[data-theme=default] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .btn, [dir=rtl]:root[data-theme=default] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .button, [dir=rtl]:root[data-theme=default] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .input-group-text, [dir=rtl]:root[data-theme=default] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .btn, [dir=rtl]:root[data-theme=default] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .button, [dir=rtl]:root[data-theme=default] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .input-group-text, [dir=rtl]:root[data-theme=default] .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle), [dir=rtl]:root[data-theme=default] .input-group > .input-group-append:last-child > .button:not(:last-child):not(.dropdown-toggle), [dir=rtl]:root[data-theme=default] .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -3833,7 +3844,7 @@ a > :root[data-theme=default] code {
   content: "";
 }
 [dir]:root[data-theme=default] .custom-control-label::after {
-  background: no-repeat 50%/50% 50%;
+  background: 50%/50% 50% no-repeat;
 }
 [dir=ltr]:root[data-theme=default] .custom-control-label::after {
   left: -1.5rem;
@@ -3938,11 +3949,11 @@ a > :root[data-theme=default] code {
 }
 [dir=ltr]:root[data-theme=default] .custom-select {
   padding: 0.375rem 1.75rem 0.375rem 0.75rem;
-  background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px;
+  background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat;
 }
 [dir=rtl]:root[data-theme=default] .custom-select {
   padding: 0.375rem 0.75rem 0.375rem 1.75rem;
-  background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat left 0.75rem center/8px 10px;
+  background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") left 0.75rem center/8px 10px no-repeat;
 }
 :root[data-theme=default] .custom-select:focus {
   outline: 0;
@@ -4026,6 +4037,7 @@ a > :root[data-theme=default] code {
   z-index: 2;
   width: 100%;
   height: calc(1.5em + 0.75rem + 2px);
+  overflow: hidden;
   opacity: 0;
 }
 [dir]:root[data-theme=default] .custom-file-input {
@@ -4049,6 +4061,7 @@ a > :root[data-theme=default] code {
   top: 0;
   z-index: 1;
   height: calc(1.5em + 0.75rem + 2px);
+  overflow: hidden;
   font-weight: 400;
   line-height: 1.5;
   color: #495057;
@@ -4102,7 +4115,7 @@ a > :root[data-theme=default] code {
   background-color: transparent;
 }
 :root[data-theme=default] .custom-range:focus {
-  outline: none;
+  outline: 0;
 }
 [dir]:root[data-theme=default] .custom-range:focus::-webkit-slider-thumb {
   box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
@@ -4290,10 +4303,8 @@ a > :root[data-theme=default] code {
 [dir]:root[data-theme=default] .nav-tabs {
   border-bottom: 1px solid #dee2e6;
 }
-[dir]:root[data-theme=default] .nav-tabs .nav-item {
-  margin-bottom: -1px;
-}
 [dir]:root[data-theme=default] .nav-tabs .nav-link {
+  margin-bottom: -1px;
   border: 1px solid transparent;
 }
 [dir=ltr]:root[data-theme=default] .nav-tabs .nav-link {
@@ -4470,8 +4481,11 @@ a > :root[data-theme=default] code {
   content: "";
 }
 [dir]:root[data-theme=default] .navbar-toggler-icon {
-  background: no-repeat center center;
-  background-size: 100% 100%;
+  background: 50%/100% 100% no-repeat;
+}
+:root[data-theme=default] .navbar-nav-scroll {
+  max-height: 75vh;
+  overflow-y: auto;
 }
 @media (max-width: 575.98px) {
   [dir=ltr]:root[data-theme=default] .navbar-expand-sm > .container, [dir=ltr]:root[data-theme=default] .navbar-expand-sm > .container-fluid, [dir=ltr]:root[data-theme=default] .navbar-expand-sm > .container-sm, [dir=ltr]:root[data-theme=default] .navbar-expand-sm > .container-md, [dir=ltr]:root[data-theme=default] .navbar-expand-sm > .container-lg, [dir=ltr]:root[data-theme=default] .navbar-expand-sm > .container-xl {
@@ -4509,6 +4523,9 @@ a > :root[data-theme=default] code {
 :root[data-theme=default] .navbar-expand-sm > .container-lg,
 :root[data-theme=default] .navbar-expand-sm > .container-xl {
     flex-wrap: nowrap;
+  }
+  :root[data-theme=default] .navbar-expand-sm .navbar-nav-scroll {
+    overflow: visible;
   }
   :root[data-theme=default] .navbar-expand-sm .navbar-collapse {
     display: flex !important;
@@ -4575,6 +4592,9 @@ a > :root[data-theme=default] code {
 :root[data-theme=default] .ta-navbar-top > .container-xl {
     flex-wrap: nowrap;
   }
+  :root[data-theme=default] .navbar-expand-md .navbar-nav-scroll, :root[data-theme=default] .ta-navbar-top .navbar-nav-scroll {
+    overflow: visible;
+  }
   :root[data-theme=default] .navbar-expand-md .navbar-collapse, :root[data-theme=default] .ta-navbar-top .navbar-collapse {
     display: flex !important;
     flex-basis: auto;
@@ -4619,6 +4639,9 @@ a > :root[data-theme=default] code {
 :root[data-theme=default] .navbar-expand-lg > .container-lg,
 :root[data-theme=default] .navbar-expand-lg > .container-xl {
     flex-wrap: nowrap;
+  }
+  :root[data-theme=default] .navbar-expand-lg .navbar-nav-scroll {
+    overflow: visible;
   }
   :root[data-theme=default] .navbar-expand-lg .navbar-collapse {
     display: flex !important;
@@ -4665,6 +4688,9 @@ a > :root[data-theme=default] code {
 :root[data-theme=default] .navbar-expand-xl > .container-xl {
     flex-wrap: nowrap;
   }
+  :root[data-theme=default] .navbar-expand-xl .navbar-nav-scroll {
+    overflow: visible;
+  }
   :root[data-theme=default] .navbar-expand-xl .navbar-collapse {
     display: flex !important;
     flex-basis: auto;
@@ -4706,6 +4732,9 @@ a > :root[data-theme=default] code {
 :root[data-theme=default] .navbar-expand > .container-lg,
 :root[data-theme=default] .navbar-expand > .container-xl {
   flex-wrap: nowrap;
+}
+:root[data-theme=default] .navbar-expand .navbar-nav-scroll {
+  overflow: visible;
 }
 :root[data-theme=default] .navbar-expand .navbar-collapse {
   display: flex !important;
@@ -5099,9 +5128,6 @@ a > :root[data-theme=default] code {
   background-color: #e9ecef;
   border-radius: 0.25rem;
 }
-:root[data-theme=default] .breadcrumb-item {
-  display: flex;
-}
 [dir=ltr]:root[data-theme=default] .breadcrumb-item + .breadcrumb-item {
   padding-left: 0.5rem;
 }
@@ -5109,14 +5135,15 @@ a > :root[data-theme=default] code {
   padding-right: 0.5rem;
 }
 :root[data-theme=default] .breadcrumb-item + .breadcrumb-item::before {
-  display: inline-block;
   color: #6c757d;
   content: "/";
 }
 [dir=ltr]:root[data-theme=default] .breadcrumb-item + .breadcrumb-item::before {
+  float: left;
   padding-right: 0.5rem;
 }
 [dir=rtl]:root[data-theme=default] .breadcrumb-item + .breadcrumb-item::before {
+  float: right;
   padding-left: 0.5rem;
 }
 :root[data-theme=default] .breadcrumb-item + .breadcrumb-item:hover::before {
@@ -5672,10 +5699,10 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
 [dir=ltr]:root[data-theme=default] .progress-bar-animated {
-  animation:  progress-bar-stripes-ltr 1s linear infinite;
+  animation: 1s linear infinite progress-bar-stripes-ltr ;
 }
 [dir=rtl]:root[data-theme=default] .progress-bar-animated {
-  animation:  progress-bar-stripes-rtl 1s linear infinite;
+  animation: 1s linear infinite progress-bar-stripes-rtl ;
 }
 @media (prefers-reduced-motion: reduce) {
   [dir=ltr]:root[data-theme=default] .progress-bar-animated {
@@ -6444,7 +6471,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   position: absolute;
   z-index: 1070;
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -6575,7 +6602,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   z-index: 1060;
   display: block;
   max-width: 276px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -6915,7 +6942,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   height: 20px;
 }
 [dir]:root[data-theme=default] .carousel-control-prev-icon, [dir]:root[data-theme=default] .carousel-control-next-icon {
-  background: no-repeat 50%/100% 100%;
+  background: 50%/100% 100% no-repeat;
 }
 [dir]:root[data-theme=default] .carousel-control-prev-icon {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5L4.25 4l2.5-2.5L5.25 0z'/%3e%3c/svg%3e");
@@ -7018,11 +7045,11 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 }
 [dir=ltr]:root[data-theme=default] .spinner-border {
   border-right-color: transparent;
-  animation:  spinner-border-ltr 0.75s linear infinite;
+  animation: 0.75s linear infinite spinner-border-ltr ;
 }
 [dir=rtl]:root[data-theme=default] .spinner-border {
   border-left-color: transparent;
-  animation:  spinner-border-rtl 0.75s linear infinite;
+  animation: 0.75s linear infinite spinner-border-rtl ;
 }
 :root[data-theme=default] .spinner-border-sm {
   width: 1rem;
@@ -7052,14 +7079,22 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   border-radius: 50%;
 }
 [dir=ltr]:root[data-theme=default] .spinner-grow {
-  animation: spinner-grow 0.75s linear infinite;
+  animation: 0.75s linear infinite spinner-grow;
 }
 [dir=rtl]:root[data-theme=default] .spinner-grow {
-  animation: spinner-grow 0.75s linear infinite;
+  animation: 0.75s linear infinite spinner-grow;
 }
 :root[data-theme=default] .spinner-grow-sm {
   width: 1rem;
   height: 1rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  [dir=ltr]:root[data-theme=default] .spinner-border, [dir=ltr]:root[data-theme=default] .spinner-grow {
+    animation-duration: 1.5s;
+  }
+  [dir=rtl]:root[data-theme=default] .spinner-border, [dir=rtl]:root[data-theme=default] .spinner-grow {
+    animation-duration: 1.5s;
+  }
 }
 :root[data-theme=default] .align-baseline {
   vertical-align: baseline !important;
@@ -23312,9 +23347,9 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 
 :root[data-theme=darkmode] {
   /*!
-   * Bootstrap v4.5.3 (https://getbootstrap.com/)
-   * Copyright 2011-2020 The Bootstrap Authors
-   * Copyright 2011-2020 Twitter, Inc.
+   * Bootstrap v4.6.0 (https://getbootstrap.com/)
+   * Copyright 2011-2021 The Bootstrap Authors
+   * Copyright 2011-2021 Twitter, Inc.
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    */
   /*! =========================================================
@@ -23384,7 +23419,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
-  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 :root[data-theme=darkmode] *,
@@ -23402,7 +23437,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   display: block;
 }
 :root[data-theme=darkmode] body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -23570,9 +23605,8 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 [dir]:root[data-theme=darkmode] button {
   border-radius: 0;
 }
-:root[data-theme=darkmode] button:focus {
-  outline: 1px dotted;
-  outline: 5px auto -webkit-focus-ring-color;
+:root[data-theme=darkmode] button:focus:not(:focus-visible) {
+  outline: 0;
 }
 :root[data-theme=darkmode] input,
 :root[data-theme=darkmode] button,
@@ -25430,6 +25464,12 @@ a > :root[data-theme=darkmode] code {
 [dir=rtl]:root[data-theme=darkmode] .valid-tooltip {
   right: 0;
 }
+.form-row > .col > [dir=ltr]:root[data-theme=darkmode] .valid-tooltip, .form-row > [class*=col-] > [dir=ltr]:root[data-theme=darkmode] .valid-tooltip {
+  left: 5px;
+}
+.form-row > .col > [dir=rtl]:root[data-theme=darkmode] .valid-tooltip, .form-row > [class*=col-] > [dir=rtl]:root[data-theme=darkmode] .valid-tooltip {
+  right: 5px;
+}
 .was-validated :root[data-theme=darkmode]:valid ~ .valid-feedback,
 .was-validated :root[data-theme=darkmode]:valid ~ .valid-tooltip, :root[data-theme=darkmode].is-valid ~ .valid-feedback,
 :root[data-theme=darkmode].is-valid ~ .valid-tooltip {
@@ -25466,11 +25506,11 @@ a > :root[data-theme=darkmode] code {
 }
 .was-validated [dir=ltr]:root[data-theme=darkmode] .custom-select:valid, [dir=ltr]:root[data-theme=darkmode] .custom-select.is-valid {
   padding-right: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") #181a1b no-repeat center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat, #181a1b url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated [dir=rtl]:root[data-theme=darkmode] .custom-select:valid, [dir=rtl]:root[data-theme=darkmode] .custom-select.is-valid {
   padding-left: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat left 0.75rem center/8px 10px, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") #181a1b no-repeat center left 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") left 0.75rem center/8px 10px no-repeat, #181a1b url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") center left 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated [dir]:root[data-theme=darkmode] .custom-select:valid:focus, [dir]:root[data-theme=darkmode] .custom-select.is-valid:focus {
   border-color: #28a745;
@@ -25538,6 +25578,12 @@ a > :root[data-theme=darkmode] code {
 [dir=rtl]:root[data-theme=darkmode] .invalid-tooltip {
   right: 0;
 }
+.form-row > .col > [dir=ltr]:root[data-theme=darkmode] .invalid-tooltip, .form-row > [class*=col-] > [dir=ltr]:root[data-theme=darkmode] .invalid-tooltip {
+  left: 5px;
+}
+.form-row > .col > [dir=rtl]:root[data-theme=darkmode] .invalid-tooltip, .form-row > [class*=col-] > [dir=rtl]:root[data-theme=darkmode] .invalid-tooltip {
+  right: 5px;
+}
 .was-validated :root[data-theme=darkmode]:invalid ~ .invalid-feedback,
 .was-validated :root[data-theme=darkmode]:invalid ~ .invalid-tooltip, :root[data-theme=darkmode].is-invalid ~ .invalid-feedback, :root[data-theme=darkmode] .has-validation-error:root[data-theme=darkmode] ~ .invalid-feedback, :root[data-theme=darkmode] .input-validation-error:root[data-theme=darkmode] ~ .invalid-feedback, :root[data-theme=default] .input-validation-error:root[data-theme=darkmode] ~ .invalid-feedback, :root[data-theme=default] .has-validation-error:root[data-theme=darkmode] ~ .invalid-feedback,
 :root[data-theme=darkmode].is-invalid ~ .invalid-tooltip,
@@ -25578,11 +25624,11 @@ a > :root[data-theme=darkmode] code {
 }
 .was-validated [dir=ltr]:root[data-theme=darkmode] .custom-select:invalid, [dir=ltr]:root[data-theme=darkmode] .custom-select.is-invalid, [dir=ltr]:root[data-theme=darkmode] .custom-select.has-validation-error, [dir=ltr]:root[data-theme=darkmode] .custom-select.input-validation-error {
   padding-right: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") #181a1b no-repeat center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat, #181a1b url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated [dir=rtl]:root[data-theme=darkmode] .custom-select:invalid, [dir=rtl]:root[data-theme=darkmode] .custom-select.is-invalid, [dir=rtl]:root[data-theme=darkmode] .custom-select.has-validation-error, [dir=rtl]:root[data-theme=darkmode] .custom-select.input-validation-error {
   padding-left: calc(0.75em + 2.3125rem);
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat left 0.75rem center/8px 10px, url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") #181a1b no-repeat center left 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") left 0.75rem center/8px 10px no-repeat, #181a1b url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") center left 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated [dir]:root[data-theme=darkmode] .custom-select:invalid:focus, [dir]:root[data-theme=darkmode] .custom-select.is-invalid:focus, [dir]:root[data-theme=darkmode] .custom-select.has-validation-error:focus, [dir]:root[data-theme=darkmode] .custom-select.input-validation-error:focus {
   border-color: #dc3545;
@@ -26703,7 +26749,7 @@ a > :root[data-theme=darkmode] code {
   background-color: #007bff;
 }
 :root[data-theme=darkmode] .dropdown-item.disabled, :root[data-theme=darkmode] .dropdown-item:disabled {
-  color: #888;
+  color: #2a2d2f;
   pointer-events: none;
 }
 [dir]:root[data-theme=darkmode] .dropdown-item.disabled, [dir]:root[data-theme=darkmode] .dropdown-item:disabled {
@@ -26894,14 +26940,6 @@ a > :root[data-theme=darkmode] code {
 :root[data-theme=darkmode] .input-group > .custom-file .custom-file-input:focus {
   z-index: 4;
 }
-[dir=ltr]:root[data-theme=darkmode] .input-group > .form-control:not(:last-child), [dir=ltr]:root[data-theme=darkmode] .input-group > .custom-select:not(:last-child) {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-[dir=rtl]:root[data-theme=darkmode] .input-group > .form-control:not(:last-child), [dir=rtl]:root[data-theme=darkmode] .input-group > .custom-select:not(:last-child) {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
 [dir=ltr]:root[data-theme=darkmode] .input-group > .form-control:not(:first-child), [dir=ltr]:root[data-theme=darkmode] .input-group > .custom-select:not(:first-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -26914,21 +26952,29 @@ a > :root[data-theme=darkmode] code {
   display: flex;
   align-items: center;
 }
-[dir=ltr]:root[data-theme=darkmode] .input-group > .custom-file:not(:last-child) .custom-file-label, [dir=ltr]:root[data-theme=darkmode] .input-group > .custom-file:not(:last-child) .custom-file-label::after {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-[dir=rtl]:root[data-theme=darkmode] .input-group > .custom-file:not(:last-child) .custom-file-label, [dir=rtl]:root[data-theme=darkmode] .input-group > .custom-file:not(:last-child) .custom-file-label::after {
+[dir=ltr]:root[data-theme=darkmode] .input-group > .custom-file:not(:last-child) .custom-file-label, [dir=ltr]:root[data-theme=darkmode] .input-group > .custom-file:not(:first-child) .custom-file-label {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-[dir=ltr]:root[data-theme=darkmode] .input-group > .custom-file:not(:first-child) .custom-file-label {
+[dir=rtl]:root[data-theme=darkmode] .input-group > .custom-file:not(:last-child) .custom-file-label, [dir=rtl]:root[data-theme=darkmode] .input-group > .custom-file:not(:first-child) .custom-file-label {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+[dir=ltr]:root[data-theme=darkmode] .input-group:not(.has-validation) > .form-control:not(:last-child), [dir=ltr]:root[data-theme=darkmode] .input-group:not(.has-validation) > .custom-select:not(:last-child), [dir=ltr]:root[data-theme=darkmode] .input-group:not(.has-validation) > .custom-file:not(:last-child) .custom-file-label::after {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+[dir=rtl]:root[data-theme=darkmode] .input-group:not(.has-validation) > .form-control:not(:last-child), [dir=rtl]:root[data-theme=darkmode] .input-group:not(.has-validation) > .custom-select:not(:last-child), [dir=rtl]:root[data-theme=darkmode] .input-group:not(.has-validation) > .custom-file:not(:last-child) .custom-file-label::after {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-[dir=rtl]:root[data-theme=darkmode] .input-group > .custom-file:not(:first-child) .custom-file-label {
+[dir=ltr]:root[data-theme=darkmode] .input-group.has-validation > .form-control:nth-last-child(n+3), [dir=ltr]:root[data-theme=darkmode] .input-group.has-validation > .custom-select:nth-last-child(n+3), [dir=ltr]:root[data-theme=darkmode] .input-group.has-validation > .custom-file:nth-last-child(n+3) .custom-file-label::after {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+[dir=rtl]:root[data-theme=darkmode] .input-group.has-validation > .form-control:nth-last-child(n+3), [dir=rtl]:root[data-theme=darkmode] .input-group.has-validation > .custom-select:nth-last-child(n+3), [dir=rtl]:root[data-theme=darkmode] .input-group.has-validation > .custom-file:nth-last-child(n+3) .custom-file-label::after {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 :root[data-theme=darkmode] .input-group-prepend,
 :root[data-theme=darkmode] .input-group-append {
@@ -27027,11 +27073,11 @@ a > :root[data-theme=darkmode] code {
 [dir=rtl]:root[data-theme=darkmode] .input-group-lg > .custom-select, [dir=rtl]:root[data-theme=darkmode] .input-group-sm > .custom-select {
   padding-left: 1.75rem;
 }
-[dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-prepend > .btn, [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-prepend > .button, [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-prepend > .input-group-text, [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-append:not(:last-child) > .btn, [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-append:not(:last-child) > .button, [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-append:not(:last-child) > .input-group-text, [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle), [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .button:not(:last-child):not(.dropdown-toggle), [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
+[dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-prepend > .btn, [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-prepend > .button, [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-prepend > .input-group-text, [dir=ltr]:root[data-theme=darkmode] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .btn, [dir=ltr]:root[data-theme=darkmode] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .button, [dir=ltr]:root[data-theme=darkmode] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .input-group-text, [dir=ltr]:root[data-theme=darkmode] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .btn, [dir=ltr]:root[data-theme=darkmode] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .button, [dir=ltr]:root[data-theme=darkmode] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .input-group-text, [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle), [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .button:not(:last-child):not(.dropdown-toggle), [dir=ltr]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-[dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-prepend > .btn, [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-prepend > .button, [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-prepend > .input-group-text, [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-append:not(:last-child) > .btn, [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-append:not(:last-child) > .button, [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-append:not(:last-child) > .input-group-text, [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle), [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .button:not(:last-child):not(.dropdown-toggle), [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
+[dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-prepend > .btn, [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-prepend > .button, [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-prepend > .input-group-text, [dir=rtl]:root[data-theme=darkmode] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .btn, [dir=rtl]:root[data-theme=darkmode] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .button, [dir=rtl]:root[data-theme=darkmode] .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .input-group-text, [dir=rtl]:root[data-theme=darkmode] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .btn, [dir=rtl]:root[data-theme=darkmode] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .button, [dir=rtl]:root[data-theme=darkmode] .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .input-group-text, [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle), [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .button:not(:last-child):not(.dropdown-toggle), [dir=rtl]:root[data-theme=darkmode] .input-group > .input-group-append:last-child > .input-group-text:not(:last-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -27139,7 +27185,7 @@ a > :root[data-theme=darkmode] code {
   content: "";
 }
 [dir]:root[data-theme=darkmode] .custom-control-label::after {
-  background: no-repeat 50%/50% 50%;
+  background: 50%/50% 50% no-repeat;
 }
 [dir=ltr]:root[data-theme=darkmode] .custom-control-label::after {
   left: -1.5rem;
@@ -27244,11 +27290,11 @@ a > :root[data-theme=darkmode] code {
 }
 [dir=ltr]:root[data-theme=darkmode] .custom-select {
   padding: 0.375rem 1.75rem 0.375rem 0.75rem;
-  background: #181a1b url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px;
+  background: #181a1b url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat;
 }
 [dir=rtl]:root[data-theme=darkmode] .custom-select {
   padding: 0.375rem 0.75rem 0.375rem 1.75rem;
-  background: #181a1b url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat left 0.75rem center/8px 10px;
+  background: #181a1b url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23181a1b' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") left 0.75rem center/8px 10px no-repeat;
 }
 :root[data-theme=darkmode] .custom-select:focus {
   outline: 0;
@@ -27332,6 +27378,7 @@ a > :root[data-theme=darkmode] code {
   z-index: 2;
   width: 100%;
   height: calc(1.5em + 0.75rem + 2px);
+  overflow: hidden;
   opacity: 0;
 }
 [dir]:root[data-theme=darkmode] .custom-file-input {
@@ -27355,6 +27402,7 @@ a > :root[data-theme=darkmode] code {
   top: 0;
   z-index: 1;
   height: calc(1.5em + 0.75rem + 2px);
+  overflow: hidden;
   font-weight: 400;
   line-height: 1.5;
   color: #2a2d2f;
@@ -27408,7 +27456,7 @@ a > :root[data-theme=darkmode] code {
   background-color: transparent;
 }
 :root[data-theme=darkmode] .custom-range:focus {
-  outline: none;
+  outline: 0;
 }
 [dir]:root[data-theme=darkmode] .custom-range:focus::-webkit-slider-thumb {
   box-shadow: 0 0 0 1px #181a1b, 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
@@ -27596,10 +27644,8 @@ a > :root[data-theme=darkmode] code {
 [dir]:root[data-theme=darkmode] .nav-tabs {
   border-bottom: 1px solid rgba(140, 130, 115, 0.13);
 }
-[dir]:root[data-theme=darkmode] .nav-tabs .nav-item {
-  margin-bottom: -1px;
-}
 [dir]:root[data-theme=darkmode] .nav-tabs .nav-link {
+  margin-bottom: -1px;
   border: 1px solid transparent;
 }
 [dir=ltr]:root[data-theme=darkmode] .nav-tabs .nav-link {
@@ -27776,8 +27822,11 @@ a > :root[data-theme=darkmode] code {
   content: "";
 }
 [dir]:root[data-theme=darkmode] .navbar-toggler-icon {
-  background: no-repeat center center;
-  background-size: 100% 100%;
+  background: 50%/100% 100% no-repeat;
+}
+:root[data-theme=darkmode] .navbar-nav-scroll {
+  max-height: 75vh;
+  overflow-y: auto;
 }
 @media (max-width: 575.98px) {
   [dir=ltr]:root[data-theme=darkmode] .navbar-expand-sm > .container, [dir=ltr]:root[data-theme=darkmode] .navbar-expand-sm > .container-fluid, [dir=ltr]:root[data-theme=darkmode] .navbar-expand-sm > .container-sm, [dir=ltr]:root[data-theme=darkmode] .navbar-expand-sm > .container-md, [dir=ltr]:root[data-theme=darkmode] .navbar-expand-sm > .container-lg, [dir=ltr]:root[data-theme=darkmode] .navbar-expand-sm > .container-xl {
@@ -27815,6 +27864,9 @@ a > :root[data-theme=darkmode] code {
 :root[data-theme=darkmode] .navbar-expand-sm > .container-lg,
 :root[data-theme=darkmode] .navbar-expand-sm > .container-xl {
     flex-wrap: nowrap;
+  }
+  :root[data-theme=darkmode] .navbar-expand-sm .navbar-nav-scroll {
+    overflow: visible;
   }
   :root[data-theme=darkmode] .navbar-expand-sm .navbar-collapse {
     display: flex !important;
@@ -27881,6 +27933,9 @@ a > :root[data-theme=darkmode] code {
 [data-theme=default]:root[data-theme=darkmode] .ta-navbar-top .navbar-expand-md > .container-xl {
     flex-wrap: nowrap;
   }
+  :root[data-theme=darkmode] .navbar-expand-md .navbar-nav-scroll, :root[data-theme=darkmode] .ta-navbar-top .navbar-nav-scroll {
+    overflow: visible;
+  }
   :root[data-theme=darkmode] .navbar-expand-md .navbar-collapse, :root[data-theme=darkmode] .ta-navbar-top .navbar-collapse {
     display: flex !important;
     flex-basis: auto;
@@ -27925,6 +27980,9 @@ a > :root[data-theme=darkmode] code {
 :root[data-theme=darkmode] .navbar-expand-lg > .container-lg,
 :root[data-theme=darkmode] .navbar-expand-lg > .container-xl {
     flex-wrap: nowrap;
+  }
+  :root[data-theme=darkmode] .navbar-expand-lg .navbar-nav-scroll {
+    overflow: visible;
   }
   :root[data-theme=darkmode] .navbar-expand-lg .navbar-collapse {
     display: flex !important;
@@ -27971,6 +28029,9 @@ a > :root[data-theme=darkmode] code {
 :root[data-theme=darkmode] .navbar-expand-xl > .container-xl {
     flex-wrap: nowrap;
   }
+  :root[data-theme=darkmode] .navbar-expand-xl .navbar-nav-scroll {
+    overflow: visible;
+  }
   :root[data-theme=darkmode] .navbar-expand-xl .navbar-collapse {
     display: flex !important;
     flex-basis: auto;
@@ -28012,6 +28073,9 @@ a > :root[data-theme=darkmode] code {
 :root[data-theme=darkmode] .navbar-expand > .container-lg,
 :root[data-theme=darkmode] .navbar-expand > .container-xl {
   flex-wrap: nowrap;
+}
+:root[data-theme=darkmode] .navbar-expand .navbar-nav-scroll {
+  overflow: visible;
 }
 :root[data-theme=darkmode] .navbar-expand .navbar-collapse {
   display: flex !important;
@@ -28405,9 +28469,6 @@ a > :root[data-theme=darkmode] code {
   background-color: rgba(140, 130, 115, 0.13);
   border-radius: 0.25rem;
 }
-:root[data-theme=darkmode] .breadcrumb-item {
-  display: flex;
-}
 [dir=ltr]:root[data-theme=darkmode] .breadcrumb-item + .breadcrumb-item {
   padding-left: 0.5rem;
 }
@@ -28415,14 +28476,15 @@ a > :root[data-theme=darkmode] code {
   padding-right: 0.5rem;
 }
 :root[data-theme=darkmode] .breadcrumb-item + .breadcrumb-item::before {
-  display: inline-block;
   color: #888;
   content: "/";
 }
 [dir=ltr]:root[data-theme=darkmode] .breadcrumb-item + .breadcrumb-item::before {
+  float: left;
   padding-right: 0.5rem;
 }
 [dir=rtl]:root[data-theme=darkmode] .breadcrumb-item + .breadcrumb-item::before {
+  float: right;
   padding-left: 0.5rem;
 }
 :root[data-theme=darkmode] .breadcrumb-item + .breadcrumb-item:hover::before {
@@ -28978,10 +29040,10 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
 [dir=ltr]:root[data-theme=darkmode] .progress-bar-animated {
-  animation:  progress-bar-stripes-ltr 1s linear infinite;
+  animation: 1s linear infinite progress-bar-stripes-ltr ;
 }
 [dir=rtl]:root[data-theme=darkmode] .progress-bar-animated {
-  animation:  progress-bar-stripes-rtl 1s linear infinite;
+  animation: 1s linear infinite progress-bar-stripes-rtl ;
 }
 @media (prefers-reduced-motion: reduce) {
   [dir=ltr]:root[data-theme=darkmode] .progress-bar-animated {
@@ -29750,7 +29812,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   position: absolute;
   z-index: 1070;
   display: block;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -29881,7 +29943,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   z-index: 1060;
   display: block;
   max-width: 276px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -30221,7 +30283,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   height: 20px;
 }
 [dir]:root[data-theme=darkmode] .carousel-control-prev-icon, [dir]:root[data-theme=darkmode] .carousel-control-next-icon {
-  background: no-repeat 50%/100% 100%;
+  background: 50%/100% 100% no-repeat;
 }
 [dir]:root[data-theme=darkmode] .carousel-control-prev-icon {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5L4.25 4l2.5-2.5L5.25 0z'/%3e%3c/svg%3e");
@@ -30324,11 +30386,11 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 }
 [dir=ltr]:root[data-theme=darkmode] .spinner-border {
   border-right-color: transparent;
-  animation:  spinner-border-ltr 0.75s linear infinite;
+  animation: 0.75s linear infinite spinner-border-ltr ;
 }
 [dir=rtl]:root[data-theme=darkmode] .spinner-border {
   border-left-color: transparent;
-  animation:  spinner-border-rtl 0.75s linear infinite;
+  animation: 0.75s linear infinite spinner-border-rtl ;
 }
 :root[data-theme=darkmode] .spinner-border-sm {
   width: 1rem;
@@ -30358,14 +30420,22 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   border-radius: 50%;
 }
 [dir=ltr]:root[data-theme=darkmode] .spinner-grow {
-  animation: spinner-grow 0.75s linear infinite;
+  animation: 0.75s linear infinite spinner-grow;
 }
 [dir=rtl]:root[data-theme=darkmode] .spinner-grow {
-  animation: spinner-grow 0.75s linear infinite;
+  animation: 0.75s linear infinite spinner-grow;
 }
 :root[data-theme=darkmode] .spinner-grow-sm {
   width: 1rem;
   height: 1rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  [dir=ltr]:root[data-theme=darkmode] .spinner-border, [dir=ltr]:root[data-theme=darkmode] .spinner-grow {
+    animation-duration: 1.5s;
+  }
+  [dir=rtl]:root[data-theme=darkmode] .spinner-border, [dir=rtl]:root[data-theme=darkmode] .spinner-grow {
+    animation-duration: 1.5s;
+  }
 }
 :root[data-theme=darkmode] .align-baseline {
   vertical-align: baseline !important;

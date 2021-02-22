@@ -1,4 +1,15 @@
-@model OrchardCore.Layers.ViewModels.LayerEditViewModel
+@model LayerEditViewModel
+@{
+    var routeValues = new RouteValueDictionary
+    {
+        { "area", "OrchardCore.Layers" },
+        { "controller", "LayerRule" },
+        { "name", Model.Name }
+    };
+    ViewData["ConditionRouteValues"] = routeValues;
+
+    var orderUrl = Url.Action("UpdateOrder", "LayerRule");
+}
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
 
@@ -9,17 +20,19 @@
         <span asp-validation-for="Name"></span>
     </div>
 
-    <div class="form-group" asp-validation-class-for="Rule">
-        <label asp-for="Rule">@T["Rule"]</label>
-        <input asp-for="Rule" class="form-control" type="text" />
-        <span asp-validation-for="Rule"></span>
-    </div>
-
     <div class="form-group" asp-validation-class-for="Description">
         <label asp-for="Description">@T["Description"]</label>
         <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
         <span asp-validation-for="Description"></span>
     </div>
 
-    <input class="button" type="submit" value="@T["Save"]" />
+    <div class="d-none" id="ruleOrderUrl" data-url="@orderUrl"></div>
+    <div class="d-none ruleorderparameters" data-param="name" data-value="@Model.Name"></div>
+    <div class="d-none" id="ruleOrderErrorMessage" data-message="@T["Error updating rule order"]"></div>
+
+    @await DisplayAsync(Model.LayerRule)
+
+    <input class="button mt-3" type="submit" value="@T["Save"]" />
 </form>
+
+@await DisplayAsync(await New.ConditionsModal(Thumbnails: Model.Thumbnails, Name: Model.Name))
