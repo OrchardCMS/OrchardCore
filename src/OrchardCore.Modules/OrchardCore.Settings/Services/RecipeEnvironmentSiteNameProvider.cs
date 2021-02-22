@@ -14,16 +14,14 @@ namespace OrchardCore.Settings
             _siteService = siteService;
         }
 
+        public int Order => 0;
+
         public async Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
         {
-            // When these have already been set by another provider, do not reset them.
-            if (!environment.ContainsKey(nameof(ISite.SiteName)))
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            if (!String.IsNullOrEmpty(siteSettings.SiteName))
             {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                if (!String.IsNullOrEmpty(siteSettings.SiteName))
-                {
-                    environment[nameof(SiteSettings.SiteName)] = siteSettings.SiteName;
-                }
+                environment[nameof(SiteSettings.SiteName)] = siteSettings.SiteName;
             }
         }
     }

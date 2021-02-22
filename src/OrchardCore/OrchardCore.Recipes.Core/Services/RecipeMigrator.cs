@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -47,7 +48,8 @@ namespace OrchardCore.Recipes.Services
             recipeDescriptor.RequireNewScope = false;
 
             var environment = new Dictionary<string, object>();
-            await _environmentProviders.InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
+
+            await _environmentProviders.OrderBy(x => x.Order).InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
 
             var executionId = Guid.NewGuid().ToString("n");
             return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);

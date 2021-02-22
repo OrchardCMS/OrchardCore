@@ -17,20 +17,17 @@ namespace OrchardCore.Users.Services
             _userService = userService;
         }
 
+        public int Order => 0;
+
         public async Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
         {
-            // When these have already been set by another provider, do not reset them.
-            if (!environment.ContainsKey("AdminUserId") && !environment.ContainsKey("AdminUsername"))
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            if (!String.IsNullOrEmpty(siteSettings.SuperUser))
             {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                if (!String.IsNullOrEmpty(siteSettings.SuperUser))
+                var superUser = await _userService.GetUserByUniqueIdAsync(siteSettings.SuperUser);
+                if (superUser != null)
                 {
-                    var superUser = await _userService.GetUserByUniqueIdAsync(siteSettings.SuperUser);
-                    if (superUser != null)
-                    {
-                        environment["AdminUserId"] = siteSettings.SuperUser;
-                        environment["AdminUsername"] = superUser.UserName;
-                    }
+                    environment["AdminUserId"] = siteSettings.SuperUser;
                 }
             }
         }

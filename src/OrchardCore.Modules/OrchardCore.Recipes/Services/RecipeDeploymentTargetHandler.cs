@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
@@ -43,7 +44,7 @@ namespace OrchardCore.Recipes.Services
             };
 
             var environment = new Dictionary<string, object>();
-            await _environmentProviders.InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
+            await _environmentProviders.OrderBy(x => x.Order).InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
 
             await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);
 

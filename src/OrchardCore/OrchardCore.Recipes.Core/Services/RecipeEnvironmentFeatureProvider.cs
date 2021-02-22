@@ -14,10 +14,12 @@ namespace OrchardCore.Recipes.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
+        // Set later to override any pre existing values.
+        public int Order => 1000;
+
         public Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
         {
             // When a migration is executed during setup these properties are available on the feature.
-            // They should always override any current values.
             var feature = _httpContextAccessor.HttpContext.Features.Get<RecipeEnvironmentFeature>();
             if (feature != null)
             {
