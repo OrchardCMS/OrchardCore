@@ -130,7 +130,7 @@ namespace OrchardCore.DisplayManagement.Notify
             {
                 foreach (var messageEntry in _existingEntries)
                 {
-                    await shape.AddAsync(await _shapeFactory.Message(messageEntry));
+                    await shape.AddAsync((object) await _shapeFactory.Message(messageEntry));
                 }
             }            
 

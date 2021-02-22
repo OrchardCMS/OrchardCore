@@ -146,10 +146,7 @@ namespace OrchardCore.Layers.Services
 
                     var contentZone = layout.Zones[widget.Zone];
 
-                    if (contentZone is Shape shape)
-                    {
-                        await shape.AddAsync(wrapper);
-                    }
+                    await contentZone.AddAsync(wrapper, "");                    
                 }
             }
 

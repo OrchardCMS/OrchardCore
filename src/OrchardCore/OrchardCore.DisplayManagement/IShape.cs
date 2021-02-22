@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
@@ -20,10 +21,27 @@ namespace OrchardCore.DisplayManagement
         IList<string> Classes { get; }
         IDictionary<string, string> Attributes { get; }
         IDictionary<string, object> Properties { get; }
+        IReadOnlyList<IPositioned> Items { get; }
+        ValueTask<IShape> AddAsync(object item, string position);
     }
 
     public static class IShapeExtensions
     {
+        public static async ValueTask<IShape> AddRangeAsync(this IShape shape, IEnumerable<object> items, string position = null)
+        {
+            foreach (var item in items)
+            {
+                await shape.AddAsync(item, position);
+            }
+
+            return shape;
+        }
+
+        public static ValueTask<IShape> AddAsync(this IShape shape, object item)
+        {
+            return shape.AddAsync(item, "");
+        }
+
         private static readonly JsonSerializer ShapeSerializer = new JsonSerializer
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore

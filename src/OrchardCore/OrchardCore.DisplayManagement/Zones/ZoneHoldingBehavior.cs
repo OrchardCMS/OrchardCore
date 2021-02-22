@@ -212,14 +212,14 @@ namespace OrchardCore.DisplayManagement.Zones
             }
         }
 
-        public override async ValueTask<Shape> AddAsync(object item, string position = null)
+        public override async ValueTask<IShape> AddAsync(object item, string position)
         {
             if (item == null)
             {
                 return _parent;
             }
 
-            var zone = await _zoneFactory() as Shape;
+            var zone = await _zoneFactory();
             zone.Properties["Parent"] = _parent;
             zone.Properties["ZoneName"] = _potentialZoneName;
             _parent.Properties[_potentialZoneName] = zone;

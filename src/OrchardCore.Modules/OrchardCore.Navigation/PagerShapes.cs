@@ -258,7 +258,7 @@ namespace OrchardCore.Navigation
             }
 
             // first
-            var firstItem = await New.Pager_First(Value: firstText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page < 2);
+            IShape firstItem = await New.Pager_First(Value: firstText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page < 2);
 
             if (noFollow)
             {
@@ -273,7 +273,7 @@ namespace OrchardCore.Navigation
                 routeData[pageKey] = currentPage - 1;
             }
 
-            var previousItem = await New.Pager_Previous(Value: previousText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page < 2);
+            IShape previousItem = await New.Pager_Previous(Value: previousText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page < 2);
 
             if (noFollow)
             {
@@ -285,7 +285,7 @@ namespace OrchardCore.Navigation
             // gap at the beginning of the pager
             if (firstPage > 1 && numberOfPagesToShow > 0)
             {
-                await shape.AddAsync(await New.Pager_Gap(Value: gapText, Pager: shape));
+                await shape.AddAsync((object) await New.Pager_Gap(Value: gapText, Pager: shape));
             }
 
             // page numbers
@@ -296,7 +296,7 @@ namespace OrchardCore.Navigation
                     if (p == currentPage)
                     {
                         routeData[pageKey] = currentPage;
-                        var currentPageItem = await New.Pager_CurrentPage(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: shape);
+                        IShape currentPageItem = await New.Pager_CurrentPage(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: shape);
 
                         if (noFollow)
                         {
@@ -316,7 +316,7 @@ namespace OrchardCore.Navigation
                             routeData[pageKey] = p;
                         }
 
-                        var pagerItem = await New.Pager_Link(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: shape);
+                        IShape pagerItem = await New.Pager_Link(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: shape);
 
                         if (p > currentPage)
                         {
@@ -335,12 +335,12 @@ namespace OrchardCore.Navigation
             // gap at the end of the pager
             if (lastPage < totalPageCount && numberOfPagesToShow > 0)
             {
-                await shape.AddAsync(await New.Pager_Gap(Value: gapText, Pager: shape));
+                await shape.AddAsync((object) await New.Pager_Gap(Value: gapText, Pager: shape));
             }
 
             // Next
             routeData[pageKey] = Page + 1;
-            var pagerNextItem = await New.Pager_Next(Value: nextText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page >= totalPageCount && !ShowNext);
+            IShape pagerNextItem = await New.Pager_Next(Value: nextText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page >= totalPageCount && !ShowNext);
 
             if (noFollow)
             {
@@ -351,7 +351,7 @@ namespace OrchardCore.Navigation
 
             // Last
             routeData[pageKey] = totalPageCount;
-            var pagerLastItem = await New.Pager_Last(Value: lastText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page >= totalPageCount);
+            IShape pagerLastItem = await New.Pager_Last(Value: lastText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page >= totalPageCount);
 
             if (noFollow)
             {
@@ -408,7 +408,7 @@ namespace OrchardCore.Navigation
                     ["before"] = before
                 };
 
-                var previousItem = await New.Pager_Previous(Value: previousText, RouteValues: beforeRouteData, Pager: shape);
+                IShape previousItem = await New.Pager_Previous(Value: previousText, RouteValues: beforeRouteData, Pager: shape);
 
                 if (noFollow)
                 {
@@ -426,7 +426,7 @@ namespace OrchardCore.Navigation
                     ["after"] = after
                 };
 
-                var nextItem = await New.Pager_Next(Value: nextText, RouteValues: afterRouteData, Pager: shape);
+                IShape nextItem = await New.Pager_Next(Value: nextText, RouteValues: afterRouteData, Pager: shape);
 
                 if (noFollow)
                 {

@@ -15,21 +15,26 @@ namespace OrchardCore.DisplayManagement.Shapes
     [DebuggerTypeProxy(typeof(ShapeDebugView))]
     public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
     {
-        private List<string> _classes;
-        private Dictionary<string, string> _attributes;
-        private List<IPositioned> _items = new List<IPositioned>();
         private bool _sorted = false;
 
         public ShapeMetadata Metadata { get; } = new ShapeMetadata();
 
         public string Id { get; set; }
         public string TagName { get; set; }
+
+        private List<string> _classes;
         public IList<string> Classes => _classes ??= new List<string>();
+
+        private Dictionary<string, string> _attributes;
         public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
-        public IList<IPositioned> Items
+
+        private List<IPositioned> _items;
+        public IReadOnlyList<IPositioned> Items
         {
             get
             {
+                _items ??= new List<IPositioned>();
+
                 if (!_sorted)
                 {
                     _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
@@ -40,7 +45,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
         }
 
-        public bool HasItems => _items.Count > 0;
+        public bool HasItems => _items != null && _items.Count > 0;
 
         public string Position
         {
@@ -48,11 +53,11 @@ namespace OrchardCore.DisplayManagement.Shapes
             set { Metadata.Position = value; }
         }
 
-        public virtual ValueTask<Shape> AddAsync(object item, string position = null)
+        public virtual ValueTask<IShape> AddAsync(object item, string position)
         {
             if (item == null)
             {
-                return new ValueTask<Shape>(this);
+                return new ValueTask<IShape>(this);
             }
 
             if (position == null)
@@ -61,6 +66,8 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
 
             _sorted = false;
+
+            _items ??= new List<IPositioned>();
 
             if (item is IHtmlContent)
             {
@@ -84,21 +91,16 @@ namespace OrchardCore.DisplayManagement.Shapes
                 }
             }
 
-            return new ValueTask<Shape>(this);
-        }
-
-        public async ValueTask<Shape> AddRangeAsync(IEnumerable<object> items, string position = null)
-        {
-            foreach (var item in items)
-            {
-                await AddAsync(item, position);
-            }
-
-            return this;
+            return new ValueTask<IShape>(this);
         }
 
         public void Remove(string shapeName)
         {
+            if (_items == null)
+            {
+                return;
+            }
+
             for (var i = _items.Count - 1; i >= 0; i--)
             {
                 if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
@@ -111,6 +113,11 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IShape Named(string shapeName)
         {
+            if (_items == null)
+            {
+                return null;
+            }
+
             for (var i = 0; i < _items.Count; i++)
             {
                 if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
@@ -124,6 +131,11 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IShape NormalizedNamed(string shapeName)
         {
+            if (_items == null)
+            {
+                return null;
+            }
+
             for (var i = 0; i < _items.Count; i++)
             {
                 if (_items[i] is IShape shape && shape.Metadata.Name?.Replace("__", "-") == shapeName)
@@ -137,6 +149,11 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
+            if (_items == null)
+            {
+                Enumerable.Empty<object>().GetEnumerator();
+            }
+
             if (!_sorted)
             {
                 _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
@@ -148,6 +165,11 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IEnumerator GetEnumerator()
         {
+            if (_items == null)
+            {
+                Enumerable.Empty<object>().GetEnumerator();
+            }
+
             if (!_sorted)
             {
                 _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
