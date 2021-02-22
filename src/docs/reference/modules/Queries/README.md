@@ -100,7 +100,7 @@ For Lucene queries with custom object schema, you are limited to elements stored
 
 For SQL queries, you can expose any column where property name is a column alias from the query.
 
-Here an example of a custom Query from a manually added table in a database : 
+Here is an example of a custom Query from a manually added table in a database : 
 
 ```sql
 -- On the Query don't check the "return content items" checkbox
