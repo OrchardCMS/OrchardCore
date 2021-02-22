@@ -39,7 +39,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                             .WithField("displayText");
                     });
 
-                var nodes = result["data"]["recentBlogPosts"];
+                var nodes = result["data"]["RecentBlogPosts"];
 
                 Assert.Equal(2, nodes.Count());
                 Assert.Equal("Some sorta blogpost in a Query!", nodes[0]["displayText"].ToString());
