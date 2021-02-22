@@ -10,13 +10,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Setup.Services;
+using OrchardCore.Abstractions.Setup;
 
 namespace OrchardCore.AutoSetup
 {
-    using OrchardCore.Abstractions.Setup;
-
     /// <summary>
     /// The auto setup middleware.
     /// </summary>

@@ -1,11 +1,11 @@
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+
 namespace OrchardCore.AutoSetup.Options
 {
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Localization;
-
     /// <summary>
     /// The auto setup options.
     /// </summary>
