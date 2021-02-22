@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Globalization;
 using Lucene.Net.QueryParsers.Simple;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
@@ -24,10 +23,12 @@ namespace OrchardCore.Lucene.QueryProviders
 
             foreach(var field in fields)
             {
-                if(field.Contains('^', StringComparison.Ordinal) && Single.TryParse(field.Split("^").Last(), out weight))
+                var fieldWeightArray = field.Split('^', 2);
+
+                if(fieldWeightArray.Length > 1 && Single.TryParse(fieldWeightArray[1], out weight))
                 {
                     weights.Remove(field);
-                    weights.Add(field.Split("^").First(), weight);
+                    weights.Add(fieldWeightArray[0], weight);
                 }
             }
 

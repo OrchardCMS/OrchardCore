@@ -2262,6 +2262,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "lazcool",
+      "name": "Phil Davies",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12608907?v=4",
+      "profile": "https://www.linkedin.com/in/philgdavies/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
