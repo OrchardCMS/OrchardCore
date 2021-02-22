@@ -1,37 +1,19 @@
 @using OrchardCore.Forms.ViewModels;
 @model ValidationRulePartEditViewModel
 
-<div class="form-group" >
-    <label asp-for="Type">@T["Validate Type"]</label>
+<div class="form-group">
+    <label asp-for="Type">@T["Validate Rule Type"]</label>
     <select asp-for="Type" class="form-control content-preview-select">
         <option value="none">@T["None"]</option>
         <option value="contains">@T["Contains"]</option>
-        <option value="isAscii">@T["IsAscii"]</option>
-        <option value="isBase64">@T["IsBase64"]</option>
-        <option value="isBefore">@T["IsBefore"]</option>
-        <option value="isAfter">@T["IsAfter"]</option>
-        <option value="isAlphanumeric">@T["IsAlphanumeric"]</option>
-        <option value="isBoolean">@T["IsBoolean"]</option>
-        <option value="isByteLength">@T["IsByteLength"]</option>
-        <option value="isCreditCard">@T["IsCreditCard"]</option>
         <option value="isCurrency">@T["IsCurrency"]</option>
         <option value="isDate">@T["IsDate"]</option>
         <option value="isDecimal">@T["IsDecimal"]</option>
         <option value="isEmail">@T["IsEmail"]</option>
         <option value="isEmpty">@T["IsEmpty"]</option>
         <option value="isFloat">@T["IsFloat"]</option>
-        <option value="isHash">@T["IsHash"]</option>
         <option value="isInt">@T["IsInt"]</option>
-        <option value="isIP">@T["IsIP"]</option>
-        <option value="isIPRange">@T["IsIPRange"]</option>
-        <option value="isJSON">@T["IsJSON"]</option>
         <option value="isLength">@T["IsLength"]</option>
-        <option value="isLowercase">@T["IsLowercase"]</option>
-        <option value="isMACAddress">@T["IsMACAddress"]</option>
-        <option value="isMD5">@T["IsMD5"]</option>
-        <option value="isMimeType">@T["isMimeType"]</option>
-        <option value="isNumeric">@T["IsNumeric"]</option>
-        <option value="isStrongPassword">@T["IsStrongPassword"]</option>
         <option value="isURL">@T["isURL"]</option>
         <option value="matches">@T["Matches"]</option>
 
@@ -39,8 +21,8 @@
     <span class="hint">@T["The validate type."]</span>
 </div>
 
-<div class="form-group" >
-    <label asp-for="Option">@T["Validate Options"]</label>
+<div class="form-group">
+    <label asp-for="Option">@T["Validate Rule Options"]</label>
     <input asp-for="Option" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["The text to check the string. For detailed rules, please see https://github.com/validatorjs/validator.js"]</span>
 </div>

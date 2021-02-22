@@ -1,8 +1,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -50,10 +52,32 @@ namespace OrchardCore.Forms.Workflows.Activities
             }
 
             var httpContext = _httpContextAccessor.HttpContext;
-
+            var rules = new List<dynamic>();
             foreach (var item in httpContext.Request.Form)
             {
-                updater.ModelState.SetModelValue(item.Key, item.Value, item.Value);
+                if (item.Key.Equals("validateRules", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (string.IsNullOrEmpty(item.Value[0]))
+                    {
+                        rules = JsonConvert.DeserializeObject<List<dynamic>>(item.Value[0]);
+                    }
+                }
+                else
+                {
+                    updater.ModelState.SetModelValue(item.Key, item.Value, item.Value);
+                }
+            }
+            if (rules.Count > 0)
+            {
+                foreach (var item in rules)
+                {
+                    var type = item.type;
+                    var option = item.option;
+                    var formItem = httpContext.Request.Form.FirstOrDefault(a => a.Key == item.elementId);
+                    var formItemValue = formItem.Value;
+                    // validate formItem.Value
+
+                }
             }
 
             var isValid = updater.ModelState.ErrorCount == 0;

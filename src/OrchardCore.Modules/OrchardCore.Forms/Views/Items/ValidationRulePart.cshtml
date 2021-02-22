@@ -1,23 +1,48 @@
 @using OrchardCore.Forms.Models
 @model ShapeViewModel<ValidationRulePart>
 @{
-    var type =  Model.Value.Type;
+    var type = Model.Value.Type;
     var option = Html.Raw(Model.Value.Option);
 
     var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
     var elementId = formElementPart.Id;
 }
 
-<script asp-src="~/OrchardCore.Forms/Scripts/validator.min.js" debug-src="~/OrchardCore.Forms/Scripts/validator.js" asp-name="validator" depends-on="jQuery" at="Foot" ></script>
+<script asp-src="~/OrchardCore.Forms/Scripts/validator.min.js" debug-src="~/OrchardCore.Forms/Scripts/validator.js" asp-name="validator" depends-on="jQuery" at="Foot"></script>
 
 <script at="Foot">
-    var type = '@type';
     if (type != "none") {
+
+        var type = '@type';
         var elementId = '#' + '@elementId';
-        var option = JSON.parse('@option');
+        var option = '@option';
         var validateElementId = elementId + type;
+
+        if (window.validatorObject) {
+            var obj = {};
+            obj.type = type;
+            obj.elementId = '@elementId';
+            obj.option = option;
+            objs.push(obj);
+            window.validatorObject.push(obj);
+        } else {
+            window.validatorObject = new Array();
+            var obj = {};
+            obj.type = type;
+            obj.elementId = '@elementId';
+            obj.option = option;
+            window.validatorObject.push(obj);
+        }
+
+
         $(elementId).bind("keyup", function (e) {
-            var re = window.validator['@type']($(elementId).val(), option);
+            var re = false;
+            if (option == '') {
+               re = window.validator['@type']($(elementId).val());
+            } else {
+               re = window.validator['@type']($(elementId).val(), JSON.parse(option));
+            }
+
             var docEle = document.getElementById(validateElementId);
             if (re) {
                 if (docEle) {
@@ -26,8 +51,8 @@
                 }
             } else {
                 if (!docEle) {
-                    var dangerTexgt = "<p id='" + validateElementId + "' class='text-danger'>Validate " + "@type" + " failed.<p>";
-                    $(elementId).after(dangerTexgt);
+                    var dangerText = "<p id='" + validateElementId + "' class='text-danger'>Validate " + "@type" + " failed.<p>";
+                    $(elementId).after(dangerText);
                     $(elementId).parent().parent().parent().find(":submit").attr('disabled', 'true');
                 }
 
