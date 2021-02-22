@@ -5,7 +5,6 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -16,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         {
             var services = ((LiquidTemplateContext)context).Services;
 
-            var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync() as ZoneHolding;
+            var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync();
             var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
             var htmlContent = await displayHelper.ShapeExecuteAsync(layout.Zones["Content"]);

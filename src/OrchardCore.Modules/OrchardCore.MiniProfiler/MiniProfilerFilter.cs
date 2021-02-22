@@ -33,16 +33,12 @@ namespace OrchardCore.MiniProfiler
             if ((context.Result is ViewResult || context.Result is PageResult) &&
                 (_options.AllowOnAdmin || !AdminAttribute.IsApplied(context.HttpContext)))
             {
-                var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
+                var layout = await _layoutAccessor.GetLayoutAsync();
                 var footerZone = layout.Zones["Footer"];
 
-                if (footerZone is ZoneOnDemand zoneOnDemand)
+                if (footerZone is Shape shape)
                 {
-                    await zoneOnDemand.AddAsync(await _shapeFactory.CreateAsync("MiniProfiler"));
-                }
-                else if (footerZone is Shape shape)
-                {
-                    shape.Add(await _shapeFactory.CreateAsync("MiniProfiler"));
+                    await shape.AddAsync(await _shapeFactory.CreateAsync("MiniProfiler"));
                 }
             }
 

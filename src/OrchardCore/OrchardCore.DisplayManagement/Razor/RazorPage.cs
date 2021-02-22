@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -85,6 +86,16 @@ namespace OrchardCore.DisplayManagement.Razor
             return _displayHelper.ShapeExecuteAsync(shape);
         }
 
+        /// <summary>
+        /// Renders a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        public Task<IHtmlContent> DisplayAsync(IShape shape)
+        {
+            EnsureDisplayHelper();
+            return _displayHelper.ShapeExecuteAsync(shape);
+        }
+
         public IOrchardDisplayHelper Orchard
         {
             get
@@ -99,9 +110,9 @@ namespace OrchardCore.DisplayManagement.Razor
             }
         }
 
-        private dynamic _themeLayout;
+        protected IZoneHolding _themeLayout;
 
-        public dynamic ThemeLayout
+        public IZoneHolding ThemeLayout
         {
             get
             {
@@ -249,7 +260,7 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <returns>The HTML content to render.</returns>
         public Task<IHtmlContent> RenderBodyAsync()
         {
-            return DisplayAsync(ThemeLayout.Content);
+            return DisplayAsync(ThemeLayout.Zones["Content"]);
         }
 
         /// <summary>
@@ -266,7 +277,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout[name];
+            var zone = ThemeLayout.Zones[name];
 
             return zone != null;
         }
@@ -334,9 +345,9 @@ namespace OrchardCore.DisplayManagement.Razor
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout[name];
+            var zone = ThemeLayout.Zones[name];
 
-            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
+            if (required && zone != null)
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }

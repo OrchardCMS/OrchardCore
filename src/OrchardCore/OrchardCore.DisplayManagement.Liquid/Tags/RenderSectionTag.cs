@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         {
             var services = ((LiquidTemplateContext)context).Services;
 
-            var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync() as ZoneHolding;
+            var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync();
             var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
             var arguments = new NamedExpressionList(argumentsList);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -25,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string TagName { get; set; }
         public IList<string> Classes => _classes ??= new List<string>();
         public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
-        public IEnumerable<dynamic> Items
+        public IList<IPositioned> Items
         {
             get
             {
@@ -47,11 +48,11 @@ namespace OrchardCore.DisplayManagement.Shapes
             set { Metadata.Position = value; }
         }
 
-        public virtual Shape Add(object item, string position = null)
+        public virtual ValueTask<Shape> AddAsync(object item, string position = null)
         {
             if (item == null)
             {
-                return this;
+                return new ValueTask<Shape>(this);
             }
 
             if (position == null)
@@ -83,14 +84,14 @@ namespace OrchardCore.DisplayManagement.Shapes
                 }
             }
 
-            return this;
+            return new ValueTask<Shape>(this);
         }
 
-        public Shape AddRange(IEnumerable<object> items, string position = null)
+        public async ValueTask<Shape> AddRangeAsync(IEnumerable<object> items, string position = null)
         {
             foreach (var item in items)
             {
-                Add(item, position);
+                await AddAsync(item, position);
             }
 
             return this;

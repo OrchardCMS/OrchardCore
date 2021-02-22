@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Theming
 {
@@ -23,26 +23,29 @@ namespace OrchardCore.DisplayManagement.Theming
 
             if (ThemeLayout != null)
             {
-                // Then is added to the Content zone of the Layout shape
-                ThemeLayout.Content.Add(body);
+                var content = ThemeLayout.Zones["Content"] as Shape;
 
+                // Then is added to the Content zone of the Layout shape
                 // Render Shapes in Content
-                if (ThemeLayout.Content is IShape content)
+                if (content != null)
                 {
+                    await content.AddAsync(body);
+
                     var htmlContent = await DisplayAsync(content);
-                    ThemeLayout.Content = htmlContent;
+                    content.Items.Clear();
+                    await content.AddAsync(htmlContent);
                 }
 
-                if (ThemeLayout is ZoneHolding layout)
+                foreach (var zone in ThemeLayout.Properties)
                 {
-                    foreach (var zone in layout.Properties.ToArray())
+                    // Is zone empty
+                    if (zone.Value != null)
                     {
-                        if (!(zone.Value is ZoneOnDemand) && zone.Value is IShape shape)
-                        {
-                            // Render each layout zone
-                            var htmlZone = await DisplayAsync(shape);
-                            layout.Properties[zone.Key] = htmlZone;
-                        }
+                        var shape = zone.Value as IShape;
+
+                        // Render each layout zone
+                        var htmlZone = await DisplayAsync(shape);
+                        ThemeLayout.Properties[zone.Key] = htmlZone;
                     }
                 }
 

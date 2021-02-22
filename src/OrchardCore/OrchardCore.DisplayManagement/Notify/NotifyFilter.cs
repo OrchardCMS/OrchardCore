@@ -122,21 +122,15 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
+            var layout = await _layoutAccessor.GetLayoutAsync();
+
             var messagesZone = layout.Zones["Messages"];
 
-            if (messagesZone is ZoneOnDemand zoneOnDemand)
+            if (messagesZone is Shape shape)
             {
                 foreach (var messageEntry in _existingEntries)
                 {
-                    await zoneOnDemand.AddAsync(await _shapeFactory.Message(messageEntry));
-                }
-            }
-            else if (messagesZone is Shape shape)
-            {
-                foreach (var messageEntry in _existingEntries)
-                {
-                    shape.Add(await _shapeFactory.Message(messageEntry));
+                    await shape.AddAsync(await _shapeFactory.Message(messageEntry));
                 }
             }            
 

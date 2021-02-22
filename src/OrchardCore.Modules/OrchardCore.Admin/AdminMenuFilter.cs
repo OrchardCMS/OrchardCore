@@ -64,17 +64,13 @@ namespace OrchardCore.Admin
                     RouteData = filterContext.RouteData,
                 }));
 
-            var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
+            var layout = await _layoutAccessor.GetLayoutAsync();
 
             var navigation = layout.Zones["Navigation"];
 
-            if (navigation is ZoneOnDemand zoneOnDemand)
+            if (navigation is Shape shape)
             {
-                await zoneOnDemand.AddAsync(menuShape);
-            }
-            else if (navigation is Shape shape)
-            {
-                shape.Add(menuShape);
+                await shape.AddAsync(menuShape);
             }
 
             await next();

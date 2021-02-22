@@ -34,8 +34,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            var buffer = new ViewBufferTextWriterContent();
-
             ViewBufferTextWriterContent content = null;
 
             if (statements != null && statements.Count > 0)
@@ -50,17 +48,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            var layout = await layoutAccessor.GetLayoutAsync() as ZoneHolding;
+            var layout = await layoutAccessor.GetLayoutAsync();
 
             var zone = layout.Zones[name];
 
-            if (zone is ZoneOnDemand zoneOnDemand)
+            if (zone is Shape shape)
             {
-                await zoneOnDemand.AddAsync(content, position);
-            }
-            else if (zone is Shape shape)
-            {
-                shape.Add(content, position);
+                await shape.AddAsync(content, position);
             }
 
             return Completion.Normal;

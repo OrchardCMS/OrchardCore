@@ -201,13 +201,9 @@ namespace OrchardCore.DisplayManagement.Views
 
             position = !String.IsNullOrEmpty(position) ? position : null;
 
-            if (parentShape is ZoneOnDemand zoneOnDemand)
+            if (parentShape is Shape shape)
             {
-                await zoneOnDemand.AddAsync(newShape, position);
-            }
-            else if (parentShape is Shape shape)
-            {
-                shape.Add(newShape, position);
+                await shape.AddAsync(newShape, position);
             }
         }
 

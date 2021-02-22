@@ -81,7 +81,7 @@ namespace OrchardCore.Menu
                         shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted
-                        ((Shape)menu).Add(shape);
+                        await ((Shape)menu).AddAsync(shape);
                     }
                 });
 

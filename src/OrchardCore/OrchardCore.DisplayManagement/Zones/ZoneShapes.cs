@@ -121,9 +121,10 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     foreach (var item in orderedGrouping)
                     {
-                        groupingShape.Add(item);
+                        await groupingShape.AddAsync(item);
                     }
-                    container.Add(groupingShape);
+
+                    await container.AddAsync(groupingShape);
                 }
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
@@ -210,9 +211,10 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     foreach (var item in orderedGrouping)
                     {
-                        groupingShape.Add(item);
+                        await groupingShape.AddAsync(item);
                     }
-                    container.Add(groupingShape);
+
+                    await container.AddAsync(groupingShape);
                 }
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
@@ -321,9 +323,9 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     foreach (var item in orderedGrouping)
                     {
-                        groupingShape.Add(item);
+                        await groupingShape.AddAsync(item);
                     }
-                    container.Add(groupingShape);
+                    await container.AddAsync(groupingShape);
                 }
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));

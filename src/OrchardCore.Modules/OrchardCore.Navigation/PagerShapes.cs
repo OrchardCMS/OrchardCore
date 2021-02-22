@@ -265,7 +265,7 @@ namespace OrchardCore.Navigation
                 firstItem.Attributes["rel"] = "no-follow";
             }
 
-            shape.Add(firstItem);
+            await shape.AddAsync(firstItem);
 
             // previous
             if ((Page > 1) && (currentPage > 2))
@@ -280,12 +280,12 @@ namespace OrchardCore.Navigation
                 previousItem.Attributes["rel"] = "no-follow";
             }
 
-            shape.Add(previousItem);
+            await shape.AddAsync(previousItem);
 
             // gap at the beginning of the pager
             if (firstPage > 1 && numberOfPagesToShow > 0)
             {
-                shape.Add(await New.Pager_Gap(Value: gapText, Pager: shape));
+                await shape.AddAsync(await New.Pager_Gap(Value: gapText, Pager: shape));
             }
 
             // page numbers
@@ -303,7 +303,7 @@ namespace OrchardCore.Navigation
                             currentPageItem.Attributes["rel"] = "no-follow";
                         }
 
-                        shape.Add(currentPageItem);
+                        await shape.AddAsync(currentPageItem);
                     }
                     else
                     {
@@ -327,7 +327,7 @@ namespace OrchardCore.Navigation
                             pagerItem.Attributes["rel"] = noFollow ? "no-follow" : "prev";
                         }
 
-                        shape.Add(pagerItem);
+                        await shape.AddAsync(pagerItem);
                     }
                 }
             }
@@ -335,7 +335,7 @@ namespace OrchardCore.Navigation
             // gap at the end of the pager
             if (lastPage < totalPageCount && numberOfPagesToShow > 0)
             {
-                shape.Add(await New.Pager_Gap(Value: gapText, Pager: shape));
+                await shape.AddAsync(await New.Pager_Gap(Value: gapText, Pager: shape));
             }
 
             // Next
@@ -347,7 +347,7 @@ namespace OrchardCore.Navigation
                 pagerNextItem.Attributes["rel"] = "no-follow";
             }
 
-            shape.Add(pagerNextItem);
+            await shape.AddAsync(pagerNextItem);
 
             // Last
             routeData[pageKey] = totalPageCount;
@@ -358,7 +358,7 @@ namespace OrchardCore.Navigation
                 pagerLastItem.Attributes["rel"] = "no-follow";
             }
 
-            shape.Add(pagerLastItem);
+            await shape.AddAsync(pagerLastItem);
 
             return await DisplayAsync(shape);
         }
@@ -415,7 +415,7 @@ namespace OrchardCore.Navigation
                     previousItem.Attributes["rel"] = "no-follow";
                 }
 
-                shape.Add(previousItem);
+                await shape.AddAsync(previousItem);
                 shape.Properties["FirstClass"] = PreviousClass;
             }
 
@@ -433,7 +433,7 @@ namespace OrchardCore.Navigation
                     nextItem.Attributes["rel"] = "no-follow";
                 }
 
-                shape.Add(nextItem);
+                await shape.AddAsync(nextItem);
                 shape.Properties["LastClass"] = NextClass;
             }
 
