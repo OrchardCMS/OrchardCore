@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -25,14 +26,14 @@ namespace OrchardCore.Security
             _authenticationOptions = authenticationOptions;
         }
 
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
             {
-                return AuthenticateResult.NoResult();
+                return Task.FromResult<AuthenticateResult>(AuthenticateResult.NoResult());
             }
 
-            return await Context.AuthenticateAsync(Options.ApiAuthenticationScheme);
+            return Context.AuthenticateAsync(Options.ApiAuthenticationScheme);
         }
 
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
@@ -40,6 +41,12 @@ namespace OrchardCore.Security
             if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
             {
                 return Task.CompletedTask;
+            }
+
+            var statusCodePagesFeature = Context.Features.Get<IStatusCodePagesFeature>();
+            if (statusCodePagesFeature != null)
+            {
+                statusCodePagesFeature.Enabled = false;
             }
 
             return Context.ChallengeAsync(Options.ApiAuthenticationScheme);
@@ -52,6 +59,12 @@ namespace OrchardCore.Security
                 return Task.CompletedTask;
             }
 
+            var statusCodePagesFeature = Context.Features.Get<IStatusCodePagesFeature>();
+            if (statusCodePagesFeature != null)
+            {
+                statusCodePagesFeature.Enabled = false;
+            }
+            
             return Context.ForbidAsync(Options.ApiAuthenticationScheme);
         }
     }

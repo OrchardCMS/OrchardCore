@@ -7,7 +7,7 @@ namespace OrchardCore.Resources
         // CDNs
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
-        private const string codeMirrorVersion = "5.59.2";
+        private const string codeMirrorVersion = "5.59.3";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
@@ -164,7 +164,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn(codeMirrorUrl + "codemirror.min.js", codeMirrorUrl + "codemirror.js")
-                .SetCdnIntegrity("sha384-8+WyQMvfWaFXYLj2nJ/+9P+CP9WSvjpVsAHU29sCCRGGZmMvEwoHA3ocrpUh3K0c", "sha384-uDK+DThxF3MmLpaJ5u8df1/T6XoAfNWoRthhVSAJmSSuRDUOKMVgLJWqH1pa+0E3")
+                .SetCdnIntegrity("sha384-kpEvYXfMSJy+E+EP/KU+ozjEdR9hcg7bRsHPgEHg7OooHjqT2Pc2ctHpk6m3qSQC", "sha384-EOrUJr+a9OlGEoP6h0akZjV36wwr5aXtamwzd6D8HiRNt7Jlzxd2YCxXUhjEEfYx")
                 .SetVersion(codeMirrorVersion);
 
             manifest
@@ -184,7 +184,7 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("codemirror-addon-selection-active-line")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/selection/active-line.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/selection/active-line.js")
-                .SetCdn(codeMirrorUrl + "addon/selection/active-line.min.js", codeMirrorUrl + "addon/selection/active-line.min.js")
+                .SetCdn(codeMirrorUrl + "addon/selection/active-line.min.js", codeMirrorUrl + "addon/selection/active-line.js")
                 .SetCdnIntegrity("sha384-G0dW669yzC7wSAJf0Tqu4PyeHKXY0vAX9xZtaTPnK/+EHjtucblXS/5GHR55j1mx", "sha384-kKz13r+qZMgTNgXROGNHQ0/0/J1FtvIvRZ9yjOHo1YLUCd+KF8r9R+su/B+f6C0U")
                 .SetVersion(codeMirrorVersion);
 
