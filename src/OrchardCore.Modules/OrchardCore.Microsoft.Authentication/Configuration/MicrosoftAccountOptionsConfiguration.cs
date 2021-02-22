@@ -44,11 +44,6 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
-            if (_microsoftAccountService.ValidateSettings(settings).Any())
-            {
-                return;
-            }
-
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(MicrosoftAccountDefaults.AuthenticationScheme, builder =>
             {
@@ -71,7 +66,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
-            options.ClientId = loginSettings.AppId ?? String.Empty;
+            options.ClientId = loginSettings.AppId;
 
             try
             {
@@ -79,10 +74,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
             catch
             {
-                if (_shellSettings.State == TenantState.Running)
-                {
-                    _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
-                }
+                _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
             }
 
             if (loginSettings.CallbackPath.HasValue)
@@ -98,7 +90,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         private async Task<MicrosoftAccountSettings> GetMicrosoftAccountSettingsAsync()
         {
             var settings = await _microsoftAccountService.GetSettingsAsync();
-            if ((_microsoftAccountService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
+            if (_microsoftAccountService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
             {
                 if (_shellSettings.State == TenantState.Running)
                 {

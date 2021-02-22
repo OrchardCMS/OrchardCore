@@ -71,7 +71,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
                 return;
             }
 
-            options.ConsumerKey = settings.Item1?.ConsumerKey ?? String.Empty;
+            options.ConsumerKey = settings.Item1.ConsumerKey;
             try
             {
                 options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter).Unprotect(settings.Item1.ConsumerSecret);

@@ -42,11 +42,6 @@ namespace OrchardCore.Google.Authentication.Configuration
                 return;
             }
 
-            if (!_googleAuthenticationService.CheckSettings(settings))
-            {
-                return;
-            }
-
             options.AddScheme(GoogleDefaults.AuthenticationScheme, builder =>
             {
                 builder.DisplayName = "Google";
@@ -62,8 +57,12 @@ namespace OrchardCore.Google.Authentication.Configuration
             }
 
             var settings = GetGoogleAuthenticationSettingsAsync().GetAwaiter().GetResult();
+            if (settings == null)
+            {
+                return;
+            }
 
-            options.ClientId = settings?.ClientID ?? string.Empty;
+            options.ClientId = settings.ClientID;
             try
             {
                 options.ClientSecret = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Unprotect(settings.ClientSecret);
