@@ -43,7 +43,7 @@ namespace OrchardCore.Recipes.Services
             };
 
             var environment = new Dictionary<string, object>();
-            await _environmentProviders.InvokeAsync((provider, env) => provider.SetEnvironmentAsync(env), environment, _logger);
+            await _environmentProviders.InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
 
             await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);
 

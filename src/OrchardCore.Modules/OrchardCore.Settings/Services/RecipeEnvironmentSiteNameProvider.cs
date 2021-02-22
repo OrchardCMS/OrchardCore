@@ -14,7 +14,7 @@ namespace OrchardCore.Settings
             _siteService = siteService;
         }
 
-        public async Task SetEnvironmentAsync(IDictionary<string, object> environment)
+        public async Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
         {
             // When these have already been set by another provider, do not reset them.
             if (!environment.ContainsKey(nameof(ISite.SiteName)))

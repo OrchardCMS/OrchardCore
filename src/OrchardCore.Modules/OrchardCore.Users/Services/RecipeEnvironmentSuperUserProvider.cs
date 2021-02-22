@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Services
             _userService = userService;
         }
 
-        public async Task SetEnvironmentAsync(IDictionary<string, object> environment)
+        public async Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
         {
             // When these have already been set by another provider, do not reset them.
             if (!environment.ContainsKey("AdminUserId") && !environment.ContainsKey("AdminUsername"))

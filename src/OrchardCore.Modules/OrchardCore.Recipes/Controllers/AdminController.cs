@@ -106,7 +106,7 @@ namespace OrchardCore.Recipes.Controllers
             }
 
             var environment = new Dictionary<string, object>();
-            await _environmentProviders.InvokeAsync((provider, env) => provider.SetEnvironmentAsync(env), environment, _logger);
+            await _environmentProviders.InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
 
             var executionId = Guid.NewGuid().ToString("n");
 

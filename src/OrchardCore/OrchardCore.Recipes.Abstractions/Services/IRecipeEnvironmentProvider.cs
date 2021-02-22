@@ -5,6 +5,6 @@ namespace OrchardCore.Recipes.Services
 {
     public interface IRecipeEnvironmentProvider
     {
-        Task SetEnvironmentAsync(IDictionary<string, object> environment);
+        Task PopulateEnvironmentAsync(IDictionary<string, object> environment);
     }
 }

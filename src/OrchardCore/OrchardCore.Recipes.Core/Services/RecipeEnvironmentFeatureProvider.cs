@@ -14,7 +14,7 @@ namespace OrchardCore.Recipes.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Task SetEnvironmentAsync(IDictionary<string, object> environment)
+        public Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
         {
             // When a migration is executed during setup these properties are available on the feature.
             // They should always override any current values.
