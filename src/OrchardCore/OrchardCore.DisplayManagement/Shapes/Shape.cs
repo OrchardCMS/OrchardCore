@@ -192,6 +192,18 @@ namespace OrchardCore.DisplayManagement.Shapes
             return base.TryConvert(binder, out result);
         }
 
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        {
+            // In case AddAsync() is called on a dynamic object, to prevent Copmosite from seing it as a property assignment
+            if (binder.Name == "AddAsync")
+            {
+                result = AddAsync(args.Length > 0 ? args[0] : null, args.Length > 1 ? args[1].ToString() : "");
+                return true;
+            }
+
+            return base.TryInvokeMember(binder, args, out result);
+        }
+
         public static TagBuilder GetTagBuilder(Shape shape, string defaultTagName = "span")
         {
             var tagName = defaultTagName;
