@@ -19,8 +19,8 @@ namespace OrchardCore.Recipes.Services
         private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
         private readonly ILogger _logger;
 
-        public RecipeDeploymentTargetHandler(IShellHost shellHost, 
-            ShellSettings shellSettings, 
+        public RecipeDeploymentTargetHandler(IShellHost shellHost,
+            ShellSettings shellSettings,
             IRecipeExecutor recipeExecutor,
             IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
             ILogger<RecipeDeploymentTargetHandler> logger)
@@ -45,7 +45,7 @@ namespace OrchardCore.Recipes.Services
             var environment = new Dictionary<string, object>();
             await _environmentProviders.InvokeAsync((provider, env) => provider.SetEnvironmentAsync(env), environment, _logger);
 
-            await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
+            await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);
 
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }

@@ -21,15 +21,15 @@ namespace OrchardCore.Recipes.Services
             var feature = _httpContextAccessor.HttpContext.Features.Get<RecipeEnvironmentFeature>();
             if (feature != null)
             {
-                if (feature.Properties.TryGetValue("AdminUserId", out object adminUserId))
+                if (feature.Properties.TryGetValue("AdminUserId", out var adminUserId))
                 {
                     environment["AdminUserId"] = adminUserId;
                 }
-                if (feature.Properties.TryGetValue("AdminUsername", out object adminUserName))
+                if (feature.Properties.TryGetValue("AdminUsername", out var adminUserName))
                 {
                     environment["AdminUsername"] = adminUserName;
                 }
-                if (feature.Properties.TryGetValue("SiteName", out object siteName))
+                if (feature.Properties.TryGetValue("SiteName", out var siteName))
                 {
                     environment["SiteName"] = siteName;
                 }

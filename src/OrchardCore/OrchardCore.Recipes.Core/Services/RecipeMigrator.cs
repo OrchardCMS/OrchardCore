@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Modules;
-using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Recipes.Services
 {
@@ -51,7 +50,6 @@ namespace OrchardCore.Recipes.Services
             await _environmentProviders.InvokeAsync((provider, env) => provider.SetEnvironmentAsync(env), environment, _logger);
 
             var executionId = Guid.NewGuid().ToString("n");
-            
             return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);
         }
     }

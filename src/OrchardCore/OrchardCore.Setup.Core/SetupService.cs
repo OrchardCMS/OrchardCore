@@ -140,7 +140,7 @@ namespace OrchardCore.Setup.Services
             if (context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
             {
                 recipeEnvironmentFeature.Properties[SetupConstants.AdminUsername] = adminUsername;
-            } 
+            }
             if (context.Properties.TryGetValue(SetupConstants.SiteName, out var siteName))
             {
                 recipeEnvironmentFeature.Properties[SetupConstants.SiteName] = siteName;
@@ -152,9 +152,9 @@ namespace OrchardCore.Setup.Services
 
             if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
             {
-                shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider)? databaseProvider?.ToString(): String.Empty ;
-                shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString ) ? databaseConnectionString?.ToString(): String.Empty;
-                shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix)? databaseTablePrefix?.ToString():String.Empty;
+                shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
+                shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
+                shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
             }
 
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))

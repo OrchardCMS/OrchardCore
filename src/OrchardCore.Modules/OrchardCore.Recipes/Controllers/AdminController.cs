@@ -26,36 +26,33 @@ namespace OrchardCore.Recipes.Controllers
         private readonly IExtensionManager _extensionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
-        private readonly INotifier _notifier;
         private readonly IRecipeExecutor _recipeExecutor;
-        private readonly ISiteService _siteService;
         private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
-        private readonly ILogger _logger;
+        private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
+        private readonly ILogger _logger;
 
         public AdminController(
             IShellHost shellHost,
             ShellSettings shellSettings,
-            ISiteService siteService,
             IExtensionManager extensionManager,
-            IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             IRecipeExecutor recipeExecutor,
-            INotifier notifier,
             IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
+            INotifier notifier,
+            IHtmlLocalizer<AdminController> localizer,
             ILogger<AdminController> logger)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _siteService = siteService;
-            _recipeExecutor = recipeExecutor;
             _extensionManager = extensionManager;
             _authorizationService = authorizationService;
             _recipeHarvesters = recipeHarvesters;
+            _recipeExecutor = recipeExecutor;
+            _environmentProviders = environmentProviders;
             _notifier = notifier;
             H = localizer;
-            _environmentProviders = environmentProviders;
             _logger = logger;
         }
 
@@ -107,8 +104,6 @@ namespace OrchardCore.Recipes.Controllers
                 _notifier.Error(H["Recipe was not found."]);
                 return RedirectToAction("Index");
             }
-
-            var site = await _siteService.GetSiteSettingsAsync();
 
             var environment = new Dictionary<string, object>();
             await _environmentProviders.InvokeAsync((provider, env) => provider.SetEnvironmentAsync(env), environment, _logger);
