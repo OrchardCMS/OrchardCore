@@ -24,6 +24,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -197,6 +198,8 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
 
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
+
+            services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
         }
     }
 
