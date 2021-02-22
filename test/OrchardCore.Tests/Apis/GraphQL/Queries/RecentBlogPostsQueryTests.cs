@@ -33,7 +33,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var result = await context
                     .GraphQLClient
                     .Content
-                    .Query("recentBlogPosts", builder =>
+                    .Query("RecentBlogPosts", builder =>
                     {
                         builder
                             .WithField("displayText");

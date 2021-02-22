@@ -41,7 +41,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 var result = await context
                     .GraphQLClient
                     .Content
-                    .Query("recentBlogPosts", builder =>
+                    .Query("RecentBlogPosts", builder =>
                     {
                         builder
                             .WithField("displayText");
