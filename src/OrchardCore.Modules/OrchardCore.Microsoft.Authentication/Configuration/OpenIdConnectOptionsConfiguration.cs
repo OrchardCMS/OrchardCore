@@ -39,6 +39,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.SaveTokens = settings.SaveTokens;
 
         }
+
         public void Configure(OpenIdConnectOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
     }
 }
