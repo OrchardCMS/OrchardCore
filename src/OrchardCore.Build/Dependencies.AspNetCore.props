@@ -38,8 +38,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
   <!-- Add all Microsoft.Extensions packages -->
