@@ -126,9 +126,11 @@ nav:
             - Widgets: docs/reference/modules/Widgets/README.md
             - Forms: docs/reference/modules/Forms/README.md
             - Templates: docs/reference/modules/Templates/README.md
+            - Placements: docs/reference/modules/Placements/README.md
             - Themes: docs/reference/modules/Themes/README.md
             - Liquid: docs/reference/modules/Liquid/README.md
             - Indexing: docs/reference/modules/Indexing/README.md
+            - Rules: docs/reference/modules/Rules/README.md
             - SQL: docs/reference/modules/SQL/README.md
             - Lucene: docs/reference/modules/Lucene/README.md
             - Queries: docs/reference/modules/Queries/README.md
@@ -144,6 +146,7 @@ nav:
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
             - Admin: docs/reference/modules/Admin/README.md
+            - Admin Dashboard: docs/reference/modules/AdminDashboard/README.md
             - Admin Menu: docs/reference/modules/AdminMenu/README.md
             - Taxonomies: docs/reference/modules/Taxonomies/README.md
             - Authentication:
@@ -160,6 +163,7 @@ nav:
             - Features: docs/reference/modules/Features/README.md
             - Contents: docs/reference/modules/Contents/README.md
             - Configuration: docs/reference/core/Configuration/README.md
+            - Cors: docs/reference/modules/Cors/README.md
             - Custom Settings: docs/reference/modules/CustomSettings/README.md
             - Placement: docs/reference/core/Placement/README.md
             - Data: docs/reference/core/Data/README.md
@@ -169,6 +173,7 @@ nav:
             - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
             - Health Check: docs/reference/modules/HealthChecks/README.md
             - HTTPS: docs/reference/modules/Https/README.md
+            - Key Vault (Azure): docs/reference/core/KeyVault.Azure/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
             - Mini Profiler: docs/reference/modules/MiniProfiler/README.md
@@ -187,12 +192,13 @@ nav:
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
     - Resources: 
         - Learning: docs/resources/README.md
+        - Tutorials: docs/resources/tutorials/README.md
         - Development Tools: docs/resources/development-tools/README.md
         - Meeting: docs/resources/meeting/README.md
-        - Workshops: docs/resources/workshops/README.md
         - Branding: docs/resources/branding/README.md
-        - Owners: docs/resources/owners/README.md
         - Libraries: docs/resources/libraries/README.md
+        - Owners: docs/resources/owners/README.md
+        - Workshops: docs/resources/workshops/README.md
     - Releases: 
         - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
         - 1.0.0-rc1: docs/releases/1.0.0-rc1.md

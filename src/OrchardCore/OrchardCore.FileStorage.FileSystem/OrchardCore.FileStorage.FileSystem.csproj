@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore FileStorage FileSystem</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Implementation for Physical FileStorage.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +18,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 
 </Project>

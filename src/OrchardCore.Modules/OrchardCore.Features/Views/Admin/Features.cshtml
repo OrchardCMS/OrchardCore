@@ -2,20 +2,15 @@
 @using OrchardCore.Modules;
 @model FeaturesViewModel
 
-<div class="row">
-    <div class="form-group col mb-n1">
-        <h1>@RenderTitleSegments(T["Features"])</h1>
-    </div>
-</div>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Features"])</h1></zone>
+
 <form autocomplete="off" class="position-sticky action-bar">
     <div class="card mb-3">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                    </div>
-                    <input id="search-box" class="form-control mr-sm-2" placeholder="@T["Search"]" type="search" autofocus>
+                <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
+                    <i class="fa fa-search form-control-feedback"></i>
+                    <input id="search-box" class="form-control mr-sm-2" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
                 <div class="dropdown float-right order-md-1">
                     <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -105,7 +100,7 @@
                                             {
                                                 @foreach (var d in dependencies)
                                                 {
-                                                    <span class="badge badge-info">
+                                                    <span class="badge ta-badge">
                                                         @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                     </span>
                                                 }
@@ -121,7 +116,7 @@
                                     <div class="col-md-2 text-right">
                                         @if (showEnable && !feature.IsEnabled)
                                         {
-                                            <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                                            <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
                                         }
                                         @if (showDisable && feature.IsEnabled)
                                         {
@@ -131,7 +126,7 @@
                                                 var enabledDependentFeatures = new HtmlString($"<ul>{String.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
                                                 confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", feature.Descriptor.Name, enabledDependentFeatures];
                                             }
-                                            <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                            <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                         }
                                     </div>
                                 </div>

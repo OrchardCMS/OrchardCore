@@ -79,12 +79,13 @@ namespace OrchardCore.Deployment.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                deploymentPlans = deploymentPlans.Where(dp => dp.Name.Contains(options.Search));
+                deploymentPlans = deploymentPlans.Where(x => x.Name.Contains(options.Search));
             }
 
             var count = await deploymentPlans.CountAsync();
 
             var results = await deploymentPlans
+                .OrderBy(p => p.Name)
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
                 .ListAsync();
@@ -297,7 +298,7 @@ namespace OrchardCore.Deployment.Controllers
 
                 _session.Save(deploymentPlan);
 
-                _notifier.Success(H["Deployment plan updated successfully"]);
+                _notifier.Success(H["Deployment plan updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -323,7 +324,7 @@ namespace OrchardCore.Deployment.Controllers
 
             _session.Delete(deploymentPlan);
 
-            _notifier.Success(H["Deployment plan deleted successfully"]);
+            _notifier.Success(H["Deployment plan deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

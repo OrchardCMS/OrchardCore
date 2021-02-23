@@ -16,6 +16,7 @@
     @import "modules/admin/_tabs.scss";
     @import "modules/admin/_login.scss";
     @import "modules/admin/_codemirror.scss";
+    @import "modules/admin/_trumbowyg.scss";
     @import "modules/admin/_switch.scss";
     @import "modules/admin/_jquery-ui.scss";
 
@@ -25,7 +26,7 @@
 :root[data-theme='darkmode'] {
     @import "modules/theme/darkmode/_variables.scss";
     @import "../../node_modules/bootstrap/scss/bootstrap";
-    
+
     @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
     @import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
 
@@ -40,8 +41,10 @@
     @import "modules/admin/_tabs.scss";
     @import "modules/admin/_login.scss";
     @import "modules/admin/_codemirror.scss";
+    @import "modules/admin/_trumbowyg.scss";
     @import "modules/admin/_switch.scss";
     @import "modules/admin/_jquery-ui.scss";
 
     @import "modules/theme/darkmode/_bootswatch.scss";
 }
+ 

@@ -1,6 +1,6 @@
 @model CreatePartViewModel
 
-<h1>@RenderTitleSegments(T["New Content Part"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["New Content Part"])</h1></zone>
 
 <form asp-action="CreatePart">
     @Html.ValidationSummary()

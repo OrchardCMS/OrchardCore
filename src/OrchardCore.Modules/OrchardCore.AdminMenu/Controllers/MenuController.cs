@@ -66,7 +66,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                adminMenuList = adminMenuList.Where(dp => dp.Name.Contains(options.Search)).ToList();
+                adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             var count = adminMenuList.Count();
@@ -86,8 +86,8 @@ namespace OrchardCore.AdminMenu.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error when retrieving the list of admin menus");
-                _notifier.Error(H["Error when retrieving the list of admin menus"]);
+                _logger.LogError(ex, "Error when retrieving the list of admin menus.");
+                _notifier.Error(H["Error when retrieving the list of admin menus."]);
             }
 
             // Maintain previous route data when generating page links
@@ -108,6 +108,15 @@ namespace OrchardCore.AdminMenu.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
+        {
+            return RedirectToAction("List", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<IActionResult> Create()
@@ -188,7 +197,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
                 await _adminMenuService.SaveAsync(adminMenu);
 
-                _notifier.Success(H["Admin menu updated successfully"]);
+                _notifier.Success(H["Admin menu updated successfully."]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -217,7 +226,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (removed == 1)
             {
-                _notifier.Success(H["Admin menu deleted successfully"]);
+                _notifier.Success(H["Admin menu deleted successfully."]);
             }
             else
             {
@@ -280,7 +289,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            _notifier.Success(H["Admin menu toggled successfully"]);
+            _notifier.Success(H["Admin menu toggled successfully."]);
 
             return RedirectToAction(nameof(List));
         }

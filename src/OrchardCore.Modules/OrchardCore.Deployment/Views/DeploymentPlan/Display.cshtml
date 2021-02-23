@@ -2,9 +2,19 @@
 @inject IDeploymentManager DeploymentTargetManager
 @using OrchardCore.Deployment.Services
 @using Microsoft.AspNetCore.Routing
+@{
+    var orderUrl = Url.Action("UpdateOrder", "Step");
+}
 
-<h1>@RenderTitleSegments(T["Deployment Plan"])</h1>
+<script asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.js" debug-src="~/OrchardCore.Deployment/Scripts/steporder.js" asp-name="step-order" at="Foot" depends-on="sortable, jQuery"></script>
+<style asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.css" debug-src="~/OrchardCore.Deployment/Scripts/steporder.css" asp-name="step-order" at="Foot" depends-on="sortable, jQuery"></style>
 
+<zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plan"])</h1></zone>
+
+<div class="d-none" id="stepOrderUrl" data-url="@orderUrl"></div>
+<div class="d-none" id="deploymentPlanId" data-id="@Model.DeploymentPlan.Id"></div>
+<div class="d-none" id="stepOrderErrorMessage" data-message="@T["Error updating step order"]"></div>
+    
 <div class="card mb-3">
     <nav class="card-body bg-primary p-3">
         <div class="input-group input-group-sm w-lg-50 d-inline-flex">
@@ -23,20 +33,23 @@
 <form asp-action="DeploymentPlan">
     @if (Model.Items.Any())
     {
-        <ul class="list-group">
+        <ul class="list-group" id="stepOrder">
             @foreach (var item in Model.Items)
             {
                 item.DeploymentPlanId = Model.DeploymentPlan.Id;
 
                 <li class="list-group-item">
-                    @await DisplayAsync(item)
+                    <div class="d-flex">
+                        <div class="ui-sortable-handle cursor-pointer mr-2"><i class="fas fa-arrows-alt"></i></div>
+                        @await DisplayAsync(item)
+                    </div>
                 </li>
             }
         </ul>
     }
     else
     {
-        <div class="alert alert-info mb-1" role="alert">
+        <div class="alert alert-info mb-0" role="alert">
             @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
         </div>
     }
@@ -54,7 +67,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
                 </div>
                 <div id="cards" class="row">
                     @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
@@ -97,7 +110,7 @@
                                     <p>@target.Description</p>
                                 </div>
                                 <div class="card-footer text-muted text-xs-right">
-                                    <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" itemprop="UnsafeUrl">@T["Select"]</a>
+                                    <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" data-url-af="UnsafeUrl">@T["Select"]</a>
                                 </div>
                             </div>
                         </div>

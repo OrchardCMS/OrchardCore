@@ -7,7 +7,7 @@
 }
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["Manage Workflows"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Manage Workflows"])</h1></zone>
 
 <form asp-action="Index" id="workflows-types-form" method="post">
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
@@ -16,15 +16,10 @@
 
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
-            <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                    </div>
+            <div class="form-group mb-n1 has-search">
+                <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
+                    <i class="fa fa-search form-control-feedback"></i>
                     <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
-                    </div>
                 </div>
                 <div class="btn-group float-right">
                     <a asp-action="EditProperties" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-secondary float-right create" role="button">@T["Create Workflow"]</a>
@@ -32,7 +27,6 @@
             </div>
         </div>
     </div>
-
     <ul class="list-group with-checkbox">
         @if (Model.WorkflowTypes.Any())
         {
@@ -69,7 +63,7 @@
                         <div class="related">
                             <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-success btn-sm">@T["Properties"]</a>
-                            <a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                             <a asp-action="Duplicate" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-warning btn-sm">@T["Duplicate"]</a>
                         </div>
 
@@ -78,16 +72,16 @@
                             <label class="custom-control-label" for="itemIds-@entry.Id"></label>
                         </div>
                         <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
+                        @if (!entry.WorkflowType.IsEnabled)
+                        {
+                            <span class="badge text-danger"><i class="fas fa-power-off"></i> @T["Disabled"]</span>
+                        }
+                        @if (entry.WorkflowCount > 0)
+                        {
+                            <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge ta-badge"><i class="fa fa-list-ol"></i> @T.Plural(entry.WorkflowCount, "1 instance", "{0} instances")</a>
+                        }
 
                         <div class="metadata">
-                            @if (!entry.WorkflowType.IsEnabled)
-                            {
-                                <span class="badge badge-secondary">@T["Disabled"]</span>
-                            }
-                            @if (entry.WorkflowCount > 0)
-                            {
-                                <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge badge-info">@T.Plural(entry.WorkflowCount, "1 instance", "{0} instances")</a>
-                            }
                         </div>
                     </div>
                 </li>
@@ -96,7 +90,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no workflows for the moment."]
                 </div>
             </li>
@@ -161,7 +155,7 @@
 
             selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
             selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
-            
+
             selectedItems.text(selectedItemsCount + ' @T["selected"]');
             displayActionsOrFilters();
         });

@@ -47,6 +47,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             TemplateContext.GlobalMemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
             TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
+            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeMetadata>();
 
             Factory.RegisterTag<RenderBodyTag>("render_body");
             Factory.RegisterTag<RenderSectionTag>("render_section");
@@ -383,8 +384,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         internal static void AddAsyncFilters(this LiquidTemplateContext context, LiquidOptions options)
         {
-            context.Filters.EnsureCapacity(options.FilterRegistrations.Count);
-
             foreach (var registration in options.FilterRegistrations)
             {
                 context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>

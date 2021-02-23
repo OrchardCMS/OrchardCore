@@ -1,4 +1,4 @@
-@model dynamic
+@model GroupingViewModel
 @using OrchardCore.Mvc.Utilities
 @{
     TagBuilder tag = Tag(Model, "div");
@@ -10,7 +10,7 @@
 
     tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
-    var cardIdPrefix = $"card-{Model.ContentItem?.ContentItemId}-{Model.Grouping.Key}".HtmlClassify();
+    var cardIdPrefix = $"card-{Model.Identifier}-{Model.Grouping.Key}".HtmlClassify();
 }
 <div class="card">
     <div class="card-header" id="heading-@cardIdPrefix">

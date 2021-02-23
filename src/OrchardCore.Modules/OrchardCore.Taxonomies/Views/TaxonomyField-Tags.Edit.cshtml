@@ -1,16 +1,13 @@
-@model OrchardCore.Taxonomies.ViewModels.EditTaxonomyFieldViewModel
-@using OrchardCore.Taxonomies.Settings;
+@model OrchardCore.Taxonomies.ViewModels.EditTagTaxonomyFieldViewModel
+@using OrchardCore.Taxonomies.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
-@using Newtonsoft.Json.Linq;
-@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService;
 
 @{
     var taxonomySettings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
     var tagsSettings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldTagsEditorSettings>();
-    // Create a flat object for vue multi select with required properties.
-    var allTagTerms = JArray.FromObject(Model.TermEntries.Select(te => new { contentItemId = te.ContentItemId, selected = te.Selected, displayText = te.Term.DisplayText, isLeaf = te.IsLeaf }));
-
+ 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
 
@@ -23,7 +20,6 @@
     }
 
     var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
-    var termEntriesKey = Html.NameFor(x => x.TermEntries);
 
 }
 
@@ -49,12 +45,11 @@
 else
 {
     <div class="form-group">
-        <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-all-tag-terms="@allTagTerms" data-create-tag-url="@createTagUrl" data-term-entries-key="@termEntriesKey" data-content-item-id-key="@nameof(TermEntry.ContentItemId)" data-selected-key="@nameof(TermEntry.Selected)">
+        <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-all-tag-terms="@Model.TagTermEntries" data-create-tag-url="@createTagUrl">
 
             <div class="form-group">
                 <div class="w-xl-50">
-                    <input v-for="tagTerm in allTagTerms" v-bind:name="termEntriesContentItemName(tagTerm)" v-bind:value="tagTerm.contentItemId" type="hidden" />
-                    <input v-for="tagTerm in allTagTerms" v-bind:name="termEntriesSelectedName(tagTerm)" v-bind:value="tagTerm.selected" type="hidden" />
+                    <input asp-for="TermContentItemIds" type="hidden" v-model="selectedTagTermsIds" />
 
                     <vue-multiselect v-model="selectedTagTerms"
                                      placeholder="@T["Type to search"]"

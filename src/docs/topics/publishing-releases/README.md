@@ -12,7 +12,7 @@ You can copy the following checklist to a GitHub issue and tick everything as yo
 While the checklist is in a recommended order not every step depends strictly on the previous ones.  
 `<version name>` should be replaced with the current version, e.g. "1.0.0" or "rc2".
 
-```
+```markdown
 ### Prepare the project
 Do some housekeeping on GitHub in the [main repo](https://github.com/OrchardCMS/OrchardCore).
 

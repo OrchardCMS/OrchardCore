@@ -19,6 +19,8 @@ namespace OrchardCore.Taxonomies.Indexing
         public string ContentPart { get; set; }
         public string ContentField { get; set; }
         public string TermContentItemId { get; set; }
+        public bool Published { get; set; }
+        public bool Latest { get; set; }
     }
 
     public class TaxonomyIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
@@ -37,7 +39,8 @@ namespace OrchardCore.Taxonomies.Indexing
             context.For<TaxonomyIndex>()
                 .Map(contentItem =>
                 {
-                    if (!contentItem.IsPublished())
+                    // Remove index records of soft deleted items.
+                    if (!contentItem.Published && !contentItem.Latest)
                     {
                         return null;
                     }
@@ -49,7 +52,7 @@ namespace OrchardCore.Taxonomies.Indexing
                     }
 
                     // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+                    _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for Taxonomy fields
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
@@ -60,7 +63,7 @@ namespace OrchardCore.Taxonomies.Indexing
                         _ignoredTypes.Add(contentItem.ContentType);
                         return null;
                     }
-                    
+
                     var fieldDefinitions = contentTypeDefinition
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)))
                         .ToArray();
@@ -103,6 +106,8 @@ namespace OrchardCore.Taxonomies.Indexing
                                 ContentPart = fieldDefinition.PartDefinition.Name,
                                 ContentField = fieldDefinition.Name,
                                 TermContentItemId = termContentItemId,
+                                Published = contentItem.Published,
+                                Latest = contentItem.Latest
                             });
                         }
                     }
