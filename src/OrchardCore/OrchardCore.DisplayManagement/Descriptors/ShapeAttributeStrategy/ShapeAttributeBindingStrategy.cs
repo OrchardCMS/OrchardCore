@@ -128,7 +128,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
             if (String.Equals(parameter.Name, "DisplayAsync", StringComparison.OrdinalIgnoreCase))
             {
-                return displayContext.DisplayAsync;
+                return displayContext.DisplayHelper;
             }
 
             if (String.Equals(parameter.Name, "New", StringComparison.OrdinalIgnoreCase))

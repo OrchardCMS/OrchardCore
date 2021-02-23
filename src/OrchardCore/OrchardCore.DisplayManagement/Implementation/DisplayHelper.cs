@@ -73,7 +73,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             var context = new DisplayContext
             {
-                DisplayAsync = this,
+                DisplayHelper = this,
                 Value = shape,
                 ServiceProvider = _serviceProvider
             };

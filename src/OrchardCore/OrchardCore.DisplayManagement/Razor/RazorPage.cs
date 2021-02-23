@@ -244,14 +244,20 @@ namespace OrchardCore.DisplayManagement.Razor
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A new <see cref="TagBuilder"/>.</returns>
-        public TagBuilder Tag(dynamic shape)
+        public TagBuilder Tag(IShape shape)
         {
-            return Shape.GetTagBuilder(shape);
+            return shape.GetTagBuilder();
         }
 
-        public TagBuilder Tag(dynamic shape, string tag)
+        /// <summary>
+        /// Creates a <see cref="TagBuilder"/> to render a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <param name="tag">The tag name to use.</param>
+        /// <returns>A new <see cref="TagBuilder"/>.</returns>
+        public TagBuilder Tag(IShape shape, string tag)
         {
-            return Shape.GetTagBuilder(shape, tag);
+            return shape.GetTagBuilder(tag);
         }
 
         /// <summary>

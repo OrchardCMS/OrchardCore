@@ -204,45 +204,6 @@ namespace OrchardCore.DisplayManagement.Shapes
             return base.TryInvokeMember(binder, args, out result);
         }
 
-        public static TagBuilder GetTagBuilder(Shape shape, string defaultTagName = "span")
-        {
-            var tagName = defaultTagName;
-
-            // We keep this for backward compatibility
-            if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
-            {
-                tagName = valueString;
-            }
-
-            if (!String.IsNullOrEmpty(shape.TagName))
-            {
-                tagName = shape.TagName;
-            }
-
-            return GetTagBuilder(tagName, shape.Id, shape.Classes, shape.Attributes);
-        }
-
-        public static TagBuilder GetTagBuilder(string tagName, string id, IEnumerable<string> classes, IDictionary<string, string> attributes)
-        {
-            var tagBuilder = new TagBuilder(tagName);
-
-            if (attributes != null)
-            {
-                tagBuilder.MergeAttributes(attributes, false);
-            }
-
-            foreach (var cssClass in classes ?? Enumerable.Empty<string>())
-            {
-                tagBuilder.AddCssClass(cssClass);
-            }
-
-            if (!String.IsNullOrWhiteSpace(id))
-            {
-                tagBuilder.Attributes["id"] = id;
-            }
-            return tagBuilder;
-        }
-
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             return TryGetMemberImpl(binder.Name, out result);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
@@ -40,6 +41,44 @@ namespace OrchardCore.DisplayManagement
         public static ValueTask<IShape> AddAsync(this IShape shape, object item)
         {
             return shape.AddAsync(item, "");
+        }
+
+        public static TagBuilder GetTagBuilder(this IShape shape, string defaultTagName = "span")
+        {
+            var tagName = defaultTagName;
+
+            // We keep this for backward compatibility
+            if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
+            {
+                tagName = valueString;
+            }
+
+            if (!String.IsNullOrEmpty(shape.TagName))
+            {
+                tagName = shape.TagName;
+            }
+
+            var tagBuilder = new TagBuilder(tagName);
+
+            if (shape.Attributes != null)
+            {
+                tagBuilder.MergeAttributes(shape.Attributes, false);
+            }
+
+            if (shape.Classes != null)
+            {
+                foreach (var cssClass in shape.Classes)
+                {
+                    tagBuilder.AddCssClass(cssClass);
+                }
+            }
+
+            if (!String.IsNullOrWhiteSpace(shape.Id))
+            {
+                tagBuilder.Attributes["id"] = shape.Id;
+            }
+
+            return tagBuilder;
         }
 
         private static readonly JsonSerializer ShapeSerializer = new JsonSerializer
