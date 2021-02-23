@@ -146,9 +146,9 @@ namespace OrchardCore.ContentManagement.Display
                         var contentPartShape = shapeResult.Shape;
 
                         // Make the ContentPart name property available on the shape
-                        dynamic dynamicContentPartShape = contentPartShape;
-                        dynamicContentPartShape[partTypeName] = part.Content;
-                        dynamicContentPartShape["ContentItem"] = part.ContentItem;
+                        var dynamicContentPartShape = contentPartShape;
+                        dynamicContentPartShape.Properties[partTypeName] = part.Content;
+                        dynamicContentPartShape.Properties["ContentItem"] = part.ContentItem;
 
                         contentPartShape.Metadata.Alternates.Add(partTypeName);
                         contentPartShape.Metadata.Alternates.Add($"{contentType}__{partTypeName}");
@@ -222,8 +222,8 @@ namespace OrchardCore.ContentManagement.Display
             if (contentTypeDefinition == null)
                 return;
 
-            dynamic contentShape = context.Shape;
-            dynamic partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
+            var contentShape = context.Shape as IZoneHolding;
+            var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
                 Arguments.From(new
                 {
                     Identifier = contentItem.ContentItemId
@@ -255,14 +255,14 @@ namespace OrchardCore.ContentManagement.Display
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
-                dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit");
-                typePartShape.ContentPart = part;
-                typePartShape.ContentTypePartDefinition = typePartDefinition;
+                var typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit");
+                typePartShape.Properties["ContentPart"] = part;
+                typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
 
                 var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
 
                 await partsShape.AddAsync(typePartShape, partPosition);
-                partsShape[typePartDefinition.Name] = typePartShape;
+                partsShape.Properties[typePartDefinition.Name] = typePartShape;
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}";
                 context.DefaultPosition = partPosition;
@@ -322,8 +322,8 @@ namespace OrchardCore.ContentManagement.Display
             if (contentTypeDefinition == null)
                 return;
 
-            dynamic contentShape = context.Shape;
-            dynamic partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
+            var contentShape = context.Shape as IZoneHolding;
+            var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
                 Arguments.From(new
                 {
                     Identifier = contentItem.ContentItemId
@@ -355,13 +355,13 @@ namespace OrchardCore.ContentManagement.Display
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
-                dynamic typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit");
-                typePartShape.ContentPart = part;
-                typePartShape.ContentTypePartDefinition = typePartDefinition;
+                var typePartShape = await context.ShapeFactory.CreateAsync("ContentPart_Edit");
+                typePartShape.Properties["ContentPart"] = part;
+                typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
                 var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
 
                 await partsShape.AddAsync(typePartShape, partPosition);
-                partsShape[typePartDefinition.Name] = typePartShape;
+                partsShape.Properties[typePartDefinition.Name] = typePartShape;
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}:{partPosition}";
                 var partDisplayDrivers = _contentPartDisplayDriverResolver.GetEditorDrivers(partTypeName, typePartDefinition.Editor());
