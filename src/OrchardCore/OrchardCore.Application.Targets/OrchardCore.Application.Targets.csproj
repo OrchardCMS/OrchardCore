@@ -18,13 +18,18 @@
   </ItemGroup>
 
   <!--
-    You can inject nuget targets and props via nuget.
-    Say you have a package named “MyPackage”. NuGet will add an MSBuild import to
-    build/$targetFramework/$packageId.props and build/$targetFramework/$packageId.targets.
-    You can optionally leave out the $targetFramework subdirectory.
-    Caution: this will make NuGet treat your packages as compatible with “any” target framework.
-  -->
+    Add ".props" and ".targets" files in the package specific to the "Application.Targets" nuget package
 
+    When the OrchardCore.Application.Targets package is referenced, the .props and .targets
+    files present in the build folder will also be referenced by the generated .props and .targets
+    files in the obj folder of the referencing project.
+
+    See: https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package#include-msbuild-props-and-targets-in-a-package
+    * The files in the build folder will be applied to any TFM.
+    * The files in the build\$(TargetFramework) folder will be applied to only referencing projects targeting that TFM
+    * The files in the buildMultiTargeting folder will only be applied when the referencing project's $(TargetFramework)
+      is empty
+  -->
   <ItemGroup>
     <None Include="OrchardCore.Application.Targets.targets" Pack="true">
       <PackagePath>build\OrchardCore.Application.Targets.targets</PackagePath>

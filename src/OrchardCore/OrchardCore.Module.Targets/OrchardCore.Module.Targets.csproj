@@ -13,7 +13,21 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <!-- Add the OrchardCore.Module.props file in the package -->
+  <!--
+    Add the OrchardCore.Module.Targets .props and .target files to the package.
+    Also add the Package.Build.props which is necessary for an assembly to be considered an
+    OrchardCore module.
+
+    When the OrchardCore.Module.Targets package is referenced, the .props and .targets files
+    present in the build folder will also be referenced by the generated .props and .targets
+    files in the obj folder of the referencing project.
+
+    See: https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package#include-msbuild-props-and-targets-in-a-package
+    * The files in the build folder will be applied to any TFM.
+    * The files in the build\$(TargetFramework) folder will be applied to only referencing projects targeting that TFM
+    * The files in the buildMultiTargeting folder will only be applied when the referencing project's $(TargetFramework)
+      is empty
+  -->
   <ItemGroup>
     <None Include="OrchardCore.Module.Targets.props" Pack="true">
       <PackagePath>build\OrchardCore.Module.Targets.props</PackagePath>
