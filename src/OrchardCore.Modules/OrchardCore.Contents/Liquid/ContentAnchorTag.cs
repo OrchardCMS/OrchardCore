@@ -27,10 +27,10 @@ namespace OrchardCore.Contents.Liquid
             {
                 switch (argument.Name)
                 {
-                    case "admin_for": 
-                    case "display_for": 
-                    case "edit_for": 
-                    case "remove_for": 
+                    case "admin_for":
+                    case "display_for":
+                    case "edit_for":
+                    case "remove_for":
                     case "create_for": return true;
                 }
             }
@@ -69,17 +69,17 @@ namespace OrchardCore.Contents.Liquid
                         if (argument.Name.StartsWith("route_", StringComparison.OrdinalIgnoreCase))
                         {
                             routeValues ??= new Dictionary<string, string>();
-                            routeValues[argument.Name.Substring(6)] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                            routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                         }
                         else
                         {
                             customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                         }
+
                         break;
                 }
             }
 
-            ContentItemMetadata metadata = null;
             ContentItem contentItem = null;
 
             var urlHelper = urlHelperFactory.GetUrlHelper(viewContext);
@@ -89,7 +89,7 @@ namespace OrchardCore.Contents.Liquid
                 contentItem = displayFor;
                 var previewAspect = await contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
 
-                if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
+                if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
                 {
                     var previewUrl = previewAspect.PreviewUrl;
                     if (!previewUrl.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
@@ -108,7 +108,7 @@ namespace OrchardCore.Contents.Liquid
                 }
                 else
                 {
-                    metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(displayFor);
+                    var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(displayFor);
 
                     if (metadata.DisplayRouteValues != null)
                     {
@@ -127,7 +127,7 @@ namespace OrchardCore.Contents.Liquid
             else if (editFor != null)
             {
                 contentItem = editFor;
-                metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(editFor);
+                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(editFor);
 
                 if (metadata.EditorRouteValues != null)
                 {
@@ -142,7 +142,7 @@ namespace OrchardCore.Contents.Liquid
             else if (adminFor != null)
             {
                 contentItem = adminFor;
-                metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(adminFor);
+                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(adminFor);
 
                 if (metadata.AdminRouteValues != null)
                 {
@@ -160,7 +160,7 @@ namespace OrchardCore.Contents.Liquid
             else if (removeFor != null)
             {
                 contentItem = removeFor;
-                metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(removeFor);
+                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(removeFor);
 
                 if (metadata.RemoveRouteValues != null)
                 {
@@ -178,7 +178,7 @@ namespace OrchardCore.Contents.Liquid
             else if (createFor != null)
             {
                 contentItem = createFor;
-                metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(createFor);
+                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(createFor);
 
                 if (metadata.CreateRouteValues == null)
                 {
@@ -192,6 +192,11 @@ namespace OrchardCore.Contents.Liquid
 
                     customAttributes["href"] = urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues);
                 }
+            }
+
+            if (customAttributes.Count == 0)
+            {
+                return Completion.Normal;
             }
 
             var tagBuilder = new TagBuilder("a");
@@ -221,7 +226,7 @@ namespace OrchardCore.Contents.Liquid
             {
                 content.WriteTo(writer, (HtmlEncoder)encoder);
             }
-            else if (!string.IsNullOrEmpty(contentItem.DisplayText))
+            else if (!String.IsNullOrEmpty(contentItem.DisplayText))
             {
                 writer.Write(encoder.Encode(contentItem.DisplayText));
             }

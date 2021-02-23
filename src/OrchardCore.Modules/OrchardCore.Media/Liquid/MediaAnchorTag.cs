@@ -35,7 +35,6 @@ namespace OrchardCore.Media.Liquid
         public async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
         {
             var services = context.Services;
-            var viewContext = context.ViewContext;
             var mediaFileStore = services.GetRequiredService<IMediaFileStore>();
             var fileVersionProvider = services.GetRequiredService<IFileVersionProvider>();
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
@@ -43,7 +42,6 @@ namespace OrchardCore.Media.Liquid
             string assetHref = null;
             string appendVersion = null;
 
-            Dictionary<string, string> routeValues = null;
             Dictionary<string, string> customAttributes = null;
 
             foreach (var argument in argumentsList)
@@ -55,19 +53,13 @@ namespace OrchardCore.Media.Liquid
 
                     default:
 
-                        if (argument.Name.StartsWith("route_", StringComparison.OrdinalIgnoreCase))
-                        {
-                            routeValues ??= new Dictionary<string, string>();
-                            routeValues[argument.Name.Substring(6)] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
-                        }
-                        else
-                        {
-                            customAttributes ??= new Dictionary<string, string>();
-                            customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
-                        }
+                        customAttributes ??= new Dictionary<string, string>();
+                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+
                         break;
                 }
             }
+
             if (String.IsNullOrEmpty(assetHref))
             {
                 return Completion.Normal;

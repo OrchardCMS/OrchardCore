@@ -37,7 +37,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             string host = null;
             string protocol = null;
             string route = null;
-            string allRouteData = null;
             string href = null;
 
             Dictionary<string, string> routeValues = null;
@@ -56,20 +55,33 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     case "host": host = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "protocol": protocol = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "route": route = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "all-route-data": allRouteData = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+
+                    case "all_route_data":
+
+                        var allRouteData = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
+
+                        if (allRouteData is Dictionary<string, string> allRouteValues)
+                        {
+                            routeValues = allRouteValues;
+                        }
+
+                        break;
+
                     case "href": href = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
 
                     default:
+
                         if (argument.Name.StartsWith("route_"))
                         {
                             routeValues ??= new Dictionary<string, string>();
-                            routeValues[argument.Name.Substring(6)] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                            routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                         }
                         else
                         {
                             customAttributes ??= new Dictionary<string, string>();
                             customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                         }
+
                         break;
                 }
             }
@@ -89,7 +101,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             }
 
             // If "href" is already set, it means the user is attempting to use a normal anchor.
-            if (!string.IsNullOrEmpty(href))
+            if (!String.IsNullOrEmpty(href))
             {
                 if (action != null ||
                     controller != null ||
@@ -139,7 +151,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 tagBuilder = generator.GeneratePageLink(
                     viewContext,
-                    linkText: string.Empty,
+                    linkText: String.Empty,
                     pageName: page,
                     pageHandler: pageHandler,
                     protocol: protocol,
@@ -152,7 +164,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 tagBuilder = generator.GenerateRouteLink(
                     viewContext,
-                    linkText: string.Empty,
+                    linkText: String.Empty,
                     routeName: route,
                     protocol: protocol,
                     hostName: host,
@@ -164,7 +176,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 tagBuilder = generator.GenerateActionLink(
                    viewContext,
-                   linkText: string.Empty,
+                   linkText: String.Empty,
                    actionName: action,
                    controllerName: controller,
                    protocol: protocol,
