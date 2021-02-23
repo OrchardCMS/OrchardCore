@@ -54,6 +54,7 @@ namespace OrchardCore.Taxonomies
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<TaxonomyField>();
+                o.MemberAccessStrategy.Register<TermPartViewModel>();
                 o.MemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
                 o.MemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
             })

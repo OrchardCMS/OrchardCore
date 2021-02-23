@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Liquid;
 using OrchardCore.ContentManagement.Display.Placement;
+using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Liquid;
 
@@ -13,6 +14,12 @@ namespace OrchardCore.ContentManagement.Display
     {
         public static IServiceCollection AddContentManagementDisplay(this IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ContentItemViewModel>();
+                o.MemberAccessStrategy.Register<ContentPartViewModel>();
+            });
+
             services.TryAddTransient<IContentItemDisplayManager, ContentItemDisplayManager>();
             services.TryAddEnumerable(new ServiceDescriptor(typeof(IContentDisplayHandler), typeof(ContentItemDisplayCoordinator), ServiceLifetime.Scoped));
 
