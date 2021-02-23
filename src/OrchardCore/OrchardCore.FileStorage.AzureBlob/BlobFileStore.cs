@@ -89,12 +89,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             return null;
         }
-
-        // public async IEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
-        // {
-        //     return await GetDirectoryContentAsync(path, includeSubDirectories).ToListAsync();
-            
-        // }
         public IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
             if (includeSubDirectories)

@@ -21,6 +21,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             {
                 return;
             }
+
             options.Cookie.Path = _tenantPrefix;
             options.LoginPath = $"~/AzureAD/Account/SignIn/{AzureADDefaults.AuthenticationScheme}";
             options.LogoutPath = $"~/AzureAD/Account/SignOut/{AzureADDefaults.AuthenticationScheme}";

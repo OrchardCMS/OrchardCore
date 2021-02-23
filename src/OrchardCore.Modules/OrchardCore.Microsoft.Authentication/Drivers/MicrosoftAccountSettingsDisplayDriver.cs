@@ -1,7 +1,9 @@
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -19,19 +21,22 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly ILogger _logger;
 
         public MicrosoftAccountSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            ILogger<MicrosoftAccountSettingsDisplayDriver> logger)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _logger = logger;
         }
 
         public override async Task<IDisplayResult> EditAsync(MicrosoftAccountSettings settings, BuildEditorContext context)
@@ -47,8 +52,17 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 model.AppId = settings.AppId;
                 if (!string.IsNullOrWhiteSpace(settings.AppSecret))
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
-                    model.AppSecret = protector.Unprotect(settings.AppSecret);
+                    try
+                    {
+                        var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
+                        model.AppSecret = protector.Unprotect(settings.AppSecret);
+                    } 
+                    catch (CryptographicException)
+                    {
+                        _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
+                        model.AppSecret = string.Empty;
+                        model.HasDecryptionError = true;
+                    } 
                 }
                 else
                 {
