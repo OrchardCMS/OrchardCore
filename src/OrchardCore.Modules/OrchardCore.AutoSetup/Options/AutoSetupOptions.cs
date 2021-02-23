@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using System.Linq;
 
 namespace OrchardCore.AutoSetup.Options
 {
@@ -18,43 +18,34 @@ namespace OrchardCore.AutoSetup.Options
         public string AutoSetupPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the Root tenant setup options.
+        /// Gets or sets the Tenants to install.
         /// </summary>
-        public BaseTenantSetupOptions RootTenant { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Sub-tenants.
-        /// </summary>
-        public List<TenantSetupOptions> SubTenants { get; set; } = new List<TenantSetupOptions>();
+        public List<TenantSetupOptions> Tenants { get; set; } = new List<TenantSetupOptions>();
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var T = validationContext.GetService<IStringLocalizer<AutoSetupOptions>>();
-
-            if (RootTenant == null)
-            {
-                yield return new ValidationResult(T["The field {0} should not be null", "Root Tenant"], new[] { nameof(RootTenant) });
-                yield break;
-            }
 
             if (!string.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith("/"))
             {
                 yield return new ValidationResult(T["The field {0} should be empty or start with /", "Auto Setup Path"], new[] { nameof(AutoSetupPath) });
             }
 
-            foreach (var validationResult in RootTenant.Validate(validationContext))
+            if (Tenants == null || Tenants.Count == 0)
             {
-                yield return validationResult;
+                yield return new ValidationResult(T["The field {0} should contain at least one tenant", "Tenants"], new[] { nameof(Tenants) });
             }
 
-            if (SubTenants != null && SubTenants.Count > 0)
+            if (Tenants.Count(tenant => tenant.IsDefault) != 1)
             {
-                foreach (var tenant in SubTenants)
+                yield return new ValidationResult(T["The Single Default Tenant should be provided", "Tenants"], new[] { nameof(Tenants) });
+            }
+
+            foreach (var tenant in Tenants)
+            {
+                foreach (var validationResult in tenant.Validate(validationContext))
                 {
-                    foreach (var validationResult in tenant.Validate(validationContext))
-                    {
-                        yield return validationResult;
-                    }
+                    yield return validationResult;
                 }
             }
         }

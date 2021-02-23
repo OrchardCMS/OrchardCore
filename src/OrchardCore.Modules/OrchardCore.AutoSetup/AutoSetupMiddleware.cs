@@ -70,18 +70,18 @@ namespace OrchardCore.AutoSetup
         /// </returns>
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            var currentShellSettings = httpContext.RequestServices.GetRequiredService<ShellSettings>();
             var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
 
             _logger.LogInformation("AutoSetup is initializing the site");
-            if (await SetupTenantAsync(setupService, _setupOptions.Value.RootTenant, currentShellSettings))
+
+            foreach (var tenant in _setupOptions.Value.Tenants)
             {
-                foreach (var tenant in _setupOptions.Value.SubTenants)
+                if (!await SetupTenantAsync(
+                            setupService,
+                            tenant,
+                            tenant.IsDefault ? httpContext.RequestServices.GetRequiredService<ShellSettings>() : CreateTenantSettings(tenant)))
                 {
-                    if(!await SetupTenantAsync(setupService, tenant, CreateTenantSettings(tenant)))
-                    {
-                        break;
-                    }
+                    break;
                 }
 
                 httpContext.Response.Redirect("/");
@@ -99,7 +99,7 @@ namespace OrchardCore.AutoSetup
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public async Task<bool> SetupTenantAsync(ISetupService setupService, BaseTenantSetupOptions setupOptions, ShellSettings shellSettings)
+        public async Task<bool> SetupTenantAsync(ISetupService setupService, TenantSetupOptions setupOptions, ShellSettings shellSettings)
         {
             var setupContext = await GetSetupContextAsync(setupOptions, setupService, shellSettings);
 
@@ -152,18 +152,18 @@ namespace OrchardCore.AutoSetup
         /// <param name="setupService"> The setup service. </param>
         /// <param name="shellSettings"> The tenant shell settings. </param>
         /// <returns> The <see cref="SetupContext"/>. to setup the site </returns>
-        private static async Task<SetupContext> GetSetupContextAsync(BaseTenantSetupOptions options, ISetupService setupService, ShellSettings shellSettings)
+        private static async Task<SetupContext> GetSetupContextAsync(TenantSetupOptions options, ISetupService setupService, ShellSettings shellSettings)
         {
             var recipes = await setupService.GetSetupRecipesAsync();
 
             var recipe = recipes.SingleOrDefault(r => r.Name == options.RecipeName);
 
             var setupContext = new SetupContext
-                               {
-                                   Recipe = recipe,
-                                   ShellSettings = shellSettings,
-                                   Errors = new Dictionary<string,string>()
-                               };
+            {
+                Recipe = recipe,
+                ShellSettings = shellSettings,
+                Errors = new Dictionary<string, string>()
+            };
 
             setupContext.Properties[SetupConstants.AdminEmail] = options.AdminEmail;
             setupContext.Properties[SetupConstants.AdminPassword] = options.AdminPassword;
