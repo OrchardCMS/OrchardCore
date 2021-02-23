@@ -6,6 +6,8 @@ namespace OrchardCore.Layers.ViewModels
 {
     public class LayersIndexViewModel
     {
+        public bool AdminLayers { get; set; }
+        
         [BindNever]
         public string[] Zones { get; set; }
 

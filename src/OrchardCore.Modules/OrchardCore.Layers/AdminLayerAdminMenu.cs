@@ -6,11 +6,11 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Layers
 {
-    public class AdminMenu : INavigationProvider
+    public class AdminLayerAdminMenu : INavigationProvider
     {
         private readonly IStringLocalizer S;
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public AdminLayerAdminMenu(IStringLocalizer<AdminLayerAdminMenu> localizer)
         {
             S = localizer;
         }
@@ -25,18 +25,18 @@ namespace OrchardCore.Layers
             builder
                 .Add(S["Design"], design => design
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
-                            .Permission(Permissions.ManageLayers)
+                        .Add(S["Admin Zones"], S["Admin Zones"].PrefixPosition(), zones => zones
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AdminLayerSiteSettingsDisplayDriver.GroupId })
+                            .Permission(AdminLayerPermissions.ManageAdminLayers)
                             .LocalNav()
                         ))
-                    .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
-                        .Permission(Permissions.ManageLayers)
-                        .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
+                    .Add(S["Admin Widgets"], S["AdminWidgets"].PrefixPosition(), widgets => widgets
+                        .Permission(AdminLayerPermissions.ManageAdminLayers)
+                        .Action("Admin", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()
                     ));
 
             return Task.CompletedTask;
         }
-    } 
+    }    
 }

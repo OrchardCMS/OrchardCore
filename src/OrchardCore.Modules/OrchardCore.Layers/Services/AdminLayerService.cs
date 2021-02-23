@@ -12,12 +12,12 @@ using YesSql;
 
 namespace OrchardCore.Layers.Services
 {
-    public class LayerService : ILayerService
+    public class AdminLayerService : IAdminLayerService
     {
         private readonly ISession _session;
-        private readonly IDocumentManager<LayersDocument> _documentManager;
+        private readonly IDocumentManager<AdminLayersDocument> _documentManager;
 
-        public LayerService(ISession session, IDocumentManager<LayersDocument> documentManager)
+        public AdminLayerService(ISession session, IDocumentManager<AdminLayersDocument> documentManager)
         {
             _session = session;
             _documentManager = documentManager;
@@ -26,18 +26,18 @@ namespace OrchardCore.Layers.Services
         /// <summary>
         /// Loads the layers document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<LayersDocument> LoadLayersAsync() => _documentManager.GetOrCreateMutableAsync();
+        public Task<AdminLayersDocument> LoadLayersAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the layers document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<LayersDocument> GetLayersAsync() => _documentManager.GetOrCreateImmutableAsync();
+        public Task<AdminLayersDocument> GetLayersAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
             Expression<Func<ContentItemIndex, bool>> predicate)
         {
             return await _session
-                .Query<ContentItem, LayerMetadataIndex>()
+                .Query<ContentItem, AdminLayerMetadataIndex>()
                 .With(predicate)
                 .ListAsync();
         }
@@ -48,7 +48,7 @@ namespace OrchardCore.Layers.Services
             var allWidgets = await GetLayerWidgetsAsync(predicate);
 
             return allWidgets
-                .Select(x => x.As<LayerMetadata>())
+                .Select(x => x.As<AdminLayerMetadata>())
                 .Where(x => x != null)
                 .OrderBy(x => x.Position)
                 .ToList();

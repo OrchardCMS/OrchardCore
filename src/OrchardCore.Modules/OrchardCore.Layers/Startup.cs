@@ -62,6 +62,10 @@ namespace OrchardCore.Layers
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllLayersDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
+
+            // Registered as part of layers as the controller is shared between features.
+
+            services.AddScoped<IAdminLayerService, AdminLayerService>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -127,4 +131,68 @@ namespace OrchardCore.Layers
             ); 
         }
     }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllLayersDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllLayersDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
+        } 
+    }
+
+    [Feature("OrchardCore.AdminLayers")]
+
+    public class AdminLayersStartup : StartupBase
+    {       
+        private readonly AdminOptions _adminOptions;
+
+        public AdminLayersStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(AdminLayerFilter));
+            });
+
+            services.AddScoped<IDisplayDriver<ISite>, AdminLayerSiteSettingsDisplayDriver>();
+            services.AddContentPart<AdminLayerMetadata>();
+            services.AddScoped<IContentDisplayDriver, AdminLayerMetadataWelder>();
+            services.AddScoped<INavigationProvider, AdminLayerAdminMenu>();
+            services.AddSingleton<IIndexProvider, AdminLayerMetadataIndexProvider>();
+            services.AddScoped<IDataMigration, AdminLayerMigrations>();
+            services.AddScoped<IPermissionProvider, AdminLayerPermissions>();
+            // services.AddRecipeExecutionStep<AdminLayerStep>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var adminControllerName = typeof(AdminController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "AdminLayers.Index",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/AdminLayers",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Admin) }
+            );
+        }        
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+
+    public class AdminDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // services.AddTransient<IDeploymentSource, AllLayersDeploymentSource>();
+            // services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllLayersDeploymentStep>());
+            // services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
+        } 
+    }       
 }

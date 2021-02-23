@@ -5,13 +5,13 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Layers
 {
-    public class Permissions : IPermissionProvider
+    public class AdminLayerPermissions : IPermissionProvider
     {
-        public static readonly Permission ManageLayers = new Permission("ManageLayers", "Manage layers");
+        public static readonly Permission ManageAdminLayers = new Permission("ManageAdminLayers", "Manage admin layers");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(new[] { ManageLayers }.AsEnumerable());
+            return Task.FromResult(new[] { ManageAdminLayers }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -21,9 +21,9 @@ namespace OrchardCore.Layers
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageLayers }
+                    Permissions = new[] { ManageAdminLayers }
                 }
             };
         }
-    } 
+    }    
 }

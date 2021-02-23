@@ -19,7 +19,7 @@
                 <div id="cards" class="row">
                     @foreach (var thumbnail in thumbnails.OrderBy(t => t.Key))
                     {
-                        thumbnail.Value.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name = Model.Name, type = thumbnail.Key });
+                        thumbnail.Value.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name = Model.Name, type = thumbnail.Key, admin = Model.Admin });
                         <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
                             @await DisplayAsync(thumbnail.Value)
                         </div>

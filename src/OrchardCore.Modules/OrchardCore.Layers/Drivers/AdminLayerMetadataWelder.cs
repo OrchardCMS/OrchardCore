@@ -12,13 +12,14 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Layers.Drivers
 {
-    public class LayerMetadataWelder : ContentDisplayDriver
+    public class AdminLayerMetadataWelder : ContentDisplayDriver
     {
-        private readonly ILayerService _layerService;
+        private readonly IAdminLayerService _layerService;
         private readonly IStringLocalizer S;
-        public const string LayerPrefix = "LayerMetadata";
 
-        public LayerMetadataWelder(ILayerService layerService, IStringLocalizer<LayerMetadataWelder> stringLocalizer)
+        public const string LayerPrefix = "AdminLayerMetadata";
+
+        public AdminLayerMetadataWelder(IAdminLayerService layerService, IStringLocalizer<AdminLayerMetadataWelder> stringLocalizer)
         {
             _layerService = layerService;
             S = stringLocalizer;
@@ -35,11 +36,11 @@ namespace OrchardCore.Layers.Drivers
 
         public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
         {
-            var layerMetadata = model.As<LayerMetadata>();
+            var layerMetadata = model.As<AdminLayerMetadata>();
 
             if (layerMetadata == null)
             {
-                layerMetadata = new LayerMetadata();
+                layerMetadata = new AdminLayerMetadata();
 
                 // Are we loading an editor that requires layer metadata?
                 if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position)
@@ -53,7 +54,7 @@ namespace OrchardCore.Layers.Drivers
                 }
             }
 
-            return Initialize<LayerMetadataEditViewModel>("LayerMetadata_Edit", async shape =>
+            return Initialize<AdminLayerMetadataEditViewModel>("AdminLayerMetadata_Edit", async shape =>
             {
                 shape.Title = model.DisplayText;
                 shape.LayerMetadata = layerMetadata;
@@ -64,7 +65,7 @@ namespace OrchardCore.Layers.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
         {
-            var viewModel = new LayerMetadataEditViewModel();
+            var viewModel = new AdminLayerMetadataEditViewModel();
 
             await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
@@ -75,12 +76,12 @@ namespace OrchardCore.Layers.Drivers
 
             if (String.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
             {
-                context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Zone", S["Zone is missing"]);
+                context.Updater.ModelState.AddModelError(Prefix, "AdminLayerMetadata.Zone", S["Zone is missing"]);
             }
 
             if (String.IsNullOrEmpty(viewModel.LayerMetadata.Layer))
             {
-                context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Layer", S["Layer is missing"]);
+                context.Updater.ModelState.AddModelError(Prefix, "AdminLayerMetadata.Layer", S["Layer is missing"]);
             }
 
             if (context.Updater.ModelState.IsValid)

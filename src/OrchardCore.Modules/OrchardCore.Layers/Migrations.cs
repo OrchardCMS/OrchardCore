@@ -58,7 +58,7 @@ namespace OrchardCore.Layers
 
         public async Task<int> UpdateFrom2Async()
         {
-            var layers = await _layerService.LoadLayersAsync();
+            var layers = await _layerService.GetLayersAsync();
             foreach (var layer in layers.Layers)
             {
                 layer.LayerRule = new Rule();
@@ -71,7 +71,7 @@ namespace OrchardCore.Layers
                 #pragma warning restore 0618
             }
 
-            await _layerService.UpdateAsync(layers);
+            await _layerService.UpdateAsync(layers.Layers);
             
             var layerFeature = _typeFeatureProvider.GetFeatureForDependency(GetType());
             

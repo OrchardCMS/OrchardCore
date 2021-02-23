@@ -4,16 +4,18 @@
     {
         { "area", "OrchardCore.Layers" },
         { "controller", "LayerRule" },
-        { "name", Model.Name }
+        { "name", Model.Name },
+        { "admin", Model.AdminLayers }
     };
     ViewData["ConditionRouteValues"] = routeValues;
 
-    var orderUrl = Url.Action("UpdateOrder", "LayerRule");
+    var orderUrl = Url.Action("UpdateOrder", "LayerRule", new { admin = Model.AdminLayers });
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
 
 <form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="AdminLayers"/>
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
         <input readonly="readonly" asp-for="Name" class="form-control" type="text" />
@@ -35,4 +37,4 @@
     <input class="button mt-3" type="submit" value="@T["Save"]" />
 </form>
 
-@await DisplayAsync(await New.ConditionsModal(Thumbnails: Model.Thumbnails, Name: Model.Name))
+@await DisplayAsync(await New.ConditionsModal(Thumbnails: Model.Thumbnails, Name: Model.Name, Admin: Model.AdminLayers))

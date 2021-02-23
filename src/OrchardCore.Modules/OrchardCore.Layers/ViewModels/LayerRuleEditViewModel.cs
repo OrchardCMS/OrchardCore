@@ -2,6 +2,7 @@ namespace OrchardCore.Layers.ViewModels
 {
     public class LayerRuleEditViewModel
     {
+        public bool Admin { get; set; }
         public string Name { get; set; }
         public string ConditionGroupId { get; set; }
         public string ConditionId { get; set; }

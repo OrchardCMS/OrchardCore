@@ -24,9 +24,9 @@ using OrchardCore.Rules;
 
 namespace OrchardCore.Layers.Services
 {
-    public class LayerFilter : IAsyncResultFilter
+    public class AdminLayerFilter : IAsyncResultFilter
     {
-        private const string WidgetsKey = "OrchardCore.Layers.LayerFilter:AllWidgets";
+        private const string WidgetsKey = "OrchardCore.Layers.AdminLayerFilter:AllWidgets";
 
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -35,11 +35,11 @@ namespace OrchardCore.Layers.Services
         private readonly IMemoryCache _memoryCache;
         private readonly IThemeManager _themeManager;
         private readonly IAdminThemeService _adminThemeService;
-        private readonly ILayerService _layerService;
+        private readonly IAdminLayerService _layerService;
         private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
 
-        public LayerFilter(
-            ILayerService layerService,
+        public AdminLayerFilter(
+            IAdminLayerService layerService,
             ILayoutAccessor layoutAccessor,
             IContentItemDisplayManager contentItemDisplayManager,
             IUpdateModelAccessor modelUpdaterAccessor,
@@ -62,25 +62,25 @@ namespace OrchardCore.Layers.Services
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            // Should only run on the front-end for a full view
+            // Should only run on the admin for a full view
             if ((context.Result is ViewResult || context.Result is PageResult) &&
-                !AdminAttribute.IsApplied(context.HttpContext))
+                AdminAttribute.IsApplied(context.HttpContext))
             {
                 // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.
                 // In this case don't render Layers.
-                var selectedTheme = (await _themeManager.GetThemeAsync())?.Id;
-                var adminTheme = await _adminThemeService.GetAdminThemeNameAsync();
-                if (selectedTheme == adminTheme)
-                {
-                    await next.Invoke();
-                    return;
-                }
+                // var selectedTheme = (await _themeManager.GetThemeAsync())?.Id;
+                // var adminTheme = await _adminThemeService.GetAdminThemeNameAsync();
+                // if (selectedTheme == adminTheme)
+                // {
+                //     await next.Invoke();
+                //     return;
+                // }
 
                 var layerState = await _layerStateManager.GetOrCreateImmutableAsync();
 
-                if (!_memoryCache.TryGetValue<CacheEntry>(WidgetsKey, out var cacheEntry) || cacheEntry.Identifier != layerState.Identifier)
+                if (!_memoryCache.TryGetValue<AdminCacheEntry>(WidgetsKey, out var cacheEntry) || cacheEntry.Identifier != layerState.Identifier)
                 {
-                    cacheEntry = new CacheEntry()
+                    cacheEntry = new AdminCacheEntry()
                     {
                         Identifier = layerState.Identifier,
                         Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
@@ -122,27 +122,27 @@ namespace OrchardCore.Layers.Services
 
                     var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 
-                    widgetContent.Classes.Add("widget");
-                    widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+                    // widgetContent.Classes.Add("widget");
+                    // widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
-                    var wrapper = new WidgetWrapper
-                    {
-                        Widget = widget.ContentItem,
-                        Content = widgetContent
-                    };
+                    // var wrapper = new WidgetWrapper
+                    // {
+                    //     Widget = widget.ContentItem,
+                    //     Content = widgetContent
+                    // };
 
-                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
-                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
+                    // wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+                    // wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
 
                     var contentZone = layout.Zones[widget.Zone];
 
                     if (contentZone is ZoneOnDemand zoneOnDemand)
                     {
-                        await zoneOnDemand.AddAsync(wrapper);
+                        await zoneOnDemand.AddAsync(widgetContent);
                     }
                     else if (contentZone is Shape shape)
                     {
-                        shape.Add(wrapper);
+                        shape.Add(widgetContent);
                     }
                 }
             }
@@ -150,7 +150,7 @@ namespace OrchardCore.Layers.Services
             await next.Invoke();
         }
 
-        internal class CacheEntry : Document
+        internal class AdminCacheEntry : Document
         {
             public IEnumerable<ILayerMetadata> Widgets { get; set; }
         }

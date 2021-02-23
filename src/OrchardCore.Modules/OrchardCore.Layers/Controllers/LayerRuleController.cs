@@ -23,6 +23,7 @@ namespace OrchardCore.Layers.Controllers
         private readonly IDisplayManager<Condition> _displayManager;
         private readonly IEnumerable<IConditionFactory> _factories;
         private readonly ILayerService _layerService;
+        private readonly IAdminLayerService _adminLayerService;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
@@ -35,6 +36,7 @@ namespace OrchardCore.Layers.Controllers
             IDisplayManager<Condition> displayManager,
             IEnumerable<IConditionFactory> factories,
             ILayerService layerService,
+            IAdminLayerService adminLayerService,
             IConditionIdGenerator conditionIdGenerator,
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -46,6 +48,7 @@ namespace OrchardCore.Layers.Controllers
             _factories = factories;
             _authorizationService = authorizationService;
             _layerService = layerService;
+            _adminLayerService = adminLayerService;
             _conditionIdGenerator = conditionIdGenerator;
             _siteService = siteService;
             _notifier = notifier;
@@ -54,14 +57,17 @@ namespace OrchardCore.Layers.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Create(string queryType, string name, string type, string conditionGroupId)
+        public async Task<IActionResult> Create(string queryType, string name, string type, string conditionGroupId, bool admin)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.GetLayersAsync();
+            var layers = admin
+                ? await _adminLayerService.GetLayersAsync()
+                : await _layerService.GetLayersAsync();
+                
             var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
             if (layer == null)
@@ -86,6 +92,7 @@ namespace OrchardCore.Layers.Controllers
             var model = new LayerRuleCreateViewModel
             {
                 Name = name,
+                Admin = admin,
                 ConditionGroupId = conditionGroup.ConditionId,
                 ConditionType = type,
                 Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true)
@@ -102,7 +109,10 @@ namespace OrchardCore.Layers.Controllers
                 return Forbid();
             }
 
-            var layers = await _layerService.LoadLayersAsync();
+            var layers = model.Admin
+                ? await _adminLayerService.LoadLayersAsync()
+                : await _layerService.LoadLayersAsync();
+
             var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
 
             if (layer == null)
@@ -130,7 +140,10 @@ namespace OrchardCore.Layers.Controllers
             {
                 _conditionIdGenerator.GenerateUniqueId(condition);
                 conditionGroup.Conditions.Add(condition);
-                await _layerService.UpdateAsync(layers);
+                await (model.Admin
+                    ? _adminLayerService.UpdateAsync(layers.Layers)
+                    : _layerService.UpdateAsync(layers.Layers));
+
                 _notifier.Success(H["Condition added successfully."]);
                 return RedirectToAction("Edit", "Admin", new { name = model.Name });
             }
@@ -141,14 +154,17 @@ namespace OrchardCore.Layers.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(string name, string conditionId)
+        public async Task<IActionResult> Edit(string name, string conditionId, bool admin)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.GetLayersAsync();
+            var layers = admin
+                ? await _adminLayerService.GetLayersAsync()
+                : await _layerService.GetLayersAsync();
+                
             var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
             if (layer == null)
@@ -165,6 +181,7 @@ namespace OrchardCore.Layers.Controllers
 
             var model = new LayerRuleEditViewModel
             {
+                Admin = admin,
                 Name = name,
                 Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false)
             };
@@ -180,7 +197,10 @@ namespace OrchardCore.Layers.Controllers
                 return Forbid();
             }
 
-            var layers = await _layerService.LoadLayersAsync();
+            var layers = model.Admin
+                ? await _adminLayerService.LoadLayersAsync()
+                : await _layerService.LoadLayersAsync();
+
             var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
 
             if (layer == null)
@@ -199,7 +219,10 @@ namespace OrchardCore.Layers.Controllers
 
             if (ModelState.IsValid)
             {
-                await _layerService.UpdateAsync(layers);
+                await (model.Admin 
+                    ? _adminLayerService.UpdateAsync(layers.Layers)
+                    : _layerService.UpdateAsync(layers.Layers));
+
                 _notifier.Success(H["Condition updated successfully."]);
                 return RedirectToAction("Edit", "Admin", new { name = model.Name });
             }
@@ -212,14 +235,17 @@ namespace OrchardCore.Layers.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(string name, string conditionId)
+        public async Task<IActionResult> Delete(string name, string conditionId, bool admin)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.LoadLayersAsync();
+            var layers = admin 
+                ? await _adminLayerService.LoadLayersAsync()
+                : await _layerService.LoadLayersAsync();
+
             var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
             if (layer == null)
@@ -236,21 +262,26 @@ namespace OrchardCore.Layers.Controllers
             }
 
             conditionParent.Conditions.Remove(condition);
-            await _layerService.UpdateAsync(layers);
+            await (admin 
+                ? _adminLayerService.UpdateAsync(layers.Layers)
+                : _layerService.UpdateAsync(layers.Layers));
 
             _notifier.Success(H["Condition deleted successfully."]);
 
-            return RedirectToAction("Edit", "Admin", new { name = name });
+            return RedirectToAction("Edit", "Admin", new { name = name, admin = admin });
         }
 
-        public async Task<IActionResult> UpdateOrder(string name, string conditionId, string toConditionId, int toPosition)
+        public async Task<IActionResult> UpdateOrder(string name, string conditionId, string toConditionId, int toPosition, bool admin)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.LoadLayersAsync();
+            var layers = admin 
+                ? await _adminLayerService.LoadLayersAsync()
+                : await _layerService.LoadLayersAsync();
+
             var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
             if (layer == null)
@@ -270,7 +301,9 @@ namespace OrchardCore.Layers.Controllers
             conditionParent.Conditions.Remove(condition);
             toGroupCondition.Conditions.Insert(toPosition, condition);
 
-            await _layerService.UpdateAsync(layers);   
+            await (admin 
+                ? _adminLayerService.UpdateAsync(layers.Layers)
+                : _layerService.UpdateAsync(layers.Layers));
 
             return Ok();  
         }

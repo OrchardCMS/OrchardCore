@@ -29,6 +29,7 @@ namespace OrchardCore.Layers.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly ISiteService _siteService;
         private readonly ILayerService _layerService;
+        private readonly IAdminLayerService _adminLayerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -46,6 +47,7 @@ namespace OrchardCore.Layers.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             ISiteService siteService,
             ILayerService layerService,
+            IAdminLayerService adminLayerService,
             IAuthorizationService authorizationService,
             ISession session,
             IUpdateModelAccessor updateModelAccessor,
@@ -62,6 +64,7 @@ namespace OrchardCore.Layers.Controllers
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
             _layerService = layerService;
+            _adminLayerService = adminLayerService;
             _authorizationService = authorizationService;
             _session = session;
             _updateModelAccessor = updateModelAccessor;
@@ -75,21 +78,40 @@ namespace OrchardCore.Layers.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index()
+        public Task<IActionResult> Admin()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            // Used to provide a different url such that the Admin Layers menu entry doesn't collide with the Layers ones
+            return Index(true);
+        }
+
+        public async Task<IActionResult> Index(bool adminLayers)
+        {
+            if (!adminLayers && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.GetLayersAsync();
-            var widgets = await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
+            if (adminLayers && !await _authorizationService.AuthorizeAsync(User, AdminLayerPermissions.ManageAdminLayers))
+            {
+                return Forbid();
+            }            
 
-            var model = new LayersIndexViewModel { Layers = layers.Layers.ToList() };
+            var layers = adminLayers 
+                ? await _adminLayerService.GetLayersAsync()
+                : await _layerService.GetLayersAsync();
+            
+            var widgets = adminLayers 
+                ? await _adminLayerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true)
+                : await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
+
+            var model = new LayersIndexViewModel { Layers = layers.Layers, AdminLayers = adminLayers };
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            model.Zones = siteSettings.As<LayerSettings>().Zones ?? Array.Empty<string>();
+            model.Zones = adminLayers
+                ? siteSettings.As<AdminLayerSettings>().Zones ?? Array.Empty<string>()
+                : siteSettings.As<LayerSettings>().Zones ?? Array.Empty<string>();
+
             model.Widgets = new Dictionary<string, List<dynamic>>();
 
             foreach (var widget in widgets.OrderBy(x => x.Position))
@@ -104,39 +126,61 @@ namespace OrchardCore.Layers.Controllers
                 list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
             }
 
-            return View(model);
+            return View("Index", model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Index(LayersIndexViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            if (!model.AdminLayers && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
+            }
+
+            if (model.AdminLayers && !await _authorizationService.AuthorizeAsync(User, AdminLayerPermissions.ManageAdminLayers))
+            {
+                return Forbid();
+            }            
+
+            if (model.AdminLayers)
+            {
+                return RedirectToAction("Admin");
             }
 
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(bool adminLayers)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            if (!adminLayers && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            return View();
+            if (adminLayers && !await _authorizationService.AuthorizeAsync(User, AdminLayerPermissions.ManageAdminLayers))
+            {
+                return Forbid();
+            }
+
+            return View(new LayerEditViewModel { AdminLayers = adminLayers });
         }
 
         [HttpPost, ActionName("Create")]
         public async Task<IActionResult> CreatePost(LayerEditViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            if (!model.AdminLayers && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.LoadLayersAsync();
+            if (model.AdminLayers && !await _authorizationService.AuthorizeAsync(User, AdminLayerPermissions.ManageAdminLayers))
+            {
+                return Forbid();
+            }
+
+            var layers = model.AdminLayers 
+                ? await _adminLayerService.LoadLayersAsync()
+                : await _layerService.LoadLayersAsync();
 
             ValidateViewModel(model, layers, isNew: true);
 
@@ -153,22 +197,33 @@ namespace OrchardCore.Layers.Controllers
 
                 layers.Layers.Add(layer);
 
-                await _layerService.UpdateAsync(layers);
+                await (model.AdminLayers
+                    ? _adminLayerService.UpdateAsync(layers.Layers)
+                    : _layerService.UpdateAsync(layers.Layers));
 
-                return RedirectToAction("Index");
+                return model.AdminLayers 
+                    ? RedirectToAction("Admin")
+                    : RedirectToAction("Index");                
             }
 
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(string name)
+        public async Task<IActionResult> Edit(string name, bool adminLayers)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            if (!adminLayers && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.GetLayersAsync();
+            if (adminLayers && !await _authorizationService.AuthorizeAsync(User, AdminLayerPermissions.ManageAdminLayers))
+            {
+                return Forbid();
+            }
+
+            var layers = adminLayers
+                ? await _adminLayerService.GetLayersAsync()
+                : await _layerService.GetLayersAsync();
 
             var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
@@ -191,6 +246,7 @@ namespace OrchardCore.Layers.Controllers
 
             var model = new LayerEditViewModel
             {
+                AdminLayers = adminLayers,
                 Name = layer.Name,
                 Description = layer.Description,
                 LayerRule = rule,
@@ -203,12 +259,19 @@ namespace OrchardCore.Layers.Controllers
         [HttpPost, ActionName("Edit")]
         public async Task<IActionResult> EditPost(LayerEditViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            if (!model.AdminLayers && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.LoadLayersAsync();
+            if (model.AdminLayers && !await _authorizationService.AuthorizeAsync(User, AdminLayerPermissions.ManageAdminLayers))
+            {
+                return Forbid();
+            }
+
+            var layers = model.AdminLayers
+                ? await _adminLayerService.LoadLayersAsync()
+                : await _layerService.LoadLayersAsync();
 
             ValidateViewModel(model, layers, isNew: false);
 
@@ -224,23 +287,34 @@ namespace OrchardCore.Layers.Controllers
                 layer.Name = model.Name;
                 layer.Description = model.Description;
 
-                await _layerService.UpdateAsync(layers);
+                await (model.AdminLayers
+                    ? _adminLayerService.UpdateAsync(layers.Layers)
+                    : _layerService.UpdateAsync(layers.Layers));
 
-                return RedirectToAction("Index");
+                return model.AdminLayers 
+                    ? RedirectToAction("Admin")
+                    : RedirectToAction("Index"); 
             }
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(string name)
+        public async Task<IActionResult> Delete(string name, bool adminLayers)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            if (!adminLayers && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.LoadLayersAsync();
+            if (adminLayers && !await _authorizationService.AuthorizeAsync(User, AdminLayerPermissions.ManageAdminLayers))
+            {
+                return Forbid();
+            }
+
+            var layers = adminLayers
+                ? await _adminLayerService.LoadLayersAsync()
+                : await _layerService.LoadLayersAsync();
 
             var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
@@ -249,12 +323,17 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var widgets = await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
+            var widgets = adminLayers 
+                ? await _adminLayerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true)
+                : await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
 
             if (!widgets.Any(x => String.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
             {
                 layers.Layers.Remove(layer);
-                await _layerService.UpdateAsync(layers);
+                await (adminLayers 
+                    ? _adminLayerService.UpdateAsync(layers.Layers)
+                    : _layerService.UpdateAsync(layers.Layers));
+
                 _notifier.Success(H["Layer deleted successfully."]);
             }
             else
@@ -262,16 +341,23 @@ namespace OrchardCore.Layers.Controllers
                 _notifier.Error(H["The layer couldn't be deleted: you must remove any associated widgets first."]);
             }
 
-            return RedirectToAction("Index");
+            return adminLayers 
+                ? RedirectToAction("Admin")
+                : RedirectToAction("Index"); 
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdatePosition(string contentItemId, double position, string zone)
+        public async Task<IActionResult> UpdatePosition(string contentItemId, double position, string zone, bool adminLayers)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            if (!adminLayers && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return StatusCode(401);
             }
+
+            if (adminLayers && !await _authorizationService.AuthorizeAsync(User, AdminLayerPermissions.ManageAdminLayers))
+            {
+                return StatusCode(401);
+            }            
 
             // Load the latest version first if any
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);

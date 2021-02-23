@@ -1,6 +1,9 @@
 @using System.Globalization;
-@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.Entities
+@using OrchardCore.ContentManagement
 @using OrchardCore.Layers.Drivers
+@using OrchardCore.Layers.Models
 @model OrchardCore.Layers.ViewModels.LayersIndexViewModel
 
 @inject IContentManager ContentManager
@@ -8,8 +11,9 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");   
 }
+
 <script asp-name="jquery-ui" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Widgets and Layers"])</h1></zone>
@@ -32,7 +36,7 @@
         <form asp-action="Index">
             @if (Model.Zones == null || !Model.Zones.Any())
             {
-                <p class="alert alert-warning">@T["Please <a href=\"{0}\">define the available zones</a> before adding Widgets", Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })]</p>
+                <p class="alert alert-warning">@T["Please <a href=\"{0}\">define the available zones</a> before adding Widgets", @Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = Model.AdminLayers ? AdminLayerSiteSettingsDisplayDriver.GroupId : LayerSiteSettingsDisplayDriver.GroupId })]</p>
             }
             else
             {
@@ -51,8 +55,9 @@
                                     <ul class="list-group zones">
                                         @foreach (var contentItemSummary in Model.Widgets[zone])
                                         {
-                                            contentItemSummary.Tags.Add(Html.Raw("<span class=\"badge ta-badge align-text-top font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
-                                            maxPosition = Math.Max(maxPosition, (double)contentItemSummary.ContentItem.Content.LayerMetadata.Position);
+                                            var layerMetadata = Model.AdminLayers ? (ILayerMetadata)((ContentItem)contentItemSummary.ContentItem).As<AdminLayerMetadata>() : (ILayerMetadata)((ContentItem)contentItemSummary.ContentItem).As<LayerMetadata>();   
+                                            contentItemSummary.Tags.Add(Html.Raw("<span class=\"badge ta-badge align-text-top font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + layerMetadata.Layer + "</span>"));
+                                            maxPosition = Math.Max(maxPosition, (double)layerMetadata.Position);
 
                                             <text>
                                                 <li class="list-group-item">
@@ -62,8 +67,8 @@
                                                     <input type="hidden"
                                                            class="layer-metadata"
                                                            data-zone="@zone"
-                                                           data-layer="@contentItemSummary.ContentItem.Content.LayerMetadata.Layer"
-                                                           data-position="@contentItemSummary.ContentItem.Content.LayerMetadata.Position.ToString(CultureInfo.InvariantCulture)"
+                                                           data-layer="@layerMetadata.Layer"
+                                                           data-position="@layerMetadata.Position.ToString(CultureInfo.InvariantCulture)"
                                                            data-content-item-id="@contentItemSummary.ContentItem.ContentItemId" />
                                                 </li>
                                             </text>
@@ -83,8 +88,19 @@
                                             var contentItem = await ContentManager.NewAsync(type.Name);
                                             var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
                                             createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
-                                            createRoute["LayerMetadata.Zone"] = zone;
-                                            createRoute["LayerMetadata.Position"] = maxPosition + 1;
+                                            if (Model.AdminLayers)
+                                            {
+                                                createRoute["AdminLayerMetadata.Zone"] = zone;
+                                                createRoute["AdminLayerMetadata.Position"] = maxPosition + 1;
+
+                                            }
+                                            else
+                                            {
+                                                createRoute["LayerMetadata.Zone"] = zone;
+                                                createRoute["LayerMetadata.Position"] = maxPosition + 1;
+
+                                            }
+
                                             <a class="dropdown-item add-list-widget btn-sm"
                                                data-widget-type="@type.Name"
                                                data-zone="@zone"
@@ -119,8 +135,8 @@
                                     <label class="custom-control-label" for="@layer.Name">@layer.Name</label>
                                 </div>
                                 <div>
-                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>
-                                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name, adminLayers = Model.AdminLayers })">@T["Edit"]</a>
+                                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name, adminLayers = Model.AdminLayers })" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                                 </div>
                             </div>
                             <div>
@@ -133,10 +149,10 @@
         </div>
         @if (!Model.Layers.Any())
         {
-            <p class="alert alert-warning">@T["Please <a href=\"{0}\">create a layer</a> before adding Widgets", Url.Action("Create", "Admin", new { area = "OrchardCore.Layers" })]</p>
+            <p class="alert alert-warning">@T["Please <a href=\"{0}\">create a layer</a> before adding Widgets", Url.Action("Create", "Admin", new { area = "OrchardCore.Layers", adminLayers = Model.AdminLayers })]</p>
         }
 
-        <a class="button btn-sm" href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Layers" })">@T["Add"]</a>
+        <a class="button btn-sm" href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Layers", adminLayers = Model.AdminLayers })">@T["Add"]</a>
     </div>
 </div>
 

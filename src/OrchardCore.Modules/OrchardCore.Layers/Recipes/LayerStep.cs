@@ -42,7 +42,7 @@ namespace OrchardCore.Layers.Recipes
 
             var model = context.Step.ToObject<LayerStepModel>();
 
-            var allLayers = await _layerService.LoadLayersAsync();
+            var allLayers = await _layerService.GetLayersAsync();
 
             var unknownTypes = new List<string>();
             var factories = _factories.ToDictionary(x => x.Name);
@@ -122,7 +122,7 @@ namespace OrchardCore.Layers.Recipes
                 throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
             }
 
-            await _layerService.UpdateAsync(allLayers);
+            await _layerService.UpdateAsync(allLayers.Layers);
         }
     }
 

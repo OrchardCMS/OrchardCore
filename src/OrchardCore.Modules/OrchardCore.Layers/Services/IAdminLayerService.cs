@@ -8,17 +8,17 @@ using OrchardCore.Layers.Models;
 
 namespace OrchardCore.Layers.Services
 {
-    public interface ILayerService
+    public interface IAdminLayerService
     {
         /// <summary>
         /// Loads the layers document from the store for updating and that should not be cached.
         /// </summary>
-        Task<LayersDocument> LoadLayersAsync();
+        Task<AdminLayersDocument> LoadLayersAsync();
 
         /// <summary>
         /// Gets the layers document from the cache for sharing and that should not be updated.
         /// </summary>
-        Task<LayersDocument> GetLayersAsync();
+        Task<AdminLayersDocument> GetLayersAsync();
 
         Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate);
         Task<IEnumerable<ILayerMetadata>> GetLayerWidgetsMetadataAsync(Expression<Func<ContentItemIndex, bool>> predicate);
