@@ -145,9 +145,8 @@ namespace OrchardCore.Resources.Liquid
                 {
                     var buffer = new HtmlContentBuilder();
                     resourceManager.RenderLocalScript(setting, buffer);
-                    var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
-                    buffer.WriteTo(writer, htmlEncoder);
+                    buffer.WriteTo(writer, (HtmlEncoder)encoder);
                 }
             }
             else if (!String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))
@@ -296,9 +295,8 @@ namespace OrchardCore.Resources.Liquid
                     {
                         var buffer = new HtmlContentBuilder();
                         resourceManager.RenderLocalScript(setting, buffer);
-                        var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
-                        buffer.WriteTo(writer, htmlEncoder);
+                        buffer.WriteTo(writer, (HtmlEncoder)encoder);
                     }
 
                 }

@@ -18,6 +18,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
@@ -30,6 +31,7 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
+using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
@@ -61,6 +63,8 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IAnchorTag, MediaAnchorTag>();
+
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();

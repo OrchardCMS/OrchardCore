@@ -107,9 +107,8 @@ namespace OrchardCore.Resources.Liquid
                 {
                     var buffer = new HtmlContentBuilder();
                     resourceManager.RenderLocalStyle(setting, buffer);
-                    var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
-                    buffer.WriteTo(writer, htmlEncoder);
+                    buffer.WriteTo(writer, (HtmlEncoder)encoder);
                 }
             }
             else if (!String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))
@@ -185,9 +184,8 @@ namespace OrchardCore.Resources.Liquid
                 {
                     var buffer = new HtmlContentBuilder();
                     resourceManager.RenderLocalStyle(setting, buffer);
-                    var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
-                    buffer.WriteTo(writer, htmlEncoder);
+                    buffer.WriteTo(writer, (HtmlEncoder)encoder);
                 }
             }
             else if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(src))
@@ -261,9 +259,8 @@ namespace OrchardCore.Resources.Liquid
                 {
                     var buffer = new HtmlContentBuilder();
                     resourceManager.RenderLocalStyle(setting, buffer);
-                    var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
-                    buffer.WriteTo(writer, htmlEncoder);
+                    buffer.WriteTo(writer, (HtmlEncoder)encoder);
                 }
             }
             else if (String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))

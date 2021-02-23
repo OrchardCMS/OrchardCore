@@ -261,7 +261,7 @@ namespace OrchardCore.ContentManagement.Display
 
                 var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
 
-                partsShape.Add(typePartShape, partPosition);
+                await partsShape.AddAsync(typePartShape, partPosition);
                 partsShape[typePartDefinition.Name] = typePartShape;
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}";
@@ -360,7 +360,7 @@ namespace OrchardCore.ContentManagement.Display
                 typePartShape.ContentTypePartDefinition = typePartDefinition;
                 var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
 
-                partsShape.Add(typePartShape, partPosition);
+                await partsShape.AddAsync(typePartShape, partPosition);
                 partsShape[typePartDefinition.Name] = typePartShape;
 
                 context.DefaultZone = $"Parts.{typePartDefinition.Name}:{partPosition}";

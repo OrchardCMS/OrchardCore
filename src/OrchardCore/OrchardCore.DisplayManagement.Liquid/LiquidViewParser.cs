@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.Options;
@@ -40,12 +44,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             RegisterParserTag("httpcontext_remove_items", Primary, HttpContextRemoveItemTag.WriteToAsync);
 
             RegisterParserTag("helper", ArgumentsList, FluidTagHelper.WriteArgumentsTagHelperAsync);
+            RegisterParserBlock("block", ArgumentsList, FluidTagHelper.WriteArgumentsBlockHelperAsync);
 
             RegisterParserTag("shape", ArgumentsList, new ShapeTag().WriteToAsync);
             RegisterParserBlock("zone", ArgumentsList, ZoneTag.WriteToAsync);
 
-            RegisterParserBlock("block", ArgumentsList, FluidTagHelper.WriteArgumentsBlockHelperAsync);
-            RegisterParserBlock("a", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("a", list, statements, writer, encoder, context));
+            RegisteredTags["a"] = ArgumentsList.AndSkip(TagEnd).And(Parsers.ZeroOrOne(AnyTagsList.AndSkip(CreateTag("enda")))).Then<Statement>(x => new ParserBlockStatement<List<FilterArgument>>(x.Item1, x.Item2, DefaultAnchorTag.WriteToAsync));
             RegisterParserBlock("form", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("form", list, statements, writer, encoder, context));
             RegisterParserBlock("scriptblock", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("scriptblock", list, statements, writer, encoder, context));
             RegisterParserBlock("styleblock", ArgumentsList, async (list, statements, writer, encoder, context) => await FluidTagHelper.WriteToAsync("styleblock", list, statements, writer, encoder, context));
@@ -64,5 +68,23 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
 
         public Parser<List<FilterArgument>> ArgumentsListParser => ArgumentsList;
+
+        internal sealed class ParserBlockStatement<T> : TagStatement
+        {
+            private readonly Func<T, IReadOnlyList<Statement>, TextWriter, TextEncoder, TemplateContext, ValueTask<Completion>> _render;
+
+            public ParserBlockStatement(T value, List<Statement> statements, Func<T, IReadOnlyList<Statement>, TextWriter, TextEncoder, TemplateContext, ValueTask<Completion>> render) : base(statements)
+            {
+                Value = value;
+                _render = render ?? throw new ArgumentNullException(nameof(render));
+            }
+
+            public T Value { get; }
+
+            public override ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+            {
+                return _render(Value, Statements, writer, encoder, context);
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
+using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
@@ -30,6 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(services =>
             {
                 services.AddSingleton<LiquidViewParser>();
+                services.AddSingleton<IAnchorTag, AnchorTag>();
 
                 services.AddTransient<IConfigureOptions<TemplateOptions>, TemplateOptionsFileProviderSetup>();
 

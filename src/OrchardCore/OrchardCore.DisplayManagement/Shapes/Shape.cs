@@ -151,7 +151,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (_items == null)
             {
-                Enumerable.Empty<object>().GetEnumerator();
+                return Enumerable.Empty<object>().GetEnumerator();
             }
 
             if (!_sorted)
@@ -167,7 +167,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (_items == null)
             {
-                Enumerable.Empty<object>().GetEnumerator();
+                return Enumerable.Empty<object>().GetEnumerator();
             }
 
             if (!_sorted)

@@ -18,7 +18,6 @@ namespace OrchardCore.Resources.Liquid
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();
-            var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
             var type = ResourceType.Footer;
 
@@ -69,7 +68,7 @@ namespace OrchardCore.Resources.Liquid
                     break;
             }
 
-            buffer.WriteTo(writer, htmlEncoder);
+            buffer.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }

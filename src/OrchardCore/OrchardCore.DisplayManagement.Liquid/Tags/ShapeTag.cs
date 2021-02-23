@@ -32,7 +32,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var services = ((LiquidTemplateContext)context).Services;
             var shapeFactory = services.GetRequiredService<IShapeFactory>();
             var displayHelper = services.GetRequiredService<IDisplayHelper>();
-            var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
             string cacheId = null;
             TimeSpan? cacheFixedDuration = null;
@@ -118,7 +117,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var shapeContent = await displayHelper.ShapeExecuteAsync(shape);
 
-            shapeContent.WriteTo(writer, htmlEncoder);
+            shapeContent.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }
