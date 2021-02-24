@@ -18,7 +18,7 @@ namespace OrchardCore.Menu
             await _recipeMigrator.ExecuteAsync("menu.recipe.json", this);
 
             // Shortcut other migration steps on new content definition schemas.
-            return 2;
+            return 3;
         }
 
         // Add content menu. This only needs to run on old content definition schemas.
@@ -28,6 +28,15 @@ namespace OrchardCore.Menu
             await _recipeMigrator.ExecuteAsync("content-menu-updatefrom1.recipe.json", this);
 
             return 2;
+        }
+
+        // Add html menu. This only needs to run on old content definition schemas.
+        // This code can be removed in a later version.
+        public async Task<int> UpdateFrom2Async()
+        {
+            await _recipeMigrator.ExecuteAsync("html-menu-updatefrom2.recipe.json", this);
+
+            return 3;
         }
     }
 }
