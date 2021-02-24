@@ -259,11 +259,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             context.SetValue("ViewLocalizer", viewLocalizer);
 
-            //if (model != null)
-            //{
-            //    context.MemberAccessStrategy.Register(model.GetType());
-            //}
-
             if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
             {
                 if (context.ShapeRecursions++ > LiquidTemplateContext.MaxShapeRecursions)

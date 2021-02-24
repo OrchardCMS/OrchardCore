@@ -19,7 +19,7 @@ namespace OrchardCore.Benchmark
     {
         private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
         private static readonly FluidValue _input = ObjectValue.Create(HtmlString.Empty, new TemplateOptions());
-        private static readonly LiquidFilterResolver<ShapeRenderFilter> _liquidFilterResolver;
+        private static readonly LiquidFilterDelegateResolver<ShapeRenderFilter> _liquidFilterDelegateResolver;
         private static readonly IServiceProvider _serviceProvider;
 
         static FluidShapeRenderBenchmark()
@@ -31,7 +31,7 @@ namespace OrchardCore.Benchmark
                 .AddTransient(typeof(ShapeRenderFilter))
                 .BuildServiceProvider();
 
-            _liquidFilterResolver = new LiquidFilterResolver<ShapeRenderFilter>();
+            _liquidFilterDelegateResolver = new LiquidFilterDelegateResolver<ShapeRenderFilter>();
         }
 
         // 21st Feb 2021
@@ -79,7 +79,7 @@ namespace OrchardCore.Benchmark
         public async Task ShapeRenderWithResolver()
         {
             var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-            await _liquidFilterResolver.ResolveThenProcessAsync(_input, _filterArguments, templateContext);
+            await _liquidFilterDelegateResolver.ResolveAsync(_input, _filterArguments, templateContext);
         }
 
         private static async ValueTask<FluidValue> OriginalShapeRenderDynamic(FluidValue input, FilterArguments arguments, TemplateContext context)

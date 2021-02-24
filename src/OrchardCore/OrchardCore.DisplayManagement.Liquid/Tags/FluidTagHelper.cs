@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -37,7 +36,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             // If no identifier is set, use the first argument as the name of the tag helper
             // e.g., {% helper "input", for: "Text", class: "form-control" %}
 
-            identifier = identifier ?? (await arguments[0].Expression.EvaluateAsync(context)).ToStringValue();
+            identifier ??= (await arguments[0].Expression.EvaluateAsync(context)).ToStringValue();
 
             // These mapping will assign an argument name to the first element in the filter arguments,
             // such that the tag helper can be matched based on the expected attribute names.
@@ -64,13 +63,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tagHelper = factory.CreateTagHelper(activator, viewContext,
                 filterArguments, out var contextAttributes, out var outputAttributes);
 
-
             ViewBufferTextWriterContent content = null;
-            
+
             if (statements != null && statements.Count > 0)
             {
                 content = new ViewBufferTextWriterContent();
-                
+
                 var completion = await statements.RenderStatementsAsync(content, encoder, context);
 
                 if (completion != Completion.Normal)
