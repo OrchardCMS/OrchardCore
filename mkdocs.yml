@@ -130,6 +130,7 @@ nav:
             - Themes: docs/reference/modules/Themes/README.md
             - Liquid: docs/reference/modules/Liquid/README.md
             - Indexing: docs/reference/modules/Indexing/README.md
+            - Rules: docs/reference/modules/Rules/README.md
             - SQL: docs/reference/modules/SQL/README.md
             - Lucene: docs/reference/modules/Lucene/README.md
             - Queries: docs/reference/modules/Queries/README.md

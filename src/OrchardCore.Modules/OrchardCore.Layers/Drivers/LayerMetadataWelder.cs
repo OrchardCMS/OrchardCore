@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Layers.Drivers
 {
@@ -73,7 +74,12 @@ namespace OrchardCore.Layers.Drivers
 
             if (String.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
             {
-                context.Updater.ModelState.AddModelError("LayerMetadata.Zone", S["Zone is missing"]);
+                context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Zone", S["Zone is missing"]);
+            }
+
+            if (String.IsNullOrEmpty(viewModel.LayerMetadata.Layer))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Layer", S["Layer is missing"]);
             }
 
             if (context.Updater.ModelState.IsValid)

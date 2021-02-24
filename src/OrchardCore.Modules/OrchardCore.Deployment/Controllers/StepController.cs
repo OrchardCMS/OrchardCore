@@ -231,5 +231,36 @@ namespace OrchardCore.Deployment.Controllers
 
             return RedirectToAction("Display", "DeploymentPlan", new { id });
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrder(int id, int oldIndex, int newIndex)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            {
+                return Forbid();
+            }
+
+            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+
+            if (deploymentPlan == null)
+            {
+                return NotFound();
+            }
+
+            var step = deploymentPlan.DeploymentSteps.ElementAtOrDefault(oldIndex);
+
+            if (step == null)
+            {
+                return NotFound();
+            }    
+
+            deploymentPlan.DeploymentSteps.RemoveAt(oldIndex);
+
+            deploymentPlan.DeploymentSteps.Insert(newIndex, step);
+            
+            _session.Save(deploymentPlan);
+
+            return Ok();  
+        }        
     }
 }

@@ -22,6 +22,7 @@ namespace OrchardCore.ResourceManagement
         public bool? AppendVersion { get; set; }
         public List<string> Dependencies { get; set; }
         public Action<ResourceDefinition> InlineDefinition { get; set; }
+        public ResourcePosition Position { get; set; }
 
         public Dictionary<string, string> Attributes
         {
@@ -131,7 +132,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings UseCondition(string condition)
         {
-            Condition = Condition ?? condition;
+            Condition ??= condition;
             return this;
         }
 
@@ -216,24 +217,69 @@ namespace OrchardCore.ResourceManagement
             return mergedAttributes;
         }
 
-        public RequireSettings Combine(RequireSettings other)
+        public RequireSettings UpdatePositionFromDependent(RequireSettings dependent)
         {
-            var settings = (new RequireSettings
+            if (dependent.Position == ResourcePosition.First && Position == ResourcePosition.Last)
+            {
+                throw new InvalidOperationException($"Invalid dependency position of type '{dependent.Type}' for resource '{dependent.Name}' positioned at '{dependent.Position}' depending on '{Name}' positioned at '{Position}'");
+            }
+
+            // If a 'First' resource depends on a 'ByDependency' resource, position the dependency 'First'.
+            if (dependent.Position == ResourcePosition.First && Position == ResourcePosition.ByDependency)
+            {
+                Position = ResourcePosition.First;
+            }
+
+            return this;
+        }
+
+        public RequireSettings UpdatePositionFromDependency(RequireSettings dependency)
+        {
+            // If a 'ByDependency' resource depends on a 'Last' resource, position the dependent 'Last'.
+            if (Position == ResourcePosition.ByDependency && dependency.Position == ResourcePosition.Last)
+            {
+                Position = ResourcePosition.Last;
+            }
+
+            return this;
+        }
+
+        public RequireSettings CombinePosition(RequireSettings dependent)
+        {
+            UpdatePositionFromDependent(dependent);
+            dependent.UpdatePositionFromDependency(this);
+
+            return this;
+        }
+
+        public RequireSettings NewAndCombine(RequireSettings other)
+        {
+            return new RequireSettings
             {
                 Name = Name,
                 Type = Type,
-            }).AtLocation(Location).AtLocation(other.Location)
-                .WithBasePath(BasePath).WithBasePath(other.BasePath)
-                .UseCdn(CdnMode).UseCdn(other.CdnMode)
-                .UseCdnBaseUrl(CdnBaseUrl).UseCdnBaseUrl(other.CdnBaseUrl)
-                .UseDebugMode(DebugMode).UseDebugMode(other.DebugMode)
-                .UseCulture(Culture).UseCulture(other.Culture)
-                .UseCondition(Condition).UseCondition(other.Condition)
-                .UseVersion(Version).UseVersion(other.Version)
-                .ShouldAppendVersion(AppendVersion).ShouldAppendVersion(other.AppendVersion)
-                .Define(InlineDefinition).Define(other.InlineDefinition);
-            settings._attributes = MergeAttributes(other);
-            return settings;
+                Position = Position
+            }
+                .Combine(other)
+                ;
+        }
+
+        public RequireSettings Combine(RequireSettings other)
+        {
+            AtLocation(Location).AtLocation(other.Location)
+            .WithBasePath(BasePath).WithBasePath(other.BasePath)
+            .UseCdn(CdnMode).UseCdn(other.CdnMode)
+            .UseCdnBaseUrl(CdnBaseUrl).UseCdnBaseUrl(other.CdnBaseUrl)
+            .UseDebugMode(DebugMode).UseDebugMode(other.DebugMode)
+            .UseCulture(Culture).UseCulture(other.Culture)
+            .UseCondition(Condition).UseCondition(other.Condition)
+            .UseVersion(Version).UseVersion(other.Version)
+            .ShouldAppendVersion(AppendVersion).ShouldAppendVersion(other.AppendVersion)
+            .Define(InlineDefinition).Define(other.InlineDefinition)
+            ;
+
+            _attributes = MergeAttributes(other);
+            return this;
         }
     }
 }
