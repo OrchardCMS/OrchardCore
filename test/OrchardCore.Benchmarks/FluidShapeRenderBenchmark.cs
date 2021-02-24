@@ -107,8 +107,7 @@ namespace OrchardCore.Benchmark
                 return new HtmlContentValue(await task);
             }
 
-            var shape = input.ToObjectValue();
-            if (shape != null)
+            if (input.ToObjectValue() is IShape shape)
             {
                 if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {
@@ -133,9 +132,7 @@ namespace OrchardCore.Benchmark
                 return new HtmlContentValue(await task);
             }
 
-            var shape = input.ToObjectValue();
-
-            if (shape != null)
+            if (input.ToObjectValue() is IShape shape)
             {
                 var services = ((LiquidTemplateContext)context).Services;
 

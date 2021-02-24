@@ -1,19 +1,15 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Extensions;
@@ -22,9 +18,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
     public class ShapeAttributeBindingStrategy : IShapeTableHarvester
     {
-        private static readonly ConcurrentDictionary<MethodInfo, ParameterInfo[]> _parameters =
-            new ConcurrentDictionary<MethodInfo, ParameterInfo[]>();
-
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
 
