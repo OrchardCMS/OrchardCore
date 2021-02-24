@@ -5,17 +5,17 @@ using OrchardCore.Recipes.Models;
 namespace OrchardCore.Setup.Services
 {
     /// <summary>
-    /// Represents a class that contains a set up information.
+    /// Represents a class that contains setup information.
     /// </summary>
     public class SetupContext
     {
         /// <summary>
-        /// Gets or sets the settings shell.
+        /// Gets or sets the shell settings.
         /// </summary>
         public ShellSettings ShellSettings { get; set; }
 
         /// <summary>
-        /// Gets or sets the features that will be enable when the set up finished.
+        /// Gets or sets the features that will be enabled.
         /// </summary>
         public IEnumerable<string> EnabledFeatures { get; set; }
 
@@ -25,9 +25,10 @@ namespace OrchardCore.Setup.Services
         public RecipeDescriptor Recipe { get; set; }
 
         /// <summary>
-        /// Gets or sets the errors during set up if there is.
+        /// Gets or sets the errors that occurred during the setup.
         /// </summary>
         public IDictionary<string, string> Errors { get; set; }
+
         /// <summary>
         /// Gets additional key/value info.
         /// </summary>
