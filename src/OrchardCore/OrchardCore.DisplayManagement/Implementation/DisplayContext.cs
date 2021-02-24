@@ -19,6 +19,6 @@ namespace OrchardCore.DisplayManagement.Implementation
         public IServiceProvider ServiceProvider { get; set; }
         public IDisplayHelper DisplayHelper { get; set; }
         public string HtmlFieldPrefix { get; set; }
-        public object Value { get; set; }
+        public IShape Value { get; set; }
     }
 }

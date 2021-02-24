@@ -83,7 +83,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
                 // Give the item shape the possibility to alter its container tag
                 // by rendering them before rendering the containing list.
-                var itemContent = await displayContext.DisplayHelper.ShapeExecuteAsync(item);
+                var itemContent = await displayContext.DisplayHelper.ShapeExecuteAsync((IShape)item);
 
                 itemTag.InnerHtml.AppendHtml(itemContent);
                 listTagBuilder.InnerHtml.AppendHtml(itemTag);

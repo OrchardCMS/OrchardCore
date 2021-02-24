@@ -22,8 +22,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 return new HtmlContentValue(await task);
             }
 
-            var shape = input.ToObjectValue();
-            if (shape != null)
+            if (input.ToObjectValue() is IShape shape)
             {
                 var task = _displayHelper.ShapeExecuteAsync(shape);
                 if (!task.IsCompletedSuccessfully)

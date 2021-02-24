@@ -46,12 +46,12 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             if (parameters.Positional.Count() == 1)
             {
-                return ShapeExecuteAsync(parameters.Positional.First());
+                return ShapeExecuteAsync(parameters.Positional.First() as IShape);
             }
 
             if (parameters.Positional.Any())
             {
-                return ShapeExecuteAsync(parameters.Positional);
+                return ShapeExecuteAsync(parameters.Positional.Cast<IShape>());
             }
 
             // zero args - no display to execute
@@ -64,7 +64,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             return await ShapeExecuteAsync(shape);
         }
 
-        public Task<IHtmlContent> ShapeExecuteAsync(object shape)
+        public Task<IHtmlContent> ShapeExecuteAsync(IShape shape)
         {
             if (shape == null)
             {
@@ -81,7 +81,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             return _htmlDisplay.ExecuteAsync(context);
         }
 
-        public async Task<IHtmlContent> ShapeExecuteAsync(IEnumerable<object> shapes)
+        public async Task<IHtmlContent> ShapeExecuteAsync(IEnumerable<IShape> shapes)
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 

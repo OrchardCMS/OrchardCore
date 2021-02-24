@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Zones
             var htmlContentBuilder = new HtmlContentBuilder();
             foreach (var item in Shape)
             {
-                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(item));
+                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
             }
 
             return htmlContentBuilder;
@@ -48,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Zones
             {
                 foreach (var item in shapes)
                 {
-                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(item));
+                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
                 }
 
                 return htmlContentBuilder;
@@ -335,7 +335,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 // When nothing is grouped in a column, the grouping is rendered directly.
                 foreach (var item in Shape.Grouping)
                 {
-                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(item));
+                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
                 }
             }
 

@@ -28,17 +28,23 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var name = (await nameExpression.EvaluateAsync(context)).ToStringValue();
 
             var requiredExpression = arguments["required", 1];
-            var required = requiredExpression == null ? false : (await requiredExpression.EvaluateAsync(context)).ToBooleanValue();
+            var required = requiredExpression != null && (await requiredExpression.EvaluateAsync(context)).ToBooleanValue();
 
             var zone = layout.Zones[name];
 
-            if (required && zone != null && zone is ZoneOnDemand)
+            if (zone is ZoneOnDemand)
             {
-                throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
+                if (required)
+                {
+                    throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
+                }
+
+                return Completion.Normal;
             }
 
             IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(zone);
             htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
+
             return Completion.Normal;
         }
     }
