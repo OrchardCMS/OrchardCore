@@ -59,7 +59,6 @@ namespace OrchardCore.Menu
                 .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlMenuItemPartSettingsDisplayDriver>();
 
-
             services.AddTagHelpers<MenuTagHelper>();
         }
 
