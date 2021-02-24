@@ -984,6 +984,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js: uuid()]",
+                "DisplayText": "Home",
                 "LinkMenuItemPart": {
                   "Name": "Home",
                   "Url": "~/"
@@ -992,6 +993,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js: uuid()]",
+                "DisplayText": "About",
                 "LinkMenuItemPart": {
                   "Name": "About",
                   "Url": "~/about"
