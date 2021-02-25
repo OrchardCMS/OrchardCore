@@ -332,9 +332,9 @@
   {
     "copy": true,
     "inputs": [
-      "Assets/monaco/monaco.json"
+      "Assets/monaco/IStandaloneEditorConstructionOptions.json"
     ],
-    "output": "wwwroot/Scripts/monaco/monaco.json"
+    "output": "wwwroot/Scripts/monaco/IStandaloneEditorConstructionOptions.json"
   }
 
 ]
