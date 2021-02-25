@@ -230,11 +230,20 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 };
             }
 
+            // pre-calculate the default value 
+            var defaultValue = parameter.ParameterType.IsValueType ? Activator.CreateInstance(parameter.ParameterType) : null;
+
+            var isDateTimeType =
+                parameter.ParameterType == typeof(DateTime) ||
+                parameter.ParameterType == typeof(DateTime?) ||
+                parameter.ParameterType == typeof(DateTimeOffset) ||
+                parameter.ParameterType == typeof(DateTimeOffset?);
+
             return d =>
             {
                 if (!d.Value.Properties.TryGetValue(parameter.Name, out var result) || result == null)
                 {
-                    return null;
+                    return defaultValue;
                 }
 
                 if (parameter.ParameterType.IsAssignableFrom(result.GetType()))
@@ -243,7 +252,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 }
 
                 // Specific implementation for DateTimes
-                if (result.GetType() == typeof(string) && (parameter.ParameterType == typeof(DateTime) || parameter.ParameterType == typeof(DateTime?)))
+                if (result.GetType() == typeof(string) && isDateTimeType)
                 {
                     return DateTime.Parse((string)result);
                 }
