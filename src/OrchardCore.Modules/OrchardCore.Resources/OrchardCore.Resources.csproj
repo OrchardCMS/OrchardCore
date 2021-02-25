@@ -11,29 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="wwwroot\Scripts\monaco\cdn.js" />
-    <EmbeddedResource Remove="wwwroot\Scripts\monaco\dev.js" />
-    <EmbeddedResource Remove="wwwroot\Scripts\monaco\min.js" />
-    <EmbeddedResource Remove="wwwroot\Scripts\monaco\monaco.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\Scripts\monaco\cdn.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\Scripts\monaco\dev.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\Scripts\monaco\min.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\Scripts\monaco\monaco.json">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>

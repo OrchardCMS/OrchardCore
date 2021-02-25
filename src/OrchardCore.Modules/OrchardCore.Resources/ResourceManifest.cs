@@ -10,7 +10,7 @@ namespace OrchardCore.Resources
         // CDNs
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
-        private const string monacoEditorVersion = "0.21.2";
+        private const string monacoEditorVersion = "0.22.3";
         private const string codeMirrorVersion = "5.59.4";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
@@ -406,10 +406,10 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("monaco-loader")
                 .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min/vs/loader.js", "~/OrchardCore.Resources/Scripts/monaco/dev/vs/loader.js")
-                .SetCdn(monacoEditorUrl + "min/vs/loader.js")
-                .SetCdnIntegrity("sha512-fSLVGpTrvZYhUtBCsrJFYvg6CXQ6bt082MjIGrYsTQCbsmsi/iA9/gH8x15+pv3nP+QNPyuXWEftuJgo3d3dww==")
+                .SetCdn(monacoEditorUrl + "min/vs/loader.min.js")
+                .SetCdnIntegrity("sha512-+8+MX2hyUZxaUfMJT0ew+rPsrTGiTmCg8oksa6uVE/ZlR/g3SJtyozqcqDGkw/W785xYAvcx1LxXPP+ywD0SNw==")
                 .SetPosition(ResourcePosition.Last)
-                .SetVersion(monacoEditorVersion);
+                .SetVersion(monacoEditorVersion);           
 
             manifest
                 .DefineScript("monaco")

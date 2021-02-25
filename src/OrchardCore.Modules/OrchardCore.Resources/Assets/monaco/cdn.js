@@ -7,7 +7,7 @@ window.MonacoEnvironment = {
         self.MonacoEnvironment = {
           baseUrl: '${monacoEditorUrl}min/'
         };
-        importScripts('${monacoEditorUrl}min/vs/base/worker/workerMain.js');`
+        importScripts('${monacoEditorUrl}min/vs/base/worker/workerMain.min.js');`
         )}`;
     }
 };
