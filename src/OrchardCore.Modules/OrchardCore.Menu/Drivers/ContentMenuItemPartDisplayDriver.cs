@@ -30,15 +30,23 @@ namespace OrchardCore.Menu.Drivers
         {
             return Initialize<ContentMenuItemPartEditViewModel>("ContentMenuItemPart_Edit", model =>
             {
-                model.Name = part.Name;
+                model.Name = part.ContentItem.DisplayText;
                 model.MenuItemPart = part;
             });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentMenuItemPart part, IUpdateModel updater)
         {
-            //Update Part Name
-            await updater.TryUpdateModelAsync(part, Prefix, x => x.Name);
+            var model = new ContentMenuItemPartEditViewModel();
+
+            if (await updater.TryUpdateModelAsync(model, Prefix))
+            {
+                part.ContentItem.DisplayText = model.Name;
+// This code can be removed in a later release.
+#pragma warning disable 0618                
+                part.Name = model.Name;
+#pragma warning restore 0618
+            }
 
             return Edit(part);
         }

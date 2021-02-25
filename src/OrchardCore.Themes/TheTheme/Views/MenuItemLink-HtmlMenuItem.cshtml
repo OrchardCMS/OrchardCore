@@ -1,0 +1,28 @@
+@using OrchardCore.ContentManagement
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var htmlMenuItemPart = contentItem.As<HtmlMenuItemPart>();
+    int level = (int)Model.Level;
+
+    TagBuilder tag = Tag(Model, "a");
+
+    var url = htmlMenuItemPart.Url;
+    if (url.StartsWith('/'))
+    {
+        url = '~' + url;
+    }
+
+    if (url.StartsWith("~/", StringComparison.Ordinal))
+    {
+        url = Url.Content(htmlMenuItemPart.Url);
+    }
+
+    tag.Attributes["href"] = url;
+    tag.InnerHtml.AppendHtml(Html.Raw(htmlMenuItemPart.Html));
+
+    if (Model.Level == 0 && Model.HasItems)
+    {
+        tag.InnerHtml.AppendHtml("<b class=\"caret\"></b>");
+    }
+}
+@tag
