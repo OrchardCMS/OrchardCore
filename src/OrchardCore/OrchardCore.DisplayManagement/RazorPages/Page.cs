@@ -77,8 +77,22 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <param name="shape">The shape.</param>
         public Task<IHtmlContent> DisplayAsync(dynamic shape)
         {
-            EnsureDisplayHelper();
-            return (Task<IHtmlContent>)_displayHelper(shape);
+            if (shape is IShape shapeObject)
+            {
+                EnsureDisplayHelper();
+
+                return _displayHelper.ShapeExecuteAsync(shapeObject);
+            }
+            else if (shape is IHtmlContent htmlContent)
+            {
+                return Task.FromResult(htmlContent);
+            }
+            else if (shape is object obj)
+            {
+                return Task.FromResult<IHtmlContent>(new StringHtmlContent(obj.ToString()));
+            }
+
+            return Task.FromResult<IHtmlContent>(HtmlString.Empty);
         }
 
         /// <summary>

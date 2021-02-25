@@ -39,7 +39,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public async Task<IHtmlContent> ExecuteAsync(DisplayContext context)
         {
-            var shape = context.Value as IShape;
+            var shape = context.Value;
 
             // non-shape arguments are returned as a no-op
             if (shape == null)
@@ -50,7 +50,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             var shapeMetadata = shape.Metadata;
 
             // can't really cope with a shape that has no type information
-            if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
+            if (shapeMetadata == null || String.IsNullOrEmpty(shapeMetadata.Type))
             {
                 return CoerceHtmlString(context.Value);
             }

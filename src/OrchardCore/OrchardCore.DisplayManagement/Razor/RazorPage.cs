@@ -81,8 +81,22 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <param name="shape">The shape.</param>
         public Task<IHtmlContent> DisplayAsync(dynamic shape)
         {
-            EnsureDisplayHelper();
-            return _displayHelper.ShapeExecuteAsync(shape);
+            if (shape is IShape shapeObject)
+            {
+                EnsureDisplayHelper();
+
+                return _displayHelper.ShapeExecuteAsync(shapeObject);
+            }
+            else if (shape is IHtmlContent htmlContent)
+            {
+                return Task.FromResult(htmlContent);
+            }
+            else if (shape is object obj)
+            {
+                return Task.FromResult<IHtmlContent>(new StringHtmlContent(obj.ToString()));
+            }
+
+            return Task.FromResult<IHtmlContent>(HtmlString.Empty);
         }
 
         /// <summary>

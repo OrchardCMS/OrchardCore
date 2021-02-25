@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -39,12 +38,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             {
                 return new ValueTask<FluidValue>(new HtmlContentValue(htmlContent));
             }
-            else if (inputObject is string stringHtml)
+            else if (inputObject is object obj)
             {
-                return new ValueTask<FluidValue>(new HtmlContentValue(new StringHtmlContent(stringHtml)));
+                return new ValueTask<FluidValue>(new HtmlContentValue(new StringHtmlContent(obj.ToString())));
             }
 
-            return new ValueTask<FluidValue>(NilValue.Instance);
+            return new ValueTask<FluidValue>(new HtmlContentValue(HtmlString.Empty));
         }
     }
 }
