@@ -20,7 +20,6 @@ namespace OrchardCore.Resources
                 o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("resources", parser.ArgumentsListParser, ResourcesTag.WriteToAsync));
             });
 
-            serviceCollection.AddScoped<IResourceManifestProvider, ResourceManifest>();
             serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
     }

@@ -76,11 +76,11 @@ Named resources are registered by implementing the `IResourceManifestProvider` i
 This example is provided from `TheBlogTheme` to demonstrate.
 
 ```csharp
-public class ResourceManifest : IResourceManifestProvider
+public class ResourceManifest IConfigureOptions<ResourceManagementOptions>
 {
-    public void BuildManifests(IResourceManifestBuilder builder)
+    public void Configure(ResourceManagementOptions options)
     {
-        var manifest = builder.Add();
+        var manifest = new ResourceManifest();
 
         manifest
             .DefineScript("TheBlogTheme-vendor-jQuery")
@@ -88,6 +88,8 @@ public class ResourceManifest : IResourceManifestProvider
             .SetCdn("https://code.jquery.com/jquery-3.4.1.min.js", "https://code.jquery.com/jquery-3.4.1.js")
             .SetCdnIntegrity("sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh", "sha384-mlceH9HlqLp7GMKHrj5Ara1+LvdTZVMx4S1U43/NxCvAkzIo8WJ0FE7duLel3wVo")
             .SetVersion("3.4.1");
+
+            options.Manifests.Add(manifest);
         }
     }
 
@@ -103,8 +105,8 @@ We set the Cdn Integrity Hashes and the version to `3.4.1`
 This script will then be available for the tag helper or API to register by name. 
 
 !!! note "Registration"
-    Make sure to register this `IResourceManifestProvider` in the `Startup` or your theme or module.
-    `serviceCollection.AddScoped<IResourceManifestProvider, ResourceManifest>();`
+    Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
+    `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
 
 ## Usage
 
