@@ -6,7 +6,10 @@ namespace OrchardCore.AdminDashboard.ViewModels
 {
     public class DashboardPartViewModel
     {
+        public string ContentItemId { get; set; }
         public double Position { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
 
         [BindNever]
         public ContentItem ContentItem { get; set; }

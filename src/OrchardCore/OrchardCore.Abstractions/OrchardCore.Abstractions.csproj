@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
 
     <!-- NuGet properties-->
     <Title>OrchardCore Abstractions</Title>
     <Description>$(OCFrameworkDescription)
-    
+
     Abstractions of OrchardCore ShellHost.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>

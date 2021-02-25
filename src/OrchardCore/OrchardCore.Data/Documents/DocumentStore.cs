@@ -162,7 +162,7 @@ namespace OrchardCore.Data.Documents
                 }
                 else
                 {
-                    throw (exception);
+                    throw;
                 }
             }
         }
