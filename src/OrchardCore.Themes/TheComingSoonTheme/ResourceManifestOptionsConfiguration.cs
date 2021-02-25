@@ -72,7 +72,7 @@ namespace OrchardCore.Themes.TheComingSoonTheme
                 .SetUrl("~/TheComingSoonTheme/css/bootstrap-oc.min.css", "~/TheComingSoonTheme/css/bootstrap-oc.css")
                 .SetVersion("1.0.0");
         }
-        
+
         public void Configure(ResourceManagementOptions options)
         {
             options.ResourceManifests.Add(_manifest);

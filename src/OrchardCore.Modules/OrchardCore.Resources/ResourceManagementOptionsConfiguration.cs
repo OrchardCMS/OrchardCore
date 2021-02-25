@@ -19,11 +19,11 @@ namespace OrchardCore.Resources
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
         private static ResourceManifest _manifest;
-        
+
         static ResourceManagementOptionsConfiguration()
         {
             _manifest = new ResourceManifest();
-            
+
             _manifest
                 .DefineScript("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.min.js", "~/OrchardCore.Resources/Scripts/jquery.js")
@@ -131,14 +131,14 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css", "https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.css")
                 .SetCdnIntegrity("sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l", "sha384-pLdz7B8fCz67WCt1ia07iekybqLYOs8EBhBCAzsYPb0a7uox8jSB6RaN6zf0GZ0Z")
                 .SetVersion("4.6.0");
-            
+
             _manifest
                 .DefineStyle("bootstrap-select")
                 .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-select.min.css", "~/OrchardCore.Resources/Styles/bootstrap-select.css")
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.css")
                 .SetCdnIntegrity("sha384-dTqTc7d5t+FKhTIaMmda32pZNoXY/Y0ui0hRl5GzDQp4aARfEzbP1jzX6+KRuGKg", "sha384-OlTrhEtwZzUzVXapTUO8s6QryXzpD8mFyNVA8kyAi8KMgfOKSJYvielvExM+dNPR")
                 .SetVersion("1.13.18");
-                
+
             _manifest
                 .DefineScript("bootstrap-select")
                 .SetDependencies("jQuery")
@@ -153,7 +153,7 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.css")
                 .SetCdnIntegrity("sha384-Ot7O5p8Ws9qngwQOA1DP7acHuGIfK63cYbVJRYzrrMXhT3syEYhEsg+uqPsPpRhZ", "sha384-x1BbAB1QrM4/ZjT+vJzuI/NdvRo4tINKqg7lTN9jCq0bWrr/nelp9KfroZWd3UJu")
                 .SetVersion("11.0.2");
-                
+
             _manifest
                 .DefineScript("bootstrap-slider")
                 .SetDependencies("jQuery")
@@ -402,6 +402,7 @@ namespace OrchardCore.Resources
                 .SetCdnIntegrity("sha384-eITc5AorI6xzkW7XunGaNrcA0l6qrU/kA/mOhLQOC5thAzlHSClQTOecyzGK6QXK", "sha384-qYkL05PP6ICwBjU1X95J3yIhrm7w3efbzz0r1oti35uPxRjXP6t5B8gP0xNuOmdt")
                 .SetVersion("2.2.1");
         }
+
         public ResourceManagementOptionsConfiguration(ISiteService siteService, IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
             _siteService = siteService;

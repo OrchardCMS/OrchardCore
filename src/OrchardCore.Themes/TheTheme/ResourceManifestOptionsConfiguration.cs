@@ -1,5 +1,5 @@
-using OrchardCore.ResourceManagement;
 using Microsoft.Extensions.Options;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Themes.TheTheme
 {
@@ -17,7 +17,7 @@ namespace OrchardCore.Themes.TheTheme
                 .SetVersion("1.0.0");
 
         }
-        
+
         public void Configure(ResourceManagementOptions options)
         {
             options.ResourceManifests.Add(_manifest);

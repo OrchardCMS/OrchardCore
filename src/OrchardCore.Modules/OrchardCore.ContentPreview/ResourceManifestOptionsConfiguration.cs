@@ -1,5 +1,5 @@
-using OrchardCore.ResourceManagement;
 using Microsoft.Extensions.Options;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.ContentPreview
 {

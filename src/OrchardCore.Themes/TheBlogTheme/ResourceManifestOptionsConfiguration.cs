@@ -1,5 +1,5 @@
-using OrchardCore.ResourceManagement;
 using Microsoft.Extensions.Options;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Themes.TheBlogTheme
 {
@@ -67,7 +67,7 @@ namespace OrchardCore.Themes.TheBlogTheme
                 .SetCdnIntegrity("sha384-9/D4ECZvKMVEJ9Bhr3ZnUAF+Ahlagp1cyPC7h5yDlZdXs4DQ/vRftzfd+2uFUuqS", "sha384-vkhNV6UI0lzGY+LU1vEFOQTnBcvaEr/ExwLUaZJmpqsmRZu5LDxNB+yEQiXIqCg9")
                 .SetVersion("5.15.1");
         }
-        
+
         public void Configure(ResourceManagementOptions options)
         {
             options.ResourceManifests.Add(_manifest);

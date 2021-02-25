@@ -1,5 +1,5 @@
-using OrchardCore.ResourceManagement;
 using Microsoft.Extensions.Options;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Facebook
 {
@@ -20,7 +20,7 @@ namespace OrchardCore.Facebook
                 .DefineScript("fbsdk")
                 .SetUrl("~/OrchardCore.Facebook/sdk/fbsdk.js");
         }
-        
+
         public void Configure(ResourceManagementOptions options)
         {
             options.ResourceManifests.Add(_manifest);

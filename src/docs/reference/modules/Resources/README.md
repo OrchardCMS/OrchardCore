@@ -76,22 +76,27 @@ Named resources are registered by implementing the `IResourceManifestProvider` i
 This example is provided from `TheBlogTheme` to demonstrate.
 
 ```csharp
-public class ResourceManifest IConfigureOptions<ResourceManagementOptions>
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    public void Configure(ResourceManagementOptions options)
-    {
-        var manifest = new ResourceManifest();
+    private static ResourceManifest _manifest;
 
-        manifest
+    static ResourceManagementOptionsConfiguration()
+    {
+        _manifest = new ResourceManifest();
+
+        _manifest
             .DefineScript("TheBlogTheme-vendor-jQuery")
             .SetUrl("~/TheBlogTheme/vendor/jquery/jquery.min.js", "~/TheBlogTheme/vendor/jquery/jquery.js")
             .SetCdn("https://code.jquery.com/jquery-3.4.1.min.js", "https://code.jquery.com/jquery-3.4.1.js")
             .SetCdnIntegrity("sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh", "sha384-mlceH9HlqLp7GMKHrj5Ara1+LvdTZVMx4S1U43/NxCvAkzIo8WJ0FE7duLel3wVo")
             .SetVersion("3.4.1");
-
-            options.Manifests.Add(manifest);
-        }
     }
+
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
 
 ```
 
