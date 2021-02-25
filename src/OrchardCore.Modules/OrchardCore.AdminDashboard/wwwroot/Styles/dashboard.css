@@ -3,9 +3,34 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+@media (max-width: 567.98px) {
+  :root {
+    --dashboard-columns: 1;
+    --dashboard-columns-default: 1; } }
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  :root {
+    --dashboard-columns: 2;
+    --dashboard-columns-default: 2; } }
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  :root {
+    --dashboard-columns: 3;
+    --dashboard-columns-default: 3; } }
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  :root {
+    --dashboard-columns: 4;
+    --dashboard-columns-default: 4; } }
+
+@media (min-width: 1200px) {
+  :root {
+    --dashboard-columns: 6;
+    --dashboard-columns-default: 6; } }
+
 .dashboard-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(var(--dashboard-columns), 1fr);
   grid-template-rows: repeat(6, 240px);
   grid-gap: 1rem; }
   .dashboard-container .dashboard-wrapper {
@@ -24,16 +49,16 @@
   .dashboard-meta:first-child {
     padding-top: 12px; }
 
-:root[data-theme='default'] .dashboard-wrapper .card .card-header {
+:root[data-theme="default"] .dashboard-wrapper .card .card-header {
   background-color: #fff !important; }
 
-:root[data-theme='default'] .dashboard-wrapper .card .card-footer {
+:root[data-theme="default"] .dashboard-wrapper .card .card-footer {
   background-color: #fff !important; }
 
-:root[data-theme='darkmode'] .dashboard-wrapper .card .card-header {
+:root[data-theme="darkmode"] .dashboard-wrapper .card .card-header {
   background-color: #181a1b !important; }
 
-:root[data-theme='darkmode'] .dashboard-wrapper .card .card-footer {
+:root[data-theme="darkmode"] .dashboard-wrapper .card .card-footer {
   background-color: #181a1b !important; }
 
 .dashboard-handle {

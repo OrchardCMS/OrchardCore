@@ -1,6 +1,48 @@
+
+// Extra small devices (portrait phones, less than 576px)
+@media (max-width: 567.98px) {
+    :root{
+        --dashboard-columns: 1;
+        --dashboard-columns-default: 1;
+    }
+}
+
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) and (max-width: 767.98px) {
+    :root{
+        --dashboard-columns: 2;
+        --dashboard-columns-default: 2;
+
+    }
+}
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) and (max-width: 991.98px) {
+    :root{
+        --dashboard-columns: 3;
+        --dashboard-columns-default: 3;
+    }
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    :root{
+        --dashboard-columns: 4;
+        --dashboard-columns-default: 4;
+    }
+}
+
+// Extra large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+    :root{
+        --dashboard-columns: 6;
+        --dashboard-columns-default: 6;
+    }
+}
+
 .dashboard-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat( var(--dashboard-columns), 1fr);
     grid-template-rows: repeat(6, 240px);
     grid-gap: 1rem;
 
@@ -30,7 +72,7 @@
     }
 }
 
-:root[data-theme='default'] {
+:root[data-theme="default"] {
     & .dashboard-wrapper {
         & .card {
             & .card-header {
@@ -43,7 +85,7 @@
     }
 }
 
-:root[data-theme='darkmode'] {
+:root[data-theme="darkmode"] {
     & .dashboard-wrapper {
         & .card {
             & .card-header {

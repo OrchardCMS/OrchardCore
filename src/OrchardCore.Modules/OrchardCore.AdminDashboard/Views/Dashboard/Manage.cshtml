@@ -10,8 +10,9 @@
     // Todo Create Settings for Dashboard
     var settings = new
     {
-        NoOfRows = 4,
-        NoOfCols = 4 // Default is auto fit - 240px
+        // Default is 1, i.e. 6 columns in large screen, 3 for tablets and 1 for phones. 
+        // Changing Scale 2 will increase the # columns to 12 for large screen, 6 for tablets and 2 for phones. 
+        ColumnScale = 1 
     };
 }
 
@@ -63,7 +64,7 @@
     @T["Dashboard successfully updated."]&nbsp;<a href="#"><strong>@T["Undo"]</strong></a>.
 </div>
 
-<div class="dashboard-container" id="container">
+<div class="dashboard-container" id="container" style="--dashboard-columns: calc( @(settings.ColumnScale) * var(--dashboard-columns-default));">
     @foreach (var dashboard in Model.Dashboards)
     {
     @await DisplayAsync(dashboard)
