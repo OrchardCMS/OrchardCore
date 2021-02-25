@@ -36,12 +36,14 @@
         }
     });
 </script>
-
+@if (Model.Settings.DisplayKeywords)
+{ 
 <div class="form-group" asp-validation-class-for="MetaKeywords">
     <label asp-for="MetaKeywords">@T["Meta Keywords"] </label>
     <input asp-for="MetaKeywords" class="form-control content-preview-text" />
     <span class="hint">@T["The meta keywords to render for this page, comma separated."]</span>
 </div>
+}
 
 <div class="form-group" asp-validation-class-for="Canonical">
     <label asp-for="Canonical">@T["Canonical"] </label>
@@ -55,6 +57,8 @@
     <span class="hint">@T["The robots meta to render for this page."]</span>
 </div>
 
+@if (Model.Settings.DisplayCustomMetaTags)
+{
 <script asp-src="~/OrchardCore.Seo/Scripts/customMetaTagsEditor.min.js" debug-src="~/OrchardCore.Seo/Scripts/customMetaTagsEditor.js" asp-name="customMetaTagsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
 <style asp-src="~/OrchardCore.Seo/Styles/customMetaTagsEditor.min.css" debug-src="~/OrchardCore.Seo/Styles/customMetaTagsEditor.css"></style>
 
@@ -141,3 +145,4 @@
     <meta-tags-table :data="sharedState"></meta-tags-table>
     <meta-tags-modal :data="sharedState" v-on:reload-data="reloadData()"></meta-tags-modal>
 </div>
+}

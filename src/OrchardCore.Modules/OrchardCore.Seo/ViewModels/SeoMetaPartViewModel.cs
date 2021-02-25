@@ -17,5 +17,8 @@ namespace OrchardCore.Seo.ViewModels
 
         [BindNever]
         public SeoMetaPart SeoMetaPart { get; set; }
+
+        [BindNever]
+        public SeoMetaPartSettings Settings { get; set; }
     }
 }

@@ -8,6 +8,8 @@ using OrchardCore.Modules;
 using OrchardCore.Seo.Drivers;
 using OrchardCore.Seo.Models;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.SeoMeta.Settings;
+using OrchardCore.ContentTypes.Editors;
 
 namespace OrchardCore.Seo
 {
@@ -18,10 +20,11 @@ namespace OrchardCore.Seo
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddContentPart<SeoMetaPart>()
-                .UseDisplayDriver<SeoMetaPartDisplay>()
+                .UseDisplayDriver<SeoMetaPartDisplayDriver>()
                 .AddHandler<SeoMetaPartHandler>();
 
             services.AddScoped<IContentDisplayDriver, SeoContentDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, SeoMetaPartSettingsDisplayDriver>();
 
             services.RemoveAll<IPageTitleBuilder>();
 

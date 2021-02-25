@@ -12,10 +12,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OrchardCore.ResourceManagement;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement.Display.Models;
+using System.Collections.Generic;
 
 namespace OrchardCore.Seo.Drivers
 {
-    public class SeoMetaPartDisplay : ContentPartDisplayDriver<SeoMetaPart>
+    public class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaPart>
     {
         private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
@@ -28,11 +30,11 @@ namespace OrchardCore.Seo.Drivers
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
         private readonly IStringLocalizer S;
 
-        public SeoMetaPartDisplay(
+        public SeoMetaPartDisplayDriver(
             IContentManager contentManager,
             IServiceProvider serviceProvider,
             ILiquidTemplateManager liquidTemplateManager,
-            IStringLocalizer<SeoMetaPartDisplay> stringLocalizer
+            IStringLocalizer<SeoMetaPartDisplayDriver> stringLocalizer
             )
         {
             _contentManager = contentManager;
@@ -41,10 +43,13 @@ namespace OrchardCore.Seo.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(SeoMetaPart part)
+        public override IDisplayResult Edit(SeoMetaPart part, BuildPartEditorContext context)
         {
-            return Combine(
-                Initialize<SeoMetaPartViewModel>("SeoMetaPart_Edit", model =>
+            var settings = context.TypePartDefinition.GetSettings<SeoMetaPartSettings>();
+
+            var results = new List<IDisplayResult>();
+
+            results.Add(Initialize<SeoMetaPartViewModel>("SeoMetaPart_Edit", model =>
                 {
                     model.PageTitle = part.PageTitle;
                     model.Render = part.Render;
@@ -54,15 +59,23 @@ namespace OrchardCore.Seo.Drivers
                     model.MetaRobots = part.MetaRobots;
                     model.CustomMetaTags = JsonConvert.SerializeObject(part.CustomMetaTags, SerializerSettings);
                     model.SeoMetaPart = part;
-                }).Location("Parts#Seo;50"),
-                Initialize<SeoMetaPartOpenGraphViewModel>("SeoMetaPartOpenGraph_Edit", model =>
+                    model.Settings = settings;
+                }).Location("Parts#Seo;50"));
+
+            if (settings.DisplayOpenGraph)
+            {
+                results.Add(Initialize<SeoMetaPartOpenGraphViewModel>("SeoMetaPartOpenGraph_Edit", model =>
                 {
                     model.OpenGraphType = part.OpenGraphType;
                     model.OpenGraphTitle = part.OpenGraphTitle;
                     model.OpenGraphDescription = part.OpenGraphDescription;
                     model.SeoMetaPart = part;
-                }).Location("Parts#Seo;50%Open Graph;20"),
-                Initialize<SeoMetaPartTwitterViewModel>("SeoMetaPartTwitter_Edit", model =>
+                }).Location("Parts#Seo;50%Open Graph;20"));
+            }
+
+            if (settings.DisplayTwitter)
+            {
+                results.Add(Initialize<SeoMetaPartTwitterViewModel>("SeoMetaPartTwitter_Edit", model =>
                 {
                     model.TwitterTitle = part.TwitterTitle;
                     model.TwitterDescription = part.TwitterDescription;
@@ -70,12 +83,19 @@ namespace OrchardCore.Seo.Drivers
                     model.TwitterCreator = part.TwitterCreator;
                     model.TwitterSite = part.TwitterSite;
                     model.SeoMetaPart = part;
-                }).Location("Parts#Seo;50%Twitter;30"),
-                Initialize<SeoMetaPartGoogleSchemaViewModel>("SeoMetaPartGoogleSchema_Edit", model =>
-                {
-                    model.GoogleSchema = part.GoogleSchema;
-                    model.SeoMetaPart = part;
-                }).Location("Parts#Seo;50%Google Schema;40"));
+                }).Location("Parts#Seo;50%Twitter;30"));
+            }
+
+            if (settings.DisplayGoogleSchema)
+            {
+                results.Add(Initialize<SeoMetaPartGoogleSchemaViewModel>("SeoMetaPartGoogleSchema_Edit", model =>
+                    {
+                        model.GoogleSchema = part.GoogleSchema;
+                        model.SeoMetaPart = part;
+                    }).Location("Parts#Seo;50%Google Schema;40"));
+            }
+
+            return Combine(results);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SeoMetaPart part, IUpdateModel updater)
