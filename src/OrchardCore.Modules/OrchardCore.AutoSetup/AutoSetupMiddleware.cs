@@ -35,6 +35,8 @@ namespace OrchardCore.AutoSetup
         /// </summary>
         private readonly IOptions<AutoSetupOptions> _setupOptions;
 
+        private readonly IShellHost _shellHost;
+
         /// <summary>
         /// The _logger.
         /// </summary>
@@ -46,17 +48,20 @@ namespace OrchardCore.AutoSetup
         /// <param name="next"> The next middleware in the execution pipeline. </param>
         /// <param name="shellSettingsManager">The Shell settings manager</param>
         /// <param name="setupOptions"> The auto-setup Options. </param>
+        /// <param name="shellHost"></param>
         /// <param name="logger"> The logger. </param>
         public AutoSetupMiddleware(
             RequestDelegate next,
             IShellSettingsManager shellSettingsManager,
             IOptions<AutoSetupOptions> setupOptions,
+            IShellHost shellHost,
             ILogger<AutoSetupMiddleware> logger)
         {
             _logger = logger;
             _next = next;
             _shellSettingsManager = shellSettingsManager;
             _setupOptions = setupOptions;
+            _shellHost = shellHost;
         }
 
         /// <summary>
@@ -71,20 +76,43 @@ namespace OrchardCore.AutoSetup
         public async Task InvokeAsync(HttpContext httpContext)
         {
             var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
+            var shellSettings = httpContext.RequestServices.GetRequiredService<ShellSettings>();
 
-            _logger.LogInformation("AutoSetup is initializing the site");
-
-            foreach (var tenant in _setupOptions.Value.Tenants)
+            if (shellSettings.State == TenantState.Uninitialized)
             {
-                if (!await SetupTenantAsync(
-                            setupService,
-                            tenant,
-                            tenant.IsDefault ? httpContext.RequestServices.GetRequiredService<ShellSettings>() : CreateTenantSettings(tenant)))
-                {
-                    break;
-                }
+                var setupTenant = _setupOptions.Value.Tenants
+                    .FirstOrDefault(options => string.Equals(shellSettings.Name, options.ShellName));
 
-                httpContext.Response.Redirect("/");
+                if (setupTenant != null)
+                {
+                    if (await SetupTenantAsync(setupService, setupTenant, shellSettings))
+                    {
+                        if (setupTenant.IsDefault)
+                        {
+                            // Create the rest of the Shells for further on demand setup
+                            foreach (var tenant in _setupOptions.Value.Tenants)
+                            {
+                                if (setupTenant != tenant)
+                                {
+                                    await CreateTenantSettingsAsync(tenant);
+                                }
+                            }
+                        }
+                    }
+
+                    var redirectUrl = "/";
+                    if (!string.IsNullOrEmpty(setupTenant.RequestUrlHost))
+                    {
+                        redirectUrl = setupTenant.RequestUrlHost;
+                    }
+                    else if (!string.IsNullOrEmpty(setupTenant.RequestUrlPrefix))
+                    {
+                        redirectUrl = $"/{setupTenant.RequestUrlPrefix}";
+                    }
+
+                    httpContext.Response.Redirect(redirectUrl);
+                    await httpContext.Response.CompleteAsync();
+                }
             }
 
             await _next.Invoke(httpContext);
@@ -102,6 +130,8 @@ namespace OrchardCore.AutoSetup
         public async Task<bool> SetupTenantAsync(ISetupService setupService, TenantSetupOptions setupOptions, ShellSettings shellSettings)
         {
             var setupContext = await GetSetupContextAsync(setupOptions, setupService, shellSettings);
+
+            _logger.LogInformation("AutoSetup is initializing the site");
 
             await setupService.SetupAsync(setupContext);
 
@@ -127,11 +157,11 @@ namespace OrchardCore.AutoSetup
         /// </summary>
         /// <param name="setupOptions"> The setup options. </param>
         /// <returns> The <see cref="ShellSettings"/>. </returns>
-        public ShellSettings CreateTenantSettings(TenantSetupOptions setupOptions)
+        public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
         {
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
-            shellSettings.Name = setupOptions.SiteName;
+            shellSettings.Name = setupOptions.ShellName;
             shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
             shellSettings.RequestUrlPrefix = setupOptions.RequestUrlPrefix;
             shellSettings.State = TenantState.Uninitialized;
@@ -141,6 +171,8 @@ namespace OrchardCore.AutoSetup
             shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider;
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = setupOptions.RecipeName;
+
+            await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
             return shellSettings;
         }

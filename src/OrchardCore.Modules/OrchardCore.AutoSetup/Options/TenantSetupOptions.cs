@@ -6,15 +6,22 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.AutoSetup.Options
 {
+    using System.Text.RegularExpressions;
+
     /// <summary>
     /// The tenant setup options.
     /// </summary>
     public class TenantSetupOptions
     {
         /// <summary>
-        /// Gets or sets the Flag which indicates a Default/Root shell/tenant.
+        /// The default/root shell name.
         /// </summary>
-        public bool IsDefault { get; set; }
+        private const string DefaultShellName = "Default";
+
+        /// <summary>
+        /// The Shell Name
+        /// </summary>
+        public string ShellName { get; set; }
 
         /// <summary>
         /// Gets or sets the user friendly Tenant/Site Name.
@@ -72,6 +79,11 @@ namespace OrchardCore.AutoSetup.Options
         public string RequestUrlPrefix { get; set; }
 
         /// <summary>
+        /// Gets the Flag which indicates a Default/Root shell/tenant.
+        /// </summary>
+        public bool IsDefault => string.Equals(ShellName, DefaultShellName, StringComparison.InvariantCultureIgnoreCase);
+
+        /// <summary>
         /// The validate.
         /// </summary>
         /// <param name="validationContext"> The validation context. </param>
@@ -80,6 +92,11 @@ namespace OrchardCore.AutoSetup.Options
         public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var T = validationContext.GetService<IStringLocalizer<AutoSetupOptions>>();
+
+            if (String.IsNullOrEmpty(ShellName) || !Regex.IsMatch(ShellName, @"^\w+$"))
+            {
+                yield return new ValidationResult(T["Invalid shell name. Can not be empty and must contain characters only and no spaces.", "Shell name"], new[] { nameof(ShellName) });
+            }
 
             if (!IsDefault && string.IsNullOrWhiteSpace(RequestUrlPrefix) && string.IsNullOrWhiteSpace(RequestUrlHost))
             {
