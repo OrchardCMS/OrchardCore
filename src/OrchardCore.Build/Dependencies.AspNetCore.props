@@ -1,8 +1,31 @@
 <Project>
   <PropertyGroup>
-    <AspNetCoreVersion>3.1.12</AspNetCoreVersion>
-    <AspNetCoreTargetFramework>netcoreapp3.1</AspNetCoreTargetFramework>
+    <!-- The default TFM for web app and console projects is net5.0 -->
+    <AspNetCoreTargetFramework>net5.0</AspNetCoreTargetFramework>
+    <AspNetCoreTargetFrameworks>netcoreapp3.1;net5.0</AspNetCoreTargetFrameworks>
+    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
   </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(TargetFramework)' == 'net5.0' ">
+      <PropertyGroup>
+        <AspNetCoreVersion>5.0.3</AspNetCoreVersion>
+        <MicrosoftExtensionsVersion>5.0.1</MicrosoftExtensionsVersion>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <!--
+      Fallback when not targetting .net 5.0.
+      At this time, that would mean .net core 3.1. If there are more target frameworks in the future,
+      this logic should change slightly.
+      -->
+      <PropertyGroup>
+        <AspNetCoreVersion>3.1.12</AspNetCoreVersion>
+        <MicrosoftExtensionsVersion>3.1.12</MicrosoftExtensionsVersion>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <!-- Add all of the AspNetCore packages -->
   <ItemGroup>
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCoreVersion)" />
@@ -15,7 +38,12 @@
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
+
+  <!-- Add all Microsoft.Extensions packages -->
+  <ItemGroup>
+    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsVersion)" />
+  </ItemGroup>
+
 </Project>

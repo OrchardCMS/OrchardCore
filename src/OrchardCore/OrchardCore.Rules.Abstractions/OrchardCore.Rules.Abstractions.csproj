@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Rules</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Rules Abstractions</Title>
     <Description>$(OCFrameworkDescription)
-    
+
     Abstractions for rules.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
@@ -18,5 +17,5 @@
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
   </ItemGroup>
-  
+
 </Project>

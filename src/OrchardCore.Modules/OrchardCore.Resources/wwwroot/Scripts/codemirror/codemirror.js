@@ -14650,6 +14650,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.59.3";
+  CodeMirror.version = "5.59.4";
   return CodeMirror;
 });
