@@ -7,6 +7,7 @@
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "CardGrouping";
     Model.Classes.Clear();
+    Model.Classes.Add("accordion");
 
     tag.Attributes["id"] = $"tab-{Model.Grouping.Key}-{Model.Identifier}".HtmlClassify();
     tag.AddCssClass("tab-pane fade");

@@ -136,6 +136,9 @@ namespace OrchardCore.DisplayManagement.Zones
                     m.Identifier = identifier;
                     m.Grouping = groupings.ElementAt(0);
                 });
+
+                ((List<string>)cardGrouping.Classes).AddRange(Shape.Classes);
+
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(cardGrouping));
             }
 
@@ -214,6 +217,8 @@ namespace OrchardCore.DisplayManagement.Zones
                     }
                     container.Add(groupingShape);
                 }
+
+                ((List<string>)container.Classes).AddRange(Shape.Classes);
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
             }

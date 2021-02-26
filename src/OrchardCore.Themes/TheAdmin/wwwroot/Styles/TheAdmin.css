@@ -46778,3 +46778,6 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 :root[data-theme=darkmode] .list-group-item-action .list-group-item-heading {
   color: #fff;
 }
+[dir]:root[data-theme=darkmode] .card-header {
+  background-color: #1b1e1f;
+}
