@@ -166,14 +166,14 @@ namespace OrchardCore.Resources
                 .DefineStyle("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Styles/codemirror/codemirror.min.css", "~/OrchardCore.Resources/Styles/codemirror/codemirror.css")
                 .SetCdn(codeMirrorUrl + "codemirror.min.css", codeMirrorUrl + "codemirror.css")
-                .SetCdnIntegrity("sha384-M2ZzGXwbH1fm9nsCEXyIdWzOoQqD7rM5rOSARAM2bl4rNksHfYqdMltLkdZZhwsi", "sha384-me3GYw39+VnACscdDXhP/b1IARe/OQVQhFGmJaZpMi9PappkEGC93cl+iVBotdjX")
+                .SetCdnIntegrity("sha384-K/FfhVUneW5TdId1iTRDHsOHhLGHoJekcX6UThyJhMRctwRxlL3XmSnTeWX2k3Qe", "sha384-KsbK45E17r4hdzdJB8hf/poBTYi0oDktKdCAyP67Uc9lE9Amf83NF+Vf6VJZ6mRK")
                 .SetVersion(codeMirrorVersion);
 
             _manifest
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn(codeMirrorUrl + "codemirror.min.js", codeMirrorUrl + "codemirror.js")
-                .SetCdnIntegrity("sha384-kpEvYXfMSJy+E+EP/KU+ozjEdR9hcg7bRsHPgEHg7OooHjqT2Pc2ctHpk6m3qSQC", "sha384-EOrUJr+a9OlGEoP6h0akZjV36wwr5aXtamwzd6D8HiRNt7Jlzxd2YCxXUhjEEfYx")
+                .SetCdnIntegrity("sha384-v0AyVIspkm1uirQ6Nsmr90ScryXAWf+xv0DlNrNo1BkSY3sqr7tsUKLZyTMHqy2G", "sha384-4Kka5Zlhg+Yey1AtINHTVRfRwEbeb269ESi+eYTrhd3s1MVH7j3onAj0m+R5mmhi")
                 .SetVersion(codeMirrorVersion);
 
             _manifest
