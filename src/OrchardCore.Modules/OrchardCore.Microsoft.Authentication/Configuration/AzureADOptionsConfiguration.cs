@@ -13,6 +13,10 @@ using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 
+#pragma warning disable CS0618
+// The net5.0 5.0.3 build obsoletes 'AzureADOptions' and 'AzureADDefaults', 'Microsoft.Identity.Web' should be used instead.
+// The build warning is disabled temporarily until the code can be migrated.
+
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     public class AzureADOptionsConfiguration :
@@ -110,3 +114,6 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         }
     }
 }
+
+// Restore the obsolete warning disabled above
+#pragma warning restore CS0618

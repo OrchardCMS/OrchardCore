@@ -1,8 +1,14 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  
-  <!-- 
-    This file is included in the NuGet packages as "build\$(TargetFramework)\$(AssemblyName).props" file.
-    It contains the logic to be referenced as a module by the main application.
+
+  <!--
+    The ModulePackageNames item group will cause the application referencing this
+    assembly to treat this assembly as an Orchard Module.  Without this, the application
+    will not realize that the assembly is a module and the module will not be loaded and
+    available.
+
+    This is packaged into the nuget package in OrchardCore.Module.Targets and should
+    automatically be imported into the referencing project's generated msbuild files
+    in the obj folder.
   -->
   <ItemGroup>
     <ModulePackageNames Include="$(MSBuildThisFileName)" />
