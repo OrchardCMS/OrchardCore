@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -23,8 +22,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 return new HtmlContentValue(await task);
             }
 
-            var inputObject = input.ToObjectValue();
-            if (inputObject is IShape shape)
+            if (input.ToObjectValue() is IShape shape)
             {
                 var task = _displayHelper.ShapeExecuteAsync(shape);
                 if (!task.IsCompletedSuccessfully)
@@ -33,14 +31,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 }
 
                 return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
-            }
-            else if (inputObject is IHtmlContent htmlContent)
-            {
-                return new ValueTask<FluidValue>(new HtmlContentValue(htmlContent));
-            }
-            else if (inputObject is object obj)
-            {
-                return new ValueTask<FluidValue>(new HtmlContentValue(new StringHtmlContent(obj.ToString())));
             }
 
             return new ValueTask<FluidValue>(new HtmlContentValue(HtmlString.Empty));

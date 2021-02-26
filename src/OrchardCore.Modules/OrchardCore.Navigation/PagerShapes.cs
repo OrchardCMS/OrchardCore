@@ -14,6 +14,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Navigation
 {
@@ -285,7 +286,7 @@ namespace OrchardCore.Navigation
             // gap at the beginning of the pager
             if (firstPage > 1 && numberOfPagesToShow > 0)
             {
-                await shape.AddAsync((object) await New.Pager_Gap(Value: gapText, Pager: shape));
+                await shape.AddAsync((object)await New.Pager_Gap(Value: gapText, Pager: shape));
             }
 
             // page numbers
@@ -335,7 +336,7 @@ namespace OrchardCore.Navigation
             // gap at the end of the pager
             if (lastPage < totalPageCount && numberOfPagesToShow > 0)
             {
-                await shape.AddAsync((object) await New.Pager_Gap(Value: gapText, Pager: shape));
+                await shape.AddAsync((object)await New.Pager_Gap(Value: gapText, Pager: shape));
             }
 
             // Next
@@ -552,9 +553,9 @@ namespace OrchardCore.Navigation
 
         private IHtmlContent CoerceHtmlString(object value)
         {
-            if (value == null)
+            if (value == null || value is ZoneOnDemand)
             {
-                return null;
+                return HtmlString.Empty;
             }
 
             if (value is IHtmlContent result)

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Implementation
@@ -42,9 +43,9 @@ namespace OrchardCore.DisplayManagement.Implementation
             var shape = context.Value;
 
             // non-shape arguments are returned as a no-op
-            if (shape == null)
+            if (shape == null || shape is ZoneOnDemand)
             {
-                return CoerceHtmlString(context.Value);
+                return HtmlString.Empty;
             }
 
             var shapeMetadata = shape.Metadata;
@@ -254,9 +255,9 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         private static IHtmlContent CoerceHtmlString(object value)
         {
-            if (value == null)
+            if (value == null || value is ZoneOnDemand)
             {
-                return null;
+                return HtmlString.Empty;
             }
 
             if (value is IHtmlContent result)
@@ -267,11 +268,11 @@ namespace OrchardCore.DisplayManagement.Implementation
                 // serialize it right away. But performance seems to be better
                 // like this, until we find this is an issue.
 
-                //using (var html = new StringWriter())
-                //{
-                //    result.WriteTo(html, htmlEncoder);
-                //    return new HtmlString(html.ToString());
-                //}
+                // using (var html = new StringWriter())
+                // {
+                //     result.WriteTo(html, htmlEncoder);
+                //     return new HtmlString(html.ToString());
+                // }
             }
 
             // Convert to a string and HTML-encode it
@@ -291,7 +292,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         private static ValueTask<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
         {
-            async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
+            static async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
             {
                 return CoerceHtmlString(await task);
             }

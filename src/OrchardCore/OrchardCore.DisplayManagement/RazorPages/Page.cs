@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
 {
     public abstract class Page : Microsoft.AspNetCore.Mvc.RazorPages.Page
     {
-        private dynamic _displayHelper;
+        private IDisplayHelper _displayHelper;
         private IShapeFactory _shapeFactory;
         private IOrchardDisplayHelper _orchardHelper;
         private ISite _site;
@@ -77,22 +77,8 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <param name="shape">The shape.</param>
         public Task<IHtmlContent> DisplayAsync(dynamic shape)
         {
-            if (shape is IShape shapeObject)
-            {
-                EnsureDisplayHelper();
-
-                return _displayHelper.ShapeExecuteAsync(shapeObject);
-            }
-            else if (shape is IHtmlContent htmlContent)
-            {
-                return Task.FromResult(htmlContent);
-            }
-            else if (shape is object obj)
-            {
-                return Task.FromResult<IHtmlContent>(new StringHtmlContent(obj.ToString()));
-            }
-
-            return Task.FromResult<IHtmlContent>(HtmlString.Empty);
+            EnsureDisplayHelper();
+            return _displayHelper.ShapeExecuteAsync(shape);
         }
 
         /// <summary>

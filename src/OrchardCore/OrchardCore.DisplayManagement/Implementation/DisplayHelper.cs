@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
@@ -66,7 +67,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public Task<IHtmlContent> ShapeExecuteAsync(IShape shape)
         {
-            if (shape == null)
+            if (shape == null || shape is ZoneOnDemand)
             {
                 return Task.FromResult<IHtmlContent>(HtmlString.Empty);
             }

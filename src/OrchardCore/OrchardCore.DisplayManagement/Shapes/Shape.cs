@@ -6,7 +6,6 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Zones;
 
