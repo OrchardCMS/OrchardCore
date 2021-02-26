@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Localization.Dynamic.Deployment;
-using OrchardCore.Localization.Dynamic.Recipes;
-using OrchardCore.Localization.Dynamic.Services;
+using OrchardCore.Localization.Data.Deployment;
+using OrchardCore.Localization.Data.Recipes;
+using OrchardCore.Localization.Data.Services;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
 
-namespace OrchardCore.Localization
+namespace OrchardCore.Localization.Data
 {
     /// <summary>
     /// Represents a localization module entry point.

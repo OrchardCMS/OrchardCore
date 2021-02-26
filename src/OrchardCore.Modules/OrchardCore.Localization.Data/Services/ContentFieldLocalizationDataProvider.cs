@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.ContentTypes.Services;
 
-namespace OrchardCore.Localization.Dynamic.Services
+namespace OrchardCore.Localization.Data.Services
 {
     public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
     {

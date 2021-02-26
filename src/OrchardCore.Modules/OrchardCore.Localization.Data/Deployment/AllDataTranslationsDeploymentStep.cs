@@ -1,6 +1,6 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Localization.Dynamic.Deployment
+namespace OrchardCore.Localization.Data.Deployment
 {
     public class AllDataTranslationsDeploymentStep : DeploymentStep
     {

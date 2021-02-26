@@ -1,11 +1,11 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Dynamic Localization",
+    Name = "Data Localization",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Provides support for dynamic data localization.",
+    Description = "Provides support for data localization.",
     Category = "Internationalization",
     Dependencies = new[] { "OrchardCore.Localization" }
 )]

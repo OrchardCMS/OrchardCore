@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Localization.Dynamic.Models
+namespace OrchardCore.Localization.Data.Models
 {
     public class TranslationsDocument : Document
     {

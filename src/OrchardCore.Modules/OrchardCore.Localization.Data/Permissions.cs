@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Localization.Dynamic
+namespace OrchardCore.Localization.Data
 {
     /// <summary>
     /// Represents the localization module permissions.
