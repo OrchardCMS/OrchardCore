@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
     <Title>OrchardCore Roles</Title>
     <Description>$(OCCMSDescription)
-    
+
     The roles module is adding the ability to assign roles to users. It's also providing a set of default roles for which other modules can define default permissions.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>

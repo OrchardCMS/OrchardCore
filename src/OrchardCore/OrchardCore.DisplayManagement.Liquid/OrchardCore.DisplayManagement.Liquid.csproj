@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
 
     <!-- NuGet properties-->
     <Title>OrchardCore DisplayManagement Liquid</Title>

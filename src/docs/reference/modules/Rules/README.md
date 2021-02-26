@@ -6,7 +6,7 @@ Enabling the `OrchardCore.Rules` module allows you to implement condition based 
 
 You may create your own conditions for more complex scenarios.
 
-You will need to implement the abstrations found in the `OrchardCore.Rules.Abstractions` package.
+You will need to implement the abstractions found in the `OrchardCore.Rules.Abstractions` package.
 
 - `Condition`
 - `ConditionEvaluator`
