@@ -391,12 +391,12 @@ namespace OrchardCore.Media
 </table>";
                 d.Categories = new string[] { "HTML Content", "Media" };
             });
-            services.AddShortcode<ShareShortCodeProvider>("share", d =>
+            services.AddShortcode<LinkShortcodeProvider>("link", d =>
             {
-                d.DefaultValue = "[share] [/share]";
+                d.DefaultValue = "[link] [/link]";
                 d.Hint = "Add a link to sharable, downloadable content from the media library.";
                 d.Usage =
-@"[share]foo.jpg[/share]<br>
+@"[link]foo.jpg[/link]<br>
 <table>
   <tr>
     <td>Args:</td>
@@ -413,7 +413,7 @@ namespace OrchardCore.Media
             // whitelist the 'download' attribute to enable the share-shortcode
             services.ConfigureHtmlSanitizer((sanitizer) =>
             {
-                sanitizer.AllowedAttributes.Add(ShortcodeProperty.Save.Mapping);
+                sanitizer.AllowedAttributes.Add(LinkShortcodeProperties.Save.Mapping);
             });
         }
     }

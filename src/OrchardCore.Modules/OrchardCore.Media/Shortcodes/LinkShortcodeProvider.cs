@@ -31,17 +31,15 @@ namespace OrchardCore.Media.Shortcodes
     /// delimiter for the next arguement pair, and so quotes are required for multi-word titles
     /// - class: to specify the css classes to attach to the element
     /// </summary>
-    public class ShareShortCodeProvider : IShortcodeProvider
+    public class LinkShortcodeProvider
+        : IShortcodeProvider
     {
 
-        private const string FileExtensionSeperator = ".";
         private static readonly ValueTask<string> Null = new ValueTask<string>((string)null);
-        private static readonly ValueTask<string> ShareShortcode = new ValueTask<string>("[share]");
+        private static readonly ValueTask<string> LinkShortcode = new ValueTask<string>("[link]");
         private static readonly HashSet<string> Shortcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "share",
-            "doc",
-            "download"
+            "link",
         };
 
         private readonly IMediaFileStore _mediaFileStore;
@@ -49,7 +47,7 @@ namespace OrchardCore.Media.Shortcodes
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResourceManagementOptions _options;
 
-        public ShareShortCodeProvider(
+        public LinkShortcodeProvider(
             IMediaFileStore mediaFileStore,
             IHtmlSanitizerService htmlSanitizerService,
             IHttpContextAccessor httpContextAccessor,
@@ -62,7 +60,7 @@ namespace OrchardCore.Media.Shortcodes
         }
 
         #region https://stackoverflow.com/a/40361205/549306
-        private static readonly Uri SomeBaseUri = new Uri("http://canbeanything");
+        private static readonly Uri SomeBaseUri = new Uri("http://example.com");
 
         private static string GetFileNameFromUrl(string url)
         {
@@ -86,57 +84,54 @@ namespace OrchardCore.Media.Shortcodes
             }
 
             // critical that at least the content or the href/url/source is set
-            if (String.IsNullOrWhiteSpace(content) && !IsSet(arguments, ShortcodeProperty.Url))
+            if (String.IsNullOrWhiteSpace(content) && arguments.NamedOrDefault(LinkShortcodeProperties.Url.Name) is null)
             {
-                return ShareShortcode;
+                return LinkShortcode;
             }
 
             string url;
-            string href;
             // sort out and infer as necessary the description (content) and resource location (url and href)
-            if (IsSet(arguments, ShortcodeProperty.Url))
+            if (arguments.NamedOrDefault(LinkShortcodeProperties.Url.Name) is null)
             {
-                url = UrlFixer(arguments.NamedOrDefault(ShortcodeProperty.Url.Name));
-                if (String.IsNullOrWhiteSpace(content))
-                {
-                    content = GetFileNameFromUrl(url).Split(FileExtensionSeperator)[0];
-                }
+                url = UrlFixer(content);
+                content = url;
             }
             else
             {
-                url = UrlFixer(content);
-                // because both the content and the href can't be empty, we presume the content was the href in this branch, and replace a shortened, friendlier name for the resulting content
-                content = GetFileNameFromUrl(content).Split(FileExtensionSeperator)[0];
+                url = UrlFixer(arguments.NamedOrDefault(LinkShortcodeProperties.Url.Name));
+                if (String.IsNullOrWhiteSpace(content))
+                {
+                    content = url;
+                }
             }
 
             // urlencode to fix space in path rendering
-            href = FormatAsHtmlElementAttribute(ShortcodeProperty.Url, Uri.EscapeUriString(url));
-            var saveAs = IsSet(arguments, ShortcodeProperty.Save) ? arguments.NamedOrDefault(ShortcodeProperty.Save.Name) : GetFileNameFromUrl(url);
-            saveAs = FormatAsHtmlElementAttribute(ShortcodeProperty.Save, saveAs);
+            var href = FormatAsAttributePair(LinkShortcodeProperties.Url, Uri.EscapeUriString(url));
 
-            // process contextually benign adornments
+            // construct a browser-friendly 'save as' filename
+            var saveAs = arguments.NamedOrDefault(LinkShortcodeProperties.Save.Name) is null ? GetFileNameFromUrl(url) : arguments.NamedOrDefault(LinkShortcodeProperties.Save.Name);
+            saveAs = FormatAsAttributePair(LinkShortcodeProperties.Save, saveAs);
+
+            // process contextually benign link adornments
             var classList = String.Empty;
             var titleText = String.Empty;
             if (arguments.Any())
             {
 
-                classList = FormatArguement(arguments, ShortcodeProperty.Class);
-                titleText = FormatArguement(arguments, ShortcodeProperty.Tooltip);
-                //var queryStringParams = new Dictionary<string, string>();
-                //content = QueryHelpers.AddQueryString(content, queryStringParams);
+                classList = FormatArguement(arguments, LinkShortcodeProperties.Class);
+                titleText = FormatArguement(arguments, LinkShortcodeProperties.Tooltip);
             }
 
-            content = String.Format("<a {0} {1} {2} {3}>{4}</a>", new string[] { titleText, classList, href, saveAs, content });
+            // render sanitized html
+            content = $"<a {titleText} {classList} {href} {saveAs}>{content}</a>";
             content = _htmlSanitizerService.Sanitize(content);
 
             return new ValueTask<string>(content);
         }
 
-        private static string FormatAsHtmlElementAttribute(ShortcodeProperty property, string value) => !String.IsNullOrEmpty(value) ? String.Format("{0}=\"{1}\"", new string[] { property.Mapping, value }) : String.Empty;
+        private static string FormatAsAttributePair(LinkShortcodeProperties property, string value) => String.IsNullOrEmpty(value) ? String.Empty: $"{property.Mapping}=\"{value}\"";
 
-        private static bool IsSet(Arguments arguments, ShortcodeProperty property) => !String.IsNullOrWhiteSpace(arguments.NamedOrDefault(property.Name));
-
-        private static string FormatArguement(Arguments arguments, ShortcodeProperty property) => FormatAsHtmlElementAttribute(property, arguments.Named(property.Name));
+        private static string FormatArguement(Arguments arguments, LinkShortcodeProperties property) => FormatAsAttributePair(property, arguments.Named(property.Name));
 
         private string UrlFixer(string url)
         {
@@ -148,23 +143,26 @@ namespace OrchardCore.Media.Shortcodes
 
             if (IsVirtualPath(url))
             {
+                // add tenant path part
                 var requestPath = _httpContextAccessor.HttpContext.Request.PathBase;
                 url = requestPath.Add(url[1..]).Value;
                 // using a cdn?
-                if (!String.IsNullOrEmpty(_options.CdnBaseUrl))
+                if (IsUsingCdn())
                 {
+                    // add cdn part
                     url = _options.CdnBaseUrl + url;
                 }
             }
             else
             {
+                // add media store part
                 url = _mediaFileStore.MapPathToPublicUrl(url);
             }
 
- 
-
             return url;
         }
+
+        private bool IsUsingCdn() => !String.IsNullOrEmpty(_options.CdnBaseUrl);
 
         // Serve static files from virtual path (multi-tenancy)
         private static bool IsVirtualPath(string url) => url.StartsWith("~/", StringComparison.Ordinal);
