@@ -137,8 +137,6 @@ namespace OrchardCore.DisplayManagement.Zones
                     m.Grouping = groupings.ElementAt(0);
                 });
 
-                cardGrouping.Classes.Add("accordion");
-
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(cardGrouping));
             }
 
