@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
-      <PackagePath>build\$(AssemblyName).props</PackagePath>
+      <PackagePath>buildMultiTargeting\$(AssemblyName).props</PackagePath>
     </None>
   </ItemGroup>
 
