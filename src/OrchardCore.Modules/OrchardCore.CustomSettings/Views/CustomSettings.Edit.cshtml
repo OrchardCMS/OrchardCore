@@ -11,8 +11,6 @@
         <div class="edit-item-parts">
             @if (Model.Parts != null)
             {
-                Model.Parts.Classes.Add("accordion");
-
                 @await DisplayAsync(Model.Parts)
             }
         </div>

@@ -137,7 +137,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     m.Grouping = groupings.ElementAt(0);
                 });
 
-                ((List<string>)cardGrouping.Classes).AddRange(Shape.Classes);
+                cardGrouping.Classes.Add("accordion");
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(cardGrouping));
             }
@@ -176,12 +176,28 @@ namespace OrchardCore.DisplayManagement.Zones
 
             if (groupings.Count > 1)
             {
+                var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("CardContainer", m =>
+                {
+                    m.Identifier = Shape.Identifier;
+                });
+
                 var orderedGroupings = groupings.OrderBy(grouping =>
                 {
                     var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                     {
                         if (group is IShape s && !String.IsNullOrEmpty(s.Metadata.Card) && s.Metadata.Card.IndexOf(';') != -1)
                         {
+                            return true;
+                        }
+
+                        return false;
+                    });
+
+                    var hasDisplayType = grouping.FirstOrDefault(group =>
+                    {
+                        if (group is IShape s && !String.IsNullOrEmpty(s.Metadata.Type) && s.Metadata.Type.IndexOf("__") != -1)
+                        {
+                            container.Classes.Add(s.Metadata.Type.Split("__", 2).Last().ToLower());
                             return true;
                         }
 
@@ -198,11 +214,6 @@ namespace OrchardCore.DisplayManagement.Zones
                     return new PositionalGrouping();
                 }, FlatPositionComparer.Instance);
 
-                var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("CardContainer", m =>
-                {
-                    m.Identifier = Shape.Identifier;
-                });
-
                 foreach (var orderedGrouping in orderedGroupings)
                 {
                     var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Card", m =>
@@ -217,8 +228,6 @@ namespace OrchardCore.DisplayManagement.Zones
                     }
                     container.Add(groupingShape);
                 }
-
-                ((List<string>)container.Classes).AddRange(Shape.Classes);
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
             }

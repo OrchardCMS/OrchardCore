@@ -49,7 +49,7 @@ namespace OrchardCore.Seo.Drivers
 
             var results = new List<IDisplayResult>();
 
-            results.Add(Initialize<SeoMetaPartViewModel>("SeoMetaPart_Edit", model =>
+            results.Add(Initialize<SeoMetaPartViewModel>("SeoMetaPart_Edit__Accordion", model =>
                 {
                     model.PageTitle = part.PageTitle;
                     model.Render = part.Render;
