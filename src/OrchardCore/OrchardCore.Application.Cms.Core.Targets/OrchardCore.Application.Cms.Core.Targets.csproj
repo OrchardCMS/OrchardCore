@@ -106,6 +106,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Scripting\OrchardCore.Scripting.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Settings\OrchardCore.Settings.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Setup\OrchardCore.Setup.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.AutoSetup\OrchardCore.AutoSetup.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Sitemaps\OrchardCore.Sitemaps.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Shortcodes\OrchardCore.Shortcodes.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Taxonomies\OrchardCore.Taxonomies.csproj" PrivateAssets="none" />
