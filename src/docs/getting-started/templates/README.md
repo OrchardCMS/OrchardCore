@@ -36,11 +36,12 @@ You can pass the following CLI parameters to setup options:
 Orchard Core Cms Web App (C#)
 Author: Orchard Project
 Options:
-  --Framework            Configures the Framework.
+  -fk|--framework        Configures the Framework.
                              net5.0        - Configures the 5.0 .NET Framework.
                              netcoreapp3.1 - Configures the 3.1 .NET Core Framework.
                          Default: net5.0
-  --logger               Configures the logger component.
+
+  -lg|--logger               Configures the logger component.
                              nlog       - Configures NLog as the logger component.
                              serilog    - Configures Serilog as the logger component.
                              none       - Do not use a logger.
@@ -54,7 +55,7 @@ Options:
 The `3.1` .NET Core Framework can be used with this command:
 
 ```CMD
-dotnet new occms --Framework netcoreapp3.1
+dotnet new occms --framework netcoreapp3.1
 ```
 
 Logging can be ignored with this command:
