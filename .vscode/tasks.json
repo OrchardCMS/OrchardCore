@@ -100,6 +100,7 @@
 					"--configuration", "release",
 					"--runtime", "win-x64",
 					"--self-contained",
+          "--framework", "net5.0",
 					"--output", ".\\.build\\release"
 				]
 			},
@@ -108,6 +109,7 @@
 				"--configuration", "release",
 				"--runtime", "linux-x64",
 				"--self-contained",
+        "--framework", "net5.0",
 				"--output", "./.build/release"
 			],
 			"problemMatcher": "$msCompile"
@@ -123,6 +125,7 @@
 					"--configuration", "release",
 					"--runtime", "win-x64",
 					"--self-contained", "false",
+          "--framework", "net5.0",
 					"--output", ".\\.build\\release"
 				]
 			},
@@ -131,6 +134,7 @@
 				"--configuration", "release",
 				"--runtime", "linux-x64",
 				"--self-contained", "false",
+        "--framework", "net5.0",
 				"--output", "./.build/release"
 			],
 			"problemMatcher": "$msCompile"
