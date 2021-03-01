@@ -3,7 +3,7 @@
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>OrchardCore.Tests</AssemblyName>
     <PackageId>OrchardCore.Tests</PackageId>
