@@ -36,7 +36,7 @@ You can pass the following CLI parameters to setup options:
 Orchard Core Cms Web App (C#)
 Author: Orchard Project
 Options:
-  -fk|--framework        Configures the Framework.
+  -fm|--framework        Configures the Framework.
                              net5.0        - Configures the 5.0 .NET Framework.
                              netcoreapp3.1 - Configures the 3.1 .NET Core Framework.
                          Default: net5.0
