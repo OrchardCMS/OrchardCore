@@ -20,7 +20,7 @@ jobs:
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.102
+        dotnet-version: 5.0.103
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -50,7 +50,7 @@ jobs:
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.102
+        dotnet-version: 5.0.103
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -98,7 +98,7 @@ jobs:
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.102
+        dotnet-version: 5.0.103
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -142,7 +142,7 @@ jobs:
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.102
+        dotnet-version: 5.0.103
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -185,7 +185,7 @@ jobs:
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.102
+        dotnet-version: 5.0.103
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
