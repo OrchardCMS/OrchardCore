@@ -53,8 +53,10 @@ The auto-setup module allows to automatically install the application/tenants on
 | `AdminPassword` | The password of the tenant super user. |
 | `DatabaseProvider` | The database provider. |
 | `DatabaseConnectionString` | The connection string. |
-| `DatabaseTablePrefix` | The database table prefix. |
+| `DatabaseTablePrefix` | The database table prefix. Can be used to install Tenant on the same Database |
 | `RecipeName` | The tenant installation Recipe Name. |
+| `RequestUrlHost` | The tenant host url. |
+| `RequestUrlPrefix` | The tenant url prefix. |
 
 !!! note
     Tenants Array Must Contain Root Tenant with `ShellName` equals to `Default`. Each tenant will be installed on Demand (on the first tenant request).
