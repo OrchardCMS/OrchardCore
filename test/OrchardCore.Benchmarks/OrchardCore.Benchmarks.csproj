@@ -5,8 +5,13 @@
   <PropertyGroup>
     <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
     <RootNamespace>OrchardCore.Benchmark</RootNamespace>
+    <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" />
