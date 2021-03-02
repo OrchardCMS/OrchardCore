@@ -37,13 +37,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             {
                 var partName = part.Name;
 
-                // Check if another builder has already added a field for this part.
-                if (contentItemType.HasField(partName)) continue;
-
                 // This builder only handles parts with fields.
-                if (!part.PartDefinition.Fields.Any()) continue;
+                if (!part.PartDefinition.Fields.Any()) 
+                {
+                    continue;
+                }
 
-                if (_contentOptions.ShouldSkip(part)) continue;
+                if (_contentOptions.ShouldSkip(part)) 
+                {
+                    continue;
+                }
 
                 if (_contentOptions.ShouldCollapse(part))
                 {
@@ -55,7 +58,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                             if (fieldType != null)
                             {
-                                if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name)) continue;
+                                if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name)) 
+                                {
+                                    continue;
+                                }
 
                                 contentItemType.AddField(fieldType);
                                 break;
@@ -65,6 +71,27 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
                 else
                 {
+                    // Check if another builder has already added a field for this part.
+                    var existingField = contentItemType.GetField(partName.ToFieldName());
+                    if (existingField != null)
+                    {
+                        // Add content field types.
+                        foreach (var field in part.PartDefinition.Fields)
+                        {
+                            foreach (var fieldProvider in contentFieldProviders)
+                            {
+                                var contentFieldType = fieldProvider.GetField(field);
+
+                                if (contentFieldType != null && !contentItemType.HasField(contentFieldType.Name))
+                                {
+                                    contentItemType.AddField(contentFieldType);
+                                    break;
+                                }
+                            }
+                        }
+                        continue;
+                    }
+
                     if (_dynamicPartFields.TryGetValue(partName, out var fieldType))
                     {
                         contentItemType.AddField(fieldType);
