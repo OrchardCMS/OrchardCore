@@ -37,9 +37,9 @@ Orchard Core Cms Web App (C#)
 Author: Orchard Project
 Options:
   -fm|--framework        Configures the Framework.
-                             net5.0        - Configures the 5.0 .NET Framework.
                              netcoreapp3.1 - Configures the 3.1 .NET Core Framework.
-                         Default: net5.0
+                             net5.0        - Configures the 5.0 .NET Framework.
+                         Default: netcoreapp3.1
 
   -lg|--logger               Configures the logger component.
                              nlog       - Configures NLog as the logger component.
@@ -52,10 +52,10 @@ Options:
                          Default: 1.0.0-rc2
 ```
 
-The `3.1` .NET Core Framework can be used with this command:
+The .NET Framework `5.0` can be used with this command:
 
 ```CMD
-dotnet new occms --framework netcoreapp3.1
+dotnet new occms --framework net5.0
 ```
 
 Logging can be ignored with this command:
