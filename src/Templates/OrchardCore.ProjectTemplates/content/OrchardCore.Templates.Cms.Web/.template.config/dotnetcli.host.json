@@ -15,7 +15,8 @@
     }
   },
   "usageExamples": [
-    "--nlog false",
+    "--framework net5.0",
+    "--logger none",
     "--orchard-version 1.0.0-rc2"
   ]
 }

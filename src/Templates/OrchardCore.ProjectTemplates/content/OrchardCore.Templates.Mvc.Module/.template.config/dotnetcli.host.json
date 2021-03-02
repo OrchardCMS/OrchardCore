@@ -11,6 +11,7 @@
     }
   },
   "usageExamples": [
+    "--framework net5.0",
     "--orchard-version 1.0.0-beta3"
   ]
 }
