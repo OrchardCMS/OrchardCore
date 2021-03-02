@@ -16,6 +16,11 @@ namespace OrchardCore.ContentManagement.Records
     public class AutoroutePartIndex : MapIndex
     {
         /// <summary>
+        /// The id of the document.
+        /// </summary>
+        public int DocumentId { get; set; }
+
+        /// <summary>
         /// The container content item id.
         /// </summary>
         public string ContentItemId { get; set; }
@@ -49,10 +54,10 @@ namespace OrchardCore.ContentManagement.Records
     public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<ContentItem> _contentItemRemoved = new HashSet<ContentItem>();
-        private readonly HashSet<ContentItem> _partRemoved = new HashSet<ContentItem>();
-        private IContentManager _contentManager;
+        private readonly HashSet<ContentItem> _itemRemoved = new HashSet<ContentItem>();
+        private readonly HashSet<string> _partRemoved = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
+        private IContentManager _contentManager;
 
         public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
         {
@@ -67,31 +72,30 @@ namespace OrchardCore.ContentManagement.Records
 
                 if (part != null)
                 {
-                    _contentItemRemoved.Add(context.ContentItem);
+                    _itemRemoved.Add(context.ContentItem);
                 }
             }
 
             return Task.CompletedTask;
         }
 
-        public override async Task UpdatedAsync(UpdateContentContext context)
+        public override async Task PublishedAsync(PublishContentContext context)
         {
             var part = context.ContentItem.As<AutoroutePart>();
 
-            // Validate that the content definition contains an AutoroutePart.
-            // This prevents indexing parts that have been removed from the type definition, but are still present in the elements.            
+            // Validate that the content definition contains this part, this prevents indexing parts
+            // that have been removed from the type definition, but are still present in the elements.            
             if (part != null)
             {
                 // Lazy initialization because of ISession cyclic dependency.
-                _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+                _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                // Search for AutoroutePart.
+                // Search for this part.
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-
                 if (!contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AutoroutePart)))
                 {
                     context.ContentItem.Remove<AutoroutePart>();
-                    _partRemoved.Add(context.ContentItem);
+                    _partRemoved.Add(context.ContentItem.ContentItemId);
 
                     // When the part has been removed enlist an update for after the session has been committed.
                     var autorouteEntries = _serviceProvider.GetRequiredService<IAutorouteEntries>();
@@ -107,32 +111,28 @@ namespace OrchardCore.ContentManagement.Records
         public void Describe(DescribeContext<ContentItem> context)
         {
             context.For<AutoroutePartIndex>()
+                .When(contentItem => contentItem.Has<AutoroutePart>() || _partRemoved.Contains(contentItem.ContentItemId))
                 .Map(async contentItem =>
                 {
+                    // If the content item was removed, a record is still added.
+                    var itemRemoved = _itemRemoved.Contains(contentItem);
+                    if (!contentItem.Published && !contentItem.Latest && !itemRemoved)
+                    {
+                        return null;
+                    }
+
+                    // If the part was removed from the type definition, a record is still added.
+                    var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
+
                     var part = contentItem.As<AutoroutePart>();
-
-                    // When the part has been removed from the type definition it will return null here but we still need to process the index.
-                    var partRemoved = _partRemoved.Contains(contentItem);
-                    if (!partRemoved && part == null)
-                    {
-                        return null;
-                    }
-
-                    // If the related content item was removed, a record is still added.
-                    var contentItemRemoved = _contentItemRemoved.Contains(contentItem);
-                    if (!contentItem.Published && !contentItem.Latest && !contentItemRemoved)
-                    {
-                        return null;
-                    }
-
-                    if (!partRemoved && String.IsNullOrEmpty(part.Path))
+                    if (!partRemoved && (part == null || String.IsNullOrEmpty(part.Path)))
                     {
                         return null;
                     }
 
                     var results = new List<AutoroutePartIndex>
                     {
-                        // If the part is disabled, or removed, a record is still added but with a null path.
+                        // If the part is disabled or was removed, a record is still added but with a null path.
                         new AutoroutePartIndex
                         {
                             ContentItemId = contentItem.ContentItemId,
@@ -142,7 +142,7 @@ namespace OrchardCore.ContentManagement.Records
                         }
                     };
 
-                    if (partRemoved || !part.RouteContainedItems || part.Disabled || contentItemRemoved)
+                    if (partRemoved || !part.RouteContainedItems || part.Disabled || itemRemoved)
                     {
                         return results;
                     }

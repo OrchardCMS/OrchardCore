@@ -31,7 +31,7 @@ namespace OrchardCore.Lucene.QueryProviders
 
                     // TODO: Support flags
 
-                    var regexpQuery = new RegexpQuery(new Term(value.Value<string>()));
+                    var regexpQuery = new RegexpQuery(new Term(first.Name, value.Value<string>()));
 
                     if (obj.TryGetValue("boost", out var boost))
                     {

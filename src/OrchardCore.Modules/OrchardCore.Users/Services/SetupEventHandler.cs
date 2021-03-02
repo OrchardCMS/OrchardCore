@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Models;
 
@@ -18,28 +20,20 @@ namespace OrchardCore.Users.Services
         }
 
         public Task Setup(
-            string siteName,
-            string userName,
-            string userId,
-            string email,
-            string password,
-            string dbProvider,
-            string dbConnectionString,
-            string dbTablePrefix,
-            string siteTimeZone,
+            IDictionary<string, object> properties,
             Action<string, string> reportError
             )
         {
             var user = new User
             {
-                UserName = userName,
-                UserId = userId,
-                Email = email,
+                UserName = properties.TryGetValue(SetupConstants.AdminUsername, out var adminUserName) ? adminUserName?.ToString(): String.Empty,
+                UserId = properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString(): String.Empty,
+                Email =properties.TryGetValue(SetupConstants.AdminEmail, out var adminEmail) ? adminEmail?.ToString(): String.Empty,
                 RoleNames = new string[] { "Administrator" },
                 EmailConfirmed = true
             };
 
-            return _userService.CreateUserAsync(user, password, reportError);
+            return _userService.CreateUserAsync(user, properties[SetupConstants.AdminPassword]?.ToString(), reportError);
         }
     }
 }

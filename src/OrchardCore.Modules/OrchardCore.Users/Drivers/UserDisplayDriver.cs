@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
-using OrchardCore.Security.Services;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
@@ -23,37 +22,30 @@ namespace OrchardCore.Users.Drivers
     {
         private const string AdministratorRole = "Administrator";
         private readonly UserManager<IUser> _userManager;
-        private readonly IRoleService _roleService;
-        private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+        private IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
         private readonly IHtmlLocalizer H;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
-            IRoleService roleService,
-            IUserRoleStore<IUser> userRoleStore,
             IHttpContextAccessor httpContextAccessor,
             INotifier notifier,
             ILogger<UserDisplayDriver> logger,
-            IEnumerable<IUserEventHandler> handlers,
+            IEnumerable<IUserEventHandler> userEventHandlers,
             IAuthorizationService authorizationService,
             IHtmlLocalizer<UserDisplayDriver> htmlLocalizer)
         {
             _userManager = userManager;
-            _roleService = roleService;
-            _userRoleStore = userRoleStore;
             _httpContextAccessor = httpContextAccessor;
             _notifier = notifier;
             _authorizationService = authorizationService;
             _logger = logger;
-            Handlers = handlers;
+            _userEventHandlers = userEventHandlers;
             H = htmlLocalizer;
         }
-
-        public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
         public override IDisplayResult Display(User user)
         {
@@ -63,55 +55,52 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
+        public override IDisplayResult Edit(User user)
         {
-            return Task.FromResult<IDisplayResult>(Initialize<EditUserViewModel>("UserFields_Edit", async model =>
+            return Initialize<EditUserViewModel>("UserFields_Edit", async model =>
             {
-                var roleNames = await GetRoleNamesAsync();
-                var userRoleNames = await _userManager.GetRolesAsync(user);
-                var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = userRoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
-
-                model.Roles = roles;
                 model.EmailConfirmed = user.EmailConfirmed;
                 model.IsEnabled = user.IsEnabled;
+                // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
+                model.IsEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
+                    String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
             })
             .Location("Content:1.5")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers)));
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers, user));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers))
+            // To prevent html injection when updating the user must meet all authorization requirements.
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user))
             {
                 // When the user is only editing their profile never update this part of the user.
-                return await EditAsync(user, context);
+                return Edit(user);
             }
 
             var model = new EditUserViewModel();
-            var httpContext = _httpContextAccessor.HttpContext;
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
                 return await EditAsync(user, context);
             }
 
-            var usersOfAdminRole = await _userManager.GetUsersInRoleAsync(AdministratorRole);
             if (!model.IsEnabled && user.IsEnabled)
             {
-                if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName)
+                var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>(); ;
+                if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
                 {
                     _notifier.Warning(H["Cannot disable the only administrator."]);
                 }
                 else
                 {
-                    if (user.UserName != httpContext.User.Identity.Name)
+                    if (!String.Equals(user.UserId, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)))
                     {
                         user.IsEnabled = model.IsEnabled;
                         var userContext = new UserContext(user);
                         // TODO This handler should be invoked through the create or update methods.
-                        // otherwise it will not be invoked when a workflow changes this value.
-                        // or other operation.
-                        await Handlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
+                        // otherwise it will not be invoked when a workflow, or other operation, changes this value.
+                        await _userEventHandlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
                     }
                     else
                     {
@@ -123,74 +112,21 @@ namespace OrchardCore.Users.Drivers
             {
                 user.IsEnabled = model.IsEnabled;
                 var userContext = new UserContext(user);
-                // TODO This handler should be invoked through the or update methods.
-                // otherwise it will not be invoked when a workflow changes this value.
-                // or other operation.
-                await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
+                // TODO This handler should be invoked through the create or update methods.
+                // otherwise it will not be invoked when a workflow, or other operation, changes this value.
+                await _userEventHandlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
             }
 
             if (context.Updater.ModelState.IsValid)
             {
-                if (model.EmailConfirmed)
+                if (model.EmailConfirmed && !await _userManager.IsEmailConfirmedAsync(user))
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     await _userManager.ConfirmEmailAsync(user, token);
                 }
-
-                var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
-
-                if (context.IsNew)
-                {
-                    // Add new roles
-                    foreach (var role in roleNames)
-                    {
-                        await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken));
-                    }
-                }
-                else
-                {
-                    // Remove roles in two steps to prevent an iteration on a modified collection
-                    var rolesToRemove = new List<string>();
-                    foreach (var role in await _userRoleStore.GetRolesAsync(user, default(CancellationToken)))
-                    {
-                        if (!roleNames.Contains(role))
-                        {
-                            rolesToRemove.Add(role);
-                        }
-                    }
-
-                    foreach (var role in rolesToRemove)
-                    {
-                        // Make sure we always have at least one administrator account
-                        if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName && role == AdministratorRole)
-                        {
-                            _notifier.Warning(H["Cannot remove administrator role from the only administrator."]);
-                            continue;
-                        }
-                        else
-                        {
-                            await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken));
-                        }
-                    }
-
-                    // Add new roles
-                    foreach (var role in roleNames)
-                    {
-                        if (!await _userRoleStore.IsInRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken)))
-                        {
-                            await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken));
-                        }
-                    }
-                }
             }
 
-            return await EditAsync(user, context);
-        }
-
-        private async Task<IEnumerable<string>> GetRoleNamesAsync()
-        {
-            var roleNames = await _roleService.GetRoleNamesAsync();
-            return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+            return Edit(user);
         }
     }
 }

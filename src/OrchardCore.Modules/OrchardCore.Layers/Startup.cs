@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -94,6 +95,36 @@ namespace OrchardCore.Layers
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers/Edit",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
+
+            var layerRuleControllerName = typeof(LayerRuleController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "Layers.Rules.Create",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Create",
+                defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.Create) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Layers.Rules.Delete",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Delete",
+                defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.Delete) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Layers.Rules.Edit",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Edit",
+                defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.Edit) }
+            ); 
+
+            routes.MapAreaControllerRoute(
+                name: "Layers.Rules.Order",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Order",
+                defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.UpdateOrder) }
+            ); 
         }
     }
 }
