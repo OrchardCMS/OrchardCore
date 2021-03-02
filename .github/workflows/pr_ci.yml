@@ -1,7 +1,7 @@
 name: PR - CI
 on: 
   pull_request:
-    paths-ignore:	
+    paths-ignore:
       - '**/*.md'	
       - 'mkdocs.yml'	
       - 'src/docs/**/*'
@@ -30,7 +30,8 @@ jobs:
         dotnet-version: 5.0.102
     - name: Build
       run: |
-        dotnet build --configuration Release
+        dotnet build --configuration Release --framework net5.0
+        dotnet build --configuration Release --framework netcoreapp3.1
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
@@ -47,5 +48,5 @@ jobs:
         name: functional-test-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data/logs
   

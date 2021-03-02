@@ -160,9 +160,9 @@ namespace OrchardCore.Media.Services
                 return;
             }
 
-            if (!(await _fileStore.GetDirectoryContentAsync(previousDirPath)).Any())
+            if (!(await _fileStore.GetDirectoryContentAsync(previousDirPath).AnyAsync()))
             {
-                await _fileStore.TryDeleteDirectoryAsync(previousDirPath);
+                await _fileStore.TryDeleteDirectoryAsync(previousDirPath);                
             }
         }
     }

@@ -4,7 +4,9 @@
 */
 
 .vue-multiselect .multiselect--active {
-  z-index: 1000; }
+  z-index: 1000;
+}
 
 [v-cloak] {
-  display: none; }
+  display: none;
+}

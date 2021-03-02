@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -22,6 +23,7 @@ using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql;
 using YesSql.Services;
+using YesSql.Sql;
 
 namespace OrchardCore.Users.Controllers
 {
@@ -35,6 +37,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
+        private readonly IRoleService _roleService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         private readonly dynamic New;
@@ -48,6 +51,7 @@ namespace OrchardCore.Users.Controllers
             ISession session,
             UserManager<IUser> userManager,
             IUserService userService,
+            IRoleService roleService,
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -63,6 +67,7 @@ namespace OrchardCore.Users.Controllers
             _notifier = notifier;
             _siteService = siteService;
             _userService = userService;
+            _roleService = roleService;
             _updateModelAccessor = updateModelAccessor;
 
             New = shapeFactory;
@@ -72,7 +77,10 @@ namespace OrchardCore.Users.Controllers
 
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            // Check a dummy user account to see if the current user has permission to view users.
+            var authUser = new User();
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, authUser))
             {
                 return Forbid();
             }
@@ -192,47 +200,76 @@ namespace OrchardCore.Users.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            // Check a dummy user account to see if the current user has permission to manage it.
+            var authUser = new User();
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, authUser))
             {
                 return Forbid();
             }
 
             if (itemIds?.Count() > 0)
             {
-                var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
+                var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
+
+                // Bulk actions require the ManageUsers permission on all the checked users.
+                // To prevent html injection we authorize each user before performing any operations.
+                foreach (var user in checkedUsers)
+                {
+                    if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+                    {
+                        return Forbid();
+                    }
+                }
+
                 switch (options.BulkAction)
                 {
                     case UsersBulkAction.None:
                         break;
                     case UsersBulkAction.Approve:
-                        foreach (var item in checkedContentItems)
+                        foreach (var user in checkedUsers)
                         {
-                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(item);
-                            await _userManager.ConfirmEmailAsync(item, token);
-                            _notifier.Success(H["User {0} successfully approved.", item.UserName]);
+                            if (!await _userManager.IsEmailConfirmedAsync(user))
+                            {
+                                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                                await _userManager.ConfirmEmailAsync(user, token);
+                                _notifier.Success(H["User {0} successfully approved.", user.UserName]);
+                            }
                         }
                         break;
                     case UsersBulkAction.Delete:
-                        foreach (var item in checkedContentItems)
+                        foreach (var user in checkedUsers)
                         {
-                            await _userManager.DeleteAsync(item);
-                            _notifier.Success(H["User {0} successfully deleted.", item.UserName]);
+                            if (String.Equals(user.UserId, User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
+                            await _userManager.DeleteAsync(user);
+                            _notifier.Success(H["User {0} successfully deleted.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Disable:
-                        foreach (var item in checkedContentItems)
+                        foreach (var user in checkedUsers)
                         {
-                            item.IsEnabled = false;
-                            await _userManager.UpdateAsync(item);
-                            _notifier.Success(H["User {0} successfully disabled.", item.UserName]);
+                            if (String.Equals(user.UserId, User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
+                            user.IsEnabled = false;
+                            await _userManager.UpdateAsync(user);
+                            _notifier.Success(H["User {0} successfully disabled.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Enable:
-                        foreach (var item in checkedContentItems)
+                        foreach (var user in checkedUsers)
                         {
-                            item.IsEnabled = true;
-                            await _userManager.UpdateAsync(item);
-                            _notifier.Success(H["User {0} successfully enabled.", item.UserName]);
+                            if (String.Equals(user.UserId, User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
+                            user.IsEnabled = true;
+                            await _userManager.UpdateAsync(user);
+                            _notifier.Success(H["User {0} successfully enabled.", user.UserName]);
                         }
                         break;
                     default:
@@ -244,12 +281,14 @@ namespace OrchardCore.Users.Controllers
         }
         public async Task<IActionResult> Create()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            var user = new User();
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
             {
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(new User(), updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
             return View(shape);
         }
@@ -258,12 +297,12 @@ namespace OrchardCore.Users.Controllers
         [ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            var user = new User();
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
             {
                 return Forbid();
             }
-
-            var user = new User();
 
             var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
@@ -287,6 +326,7 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> Edit(string id, string returnUrl)
         {
             // When no id is provided we assume the user is trying to edit their own profile.
+            var editingOwnUser = false;
             if (String.IsNullOrEmpty(id))
             {
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -294,19 +334,18 @@ namespace OrchardCore.Users.Controllers
                 {
                     return Forbid();
                 }
-            }
-            else
-            {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-                {
-                    return Forbid();
-                }
+                editingOwnUser = true;
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
+            {
+                return Forbid();
             }
 
             var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
@@ -331,15 +370,16 @@ namespace OrchardCore.Users.Controllers
                     return Forbid();
                 }
             }
-            else if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
 
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
+            {
+                return Forbid();
             }
 
             var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
@@ -379,6 +419,11 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
+                if (!String.IsNullOrEmpty(returnUrl))
+                {
+                    return LocalRedirect(returnUrl);
+                }
+
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -386,16 +431,16 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
             var user = await _userManager.FindByIdAsync(id) as User;
 
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            {
+                return Forbid();
             }
 
             var result = await _userManager.DeleteAsync(user);
@@ -421,16 +466,16 @@ namespace OrchardCore.Users.Controllers
 
         public async Task<IActionResult> EditPassword(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
             var user = await _userManager.FindByIdAsync(id) as User;
 
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            {
+                return Forbid();
             }
 
             var model = new ResetPasswordViewModel { Email = user.Email };
@@ -441,16 +486,16 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
             var user = await _userManager.FindByEmailAsync(model.Email) as User;
 
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            {
+                return Forbid();
             }
 
             if (ModelState.IsValid)

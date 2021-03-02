@@ -92,13 +92,13 @@ What if you want all tenants to access the same database? The corresponding conf
 {
   "OrchardCore": {
     "ConnectionString": "...",
-    "DatabaseProvider": "SqlConnection"
-  },
-  "Default" : {
-    "TablePrefix": "Default"
+    "DatabaseProvider": "SqlConnection",
+    "Default" : {
+      "State": "Uninitialized",
+      "TablePrefix": "Default"
+    }
   }
 }
-
 ```
 
 Notes on the above configuration:

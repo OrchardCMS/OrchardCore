@@ -543,9 +543,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     return new AnimalIndex
                     {
-                        Name = contentItem.As<Animal>() != null ?
-                                contentItem.As<Animal>().Name
-                                : contentItem.As<AnimalPart>().Name
+                        Name = contentItem.As<Animal>() != null
+                            ? contentItem.As<Animal>().Name
+                            : contentItem.As<AnimalPart>().Name
                     };
                 });
         }
