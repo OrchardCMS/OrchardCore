@@ -64,7 +64,7 @@ namespace OrchardCore.Layers.Recipes
                     _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
                 }
 
-                // Replace any property that is set in the recipe step                
+                // Replace any property that is set in the recipe step
                 if (!String.IsNullOrEmpty(layerStep.Name))
                 {
                     layer.Name = layerStep.Name;
@@ -74,13 +74,13 @@ namespace OrchardCore.Layers.Recipes
                     throw new ArgumentNullException($"{nameof(layer.Name)} is required");
                 }
 
-                if (!String.IsNullOrEmpty(layerStep.LayerRule.ConditionId))
-                {
-                    layer.LayerRule.ConditionId = layerStep.LayerRule.ConditionId;
-                }
-
                 if (layerStep.LayerRule != null)
                 {
+                    if (!String.IsNullOrEmpty(layerStep.LayerRule.ConditionId))
+                    {
+                        layer.LayerRule.ConditionId = layerStep.LayerRule.ConditionId;
+                    }
+
                     // The conditions list is cleared, because we cannot logically merge conditions.
                     layer.LayerRule.Conditions.Clear();
                     foreach (var condition in layerStep.LayerRule.Conditions)
