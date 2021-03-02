@@ -6,11 +6,12 @@
   <Import Project="..\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.props" />
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <PreserveCompilationReferences>true</PreserveCompilationReferences>
+    <BuildInParallel>true</BuildInParallel>
   </PropertyGroup>
 
   <ItemGroup>

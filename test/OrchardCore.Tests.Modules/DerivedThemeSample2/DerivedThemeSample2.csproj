@@ -4,6 +4,10 @@
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.props" />
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
 
+  <PropertyGroup>
+    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
     <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
