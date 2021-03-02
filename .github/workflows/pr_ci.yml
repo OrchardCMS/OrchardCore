@@ -1,7 +1,7 @@
 name: PR - CI
 on: 
   pull_request:
-    paths-ignore:	
+    paths-ignore:
       - '**/*.md'	
       - 'mkdocs.yml'	
       - 'src/docs/**/*'
