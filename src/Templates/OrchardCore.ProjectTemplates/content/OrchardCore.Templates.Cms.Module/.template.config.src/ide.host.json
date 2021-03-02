@@ -3,6 +3,10 @@
   "icon": "icon.png",
   "symbolInfo": [
     {
+      "id": "Framework",
+      "isVisible": "true"
+    },
+    {
       "id": "AddPart",
       "name": {
         "text": "Add all files required for a part"
