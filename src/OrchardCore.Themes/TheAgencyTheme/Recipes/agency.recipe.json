@@ -35,6 +35,7 @@
 
         // Content Management
         "OrchardCore.Alias",
+        "OrchardCore.AuditTrail",
         "OrchardCore.Autoroute",
         "OrchardCore.Html",
         "OrchardCore.ContentFields",
