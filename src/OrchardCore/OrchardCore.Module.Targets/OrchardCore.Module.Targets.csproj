@@ -32,6 +32,9 @@
     <None Include="OrchardCore.Module.Targets.props" Pack="true">
       <PackagePath>build\OrchardCore.Module.Targets.props</PackagePath>
     </None>
+    <None Include="buildMultiTargeting\OrchardCore.Module.Targets.props" Pack="true">
+      <PackagePath>buildMultitargeting\OrchardCore.Module.Targets.props</PackagePath>
+    </None>
     <None Include="OrchardCore.Module.Targets.targets" Pack="true">
       <PackagePath>build\OrchardCore.Module.Targets.targets</PackagePath>
     </None>
