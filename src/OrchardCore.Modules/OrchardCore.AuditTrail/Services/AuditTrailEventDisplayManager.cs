@@ -10,13 +10,12 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Modules;
 using YesSql;
-using IYesSqlSession = YesSql.ISession;
 
 namespace OrchardCore.AuditTrail.Services
 {
     public class AuditTrailEventDisplayManager : IAuditTrailEventDisplayManager
     {
-        private readonly IYesSqlSession _session;
+        private readonly ISession _session;
         private readonly IShapeFactory _shapeFactory;
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
@@ -24,7 +23,7 @@ namespace OrchardCore.AuditTrail.Services
         public ILogger Logger { get; set; }
 
         public AuditTrailEventDisplayManager(
-            IYesSqlSession session,
+            ISession session,
             IShapeFactory shapeFactory,
             IAuditTrailManager auditTrailManager,
             ILogger<AuditTrailEventDisplayManager> logger,
@@ -77,11 +76,11 @@ namespace OrchardCore.AuditTrail.Services
             return additionalColumnDisplay;
         }
 
-        public async Task<IShape> BuildDisplayAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
-            await BuildEventShapeAsync("AuditTrailEvent", auditTrailEvent, displayType);
+        public Task<IShape> BuildDisplayAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
+            BuildEventShapeAsync("AuditTrailEvent", auditTrailEvent, displayType);
 
-        public async Task<IShape> BuildActionsAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
-            await BuildEventShapeAsync("AuditTrailEventActions", auditTrailEvent, displayType);
+        public Task<IShape> BuildActionsAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
+            BuildEventShapeAsync("AuditTrailEventActions", auditTrailEvent, displayType);
 
         private async Task<IShape> BuildEventShapeAsync(string shapeType, AuditTrailEvent auditTrailEvent, string displayType)
         {

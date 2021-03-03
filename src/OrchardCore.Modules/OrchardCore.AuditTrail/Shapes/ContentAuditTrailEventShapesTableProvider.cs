@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.AuditTrail.Extensions;
@@ -7,10 +9,7 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Descriptors;
-using System.Collections.Generic;
-using System.Linq;
 using YesSql;
-using IYesSqlSession = YesSql.ISession;
 
 namespace OrchardCore.AuditTrail.Shapes
 {
@@ -32,7 +31,7 @@ namespace OrchardCore.AuditTrail.Shapes
 
                 if (context.Shape.Metadata.DisplayType == "Detail")
                 {
-                    var session = context.ServiceProvider.GetRequiredService<IYesSqlSession>();
+                    var session = context.ServiceProvider.GetRequiredService<ISession>();
 
                     AuditTrailEvent previousAuditTrailEvent = null;
 
