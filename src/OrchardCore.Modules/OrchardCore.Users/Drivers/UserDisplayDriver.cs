@@ -85,7 +85,10 @@ namespace OrchardCore.Users.Drivers
                 return await EditAsync(user, context);
             }
 
-            if (!model.IsEnabled && user.IsEnabled)
+            var isEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
+                    String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
+
+            if (!isEditingDisabled &&!model.IsEnabled && user.IsEnabled)
             {
                 var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>(); ;
                 if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
@@ -94,21 +97,14 @@ namespace OrchardCore.Users.Drivers
                 }
                 else
                 {
-                    if (!String.Equals(user.UserId, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)))
-                    {
-                        user.IsEnabled = model.IsEnabled;
-                        var userContext = new UserContext(user);
+                    user.IsEnabled = model.IsEnabled;
+                    var userContext = new UserContext(user);
                         // TODO This handler should be invoked through the create or update methods.
-                        // otherwise it will not be invoked when a workflow, or other operation, changes this value.
-                        await _userEventHandlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
-                    }
-                    else
-                    {
-                        _notifier.Warning(H["Cannot disable current user."]);
-                    }
+                    // otherwise it will not be invoked when a workflow, or other operation, changes this value.
+                    await _userEventHandlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
                 }
             }
-            else if (model.IsEnabled && !user.IsEnabled)
+            else if (!isEditingDisabled && model.IsEnabled && !user.IsEnabled)
             {
                 user.IsEnabled = model.IsEnabled;
                 var userContext = new UserContext(user);
