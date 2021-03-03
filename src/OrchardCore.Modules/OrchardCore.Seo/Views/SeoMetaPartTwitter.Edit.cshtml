@@ -29,20 +29,3 @@
     <input asp-for="TwitterSite" class="form-control content-preview-text" />
     <span class="hint">@T["The Social Meta Settings Twitter Site is used by default, or can be overridden here."]</span>
 </div>
-
-<style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
-<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
-<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
-<script at="Foot">
-    $(function () {
-        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.TwitterDescription)');
-        if (optionsTextArea) {
-            var editor = CodeMirror.fromTextArea(optionsTextArea, {
-                autoRefresh: true,
-                lineWrapping: true,
-                styleActiveLine: true
-            });
-        }
-    });
-</script>
