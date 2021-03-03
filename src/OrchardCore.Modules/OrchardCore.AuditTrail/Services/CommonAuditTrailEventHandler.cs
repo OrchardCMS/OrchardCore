@@ -13,7 +13,6 @@ namespace OrchardCore.AuditTrail.Services
     {
         private readonly IServiceProvider _serviceProvider;
 
-
         public CommonAuditTrailEventHandler(
             IServiceProvider serviceProvider,
             IStringLocalizer<CommonAuditTrailEventHandler> stringLocalizer)
@@ -22,7 +21,6 @@ namespace OrchardCore.AuditTrail.Services
 
             T = stringLocalizer;
         }
-
 
         public override void Filter(QueryFilterContext context)
         {
@@ -73,7 +71,6 @@ namespace OrchardCore.AuditTrail.Services
             context.FilterDisplay.Add(categoryFilterDisplay);
             context.FilterDisplay.Add(userNameFilterDisplay);
         }
-
 
         private DateTime? GetDateFromFilter(Filters filters, string fieldName, string prefix)
         {

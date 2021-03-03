@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Localization;
+using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Controllers;
 using OrchardCore.AuditTrail.Permissions;
 using OrchardCore.Navigation;
-using System;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Navigation
 {
@@ -11,12 +11,10 @@ namespace OrchardCore.AuditTrail.Navigation
     {
         private readonly IStringLocalizer T;
 
-
         public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
         {
             T = stringLocalizer;
         }
-
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

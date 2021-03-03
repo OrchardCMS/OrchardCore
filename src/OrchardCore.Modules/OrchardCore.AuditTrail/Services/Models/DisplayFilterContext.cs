@@ -1,4 +1,4 @@
-﻿using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.AuditTrail.Services.Models
@@ -8,7 +8,6 @@ namespace OrchardCore.AuditTrail.Services.Models
         public IShapeFactory ShapeFactory { get; set; }
         public Filters Filters { get; set; }
         public Shape FilterDisplay { get; set; }
-
 
         public DisplayFilterContext(IShapeFactory shapeFactory, Filters filters, Shape filterDisplay)
         {

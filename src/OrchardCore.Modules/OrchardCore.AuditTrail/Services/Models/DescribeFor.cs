@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Localization;
-using OrchardCore.AuditTrail.Models;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Localization;
+using OrchardCore.AuditTrail.Models;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {
@@ -14,14 +14,12 @@ namespace OrchardCore.AuditTrail.Services.Models
         public LocalizedString Name { get; private set; }
         public string ProviderName { get; set; }
 
-
         public DescribeFor(string category, string providerName, LocalizedString name)
         {
             Name = name;
             Category = category;
             ProviderName = providerName;
         }
-
 
         public DescribeFor Event(
             string eventName,

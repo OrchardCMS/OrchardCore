@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Localization;
+using System.Collections.Generic;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
-using System.Collections.Generic;
 
 namespace OrchardCore.AuditTrail.Providers
 {
@@ -18,12 +18,10 @@ namespace OrchardCore.AuditTrail.Providers
         public const string Cloned = nameof(Cloned);
         public const string Restored = nameof(Restored);
 
-
         public ContentAuditTrailEventProvider(IStringLocalizer<ContentAuditTrailEventProvider> stringLocalizer)
         {
             T = stringLocalizer;
         }
-
 
         public override void Describe(DescribeContext context) =>
             context.For<ContentAuditTrailEventProvider>("Content", T["Content Item"])
@@ -34,7 +32,6 @@ namespace OrchardCore.AuditTrail.Providers
                 .Event(Removed, T["Removed"], T["A content item was deleted."], BuildAuditTrailEvent, true)
                 .Event(Cloned, T["Cloned"], T["A content item was cloned."], BuildAuditTrailEvent, true)
                 .Event(Restored, T["Restored"], T["A content item was restored to a previous version."], BuildAuditTrailEvent, true);
-
 
         private void BuildAuditTrailEvent(AuditTrailEvent auditTrailEvent, Dictionary<string, object> eventData)
         {

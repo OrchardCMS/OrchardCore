@@ -31,7 +31,6 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
 
-
         public ContentController(
             IYesSqlSession session,
             INotifier notifier,
@@ -52,7 +51,6 @@ namespace OrchardCore.AuditTrail.Controllers
 
             H = htmlLocalizer;
         }
-
 
         public async Task<ActionResult> Detail(int versionNumber, string auditTrailEventId)
         {

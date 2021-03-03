@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {
@@ -7,7 +7,6 @@ namespace OrchardCore.AuditTrail.Services.Models
         public ContentItem ContentItem { get; }
         public string EventName { get; }
         public bool IsCanceled { get; set; }
-
 
         public BuildingAuditTrailEventContext(ContentItem contentItem, string eventName)
         {

@@ -19,7 +19,6 @@ namespace OrchardCore.AuditTrail.Handlers
         private readonly IHttpContextAccessor _hca;
         private readonly IAuditTrailManager _auditTrailManager;
 
-
         public UserEventHandler(
             IHttpContextAccessor hca,
             IAuditTrailManager auditTrailManager)
@@ -27,7 +26,6 @@ namespace OrchardCore.AuditTrail.Handlers
             _hca = hca;
             _auditTrailManager = auditTrailManager;
         }
-
 
         public Task LoggedInAsync(string userName) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.LoggedIn, userName);
@@ -77,7 +75,6 @@ namespace OrchardCore.AuditTrail.Handlers
             Task.CompletedTask;
 
         #endregion
-
 
         private async Task RecordAuditTrailEventAsync(string eventName, string username)
         {

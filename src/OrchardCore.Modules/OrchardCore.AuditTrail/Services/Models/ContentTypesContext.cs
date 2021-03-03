@@ -7,7 +7,6 @@ namespace OrchardCore.AuditTrail.Services.Models
         public ContentTypeDefinition ContentTypeDefinition { get; }
         public bool IsIgnored { get; set; }
 
-
         public ContentTypesContext(ContentTypeDefinition contentTypeDefinition)
         {
             ContentTypeDefinition = contentTypeDefinition;

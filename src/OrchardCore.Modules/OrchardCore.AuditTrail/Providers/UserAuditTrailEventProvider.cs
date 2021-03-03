@@ -18,12 +18,10 @@ namespace OrchardCore.AuditTrail.Providers
         public const string Created = nameof(Created);
         public const string Deleted = nameof(Deleted);
 
-
         public UserAuditTrailEventProvider(IStringLocalizer<UserAuditTrailEventProvider> stringLocalizer)
         {
             T = stringLocalizer;
         }
-
 
         public override void Describe(DescribeContext context) =>
             context.For<UserAuditTrailEventProvider>("User", T["User"])
@@ -36,7 +34,6 @@ namespace OrchardCore.AuditTrail.Providers
                 .Event(Disabled, T["Disabled"], T["A user was disabled."], BuildAuditTrailEvent, true)
                 .Event(Created, T["Created"], T["A user was created."], BuildAuditTrailEvent, true)
                 .Event(Deleted, T["Deleted"], T["A user was deleted."], BuildAuditTrailEvent, true);
-
 
         private void BuildAuditTrailEvent(AuditTrailEvent auditTrailEvent, Dictionary<string, object> eventData) =>
             auditTrailEvent.Put(auditTrailEvent.EventName, eventData);

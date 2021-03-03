@@ -16,13 +16,11 @@ namespace OrchardCore.AuditTrail.Drivers
         private readonly IHttpContextAccessor _hca;
         private readonly IAuthorizationService _authorizationService;
 
-
         public AuditTrailTrimmingSettingsDisplayDriver(IHttpContextAccessor hca, IAuthorizationService authorizationService)
         {
             _hca = hca;
             _authorizationService = authorizationService;
         }
-
 
         public override async Task<IDisplayResult> EditAsync(AuditTrailTrimmingSettings section, BuildEditorContext context) =>
             !await IsAuthorizedToManageAuditTrailSettingsAsync()
@@ -50,7 +48,6 @@ namespace OrchardCore.AuditTrail.Drivers
 
             return await EditAsync(section, context);
         }
-
 
         private Task<bool> IsAuthorizedToManageAuditTrailSettingsAsync() =>
              _authorizationService.AuthorizeAsync(_hca.HttpContext.User, AuditTrailPermissions.ManageAuditTrailSettings);

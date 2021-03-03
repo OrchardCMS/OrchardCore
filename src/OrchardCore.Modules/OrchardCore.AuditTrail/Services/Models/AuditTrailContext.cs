@@ -10,7 +10,6 @@ namespace OrchardCore.AuditTrail.Services.Models
         public string EventFilterKey { get; set; }
         public string EventFilterData { get; set; }
 
-
         public AuditTrailContext(
             string eventName,
             string userName,

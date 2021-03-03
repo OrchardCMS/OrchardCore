@@ -8,7 +8,6 @@ namespace OrchardCore.AuditTrail.Services.Models
         public IQuery<AuditTrailEvent> Query { get; }
         public Filters Filters { get; }
 
-
         public QueryFilterContext(IQuery<AuditTrailEvent> query, Filters filters)
         {
             Query = query;

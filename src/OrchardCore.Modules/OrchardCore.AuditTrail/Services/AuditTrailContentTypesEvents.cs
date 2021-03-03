@@ -1,9 +1,9 @@
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -11,12 +11,10 @@ namespace OrchardCore.AuditTrail.Services
     {
         private readonly ISiteService _siteService;
 
-
         public AuditTrailContentTypesEvents(ISiteService siteService)
         {
             _siteService = siteService;
         }
-
 
         public async Task BuildingAuditTrailEventAsync(BuildingAuditTrailEventContext buildingAuditTrailEventContext)
         {

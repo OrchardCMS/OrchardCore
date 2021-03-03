@@ -8,7 +8,6 @@ namespace OrchardCore.AuditTrail.ViewModels
         public List<AuditTrailCategorySettingsViewModel> Categories { get; set; }
         public List<IgnoredContentTypesViewModel> IgnoredContentTypes { get; set; }
 
-
         public AuditTrailSettingsViewModel()
         {
             IgnoredContentTypes = new List<IgnoredContentTypesViewModel>();

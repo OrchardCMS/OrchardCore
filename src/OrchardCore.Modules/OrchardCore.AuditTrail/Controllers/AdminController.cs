@@ -24,7 +24,6 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IAuditTrailEventDisplayManager _auditTrailEventDisplayManager;
 
-
         public AdminController(
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -40,7 +39,6 @@ namespace OrchardCore.AuditTrail.Controllers
             _authorizationService = authorizationService;
             _auditTrailEventDisplayManager = auditTrailEventDisplayManager;
         }
-
 
         public async Task<ActionResult> Index(PagerParameters pagerParameters, AuditTrailOrderBy? orderBy = null)
         {

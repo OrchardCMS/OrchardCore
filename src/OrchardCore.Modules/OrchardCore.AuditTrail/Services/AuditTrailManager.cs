@@ -32,7 +32,6 @@ namespace OrchardCore.AuditTrail.Services
 
         public ILogger Logger { get; set; }
 
-
         public AuditTrailManager(
             IClock clock,
             IYesSqlSession session,
@@ -55,7 +54,6 @@ namespace OrchardCore.AuditTrail.Services
             Logger = logger;
             T = stringLocalizer;
         }
-
 
         public async Task AddAuditTrailEventAsync<TAuditTrailEventProvider>(AuditTrailContext auditTrailContext)
             where TAuditTrailEventProvider : IAuditTrailEventProvider
@@ -200,7 +198,6 @@ namespace OrchardCore.AuditTrail.Services
             DescribeCategories().SelectMany(
                 categoryDescriptor => categoryDescriptor.Events.Where(
                     eventDescriptor => eventDescriptor.FullEventName == auditTrailEvent.FullEventName)).FirstOrDefault();
-
 
         private IEnumerable<AuditTrailEventDescriptor> DescribeEvents(string eventName, string providerName) =>
             DescribeCategories().Where(

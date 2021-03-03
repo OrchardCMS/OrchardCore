@@ -23,7 +23,6 @@ namespace OrchardCore.AuditTrail.Services
 
         public ILogger Logger { get; set; }
 
-
         public AuditTrailEventDisplayManager(
             IYesSqlSession session,
             IShapeFactory shapeFactory,
@@ -38,7 +37,6 @@ namespace OrchardCore.AuditTrail.Services
 
             Logger = logger;
         }
-
 
         public async Task<IShape> BuildFilterDisplayAsync(Filters filters)
         {
@@ -84,7 +82,6 @@ namespace OrchardCore.AuditTrail.Services
 
         public async Task<IShape> BuildActionsAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
             await BuildEventShapeAsync("AuditTrailEventActions", auditTrailEvent, displayType);
-
 
         private async Task<IShape> BuildEventShapeAsync(string shapeType, AuditTrailEvent auditTrailEvent, string displayType)
         {

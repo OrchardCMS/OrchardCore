@@ -24,7 +24,6 @@ namespace OrchardCore.AuditTrail.Handlers
 
         public ILogger Logger { get; set; }
 
-
         public GlobalContentHandler(
             IYesSqlSession session,
             IHttpContextAccessor hca,
@@ -39,7 +38,6 @@ namespace OrchardCore.AuditTrail.Handlers
 
             Logger = logger;
         }
-
 
         public override Task DraftSavedAsync(SaveDraftContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Saved, context.ContentItem);
@@ -69,7 +67,6 @@ namespace OrchardCore.AuditTrail.Handlers
 
         public override Task ClonedAsync(CloneContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Cloned, context.ContentItem);
-
 
         private async Task RecordAuditTrailEventAsync(string eventName, IContent content)
         {
