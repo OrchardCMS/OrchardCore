@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -58,9 +57,11 @@ namespace OrchardCore.AuditTrail.Controllers
                 .Where(auditTrailEventIndex => auditTrailEventIndex.AuditTrailEventId == auditTrailEventId)
                 .FirstOrDefaultAsync();
 
-            var contentItem = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
+            var existing = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
+            var contentItem = await _contentManager.NewAsync(existing.ContentType);
+            contentItem.Merge(existing);
 
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }
@@ -97,31 +98,30 @@ namespace OrchardCore.AuditTrail.Controllers
                 .OrderByDescending(eventIndex => eventIndex.VersionNumber)
                 .FirstOrDefaultAsync();
 
-            var latestContentItem = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
+            var existing = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
+            var contentItem = await _contentManager.NewAsync(existing.ContentType);
+            contentItem.Merge(existing);
 
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, latestContentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, contentItem))
             {
                 return Forbid();
             }
 
             var activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(contentItemIndex =>
-                    contentItemIndex.ContentItemId == latestContentItem.ContentItemId &&
+                    contentItemIndex.ContentItemId == existing.ContentItemId &&
                     (contentItemIndex.Published || contentItemIndex.Latest)).ListAsync();
 
-            if (activeVersions.Any())
+            foreach (var version in activeVersions)
             {
-                foreach (var version in activeVersions)
-                {
-                    version.Published = false;
-                    version.Latest = false;
-                    _session.Save(version);
-                }
+                version.Published = false;
+                version.Latest = false;
+                _session.Save(version);
             }
 
-            // Adding this item to HttpContenxt.Items is necessary to be able to know that an earlier version of this
+            // Adding this item to HttpContext.Features is necessary to be able to know that an earlier version of this
             // event has been restored, not a new one has been created.
-            _httpContextAccessor.HttpContext.Items.Add("OrchardCore.AuditTrail.Restored", contentItemToRestore);
+            _httpContextAccessor.HttpContext.Features.Set(new AuditTrailRestoreFeature { ContentItem = contentItemToRestore });
             contentItemToRestore.Latest = true;
             await _contentManager.CreateAsync(contentItemToRestore, VersionOptions.Draft);
 

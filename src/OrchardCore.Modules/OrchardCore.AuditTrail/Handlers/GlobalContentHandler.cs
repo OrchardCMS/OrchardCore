@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AuditTrail.Extensions;
+using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Providers;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
@@ -44,9 +45,11 @@ namespace OrchardCore.AuditTrail.Handlers
 
         public override Task CreatedAsync(CreateContentContext context)
         {
-            if (_httpContextAccessor.HttpContext.Items.ContainsKey("OrchardCore.AuditTrail.Restored"))
+            var auditTrailRestoreFeature = _httpContextAccessor.HttpContext.Features.Get<AuditTrailRestoreFeature>();
+
+            if (auditTrailRestoreFeature != null)
             {
-                return RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, context.ContentItem);
+                return RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, auditTrailRestoreFeature.ContentItem);
             }
             else if (!context.ContentItem.Published)
             {
