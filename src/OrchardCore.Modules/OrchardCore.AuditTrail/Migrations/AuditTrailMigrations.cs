@@ -1,9 +1,9 @@
-﻿using OrchardCore.AuditTrail.Indexes;
+using System;
+using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
-using System;
 using YesSql.Sql;
 
 namespace OrchardCore.AuditTrail.Migrations
@@ -12,12 +12,10 @@ namespace OrchardCore.AuditTrail.Migrations
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-
         public AuditTrailMigrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
-
 
         public int Create()
         {
@@ -34,15 +32,17 @@ namespace OrchardCore.AuditTrail.Migrations
                 .Column<string>(nameof(AuditTrailEventIndex.EventName))
                 .Column<string>(nameof(AuditTrailEventIndex.UserName), column => column.Nullable().WithLength(255)));
 
-            SchemaBuilder.AlterTable(nameof(AuditTrailEventIndex), table => table
-                .CreateIndex($"IDX_{nameof(AuditTrailEventIndex)}_{nameof(AuditTrailEventIndex.EventName)}", nameof(AuditTrailEventIndex.EventName)));
-
-            SchemaBuilder.AlterTable(nameof(AuditTrailEventIndex), table => table
-                .CreateIndex($"IDX_{nameof(AuditTrailEventIndex)}_{nameof(AuditTrailEventIndex.Category)}", nameof(AuditTrailEventIndex.Category)));
-
-            SchemaBuilder.AlterTable(nameof(AuditTrailEventIndex), table => table
-                .CreateIndex($"IDX_{nameof(AuditTrailEventIndex)}_{nameof(AuditTrailEventIndex.CreatedUtc)}", nameof(AuditTrailEventIndex.CreatedUtc)));
-
+            SchemaBuilder.AlterIndexTable<AuditTrailEventIndex>(table => table
+                .CreateIndex("IDX_AuditTrailEventIndex_DocumentId",
+                    "DocumentId",
+                    "AuditTrailEventId",
+                    "Category",
+                    "CreatedUtc",
+                    "EventFilterData",
+                    "EventFilterKey",
+                    "EventName",
+                    "UserName")
+            );
 
             SchemaBuilder.CreateMapIndexTable<ContentAuditTrailEventIndex>(table => table
                 .Column<string>(nameof(ContentAuditTrailEventIndex.ContentItemId), column => column.WithLength(26))
@@ -51,17 +51,15 @@ namespace OrchardCore.AuditTrail.Migrations
                 .Column<int>(nameof(ContentAuditTrailEventIndex.VersionNumber))
                 .Column<bool>(nameof(ContentAuditTrailEventIndex.Published)));
 
-            SchemaBuilder.AlterTable(nameof(ContentAuditTrailEventIndex), table => table
-                .CreateIndex($"IDX_{nameof(ContentAuditTrailEventIndex)}_{nameof(ContentAuditTrailEventIndex.ContentItemId)}", nameof(ContentAuditTrailEventIndex.ContentItemId)));
-
-            SchemaBuilder.AlterTable(nameof(ContentAuditTrailEventIndex), table => table
-                .CreateIndex($"IDX_{nameof(ContentAuditTrailEventIndex)}_{nameof(ContentAuditTrailEventIndex.ContentType)}", nameof(ContentAuditTrailEventIndex.ContentType)));
-
-            SchemaBuilder.AlterTable(nameof(ContentAuditTrailEventIndex), table => table
-                .CreateIndex($"IDX_{nameof(ContentAuditTrailEventIndex)}_{nameof(ContentAuditTrailEventIndex.VersionNumber)}", nameof(ContentAuditTrailEventIndex.VersionNumber)));
-
-            SchemaBuilder.AlterTable(nameof(ContentAuditTrailEventIndex), table => table
-                .CreateIndex($"IDX_{nameof(ContentAuditTrailEventIndex)}_{nameof(ContentAuditTrailEventIndex.EventName)}", nameof(ContentAuditTrailEventIndex.EventName)));
+            SchemaBuilder.AlterIndexTable<ContentAuditTrailEventIndex>(table => table
+                .CreateIndex("IDX_ContentAuditTrailEventIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentType",
+                    "EventName",
+                    "VersionNumber",
+                    "Published")
+            );
 
             return 1;
         }
