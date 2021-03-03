@@ -2262,6 +2262,24 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "lazcool",
+      "name": "Phil Davies",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12608907?v=4",
+      "profile": "https://www.linkedin.com/in/philgdavies/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dafergu2",
+      "name": "David Ferguson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1692895?v=4",
+      "profile": "https://github.com/dafergu2",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

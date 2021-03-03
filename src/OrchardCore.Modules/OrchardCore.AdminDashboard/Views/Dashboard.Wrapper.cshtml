@@ -1,0 +1,13 @@
+@model DashboardWrapper
+@using OrchardCore.ContentManagement
+
+@{
+    var dashboardPart = Model.Dashboard.As<DashboardPart>();
+    var position = dashboardPart.Position;
+    var width = dashboardPart.Width;
+    var height = dashboardPart.Height;
+    var contentItemId = Model.Dashboard.ContentItemId; 
+}
+<div style="--dashboard-width: @(width); --dashboard-height:@(height)" class="dashboard-wrapper" id="@(contentItemId)" >
+    @await DisplayAsync(Model.Content)
+</div>
