@@ -1,9 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore AuditTrail</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Provides a log for recording and viewing back-end changes.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
