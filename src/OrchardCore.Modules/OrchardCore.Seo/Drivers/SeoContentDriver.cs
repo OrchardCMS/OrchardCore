@@ -1,42 +1,38 @@
 using System;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using OrchardCore.Seo.Models;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Seo.Models;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Seo.Drivers
 {
     public class SeoContentDriver : ContentDisplayDriver
     {       
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly HtmlEncoder _htmlEncoder;
-
         private readonly IContentManager _contentManager;
         private readonly SeoPageTitleBuilder _seoPageTitleBuilder;
         private readonly IResourceManager _resourceManager;
+        private readonly IShortcodeService _shortcodeService;
 
         private bool _primaryContentRendered { get; set; }
 
         public SeoContentDriver(
-            ILiquidTemplateManager liquidTemplateManager,
-            HtmlEncoder htmlEncoder,
             IContentManager contentManager,
             IPageTitleBuilder pageTitleBuilder,
-            IResourceManager resourceManager
+            IResourceManager resourceManager,
+            IShortcodeService shortcodeService
             )
         {
             _contentManager = contentManager;
             _seoPageTitleBuilder = pageTitleBuilder as SeoPageTitleBuilder;
             _resourceManager = resourceManager;
-            _liquidTemplateManager = liquidTemplateManager;
-            _htmlEncoder = htmlEncoder;
+            _shortcodeService = shortcodeService;
         }
 
         public override async Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
@@ -63,7 +59,7 @@ namespace OrchardCore.Seo.Drivers
 
             if (!String.IsNullOrEmpty(aspect.PageTitle))
             {
-                _seoPageTitleBuilder.SetTitle(await RenderLiquidAsync(aspect.PageTitle, contentItem));
+                _seoPageTitleBuilder.SetTitle(await RenderAsync(aspect.PageTitle, contentItem));
             }
 
             if (!String.IsNullOrEmpty(aspect.MetaDescription))
@@ -71,7 +67,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "description",
-                    Content = await RenderLiquidAsync(aspect.MetaDescription, contentItem)
+                    Content = await RenderAsync(aspect.MetaDescription, contentItem)
                 });
             }
 
@@ -80,7 +76,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "keywords",
-                    Content = await RenderLiquidAsync(aspect.MetaKeywords, contentItem)
+                    Content = await RenderAsync(aspect.MetaKeywords, contentItem)
                 });
             }    
 
@@ -98,7 +94,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "robots",
-                    Content = await RenderLiquidAsync(aspect.MetaRobots, contentItem)
+                    Content = await RenderAsync(aspect.MetaRobots, contentItem)
                 });
             }                        
 
@@ -106,11 +102,11 @@ namespace OrchardCore.Seo.Drivers
             {
                 // Generate a new meta entry as the builder is preopulated.
                 _resourceManager.RegisterMeta(new MetaEntry(
-                    await RenderLiquidAsync(customMetaTag.Name, contentItem), 
-                    await RenderLiquidAsync(customMetaTag.Property, contentItem), 
-                    await RenderLiquidAsync(customMetaTag.Content, contentItem), 
-                    await RenderLiquidAsync(customMetaTag.HttpEquiv, contentItem),
-                    await RenderLiquidAsync(customMetaTag.Charset, contentItem)));
+                    await RenderAsync(customMetaTag.Name, contentItem), 
+                    await RenderAsync(customMetaTag.Property, contentItem), 
+                    await RenderAsync(customMetaTag.Content, contentItem), 
+                    await RenderAsync(customMetaTag.HttpEquiv, contentItem),
+                    await RenderAsync(customMetaTag.Charset, contentItem)));
             }
 
             // OpenGraph
@@ -120,7 +116,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "og:type", 
-                    Content = await RenderLiquidAsync(aspect.OpenGraphType, contentItem)
+                    Content = await RenderAsync(aspect.OpenGraphType, contentItem)
                 });
             }
 
@@ -129,7 +125,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "og:title", 
-                    Content = await RenderLiquidAsync(aspect.OpenGraphTitle, contentItem)
+                    Content = await RenderAsync(aspect.OpenGraphTitle, contentItem)
                 });
             }  
 
@@ -138,7 +134,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "og:description", 
-                    Content = await RenderLiquidAsync(aspect.OpenGraphDescription, contentItem)
+                    Content = await RenderAsync(aspect.OpenGraphDescription, contentItem)
                 });
             }  
             
@@ -147,7 +143,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "og:image", 
-                    Content = await RenderLiquidAsync(aspect.OpenGraphImage, contentItem)
+                    Content = await RenderAsync(aspect.OpenGraphImage, contentItem)
                 });
             }
 
@@ -156,7 +152,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "og:image:alt", 
-                    Content = await RenderLiquidAsync(aspect.OpenGraphImageAlt, contentItem)
+                    Content = await RenderAsync(aspect.OpenGraphImageAlt, contentItem)
                 });
             }  
 
@@ -165,7 +161,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "og:url", 
-                    Content = await RenderLiquidAsync(aspect.OpenGraphUrl, contentItem)
+                    Content = await RenderAsync(aspect.OpenGraphUrl, contentItem)
                 });
             }   
 
@@ -174,7 +170,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "og:site_name", 
-                    Content = await RenderLiquidAsync(aspect.OpenGraphSiteName, contentItem)
+                    Content = await RenderAsync(aspect.OpenGraphSiteName, contentItem)
                 });
             }       
 
@@ -183,7 +179,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "fb:app_id", 
-                    Content = await RenderLiquidAsync(aspect.OpenGraphAppId, contentItem)
+                    Content = await RenderAsync(aspect.OpenGraphAppId, contentItem)
                 });
             }
 
@@ -192,7 +188,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "og:locale", 
-                    Content = await RenderLiquidAsync(aspect.OpenGraphLocale, contentItem)
+                    Content = await RenderAsync(aspect.OpenGraphLocale, contentItem)
                 });
             }
 
@@ -203,7 +199,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "twitter:card", 
-                    Content = await RenderLiquidAsync(aspect.TwitterCard, contentItem)
+                    Content = await RenderAsync(aspect.TwitterCard, contentItem)
                 });
             }
 
@@ -212,7 +208,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Property = "twitter:site", 
-                    Content = await RenderLiquidAsync(aspect.TwitterSite, contentItem)
+                    Content = await RenderAsync(aspect.TwitterSite, contentItem)
                 });
             } 
 
@@ -221,7 +217,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "twitter:title", 
-                    Content = await RenderLiquidAsync(aspect.TwitterTitle, contentItem)
+                    Content = await RenderAsync(aspect.TwitterTitle, contentItem)
                 });
             }     
 
@@ -230,7 +226,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "twitter:description", 
-                    Content = await RenderLiquidAsync(aspect.TwitterDescription, contentItem)
+                    Content = await RenderAsync(aspect.TwitterDescription, contentItem)
                 });
             }                                    
 
@@ -239,7 +235,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "twitter:image",
-                    Content = await RenderLiquidAsync(aspect.TwitterImage, contentItem)
+                    Content = await RenderAsync(aspect.TwitterImage, contentItem)
                 });
             }
 
@@ -248,7 +244,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "twitter:image:alt",
-                    Content = await RenderLiquidAsync(aspect.TwitterImageAlt, contentItem)
+                    Content = await RenderAsync(aspect.TwitterImageAlt, contentItem)
                 });
             }
 
@@ -257,7 +253,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "twitter:creator", 
-                    Content = await RenderLiquidAsync(aspect.TwitterCreator, contentItem)
+                    Content = await RenderAsync(aspect.TwitterCreator, contentItem)
                 });
             }
 
@@ -266,7 +262,7 @@ namespace OrchardCore.Seo.Drivers
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "twitter:url", 
-                    Content = await RenderLiquidAsync(aspect.TwitterUrl, contentItem)
+                    Content = await RenderAsync(aspect.TwitterUrl, contentItem)
                 });
             }
 
@@ -278,8 +274,11 @@ namespace OrchardCore.Seo.Drivers
             return null;
         }
 
-        private Task<string> RenderLiquidAsync(string template, ContentItem contentItem)
-            => _liquidTemplateManager.RenderAsync(template, _htmlEncoder, contentItem,
-                                scope => scope.SetValue("ContentItem", contentItem));
+        private ValueTask<string> RenderAsync(string template, ContentItem contentItem)
+            => _shortcodeService.ProcessAsync(template,
+                    new Context
+                    {
+                        ["ContentItem"] = contentItem
+                    });
     }
 }

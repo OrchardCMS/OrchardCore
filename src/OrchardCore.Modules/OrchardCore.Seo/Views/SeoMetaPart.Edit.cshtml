@@ -1,5 +1,7 @@
 @model OrchardCore.Seo.ViewModels.SeoMetaPartViewModel
 
+@await DisplayAsync(await New.ShortcodeModal())
+
 <div class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="Render" checked="@Model.Render" />
@@ -24,6 +26,7 @@
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
+<style asp-name="codemirror"></style>
 <script at="Foot">
     $(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.MetaDescription)');
@@ -33,9 +36,12 @@
                 lineWrapping: true,
                 styleActiveLine: true
             });
+            
+            initializeCodeMirrorShortcodeWrapper(editor);
         }
     });
 </script>
+
 @if (Model.Settings.DisplayKeywords)
 { 
 <div class="form-group" asp-validation-class-for="MetaKeywords">
