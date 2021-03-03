@@ -25,8 +25,8 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly IYesSqlSession _session;
-        private readonly IHttpContextAccessor _hca;
         private readonly IContentManager _contentManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -34,14 +34,14 @@ namespace OrchardCore.AuditTrail.Controllers
         public ContentController(
             IYesSqlSession session,
             INotifier notifier,
-            IHttpContextAccessor hca,
             IContentManager contentManager,
+            IHttpContextAccessor httpContextAccessor,
             IUpdateModelAccessor updateModelAccessor,
             IAuthorizationService authorizationService,
             IHtmlLocalizer<ContentController> htmlLocalizer,
             IContentItemDisplayManager contentItemDisplayManager)
         {
-            _hca = hca;
+            _httpContextAccessor = httpContextAccessor;
             _session = session;
             _notifier = notifier;
             _contentManager = contentManager;
@@ -121,7 +121,7 @@ namespace OrchardCore.AuditTrail.Controllers
 
             // Adding this item to HttpContenxt.Items is necessary to be able to know that an earlier version of this
             // event has been restored, not a new one has been created.
-            _hca.HttpContext.Items.Add("OrchardCore.AuditTrail.Restored", contentItemToRestore);
+            _httpContextAccessor.HttpContext.Items.Add("OrchardCore.AuditTrail.Restored", contentItemToRestore);
             contentItemToRestore.Latest = true;
             await _contentManager.CreateAsync(contentItemToRestore, VersionOptions.Draft);
 

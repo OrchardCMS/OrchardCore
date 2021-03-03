@@ -24,9 +24,9 @@ namespace OrchardCore.AuditTrail.Services
         private readonly IClock _clock;
         private readonly IStringLocalizer T;
         private readonly IYesSqlSession _session;
-        private readonly IHttpContextAccessor _hca;
         private readonly ISiteService _siteService;
         private readonly Entities.IIdGenerator _iidGenerator;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
         private readonly IEnumerable<IAuditTrailEventProvider> _auditTrailEventProviders;
 
@@ -36,18 +36,18 @@ namespace OrchardCore.AuditTrail.Services
             IClock clock,
             IYesSqlSession session,
             ISiteService siteService,
-            IHttpContextAccessor hca,
             ILogger<AuditTrailManager> logger,
             Entities.IIdGenerator iidGenerator,
+            IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<AuditTrailManager> stringLocalizer,
             IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers,
             IEnumerable<IAuditTrailEventProvider> auditTrailEventProviders)
         {
-            _hca = hca;
             _clock = clock;
             _session = session;
             _siteService = siteService;
             _iidGenerator = iidGenerator;
+            _httpContextAccessor = httpContextAccessor;
             _auditTrailEventHandlers = auditTrailEventHandlers;
             _auditTrailEventProviders = auditTrailEventProviders;
 
@@ -73,9 +73,7 @@ namespace OrchardCore.AuditTrail.Services
 
                 await _auditTrailEventHandlers.InvokeAsync(
                     (handler, context) =>
-                    handler.CreateAsync(context),
-                    auditTrailCreateContext,
-                    Logger);
+                    handler.CreateAsync(context), auditTrailCreateContext, Logger);
 
                 var auditTrailEvent = new AuditTrailEvent
                 {
@@ -180,8 +178,8 @@ namespace OrchardCore.AuditTrail.Services
             return deletedEvents;
         }
 
-        public async Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId) =>
-            await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
+        public Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId) =>
+            _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
                 .Where(x => x.AuditTrailEventId == auditTrailEventId).FirstOrDefaultAsync();
 
         public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() =>
@@ -215,7 +213,7 @@ namespace OrchardCore.AuditTrail.Services
 
             if (!settings.EnableClientIpAddressLogging) return null;
 
-            return _hca?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+            return _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
         }
 
         private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>

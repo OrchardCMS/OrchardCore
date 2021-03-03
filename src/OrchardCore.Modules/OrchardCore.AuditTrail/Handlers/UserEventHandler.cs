@@ -16,15 +16,15 @@ namespace OrchardCore.AuditTrail.Handlers
 {
     public class UserEventHandler : ILoginFormEvent, IPasswordRecoveryFormEvents, IRegistrationFormEvents, IUserEventHandler
     {
-        private readonly IHttpContextAccessor _hca;
         private readonly IAuditTrailManager _auditTrailManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserEventHandler(
-            IHttpContextAccessor hca,
-            IAuditTrailManager auditTrailManager)
+            IAuditTrailManager auditTrailManager,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _hca = hca;
             _auditTrailManager = auditTrailManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public Task LoggedInAsync(string userName) =>
@@ -38,12 +38,12 @@ namespace OrchardCore.AuditTrail.Handlers
             // of the Email from the form.
             RecordAuditTrailEventAsync(
                 UserAuditTrailEventProvider.PasswordRecovered,
-                _hca.HttpContext.Request.Form["Email"]);
+                _httpContextAccessor.HttpContext.Request.Form["Email"]);
 
         public Task PasswordResetAsync() =>
-            string.IsNullOrEmpty(_hca.HttpContext?.User?.Identity?.Name) ?
-                RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _hca.HttpContext.Request.Form["Email"]) :
-                RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _hca.HttpContext.User.Identity.Name);
+            string.IsNullOrEmpty(_httpContextAccessor.HttpContext?.User?.Identity?.Name) ?
+                RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _httpContextAccessor.HttpContext.Request.Form["Email"]) :
+                RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _httpContextAccessor.HttpContext.User.Identity.Name);
 
         public Task RegisteredAsync(IUser user) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.SignedUp, user.UserName);
@@ -120,7 +120,7 @@ namespace OrchardCore.AuditTrail.Handlers
             await _auditTrailManager.AddAuditTrailEventAsync<UserAuditTrailEventProvider>(
                 new AuditTrailContext(
                     eventName,
-                    eventName == UserAuditTrailEventProvider.Created ? userName : _hca.GetCurrentUserName(),
+                    eventName == UserAuditTrailEventProvider.Created ? userName : _httpContextAccessor.GetCurrentUserName(),
                     eventData,
                     "user",
                     userName));
@@ -128,6 +128,6 @@ namespace OrchardCore.AuditTrail.Handlers
 
         // Need to resolve the UserManager from the HttpContext to prevent circular dependency.
         private UserManager<IUser> GetUserManagerFromHttpContext() =>
-            _hca.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
+            _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
     }
 }

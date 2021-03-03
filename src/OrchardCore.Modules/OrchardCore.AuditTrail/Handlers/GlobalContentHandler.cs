@@ -18,23 +18,23 @@ namespace OrchardCore.AuditTrail.Handlers
     public class GlobalContentHandler : ContentHandlerBase
     {
         private readonly IYesSqlSession _session;
-        private readonly IHttpContextAccessor _hca;
         private readonly IAuditTrailManager _auditTrailManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IAuditTrailContentEventHandler> _auditTrailEvents;
 
         public ILogger Logger { get; set; }
 
         public GlobalContentHandler(
             IYesSqlSession session,
-            IHttpContextAccessor hca,
             ILogger<GlobalContentHandler> logger,
             IAuditTrailManager auditTrailManager,
+            IHttpContextAccessor httpContextAccessor,
             IEnumerable<IAuditTrailContentEventHandler> auditTrailEvents)
         {
-            _hca = hca;
             _session = session;
-            _auditTrailManager = auditTrailManager;
             _auditTrailEvents = auditTrailEvents;
+            _auditTrailManager = auditTrailManager;
+            _httpContextAccessor = httpContextAccessor;
 
             Logger = logger;
         }
@@ -44,7 +44,7 @@ namespace OrchardCore.AuditTrail.Handlers
 
         public override Task CreatedAsync(CreateContentContext context)
         {
-            if (_hca.HttpContext.Items.ContainsKey("OrchardCore.AuditTrail.Restored"))
+            if (_httpContextAccessor.HttpContext.Items.ContainsKey("OrchardCore.AuditTrail.Restored"))
             {
                 return RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, context.ContentItem);
             }
@@ -88,7 +88,7 @@ namespace OrchardCore.AuditTrail.Handlers
             };
 
             await _auditTrailManager.AddAuditTrailEventAsync<ContentAuditTrailEventProvider>(
-                new AuditTrailContext(eventName, _hca.GetCurrentUserName(), eventData, "content", content.ContentItem.ContentItemId));
+                new AuditTrailContext(eventName, _httpContextAccessor.GetCurrentUserName(), eventData, "content", content.ContentItem.ContentItemId));
         }
     }
 }
