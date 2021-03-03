@@ -31,9 +31,6 @@
     <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
       <PackagePath>build\$(AssemblyName).props</PackagePath>
     </None>
-    <None Include="$(MSBuildThisFileDirectory)Package.BuildMultiTargeting.props" Pack="true">
-      <PackagePath>buildMultitargeting\$(AssemblyName).props</PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
