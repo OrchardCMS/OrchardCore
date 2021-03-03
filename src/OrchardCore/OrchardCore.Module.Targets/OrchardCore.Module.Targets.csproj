@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- NuGet properties-->
@@ -33,7 +33,7 @@
       <PackagePath>build\OrchardCore.Module.Targets.props</PackagePath>
     </None>
     <None Include="buildMultiTargeting\OrchardCore.Module.Targets.props" Pack="true">
-      <PackagePath>buildMultitargeting\OrchardCore.Module.Targets.props</PackagePath>
+      <PackagePath>buildMultiTargeting\OrchardCore.Module.Targets.props</PackagePath>
     </None>
     <None Include="OrchardCore.Module.Targets.targets" Pack="true">
       <PackagePath>build\OrchardCore.Module.Targets.targets</PackagePath>
