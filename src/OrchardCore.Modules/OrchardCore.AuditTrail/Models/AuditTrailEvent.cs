@@ -1,4 +1,4 @@
-﻿using OrchardCore.Entities;
+using OrchardCore.Entities;
 using System;
 
 namespace OrchardCore.AuditTrail.Models
@@ -8,7 +8,7 @@ namespace OrchardCore.AuditTrail.Models
         /// <summary>
         /// The ID of the event.
         /// </summary>
-        public string Id { get; set; }
+        public string AuditTrailEventId { get; set; }
 
         /// <summary>
         /// The date and time when the event occurred.

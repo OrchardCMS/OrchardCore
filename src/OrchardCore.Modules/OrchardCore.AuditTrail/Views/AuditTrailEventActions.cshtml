@@ -1,5 +1,5 @@
-﻿@{
+@{
     var auditTrailEvent = (AuditTrailEvent)Model.AuditTrailEvent;
 }
 
-<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.Id">@T["Details"]</a>
+<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">@T["Details"]</a>

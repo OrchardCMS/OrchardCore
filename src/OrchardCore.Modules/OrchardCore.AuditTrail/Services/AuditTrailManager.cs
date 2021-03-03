@@ -25,8 +25,8 @@ namespace OrchardCore.AuditTrail.Services
         private readonly IStringLocalizer T;
         private readonly IYesSqlSession _session;
         private readonly ISiteService _siteService;
-        private readonly Entities.IIdGenerator _iidGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuditTrailEventIdGenerator _auditTrailEventIdGenerator;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
         private readonly IEnumerable<IAuditTrailEventProvider> _auditTrailEventProviders;
 
@@ -37,19 +37,19 @@ namespace OrchardCore.AuditTrail.Services
             IYesSqlSession session,
             ISiteService siteService,
             ILogger<AuditTrailManager> logger,
-            Entities.IIdGenerator iidGenerator,
             IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<AuditTrailManager> stringLocalizer,
+            IAuditTrailEventIdGenerator auditTrailEventIdGenerator,
             IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers,
             IEnumerable<IAuditTrailEventProvider> auditTrailEventProviders)
         {
             _clock = clock;
             _session = session;
             _siteService = siteService;
-            _iidGenerator = iidGenerator;
             _httpContextAccessor = httpContextAccessor;
             _auditTrailEventHandlers = auditTrailEventHandlers;
             _auditTrailEventProviders = auditTrailEventProviders;
+            _auditTrailEventIdGenerator = auditTrailEventIdGenerator;
 
             Logger = logger;
             T = stringLocalizer;
@@ -62,7 +62,7 @@ namespace OrchardCore.AuditTrail.Services
 
             foreach (var eventDescriptor in eventDescriptors)
             {
-                if (!await IsEventEnabledAsync(eventDescriptor)) return;
+                if (!await IsEventEnabledAsync(eventDescriptor)) continue;
 
                 var auditTrailCreateContext = new AuditTrailCreateContext(
                     auditTrailContext.EventName,
@@ -77,7 +77,7 @@ namespace OrchardCore.AuditTrail.Services
 
                 var auditTrailEvent = new AuditTrailEvent
                 {
-                    Id = _iidGenerator.GenerateUniqueId(),
+                    AuditTrailEventId = _auditTrailEventIdGenerator.GenerateUniqueId(),
                     Category = eventDescriptor.CategoryDescriptor.Category,
                     EventName = auditTrailCreateContext.EventName,
                     FullEventName = eventDescriptor.FullEventName,
@@ -135,7 +135,7 @@ namespace OrchardCore.AuditTrail.Services
                     query.With<AuditTrailEventIndex>().OrderBy(eventIndex => eventIndex.EventName).ThenByDescending(eventIndex => eventIndex.CreatedUtc);
                     break;
                 case AuditTrailOrderBy.DateDescending:
-                    query.With<AuditTrailEventIndex>().OrderByDescending(eventIndex => eventIndex.CreatedUtc).ThenByDescending(eventIndex => eventIndex.Id);
+                    query.With<AuditTrailEventIndex>().OrderByDescending(eventIndex => eventIndex.Id);
                     break;
                 default:
                     break;
@@ -225,8 +225,8 @@ namespace OrchardCore.AuditTrail.Services
 
             var auditTrailSettings = await GetAuditTrailSettingsAsync();
 
-            var auditTrailEventSetting = auditTrailSettings.EventSettings.FirstOrDefault(
-                eventSetting => eventSetting.EventName == eventDescriptor.FullEventName);
+            var auditTrailEventSetting = auditTrailSettings.EventSettings
+                .FirstOrDefault(eventSetting => eventSetting.EventName == eventDescriptor.FullEventName);
 
             return auditTrailEventSetting != null ? auditTrailEventSetting.IsEnabled : eventDescriptor.IsEnabledByDefault;
         }

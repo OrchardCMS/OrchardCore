@@ -7,7 +7,7 @@
     var auditTrailEvent = (AuditTrailEvent)Model.AuditTrailEvent;
     var eventDescriptor = (AuditTrailEventDescriptor)Model.Descriptor;
     var versionNumber = (int)Model.VersionNumber;
-    var versionText = T[string.Format("Version {0}", versionNumber)];
+    var versionText = T[$"Version {versionNumber}"];
     var eventName = eventDescriptor.LocalizedName.Value.ToLowerInvariant();
 }
 
@@ -26,7 +26,7 @@
         new
         {
             area = "OrchardCore.AuditTrail",
-            auditTrailEventId = auditTrailEvent.Id,
+            auditTrailEventId = auditTrailEvent.AuditTrailEventId,
             versionNumber = versionNumber
         }, null)]
     }
@@ -43,7 +43,7 @@
         new
         {
             area = "OrchardCore.AuditTrail",
-            auditTrailEventId = auditTrailEvent.Id,
+            auditTrailEventId = auditTrailEvent.AuditTrailEventId,
             versionNumber = versionNumber
         }, null),
         contentType,

@@ -7,7 +7,7 @@
     var availableVersionsCount = (int)Model.AvailableVersionsCount;
 }
 
-<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.Id">@T["Details"]</a>
+<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">@T["Details"]</a>
 @if (contentItem != null) 
 {
     if (availableVersionsCount != versionNumber) 
@@ -16,7 +16,7 @@
         <form method="post">
             <a asp-controller="Content"
                asp-action="Restore"
-               asp-route-auditTrailEventId="@auditTrailEvent.Id"
+               asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId"
                data-title="@T["Restore to Version"]"
                data-message="@T["Are you sure you want to restore to version {0}?", versionNumber]"
                data-ok-text="@T["Yes"]"
