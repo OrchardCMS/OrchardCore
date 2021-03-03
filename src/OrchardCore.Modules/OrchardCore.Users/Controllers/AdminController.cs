@@ -38,6 +38,7 @@ namespace OrchardCore.Users.Controllers
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
         private readonly IRoleService _roleService;
+        private readonly IUsersAdminListQueryService _usersAdminListQueryService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         private readonly dynamic New;
@@ -52,6 +53,7 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             IUserService userService,
             IRoleService roleService,
+            IUsersAdminListQueryService usersAdminListQueryService,
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -68,6 +70,7 @@ namespace OrchardCore.Users.Controllers
             _siteService = siteService;
             _userService = userService;
             _roleService = roleService;
+            _usersAdminListQueryService = usersAdminListQueryService;
             _updateModelAccessor = updateModelAccessor;
 
             New = shapeFactory;
@@ -88,44 +91,15 @@ namespace OrchardCore.Users.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var users = _session.Query<User, UserIndex>();
+            var users = await _usersAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
 
-            switch (options.Filter)
-            {
-                case UsersFilter.Approved:
-                    //users = users.Where(u => u.RegistrationStatus == UserStatus.Approved);
-                    break;
-                case UsersFilter.Pending:
-                    //users = users.Where(u => u.RegistrationStatus == UserStatus.Pending);
-                    break;
-                case UsersFilter.EmailPending:
-                    //users = users.Where(u => u.EmailStatus == UserStatus.Pending);
-                    break;
-            }
+            // var users = _session.Query<User, UserIndex>();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
-            {
-                var normalizedSearchUserName = _userManager.NormalizeName(options.Search);
-                var normalizedSearchEMail = _userManager.NormalizeEmail(options.Search);
+            //All of this moves.
 
-                users = users.Where(u => u.NormalizedUserName.Contains(normalizedSearchUserName) || u.NormalizedEmail.Contains(normalizedSearchEMail));
-            }
+ 
 
-            switch (options.Order)
-            {
-                case UsersOrder.Name:
-                    users = users.OrderBy(u => u.NormalizedUserName);
-                    break;
-                case UsersOrder.Email:
-                    users = users.OrderBy(u => u.NormalizedEmail);
-                    break;
-                case UsersOrder.CreatedUtc:
-                    //users = users.OrderBy(u => u.CreatedUtc);
-                    break;
-                case UsersOrder.LastLoginUtc:
-                    //users = users.OrderBy(u => u.LastLoginUtc);
-                    break;
-            }
+            // to here.
 
             var count = await users.CountAsync();
 
