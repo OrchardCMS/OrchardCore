@@ -84,7 +84,7 @@ namespace OrchardCore.Media.Services
                 {
                     file.IsReadOnly = false;
 
-                    if(IsFileLocked(file))
+                    if (IsFileLocked(file))
                     {
                         var i = 0;
                         while (file.Exists && IsFileLocked(file) && i <= Repeats)
@@ -110,7 +110,7 @@ namespace OrchardCore.Media.Services
                 try
                 {
                     var i = 0;
-                    while(baseDir.Exists && baseDir.GetFiles().Length == 0 && i <= Repeats)
+                    while (baseDir.Exists && baseDir.GetFiles().Length == 0 && i <= Repeats)
                     {
                         baseDir.Delete();
                         await Task.Delay(RepeatTime, cancellationToken);
