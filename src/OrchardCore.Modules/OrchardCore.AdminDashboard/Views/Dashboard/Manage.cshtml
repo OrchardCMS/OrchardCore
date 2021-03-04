@@ -1,6 +1,5 @@
 @model AdminDashboardViewModel
 @using OrchardCore.ContentManagement;
-@using OrchardCore.ContentManagement.Metadata.Settings;
 @inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
@@ -10,18 +9,14 @@
     // Todo Create Settings for Dashboard
     var settings = new
     {
-        // Default is 1, i.e. 6 columns in large screen, 3 for tablets and 1 for phones. 
-        // Changing Scale 2 will increase the # columns to 12 for large screen, 6 for tablets and 2 for phones. 
-        ColumnScale = 1 
+        // Default is 1, i.e. 6 columns in large screen, 3 for tablets and 1 for phones.
+        // Changing Scale 2 will increase the # columns to 12 for large screen, 6 for tablets and 2 for phones.
+        ColumnScale = 1
     };
 }
 
 <style asp-name="jQuery-ui" at="Head"></style>
-<style asp-src="~/OrchardCore.AdminDashboard/Styles/dashboard.min.css"
-       debug-src="~/OrchardCore.AdminDashboard/Styles/dashboard.css"
-       depends-on="jQuery-ui"
-       at="Head"></style>
-
+<style asp-src="~/OrchardCore.AdminDashboard/Styles/dashboard.min.css" debug-src="~/OrchardCore.AdminDashboard/Styles/dashboard.css" depends-on="jQuery-ui" at="Head"></style>
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <div class="float-right mb-3 d-inline-flex">
@@ -30,19 +25,17 @@
     </a>
     @if (Model.Creatable.Any())
     {
-    <div class="dropdown order-md-1">
-        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="new-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            @T["Add Widget"]
-        </button>
-        <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="bulk-action-menu-button">
-            @foreach (var item in Model.Creatable)
-            {
-            <a class="dropdown-item add-list-widget btn-sm"
-               href="@Url.RouteUrl(new { area = " OrchardCore.Contents", controller="Admin" , action="Create" , id=@item.Value, returnUrl=FullRequestPath })">@T[item.Text]</a>
-            }
+        <div class="dropdown order-md-1">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="new-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @T["Add Widget"]
+            </button>
+            <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="bulk-action-menu-button">
+                @foreach (var item in Model.Creatable)
+                {
+                    <a class="dropdown-item add-list-widget btn-sm" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>
+                }
+            </div>
         </div>
-    </div>
-
     }
 </div>
 <zone Name="Title"><h1 class="float-left">@RenderTitleSegments(T["Dashboard"])</h1></zone>
@@ -55,10 +48,10 @@
     <form id="dashboard-undo-form" asp-action="Update" method="POST">
         @for (int index = 0; index < Model.Dashboards.Count(); index++)
         {
-        <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)" name="parts[@(index)].ContentItemId" value="@Model.Dashboards[index].Dashboard.ContentItemId" />
-        <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Width" name="parts[@(index)].Width" value="" />
-        <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Height" name="parts[@(index)].Height" value="" />
-        <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Position" name="parts[@(index)].Position" value="" />
+            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)" name="parts[@(index)].ContentItemId" value="@Model.Dashboards[index].Dashboard.ContentItemId" />
+            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Width" name="parts[@(index)].Width" value="" />
+            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Height" name="parts[@(index)].Height" value="" />
+            <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)_Position" name="parts[@(index)].Position" value="" />
         }
     </form>
     @T["Dashboard successfully updated."]&nbsp;<a href="#"><strong>@T["Undo"]</strong></a>.
@@ -67,13 +60,11 @@
 <div class="dashboard-container" id="container" style="--dashboard-columns: calc( @(settings.ColumnScale) * var(--dashboard-columns-default));">
     @foreach (var dashboard in Model.Dashboards)
     {
-    @await DisplayAsync(dashboard)
+        @await DisplayAsync(dashboard)
     }
 </div>
 
 <script depends-on="jQuery-ui" at="Foot">
-
-
     $(document).ready(function(){
         //
         var _menu = null;
@@ -87,8 +78,8 @@
             $("#dashboard-undo-form").submit();
         });
 
-        function Update(metadata) {
-
+        function Update(metadata)
+        {
             var token = $("[name='__RequestVerificationToken']").val();
             var data = {
                 __RequestVerificationToken : token,
@@ -106,32 +97,39 @@
             });
         }
 
-    function snapTo(org, val,gridSize){
+        function snapTo(org, val, gridSize)
+        {
+            var snap_X =1;
+            if (org.width < val.width)
+            {
+                snap_X = Math.ceil(val.width/gridSize.width) ;
+            }
+            else
+            {
+                snap_X = Math.floor(val.width/gridSize.width) ;
+            }
 
-        var snap_X =1;
-        if(org.width < val.width){
-            snap_X = Math.ceil(val.width/gridSize.width) ;
-        }else {
-            snap_X = Math.floor(val.width/gridSize.width) ;
+            if (snap_X === 0)
+                snap_X = 1;
+
+            var snap_Y =1;
+            if (org.height < val.height)
+            {
+                snap_Y = Math.ceil(val.height/gridSize.height) ;
+            }
+            else
+            {
+                snap_Y = Math.floor(val.height/gridSize.height) ;
+            }
+
+            if(snap_Y ===0 )
+                snap_Y = 1;
+            var snap = { X : snap_X, Y: snap_Y};
+            return snap;
         }
-        if(snap_X === 0)
-            snap_X = 1;
 
-
-        var snap_Y =1;
-        if(org.height < val.height){
-            snap_Y = Math.ceil(val.height/gridSize.height) ;
-        }else{
-            snap_Y = Math.floor(val.height/gridSize.height) ;
-        }
-
-        if(snap_Y ===0 )
-            snap_Y = 1;
-        var snap = { X : snap_X, Y: snap_Y};
-        return snap;
-    }
-
-        function setUndoValues(){
+        function setUndoValues()
+        {
             $(".dashboard-container .dashboard-wrapper")
                 .each(function (index, value) {
                     $('#undo_' + $(value).attr('id') + '_Position').val(index);
@@ -140,7 +138,8 @@
                 });
         }
 
-        function getCurrentValues(){
+        function getCurrentValues()
+        {
             var metadata = [];
             $(".dashboard-container .dashboard-wrapper")
                 .each(function (index, value) {
@@ -159,8 +158,8 @@
             return metadata;
         }
 
-
-        function calculateCellSize(){
+        function calculateCellSize()
+        {
             var container = document.getElementById("container");
             var styles = window.getComputedStyle(container);
 
@@ -298,6 +297,5 @@
             _menu.hide();
             _menu = null;
         });
-
     });
 </script>
