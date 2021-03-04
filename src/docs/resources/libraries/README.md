@@ -38,7 +38,7 @@ The below table lists the different libraries used as Resources:
 | [bootstrap-slider](https://github.com/seiyria/bootstrap-slider) | Slider control for Bootstrap. | 11.0.2 | [MIT](https://github.com/seiyria/bootstrap-slider/blob/master/LICENSE.md) |
 | [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.59.3 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
 | [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | 5.15.2 | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
-| [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | 3.5.0 | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |
+| [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | 3.6.0 | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |
 | [jQuery UI](https://github.com/jquery/jquery-ui) | jQuery user interface library. | 1.12.1 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
 | [jQuery UI i18n](https://github.com/jquery/jquery-ui/tree/master/ui/i18n) | jQuery UI internationalization. | 1.7.2 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
 | [jquery-resizable-dom](https://github.com/RickStrahl/jquery-resizable) | jQuery plug-in to make DOM components resizable. | 0.35.0 | [MIT](https://github.com/RickStrahl/jquery-resizable/blob/master/LICENSE.md) |
