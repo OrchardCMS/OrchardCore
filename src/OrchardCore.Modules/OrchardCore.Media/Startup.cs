@@ -163,6 +163,9 @@ namespace OrchardCore.Media
 
             // Media Name Normalizer
             services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
+
+            // Media cache background task
+            services.AddSingleton<IBackgroundTask, MediaCacheBackgroundTask>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
