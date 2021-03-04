@@ -164,9 +164,6 @@ namespace OrchardCore.Media
 
             // Media Name Normalizer
             services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
-
-            // Media cache background task
-            services.AddSingleton<IBackgroundTask, MediaCacheBackgroundTask>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -343,6 +340,16 @@ namespace OrchardCore.Media
         {
             services.AddScoped<IPermissionProvider, MediaCachePermissions>();
             services.AddScoped<INavigationProvider, MediaCacheAdminMenu>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Cache.BackgroundTask")]
+    public class MediaCacheBackgroundTaskStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Media cache background task
+            services.AddSingleton<IBackgroundTask, MediaCacheBackgroundTask>();
         }
     }
 
