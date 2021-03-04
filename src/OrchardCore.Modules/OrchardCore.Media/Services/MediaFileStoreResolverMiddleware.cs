@@ -109,13 +109,8 @@ namespace OrchardCore.Media.Services
 
             // Always call next, this middleware always passes.
             if (await _mediaFileStoreCache.IsCachedAsync(subPathValue))
-            { 
-                await _next(context);
-            }
-
-            if (!context.Response.HasStarted)
             {
-                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                await _next(context);
             }
 
             return;

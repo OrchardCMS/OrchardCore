@@ -67,10 +67,16 @@ namespace OrchardCore.Media.Core
                 using (var fileStream = File.Create(cachePath))
                 {
                     await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
+
+                    if (fileStream.Length == 0)
+                    {
+                        throw new Exception($"Error retrieving file (length equals 0 byte) : {cachePath}");
+                    }
                 }
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error saving file {Path}", cachePath);
                 if (File.Exists(cachePath))
                 {
                     try
@@ -83,12 +89,7 @@ namespace OrchardCore.Media.Core
                         throw;
                     }
                 }
-
-                if (!cancellationToken.IsCancellationRequested)
-                {
-                    _logger.LogError(ex, "Error saving file {Path}", cachePath);
-                    throw;
-                }
+                throw;
             }
         }
 
