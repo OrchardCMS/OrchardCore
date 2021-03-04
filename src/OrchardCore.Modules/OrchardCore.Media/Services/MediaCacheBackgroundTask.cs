@@ -11,9 +11,9 @@ namespace OrchardCore.Media.Services
 {
 
     // At 12:00 on Monday.
-    [BackgroundTask(Schedule = "0 12 * * 1", Description = "Performs cleanup operations for ms-cache and is-cache folders At 12:00 on Monday.")]
+    [BackgroundTask(Schedule = "0 12 * * 1", Description = "Performs cleanup operations for ms-cache and is-cache folders periodically.")]
     // Left for test driving.
-    //[BackgroundTask(Schedule = "* * * * *", Description = "Performs cleanup operations for ms-cache and is-cache folders every minute.")]
+    //[BackgroundTask(Schedule = "* * * * *", Description = "Performs cleanup operations for ms-cache and is-cache folders periodically.")]
     public class MediaCacheBackgroundTask : IBackgroundTask
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
