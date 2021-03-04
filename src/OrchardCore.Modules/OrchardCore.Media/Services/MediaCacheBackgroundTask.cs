@@ -110,7 +110,7 @@ namespace OrchardCore.Media.Services
                 try
                 {
                     var i = 0;
-                    while(baseDir.Exists && baseDir.GetFiles().Count() == 0 && i <= Repeats)
+                    while(baseDir.Exists && baseDir.GetFiles().Length == 0 && i <= Repeats)
                     {
                         baseDir.Delete();
                         await Task.Delay(RepeatTime, cancellationToken);
