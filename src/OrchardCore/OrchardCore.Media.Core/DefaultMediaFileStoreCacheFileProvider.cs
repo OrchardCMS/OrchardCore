@@ -84,7 +84,7 @@ namespace OrchardCore.Media.Core
                     }
                 }
 
-                if(!cancellationToken.IsCancellationRequested)
+                if (!cancellationToken.IsCancellationRequested)
                 {
                     _logger.LogError(ex, "Error saving file {Path}", cachePath);
                     throw;
