@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
@@ -107,7 +108,16 @@ namespace OrchardCore.Media.Services
             }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
             // Always call next, this middleware always passes.
-            await _next(context);
+            if (await _mediaFileStoreCache.IsCachedAsync(subPathValue))
+            { 
+                await _next(context);
+            }
+
+            if (!context.Response.HasStarted)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            }
+
             return;
         }
     }

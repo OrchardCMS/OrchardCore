@@ -71,7 +71,6 @@ namespace OrchardCore.Media.Core
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error saving file {Path}", cachePath);
                 if (File.Exists(cachePath))
                 {
                     try
@@ -84,7 +83,12 @@ namespace OrchardCore.Media.Core
                         throw;
                     }
                 }
-                throw;
+
+                if(!cancellationToken.IsCancellationRequested)
+                {
+                    _logger.LogError(ex, "Error saving file {Path}", cachePath);
+                    throw;
+                }
             }
         }
 
