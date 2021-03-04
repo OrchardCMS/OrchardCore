@@ -37,7 +37,8 @@ namespace OrchardCore.Users.Services
                     {
                         environment["AdminUserId"] = siteSettings.SuperUser;
                     }
-                } catch 
+                } 
+                catch 
                 {
                     _logger.LogWarning("Could not lookup AdminUserId; User migrations may not have run yet");
                 }
