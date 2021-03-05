@@ -2,5 +2,8 @@
 
   <Import Project="..\OrchardCore.Build\OrchardCore.Commons.props" />
 
+  <PropertyGroup>
+    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
+  </PropertyGroup>
 
 </Project>
