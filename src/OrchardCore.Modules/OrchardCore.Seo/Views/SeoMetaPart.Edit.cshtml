@@ -12,41 +12,21 @@
 
 <div class="form-group" asp-validation-class-for="PageTitle">
     <label asp-for="PageTitle">@T["Page Title"] </label>
-    <input asp-for="PageTitle" class="form-control content-preview-text" />
+    <input asp-for="PageTitle" class="form-control content-preview-text shortcode-modal-input" />
     <span class="hint">@T["Override the default generated web browser page title (recommended to keep under 70 characters)."]</span>
 </div>  
 
 <div class="form-group" asp-validation-class-for="MetaDescription">
     <label asp-for="MetaDescription">@T["Meta Description"] </label>
-    <textarea asp-for="MetaDescription" class="form-control content-preview-text" rows="5"></textarea>
+    <textarea asp-for="MetaDescription" class="form-control content-preview-text shortcode-modal-input"></textarea>
     <span class="hint">@T["The meta description to render for this page."]</span>
 </div>
-
-<style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
-<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
-<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
-<style asp-name="codemirror"></style>
-<script at="Foot">
-    $(function () {
-        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.MetaDescription)');
-        if (optionsTextArea) {
-            var editor = CodeMirror.fromTextArea(optionsTextArea, {
-                autoRefresh: true,
-                lineWrapping: true,
-                styleActiveLine: true
-            });
-            
-            initializeCodeMirrorShortcodeWrapper(editor);
-        }
-    });
-</script>
 
 @if (Model.Settings.DisplayKeywords)
 { 
 <div class="form-group" asp-validation-class-for="MetaKeywords">
     <label asp-for="MetaKeywords">@T["Meta Keywords"] </label>
-    <input asp-for="MetaKeywords" class="form-control content-preview-text" />
+    <input asp-for="MetaKeywords" class="form-control content-preview-text shortcode-modal-input" />
     <span class="hint">@T["The meta keywords to render for this page, comma separated."]</span>
 </div>
 }
@@ -59,7 +39,7 @@
 
 <div class="form-group" asp-validation-class-for="MetaRobots">
     <label asp-for="MetaRobots">@T["Meta Robots"] </label>
-    <input asp-for="MetaRobots" class="form-control content-preview-text" />
+    <input asp-for="MetaRobots" class="form-control content-preview-text shortcode-modal-input" />
     <span class="hint">@T["The robots meta to render for this page."]</span>
 </div>
 
