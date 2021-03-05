@@ -29,27 +29,27 @@ namespace OrchardCore.Media.Services
             _logger = logger;
         }
 
-        public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+        public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Media cache background task cleaning started");
 
             var directoryInfo = new DirectoryInfo(Path.Combine(_webHostEnvironment.WebRootPath, "is-cache"));
 
             // Don't delete is-cache folder.
-            RecursiveDelete(directoryInfo, false, cancellationToken);
+            await RecursiveDelete(directoryInfo, false, cancellationToken);
 
             // Prevents deletion of root tenant folders.
             directoryInfo = new DirectoryInfo(Path.Combine(_webHostEnvironment.WebRootPath, "ms-cache"));
             foreach (var dir in directoryInfo.EnumerateDirectories())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                RecursiveDelete(dir, false, cancellationToken);
+                await RecursiveDelete(dir, false, cancellationToken);
             }
 
-            return Task.CompletedTask;
+            return;
         }
 
-        private async void RecursiveDelete(DirectoryInfo baseDir, bool deleteBaseDir, CancellationToken cancellationToken)
+        private async Task RecursiveDelete(DirectoryInfo baseDir, bool deleteBaseDir, CancellationToken cancellationToken)
         {
             if (!baseDir.Exists)
             {
@@ -63,7 +63,7 @@ namespace OrchardCore.Media.Services
                 {
                     try
                     {
-                        RecursiveDelete(dir, true, cancellationToken);
+                        await RecursiveDelete(dir, true, cancellationToken);
                     }
                     catch (Exception ex)
                     {
