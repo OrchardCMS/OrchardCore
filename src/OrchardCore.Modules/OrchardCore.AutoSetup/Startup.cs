@@ -73,8 +73,7 @@ namespace OrchardCore.AutoSetup
 
             if (currentShellSettings.State == TenantState.Uninitialized)
             {
-                var optionsAccessor = serviceProvider.GetRequiredService<IOptions<AutoSetupOptions>>();
-                var options = optionsAccessor.Value;
+                var options = serviceProvider.GetRequiredService<IOptions<AutoSetupOptions>>().Value;
 
                 if (options != null)
                 {
