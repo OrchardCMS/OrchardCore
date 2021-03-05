@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.AutoSetup.Options
 {
@@ -13,11 +14,6 @@ namespace OrchardCore.AutoSetup.Options
     /// </summary>
     public class TenantSetupOptions
     {
-        /// <summary>
-        /// The default/root shell name.
-        /// </summary>
-        private const string DefaultShellName = "Default";
-
         /// <summary>
         /// The Shell Name
         /// </summary>
@@ -81,7 +77,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <summary>
         /// Gets the Flag which indicates a Default/Root shell/tenant.
         /// </summary>
-        public bool IsDefault => string.Equals(ShellName, DefaultShellName, StringComparison.InvariantCultureIgnoreCase);
+        public bool IsDefault => string.Equals(ShellName, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// The validate.
@@ -101,6 +97,11 @@ namespace OrchardCore.AutoSetup.Options
             if (!IsDefault && string.IsNullOrWhiteSpace(RequestUrlPrefix) && string.IsNullOrWhiteSpace(RequestUrlHost))
             {
                 yield return new ValidationResult(T["For no Default Tenant RequestUrlPrefix or RequestUrlHost should be provided", "Tenant Url"], new[] { "TenantUrl" });
+            }
+
+            if (!string.IsNullOrEmpty(RequestUrlPrefix) && RequestUrlPrefix.Contains('/'))
+            {
+                yield return new ValidationResult(T["The field {0} can not contain more than one segment.", "Request Url Prefix"], new[] { nameof(RequestUrlPrefix) });
             }
 
             if (string.IsNullOrWhiteSpace(SiteName))

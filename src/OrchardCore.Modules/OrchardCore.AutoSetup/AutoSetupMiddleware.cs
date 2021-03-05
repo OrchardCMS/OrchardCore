@@ -57,11 +57,11 @@ namespace OrchardCore.AutoSetup
             IShellHost shellHost,
             ILogger<AutoSetupMiddleware> logger)
         {
-            _logger = logger;
             _next = next;
             _shellSettingsManager = shellSettingsManager;
             _setupOptions = setupOptions;
             _shellHost = shellHost;
+            _logger = logger;
         }
 
         /// <summary>

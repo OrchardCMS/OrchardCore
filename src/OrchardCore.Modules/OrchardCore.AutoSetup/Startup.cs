@@ -11,6 +11,7 @@ using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.AutoSetup
 {
@@ -70,7 +71,7 @@ namespace OrchardCore.AutoSetup
             var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
 
 
-            if (currentShellSettings.State == Environment.Shell.Models.TenantState.Uninitialized)
+            if (currentShellSettings.State == TenantState.Uninitialized)
             {
                 var optionsAccessor = serviceProvider.GetRequiredService<IOptions<AutoSetupOptions>>();
                 var options = optionsAccessor.Value;
@@ -103,8 +104,6 @@ namespace OrchardCore.AutoSetup
                     }
                 }
             }
-
-            base.Configure(app, routes, serviceProvider);
         }
     }
 }
