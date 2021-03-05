@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using System.Linq;
 
 namespace OrchardCore.AutoSetup.Options
@@ -22,31 +20,31 @@ namespace OrchardCore.AutoSetup.Options
         /// </summary>
         public List<TenantSetupOptions> Tenants { get; set; } = new List<TenantSetupOptions>();
 
+        /// <summary>
+        /// AutoSetupOptions Validation logic
+        /// </summary>
+        /// <param name="validationContext"> The validation context. </param>
+        /// <returns> The collection of errors. </returns>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var T = validationContext.GetService<IStringLocalizer<AutoSetupOptions>>();
-
             if (!string.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith("/"))
             {
-                yield return new ValidationResult(T["The field {0} should be empty or start with /", "Auto Setup Path"], new[] { nameof(AutoSetupPath) });
+                yield return new ValidationResult($"The field {nameof(AutoSetupPath)} should be empty or start with /");
             }
 
             if (Tenants == null || Tenants.Count == 0)
             {
-                yield return new ValidationResult(T["The field {0} should contain at least one tenant", "Tenants"], new[] { nameof(Tenants) });
+                yield return new ValidationResult($"The field {nameof(Tenants)} should contain at least one tenant");
             }
 
             if (Tenants.Count(tenant => tenant.IsDefault) != 1)
             {
-                yield return new ValidationResult(T["The Single Default Tenant should be provided", "Tenants"], new[] { nameof(Tenants) });
+                yield return new ValidationResult("The Single Default Tenant should be provided");
             }
 
-            foreach (var tenant in Tenants)
+            foreach (var validationResult in Tenants.SelectMany(tenant => tenant.Validate(validationContext)))
             {
-                foreach (var validationResult in tenant.Validate(validationContext))
-                {
-                    yield return validationResult;
-                }
+                yield return validationResult;
             }
         }
     }

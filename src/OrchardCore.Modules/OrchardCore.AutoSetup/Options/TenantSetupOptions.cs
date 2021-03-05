@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.AutoSetup.Options
@@ -80,68 +78,70 @@ namespace OrchardCore.AutoSetup.Options
         public bool IsDefault => string.Equals(ShellName, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
-        /// The validate.
+        /// Error Message Format
+        /// </summary>
+        private string RequiredErrorMessageFormat = "The {0} field is required.";
+
+        /// <summary>
+        /// Tenant validation.
         /// </summary>
         /// <param name="validationContext"> The validation context. </param>
-        /// <returns>
-        /// The collection of errors if any. </returns>
+        /// <returns> The collection of errors. </returns>
         public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var T = validationContext.GetService<IStringLocalizer<AutoSetupOptions>>();
-
             if (String.IsNullOrEmpty(ShellName) || !Regex.IsMatch(ShellName, @"^\w+$"))
             {
-                yield return new ValidationResult(T["Invalid shell name. Can not be empty and must contain characters only and no spaces.", "Shell name"], new[] { nameof(ShellName) });
+                yield return new ValidationResult("ShellName Can not be empty and must contain characters only and no spaces.");
             }
 
             if (!IsDefault && string.IsNullOrWhiteSpace(RequestUrlPrefix) && string.IsNullOrWhiteSpace(RequestUrlHost))
             {
-                yield return new ValidationResult(T["For no Default Tenant RequestUrlPrefix or RequestUrlHost should be provided", "Tenant Url"], new[] { "TenantUrl" });
+                yield return new ValidationResult("RequestUrlPrefix or RequestUrlHost should be provided for no Default Tenant");
             }
 
             if (!string.IsNullOrEmpty(RequestUrlPrefix) && RequestUrlPrefix.Contains('/'))
             {
-                yield return new ValidationResult(T["The field {0} can not contain more than one segment.", "Request Url Prefix"], new[] { nameof(RequestUrlPrefix) });
+                yield return new ValidationResult("The RequestUrlPrefix can not contain more than one segment.");
             }
 
             if (string.IsNullOrWhiteSpace(SiteName))
             {
-                yield return new ValidationResult(T["The field {0} is not provided", "Site name"], new[] { nameof(SiteName) });
+                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(SiteName)));
             }
 
             if (string.IsNullOrWhiteSpace(AdminUsername))
             {
-                yield return new ValidationResult(T["The field {0} is not provided", "Admin UserName"], new[] { nameof(AdminUsername) });
+                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(AdminUsername)));
             }
 
             if (string.IsNullOrWhiteSpace(AdminEmail))
             {
-                yield return new ValidationResult(T["The field {0} is not provided", "Admin EmailAddress"], new[] { nameof(AdminEmail) });
+                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(AdminEmail)));
             }
 
             if (string.IsNullOrWhiteSpace(AdminPassword))
             {
-                yield return new ValidationResult(T["The field {0} is not provided", "Admin Password"], new[] { nameof(AdminPassword) });
+                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(AdminPassword)));
             }
 
             if (string.IsNullOrWhiteSpace(DatabaseProvider))
             {
-                yield return new ValidationResult(T["The field {0} is not provided", "Database Provider"], new[] { nameof(DatabaseProvider) });
+                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(DatabaseProvider)));
             }
 
             if (!string.Equals(this.DatabaseProvider, "Sqlite", StringComparison.InvariantCultureIgnoreCase) && string.IsNullOrWhiteSpace(DatabaseConnectionString))
             {
-                yield return new ValidationResult(T["The field {0} is not provided", "Database ConnectionString"], new[] { nameof(DatabaseConnectionString) });
+                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(DatabaseConnectionString)));
             }
 
             if (string.IsNullOrWhiteSpace(RecipeName))
             {
-                yield return new ValidationResult(T["The field {0} is not provided", "Recipe name"], new[] { nameof(RecipeName) });
+                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(RecipeName)));
             }
 
             if (string.IsNullOrWhiteSpace(SiteTimeZone))
             {
-                yield return new ValidationResult(T["The field {0} is not provided", "Site TimeZone"], new[] { nameof(SiteTimeZone) });
+                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(SiteTimeZone)));
             }
         }
     }
