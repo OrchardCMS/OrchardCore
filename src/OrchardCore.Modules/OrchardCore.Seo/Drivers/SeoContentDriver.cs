@@ -16,7 +16,7 @@ namespace OrchardCore.Seo.Drivers
     public class SeoContentDriver : ContentDisplayDriver
     {       
         private readonly IContentManager _contentManager;
-        private readonly SeoPageTitleBuilder _seoPageTitleBuilder;
+        private readonly IPageTitleBuilder _pageTitleBuilder;
         private readonly IResourceManager _resourceManager;
         private readonly IShortcodeService _shortcodeService;
 
@@ -30,7 +30,7 @@ namespace OrchardCore.Seo.Drivers
             )
         {
             _contentManager = contentManager;
-            _seoPageTitleBuilder = pageTitleBuilder as SeoPageTitleBuilder;
+            _pageTitleBuilder = pageTitleBuilder;
             _resourceManager = resourceManager;
             _shortcodeService = shortcodeService;
         }
@@ -59,7 +59,7 @@ namespace OrchardCore.Seo.Drivers
 
             if (!String.IsNullOrEmpty(aspect.PageTitle))
             {
-                _seoPageTitleBuilder.SetTitle(await RenderAsync(aspect.PageTitle, contentItem));
+                _pageTitleBuilder.SetFixedTitle(new HtmlString(await RenderAsync(aspect.PageTitle, contentItem)));
             }
 
             if (!String.IsNullOrEmpty(aspect.MetaDescription))

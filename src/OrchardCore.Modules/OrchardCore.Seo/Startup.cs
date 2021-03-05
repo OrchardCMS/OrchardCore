@@ -26,10 +26,6 @@ namespace OrchardCore.Seo
             services.AddScoped<IContentDisplayDriver, SeoContentDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, SeoMetaPartSettingsDisplayDriver>();
 
-            services.RemoveAll<IPageTitleBuilder>();
-
-            services.AddScoped<IPageTitleBuilder, SeoPageTitleBuilder>();
-
             // This must be last, and the module dependant on Contents so this runs after the part handlers.
             services.AddScoped<IContentHandler, SeoMetaSettingsHandler>();
         }
