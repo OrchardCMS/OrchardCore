@@ -36,20 +36,20 @@ namespace OrchardCore.Media.Services
             var directoryInfo = new DirectoryInfo(Path.Combine(_webHostEnvironment.WebRootPath, "is-cache"));
 
             // Don't delete is-cache folder.
-            await RecursiveDelete(directoryInfo, false, cancellationToken);
+            await RecursiveDeleteAsync(directoryInfo, false, cancellationToken);
 
             // Prevents deletion of root tenant folders.
             directoryInfo = new DirectoryInfo(Path.Combine(_webHostEnvironment.WebRootPath, "ms-cache"));
             foreach (var dir in directoryInfo.EnumerateDirectories())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await RecursiveDelete(dir, false, cancellationToken);
+                await RecursiveDeleteAsync(dir, false, cancellationToken);
             }
 
             return;
         }
 
-        private async Task RecursiveDelete(DirectoryInfo baseDir, bool deleteBaseDir, CancellationToken cancellationToken)
+        private async Task RecursiveDeleteAsync(DirectoryInfo baseDir, bool deleteBaseDir, CancellationToken cancellationToken)
         {
             if (!baseDir.Exists)
             {
@@ -63,7 +63,7 @@ namespace OrchardCore.Media.Services
                 {
                     try
                     {
-                        await RecursiveDelete(dir, true, cancellationToken);
+                        await RecursiveDeleteAsync(dir, true, cancellationToken);
                     }
                     catch (Exception ex)
                     {
