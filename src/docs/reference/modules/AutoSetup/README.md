@@ -98,11 +98,11 @@ Since JSON configuration contains admin-sensitive information it is recommended 
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__RequestUrlPrefix": "tenant"
 ```
 
-For testing purposes, you may add the above env. variables into your profile in launchSettings.json of the Web Application project.
+For testing purposes, you may add the above env. variables into "web" profile in OrchardCore.Cms.Web project launchSettings.json file.
 Then start the web app project with the following command
 
 ```
-dotnet run --launch-profile web
+dotnet run -f netcoreapp3.1 --launch-profile web
 ```
 
 ## Enabling Auto Setup Feature
