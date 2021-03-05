@@ -66,7 +66,7 @@ namespace OrchardCore.Media.Core
                 }
                 using (var fileStream = File.Create(cachePath))
                 {
-                    await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
+                    await stream.CopyToAsync(fileStream, StreamCopyBufferSize);
 
                     if (fileStream.Length == 0)
                     {
