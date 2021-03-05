@@ -598,6 +598,10 @@ namespace OrchardCore.Queries.Sql
                     else
                     {
                         EvaluateFunCall(funCallOrId);
+                        var overClauseOpt = columnSource.ChildNodes[1];
+                        if (overClauseOpt.ChildNodes.Count > 0) {
+                            EvaluateOverClauseOptional(overClauseOpt);
+                        }
                     }
 
                     if (columnItem.ChildNodes.Count > 1)
@@ -685,6 +689,67 @@ namespace OrchardCore.Queries.Sql
             {
                 _builder.Append(parseTreeNode.ChildNodes[0].Term.Name).Append(" ");
             }
+        }
+
+        private void EvaluateOverClauseOptional(ParseTreeNode overClauseOpt)
+        {
+            var overArgumentsOpt = overClauseOpt.ChildNodes[1];
+
+            _builder.Append(" OVER ");
+            _builder.Append("(");
+
+            if (overArgumentsOpt.ChildNodes.Count == 0)
+            {
+                _builder.Append(")");
+                return;
+            }
+
+            var overPartitionByClauseOpt = overArgumentsOpt.ChildNodes[0];
+            var overOrderByClauseOpt = overArgumentsOpt.ChildNodes[1];
+
+            var hasOverPartitionByClause = overPartitionByClauseOpt.ChildNodes.Count > 0;
+            var hasOverOrderByClause = overOrderByClauseOpt.ChildNodes.Count > 0;
+
+            if (hasOverPartitionByClause) {
+                _builder.Append("PARTITION BY ");
+                var columnItemList = overPartitionByClauseOpt.ChildNodes[2];
+                for (var i = 0; i < columnItemList.ChildNodes.Count; i++) {
+                    if (i > 0)
+                    {
+                        _builder.Append(", ");
+                    }
+                    var columnItem = columnItemList.ChildNodes[i];
+                    var id = columnItem.ChildNodes[0].ChildNodes[0];
+                    EvaluateSelectId(id);
+                }
+            }
+
+            if (hasOverOrderByClause)
+            {
+                if (hasOverPartitionByClause) {
+                    _builder.Append(" ");
+                }
+
+                _builder.Append("ORDER BY ");
+
+                var orderList = overOrderByClauseOpt.ChildNodes[2];
+                for (var i = 0; i < orderList.ChildNodes.Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        _builder.Append(", ");
+                    }
+                    var orderMember = orderList.ChildNodes[i];
+                    var id = orderMember.ChildNodes[0];
+                    EvaluateSelectId(id);
+                    var orderDirOpt = orderMember.ChildNodes[1];
+                    if (orderDirOpt.ChildNodes.Count > 0) {
+                        _builder.Append(" ").Append(orderDirOpt.ChildNodes[0].Term.Name);
+                    }
+                }
+            }
+
+            _builder.Append(")");
         }
 
         private enum FormattingModes
