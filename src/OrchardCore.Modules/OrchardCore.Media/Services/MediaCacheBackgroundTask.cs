@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Media.Core;
 
 namespace OrchardCore.Media.Services
 {
@@ -17,39 +19,37 @@ namespace OrchardCore.Media.Services
     public class MediaCacheBackgroundTask : IBackgroundTask
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
         private const int Repeats = 5;
         private const int RepeatTime = 5000;
 
         public MediaCacheBackgroundTask(
         IWebHostEnvironment webHostEnvironment,
+        ShellSettings shellSettings,
         ILogger<MediaCacheBackgroundTask> logger)
         {
             _webHostEnvironment = webHostEnvironment;
+            _shellSettings = shellSettings;
             _logger = logger;
         }
 
-        public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+        public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Media cache background task cleaning started");
 
             var directoryInfo = new DirectoryInfo(Path.Combine(_webHostEnvironment.WebRootPath, "is-cache"));
 
             // Don't delete is-cache folder.
-            await RecursiveDeleteAsync(directoryInfo, false, cancellationToken);
+            RecursiveDeleteAsync(directoryInfo, false, cancellationToken);
 
-            // Prevents deletion of root tenant folders.
-            directoryInfo = new DirectoryInfo(Path.Combine(_webHostEnvironment.WebRootPath, "ms-cache"));
-            foreach (var dir in directoryInfo.EnumerateDirectories())
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                await RecursiveDeleteAsync(dir, false, cancellationToken);
-            }
+            directoryInfo = new DirectoryInfo(GetMediaCachePath(_webHostEnvironment, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath, _shellSettings));
+            RecursiveDeleteAsync(directoryInfo, false, cancellationToken);
 
-            return;
+            return Task.CompletedTask;
         }
 
-        private async Task RecursiveDeleteAsync(DirectoryInfo baseDir, bool deleteBaseDir, CancellationToken cancellationToken)
+        private async void RecursiveDeleteAsync(DirectoryInfo baseDir, bool deleteBaseDir, CancellationToken cancellationToken)
         {
             if (!baseDir.Exists)
             {
@@ -63,7 +63,7 @@ namespace OrchardCore.Media.Services
                 {
                     try
                     {
-                        await RecursiveDeleteAsync(dir, true, cancellationToken);
+                        RecursiveDeleteAsync(dir, true, cancellationToken);
                     }
                     catch (Exception ex)
                     {
@@ -150,6 +150,11 @@ namespace OrchardCore.Media.Services
 
             //file is not locked
             return false;
+        }
+
+        private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, string assetsPath, ShellSettings shellSettings)
+        {
+            return PathExtensions.Combine(hostingEnvironment.WebRootPath, assetsPath, shellSettings.Name);
         }
     }
 }
