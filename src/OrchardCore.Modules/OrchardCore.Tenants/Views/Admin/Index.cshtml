@@ -16,17 +16,9 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
 
-        var requestHost = Context.Request.Host;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
-        var port = requestHost.Port;
-
-        if (port.HasValue)
-        {
-            host += ":" + port;
-        }
-
-        var hostString = new HostString(host);
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
 
@@ -48,15 +40,9 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
 
-        var requestHost = Context.Request.Host;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
-        var port = requestHost.Port;
-
-        if (port.HasValue)
-        {
-            host += ":" + port;
-        }
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
 
@@ -65,7 +51,7 @@
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        return $"{Context.Request.Scheme}://{host + pathString.Value}";
+        return $"{Context.Request.Scheme}://{hostString.Value + pathString.Value}";
     }
 }
 
