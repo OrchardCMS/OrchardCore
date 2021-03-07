@@ -23,17 +23,18 @@ jobs:
     - name: Setup .NET Core 3.1 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.405
+        dotnet-version: 3.1.*
     - name: Setup .NET Core 5.0 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.102
+        dotnet-version: 5.0.*
     - name: Set build number 
       if: matrix.os == 'ubuntu-latest'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
     - name: Build
       run: |
-        dotnet build --configuration Release
+        dotnet build --configuration Release --framework net5.0
+        dotnet build --configuration Release --framework netcoreapp3.1
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
@@ -69,7 +70,7 @@ jobs:
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
-        docker push orchardproject/orchardcore-cms-linux
+        docker push orchardproject/orchardcore-cms-linux:dev
     - name: Deploy preview docker image for windows
       if: matrix.os == 'windows-latest'
       run: |
