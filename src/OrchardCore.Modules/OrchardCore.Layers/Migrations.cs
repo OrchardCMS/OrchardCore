@@ -70,7 +70,7 @@ namespace OrchardCore.Layers
             await _layerService.UpdateAsync(layers);
 
             // Registered as a deferred task so the migration can complete before the shell reactivates the module causing migrations to run circularly and fail.                 
-            ShellScope.RegisterBeforeDispose((scope) =>
+            ShellScope.AddDeferredTask((scope) =>
             {
                 var typeFeatureProvider = scope.ServiceProvider.GetRequiredService<ITypeFeatureProvider>();
                 var layerFeature = typeFeatureProvider.GetFeatureForDependency(GetType());
