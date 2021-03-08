@@ -19,7 +19,7 @@ namespace OrchardCore.AdminDashboard
             _recipeMigrator = recipeMigrator;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
             SchemaBuilder.CreateMapIndexTable<DashboardPartIndex>(table => table
                .Column<double>("Position")
@@ -36,15 +36,17 @@ namespace OrchardCore.AdminDashboard
                 .WithDescription("Provides a way to add widgets to a dashboard.")
                 );
 
-            return 1;
+            await _recipeMigrator.ExecuteAsync("dashboard-widgets.recipe.json", this);
+
+            // Shortcut other migration steps on new content definition schemas.
+            return 3;
         }
 
         public async Task<int> UpdateFrom1Async()
         {
             await _recipeMigrator.ExecuteAsync("dashboard-widgets.recipe.json", this);
 
-            // Shortcut other migration steps on new content definition schemas.
-            return 3;
+            return 2;
         }
 
         // This code can be removed in a later version.
