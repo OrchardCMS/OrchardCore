@@ -21,8 +21,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
+using OrchardCore.Modules;
+using TimeZoneConverter;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -237,10 +238,22 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidTemplateContextExtensions
     {
-        internal static Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+        internal static async Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
         {
             if (!context.IsInitialized)
             {
+                var localClock = context.Services.GetRequiredService<ILocalClock>();
+
+                var localTimeZone = await localClock.GetLocalTimeZoneAsync();
+
+                var systemTimeZoneId = TZConvert.IanaToWindows(localTimeZone.TimeZoneId);
+
+                var now = await localClock.LocalNowAsync;
+
+                context.TimeZone = TimeZoneInfo.FindSystemTimeZoneById(systemTimeZoneId);
+                
+                context.Now = () => now;
+
                 context.ViewContext = viewContext;
 
                 context.CultureInfo = CultureInfo.CurrentUICulture;
@@ -273,8 +286,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
 
             context.SetValue("Model", model);
-
-            return Task.CompletedTask;
         }
     }
 }
