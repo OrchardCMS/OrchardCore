@@ -12,6 +12,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Routing;
 
 namespace OrchardCore.AutoSetup
 {
@@ -98,7 +99,8 @@ namespace OrchardCore.AutoSetup
                         }
                         else
                         {
-                            app.Map(options.AutoSetupPath, appBuilder => appBuilder.UseMiddleware<AutoSetupMiddleware>());
+                            app.MapWhen(ctx => ctx.Request.Path.StartsWithNormalizedSegments(options.AutoSetupPath), appBuilder =>
+                                appBuilder.UseMiddleware<AutoSetupMiddleware>());
                         }
                     }
                 }

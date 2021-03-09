@@ -100,18 +100,15 @@ namespace OrchardCore.AutoSetup
                         }
                     }
 
-                    var redirectUrl = "/";
-                    if (!string.IsNullOrEmpty(setupTenant.RequestUrlHost))
+                    var pathBase = httpContext.Request.PathBase;
+                    if (!pathBase.HasValue)
                     {
-                        redirectUrl = setupTenant.RequestUrlHost;
-                    }
-                    else if (!string.IsNullOrEmpty(setupTenant.RequestUrlPrefix))
-                    {
-                        redirectUrl = $"/{setupTenant.RequestUrlPrefix}";
+                        pathBase = "/";
                     }
 
-                    httpContext.Response.Redirect(redirectUrl);
-                    await httpContext.Response.CompleteAsync();
+                    httpContext.Response.Redirect(pathBase);
+
+                    return;
                 }
             }
 
