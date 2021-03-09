@@ -16,7 +16,7 @@ namespace OrchardCore.Markdown.Filters
             _markdownService = markdownService;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             return new ValueTask<FluidValue>(new StringValue(_markdownService.ToHtml(input.ToStringValue())));
         }

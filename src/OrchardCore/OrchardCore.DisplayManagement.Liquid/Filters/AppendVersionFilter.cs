@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var url = input.ToStringValue();
 

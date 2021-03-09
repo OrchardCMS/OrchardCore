@@ -15,7 +15,7 @@ namespace OrchardCore.ContentLocalization.Liquid
             _contentLocalizationManager = contentLocalizationManager;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var locale = arguments.At(0).ToStringValue();
 

@@ -18,7 +18,7 @@ namespace OrchardCore.Lists.Liquid
             _session = session;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             string listContentItemId = null;
 

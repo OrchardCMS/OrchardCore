@@ -28,7 +28,7 @@ namespace OrchardCore.Contents.Liquid
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             static async ValueTask<FluidValue> Awaited(Task<IShape> task, TemplateOptions options)
             {

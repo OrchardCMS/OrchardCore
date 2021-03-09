@@ -2,8 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
@@ -18,7 +18,7 @@ namespace OrchardCore.Liquid.Filters
             _shortcodeService = shortcodeService;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
         {
             var shortcodeContext = new Context();
 

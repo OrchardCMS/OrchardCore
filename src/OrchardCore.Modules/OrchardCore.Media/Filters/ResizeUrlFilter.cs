@@ -28,7 +28,7 @@ namespace OrchardCore.Media.Filters
             _options = options.Value;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
         {
             var url = input.ToStringValue();
 

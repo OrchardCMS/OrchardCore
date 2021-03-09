@@ -18,7 +18,7 @@ namespace OrchardCore.ContentManagement.Display.Liquid
             _hostEnvironment = hostEnvironment;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
         {
             var content = input.ToObjectValue();
 

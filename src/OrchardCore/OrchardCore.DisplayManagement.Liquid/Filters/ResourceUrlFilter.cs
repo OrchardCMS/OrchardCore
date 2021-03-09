@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             _options = options.Value;
         }
 
-        public ValueTask<FluidValue>  ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue>  ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var resourcePath = input.ToStringValue();
 

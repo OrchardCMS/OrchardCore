@@ -16,7 +16,7 @@ namespace OrchardCore.Contents.Liquid
             _contentManager = contentManager;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             if (input.Type == FluidValues.Array)
             {

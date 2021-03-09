@@ -22,7 +22,7 @@ namespace OrchardCore.Contents.Liquid
             _fullTextRecursionHelper = fullTextRecursionHelper;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             if (input.Type == FluidValues.Array)
             {

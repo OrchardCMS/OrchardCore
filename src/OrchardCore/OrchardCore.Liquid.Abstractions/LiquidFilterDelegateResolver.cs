@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -9,10 +10,16 @@ namespace OrchardCore.Liquid
     {
         public ValueTask<FluidValue> ResolveAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var services = ((LiquidTemplateContext)context).Services;
+            var ctx = context as LiquidTemplateContext;
+            if (ctx == null)
+            {
+                throw new InvalidOperationException("An implementation of 'LiquidTemplateContext' is required");
+            }
+
+            var services = ctx.Services;
             var filter = services.GetRequiredService<TLiquidFilter>();
 
-            return filter.ProcessAsync(input, arguments, context);
+            return filter.ProcessAsync(input, arguments, ctx);
         }
     }
 }

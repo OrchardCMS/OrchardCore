@@ -18,7 +18,7 @@ namespace OrchardCore.Users.Liquid
             _authorizationService = authorizationService;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var clearance = false;
             var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();

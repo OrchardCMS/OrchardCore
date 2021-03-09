@@ -16,7 +16,7 @@ namespace OrchardCore.Users.Liquid
             _userManager = userManager;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments args, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments args, LiquidTemplateContext ctx)
         {
             if (input.ToObjectValue() is ClaimsPrincipal claimsPrincipal)
             {

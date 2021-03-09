@@ -19,7 +19,7 @@ namespace OrchardCore.Users.Liquid
             _session = session;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             if (input.Type == FluidValues.Array)
             {

@@ -15,7 +15,7 @@ namespace OrchardCore.Liquid.Filters
             _urlHelperFactory = urlHelperFactory;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var context = (LiquidTemplateContext)ctx;
             var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);

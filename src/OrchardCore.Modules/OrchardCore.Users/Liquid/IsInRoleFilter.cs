@@ -19,7 +19,7 @@ namespace OrchardCore.Users.Liquid
             _identityOptions = identityOptions.Value;
         }
         
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var ret = false;
 

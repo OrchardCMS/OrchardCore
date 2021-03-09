@@ -23,7 +23,7 @@ namespace OrchardCore.Workflows.Http.Liquid
             _securityTokenService = securityTokenService;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var context = (LiquidTemplateContext)ctx;
             var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);

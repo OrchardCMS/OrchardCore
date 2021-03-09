@@ -12,7 +12,7 @@ namespace OrchardCore.Liquid.Filters
         {
             _slugService = slugService;
         }
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var text = input.ToStringValue();
 

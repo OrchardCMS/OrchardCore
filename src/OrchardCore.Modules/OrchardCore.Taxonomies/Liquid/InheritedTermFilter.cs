@@ -18,7 +18,7 @@ namespace OrchardCore.Taxonomies.Liquid
             _contentManager = contentManager;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             ContentItem taxonomy = null;
             string termContentItemId = null;

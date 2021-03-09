@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             _displayHelper = displayHelper;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {

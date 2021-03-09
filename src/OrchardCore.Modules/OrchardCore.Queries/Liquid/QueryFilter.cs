@@ -15,7 +15,7 @@ namespace OrchardCore.Queries.Liquid
             _queryManager = queryManager;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var query = input.ToObjectValue() as Query;
 

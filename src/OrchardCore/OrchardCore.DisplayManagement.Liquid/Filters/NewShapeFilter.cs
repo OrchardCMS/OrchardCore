@@ -20,7 +20,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             _shapeFactory = shapeFactory;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             static async ValueTask<FluidValue> Awaited(ValueTask<IShape> task, TemplateOptions options)
             {

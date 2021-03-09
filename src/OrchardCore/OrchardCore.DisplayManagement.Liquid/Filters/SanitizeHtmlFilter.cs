@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             _htmlSanitizerService = htmlSanitizerService;
         }
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var html = input.ToStringValue();
 
