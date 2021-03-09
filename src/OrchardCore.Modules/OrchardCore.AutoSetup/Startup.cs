@@ -37,7 +37,7 @@ namespace OrchardCore.AutoSetup
         private readonly IShellConfiguration _shellConfiguration;
 
         /// <summary>
-        /// The _logger.
+        /// The logger.
         /// </summary>
         private readonly ILogger<Startup> _logger;
 
