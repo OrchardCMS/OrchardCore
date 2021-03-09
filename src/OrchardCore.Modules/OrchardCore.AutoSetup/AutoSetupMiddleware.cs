@@ -47,7 +47,7 @@ namespace OrchardCore.AutoSetup
         private readonly AutoSetupOptions _options;
 
         /// <summary>
-        /// The _logger.
+        /// The logger.
         /// </summary>
         private readonly ILogger<AutoSetupMiddleware> _logger;
 
