@@ -31,11 +31,9 @@
     <IncludeSymbols>False</IncludeSymbols>
     <!-- NuGet properties-->
     <Title>OrchardCore Code Generation Templates</Title>
-    <Description>
-      $(OCFrameworkDescription)
+    <Description>$(OCFrameworkDescription)
 
-      OrchardCore Code Templates for dotnet new template configurations for creating new websites, themes and modules from the command shell.
-    </Description>
+    OrchardCore Code Templates for dotnet new template configurations for creating new websites, themes and modules from the command shell.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
