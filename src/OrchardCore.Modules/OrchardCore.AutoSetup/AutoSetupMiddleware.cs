@@ -1,17 +1,18 @@
 using System;
-using OrchardCore.AutoSetup.Options;
-using OrchardCore.Environment.Shell.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Setup.Services;
 using OrchardCore.Abstractions.Setup;
+using OrchardCore.AutoSetup.Options;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Setup.Services;
 
 namespace OrchardCore.AutoSetup
 {
@@ -26,6 +27,16 @@ namespace OrchardCore.AutoSetup
         private readonly RequestDelegate _next;
 
         /// <summary>
+        /// The Shell host.
+        /// </summary>
+        private readonly IShellHost _shellHost;
+
+        /// <summary>
+        /// The Shell settings.
+        /// </summary>
+        private readonly ShellSettings _shellSettings;
+
+        /// <summary>
         /// The Shell settings manager.
         /// </summary>
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -33,35 +44,41 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// The auto-setup options.
         /// </summary>
-        private readonly IOptions<AutoSetupOptions> _setupOptions;
-
-        private readonly IShellHost _shellHost;
+        private readonly AutoSetupOptions _options;
 
         /// <summary>
         /// The _logger.
         /// </summary>
         private readonly ILogger<AutoSetupMiddleware> _logger;
 
+        private readonly TenantSetupOptions _setupOptions;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSetupMiddleware"/> class.
         /// </summary>
-        /// <param name="next"> The next middleware in the execution pipeline. </param>
-        /// <param name="shellSettingsManager">The Shell settings manager</param>
-        /// <param name="setupOptions"> The auto-setup Options. </param>
-        /// <param name="shellHost"></param>
-        /// <param name="logger"> The logger. </param>
+        /// <param name="next">The next middleware in the execution pipeline.</param>
+        /// <param name="shellHost">The Shell host.</param>
+        /// <param name="shellSettings">The Shell settings.</param>
+        /// <param name="shellSettingsManager">The Shell settings manager.</param>
+        /// <param name="options">The auto-setup Options.</param>
+        /// <param name="logger">The logger.</param>
         public AutoSetupMiddleware(
             RequestDelegate next,
-            IShellSettingsManager shellSettingsManager,
-            IOptions<AutoSetupOptions> setupOptions,
             IShellHost shellHost,
+            ShellSettings shellSettings,
+            IShellSettingsManager shellSettingsManager,
+            IOptions<AutoSetupOptions> options,
             ILogger<AutoSetupMiddleware> logger)
         {
             _next = next;
-            _shellSettingsManager = shellSettingsManager;
-            _setupOptions = setupOptions;
             _shellHost = shellHost;
+            _shellSettings = shellSettings;
+            _shellSettingsManager = shellSettingsManager;
+            _options = options.Value;
             _logger = logger;
+
+            _setupOptions = _options.Tenants.FirstOrDefault(options => _shellSettings.Name == options.ShellName);
         }
 
         /// <summary>
@@ -75,40 +92,43 @@ namespace OrchardCore.AutoSetup
         /// </returns>
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
-            var shellSettings = httpContext.RequestServices.GetRequiredService<ShellSettings>();
-
-            if (shellSettings.State == TenantState.Uninitialized)
+            if (_setupOptions != null && _shellSettings.State == TenantState.Uninitialized)
             {
-                var setupTenant = _setupOptions.Value.Tenants
-                    .FirstOrDefault(options => string.Equals(shellSettings.Name, options.ShellName));
-
-                if (setupTenant != null)
+                await _semaphore.WaitAsync();
+                try
                 {
-                    if (await SetupTenantAsync(setupService, setupTenant, shellSettings))
+                    if (_shellSettings.State == TenantState.Uninitialized)
                     {
-                        if (setupTenant.IsDefault)
+                        var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
+                        if (await SetupTenantAsync(setupService, _setupOptions, _shellSettings))
                         {
-                            // Create the rest of the Shells for further on demand setup
-                            foreach (var tenant in _setupOptions.Value.Tenants)
+                            if (_setupOptions.IsDefault)
                             {
-                                if (setupTenant != tenant)
+                                // Create the rest of the Shells for further on demand setup.
+                                foreach (var setupOptions in _options.Tenants)
                                 {
-                                    await CreateTenantSettingsAsync(tenant);
+                                    if (_setupOptions != setupOptions)
+                                    {
+                                        await CreateTenantSettingsAsync(setupOptions);
+                                    }
                                 }
                             }
+
+                            var pathBase = httpContext.Request.PathBase;
+                            if (!pathBase.HasValue)
+                            {
+                                pathBase = "/";
+                            }
+
+                            httpContext.Response.Redirect(pathBase);
+
+                            return;
                         }
                     }
-
-                    var pathBase = httpContext.Request.PathBase;
-                    if (!pathBase.HasValue)
-                    {
-                        pathBase = "/";
-                    }
-
-                    httpContext.Response.Redirect(pathBase);
-
-                    return;
+                }
+                finally
+                {
+                    _semaphore.Release();
                 }
             }
 
@@ -118,9 +138,9 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// Setup tenant.
         /// </summary>
-        /// <param name="setupService"> The setup service. </param>
-        /// <param name="setupOptions"> The tenant setup options. </param>
-        /// <param name="shellSettings"> The tenant shell settings. </param>
+        /// <param name="setupService">The setup service.</param>
+        /// <param name="setupOptions">The tenant setup options.</param>
+        /// <param name="shellSettings">The tenant shell settings.</param>
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
@@ -152,8 +172,8 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// Create tenant shell settings.
         /// </summary>
-        /// <param name="setupOptions"> The setup options. </param>
-        /// <returns> The <see cref="ShellSettings"/>. </returns>
+        /// <param name="setupOptions">The setup options.</param>
+        /// <returns>The <see cref="ShellSettings"/>.</returns>
         public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
         {
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
@@ -177,9 +197,9 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// Get setup context from the configuration.
         /// </summary>
-        /// <param name="options"> The tenant setup options. </param>
-        /// <param name="setupService"> The setup service. </param>
-        /// <param name="shellSettings"> The tenant shell settings. </param>
+        /// <param name="options">The tenant setup options.</param>
+        /// <param name="setupService">The setup service.</param>
+        /// <param name="shellSettings">The tenant shell settings.</param>
         /// <returns> The <see cref="SetupContext"/>. to setup the site </returns>
         private static async Task<SetupContext> GetSetupContextAsync(TenantSetupOptions options, ISetupService setupService, ShellSettings shellSettings)
         {
