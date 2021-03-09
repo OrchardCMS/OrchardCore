@@ -72,7 +72,9 @@ dotnet new ocmvc
 
 ### From Visual Studio (New Project dialog)
 
-The templates can also be used from the New Project dialog in Visual Studio.
+The templates can also be used from the 'New Project' dialog in Visual Studio.
+
+![image](../assets/images/templates/new-project.png)
 
 ### From Visual Studio (manual way)
 
