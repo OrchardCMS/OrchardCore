@@ -226,7 +226,7 @@ select
     day(CreatedUtc) as [Day],
     count(*) as [Count]
 from ContentItemIndex 
-where Published = true and ContentType = 'BlogPost'
+where Published = true and ContentType = 'BlogPost' and PublishedUtc > now()
 group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
 ```
 
@@ -284,6 +284,7 @@ The SQL parser is also able to convert some specific functions to the intended d
 | `day(_date_)`    | Returns the days part of a date.    |
 | `month(_date_)`  | Returns the months part of a date.  |
 | `year(_date_)`   | Returns the years part of a date.   |
+| `now()`          | Returns current date time (utc).    |
 
 ## Scripting
 
