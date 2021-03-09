@@ -76,6 +76,10 @@ The templates can also be used from the 'New Project' dialog in Visual Studio.
 
 ![image](../assets/images/templates/new-project.png)
 
+In order to display these templates, you need to have a recent version of Visual Studio and check 'Show all .NET Core templates in the New project dialog' in 'Tools > Options'.
+
+![image](../assets/images/templates/new-project-option.png)
+
 ### From Visual Studio (manual way)
 
 Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP.NET Core Web Application:
