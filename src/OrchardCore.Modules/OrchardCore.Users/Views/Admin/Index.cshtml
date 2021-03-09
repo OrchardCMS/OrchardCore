@@ -8,11 +8,13 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Users"])</h1></zone>
 
 <form asp-action="Index" method="post">
-    <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
+
+    @await DisplayAsync(Model)
+    @* <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
     <input type="submit" name="submit.BulkAction" class="sr-only" />
-    <input asp-for="Options.BulkAction" type="hidden" />
+    <input asp-for="Options.BulkAction" type="hidden" /> *@
     
-    <div class="card mb-3 position-sticky action-bar">
+    @* <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
                 <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
@@ -24,8 +26,8 @@
                 </div>
             </div>
         </div>
-    </div>
-    <ul class="list-group with-checkbox">
+    </div> *@
+    @* <ul class="list-group with-checkbox">
         @if (Model.Users.Count > 0)
         {
             <li class="list-group-item bg-primary">
@@ -52,7 +54,7 @@
                         </span>
                     </div>
                     <div class="form-group col mb-n1 filter"></div>
-                    @*<div class="form-group col-xl-1 mb-n1 filter">
+                    <div class="form-group col-xl-1 mb-n1 filter">
                             <div class="float-xl-right">
                                 <select asp-for="Options.Filter" asp-items="@Model.Options.UserFilters" class="selectpicker show-tick" data-header="@T["Filter by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Filter"]"></select>
                             </div>
@@ -61,7 +63,7 @@
                             <div class="float-xl-right">
                                 <select asp-for="Options.Order" asp-items="@Model.Options.UserSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Sort"]"></select>
                             </div>
-                        </div>*@
+                        </div>
                 </div>
             </li>
             @foreach (var entry in Model.Users)
@@ -83,7 +85,7 @@
                 </div>
             </li>
         }
-    </ul>
+    </ul> *@
 </form>
 
 @await DisplayAsync(Model.Pager)

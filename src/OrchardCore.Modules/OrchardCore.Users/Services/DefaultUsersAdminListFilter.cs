@@ -38,6 +38,12 @@ namespace OrchardCore.Users.Services
 
             switch (options.Filter)
             {
+                case UsersFilter.Enabled:
+                    query.With<UserIndex>(u => u.IsEnabled);
+                    break;
+                case UsersFilter.Disabled:
+                    query.With<UserIndex>(u => !u.IsEnabled);
+                    break;
                 case UsersFilter.Approved:
                     //users = users.Where(u => u.RegistrationStatus == UserStatus.Approved);
                     break;
@@ -66,12 +72,12 @@ namespace OrchardCore.Users.Services
                 case UsersOrder.Email:
                     query = query.With<UserIndex>().OrderBy(u => u.NormalizedEmail);
                     break;
-                case UsersOrder.CreatedUtc:
-                    //users = users.OrderBy(u => u.CreatedUtc);
-                    break;
-                case UsersOrder.LastLoginUtc:
-                    //users = users.OrderBy(u => u.LastLoginUtc);
-                    break;
+                // case UsersOrder.CreatedUtc:
+                //     //users = users.OrderBy(u => u.CreatedUtc);
+                //     break;
+                // case UsersOrder.LastLoginUtc:
+                //     //users = users.OrderBy(u => u.LastLoginUtc);
+                //     break;
             }
 
 

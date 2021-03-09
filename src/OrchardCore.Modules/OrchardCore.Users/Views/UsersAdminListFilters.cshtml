@@ -1,0 +1,17 @@
+@model UserIndexOptions
+@{
+    var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Users", controller = "Admin", action = "Index" });
+}
+<div class="form-group mb-n1 filter">
+    <div class="btn-group mt-1">
+        @* TODO roles sort here. *@
+        @* @if (Model.ContentTypeOptions.Any())
+        {
+            <select asp-for="SelectedContentType" asp-items="Model.ContentTypeOptions" class="selectpicker contenttypes-selectpicker show-tick mr-2" data-header="@T["Filter by content type"]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["Content Type"]" data-style="btn-sm" data-dropdown-align-right="auto">
+            </select>
+        } *@
+        <select asp-for="Filter" asp-items="@Model.UserFilters" class="selectpicker userstatuses-selectpicker show-tick mr-2" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Show"]" data-style="btn-sm"></select>
+        <select asp-for="Order" asp-items="@Model.UserSorts" class="selectpicker usersorts-selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
+    </div>
+</div>
+

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 
 namespace OrchardCore.Users.ViewModels
 {
@@ -10,6 +11,11 @@ namespace OrchardCore.Users.ViewModels
         public UsersOrder Order { get; set; }
         public UsersFilter Filter { get; set; }
         public UsersBulkAction BulkAction { get; set; }
+        public int StartIndex { get; set; }
+        public int EndIndex { get; set; }
+        public int UsersCount { get; set; }
+        public int TotalItemCount { get; set; }
+        public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
 
         [BindNever]
         public List<SelectListItem> UserFilters { get; set; }
@@ -25,8 +31,6 @@ namespace OrchardCore.Users.ViewModels
     {
         Name,
         Email,
-        CreatedUtc,
-        LastLoginUtc
     }
 
     public enum UsersFilter
@@ -34,7 +38,9 @@ namespace OrchardCore.Users.ViewModels
         All,
         Approved,
         Pending,
-        EmailPending
+        EmailPending,
+        Enabled,
+        Disabled
     }
 
     public enum UsersBulkAction

@@ -30,6 +30,7 @@ namespace OrchardCore.Users.Controllers
     public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;
+        private readonly IDisplayManager<UserIndexOptions> _userOptionsDisplayManager;
         private readonly SignInManager<IUser> _signInManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
@@ -40,6 +41,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IRoleService _roleService;
         private readonly IUsersAdminListQueryService _usersAdminListQueryService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IShapeFactory _shapeFactory;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer H;
@@ -47,6 +49,7 @@ namespace OrchardCore.Users.Controllers
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
+            IDisplayManager<UserIndexOptions> userOptionsDisplayManager,
             SignInManager<IUser> signInManager,
             IAuthorizationService authorizationService,
             ISession session,
@@ -62,6 +65,7 @@ namespace OrchardCore.Users.Controllers
             IUpdateModelAccessor updateModelAccessor)
         {
             _userDisplayManager = userDisplayManager;
+            _userOptionsDisplayManager = userOptionsDisplayManager;
             _signInManager = signInManager;
             _authorizationService = authorizationService;
             _session = session;
@@ -72,6 +76,7 @@ namespace OrchardCore.Users.Controllers
             _roleService = roleService;
             _usersAdminListQueryService = usersAdminListQueryService;
             _updateModelAccessor = updateModelAccessor;
+            _shapeFactory = shapeFactory;
 
             New = shapeFactory;
             H = htmlLocalizer;
@@ -128,46 +133,73 @@ namespace OrchardCore.Users.Controllers
                 );
             }
 
-            var model = new UsersIndexViewModel
+            options.UserFilters = new List<SelectListItem>() 
             {
-                Users = userEntries,
-                Options = options,
-                Pager = pagerShape
-            };
-
-            model.Options.UserFilters = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["All"], Value = nameof(UsersFilter.All) },
+                new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled) },
+                new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled) },
+                new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All) },
                 //new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
                 //new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
                 //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
             };
 
-            model.Options.UserSorts = new List<SelectListItem>() {
+            options.UserSorts = new List<SelectListItem>() 
+            {
                 new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name) },
                 new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email) },
                 //new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
                 //new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
             };
 
-            model.Options.UsersBulkAction = new List<SelectListItem>() {
+            options.UsersBulkAction = new List<SelectListItem>() 
+            {
                 new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
                 new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
                 new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
                 new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
             };
 
-            return View(model);
+            // Populate options pager summary values.
+            var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
+            options.StartIndex = startIndex;
+            options.EndIndex = startIndex + userEntries.Count - 1;
+            options.UsersCount = userEntries.Count;
+            options.TotalItemCount = pagerShape.TotalItemCount;
+
+            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+
+            // var model = new UsersIndexViewModel
+            // {
+            //     Users = userEntries,
+            //     Options = options,
+            //     Pager = pagerShape,
+            //     Header = header
+            // };
+
+
+            var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
+            {
+                viewModel.Users = userEntries;
+                viewModel.Pager = pagerShape;
+                viewModel.Options = options;
+                viewModel.Header = header;
+            });
+
+            return View(shapeViewModel);
         }
 
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(UsersIndexViewModel model)
+        public async Task<ActionResult> IndexFilterPOST(UsersIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
-                { "Options.Filter", model.Options.Filter },
-                { "Options.Order", model.Options.Order },
-                { "Options.Search", model.Options.Search }
-            });
+            await _userOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
+
+            return RedirectToAction("Index", model.Options.RouteValues);
+            // return RedirectToAction("Index", new RouteValueDictionary {
+            //     { "Options.Filter", model.Options.Filter },
+            //     { "Options.Order", model.Options.Order },
+            //     { "Options.Search", model.Options.Search }
+            // });
         }
 
         [HttpPost, ActionName("Index")]

@@ -9,6 +9,7 @@ namespace OrchardCore.Users.ViewModels
         public IList<UserEntry> Users { get; set; }
         public UserIndexOptions Options { get; set; } = new UserIndexOptions();
         public dynamic Pager { get; set; }
+        public dynamic Header { get; set; }
     }
 
     public class UserEntry

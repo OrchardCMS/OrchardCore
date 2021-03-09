@@ -207,6 +207,9 @@ namespace OrchardCore.Users
 
             services.AddScoped<IUsersAdminListQueryService, DefaultContentsAdminListQueryService>();
             services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
+
+            services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
+            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();            
         }
     }
 
