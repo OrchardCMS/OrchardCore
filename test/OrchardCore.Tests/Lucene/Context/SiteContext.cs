@@ -11,7 +11,6 @@ using Newtonsoft.Json;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Tenants.ViewModels;
-using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Lucene
 {
@@ -21,7 +20,6 @@ namespace OrchardCore.Tests.Lucene
         public static HttpClient DefaultTenantClient { get; }
         public string TenantName { get; private set; }
         public static IShellHost ShellHost { get; private set; }
-        public PermissionsContext PermissionsContext { get; set; }
 
         static SiteContext()
         {
@@ -72,33 +70,11 @@ namespace OrchardCore.Tests.Lucene
             TenantName = tenantName;
         }
 
-        protected static DefaultHttpContext MockHttpContext(string[] userRoles)
+        protected static DefaultHttpContext MockHttpContext(string[] userRoles, string username = "Mock User")
         {
             DefaultHttpContext httpContext = new DefaultHttpContext();
 
-            GenericIdentity identity = new GenericIdentity("Diggspace Mock User", "");
-
-            Mock<ClaimsPrincipal> mockPrincipal = new Mock<ClaimsPrincipal>();
-            mockPrincipal.Setup(x => x.Identity).Returns(identity);
-
-            if (userRoles?.Length > 0)
-            {
-                foreach (string role in userRoles)
-                {
-                    mockPrincipal.Setup(p => p.IsInRole(role)).Returns(true);
-                }
-            }
-
-            httpContext.User = mockPrincipal.Object;
-
-            return httpContext;
-        }
-
-        protected static DefaultHttpContext MockHttpContextWithUsername(string[] userRoles, string email)
-        {
-            DefaultHttpContext httpContext = new DefaultHttpContext();
-
-            GenericIdentity identity = new GenericIdentity(email.Replace('@', '+'), "");
+            GenericIdentity identity = new GenericIdentity(username.Replace('@', '+'), "");
 
             Mock<ClaimsPrincipal> mockPrincipal = new Mock<ClaimsPrincipal>();
             mockPrincipal.Setup(x => x.Identity).Returns(identity);

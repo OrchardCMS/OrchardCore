@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Lucene
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            string shellsApplicationDataPath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
+            string shellsApplicationDataPath = Path.Combine(Directory.GetCurrentDirectory(), "Lucene_App_Data");
 
             if (Directory.Exists(shellsApplicationDataPath))
             {

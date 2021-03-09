@@ -1,13 +1,17 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Security;
@@ -17,21 +21,12 @@ namespace OrchardCore.Tests.Lucene
 {
     public class SiteStartup
     {
-        public static ConcurrentDictionary<string, PermissionsContext> PermissionsContexts;
-
-        static SiteStartup()
-        {
-            PermissionsContexts = new ConcurrentDictionary<string, PermissionsContext>();
-        }
-
         public void ConfigureServices(IServiceCollection services)
         {
+            
             services.AddOrchardCms(builder =>
                 builder.AddSetupFeatures(
                     "OrchardCore.Tenants"
-                )
-                .AddTenantFeatures(
-
                 )
                 .ConfigureServices(collection =>
                 {
@@ -42,6 +37,8 @@ namespace OrchardCore.Tests.Lucene
                     });
                 })
                 .Configure(appBuilder => appBuilder.UseAuthorization()));
+
+            services.Replace(ServiceDescriptor.Transient<IConfigureOptions<ShellOptions>, LuceneShellOptionsSetup>());
 
             services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
         }
@@ -74,6 +71,25 @@ namespace OrchardCore.Tests.Lucene
         {
             context.Succeed(requirement);
             return Task.CompletedTask;
+        }
+    }
+
+    public class LuceneShellOptionsSetup : IConfigureOptions<ShellOptions>
+    {
+        private const string DefaultAppDataPath = "Lucene_App_Data";
+        private const string DefaultSitesPath = "Sites";
+
+        private readonly IHostEnvironment _hostingEnvironment;
+
+        public LuceneShellOptionsSetup(IHostEnvironment hostingEnvironment)
+        {
+            _hostingEnvironment = hostingEnvironment;
+        }
+
+        public void Configure(ShellOptions options)
+        {
+            options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, DefaultAppDataPath);
+            options.ShellsContainerName = DefaultSitesPath;
         }
     }
 }
