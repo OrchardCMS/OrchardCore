@@ -13,9 +13,9 @@
 
 @* the form is necessary to generate the antiforgery token*@
 <form asp-action="List" method="post">
-    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
     <input asp-for="Options.BulkAction" type="hidden" />
-    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input type="submit" name="submit.BulkAction" class="sr-only" />
     
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">

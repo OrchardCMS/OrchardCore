@@ -45,8 +45,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.5.1         | -              |
-| jQuery.slim           | Script | 3.5.1         | -              |
+| jQuery                | Script | 3.6.0         | -              |
+| jQuery.slim           | Script | 3.6.0         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |

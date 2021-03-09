@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-     <!-- NuGet properties-->
+    <!-- NuGet properties-->
     <Title>Target for Modular OrchardCore CMS Application</Title>
     <Description>$(OCCMSDescription)
 
@@ -9,19 +9,7 @@
     <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
 
-  <!--
-    Add ".props" and ".targets" files in the package specific to the "Cms.Core" nuget package
-
-    When the OrchardCore.Application.Cms.Core.Targets package is referenced, the .props and .targets
-    files present in the build folder will also be referenced by the generated .props and .targets
-    files in the obj folder of the referencing project.
-
-    See: https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package#include-msbuild-props-and-targets-in-a-package
-    * The files in the build folder will be applied to any TFM.
-    * The files in the build\$(TargetFramework) folder will be applied to only referencing projects targeting that TFM
-    * The files in the buildMultiTargeting folder will only be applied when the referencing project's $(TargetFramework)
-      is empty
-  -->
+  <!-- Add ".props" and ".targets" files in the package specific to the "Cms.Core" bundle -->
 
   <ItemGroup>
     <None Include="OrchardCore.Application.Cms.Core.Targets.props" Pack="true">

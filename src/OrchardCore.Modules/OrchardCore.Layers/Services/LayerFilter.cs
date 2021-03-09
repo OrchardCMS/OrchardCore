@@ -100,7 +100,7 @@ namespace OrchardCore.Layers.Services
 
                 foreach (var widget in widgets)
                 {
-                    var layer = widget.Layer != null ? layers[widget.Layer] : null;
+                    var layer = widget.Layer != null && layers.TryGetValue(widget.Layer, out var widgetLayer) ? widgetLayer : null;
 
                     if (layer == null)
                     {
