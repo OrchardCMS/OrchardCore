@@ -31,9 +31,11 @@
     <IncludeSymbols>False</IncludeSymbols>
     <!-- NuGet properties-->
     <Title>OrchardCore Code Generation Templates</Title>
-    <Description>$(OCFrameworkDescription)
+    <Description>
+      $(OCFrameworkDescription)
 
-    OrchardCore Code Templates for dotnet new template configurations for creating new websites, themes and modules from the command shell.</Description>
+      OrchardCore Code Templates for dotnet new template configurations for creating new websites, themes and modules from the command shell.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
@@ -65,7 +67,7 @@
     </Task>
   </UsingTask>
 
-  <Target Name="TransformTemplateConfigs" BeforeTargets="Build">
+  <Target Name="TransformTemplateConfigs" BeforeTargets="Build" Condition="'$(TargetFramework)' == '$(AspNetCoreTargetFramework)'">
     <!--
       For each template, copy its '.template.config.src' directory to '.template.config',
       removing any earlier output at that location.
@@ -93,6 +95,6 @@
     <!-- Update the OrchardVersion in the templates to reflect the newly built version number. -->
     <ReplaceFileText InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateOrchardVersion\}" ReplacementText="$(Version)" />
     <!-- Replace the default target framework for the template based on which TFM is being built. The resulting nuget package should have templates with the correct corresponding TFM defaulted in the template. -->
-    <ReplaceFileText Condition="'$(TargetFramework)' != ''" InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateTargetFramework\}" ReplacementText="$(TargetFramework)" />
+    <ReplaceFileText InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateTargetFramework\}" ReplacementText="$(TargetFramework)" />
   </Target>
 </Project>
