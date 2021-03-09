@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace OrchardCore.AutoSetup.Options
     {
         /// <summary>
         /// Gets or sets the Url which will trigger AutoSetup.
-        /// Leave it Empty if you want to Trigger Setup on any request
+        /// Leave it Empty if you want to Trigger Setup on any request.
         /// </summary>
         public string AutoSetupPath { get; set; }
 
@@ -21,18 +22,18 @@ namespace OrchardCore.AutoSetup.Options
         public List<TenantSetupOptions> Tenants { get; set; } = new List<TenantSetupOptions>();
 
         /// <summary>
-        /// AutoSetupOptions Validation logic
+        /// AutoSetupOptions Validation logic.
         /// </summary>
-        /// <param name="validationContext"> The validation context. </param>
-        /// <returns> The collection of errors. </returns>
+        /// <param name="validationContext">The validation context.</param>
+        /// <returns>The collection of errors.</returns>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!string.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith("/"))
+            if (!String.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith("/"))
             {
                 yield return new ValidationResult($"The field {nameof(AutoSetupPath)} should be empty or start with /");
             }
 
-            if (Tenants == null || Tenants.Count == 0)
+            if (Tenants.Count == 0)
             {
                 yield return new ValidationResult($"The field {nameof(Tenants)} should contain at least one tenant");
             }
