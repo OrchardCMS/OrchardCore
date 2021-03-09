@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.AutoSetup.Options
@@ -75,12 +78,12 @@ namespace OrchardCore.AutoSetup.Options
         /// <summary>
         /// Gets the Flag which indicates a Default/Root shell/tenant.
         /// </summary>
-        public bool IsDefault => string.Equals(ShellName, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+        public bool IsDefault => ShellName == ShellHelper.DefaultShellName;
 
         /// <summary>
         /// Error Message Format
         /// </summary>
-        private string RequiredErrorMessageFormat = "The {0} field is required.";
+        private readonly string RequiredErrorMessageFormat = "The {0} field is required.";
 
         /// <summary>
         /// Tenant validation.
@@ -94,54 +97,55 @@ namespace OrchardCore.AutoSetup.Options
                 yield return new ValidationResult("ShellName Can not be empty and must contain characters only and no spaces.");
             }
 
-            if (!IsDefault && string.IsNullOrWhiteSpace(RequestUrlPrefix) && string.IsNullOrWhiteSpace(RequestUrlHost))
+            if (!IsDefault && String.IsNullOrWhiteSpace(RequestUrlPrefix) && String.IsNullOrWhiteSpace(RequestUrlHost))
             {
                 yield return new ValidationResult("RequestUrlPrefix or RequestUrlHost should be provided for no Default Tenant");
             }
 
-            if (!string.IsNullOrEmpty(RequestUrlPrefix) && RequestUrlPrefix.Contains('/'))
+            if (!String.IsNullOrWhiteSpace(RequestUrlPrefix) && RequestUrlPrefix.Contains('/'))
             {
                 yield return new ValidationResult("The RequestUrlPrefix can not contain more than one segment.");
             }
 
-            if (string.IsNullOrWhiteSpace(SiteName))
+            if (String.IsNullOrWhiteSpace(SiteName))
             {
-                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(SiteName)));
+                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(SiteName)));
             }
 
-            if (string.IsNullOrWhiteSpace(AdminUsername))
+            if (String.IsNullOrWhiteSpace(AdminUsername))
             {
-                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(AdminUsername)));
+                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(AdminUsername)));
             }
 
-            if (string.IsNullOrWhiteSpace(AdminEmail))
+            if (String.IsNullOrWhiteSpace(AdminEmail))
             {
-                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(AdminEmail)));
+                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(AdminEmail)));
             }
 
-            if (string.IsNullOrWhiteSpace(AdminPassword))
+            if (String.IsNullOrWhiteSpace(AdminPassword))
             {
-                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(AdminPassword)));
+                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(AdminPassword)));
             }
 
-            if (string.IsNullOrWhiteSpace(DatabaseProvider))
+            var selectedProvider = validationContext.GetServices<DatabaseProvider>().FirstOrDefault(x => x.Value == DatabaseProvider);
+            if (selectedProvider == null)
             {
-                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(DatabaseProvider)));
+                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(DatabaseProvider)));
             }
 
-            if (!string.Equals(this.DatabaseProvider, "Sqlite", StringComparison.InvariantCultureIgnoreCase) && string.IsNullOrWhiteSpace(DatabaseConnectionString))
+            if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(DatabaseConnectionString))
             {
-                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(DatabaseConnectionString)));
+                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(DatabaseConnectionString)));
             }
 
-            if (string.IsNullOrWhiteSpace(RecipeName))
+            if (String.IsNullOrWhiteSpace(RecipeName))
             {
-                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(RecipeName)));
+                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(RecipeName)));
             }
 
-            if (string.IsNullOrWhiteSpace(SiteTimeZone))
+            if (String.IsNullOrWhiteSpace(SiteTimeZone))
             {
-                yield return new ValidationResult(string.Format(RequiredErrorMessageFormat, nameof(SiteTimeZone)));
+                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(SiteTimeZone)));
             }
         }
     }
