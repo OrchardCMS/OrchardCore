@@ -5,8 +5,7 @@
     <Title>OrchardCore Auto Setup</Title>
     <Description>$(OCFrameworkDescription)
 
-      The auto setup module is installing the application on first start automatically
-    </Description>
+    The auto setup module is installing the application on first start automatically</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
