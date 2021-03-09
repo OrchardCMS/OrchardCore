@@ -135,9 +135,9 @@ namespace OrchardCore.Users.Controllers
 
             options.UserFilters = new List<SelectListItem>()
             {
-                new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled) },
-                new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled) },
                 new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All) },
+                new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled) },
+                new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled) }
                 //new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
                 //new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
                 //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
