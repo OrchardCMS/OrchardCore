@@ -82,7 +82,26 @@ namespace OrchardCore.DisplayManagement.Razor
         public Task<IHtmlContent> DisplayAsync(dynamic shape)
         {
             EnsureDisplayHelper();
-            return _displayHelper.ShapeExecuteAsync(shape);
+
+            if (shape is IShape s)
+            {
+                return _displayHelper.ShapeExecuteAsync(s);
+            }
+            else
+            {
+                if (shape is IHtmlContent hc)
+                {
+                    return Task.FromResult(hc);
+                }
+                else if (shape is string str)
+                {
+                    return Task.FromResult<IHtmlContent>(new HtmlString(HtmlEncoder.Encode(str)));
+                }
+                else
+                {
+                    throw new ArgumentException("DisplayAsync requires an instance of IShape");
+                }
+            }
         }
 
         /// <summary>
