@@ -10,8 +10,8 @@ using Microsoft.Extensions.Options;
 using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Modules;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Modules;
 using OrchardCore.Routing;
 
 namespace OrchardCore.AutoSetup
@@ -22,24 +22,36 @@ namespace OrchardCore.AutoSetup
     public sealed class Startup : StartupBase
     {
         /// <summary>
+        /// AutoSetup Configuration Section Name.
+        /// </summary>
+        private const string ConfigSectionName = "OrchardCore_AutoSetup";
+
+        /// <summary>
+        /// The Shell settings.
+        /// </summary>
+        private readonly ShellSettings _shellSettings;
+
+        /// <summary>
         /// The Shell/Tenant configuration.
         /// </summary>
         private readonly IShellConfiguration _shellConfiguration;
 
         /// <summary>
-        /// AutoSetup Configuration Section Name 
+        /// The _logger.
         /// </summary>
-        private const string ConfigSectionName = "OrchardCore_AutoSetup";
+        private readonly ILogger<Startup> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
-        /// <param name="shellConfiguration">
-        /// The shell configuration.
-        /// </param>
-        public Startup(IShellConfiguration shellConfiguration)
+        /// <param name="shellSettings">The Shell settings.</param>
+        /// <param name="shellConfiguration">The shell configuration.</param>
+        /// <param name="logger">The logger.</param>
+        public Startup(ShellSettings shellSettings, IShellConfiguration shellConfiguration, ILogger<Startup> logger)
         {
-            this._shellConfiguration = shellConfiguration;
+            _shellSettings = shellSettings;
+            _shellConfiguration = shellConfiguration;
+            _logger = logger;
         }
 
         /// <summary>
@@ -68,41 +80,30 @@ namespace OrchardCore.AutoSetup
         /// </param>
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var currentShellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-            var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
-
-
-            if (currentShellSettings.State == TenantState.Uninitialized)
+            if (_shellSettings.State == TenantState.Uninitialized)
             {
                 var options = serviceProvider.GetRequiredService<IOptions<AutoSetupOptions>>().Value;
+                var validationContext = new ValidationContext(options, serviceProvider, null);
 
-                if (options != null)
+                var validationErrors = options.Validate(validationContext);
+                if (validationErrors.Any())
                 {
-                    var validationContext = new ValidationContext(options, serviceProvider, null);
-                    var validationErrors = options.Validate(validationContext);
-
-                    if (validationErrors.Any())
+                    var stringBuilder = new StringBuilder();
+                    foreach (var error in validationErrors)
                     {
-                        var stringBuilder = new StringBuilder();
-                        foreach (var error in validationErrors)
-                        {
-                            stringBuilder.Append(error.ErrorMessage);
-                        }
+                        stringBuilder.Append(error.ErrorMessage + ' ');
+                    }
 
-                        logger.LogError("AutoSetup did not start, configuration has following errors: {errors}", stringBuilder.ToString());
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(options.AutoSetupPath))
-                        {
-                            app.UseMiddleware<AutoSetupMiddleware>();
-                        }
-                        else
-                        {
-                            app.MapWhen(ctx => ctx.Request.Path.StartsWithNormalizedSegments(options.AutoSetupPath), appBuilder =>
-                                appBuilder.UseMiddleware<AutoSetupMiddleware>());
-                        }
-                    }
+                    _logger.LogError("AutoSetup did not start, configuration has following errors: {errors}", stringBuilder.ToString());
+                }
+                else if (String.IsNullOrWhiteSpace(options.AutoSetupPath))
+                {
+                    app.UseMiddleware<AutoSetupMiddleware>();
+                }
+                else
+                {
+                    app.MapWhen(ctx => ctx.Request.Path.StartsWithNormalizedSegments(options.AutoSetupPath),
+                        appBuilder => appBuilder.UseMiddleware<AutoSetupMiddleware>());
                 }
             }
         }
