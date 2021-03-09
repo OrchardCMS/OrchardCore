@@ -10,6 +10,7 @@ namespace OrchardCore.Users.ViewModels
         public string Search { get; set; }
         public UsersOrder Order { get; set; }
         public UsersFilter Filter { get; set; }
+        public string SelectedRole { get; set; }
         public UsersBulkAction BulkAction { get; set; }
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
@@ -19,6 +20,9 @@ namespace OrchardCore.Users.ViewModels
 
         [BindNever]
         public List<SelectListItem> UserFilters { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> UserRoleFilters { get; set; }
 
         [BindNever]
         public List<SelectListItem> UserSorts { get; set; }

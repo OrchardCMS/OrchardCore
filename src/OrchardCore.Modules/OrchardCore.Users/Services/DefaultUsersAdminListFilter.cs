@@ -17,15 +17,18 @@ namespace OrchardCore.Users.Services
 {
     public class DefaultUsersAdminListFilter : IUsersAdminListFilter
     {
+        private readonly YesSql.ISession _session;
         private readonly UserManager<IUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public DefaultUsersAdminListFilter(
+            YesSql.ISession session,
             UserManager<IUser> userManager,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {
+            _session = session;
             _userManager = userManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
@@ -60,37 +63,68 @@ namespace OrchardCore.Users.Services
                 var normalizedSearchUserName = _userManager.NormalizeName(options.Search);
                 var normalizedSearchEMail = _userManager.NormalizeEmail(options.Search);
 
-                query = query.With<UserIndex>().Where(u => u.NormalizedUserName.Contains(normalizedSearchUserName) || u.NormalizedEmail.Contains(normalizedSearchEMail));
+                query.With<UserIndex>().Where(u => u.NormalizedUserName.Contains(normalizedSearchUserName) || u.NormalizedEmail.Contains(normalizedSearchEMail));
             }
 
             // Apply OrderBy filters.
             switch (options.Order)
             {
                 case UsersOrder.Name:
-                    query = query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
+                    query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
                     break;
                 case UsersOrder.Email:
-                    query = query.With<UserIndex>().OrderBy(u => u.NormalizedEmail);
+                    query.With<UserIndex>().OrderBy(u => u.NormalizedEmail);
                     break;
-                // case UsersOrder.CreatedUtc:
-                //     //users = users.OrderBy(u => u.CreatedUtc);
-                //     break;
-                // case UsersOrder.LastLoginUtc:
-                //     //users = users.OrderBy(u => u.LastLoginUtc);
-                //     break;
+                    // case UsersOrder.CreatedUtc:
+                    //     //users = users.OrderBy(u => u.CreatedUtc);
+                    //     break;
+                    // case UsersOrder.LastLoginUtc:
+                    //     //users = users.OrderBy(u => u.LastLoginUtc);
+                    //     break;
             }
 
+            if (!String.IsNullOrEmpty(options.SelectedRole))
+            {
+                if (!String.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase))
+                {
+                    query.With<UserByRoleNameIndex>(x => x.RoleName == options.SelectedRole);
+                }
+                else
+                {
+                    /* Sample code for Sqlite to reduce the results, based on no values in the reduce index table(s).
 
+                    not exists 
+                    (
+                        SELECT [RoleName] 
+                        FROM UserByRoleNameIndex 
+                        INNER JOIN [UserByRoleNameIndex_Document] ON [UserByRoleNameIndex].[Id] = [UserByRoleNameIndex_Document].[UserByRoleNameIndexId] 
+                        WHERE [UserByRoleNameIndex_Document].[DocumentId] = [Document].[Id]
+                    )
 
-            // if (!String.IsNullOrEmpty(model.DisplayText))
-            // {
-            //     query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
-            // }
+                    */
 
+                    var dialect = _session.Store.Configuration.SqlDialect;
+                    var indexType = typeof(UserByRoleNameIndex);
+                    var indexTable = _session.Store.Configuration.TableNameConvention.GetIndexTable(indexType);
+                    var documentTable = _session.Store.Configuration.TableNameConvention.GetDocumentTable();
+                    var bridgeTableName = indexTable + "_" + documentTable;
+                    var bridgeTableIndexColumnName = indexType.Name + "Id";
+
+                    var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
+
+                    sqlBuilder.Select();
+                    sqlBuilder.AddSelector(dialect.QuoteForColumnName("RoleName"));
+                    sqlBuilder.From(indexTable);
+                    sqlBuilder.InnerJoin(bridgeTableName, indexTable, "Id", bridgeTableName, bridgeTableIndexColumnName);
+                    sqlBuilder.WhereAnd($"{dialect.QuoteForTableName(bridgeTableName)}.{dialect.QuoteForColumnName("DocumentId")} = {dialect.QuoteForTableName(documentTable)}.{dialect.QuoteForColumnName("Id")}");
+
+                    var sqlCmd = sqlBuilder.ToSqlString();
+
+                    query.With<UserIndex>().Where($"not exists ({sqlCmd})");
+                }
+            }
 
             return Task.CompletedTask;
-
-
         }
     }
 }

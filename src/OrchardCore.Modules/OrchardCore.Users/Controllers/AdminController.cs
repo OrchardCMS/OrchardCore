@@ -102,7 +102,7 @@ namespace OrchardCore.Users.Controllers
 
             //All of this moves.
 
- 
+
 
             // to here.
 
@@ -133,7 +133,7 @@ namespace OrchardCore.Users.Controllers
                 );
             }
 
-            options.UserFilters = new List<SelectListItem>() 
+            options.UserFilters = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled) },
                 new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled) },
@@ -143,7 +143,7 @@ namespace OrchardCore.Users.Controllers
                 //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
             };
 
-            options.UserSorts = new List<SelectListItem>() 
+            options.UserSorts = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name) },
                 new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email) },
@@ -151,13 +151,25 @@ namespace OrchardCore.Users.Controllers
                 //new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
             };
 
-            options.UsersBulkAction = new List<SelectListItem>() 
+            options.UsersBulkAction = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
                 new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
                 new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
                 new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
             };
+
+            var allRoles = (await _roleService.GetRoleNamesAsync())
+                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+
+            options.UserRoleFilters = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["All roles"], Value = String.Empty },
+                new SelectListItem() { Text = S["No roles"], Value = "Authenticated" },
+            };
+
+            // TODO Candidate for dynamic localization.
+            options.UserRoleFilters.AddRange(allRoles.Select(x => new SelectListItem { Text = x, Value = x }));
 
             // Populate options pager summary values.
             var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
@@ -167,15 +179,6 @@ namespace OrchardCore.Users.Controllers
             options.TotalItemCount = pagerShape.TotalItemCount;
 
             var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
-
-            // var model = new UsersIndexViewModel
-            // {
-            //     Users = userEntries,
-            //     Options = options,
-            //     Pager = pagerShape,
-            //     Header = header
-            // };
-
 
             var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
             {
@@ -195,11 +198,6 @@ namespace OrchardCore.Users.Controllers
             await _userOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
 
             return RedirectToAction("Index", model.Options.RouteValues);
-            // return RedirectToAction("Index", new RouteValueDictionary {
-            //     { "Options.Filter", model.Options.Filter },
-            //     { "Options.Order", model.Options.Order },
-            //     { "Options.Search", model.Options.Search }
-            // });
         }
 
         [HttpPost, ActionName("Index")]

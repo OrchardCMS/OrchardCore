@@ -38,6 +38,7 @@ namespace OrchardCore.Users.Drivers
                 model.RouteValues.TryAdd("Options.Filter", viewModel.Filter);
                 model.RouteValues.TryAdd("Options.Order", viewModel.Order);
                 model.RouteValues.TryAdd("Options.Search", viewModel.Search);
+                model.RouteValues.TryAdd("Options.SelectedRole", viewModel.SelectedRole);
             }
 
             return Edit(model);
@@ -49,12 +50,10 @@ namespace OrchardCore.Users.Drivers
             m.Order = model.Order;
             m.Filter = model.Filter;
             m.BulkAction = model.BulkAction;
-
             m.UserSorts = model.UserSorts;
             m.UserFilters = model.UserFilters;
-
             m.UsersBulkAction = model.UsersBulkAction;
-            // m.UserFil = model.CreatableTypes;
+            m.UserRoleFilters = model.UserRoleFilters;
             m.StartIndex = model.StartIndex;
             m.EndIndex = model.EndIndex;
             m.UsersCount = model.UsersCount;
