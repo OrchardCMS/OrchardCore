@@ -36,4 +36,13 @@ namespace OrchardCore.MiniProfiler
             store.Configuration.ConnectionFactory = new MiniProfilerConnectionFactory(store.Configuration.ConnectionFactory);
         }
     }
+
+    [Feature("OrchardCore.MiniProfiler.Admin")]
+    public class MiniProfilerAdminStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<MiniProfilerOptions>(settings => settings.AllowOnAdmin = true);
+        }       
+    }
 }

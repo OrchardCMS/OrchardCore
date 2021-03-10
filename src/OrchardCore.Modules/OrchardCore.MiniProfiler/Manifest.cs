@@ -4,7 +4,20 @@ using OrchardCore.Modules.Manifest;
     Name = "Mini Profiler",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Adds the Mini Profiler widget to pages.",
-    Category = "Performance"
+    Version = ManifestConstants.OrchardCoreVersion
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.MiniProfiler",
+    Name = "Mini Profiler",
+    Category = "Performance",
+    Description = "Adds the Mini Profiler widget to pages."
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.MiniProfiler.Admin",
+    Name = "Mini Profiler Admin",
+    Category = "Performance",
+    Description = "Adds the Mini Profiler widget to both admin and front end pages.",
+    Dependencies = new[] { "OrchardCore.MiniProfiler" }
 )]
