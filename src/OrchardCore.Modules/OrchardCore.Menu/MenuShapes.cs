@@ -27,8 +27,8 @@ namespace OrchardCore.Menu
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
-                    string contentItemId = menu.Properties["Alias"] != null
-                        ? await handleManager.GetContentItemIdAsync(menu.Properties["Alias"].ToString())
+                    string contentItemId = menu.TryGetProperty("Alias", out object alias) && alias != null
+                        ? await handleManager.GetContentItemIdAsync(alias.ToString())
                         : menu.Properties["ContentItemId"].ToString();
 
                     if (contentItemId == null)
@@ -56,7 +56,7 @@ namespace OrchardCore.Menu
                         return;
                     }
 
-                    var differentiator = FormatName((string)menu.Properties["MenuName"]);
+                    var differentiator = FormatName(menu.GetProperty<string>("MenuName"));
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {

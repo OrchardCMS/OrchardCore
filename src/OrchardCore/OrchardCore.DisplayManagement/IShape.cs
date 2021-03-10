@@ -28,6 +28,44 @@ namespace OrchardCore.DisplayManagement
 
     public static class IShapeExtensions
     {
+        public static bool TryGetProperty<T>(this IShape shape, string key, out T value)
+        {
+            if (shape.Properties != null && shape.Properties.TryGetValue(key, out var result))
+            {
+                if (result is T t)
+                {
+                    value = t;
+                    return true;
+                }
+            }
+
+            value = default(T);
+            return false;
+        }
+
+        public static object GetProperty(this IShape shape, string key)
+        {
+            return GetProperty(shape, key, (object) null);
+        }
+
+        public static T GetProperty<T>(this IShape shape, string key)
+        {
+            return GetProperty(shape, key, default(T));
+        }
+
+        public static T GetProperty<T>(this IShape shape, string key, T value)
+        {
+            if (shape.Properties != null && shape.Properties.TryGetValue(key, out var result))
+            {
+                if (result is T t)
+                {
+                    return t;
+                }
+            }
+
+            return value;
+        }
+
         public static async ValueTask<IShape> AddRangeAsync(this IShape shape, IEnumerable<object> items, string position = null)
         {
             foreach (var item in items)
@@ -48,7 +86,7 @@ namespace OrchardCore.DisplayManagement
             var tagName = defaultTagName;
 
             // We keep this for backward compatibility
-            if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
+            if (shape.TryGetProperty("Tag", out string valueString))
             {
                 tagName = valueString;
             }

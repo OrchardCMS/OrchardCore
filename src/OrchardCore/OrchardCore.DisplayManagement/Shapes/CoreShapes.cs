@@ -30,7 +30,14 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (Items == null)
             {
-                return HtmlString.Empty;
+                if (shape.Items != null && shape.Items.Any())
+                {
+                    Items = shape.Items;
+                }
+                else
+                {
+                    return HtmlString.Empty;
+                }
             }
 
             // prevent multiple enumerations

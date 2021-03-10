@@ -25,38 +25,32 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager")
                 .OnCreated(created =>
                 {
-                    // Intializes the common properties of a Pager shape
+                    // Initializes the common properties of a Pager shape
                     // such that views can safely add values to them.
                     created.Shape.Properties["ItemClasses"] = new List<string>();
                     created.Shape.Properties["ItemAttributes"] = new Dictionary<string, string>();
                 })
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
                     };
                 });
 
             builder.Describe("PagerSlim")
                 .OnCreated(created =>
                 {
-                    // Intializes the common properties of a Pager shape
+                    // Initializes the common properties of a Pager shape
                     // such that views can safely add values to them.
                     created.Shape.Properties["ItemClasses"] = new List<string>();
                     created.Shape.Properties["ItemAttributes"] = new Dictionary<string, string>();
                 })
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
                     };
                 });
 
@@ -64,9 +58,8 @@ namespace OrchardCore.Navigation
                 .OnDisplaying(displaying =>
                 {
                     var shape = displaying.Shape;
-                    var pager = shape.Properties["Pager"] as IShape;
-                    string pagerId = Convert.ToString(pager.Properties["PagerId"]);
-                    if (!String.IsNullOrEmpty(pagerId))
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Gap__" + EncodeAlternateElement(pagerId));
                     }
@@ -76,9 +69,8 @@ namespace OrchardCore.Navigation
                 .OnDisplaying(displaying =>
                 {
                     var shape = displaying.Shape;
-                    var pager = shape.Properties["Pager"] as IShape;
-                    string pagerId = Convert.ToString(pager.Properties["PagerId"]);
-                    if (!String.IsNullOrEmpty(pagerId))
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_First__" + EncodeAlternateElement(pagerId));
                     }
@@ -88,9 +80,8 @@ namespace OrchardCore.Navigation
                 .OnDisplaying(displaying =>
                 {
                     var shape = displaying.Shape;
-                    var pager = shape.Properties["Pager"] as IShape;
-                    string pagerId = Convert.ToString(pager.Properties["PagerId"]);
-                    if (!String.IsNullOrEmpty(pagerId))
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Previous__" + EncodeAlternateElement(pagerId));
                     }
@@ -100,9 +91,8 @@ namespace OrchardCore.Navigation
                 .OnDisplaying(displaying =>
                 {
                     var shape = displaying.Shape;
-                    var pager = shape.Properties["Pager"] as IShape;
-                    string pagerId = Convert.ToString(pager.Properties["PagerId"]);
-                    if (!String.IsNullOrEmpty(pagerId))
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Next__" + EncodeAlternateElement(pagerId));
                     }
@@ -112,9 +102,8 @@ namespace OrchardCore.Navigation
                 .OnDisplaying(displaying =>
                 {
                     var shape = displaying.Shape;
-                    var pager = shape.Properties["Pager"] as IShape;
-                    string pagerId = Convert.ToString(pager.Properties["PagerId"]);
-                    if (!String.IsNullOrEmpty(pagerId))
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Last__" + EncodeAlternateElement(pagerId));
                     }
@@ -124,9 +113,8 @@ namespace OrchardCore.Navigation
                 .OnDisplaying(displaying =>
                 {
                     var shape = displaying.Shape;
-                    var pager = shape.Properties["Pager"] as IShape;
-                    string pagerId = Convert.ToString(pager.Properties["PagerId"]);
-                    if (!String.IsNullOrEmpty(pagerId))
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_CurrentPage__" + EncodeAlternateElement(pagerId));
                     }
@@ -135,7 +123,7 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Links")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + EncodeAlternateElement(pagerId));
                     }
@@ -220,7 +208,7 @@ namespace OrchardCore.Navigation
             }
 
             // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
-            var shapeRoute = shape.Properties["RouteData"];
+            var shapeRoute = shape.GetProperty("RouteData");
 
             if (shapeRoute != null)
             {
@@ -402,7 +390,7 @@ namespace OrchardCore.Navigation
                 }
             }
 
-            if (shape.Properties.TryGetValue("Before", out var beforeValue) && beforeValue is string before)
+            if (shape.TryGetProperty("Before", out string before))
             {
                 var beforeRouteData = new RouteValueDictionary(routeData)
                 {
@@ -420,7 +408,7 @@ namespace OrchardCore.Navigation
                 shape.Properties["FirstClass"] = PreviousClass;
             }
 
-            if (shape.Properties.TryGetValue("After", out var afterValue) && afterValue is string after)
+            if (shape.TryGetProperty("After", out string after))
             {
                 var afterRouteData = new RouteValueDictionary(routeData)
                 {
@@ -468,7 +456,7 @@ namespace OrchardCore.Navigation
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            var parentTag = (TagBuilder)shape.Properties["Tag"];
+            var parentTag = shape.GetProperty<TagBuilder>("Tag");
             parentTag.AddCssClass("active");
 
             return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
@@ -509,13 +497,13 @@ namespace OrchardCore.Navigation
         {
             if (Disabled)
             {
-                if (shape.Properties.TryGetValue("Tag", out var value) && value is TagBuilder tagBuilder)
+                if (shape.TryGetProperty("Tag", out TagBuilder tagBuilder))
                 {
                     tagBuilder.AddCssClass("disabled");
                 }
             }
 
-            var RouteValues = shape.Properties["RouteValues"];
+            var RouteValues = shape.GetProperty("RouteValues");
             RouteValueDictionary rvd;
             if (RouteValues == null)
             {
@@ -546,7 +534,7 @@ namespace OrchardCore.Navigation
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            var parentTag = (TagBuilder)shape.Properties["Tag"];
+            var parentTag = shape.GetProperty<TagBuilder>("Tag");
             parentTag.AddCssClass("disabled");
             return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
