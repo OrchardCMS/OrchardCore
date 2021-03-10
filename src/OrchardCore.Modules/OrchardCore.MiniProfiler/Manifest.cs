@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.MiniProfiler",
     Name = "Mini Profiler",
     Category = "Performance",
-    Description = "Adds the Mini Profiler widget to pages."
+    Description = "Adds the Mini Profiler widget to front endpages."
 )]
 
 [assembly: Feature(
