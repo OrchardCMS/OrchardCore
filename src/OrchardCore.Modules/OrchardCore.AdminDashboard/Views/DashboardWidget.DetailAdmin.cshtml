@@ -1,54 +1,36 @@
-@using OrchardCore.Mvc.Utilities;
-@using OrchardCore.ContentManagement
-@using OrchardCore.Contents
-@inject IAuthorizationService AuthorizationService
-
-@{
-    Model.Classes.Add("dashboard-item");
-    ContentItem contentItem = Model.ContentItem;
-    var contentTypeClassName = contentItem.ContentType.HtmlClassify();
-    Model.Classes.Add(contentTypeClassName);
-    //var hasManageDashboardPermission = await AuthorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard);
-    var hasDeletePermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, contentItem);
-    var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
-}
-
-<div class="col-xl-3 col-lg-4 mb-4">
-    <div class="card">
-        @if (Model.Header != null)
-        {
-            <div class="card-header">
-                @await DisplayAsync(Model.Header)
-            </div>
-        }
-        <div class="card-body">
-            @if (Model.Meta != null)
+<div class="card @String.Join(" ", Model.Classes.ToArray()) h-100">
+    @if (Model.Header != null || Model.Leading != null || Model.ActionsMenu != null)
+    {
+        <div class="card-header">
+            @await DisplayAsync(Model.Leading)
+            @await DisplayAsync(Model.Header)
+            @if(Model.ActionsMenu != null )
             {
-                <div class="metadata">
-                    @await DisplayAsync(Model.Meta)
+                <div class="btn-group float-right" title="@T["Actions"]">
+                    <a type="button" class="btn btn-sm " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </a>
+                    <div class="actions-menu dropdown-menu">
+                        @await DisplayAsync(Model.ActionsMenu)
+                    </div>
                 </div>
             }
-            <h5 class="card-title">@Model.ContentItem.DisplayText</h5>
-
-            @await DisplayAsync(Model.Content)
-
-            @* Move this to the DashboardPart shape *@
-            @if (hasEditPermission)
-            {
-                <a class="btn btn-sm btn-primary" edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath">
-                    @T["Edit"]
-                </a>
-            }
-            @if (hasDeletePermission)
-            {
-                <a remove-for="@contentItem" class="btn btn-danger btn-sm" asp-route-returnUrl="@FullRequestPath" itemprop="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content item?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
-            }
         </div>
-        @if (Model.Footer != null)
-        {
-            <div class="card-footer">
-                @await DisplayAsync(Model.Footer)
-            </div>
-        }
+    }
+    @if (Model.Tags != null || Model.Meta != null)
+    {
+        <div class="dashboard-meta">
+            @await DisplayAsync(Model.Meta)
+            @await DisplayAsync(Model.Tags)
+        </div>
+    }
+    <div class="card-body">
+    @await DisplayAsync(Model.Content)
     </div>
+    @if (Model.Footer != null)
+    {
+        <div class="card-footer">
+            @await DisplayAsync(Model.Footer)
+        </div>
+    }
 </div>

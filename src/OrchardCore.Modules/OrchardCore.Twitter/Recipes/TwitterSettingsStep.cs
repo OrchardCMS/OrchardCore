@@ -21,16 +21,19 @@ namespace OrchardCore.Twitter.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, nameof(TwitterSettings), StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, nameof(TwitterSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
+
             var model = context.Step.ToObject<TwitterSettingsStepModel>();
-            var settings = await _twitterService.GetSettingsAsync();
+            var settings = await _twitterService.LoadSettingsAsync();
+
             settings.ConsumerKey = model.ConsumerKey;
             settings.ConsumerSecret = model.ConsumerSecret;
             settings.AccessToken = model.AccessToken;
             settings.AccessTokenSecret = model.AccessTokenSecret;
+
             await _twitterService.UpdateSettingsAsync(settings);
         }
     }

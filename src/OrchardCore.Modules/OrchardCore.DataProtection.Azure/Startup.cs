@@ -66,17 +66,17 @@ namespace OrchardCore.DataProtection.Azure
             catch (Exception e)
             {
                 _logger.LogCritical(e, "Unable to parse data protection connection string.");
-                throw e;
+                throw;
             }
 
             var createContainer = _configuration.GetValue("OrchardCore_DataProtection_Azure:CreateContainer", true);
             if (createContainer)
-            {                
+            {
                 try
-                {      
+                {
                     _logger.LogDebug("Testing data protection container {ContainerName} existence", containerName);
                     var _blobContainer = new BlobContainerClient(connectionString, containerName);
-                    var response =  _blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).GetAwaiter().GetResult();   
+                    var response =  _blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).GetAwaiter().GetResult();
                     _logger.LogDebug("Data protection container {ContainerName} created.", containerName);
                 }
                 catch (Exception)
@@ -115,7 +115,7 @@ namespace OrchardCore.DataProtection.Azure
                 catch (Exception e)
                 {
                     _logger.LogCritical(e, "Unable to parse data protection blob name.");
-                    throw e;
+                    throw;
                 }
             }
 
