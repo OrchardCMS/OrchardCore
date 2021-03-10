@@ -40,6 +40,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     case "Scheme": return new StringValue(request.Scheme);
                     case "Method": return new StringValue(request.Method);
                     case "Route": return new ObjectValue(new RouteValueDictionaryWrapper(request.RouteValues));
+                    case "Referer": return new StringValue(request.GetTypedHeaders().Referer.PathAndQuery);
 
                     default: return null;
                 }
