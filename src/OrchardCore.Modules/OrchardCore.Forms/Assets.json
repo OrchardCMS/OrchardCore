@@ -14,7 +14,7 @@
   },
   {
     "inputs": [
-      "Assets/js/SelectOptionsEditor/validator.js"
+      "Assets/js/Scripts/validator.js"
     ],
     "output": "wwwroot/Scripts/validator.js"
   }

@@ -57,7 +57,7 @@ namespace OrchardCore.Forms
 
             //ValidationRule
             _contentDefinitionManager.AlterPartDefinition("ValidationRulePart", part => part
-                .WithDescription("Provides Validate Rule property."));
+                .WithDescription("Provides the ability to use and configure validation rules for form fields."));
 
             // Input
             _contentDefinitionManager.AlterPartDefinition("InputPart", part => part

@@ -1,142 +1,253 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Forms.Entities.Scripting
 {
     public class ValidateRuleMethod : IGlobalMethodProvider
     {
-        private static GlobalMethod Contains = new GlobalMethod
-        {
-            Name = "contains",
-            Method = serviceProvider => (Func<string,string,bool>)((str,compare) =>
-            {
-                return str.Contains(compare, StringComparison.InvariantCultureIgnoreCase);
-            })
-        };
-        private static GlobalMethod IsDate = new GlobalMethod
-        {
-            Name = "isDate",
-            Method = serviceProvider => (Func<string,bool>)((str) =>
-           {
-               DateTime result;
-               return DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
-           })
-        };
+        private readonly GlobalMethod _contains;
+        private readonly GlobalMethod _equals;
+        private readonly GlobalMethod _isAfter;
+        private readonly GlobalMethod _isBefore;
+        private readonly GlobalMethod _isBoolean;
+        private readonly GlobalMethod _isByteLength;
+        private readonly GlobalMethod _isDate;
+        private readonly GlobalMethod _isDecimal;
+        private readonly GlobalMethod _isDivisibleBy;
+        private readonly GlobalMethod _isEmpty;
+        private readonly GlobalMethod _isFloat;
+        private readonly GlobalMethod _isIn;
+        private readonly GlobalMethod _isInt;
+        private readonly GlobalMethod _isJSON;
+        private readonly GlobalMethod _isLength;
+        private readonly GlobalMethod _isNumeric;
+        private readonly GlobalMethod _matches;
 
-        private static GlobalMethod IsDecimal = new GlobalMethod
+        public ValidateRuleMethod()
         {
-            Name = "isDecimal",
-            Method = serviceProvider => (Func<string,bool>)((str) =>
+            _contains = new GlobalMethod
             {
-                return ValidateIs<Decimal>(str);
-            })
-        };
-        private static GlobalMethod IsEmail = new GlobalMethod
-        {
-            Name = "isEmail",
-            Method = serviceProvider => (Func<string,bool>)((str) =>
-            {
-                if (String.IsNullOrEmpty(str)) return false;
-                string exp = @"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-||_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+([a-z]+|\d|-|\.{0,1}|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])?([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$";
-                return new Regex(exp, RegexOptions.IgnoreCase).IsMatch(str);
-            })
-        };
-        private static GlobalMethod IsEmpty = new GlobalMethod
-        {
-            Name = "isEmpty",
-            Method = serviceProvider => (Func<string,bool>)((str) =>
-            {
-                return string.IsNullOrEmpty(str);
-            })
-        };
-        private static GlobalMethod IsInt = new GlobalMethod
-        {
-            Name = "isInt",
-            Method = serviceProvider => (Func<string,bool>)((str) =>
-            {
-                return ValidateIs<int>(str);
-            })
-        };
-        private static GlobalMethod IsIP = new GlobalMethod
-        {
-            Name = "isIP",
-            Method = serviceProvider => (Func<string,bool>)((str) =>
-            {
-                return IsValidIPAddress(str);
-            })
-        };
-        private static GlobalMethod IsURL = new GlobalMethod
-        {
-            Name = "isURL",
-            Method = serviceProvider => (Func<string,bool>)((str) =>
-            {
-                string urlRegex = @"^http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?$";
-                return Regex.IsMatch(str, urlRegex);
-            })
-        };
-        private static GlobalMethod Matches = new GlobalMethod
-        {
-            Name = "matches",
-            Method = serviceProvider => (Func<string,string,bool>)((str,regexStr) =>
-            {
-                return Regex.IsMatch(str, regexStr);
-            })
-        };
-        public IEnumerable<GlobalMethod> GetMethods()
-        {
-            return new[] { Contains, IsDate, IsDecimal, IsEmail, IsEmpty, IsInt, IsIP, IsURL, Matches };
-        }
-
-        public static bool ValidateIs<T>(string value)
-        {
-            if (value == null)
-            {
-                return false;
-            }
-
-            var converter = System.ComponentModel.TypeDescriptor.GetConverter(typeof(T));
-
-            try
-            {
-                T result = (T)converter.ConvertFromString(value.ToString());
-                return result != null;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-
-        public static bool IsValidIPAddress(string IpAddress)
-        {
-            try
-            {
-                IPAddress IP;
-                if (IpAddress.Count(c => c == '.') == 3)
+                Name = "contains",
+                Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
                 {
-                    bool flag = IPAddress.TryParse(IpAddress, out IP);
-                    if (flag)
+                    return str.Contains(compare, StringComparison.InvariantCultureIgnoreCase);
+                })
+            };
+            _equals = new GlobalMethod
+            {
+                Name = "equals",
+                Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
+                {
+                    return str.Equals(compare, StringComparison.InvariantCultureIgnoreCase);
+                })
+            };
+            _isAfter = new GlobalMethod
+            {
+                Name = "isAfter",
+                Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
+                {
+                    DateTime originDate;
+                    var originResult = DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out originDate);
+                    DateTime compareDate;
+                    var compareResult =  DateTime.TryParse(compare, CultureInfo.InvariantCulture, DateTimeStyles.None, out compareDate);
+                    return originResult && compareResult && originDate > compareDate;
+                })
+            };
+            _isBefore = new GlobalMethod
+            {
+                Name = "isBefore",
+                Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
+                {
+                    DateTime originDate;
+                    var originResult = DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out originDate);
+                    DateTime compareDate;
+                    var compareResult = DateTime.TryParse(compare, CultureInfo.InvariantCulture, DateTimeStyles.None, out compareDate);
+                    return originResult && compareResult && originDate < compareDate;
+                })
+            };
+            _isBoolean = new GlobalMethod
+            {
+                Name = "isBoolean",
+                Method = serviceProvider => (Func<string, bool>)((str) =>
+                {
+                    bool flag;
+                    return Boolean.TryParse(str, out flag);
+                })
+            };
+            _isByteLength = new GlobalMethod
+            {
+                Name = "isByteLength",
+                Method = serviceProvider => (Func<string,string, bool>)((str, option) =>
+                {
+                    return ValidateLength(Encoding.UTF8.GetByteCount(str), option);
+                })
+            };
+            _isDate = new GlobalMethod
+            {
+                Name = "isDate",
+                Method = serviceProvider => (Func<string, bool>)((str) =>
+                {
+                    DateTime result;
+                    return DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
+                })
+            };
+            _isDecimal = new GlobalMethod
+            {
+                Name = "isDecimal",
+                Method = serviceProvider => (Func<string, bool>)((str) =>
+                {
+                    return ValidateIs<decimal>(str);
+                })
+            };
+            _isDivisibleBy = new GlobalMethod
+            {
+                Name = "isDivisibleBy",
+                Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
+                {
+                    int originalNumber;
+                    int compareNumber;
+                    if(Int32.TryParse(str, out originalNumber) && Int32.TryParse(compare, out compareNumber))
                     {
-                        return true;
+                        if (compareNumber == 0) return false;
+                        return originalNumber % compareNumber == 0;
                     }
                     else
                     {
                         return false;
                     }
-                }
-                else
+                })
+            };
+            _isEmpty = new GlobalMethod
+            {
+                Name = "isEmpty",
+                Method = serviceProvider => (Func<string, bool>)((str) =>
                 {
+                    return String.IsNullOrEmpty(str);
+                })
+            };
+            _isFloat = new GlobalMethod
+            {
+                Name = "isFloat",
+                Method = serviceProvider => (Func<string, bool>)((str) =>
+                {
+                    float result;
+                    return Single.TryParse(str, out result);
+                })
+            };
+            _isIn = new GlobalMethod
+            {
+                Name = "isIn",
+                Method = serviceProvider => (Func<string,string, bool>)((str,option) =>
+                {
+                    if (String.IsNullOrEmpty(option)) return false;
+                    return option.Contains(str);
+                })
+            };
+            _isInt = new GlobalMethod
+            {
+                Name = "isInt",
+                Method = serviceProvider => (Func<string, bool>)((str) =>
+                {
+                    return ValidateIs<int>(str);
+                })
+            };
+            _isJSON = new GlobalMethod
+            {
+                Name = "isJSON",
+                Method = serviceProvider => (Func<string, bool>)((str) =>
+                {
+                    if (String.IsNullOrWhiteSpace(str)) return false;
+                    var value = str.Trim();
+                    if ((value.StartsWith("{") && value.EndsWith("}")) || //For object
+                        (value.StartsWith("[") && value.EndsWith("]"))) //For array
+                    {
+                        try
+                        {
+                            var obj = JToken.Parse(value);
+                            return true;
+                        }
+                        catch (JsonReaderException)
+                        {
+                            return false;
+                        }
+                    }
                     return false;
+                })
+            };
+            _isLength = new GlobalMethod
+            {
+                Name = "isLength",
+                Method = serviceProvider => (Func<string,string, bool>)((str,option) =>
+                {
+                    return ValidateLength(str.Length, option);
+                })
+            };
+            _isNumeric = new GlobalMethod
+            {
+                Name = "isNumeric",
+                Method = serviceProvider => (Func<string, bool>)((str) =>
+                {
+                    var exp = @"^[0-9]+$";
+                    return Regex.IsMatch(str, exp);
+                })
+            };
+            _matches = new GlobalMethod
+            {
+                Name = "matches",
+                Method = serviceProvider => (Func<string, string, bool>)((str, regexStr) =>
+                {
+                    regexStr = regexStr.Replace("|-BackslashPlaceholder-|", "\\");
+                    return Regex.IsMatch(str, regexStr);
+                })
+            };
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            return new[]
+            {
+                _contains,_equals,_isAfter,_isBefore,_isBoolean,_isByteLength,
+                _isDate,_isDecimal,_isDivisibleBy,_isEmpty,_isFloat,
+                _isIn,_isInt,_isJSON,_isLength,_isNumeric,_matches
+            };
+        }
+
+        public static bool ValidateLength(int len, string option)
+        {
+            try
+            {
+                var min = 0;
+                var max = 0;
+                var obj = JToken.Parse(option);
+                if (Int32.TryParse(obj["min"]?.ToString(), out min) && Int32.TryParse(obj["max"]?.ToString(), out max))
+                {
+                    if (len >= min && (max == 0 || len <= max)) return true;
                 }
+                return false;
             }
-            catch (Exception) {
+            catch (JsonReaderException)
+            {
+                return false;
+            }
+        }
+
+        public static bool ValidateIs<T>(string value)
+        {
+            if (value == null) return false;
+            var converter = System.ComponentModel.TypeDescriptor.GetConverter(typeof(T));
+            try
+            {
+                var result = (T)converter.ConvertFromString(value.ToString());
+                return result != null;
+            }
+            catch
+            {
                 return false;
             }
         }

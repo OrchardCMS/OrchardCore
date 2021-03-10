@@ -23,7 +23,6 @@
 <script at="Foot">
     var formId = '#'+ '@formId'
     $(formId).on('click', function () {
-        console.log(window.validatorObject)
         $("<input />").attr("type", "hidden")
             .attr("name", "validateRules")  
             .attr("value", JSON.stringify(window.validatorObject))

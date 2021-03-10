@@ -57,13 +57,13 @@ namespace OrchardCore.Forms.Workflows.Activities
             }
 
             var httpContext = _httpContextAccessor.HttpContext;
-            bool validateRule = true;
+            var validateRule = true;
             var rules = new List<dynamic>();
             foreach (var item in httpContext.Request.Form)
             {
                 if (item.Key.Equals("validateRules", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    if (!string.IsNullOrEmpty(item.Value[0]))
+                    if (!String.IsNullOrEmpty(item.Value[0]))
                     {
                         rules = JsonConvert.DeserializeObject<List<dynamic>>(item.Value[0]);
                     }
@@ -78,8 +78,12 @@ namespace OrchardCore.Forms.Workflows.Activities
             {
                 foreach (var item in rules)
                 {
-                    var type = item.type.ToString();
-                    var option = item.option.ToString();
+                    string type = item.type.ToString();
+                    string option = item.option.ToString();
+                    if (option.Contains("\\"))
+                    {
+                        option = option.Replace("\\", "|-BackslashPlaceholder-|");
+                    }
                     var formItemValue = httpContext.Request.Form[item.elementId.ToString()];
                     var engine = _scriptingManager.GetScriptingEngine("js");
                     var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, null, null);

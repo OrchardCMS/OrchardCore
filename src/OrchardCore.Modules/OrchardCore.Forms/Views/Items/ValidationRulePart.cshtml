@@ -3,7 +3,6 @@
 @{
     var type = Model.Value.Type;
     var option = Html.Raw(Model.Value.Option);
-
     var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
     var elementId = formElementPart.Id;
 }
@@ -11,38 +10,28 @@
 <script asp-src="~/OrchardCore.Forms/Scripts/validator.min.js" debug-src="~/OrchardCore.Forms/Scripts/validator.js" asp-name="validator" depends-on="jQuery" at="Foot"></script>
 
 <script at="Foot">
-    if (type != "none") {
-
-        var type = '@type';
-        var elementId = '#' + '@elementId';
-        var option = '@option';
-        var validateElementId = elementId + type;
-
+    function validateElementFunction(type, originElementId, option) {
+        var elementId = '#' + originElementId;
+        var timestamp = new Date().getTime();
+        var validateElementId = originElementId + timestamp;
         if (window.validatorObject) {
-            var obj = {};
-            obj.type = type;
-            obj.elementId = '@elementId';
-            obj.option = option;
-            objs.push(obj);
+            var obj = { type: type, elementId: originElementId, option: option};
             window.validatorObject.push(obj);
         } else {
             window.validatorObject = new Array();
-            var obj = {};
-            obj.type = type;
-            obj.elementId = '@elementId';
-            obj.option = option;
+            var obj = { type: type, elementId: originElementId, option: option};
             window.validatorObject.push(obj);
         }
-
-
-        $(elementId).bind("keyup", function (e) {
+        $(elementId).bind("change keyup", function (e) {
             var re = false;
-            if (option == '') {
-               re = window.validator['@type']($(elementId).val());
-            } else {
-               re = window.validator['@type']($(elementId).val(), JSON.parse(option));
+            if (window.validator.isEmpty(option)) {
+                re = window.validator[type]($(elementId).val());
+            } else if (window.validator.isJSON(option)) {
+                re = window.validator[type]($(elementId).val(), JSON.parse(option));
             }
-
+            else {
+                re = window.validator[type]($(elementId).val(), option);
+            }
             var docEle = document.getElementById(validateElementId);
             if (re) {
                 if (docEle) {
@@ -51,14 +40,16 @@
                 }
             } else {
                 if (!docEle) {
-                    var dangerText = "<p id='" + validateElementId + "' class='text-danger'>Validate " + "@type" + " failed.<p>";
+                    var validateStr =  '@T[@type]' + ' @T["validated failed"]';
+                    var dangerText = "<div id='" + validateElementId + "' class='text-danger'>" + validateStr + "</div>";
                     $(elementId).after(dangerText);
                     $(elementId).parent().parent().parent().find(":submit").attr('disabled', 'true');
                 }
-
             }
-
         })
+    }
+    if ('@type' != "none") {
+        validateElementFunction('@type', '@elementId', '@option');
     }
 </script>
 
