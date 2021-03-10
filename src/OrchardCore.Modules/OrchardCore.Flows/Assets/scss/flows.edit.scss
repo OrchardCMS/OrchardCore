@@ -20,15 +20,16 @@
     } 
 }
 
-.btn-widget-add-below, .btn-widget-metadata {
+.btn-widget-add-below, .btn-widget-metadata, .btn-bag-add {
     ::-webkit-scrollbar {
         width: 4px;
+        background-color: #EAEAEA;
     }
 
     ::-webkit-scrollbar-thumb {
         background-color: #495057;
     }
-    
+
     .dropdown-menu {
         max-height: 200px;
         overflow: hidden auto;
