@@ -98,14 +98,6 @@ namespace OrchardCore.Users.Controllers
 
             var users = await _usersAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
 
-            // var users = _session.Query<User, UserIndex>();
-
-            //All of this moves.
-
-
-
-            // to here.
-
             var count = await users.CountAsync();
 
             var results = await users
@@ -118,6 +110,7 @@ namespace OrchardCore.Users.Controllers
             routeData.Values.Add("Options.Filter", options.Filter);
             routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.Order", options.Order);
+            routeData.Values.Add("Options.SelectedRole", options.SelectedRole);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 

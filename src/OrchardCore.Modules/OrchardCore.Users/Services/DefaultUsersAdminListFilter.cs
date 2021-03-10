@@ -11,7 +11,6 @@ using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 using YesSql;
-using YesSql.Services;
 
 namespace OrchardCore.Users.Services
 {
@@ -91,16 +90,21 @@ namespace OrchardCore.Users.Services
                 }
                 else
                 {
+
                     /* Sample code for Sqlite to reduce the results, based on no values in the reduce index table(s).
 
-                    not exists 
-                    (
-                        SELECT [RoleName] 
-                        FROM UserByRoleNameIndex 
-                        INNER JOIN [UserByRoleNameIndex_Document] ON [UserByRoleNameIndex].[Id] = [UserByRoleNameIndex_Document].[UserByRoleNameIndexId] 
-                        WHERE [UserByRoleNameIndex_Document].[DocumentId] = [Document].[Id]
-                    )
-
+                    SELECT DISTINCT [Document].*, [UserIndex_a1].[NormalizedUserName] 
+                    FROM [Document] 
+                    INNER JOIN [UserIndex] AS [UserIndex_a1] ON [UserIndex_a1].[DocumentId] = [Document].[Id] 
+                    WHERE [Document].[Type] = 'OrchardCore.Users.Models.User, OrchardCore.Users.Core' 
+                    AND not exists 
+                        (
+                            SELECT [RoleName] 
+                            FROM UserByRoleNameIndex 
+                            INNER JOIN [UserByRoleNameIndex_Document] ON [UserByRoleNameIndex].[Id] = [UserByRoleNameIndex_Document].[UserByRoleNameIndexId] 
+                            WHERE [UserByRoleNameIndex_Document].[DocumentId] = [Document].[Id]
+                        ) 
+                    ORDER BY [UserIndex_a1].[NormalizedUserName] LIMIT 10 OFFSET 0
                     */
 
                     var dialect = _session.Store.Configuration.SqlDialect;
