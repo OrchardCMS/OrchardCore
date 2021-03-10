@@ -30,6 +30,7 @@ Here are some available conditions:
 | `Javascript` | A script condition written in javascript. |
 | `All` | An all condition group contains other conditions which are all required to be true. |
 | `Any` | An any condition group contains other conditions but only requires any condition to be true. |
+| `Boolean` | A boolean condition evaluating to `true` or `false`. |
 
 Ex: The `Always` layer has a `Boolean Condition` set to `true`, so widgets on this layer will always be shown.
 
