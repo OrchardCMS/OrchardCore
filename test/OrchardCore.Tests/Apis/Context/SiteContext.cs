@@ -1,8 +1,15 @@
 using System;
 using System.Net.Http;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -20,11 +27,13 @@ namespace OrchardCore.Tests.Apis.Context
         public HttpClient Client { get; private set; }
         public string TenantName { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
+        public static IShellHost ShellHost { get; private set; }
 
         static SiteContext()
         {
             Site = new OrchardTestFixture<SiteStartup>();
             DefaultTenantClient = Site.CreateDefaultClient();
+            ShellHost = Site.Services.GetRequiredService<IShellHost>();
         }
 
         public virtual async Task InitializeAsync()
@@ -103,6 +112,49 @@ namespace OrchardCore.Tests.Apis.Context
         public Task DeleteContentItem(string contentItemId)
         {
             return Client.DeleteAsync("api/content/" + contentItemId);
+        }
+
+        internal static DefaultHttpContext MockHttpContext(string[] userRoles, string username = "Mock User")
+        {
+            DefaultHttpContext httpContext = new DefaultHttpContext();
+
+            GenericIdentity identity = new GenericIdentity(username.Replace('@', '+'), "");
+
+            Mock<ClaimsPrincipal> mockPrincipal = new Mock<ClaimsPrincipal>();
+            mockPrincipal.Setup(x => x.Identity).Returns(identity);
+
+            if (userRoles?.Length > 0)
+            {
+                foreach (string role in userRoles)
+                {
+                    mockPrincipal.Setup(p => p.IsInRole(role)).Returns(true);
+                }
+            }
+
+            httpContext.User = mockPrincipal.Object;
+
+            return httpContext;
+        }
+
+        /// <summary>
+        /// Executes the test.
+        /// </summary>
+        /// <param name="task">The task.</param>
+        internal static async Task ExecuteTest<T>(Func<ShellScope, Task> task) where T : SiteContext, new()
+        {
+            using (T context = new T())
+            {
+                await context.InitializeAsync();
+
+                // Test
+                if (ShellHost.TryGetSettings(context.TenantName, out ShellSettings shellSettings))
+                {
+                    using (ShellScope shellScope = await ShellHost.GetScopeAsync(shellSettings))
+                    {
+                        await shellScope.UsingAsync(task);
+                    }
+                }
+            }
         }
 
         public void Dispose()
