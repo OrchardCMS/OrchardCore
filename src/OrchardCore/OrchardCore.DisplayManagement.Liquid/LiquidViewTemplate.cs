@@ -244,13 +244,16 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 var localClock = context.Services.GetRequiredService<ILocalClock>();
 
+                // Configure Fluid with the time zone to represent local date and times
                 var localTimeZone = await localClock.GetLocalTimeZoneAsync();
 
-                var systemTimeZoneId = TZConvert.IanaToWindows(localTimeZone.TimeZoneId);
+                if (TZConvert.TryGetTimeZoneInfo(localTimeZone.TimeZoneId, out var timeZoneInfo))
+                {
+                    context.TimeZone = timeZoneInfo;
+                }
 
+                // Configure Fluid with the local date and time 
                 var now = await localClock.LocalNowAsync;
-
-                context.TimeZone = TZConvert.GetTimeZoneInfo(systemTimeZoneId);
 
                 context.Now = () => now;
 
