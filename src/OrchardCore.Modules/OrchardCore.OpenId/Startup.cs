@@ -318,8 +318,8 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>()
             });
 
-            // Add validation that the tokens store supports collections.
-            services.AddCollectionSupport<OpenIdToken>();
+            // Configure support for an OpenId collection.
+            services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
