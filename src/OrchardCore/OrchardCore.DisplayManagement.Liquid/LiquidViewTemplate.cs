@@ -384,8 +384,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         internal static void AddAsyncFilters(this LiquidTemplateContext context, LiquidOptions options)
         {
-            context.Filters.EnsureCapacity(options.FilterRegistrations.Count);
-
             foreach (var registration in options.FilterRegistrations)
             {
                 context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>

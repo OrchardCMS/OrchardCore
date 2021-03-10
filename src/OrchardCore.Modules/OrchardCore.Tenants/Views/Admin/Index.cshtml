@@ -16,17 +16,9 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
 
-        var requestHost = Context.Request.Host;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
-        var port = requestHost.Port;
-
-        if (port.HasValue)
-        {
-            host += ":" + port;
-        }
-
-        var hostString = new HostString(host);
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
 
@@ -35,11 +27,10 @@
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        QueryString queryString;
-
-        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+        var queryString = String.Empty;
+        if (!String.IsNullOrEmpty(shellSettingsEntry.Token))
         {
-            queryString = QueryString.Create("token", shellSettingsEntry.Token);
+            queryString = QueryString.Create("token", shellSettingsEntry.Token).ToString();
         }
 
         return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
@@ -49,15 +40,9 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
 
-        var requestHost = Context.Request.Host;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
-        var port = requestHost.Port;
-
-        if (port.HasValue)
-        {
-            host += ":" + port;
-        }
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
 
@@ -66,7 +51,7 @@
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        return $"{Context.Request.Scheme}://{host + pathString.Value}";
+        return $"{Context.Request.Scheme}://{hostString.Value + pathString.Value}";
     }
 }
 
@@ -75,8 +60,8 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
 
 <form asp-action="Index" method="post">
-    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
-    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
+    <input type="submit" name="submit.BulkAction" class="sr-only" />
     <input name="BulkAction" type="hidden" />
 
     <div class="card mb-3 position-sticky action-bar">

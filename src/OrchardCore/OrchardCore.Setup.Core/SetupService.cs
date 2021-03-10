@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -31,6 +33,7 @@ namespace OrchardCore.Setup.Services
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
         private readonly IHostApplicationLifetime _applicationLifetime;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
@@ -45,6 +48,7 @@ namespace OrchardCore.Setup.Services
         /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
         /// <param name="applicationLifetime">The <see cref="IHostApplicationLifetime"/>.</param>
+        /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
         public SetupService(
             IShellHost shellHost,
             IHostEnvironment hostingEnvironment,
@@ -53,8 +57,8 @@ namespace OrchardCore.Setup.Services
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
             IStringLocalizer<SetupService> stringLocalizer,
-            IHostApplicationLifetime applicationLifetime
-            )
+            IHostApplicationLifetime applicationLifetime,
+            IHttpContextAccessor httpContextAccessor)
         {
             _shellHost = shellHost;
             _applicationName = hostingEnvironment.ApplicationName;
@@ -64,6 +68,7 @@ namespace OrchardCore.Setup.Services
             _logger = logger;
             S = stringLocalizer;
             _applicationLifetime = applicationLifetime;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <inheridoc />
@@ -125,20 +130,36 @@ namespace OrchardCore.Setup.Services
 
             // Due to database collation we normalize the userId to lower invariant.
             // During setup there are no users so we do not need to check unicity.
-            context.AdminUserId = _setupUserIdGenerator.GenerateUniqueId().ToLowerInvariant();
+            context.Properties[SetupConstants.AdminUserId] = _setupUserIdGenerator.GenerateUniqueId().ToLowerInvariant();
+
+            var recipeEnvironmentFeature = new RecipeEnvironmentFeature();
+            if (context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId))
+            {
+                recipeEnvironmentFeature.Properties[SetupConstants.AdminUserId] = adminUserId;
+            }
+            if (context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
+            {
+                recipeEnvironmentFeature.Properties[SetupConstants.AdminUsername] = adminUsername;
+            }
+            if (context.Properties.TryGetValue(SetupConstants.SiteName, out var siteName))
+            {
+                recipeEnvironmentFeature.Properties[SetupConstants.SiteName] = siteName;
+            }
+
+            _httpContextAccessor.HttpContext.Features.Set(recipeEnvironmentFeature);
 
             var shellSettings = new ShellSettings(context.ShellSettings);
 
             if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
             {
-                shellSettings["DatabaseProvider"] = context.DatabaseProvider;
-                shellSettings["ConnectionString"] = context.DatabaseConnectionString;
-                shellSettings["TablePrefix"] = context.DatabaseTablePrefix;
+                shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
+                shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
+                shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
             }
 
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
-                throw new ArgumentException($"{nameof(context.DatabaseProvider)} is required");
+                throw new ArgumentException("DatabaseProvider is required");
             }
 
             // Creating a standalone environment based on a "minimum shell descriptor".
@@ -193,18 +214,7 @@ namespace OrchardCore.Setup.Services
 
                 var recipeExecutor = shellContext.ServiceProvider.GetRequiredService<IRecipeExecutor>();
 
-                await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new
-                {
-                    context.SiteName,
-                    context.AdminUsername,
-                    context.AdminUserId,
-                    context.AdminEmail,
-                    context.AdminPassword,
-                    context.DatabaseProvider,
-                    context.DatabaseConnectionString,
-                    context.DatabaseTablePrefix
-                },
-                _applicationLifetime.ApplicationStopping);
+                await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
             }
 
             // Reloading the shell context as the recipe has probably updated its features
@@ -220,15 +230,7 @@ namespace OrchardCore.Setup.Services
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
                 await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
-                    context.SiteName,
-                    context.AdminUsername,
-                    context.AdminUserId,
-                    context.AdminEmail,
-                    context.AdminPassword,
-                    context.DatabaseProvider,
-                    context.DatabaseConnectionString,
-                    context.DatabaseTablePrefix,
-                    context.SiteTimeZone,
+                    context.Properties,
                     reportError
                 ), context, logger);
             });

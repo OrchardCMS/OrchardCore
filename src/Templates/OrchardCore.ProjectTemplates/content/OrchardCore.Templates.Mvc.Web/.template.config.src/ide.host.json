@@ -3,6 +3,10 @@
   "icon": "icon.png",
   "symbolInfo": [
     {
+      "id": "Framework",
+      "isVisible": "true"
+    },
+    {
       "id": "OrchardVersion",
       "name": {
         "text": "Orchard Version"

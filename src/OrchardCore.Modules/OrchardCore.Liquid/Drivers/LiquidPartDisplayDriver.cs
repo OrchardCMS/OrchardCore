@@ -26,7 +26,9 @@ namespace OrchardCore.Liquid.Drivers
                 Initialize<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
                     .Location("Detail", "Content:10"),
                 Initialize<LiquidPartViewModel>("LiquidPart_Summary", m => BuildViewModel(m, liquidPart))
-                    .Location("Summary", "Content:10")
+                    .Location("Summary", "Content:10"),
+                Initialize<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
+                    .Location("DetailAdmin", "Content:10") // For dashboard widgets
             );
         }
 

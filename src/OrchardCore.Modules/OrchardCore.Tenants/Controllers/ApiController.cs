@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
@@ -260,17 +261,20 @@ namespace OrchardCore.Tenants.Controllers
             var setupContext = new SetupContext
             {
                 ShellSettings = shellSettings,
-                SiteName = model.SiteName,
                 EnabledFeatures = null, // default list,
-                AdminUsername = model.UserName,
-                AdminEmail = model.Email,
-                AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipeDescriptor,
-                SiteTimeZone = model.SiteTimeZone,
-                DatabaseProvider = selectedProvider.Value,
-                DatabaseConnectionString = connectionString,
-                DatabaseTablePrefix = tablePrefix
+                Properties = new Dictionary<string, object>
+                {
+                    { SetupConstants.SiteName, model.SiteName },
+                    { SetupConstants.AdminUsername, model.UserName },
+                    { SetupConstants.AdminEmail, model.Email },
+                    { SetupConstants.AdminPassword, model.Password },
+                    { SetupConstants.SiteTimeZone, model.SiteTimeZone },
+                    { SetupConstants.DatabaseProvider, selectedProvider.Value },
+                    { SetupConstants.DatabaseConnectionString, connectionString },
+                    { SetupConstants.DatabaseTablePrefix, tablePrefix },
+                }
             };
 
             var executionId = await _setupService.SetupAsync(setupContext);
@@ -315,8 +319,7 @@ namespace OrchardCore.Tenants.Controllers
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
 
-            QueryString queryString;
-
+            QueryString queryString = QueryString.Empty;
             if (!String.IsNullOrEmpty(token))
             {
                 queryString = QueryString.Create("token", token);

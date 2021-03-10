@@ -37,9 +37,7 @@ namespace OrchardCore.Media.Services
                         return;
                     }
 
-                    var contents = await _fileStore.GetDirectoryContentAsync(tempDir);
-
-                    foreach (var c in contents)
+                    await foreach(var c in _fileStore.GetDirectoryContentAsync(tempDir))
                     {
                         var result = c.IsDirectory ?
                             await _fileStore.TryDeleteDirectoryAsync(c.Path)
