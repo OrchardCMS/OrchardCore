@@ -59,7 +59,7 @@ namespace OrchardCore.Users.Indexes
 
         private string NormalizeKey(string key)
         {
-            return _keyNormalizer == null ? key : _keyNormalizer.NormalizeName(key);
+            return _keyNormalizer.NormalizeName(key);
         }
     }
 }

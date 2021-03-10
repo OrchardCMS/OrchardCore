@@ -8,8 +8,5 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Users"])</h1></zone>
 
 <form asp-action="Index" method="post">
-
     @await DisplayAsync(Model)
 </form>
-
-@await DisplayAsync(Model.Pager)

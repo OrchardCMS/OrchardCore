@@ -105,12 +105,10 @@ namespace OrchardCore.Users.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            // Maintain previous route data when generating page links
-            var routeData = new RouteData();
-            routeData.Values.Add("Options.Filter", options.Filter);
-            routeData.Values.Add("Options.Search", options.Search);
-            routeData.Values.Add("Options.Order", options.Order);
-            routeData.Values.Add("Options.SelectedRole", options.SelectedRole);
+            // Populate route values to maintain previous route data when generating page links
+            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+
+            var routeData = new RouteData(options.RouteValues);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
@@ -158,7 +156,7 @@ namespace OrchardCore.Users.Controllers
             options.UserRoleFilters = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["All roles"], Value = String.Empty },
-                new SelectListItem() { Text = S["No roles"], Value = "Authenticated" },
+                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated" }
             };
 
             // TODO Candidate for dynamic localization.

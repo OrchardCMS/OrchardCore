@@ -16,18 +16,15 @@ namespace OrchardCore.Users.Services
 {
     public class DefaultUsersAdminListFilter : IUsersAdminListFilter
     {
-        private readonly YesSql.ISession _session;
         private readonly UserManager<IUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public DefaultUsersAdminListFilter(
-            YesSql.ISession session,
             UserManager<IUser> userManager,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {
-            _session = session;
             _userManager = userManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
@@ -84,48 +81,9 @@ namespace OrchardCore.Users.Services
 
             if (!String.IsNullOrEmpty(options.SelectedRole))
             {
-                if (!String.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase))
-                {
-                    query.With<UserByRoleNameIndex>(x => x.RoleName == options.SelectedRole);
-                }
-                else
-                {
+                var normalizedRoleName = _userManager.NormalizeName(options.SelectedRole);
 
-                    /* Sample code for Sqlite to reduce the results, based on no values in the reduce index table(s).
-
-                    SELECT DISTINCT [Document].*, [UserIndex_a1].[NormalizedUserName] 
-                    FROM [Document] 
-                    INNER JOIN [UserIndex] AS [UserIndex_a1] ON [UserIndex_a1].[DocumentId] = [Document].[Id] 
-                    WHERE [Document].[Type] = 'OrchardCore.Users.Models.User, OrchardCore.Users.Core' 
-                    AND not exists 
-                        (
-                            SELECT [RoleName] 
-                            FROM UserByRoleNameIndex 
-                            INNER JOIN [UserByRoleNameIndex_Document] ON [UserByRoleNameIndex].[Id] = [UserByRoleNameIndex_Document].[UserByRoleNameIndexId] 
-                            WHERE [UserByRoleNameIndex_Document].[DocumentId] = [Document].[Id]
-                        ) 
-                    ORDER BY [UserIndex_a1].[NormalizedUserName] LIMIT 10 OFFSET 0
-                    */
-
-                    var dialect = _session.Store.Configuration.SqlDialect;
-                    var indexType = typeof(UserByRoleNameIndex);
-                    var indexTable = _session.Store.Configuration.TableNameConvention.GetIndexTable(indexType);
-                    var documentTable = _session.Store.Configuration.TableNameConvention.GetDocumentTable();
-                    var bridgeTableName = indexTable + "_" + documentTable;
-                    var bridgeTableIndexColumnName = indexType.Name + "Id";
-
-                    var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
-
-                    sqlBuilder.Select();
-                    sqlBuilder.AddSelector(dialect.QuoteForColumnName("RoleName"));
-                    sqlBuilder.From(indexTable);
-                    sqlBuilder.InnerJoin(bridgeTableName, indexTable, "Id", bridgeTableName, bridgeTableIndexColumnName);
-                    sqlBuilder.WhereAnd($"{dialect.QuoteForTableName(bridgeTableName)}.{dialect.QuoteForColumnName("DocumentId")} = {dialect.QuoteForTableName(documentTable)}.{dialect.QuoteForColumnName("Id")}");
-
-                    var sqlCmd = sqlBuilder.ToSqlString();
-
-                    query.With<UserIndex>().Where($"not exists ({sqlCmd})");
-                }
+                query.With<UserByRoleNameIndex>(x => x.RoleName == normalizedRoleName);
             }
 
             return Task.CompletedTask;
