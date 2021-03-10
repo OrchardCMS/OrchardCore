@@ -20,7 +20,7 @@ using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
-using OrchardCore.Scripting;
+using OrchardCore.Rules;
 
 namespace OrchardCore.Layers.Services
 {
@@ -31,7 +31,7 @@ namespace OrchardCore.Layers.Services
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IUpdateModelAccessor _modelUpdaterAccessor;
-        private readonly IScriptingManager _scriptingManager;
+        private readonly IRuleService _ruleService;
         private readonly IMemoryCache _memoryCache;
         private readonly IThemeManager _themeManager;
         private readonly IAdminThemeService _adminThemeService;
@@ -43,7 +43,7 @@ namespace OrchardCore.Layers.Services
             ILayoutAccessor layoutAccessor,
             IContentItemDisplayManager contentItemDisplayManager,
             IUpdateModelAccessor modelUpdaterAccessor,
-            IScriptingManager scriptingManager,
+            IRuleService ruleService,
             IMemoryCache memoryCache,
             IThemeManager themeManager,
             IAdminThemeService adminThemeService,
@@ -53,7 +53,7 @@ namespace OrchardCore.Layers.Services
             _layoutAccessor = layoutAccessor;
             _contentItemDisplayManager = contentItemDisplayManager;
             _modelUpdaterAccessor = modelUpdaterAccessor;
-            _scriptingManager = scriptingManager;
+            _ruleService = ruleService;
             _memoryCache = memoryCache;
             _themeManager = themeManager;
             _adminThemeService = adminThemeService;
@@ -96,14 +96,11 @@ namespace OrchardCore.Layers.Services
                 dynamic layout = await _layoutAccessor.GetLayoutAsync();
                 var updater = _modelUpdaterAccessor.ModelUpdater;
 
-                var engine = _scriptingManager.GetScriptingEngine("js");
-                var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, null, null);
-
                 var layersCache = new Dictionary<string, bool>();
 
                 foreach (var widget in widgets)
                 {
-                    var layer = layers[widget.Layer];
+                    var layer = widget.Layer != null && layers.TryGetValue(widget.Layer, out var widgetLayer) ? widgetLayer : null;
 
                     if (layer == null)
                     {
@@ -113,14 +110,7 @@ namespace OrchardCore.Layers.Services
                     bool display;
                     if (!layersCache.TryGetValue(layer.Name, out display))
                     {
-                        if (String.IsNullOrEmpty(layer.Rule))
-                        {
-                            display = false;
-                        }
-                        else
-                        {
-                            display = Convert.ToBoolean(engine.Evaluate(scope, layer.Rule));
-                        }
+                        display = await _ruleService.EvaluateAsync(layer.LayerRule);
 
                         layersCache[layer.Name] = display;
                     }

@@ -23,8 +23,8 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
-
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
     <!--This is used to generate symbol package for Source Link-->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -39,8 +39,10 @@
     <Authors>Orchard Core Community and Contributors</Authors>
     <Owners>Orchard Core Community and Contributors</Owners>
   </PropertyGroup>
+
   <ItemGroup>
       <!--This is used for Source Link -->
        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
   </ItemGroup>
+
 </Project>

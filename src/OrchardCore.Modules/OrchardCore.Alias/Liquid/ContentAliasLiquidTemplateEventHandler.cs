@@ -25,15 +25,18 @@ namespace OrchardCore.Alias.Liquid
             {
                 return new LiquidPropertyAccessor(async alias =>
                 {
-                    var aliasPartIndex = await _session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
-                    var contentItemId = aliasPartIndex?.ContentItemId;
+                    var contentItem = await _session.Query<ContentItem, AliasPartIndex>(x =>
+                        x.Published && x.Alias == alias.ToLowerInvariant())
+                        .FirstOrDefaultAsync();
 
-                    if (contentItemId == null)
+                    if (contentItem == null)
                     {
                         return NilValue.Instance;
                     }
 
-                    return FluidValue.Create(await _contentManager.GetAsync(contentItemId));
+                    contentItem = await _contentManager.LoadAsync(contentItem);
+
+                    return FluidValue.Create(contentItem);
                 });
             });
 

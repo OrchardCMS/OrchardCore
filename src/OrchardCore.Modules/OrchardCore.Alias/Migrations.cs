@@ -42,7 +42,7 @@ namespace OrchardCore.Alias
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 3;
+            return 4;
         }
 
         // This code can be removed in a later version as Latest and Published are alterations.
@@ -64,13 +64,35 @@ namespace OrchardCore.Alias
         {
             // Can't be fully created on existing databases where the 'Alias' may be of 767 chars.
             SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
-                //.CreateIndex("IDX_AliasPartIndex_DocumentId", "DocumentId", "Alias", "ContentItemId", "Latest", "Published")
+                //.CreateIndex("IDX_AliasPartIndex_DocumentId",
+                //    "DocumentId",
+                //    "Alias",
+                //    "ContentItemId",
+                //    "Latest",
+                //    "Published")
+
                 .CreateIndex("IDX_AliasPartIndex_DocumentId",
                     "DocumentId",
                     "Alias")
             );
 
             return 3;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom3()
+        {
+            // In the previous migration step, an index was not fully created,
+            // but here, we can create a separate one for the missing columns.
+            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
+                .CreateIndex("IDX_AliasPartIndex_DocumentId_ContentItemId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "Published",
+                    "Latest")
+            );
+
+            return 4;
         }
     }
 }

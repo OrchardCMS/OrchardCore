@@ -22,7 +22,6 @@ namespace OrchardCore.Themes.TheBlogTheme
                 .SetCdnIntegrity("sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj", "sha384-x6NENSfxadikq2gB4e6/qompriNc+y1J3eqWg3hAAMNBs4dFU303XMTcU3uExJgZ")
                 .SetVersion("3.5.1");
 
-
             manifest
                 .DefineScript("TheBlogTheme-vendor-bootstrap")
                 .SetDependencies("TheBlogTheme-vendor-jQuery")
