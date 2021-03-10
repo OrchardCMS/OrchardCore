@@ -17,9 +17,16 @@ namespace OrchardCore.Tests.Apis.Context
     {
         public const string RemoteDeploymentClientName = "testserver";
         public const string RemoteDeploymentApiKey = "testkey";
+        public static IShellHost ShellHost { get; private set; }
+
         public string BlogPostContentItemId { get; private set; }
         public ContentItem OriginalBlogPost { get; private set; }
         public string OriginalBlogPostVersionId { get; private set; }
+
+        static BlogPostDeploymentContext()
+        {
+            ShellHost = Site.Services.GetRequiredService<IShellHost>();
+        }
 
         public override async Task InitializeAsync()
         {

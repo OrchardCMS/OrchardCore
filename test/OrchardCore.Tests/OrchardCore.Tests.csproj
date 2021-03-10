@@ -31,7 +31,7 @@
     <None Remove="Localization\PoFiles\MultipleEntries.po" />
     <None Remove="Localization\PoFiles\PoeditHeader.po" />
     <None Remove="Localization\PoFiles\SimpleEntry.po" />
-    <None Remove="Lucene\Recipes\luceneQueryTest.json" />
+    <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
     <None Remove="Recipes\RecipeFiles\recipe1.json" />
     <None Remove="Recipes\RecipeFiles\recipe2.json" />
     <None Remove="Recipes\RecipeFiles\recipe3.json" />
@@ -56,7 +56,7 @@
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />
-    <EmbeddedResource Include="Lucene\Recipes\luceneQueryTest.json" />
+    <EmbeddedResource Include="Apis\Lucene\Recipes\luceneQueryTest.json" />
   </ItemGroup>
 
   <ItemGroup>

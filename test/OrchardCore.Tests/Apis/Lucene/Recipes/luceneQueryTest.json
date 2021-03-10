@@ -3,7 +3,7 @@
   "displayName": "Lucene Query Test 1",
   "description": "",
   "website": "",
-  "issetuprecipe": false,
+  "issetuprecipe": true,
   "categories": [ "test" ],
   "tags": [],
   "variables": {
@@ -15,6 +15,10 @@
       "name": "feature",
       "disable": [],
       "enable": [
+        "OrchardCore.Admin",
+        "OrchardCore.Recipes",
+        "OrchardCore.Roles",
+        "OrchardCore.Users",
         "OrchardCore.Indexing",
 
         // Content Management
@@ -26,8 +30,7 @@
         "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.Html",
         "OrchardCore.Lucene",
-        "OrchardCore.Lucene.ContentPicker",
-        "OrchardCore.Title"
+        "OrchardCore.Lucene.ContentPicker"
       ]
     },
     {
@@ -43,20 +46,6 @@
             }
           },
           "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                },
-                "ContentIndexSettings": {
-                  "Included": true,
-                  "Stored": true,
-                  "Analyzed": true
-                }
-              }
-            },
             {
               "PartName": "HtmlBodyPart",
               "Name": "HtmlBodyPart",
@@ -105,13 +94,10 @@
         {
           "ContentItemId": "[js:uuid()]",
           "ContentType": "Article",
-          "DisplayText": "Article",
+          "DisplayText": "Orchard",
           "Latest": true,
           "Published": true,
           "Article": {},
-          "TitlePart": {
-            "Title": "Orchard"
-          },
           "HtmlBodyPart": {
             "Html": "It’s important to note the differences between the framework and the CMS."
           }
@@ -119,13 +105,10 @@
         {
           "ContentItemId": "[js:uuid()]",
           "ContentType": "Article",
-          "DisplayText": "Article",
+          "DisplayText": "Orchard Core",
           "Latest": true,
           "Published": true,
           "Article": {},
-          "TitlePart": {
-            "Title": "Orchard Core"
-          },
           "HtmlBodyPart": {
             "Html": "This is a redevelopment on ASP.NET Core."
           }
@@ -133,13 +116,10 @@
         {
           "ContentItemId": "[js:uuid()]",
           "ContentType": "Article",
-          "DisplayText": "Article",
+          "DisplayText": "CMS",
           "Latest": true,
           "Published": true,
           "Article": {},
-          "TitlePart": {
-            "Title": "CMS"
-          },
           "HtmlBodyPart": {
             "Html": "A Web Content Management System (CMS) built on top of the Orchard Core Framework."
           }
@@ -147,13 +127,10 @@
         {
           "ContentItemId": "[js:uuid()]",
           "ContentType": "Article",
-          "DisplayText": "Article",
+          "DisplayText": "Core Framework",
           "Latest": true,
           "Published": true,
           "Article": {},
-          "TitlePart": {
-            "Title": "Core Framework"
-          },
           "HtmlBodyPart": {
             "Html": "Orchard is an application framework for building modular, multi-tenant applications on ASP.NET Core."
           }
