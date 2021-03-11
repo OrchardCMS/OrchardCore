@@ -83,7 +83,7 @@ We follow a similar process from step #1, so at this point I will make the assum
 What we are going to cover here is;
 
 1. Implement an Input type.
-2. register it in Startup class
+2. Register it in Startup class.
 3. Implement a Filter.
 
 So, lets start. The Input type is similar to the Query type, here we want to tell the GraphQL schema that we accept this input.
