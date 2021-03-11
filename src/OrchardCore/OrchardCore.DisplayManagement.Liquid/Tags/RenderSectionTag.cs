@@ -1,43 +1,50 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
-using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.Liquid.Ast;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class RenderSectionTag : ArgumentsTag
+    public class RenderSectionTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
+            var services = ((LiquidTemplateContext)context).Services;
+
+            var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync();
+            var displayHelper = services.GetRequiredService<IDisplayHelper>();
+
+            var arguments = new NamedExpressionList(argumentsList);
+
+            var nameExpression = arguments["name", 0] ?? throw new ArgumentException("render_section tag requires a name argument");
+            var name = (await nameExpression.EvaluateAsync(context)).ToStringValue();
+
+            var requiredExpression = arguments["required", 1];
+            var required = requiredExpression != null && (await requiredExpression.EvaluateAsync(context)).ToBooleanValue();
+
+            var zone = layout.Zones[name];
+
+            if (zone is ZoneOnDemand)
             {
-                throw new ArgumentException("ThemeLayout missing while invoking 'render_section'");
-            }
+                if (required)
+                {
+                    throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
+                }
 
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
-            {
-                throw new ArgumentException("DisplayHelper missing while invoking 'render_section'");
-            }
-
-            var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-
-            var name = arguments["name"].Or(arguments.At(0)).ToStringValue();
-            var required = arguments.HasNamed("required") && Convert.ToBoolean(arguments["required"].ToStringValue());
-            var zone = layout[name];
-
-            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
-            {
-                throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
+                return Completion.Normal;
             }
 
             IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(zone);
             htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
+
             return Completion.Normal;
         }
     }

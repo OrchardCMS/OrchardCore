@@ -1,8 +1,11 @@
 using System;
+using System.Security.Claims;
 using System.Web;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -204,6 +207,12 @@ namespace OrchardCore.Users
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
 
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
+
+            services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
+            services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
+
+            services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
+            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();            
         }
     }
 
@@ -212,13 +221,44 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
-            services.AddLiquidFilter<HasPermissionFilter>("has_permission");
-            services.AddLiquidFilter<HasClaimFilter>("has_claim");
-            services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
-            services.AddLiquidFilter<UserEmailFilter>("user_email");
-            services.AddLiquidFilter<UserIdFilter>("user_id");
-            services.AddLiquidFilter<UsersByIdFilter>("users_by_id");
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
+                o.Filters.AddFilter("user_id", UserFilters.UserId);
+
+                o.MemberAccessStrategy.Register<ClaimsPrincipal>();
+                o.MemberAccessStrategy.Register<ClaimsIdentity>();
+
+                o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
+
+                o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, context) =>
+                {
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
+
+                    var httpContextAccessor = liquidTemplateContext.Services.GetRequiredService<IHttpContextAccessor>();
+                    var user = httpContextAccessor.HttpContext.User;
+
+                    //    FluidValue result = name switch
+                    //    {
+                    //    nameof(User.UserId) => user.UserId,
+                    //    nameof(User.UserName),
+                    //    nameof(User.NormalizedUserName),
+                    //    nameof(User.Email),
+                    //    nameof(User.NormalizedEmail),
+                    //    nameof(User.EmailConfirmed),
+                    //    nameof(User.IsEnabled),
+                    //    nameof(User.RoleNames),
+                    //    nameof(User.Properties)
+                    //_ => NilValue.Instance
+                    //    };
+
+                    return NilValue.Instance;
+                });
+            })
+           .AddLiquidFilter<UsersByIdFilter>("users_by_id")
+           .AddLiquidFilter<HasPermissionFilter>("has_permission")
+           .AddLiquidFilter<IsInRoleFilter>("is_in_role")
+           .AddLiquidFilter<UserEmailFilter>("user_email");
         }
     }
 
@@ -243,11 +283,6 @@ namespace OrchardCore.Users
         private const string ChangeEmailPath = "ChangeEmail";
         private const string ChangeEmailConfirmationPath = "ChangeEmailConfirmation";
 
-        static ChangeEmailStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ChangeEmailViewModel>();
-        }
-
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
@@ -267,6 +302,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
+            });
+
             services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
         }
@@ -293,11 +333,6 @@ namespace OrchardCore.Users
     {
         private const string RegisterPath = "Register";
 
-        static RegistrationStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ConfirmEmailViewModel>();
-        }
-
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
@@ -310,6 +345,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
+            });
+
             services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         }
@@ -338,11 +378,6 @@ namespace OrchardCore.Users
         private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
-
-        static ResetPasswordStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<LostPasswordViewModel>();
-        }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -374,6 +409,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<LostPasswordViewModel>();
+            });
+
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
         }
