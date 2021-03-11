@@ -287,6 +287,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             return 6;
         }
 
+        // This code can be removed in a later version.
         public async Task<int> UpdateFrom6Async()
         {
             // Create all index tables with the new collection value.
@@ -358,7 +359,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdAuthorizationCollection
             );
 
-            // Retrieve all existing tokens from original Document table.
+            // Retrieve all existing tokens and authorizations from original Document table.
             var tokens = await _session.Query<OpenIdToken, OpenIdTokenIndex>().ListAsync();
             var authorizations = await _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>().ListAsync();
 
@@ -384,7 +385,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 _session.Delete(authorization);
             }
 
-            // This can be saefly dropped here as the index provider now only writes to the new collection table.
+            // This can be safely dropped here as the index provider now only writes to the new collection table.
             SchemaBuilder.DropMapIndexTable<OpenIdTokenIndex>();
             SchemaBuilder.DropMapIndexTable<OpenIdAuthorizationIndex>();
 
