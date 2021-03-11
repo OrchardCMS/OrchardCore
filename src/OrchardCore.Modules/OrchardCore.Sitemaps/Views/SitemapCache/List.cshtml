@@ -54,25 +54,30 @@
         // On each keypress filter the list of cache entries
         searchBox.keyup(function (e) {
             var search = $(this).val().toLowerCase();
+            var elementsToFilter = $("[data-cacheentry]");
+
             // On ESC, clear the search box and display all cache entries
             if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
-                $('#cache-entries > li').toggle(true);
-                var visible = $('#cache-entries > li:visible');
-                if (visible.length == 0) {
-                    $('#search-alert').removeClass("d-none");
-                    $('#none-alert').addClass("d-none");
-                }
-                else {
-                    $('#search-alert').addClass("d-none");
-                }
+                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             }
             else {
                 $('#cache-entries > li').each(function () {
                     var cacheEntry = $(this).data('cacheentry').toLowerCase();
                     var found = cacheEntry.indexOf(search) > -1;
-                    $(this).toggle(found);
+
+                    if (found)
+                    {
+                        $(this).removeClass("d-none first-child-visible last-child-visible");
+                    }
+                    else
+                    {
+                        $(this).addClass("d-none");
+                    }
                 });
+
+                elementsToFilter.filter(":not(.d-none)").first().addClass("first-child-visible");
+                elementsToFilter.filter(":not(.d-none)").last().addClass("last-child-visible");
 
                 // We display an alert if a search is not found
                 var visible = $('#cache-entries > li:visible');

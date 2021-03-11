@@ -387,6 +387,10 @@ You can access the `TagNames` property directly with the following accessor:
 !!! note
     If the display text property of the term is updated any content items will need to be republished to reflect this change.
 
+## Taxonomies Contents List Filters
+
+Provides taxonomy filters in the admin contents list.
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/DpaN02c2sDI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

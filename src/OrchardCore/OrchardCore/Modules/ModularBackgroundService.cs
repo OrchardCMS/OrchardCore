@@ -368,7 +368,7 @@ namespace OrchardCore.Modules
 
             context.Request.Scheme = "https";
 
-            var urlHost = settings.RequestUrlHost?.Split('/',
+            var urlHost = settings.RequestUrlHost?.Split(new[] { ',', ' ' },
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
             context.Request.Host = new HostString(urlHost ?? "localhost");
