@@ -23,6 +23,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         where TAuthorization : OpenIdAuthorization, new()
     {
         private readonly ISession _session;
+        private const string OpenIdCollection = OpenIdAuthorization.OpenIdCollection;
 
         public OpenIdAuthorizationStore(ISession session)
         {
@@ -34,7 +35,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TAuthorization>().CountAsync();
+            return await _session.Query<TAuthorization>(collection: OpenIdCollection).CountAsync();
         }
 
         /// <inheritdoc/>
@@ -51,7 +52,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization);
+            _session.Save(authorization, collection: OpenIdCollection);
             await _session.CommitAsync();
         }
 
@@ -65,7 +66,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Delete(authorization);
+            _session.Delete(authorization, collection: OpenIdCollection);
             await _session.CommitAsync();
         }
 
@@ -86,7 +87,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == client && index.Subject == subject).ToAsyncEnumerable();
+                index => index.ApplicationId == client && index.Subject == subject,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -111,7 +113,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == client && index.Subject == subject && index.Status == status).ToAsyncEnumerable();
+                index => index.ApplicationId == client && index.Subject == subject && index.Status == status,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -143,7 +146,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
                 index => index.ApplicationId == client && index.Subject == subject &&
-                         index.Status == status && index.Type == type).ToAsyncEnumerable();
+                         index.Status == status && index.Type == type, 
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -172,7 +176,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == identifier).ToAsyncEnumerable();
+                index => index.ApplicationId == identifier,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -186,7 +191,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.AuthorizationId == identifier).FirstOrDefaultAsync();
+                index => index.AuthorizationId == identifier,
+                collection: OpenIdCollection).FirstOrDefaultAsync();
         }
 
         /// <inheritdoc/>
@@ -199,7 +205,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return await _session.GetAsync<TAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
@@ -214,7 +220,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.Subject == subject).ToAsyncEnumerable();
+                index => index.Subject == subject,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -340,7 +347,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TAuthorization> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            var query = _session.Query<TAuthorization>();
+            var query = _session.Query<TAuthorization>(collection: OpenIdCollection);
 
             if (offset.HasValue)
             {
@@ -380,11 +387,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
                                     (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
                                      authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
                                          token => token.AuthorizationId,
-                                         token => token.Id != 0)))).Skip(offset).Take(1_000).ListAsync();
+                                         token => token.Id != 0))),
+                    collection: OpenIdCollection).Skip(offset).Take(1_000).ListAsync();
 
                 foreach (var authorization in authorizations)
                 {
-                    _session.Delete(authorization);
+                    _session.Delete(authorization, collection: OpenIdCollection);
                 }
 
                 try
@@ -531,7 +539,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization, checkConcurrency: true);
+            _session.Save(authorization, checkConcurrency: true, collection: OpenIdCollection);
 
             try
             {
