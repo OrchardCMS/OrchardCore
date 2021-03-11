@@ -22099,6 +22099,9 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   color: #495057;
   text-decoration: none;
 }
+[dir]:root[data-theme=default] .ta-badge {
+  background-color: #e9ecef;
+}
 :root[data-theme=default] .ta-navbar-brand span:last-child {
   font-weight: bold;
   color: #495057;
@@ -45458,6 +45461,9 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 :root[data-theme=darkmode] .ta-navbar-top a {
   color: #dee2e6;
   text-decoration: none;
+}
+[dir]:root[data-theme=darkmode] .ta-badge {
+  background-color: #0c0d0e;
 }
 :root[data-theme=darkmode] .ta-navbar-brand span:last-child {
   font-weight: bold;
