@@ -13,6 +13,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Fields;
+using OrchardCore.Taxonomies.Helper;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;

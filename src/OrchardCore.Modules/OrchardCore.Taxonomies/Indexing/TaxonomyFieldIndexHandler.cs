@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Indexing;
 using OrchardCore.Taxonomies.Fields;
+using OrchardCore.Taxonomies.Helper;
 
 namespace OrchardCore.Taxonomies.Indexing
 {

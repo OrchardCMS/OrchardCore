@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using OrchardCore.Taxonomies.Fields;
+using OrchardCore.Taxonomies.Helper;
 
 namespace OrchardCore.Taxonomies.Liquid
 {

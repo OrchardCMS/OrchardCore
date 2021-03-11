@@ -6,6 +6,7 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.Taxonomies.Fields;
+using OrchardCore.Taxonomies.Helper;
 
 namespace OrchardCore.Taxonomies.GraphQL
 {
