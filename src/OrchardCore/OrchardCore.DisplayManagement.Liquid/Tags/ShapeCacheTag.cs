@@ -1,55 +1,55 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class ShapeCacheTag : ExpressionArgumentsTag
+    public class ShapeCacheTag
     {
         private static readonly char[] Separators = { ',', ' ' };
 
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
+            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
             if (objectValue is IShape shape)
             {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
+                var expressions = new NamedExpressionList(arguments.Item2);
 
                 var metadata = shape.Metadata;
 
-                if (arguments.HasNamed("cache_id"))
+                if (expressions.HasNamed("cache_id"))
                 {
-                    metadata.Cache(arguments["cache_id"].ToStringValue());
+                    metadata.Cache((await expressions["cache_id"].EvaluateAsync(context)).ToStringValue());
                 }
 
-                if (arguments.HasNamed("cache_context"))
+                if (expressions.HasNamed("cache_context"))
                 {
-                    var contexts = arguments["cache_context"].ToStringValue().Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    var contexts = (await expressions["cache_context"].EvaluateAsync(context)).ToStringValue().Split(Separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddContext(contexts);
                 }
 
-                if (arguments.HasNamed("cache_tag"))
+                if (expressions.HasNamed("cache_tag"))
                 {
-                    var tags = arguments["cache_tag"].ToStringValue().Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    var tags = (await expressions["cache_tag"].EvaluateAsync(context)).ToStringValue().Split(Separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);
                 }
 
-                if (arguments.HasNamed("cache_fixed_duration"))
+                if (expressions.HasNamed("cache_fixed_duration"))
                 {
-                    if (TimeSpan.TryParse(arguments["cache_fixed_duration"].ToStringValue(), out var timespan))
+                    if (TimeSpan.TryParse((await expressions["cache_fixed_duration"].EvaluateAsync(context)).ToStringValue(), out var timespan))
                     {
                         metadata.Cache().WithExpiryAfter(timespan);
                     }
                 }
 
-                if (arguments.HasNamed("cache_sliding_duration"))
+                if (expressions.HasNamed("cache_sliding_duration"))
                 {
-                    if (TimeSpan.TryParse(arguments["cache_sliding_duration"].ToStringValue(), out var timespan))
+                    if (TimeSpan.TryParse((await expressions["cache_sliding_duration"].EvaluateAsync(context)).ToStringValue(), out var timespan))
                     {
                         metadata.Cache().WithExpirySliding(timespan);
                     }

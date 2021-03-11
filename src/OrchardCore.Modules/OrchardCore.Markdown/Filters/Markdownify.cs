@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Services;
 
@@ -10,16 +9,16 @@ namespace OrchardCore.Markdown.Filters
 {
     public class Markdownify : ILiquidFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IMarkdownService _markdownService;
+
+        public Markdownify(IMarkdownService markdownService)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'markdownify'");
-            }
+            _markdownService = markdownService;
+        }
 
-            var markdownService = ((IServiceProvider)services).GetRequiredService<IMarkdownService>();
-
-            return new ValueTask<FluidValue>(new StringValue(markdownService.ToHtml(input.ToStringValue())));
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        {
+            return new ValueTask<FluidValue>(new StringValue(_markdownService.ToHtml(input.ToStringValue())));
         }
     }
 }

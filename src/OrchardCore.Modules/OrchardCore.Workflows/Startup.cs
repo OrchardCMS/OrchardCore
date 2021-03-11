@@ -1,4 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +12,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -21,6 +26,7 @@ using OrchardCore.Workflows.Evaluators;
 using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Recipes;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
@@ -39,6 +45,15 @@ namespace OrchardCore.Workflows
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
+                o.MemberAccessStrategy.Register<WorkflowExecutionContext>();
+                o.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Input, name, context)));
+                o.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Output, name, context)));
+                o.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Properties, name, context)));
+            });
+
             services.AddIdGeneration();
             services.AddSingleton<IWorkflowTypeIdGenerator, WorkflowTypeIdGenerator>();
             services.AddSingleton<IWorkflowIdGenerator, WorkflowIdGenerator>();

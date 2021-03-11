@@ -23,8 +23,8 @@ namespace OrchardCore.Benchmark
     [MemoryDiagnoser]
     public class ShapeFactoryBenchmark
     {
-        private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", DateTime.UtcNow).Add("format", "MMMM dd, yyyy");
-        private static readonly FluidValue input = FluidValue.Create("DateTime");
+        private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+        private static readonly FluidValue input = StringValue.Create("DateTime");
         private static readonly TemplateContext _templateContext;
 
         static ShapeFactoryBenchmark()
@@ -45,17 +45,19 @@ namespace OrchardCore.Benchmark
             _templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
         }
 
+        // TODO this benchmark is meaningless as the benchmark noops as the input is not a shape.
         [Benchmark(Baseline = true)]
         public async Task OriginalShapeRender()
         {
             await ShapeRenderOriginal(input, _filterArguments, _templateContext);
         }
 
-        [Benchmark]
-        public async Task NewShapeRender()
-        {
-            await LiquidViewFilters.ShapeRender(input, _filterArguments, _templateContext);
-        }
+
+        // [Benchmark]
+        // public async Task NewShapeRender()
+        // {
+        //     await LiquidViewFilters.ShapeRender(input, _filterArguments, _templateContext);
+        // }
 
         private static async ValueTask<FluidValue> ShapeRenderOriginal(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
