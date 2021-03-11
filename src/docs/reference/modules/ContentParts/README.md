@@ -16,7 +16,7 @@ Orchard Core allows you to add Parts to a content type.
 | [`LocalizationPart`](../../modules/Localize/README.md) | Allows you to create a localization of the current content. |
 | [`ListPart`](../../modules/Lists/README.md) | Allows you to add a list. |
 | [`FlowPart`](../../modules/Flow/README.md) | Allows you to add widgets. |
-| `BagPart` | Allows you to add inner content items. |
+| [`BagPart`](../../modules/Flow/BagPart.md) | Allows you to add inner content items. |
 | `WidgetsListPart` | Allows you to add widgets in the different zones. |
 | [`FormPart`](../../modules/Forms/README.md) | Allows you to add a form. |
 | [`Preview`](../../modules/ContentPreview/README.md) | Allows you to add a preview button. |
