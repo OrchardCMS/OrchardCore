@@ -1,5 +1,7 @@
 # Setup (`OrchardCore.Setup`)
 
+When you begin with an empty site, a start screen allows you to setup the different parameters as the Title, the selected database, or the recipe that will be used to generate the site. This is done by the Setup module.
+
 ## Recipe Parameters
 
 During setup, all recipes have access to the setup screen values using these parameters:
