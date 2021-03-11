@@ -61,7 +61,7 @@ namespace OrchardCore.Forms.Workflows.Activities
             var rules = new List<dynamic>();
             foreach (var item in httpContext.Request.Form)
             {
-                if (item.Key.Equals("validateRules", StringComparison.InvariantCultureIgnoreCase))
+                if (item.Key.Equals("validationRules", StringComparison.InvariantCultureIgnoreCase))
                 {
                     if (!String.IsNullOrEmpty(item.Value[0]))
                     {

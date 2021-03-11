@@ -17,33 +17,36 @@
         if (window.validatorObject) {
             var obj = { type: type, elementId: originElementId, option: option};
             window.validatorObject.push(obj);
-        } else {
+        }
+        else {
             window.validatorObject = new Array();
             var obj = { type: type, elementId: originElementId, option: option};
             window.validatorObject.push(obj);
         }
         $(elementId).bind("change keyup", function (e) {
-            var re = false;
+            var validateResult = false;
             if (window.validator.isEmpty(option)) {
-                re = window.validator[type]($(elementId).val());
-            } else if (window.validator.isJSON(option)) {
-                re = window.validator[type]($(elementId).val(), JSON.parse(option));
+                validateResult = window.validator[type]($(elementId).val());
+            }
+            else if (window.validator.isJSON(option)) {
+                validateResult = window.validator[type]($(elementId).val(), JSON.parse(option));
             }
             else {
-                re = window.validator[type]($(elementId).val(), option);
+                validateResult = window.validator[type]($(elementId).val(), option);
             }
-            var docEle = document.getElementById(validateElementId);
-            if (re) {
-                if (docEle) {
-                    $(elementId).parent().parent().parent().find(":submit").removeAttr('disabled');
-                    docEle.remove();
+            var validationElement = document.getElementById(validateElementId);
+            if (validateResult) {
+                if (validationElement) {
+                    $(elementId).closest("form").find(":submit").removeAttr('disabled');
+                    validationElement.remove();
                 }
-            } else {
-                if (!docEle) {
+            }
+            else {
+                if (!validationElement) {
                     var validateStr =  '@T[@type]' + ' @T["validated failed"]';
                     var dangerText = "<div id='" + validateElementId + "' class='text-danger'>" + validateStr + "</div>";
                     $(elementId).after(dangerText);
-                    $(elementId).parent().parent().parent().find(":submit").attr('disabled', 'true');
+                    $(elementId).closest("form").find(":submit").attr('disabled', 'true');
                 }
             }
         })

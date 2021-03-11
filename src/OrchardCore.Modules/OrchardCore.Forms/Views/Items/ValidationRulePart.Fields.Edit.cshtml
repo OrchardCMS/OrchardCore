@@ -2,7 +2,7 @@
 @model ValidationRulePartEditViewModel
 
 <div class="form-group" >
-    <label asp-for="Type">@T["Validate Type"]</label>
+    <label asp-for="Type">@T["Validation Type"]</label>
     <select asp-for="Type" class="form-control content-preview-select">
         <option value="none">@T["None"]</option>
         <option value="contains">@T["Contains"]</option>
@@ -24,12 +24,12 @@
         <option value="matches">@T["Matches"]</option>
 
     </select>
-    <span class="hint">@T["The validate type."]</span>
+    <span class="hint">@T["The Validation type."]</span>
 </div>
 
 <div class="form-group" >
-    <label asp-for="Option">@T["Validate Options"]</label>
+    <label asp-for="Option">@T["Validation Options"]</label>
     <input asp-for="Option" type="text" class="form-control content-preview-text" />
-    <span class="hint">@T["The text to check the string. For detailed rules, please see https://github.com/validatorjs/validator.js"]</span>
+    <span class="hint">@T["For detailed, please visit https://github.com/validatorjs/validator.js"]</span>
 </div>
 
