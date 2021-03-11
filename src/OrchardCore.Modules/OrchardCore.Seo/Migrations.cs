@@ -22,7 +22,7 @@ namespace OrchardCore.Seo
         {
             _contentDefinitionManager.AlterPartDefinition("SeoMetaPart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a part that allows seo meta descriptions to be applied to a content item.")
+                .WithDescription("Provides a part that allows SEO meta descriptions to be applied to a content item.")
                 .WithField("DefaultSocialImage", field => field
                     .OfType("MediaField")
                     .WithDisplayName("Default social image")

@@ -60,7 +60,7 @@ namespace OrchardCore.Seo.Drivers
                     model.CustomMetaTags = JsonConvert.SerializeObject(part.CustomMetaTags, SerializerSettings);
                     model.SeoMetaPart = part;
                     model.Settings = settings;
-                }).Location("Parts#Seo;50"));
+                }).Location("Parts#SEO;50"));
 
             if (settings.DisplayOpenGraph)
             {
@@ -70,7 +70,7 @@ namespace OrchardCore.Seo.Drivers
                     model.OpenGraphTitle = part.OpenGraphTitle;
                     model.OpenGraphDescription = part.OpenGraphDescription;
                     model.SeoMetaPart = part;
-                }).Location("Parts#Seo;50%Open Graph;20"));
+                }).Location("Parts#SEO;50%Open Graph;20"));
             }
 
             if (settings.DisplayTwitter)
@@ -83,7 +83,7 @@ namespace OrchardCore.Seo.Drivers
                     model.TwitterCreator = part.TwitterCreator;
                     model.TwitterSite = part.TwitterSite;
                     model.SeoMetaPart = part;
-                }).Location("Parts#Seo;50%Twitter;30"));
+                }).Location("Parts#SEO;50%Twitter;30"));
             }
 
             if (settings.DisplayGoogleSchema)
@@ -92,7 +92,7 @@ namespace OrchardCore.Seo.Drivers
                     {
                         model.GoogleSchema = part.GoogleSchema;
                         model.SeoMetaPart = part;
-                    }).Location("Parts#Seo;50%Google Schema;40"));
+                    }).Location("Parts#SEO;50%Google Schema;40"));
             }
 
             return Combine(results);
