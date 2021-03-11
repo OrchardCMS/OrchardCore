@@ -38,37 +38,35 @@ The auto-setup module allows to automatically install the application/tenants on
 }
 ```
 
-
 | Parameter | Description |
 | --- | --- |
 | `AutoSetupPath` | The URL To Trigger AutoSetup For Each Tenant. If empty, auto-setup will be triggered on first tenant request e.g: /, /tenant-prefix |
-| `Tenants` | The List of the Tenants to Install. |
+| `Tenants` | The list of the tenants to install. |
 
 | Parameter | Description |
 | --- | --- |
-| `ShellName` | Technical Shell/Tenant Name it can not be empty and must contain characters only. For the Main tenant please use "Default" Name. |
+| `ShellName` | The technical shell/tenant name. It can not be empty and must contain characters only. Use "Default" for the default tenant. |
 | `SiteName` | The name of the site. |
 | `AdminUsername` | The tenant username of the super user. |
 | `AdminEmail` | The email of the tenant super user. |
 | `AdminPassword` | The password of the tenant super user. |
 | `DatabaseProvider` | The database provider. |
 | `DatabaseConnectionString` | The connection string. |
-| `DatabaseTablePrefix` | The database table prefix. Can be used to install Tenant on the same Database |
+| `DatabaseTablePrefix` | The database table prefix. Can be used to install a tenant on the same database. |
 | `RecipeName` | The tenant installation Recipe Name. |
 | `RequestUrlHost` | The tenant host url. |
 | `RequestUrlPrefix` | The tenant url prefix. |
 
 !!! note
-    Tenants Array Must Contain Root Tenant with `ShellName` equals to `Default`. Each tenant will be installed on Demand (on the first tenant request).
-    If AutoSetupPath provided it must be used to trigger the installation for each tenant e.g  
-    `/autosetup` - trigger installation of Root Tenant
+    Tenants array must contain root tenant with `ShellName` equals to `Default`.  
+    Each tenant will be installed on demand (on the first tenant request).  
+    If AutoSetupPath is provided, it must be used to trigger the installation for each tenant e.g:  
+    `/autosetup` - trigger installation of Root Tenant  
     `/mytenant/autosetup` - auto-install mytenant
-
 
 ### Environment Variables
 
-Since JSON configuration contains admin-sensitive information it is recommended to use Environment Variables instead.
-
+Since JSON configuration contains admin-sensitive information, it is recommended to use Environment Variables instead.
 
 ```
 "OrchardCore__OrchardCore_AutoSetup__AutoSetupPath": ""
@@ -98,8 +96,14 @@ Since JSON configuration contains admin-sensitive information it is recommended 
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__RequestUrlPrefix": "tenant"
 ```
 
-For testing purposes, you may add the above env. variables into "web" profile in OrchardCore.Cms.Web project launchSettings.json file.
-Then start the web app project with the following command
+For testing purposes, you may add the above environment variables into a "web" profile in the launchSettings.json file of the OrchardCore.Cms.Web project.  
+Then, start the web app project with the following command:
+
+```
+dotnet run -f net5.0 --launch-profile web
+```
+
+or 
 
 ```
 dotnet run -f netcoreapp3.1 --launch-profile web
@@ -107,11 +111,13 @@ dotnet run -f netcoreapp3.1 --launch-profile web
 
 ## Enabling Auto Setup Feature
 
-Please Enable Autosetup Feature in Web project's Startup file 
-```public void ConfigureServices(IServiceCollection services)
-   {
+Do not forget to enable the Autosetup feature in Web project's Startup file:
+
+```csharp
+    public void ConfigureServices(IServiceCollection services)
+    {
         services
-          .AddOrchardCms()
-          .AddSetupFeatures("OrchardCore.AutoSetup");
-   }
+            .AddOrchardCms()
+            .AddSetupFeatures("OrchardCore.AutoSetup");
+    }
 ```
