@@ -162,6 +162,7 @@ nav:
             - Home Route: docs/reference/modules/HomeRoute/README.md
             - Feeds: docs/reference/modules/Feeds/README.md
         - Core Modules: 
+            - Auto Setup: docs/reference/modules/AutoSetup/README.md
             - Features: docs/reference/modules/Features/README.md
             - Contents: docs/reference/modules/Contents/README.md
             - Configuration: docs/reference/core/Configuration/README.md
