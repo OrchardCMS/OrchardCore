@@ -177,7 +177,7 @@ nav:
             - HTTPS: docs/reference/modules/Https/README.md
             - Key Vault (Azure): docs/reference/core/KeyVault.Azure/README.md
             - Localization: docs/reference/modules/Localize/README.md
-            - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
+            - Logging Serilog: docs/reference/core/Logging.Serilog/README.md
             - Mini Profiler: docs/reference/modules/MiniProfiler/README.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
