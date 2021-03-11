@@ -204,6 +204,12 @@ namespace OrchardCore.Users
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
 
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
+
+            services.AddScoped<IUsersAdminListQueryService, DefaultContentsAdminListQueryService>();
+            services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
+
+            services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
+            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();            
         }
     }
 
