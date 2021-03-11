@@ -239,7 +239,7 @@ namespace OrchardCore.ContentFields
         }
     }
 
-    [RequireFeatures("OrchardCore.Users", "OrchardCore.ContentFields.Indexing.SQL")]
+    [Feature("OrchardCore.ContentFields.Indexing.SQL.UserPicker")]
     public class UserPickerSqlIndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
