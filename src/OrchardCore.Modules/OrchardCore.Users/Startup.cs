@@ -205,7 +205,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
 
-            services.AddScoped<IUsersAdminListQueryService, DefaultContentsAdminListQueryService>();
+            services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
             services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
 
             services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();

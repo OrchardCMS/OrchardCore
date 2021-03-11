@@ -9,16 +9,16 @@ using YesSql;
 
 namespace OrchardCore.Users.Services
 {
-    public class DefaultContentsAdminListQueryService : IUsersAdminListQueryService
+    public class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
     {
         private readonly ISession _session;
         private readonly IEnumerable<IUsersAdminListFilter> _usersAdminListFilters;
         private readonly ILogger _logger;
 
-        public DefaultContentsAdminListQueryService(
+        public DefaultUsersAdminListQueryService(
             ISession session,
             IEnumerable<IUsersAdminListFilter> usersAdminListFilters,
-            ILogger<DefaultContentsAdminListQueryService> logger)
+            ILogger<DefaultUsersAdminListQueryService> logger)
         {
             _session = session;
             _usersAdminListFilters = usersAdminListFilters;

@@ -1,7 +1,5 @@
 @model UserIndexOptions
-@{
-    var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Users", controller = "Admin", action = "Index" });
-}
+
 <div class="form-group mb-n1 filter">
     <div class="btn-group mt-1">
         <select asp-for="SelectedRole" asp-items="Model.UserRoleFilters" class="selectpicker userroles-selectpicker show-tick mr-2" data-header="@T["Filter by role"]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["Role"]" data-style="btn-sm" data-dropdown-align-right="auto"></select>
