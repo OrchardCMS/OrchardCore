@@ -24,13 +24,28 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri))
                 .Column<int>(nameof(OpenIdAppByLogoutUriIndex.Count)));
 
+            SchemaBuilder.AlterIndexTable<OpenIdAppByLogoutUriIndex>(table => table
+                .CreateIndex("IDX_OpenIdAppByLogoutUriIndex_LogoutRedirectUri",
+                    nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri))
+            );
+
             SchemaBuilder.CreateReduceIndexTable<OpenIdAppByRedirectUriIndex>(table => table
                 .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri))
                 .Column<int>(nameof(OpenIdAppByRedirectUriIndex.Count)));
 
+            SchemaBuilder.AlterIndexTable<OpenIdAppByRedirectUriIndex>(table => table
+                .CreateIndex("IDX_OpenIdAppByRedirectUriIndex_RedirectUri",
+                    nameof(OpenIdAppByRedirectUriIndex.RedirectUri))
+            );
+
             SchemaBuilder.CreateReduceIndexTable<OpenIdAppByRoleNameIndex>(table => table
                 .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName))
                 .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)));
+
+            SchemaBuilder.AlterIndexTable<OpenIdAppByRoleNameIndex>(table => table
+                .CreateIndex("IDX_OpenIdAppByRoleNameIndex_RoleName",
+                    nameof(OpenIdAppByRoleNameIndex.RoleName))
+            );
 
             SchemaBuilder.CreateMapIndexTable<OpenIdAuthorizationIndex>(table => table
                 .Column<string>(nameof(OpenIdAuthorizationIndex.AuthorizationId), column => column.WithLength(48))
@@ -72,6 +87,11 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<string>(nameof(OpenIdScopeByResourceIndex.Resource))
                 .Column<int>(nameof(OpenIdScopeByResourceIndex.Count)));
 
+            SchemaBuilder.AlterIndexTable<OpenIdScopeByResourceIndex>(table => table
+                .CreateIndex("IDX_OpenIdScopeByResourceIndex_Resource",
+                    nameof(OpenIdScopeByResourceIndex.Resource))
+            );
+
             SchemaBuilder.CreateMapIndexTable<OpenIdTokenIndex>(table => table
                 .Column<string>(nameof(OpenIdTokenIndex.TokenId), column => column.WithLength(48))
                 .Column<string>(nameof(OpenIdTokenIndex.ApplicationId), column => column.WithLength(48))
@@ -109,7 +129,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 5;
+            return 6;
         }
 
         // This code can be removed in a later version.
@@ -219,6 +239,32 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             return 5;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom5()
+        {
+            SchemaBuilder.AlterIndexTable<OpenIdAppByLogoutUriIndex>(table => table
+                .CreateIndex("IDX_OpenIdAppByLogoutUriIndex_LogoutRedirectUri",
+                    nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri))
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdAppByRedirectUriIndex>(table => table
+                .CreateIndex("IDX_OpenIdAppByRedirectUriIndex_RedirectUri",
+                    nameof(OpenIdAppByRedirectUriIndex.RedirectUri))
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdAppByRoleNameIndex>(table => table
+                .CreateIndex("IDX_OpenIdAppByRoleNameIndex_RoleName",
+                    nameof(OpenIdAppByRoleNameIndex.RoleName))
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdScopeByResourceIndex>(table => table
+                .CreateIndex("IDX_OpenIdScopeByResourceIndex_Resource",
+                    nameof(OpenIdScopeByResourceIndex.Resource))
+            );
+
+            return 6;
         }
     }
 }
