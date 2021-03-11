@@ -301,7 +301,7 @@ namespace OrchardCore.Tenants.Controllers
         private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
             var requestHost = Request.Host;
-            var host = shellSettings.RequestUrlHost?.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+            var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
 
             var port = requestHost.Port;
 

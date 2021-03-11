@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.Drivers
         {
             var currentUser = _httpContextAccessor.HttpContext?.User;
 
-            if (currentUser == null || !(await _authorizationService.AuthorizeAsync(currentUser, StandardPermissions.SiteOwner, part)))
+            if (!await _authorizationService.AuthorizeAsync(currentUser, StandardPermissions.SiteOwner, part))
             {
                 return null;
             }
@@ -63,7 +63,7 @@ namespace OrchardCore.Contents.Drivers
         {
             var currentUser = _httpContextAccessor.HttpContext?.User;
 
-            if (currentUser == null || !(await _authorizationService.AuthorizeAsync(currentUser, StandardPermissions.SiteOwner, part)))
+            if (!await _authorizationService.AuthorizeAsync(currentUser, StandardPermissions.SiteOwner, part))
             {
                 return null;
             }

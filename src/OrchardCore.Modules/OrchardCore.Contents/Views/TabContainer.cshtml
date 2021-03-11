@@ -9,7 +9,7 @@
     {           
         if (first)
         {
-            item.Classes.Add("show active");
+            ((dynamic)item).Classes.Add("show active");
             first = false;
         }
         @await DisplayAsync(item)

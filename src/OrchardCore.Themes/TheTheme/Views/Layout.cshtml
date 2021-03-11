@@ -33,7 +33,7 @@
         @await RenderSectionAsync("Messages", required: false)
         @await RenderBodyAsync()
     </main>
-    @if (ThemeLayout["Footer"] != null) {
+    @if (ThemeLayout.Zones["Footer"] != null) {
     <footer>
         <div class="container">
             @await RenderSectionAsync("Footer", required: false)

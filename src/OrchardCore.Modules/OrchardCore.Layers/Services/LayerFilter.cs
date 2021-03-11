@@ -93,7 +93,7 @@ namespace OrchardCore.Layers.Services
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
-                dynamic layout = await _layoutAccessor.GetLayoutAsync();
+                var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
                 var updater = _modelUpdaterAccessor.ModelUpdater;
 
                 var layersCache = new Dictionary<string, bool>();
@@ -136,14 +136,7 @@ namespace OrchardCore.Layers.Services
 
                     var contentZone = layout.Zones[widget.Zone];
 
-                    if (contentZone is ZoneOnDemand zoneOnDemand)
-                    {
-                        await zoneOnDemand.AddAsync(wrapper);
-                    }
-                    else if (contentZone is Shape shape)
-                    {
-                        shape.Add(wrapper);
-                    }
+                    await contentZone.AddAsync(wrapper, "");                    
                 }
             }
 
