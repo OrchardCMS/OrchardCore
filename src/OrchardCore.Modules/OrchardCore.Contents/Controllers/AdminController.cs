@@ -224,7 +224,7 @@ namespace OrchardCore.Contents.Controllers
                 pager.PageSize = maxPagedCount;
             }
 
-            // Populate route values to maintain previous route data when generating page links
+            // Populate route values to maintain previous route data when generating page links.
             await _contentOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
 
             var routeData = new RouteData(model.Options.RouteValues);
