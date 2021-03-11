@@ -18,10 +18,5 @@ namespace OrchardCore.Tests.Apis.Lucene
         {
             this.WithRecipe("luceneQueryTest");
         }
-
-        public override async Task InitializeAsync()
-        {
-            await base.InitializeAsync();
-        }
     }
 }
