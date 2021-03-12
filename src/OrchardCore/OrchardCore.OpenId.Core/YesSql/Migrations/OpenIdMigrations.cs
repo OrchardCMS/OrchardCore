@@ -61,7 +61,8 @@ namespace OrchardCore.OpenId.YesSql.Migrations
 
             SchemaBuilder.CreateReduceIndexTable<OpenIdAppByRoleNameIndex>(table => table
                 .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName))
-                .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)));
+                .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)),
+                collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAppByRoleNameIndex>(table => table
                 .CreateIndex("IDX_COL_OpenIdAppByRoleName_RoleName",
@@ -504,11 +505,16 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 _session.Delete(scope);
             }
 
-            // This can be safely dropped here as the index provider now only writes to the new collection table.
+            // Flush the saved documents so that the old reduced indexes will be calculated
+            // and commited to the transaction before they are then dropped.
+            await _session.FlushAsync();
+
+            // These can be safely dropped after flushing.
             SchemaBuilder.DropMapIndexTable<OpenIdApplicationIndex>();
             SchemaBuilder.DropReduceIndexTable<OpenIdAppByLogoutUriIndex>();
             SchemaBuilder.DropReduceIndexTable<OpenIdAppByRedirectUriIndex>();
             SchemaBuilder.DropReduceIndexTable<OpenIdAppByRoleNameIndex>();
+
             SchemaBuilder.DropMapIndexTable<OpenIdScopeIndex>();   
             SchemaBuilder.DropReduceIndexTable<OpenIdScopeByResourceIndex>(); 
 
