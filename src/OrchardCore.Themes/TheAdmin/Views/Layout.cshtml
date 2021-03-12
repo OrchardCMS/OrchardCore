@@ -1,11 +1,13 @@
-@inject DarkModeService DarkModeService;
-@inject IOptions<AdminOptions> AdminOptions;
+@using OrchardCore.Environment.Shell
+@inject DarkModeService DarkModeService
+@inject IOptions<AdminOptions> AdminOptions
 @{
     var adminSettings = Site.As<AdminSettings>();
     var darkMode = await DarkModeService.IsDarkModeAsync();
+    var tenant = Context.Features.Get<ShellContextFeature>().ShellContext.Settings.Name;
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-tenant="@tenant" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -33,7 +35,7 @@
         <div class="ta-navbar-top navbar-expand-lg bg-primary">
             <div class="d-flex w-100">
                 <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src=@Url.Content("~/TheAdmin/logo.png") alt="@Site.SiteName" /><span>@Site.SiteName</span></a>
-            
+
                 <div class="flex-grow-1">
                     @if (adminSettings.DisplayTitlesInTopbar)
                     {
