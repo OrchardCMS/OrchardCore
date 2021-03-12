@@ -1,3 +1,5 @@
+@using OrchardCore.Localization
+
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
@@ -12,7 +14,7 @@
             <div class="widget-editor-handle"><i class="fas fa-arrows-alt"></i></div>
         }
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-right" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
         @T["{0} <span class=\"hint dashed\">{1}</span>", contentItem.DisplayText, contentType]
         @if (Model.CanDelete != false)
         {
