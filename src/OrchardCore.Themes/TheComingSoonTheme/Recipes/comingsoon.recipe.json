@@ -8,7 +8,6 @@
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "comingsoon" ],
-
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
     "comingSoonContentItemId": "[js:uuid()]",
@@ -17,7 +16,6 @@
     "now": "[js: new Date().toISOString()]",
     "readyDate": "[js: const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];var date = new Date();date.setMonth(date.getMonth() + 1);return '<strong>' + monthNames[date.getMonth()] + ' ' + date.getFullYear()+'</strong>';]"
   },
-
   "steps": [
     {
       "name": "Feature",
@@ -602,7 +600,6 @@
                 "ConfirmationEmailSubject": {
                   "Expression": "Welcome to {{Site.SiteName}}"
                 }
-
               }
             },
             {

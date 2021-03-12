@@ -8,7 +8,7 @@ An unfortunate result is that most internal chars will be encoded by default, re
 
 ASP.NET MVC provides a way to configure these settings. Orchard Core uses the encoders registered in DI in order to respect any custom options. To disable Unicode chars encoding for all ranges, you can use this code in the `Configure()` method of the `Startup` class of your web application:
 
-```c#
+```csharp
 services.Configure<WebEncoderOptions>(options => 
 {
       options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
@@ -23,7 +23,7 @@ It is recommended to use the encoders registered in the DI containers instead of
 
 Don't call `HtmlEncode.Default` or any other `TextEncoder` but instead inject one in your service constructor like this:
 
-```c#
+```csharp
 public class MyService
 {
     private readonly HtmlEncoder _htmlEncoder;

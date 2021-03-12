@@ -23,7 +23,7 @@ namespace OrchardCore.Navigation
                 })
                 .OnProcessing(async context =>
                 {
-                    dynamic menu = context.Shape;
+                    dynamic menu = context.Shape;   
                     string menuName = menu.MenuName;
 
                     // Menu population is executed when processing the shape so that its value

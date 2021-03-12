@@ -14,18 +14,19 @@ namespace OrchardCore.Layers.Indexes
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<LayerMetadataIndex>()
+                .When(contentItem => contentItem.Has<LayerMetadata>())
                 .Map(contentItem =>
                 {
                     var layerMetadata = contentItem.As<LayerMetadata>();
-                    if (layerMetadata != null)
+                    if (layerMetadata == null)
                     {
-                        return new LayerMetadataIndex
-                        {
-                            Zone = layerMetadata.Zone,
-                        };
+                        return null;
                     }
 
-                    return null;
+                    return new LayerMetadataIndex
+                    {
+                        Zone = layerMetadata.Zone,
+                    };
                 });
         }
     }

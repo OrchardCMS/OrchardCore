@@ -12,15 +12,17 @@ namespace OrchardCore.Liquid
     /// </summary>
     public class LiquidPropertyAccessor
     {
-        private readonly Func<string, Task<FluidValue>> _getter;
+        private readonly Func<string, LiquidTemplateContext, Task<FluidValue>> _getter;
+        private readonly LiquidTemplateContext _context;
 
-        public LiquidPropertyAccessor(Func<string, Task<FluidValue>> getter)
+        public LiquidPropertyAccessor(LiquidTemplateContext context, Func<string, LiquidTemplateContext, Task<FluidValue>> getter)
         {
             _getter = getter;
+            _context = context;
         }
         public Task<FluidValue> GetValueAsync(string identifier)
         {
-            return _getter(identifier);
+            return _getter(identifier, _context);
         }
     }
 }
