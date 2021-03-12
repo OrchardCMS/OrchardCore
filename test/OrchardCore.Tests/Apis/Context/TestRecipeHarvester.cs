@@ -26,9 +26,7 @@ namespace OrchardCore.Tests.Apis.Context
         private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string[] paths)
         {
             var recipeDescriptors = new List<RecipeDescriptor>();
-
             var testAssemblyFileProvider = new EmbeddedFileProvider(GetType().GetTypeInfo().Assembly);
-
             var fileInfos = new List<IFileInfo>();
 
             foreach (var path in paths)
