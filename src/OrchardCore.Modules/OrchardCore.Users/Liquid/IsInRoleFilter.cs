@@ -12,22 +12,24 @@ namespace OrchardCore.Users.Liquid
 {
     public class IsInRoleFilter : ILiquidFilter
     {
-        private readonly string _roleClaimType;
+        private readonly IdentityOptions _identityOptions;
 
-        public IsInRoleFilter(IOptions<IdentityOptions> optionsAccessor)
+        public IsInRoleFilter(IOptions<IdentityOptions> identityOptions)
         {
-            _roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
+            _identityOptions = identityOptions.Value;
         }
-
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var ret = false;
 
             var claimName = arguments["name"].Or(arguments.At(0)).ToStringValue();
 
+            var roleClaimType = _identityOptions.ClaimsIdentity.RoleClaimType;
+
             if (input.ToObjectValue() is ClaimsPrincipal principal)
             {
-                ret = principal.Claims.Any(claim => claim.Type == _roleClaimType && claim.Value.Equals(claimName, StringComparison.OrdinalIgnoreCase)) == true;
+                ret = principal.Claims.Any(claim => claim.Type == roleClaimType && claim.Value.Equals(claimName, StringComparison.OrdinalIgnoreCase));
             }
 
             return new ValueTask<FluidValue>(ret ? BooleanValue.True : BooleanValue.False);

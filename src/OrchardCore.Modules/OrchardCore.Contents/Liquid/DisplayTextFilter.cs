@@ -2,13 +2,12 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
-using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    public class DisplayTextFilter : ILiquidFilter
+    public static class DisplayTextFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static ValueTask<FluidValue> DisplayText(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var contentItem = input.ToObjectValue() as ContentItem;
 

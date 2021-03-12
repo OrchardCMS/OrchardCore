@@ -150,7 +150,7 @@ namespace OrchardCore.Taxonomies
                         shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted
-                        termShape.Add(shape);
+                        await termShape.AddAsync(shape);
                     }
                 });
 
@@ -187,7 +187,7 @@ namespace OrchardCore.Taxonomies
                             shape.Metadata.Differentiator = differentiator;
 
                             // Don't use Items.Add() or the collection won't be sorted
-                            termItem.Add(shape);
+                            await termItem.AddAsync(shape);
                         }
                     }
 

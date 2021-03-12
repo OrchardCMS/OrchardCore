@@ -3,8 +3,8 @@
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
 <!-- Hidden submit button do not remove -->
-<input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
-<input type="submit" name="submit.BulkAction" class="d-none" />
+<input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
+<input type="submit" name="submit.BulkAction" class="sr-only" />
 @Html.HiddenFor(o => o.Options.BulkAction)
 
 <div class="card mb-3 position-sticky action-bar">

@@ -5,8 +5,20 @@
     int level = (int)Model.Level;
 
     TagBuilder tag = Tag(Model, "a");
-    tag.Attributes["href"] = linkMenuItemPart.Url;
-    tag.InnerHtml.Append(linkMenuItemPart.Name);
+
+    var url = linkMenuItemPart.Url;
+    if (url.StartsWith('/'))
+    {
+        url = '~' + url;
+    }
+
+    if (url.StartsWith("~/", StringComparison.Ordinal))
+    {
+        url = Url.Content(linkMenuItemPart.Url);
+    }
+
+    tag.Attributes["href"] = url;
+    tag.InnerHtml.Append(contentItem.DisplayText);
 
     if (Model.Level == 0 && Model.HasItems)
     {

@@ -1,0 +1,2 @@
+{% assign link = Model.ContentItem.Content.HtmlMenuItemPart %}
+<a class="nav-link js-scroll-trigger" href="{{ link.Url | href }}">{{ link.Html | raw }}</a>

@@ -9,7 +9,7 @@
 @if (Model.Values.Any())
 {
 <div class="field field-type-multitextfield field-name-@name">
-    <span class="name">@Model.PartFieldDefinition.DisplayName()@T[":"]</span>
+    <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
     @foreach (var value in Model.Values)
     {
         <span class="value">@value</span>if (value != Model.Values.Last()){@T[", "]}

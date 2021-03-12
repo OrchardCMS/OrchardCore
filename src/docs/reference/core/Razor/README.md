@@ -26,7 +26,7 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `LiquidToHtmlAsync(string liquid, object model)` | [OrchardCore.Liquid](../../modules/Liquid/README.md#razor-helpers) | Parses a liquid string to HTML. |
 | `SanitizeHtml(string html)` | [OrchardCore.Infrastructure](../Sanitizer/README.md#razor-helper) | Sanitizes an HTML string. |
 | `QueryListItemsCountAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | OrchardCore.Lists | Returns list count. |
-| `QueryListItemsAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.List](../../modules/List/README.md#orchard-helpers) | Returns list items. |
+| `QueryListItemsAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.List](../../modules/Lists/README.md#orchard-helpers) | Returns list items. |
 | `MarkdownToHtmlAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.Markdown](../../modules/Markdown/README.md#razor-helper) | Converts Markdown string to HTML. |
 | `AssetUrl(string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false)` | [OrchardCore.Media](../../modules/Media/README.md#razor-helpers) | Returns the relative URL of the specifier asset path with optional resizing parameters. |
 | `ImageResizeUrl(string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)` | [OrchardCore.Media](../../modules/Media/README.md#razor-helpers) | Returns a URL with custom resizing parameters for an existing image path. |

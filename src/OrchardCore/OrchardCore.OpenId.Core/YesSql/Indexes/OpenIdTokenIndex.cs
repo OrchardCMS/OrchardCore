@@ -9,8 +9,8 @@ namespace OrchardCore.OpenId.YesSql.Indexes
         public string TokenId { get; set; }
         public string ApplicationId { get; set; }
         public string AuthorizationId { get; set; }
-        public DateTimeOffset? CreationDate { get; set; }
-        public DateTimeOffset? ExpirationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
         public string ReferenceId { get; set; }
         public string Status { get; set; }
         public string Subject { get; set; }
@@ -19,6 +19,11 @@ namespace OrchardCore.OpenId.YesSql.Indexes
 
     public class OpenIdTokenIndexProvider : IndexProvider<OpenIdToken>
     {
+        private const string OpenIdCollection = OpenIdToken.OpenIdCollection;
+
+        public OpenIdTokenIndexProvider()
+            => CollectionName = OpenIdCollection;
+
         public override void Describe(DescribeContext<OpenIdToken> context)
         {
             context.For<OpenIdTokenIndex>()
