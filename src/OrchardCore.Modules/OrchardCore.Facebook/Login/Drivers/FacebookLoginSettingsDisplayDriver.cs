@@ -33,7 +33,7 @@ namespace OrchardCore.Facebook.Login.Drivers
         public override async Task<IDisplayResult> EditAsync(FacebookLoginSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
             {
                 return null;
             }
@@ -50,7 +50,7 @@ namespace OrchardCore.Facebook.Login.Drivers
             if (context.GroupId == FacebookConstants.Features.Login)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
                 {
                     return null;
                 }

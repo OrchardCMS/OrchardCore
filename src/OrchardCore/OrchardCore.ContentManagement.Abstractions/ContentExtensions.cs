@@ -67,6 +67,18 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <summary>
+        /// Removes a content element by its name.
+        /// </summary>
+        /// <param name="contentElement">The <see cref="ContentElement"/>.</param>
+        /// <param name="name">The name of the content element.</param>
+        /// <returns><see langword="True"/> is successfully found and removed; otherwise. <see langword="False"/> This method returns false if the name is not found.</returns>
+        public static bool Remove(this ContentElement contentElement, string name)
+        {
+            contentElement.Elements.Remove(name);
+            return contentElement.Data.Remove(name);
+        }
+
+        /// <summary>
         /// Gets a content element by its name or create a new one.
         /// </summary>
         /// <param name="contentElement">The <see cref="ContentElement"/>.</param>

@@ -22,15 +22,17 @@ namespace OrchardCore.Google.Authentication.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, nameof(GoogleAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, nameof(GoogleAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
             var model = context.Step.ToObject<GoogleAuthenticationSettingsViewModel>();
-            var settings = await _googleAuthenticationService.GetSettingsAsync();
+            var settings = await _googleAuthenticationService.LoadSettingsAsync();
+
             settings.ClientID = model.ClientID;
             settings.ClientSecret = model.ClientSecret;
             settings.CallbackPath = model.CallbackPath;
+
             await _googleAuthenticationService.UpdateSettingsAsync(settings);
         }
     }

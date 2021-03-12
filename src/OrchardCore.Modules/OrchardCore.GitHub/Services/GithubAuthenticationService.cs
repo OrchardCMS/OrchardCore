@@ -28,12 +28,19 @@ namespace OrchardCore.GitHub.Services
             return container.As<GitHubAuthenticationSettings>();
         }
 
+        public async Task<GitHubAuthenticationSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
+            return container.As<GitHubAuthenticationSettings>();
+        }
+
         public async Task UpdateSettingsAsync(GitHubAuthenticationSettings settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
+
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
             {
@@ -41,6 +48,7 @@ namespace OrchardCore.GitHub.Services
                 aspect.ClientSecret = settings.ClientSecret;
                 aspect.CallbackPath = settings.CallbackPath;
             });
+
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
@@ -51,12 +59,12 @@ namespace OrchardCore.GitHub.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            if (string.IsNullOrWhiteSpace(settings.ClientID))
+            if (String.IsNullOrWhiteSpace(settings.ClientID))
             {
                 yield return new ValidationResult(S["ClientID is required"], new string[] { nameof(settings.ClientID) });
             }
 
-            if (string.IsNullOrWhiteSpace(settings.ClientSecret))
+            if (String.IsNullOrWhiteSpace(settings.ClientSecret))
             {
                 yield return new ValidationResult(S["ClientSecret is required"], new string[] { nameof(settings.ClientSecret) });
             }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
@@ -14,15 +13,15 @@ namespace OrchardCore.Taxonomies.Liquid
 {
     public class TaxonomyTermsFilter : ILiquidFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IContentManager _contentManager;
+
+        public TaxonomyTermsFilter(IContentManager contentManager)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'taxonomy_terms'");
-            }
+            _contentManager = contentManager;
+        }
 
-            var contentManager = ((IServiceProvider)services).GetRequiredService<IContentManager>();
-
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        {
             string taxonomyContentItemId = null;
             string[] termContentItemIds = null;
 
@@ -49,7 +48,7 @@ namespace OrchardCore.Taxonomies.Liquid
                 return NilValue.Instance;
             }
 
-            var taxonomy = await contentManager.GetAsync(taxonomyContentItemId);
+            var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId);
 
             if (taxonomy == null)
             {
@@ -68,7 +67,7 @@ namespace OrchardCore.Taxonomies.Liquid
                 }
             }
 
-            return FluidValue.Create(terms);
+            return FluidValue.Create(terms, ctx.Options);
         }
     }
 }

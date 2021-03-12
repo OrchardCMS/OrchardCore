@@ -59,7 +59,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>netcoreapp3.1</TargetFramework>
+  <TargetFramework>net5.0</TargetFramework>
   <PreserveCompilationReferences>true</PreserveCompilationReferences>
 </PropertyGroup>
 ```
@@ -77,7 +77,7 @@ This will add the packages from Orchard Core CMS
 
 - Edit the `Startup.cs` file `ConfigureServices` method like this:
 
-```cs
+```csharp
 public void ConfigureServices(IServiceCollection services)
 {
     services.AddOrchardCms();
@@ -90,7 +90,7 @@ public void ConfigureServices(IServiceCollection services)
 - Edit the `Startup.cs` file `Configure`
 - Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
 
-```cs
+```csharp
    ...
    
    app.UseHttpsRedirection();

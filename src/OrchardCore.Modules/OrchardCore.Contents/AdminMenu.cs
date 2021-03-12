@@ -5,13 +5,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Admin.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Security;
+using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Contents
 {
@@ -22,6 +25,7 @@ namespace OrchardCore.Contents
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly LinkGenerator _linkGenerator;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ISiteService _siteService;
         private readonly IStringLocalizer S;
 
         public AdminMenu(
@@ -30,6 +34,7 @@ namespace OrchardCore.Contents
             IHttpContextAccessor httpContextAccessor,
             LinkGenerator linkGenerator,
             IAuthorizationService authorizationService,
+            ISiteService siteService,
             IStringLocalizer<AdminMenu> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
@@ -37,6 +42,7 @@ namespace OrchardCore.Contents
             _httpContextAccessor = httpContextAccessor;
             _linkGenerator = linkGenerator;
             _authorizationService = authorizationService;
+            _siteService = siteService;
             S = localizer;
         }
 
@@ -66,8 +72,9 @@ namespace OrchardCore.Contents
                 });
             });
 
+            var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
 
-            if (contentTypes.Any())
+            if (adminSettings.DisplayNewMenu && contentTypes.Any())
             {
                 await builder.AddAsync(S["New"], "-1", async newMenu =>
                 {
@@ -83,11 +90,14 @@ namespace OrchardCore.Contents
                             controller = "Admin",
                             action = "List"
                         }));
+
                         if (createRouteValues.Any())
+                        {
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
                                 .Permission(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditOwnContent.Name], contentTypeDefinition))
                                 );
+                        }
                     }
                 });
             }
