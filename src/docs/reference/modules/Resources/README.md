@@ -71,7 +71,7 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 ### Registering a Resource Manifest
 
-Named resources are registered by implementing the `IResourceManifestProvider` interface.
+Named resources are registered by configuring the `ResourceManagementOptions` options.
 
 This example is provided from `TheBlogTheme` to demonstrate.
 
