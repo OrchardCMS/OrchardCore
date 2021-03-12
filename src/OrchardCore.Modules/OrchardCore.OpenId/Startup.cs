@@ -63,6 +63,9 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
                 ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
             });
+
+            // Configure support for an OpenId collection.
+            services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));
         }
     }
 
@@ -317,9 +320,6 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>()
             });
-
-            // Configure support for an OpenId collection.
-            services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

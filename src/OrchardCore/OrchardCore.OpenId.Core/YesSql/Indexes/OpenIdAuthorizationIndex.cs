@@ -17,6 +17,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
     public class OpenIdAuthorizationIndexProvider : IndexProvider<OpenIdAuthorization>
     {
         private const string OpenIdCollection = OpenIdAuthorization.OpenIdCollection;
+        
         public OpenIdAuthorizationIndexProvider()
             => CollectionName = OpenIdCollection;
 
