@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.DisplayManagement.Shapes;
@@ -25,6 +26,8 @@ namespace OrchardCore.DisplayManagement
         private Dictionary<string, object> _properties;
         public IDictionary<string, object> Properties => _properties = _properties ?? new Dictionary<string, object>();
 
+        public IReadOnlyList<IPositioned> Items => throw new System.NotImplementedException();
+
         public PositionWrapper(IHtmlContent value, string position)
         {
             _value = value;
@@ -40,6 +43,11 @@ namespace OrchardCore.DisplayManagement
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
             _value.WriteTo(writer, encoder);
+        }
+
+        public ValueTask<IShape> AddAsync(object item, string position)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -23,3 +23,11 @@ using OrchardCore.Modules.Manifest;
     Description = "Content Fields Indexing module adds database indexing for content fields.",
     Dependencies = new[] { "OrchardCore.ContentFields" }
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.ContentFields.Indexing.SQL.UserPicker",
+    Name = "Content Fields Indexing (SQL) - User Picker",
+    Category = "Content Management",
+    Description = "User Picker Content Fields Indexing module adds database indexing for user picker fields.",
+    Dependencies = new[] { "OrchardCore.ContentFields", "OrchardCore.Users" }
+)]

@@ -45,8 +45,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.5.1         | -              |
-| jQuery.slim           | Script | 3.5.1         | -              |
+| jQuery                | Script | 3.6.0         | -              |
+| jQuery.slim           | Script | 3.6.0         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
@@ -76,20 +76,27 @@ Named resources are registered by implementing the `IResourceManifestProvider` i
 This example is provided from `TheBlogTheme` to demonstrate.
 
 ```csharp
-public class ResourceManifest : IResourceManifestProvider
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    public void BuildManifests(IResourceManifestBuilder builder)
-    {
-        var manifest = builder.Add();
+    private static ResourceManifest _manifest;
 
-        manifest
+    static ResourceManagementOptionsConfiguration()
+    {
+        _manifest = new ResourceManifest();
+
+        _manifest
             .DefineScript("TheBlogTheme-vendor-jQuery")
             .SetUrl("~/TheBlogTheme/vendor/jquery/jquery.min.js", "~/TheBlogTheme/vendor/jquery/jquery.js")
             .SetCdn("https://code.jquery.com/jquery-3.4.1.min.js", "https://code.jquery.com/jquery-3.4.1.js")
             .SetCdnIntegrity("sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh", "sha384-mlceH9HlqLp7GMKHrj5Ara1+LvdTZVMx4S1U43/NxCvAkzIo8WJ0FE7duLel3wVo")
             .SetVersion("3.4.1");
-        }
     }
+
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
 
 ```
 
@@ -103,8 +110,8 @@ We set the Cdn Integrity Hashes and the version to `3.4.1`
 This script will then be available for the tag helper or API to register by name. 
 
 !!! note "Registration"
-    Make sure to register this `IResourceManifestProvider` in the `Startup` or your theme or module.
-    `serviceCollection.AddScoped<IResourceManifestProvider, ResourceManifest>();`
+    Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
+    `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
 
 ## Usage
 

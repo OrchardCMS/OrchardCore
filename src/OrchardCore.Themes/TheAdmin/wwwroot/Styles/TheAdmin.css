@@ -22099,12 +22099,34 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   color: #495057;
   text-decoration: none;
 }
+[dir]:root[data-theme=default] .ta-badge {
+  background-color: #e9ecef;
+}
 :root[data-theme=default] .ta-navbar-brand span:last-child {
   font-weight: bold;
   color: #495057;
 }
 [dir]:root[data-theme=default] .list-group li:hover {
   background-color: #f8f9fa;
+}
+[dir]:root[data-theme=default] .list-group-item.first-child-visible {
+  border-top-width: 1px !important;
+}
+[dir=ltr]:root[data-theme=default] .list-group-item.first-child-visible {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+[dir=rtl]:root[data-theme=default] .list-group-item.first-child-visible {
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+}
+[dir=ltr]:root[data-theme=default] .list-group-item.last-child-visible {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+[dir=rtl]:root[data-theme=default] .list-group-item.last-child-visible {
+  border-bottom-right-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 :root[data-theme=default] body:not(.left-sidebar-compact) #ta-left-sidebar {
   z-index: calc(1000 + 1);
@@ -45440,12 +45462,34 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   color: #dee2e6;
   text-decoration: none;
 }
+[dir]:root[data-theme=darkmode] .ta-badge {
+  background-color: #0c0d0e;
+}
 :root[data-theme=darkmode] .ta-navbar-brand span:last-child {
   font-weight: bold;
   color: #dee2e6;
 }
 [dir]:root[data-theme=darkmode] .list-group li:hover {
   background-color: #1b1e1f;
+}
+[dir]:root[data-theme=darkmode] .list-group-item.first-child-visible {
+  border-top-width: 1px !important;
+}
+[dir=ltr]:root[data-theme=darkmode] .list-group-item.first-child-visible {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+[dir=rtl]:root[data-theme=darkmode] .list-group-item.first-child-visible {
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+}
+[dir=ltr]:root[data-theme=darkmode] .list-group-item.last-child-visible {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+[dir=rtl]:root[data-theme=darkmode] .list-group-item.last-child-visible {
+  border-bottom-right-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 :root[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar {
   z-index: calc(1000 + 1);

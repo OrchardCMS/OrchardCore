@@ -156,7 +156,7 @@ namespace OrchardCore.Queries.Sql
             notOpt.Rule = Empty | NOT;
             //funCall covers some pseudo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
             funCall.Rule = Id + "(" + functionArguments + ")";
-            functionArguments.Rule = selectStatement | expressionList | "*";
+            functionArguments.Rule = Empty | selectStatement | expressionList | "*";
             parameter.Rule = "@" + Id | "@" + Id + ":" + term;
 
             //Operators

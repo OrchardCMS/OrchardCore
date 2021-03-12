@@ -17,9 +17,8 @@
     Add the necessary '.props' and '.targets' files under the 'build\' folder of this package,
     so that a referencing project is built / packed and considered as an 'OrchardCore' module.
 
-    When packaging a project that references this package, and that targets multiple TFMs, the
-    scripts under the 'build\' folder are not executed, so we pack another '.props' file under
-    the 'buildMultiTargeting\' folder, that will just import the one under the `build\` folder.
+    If a referencing project targets multiple TFMs the scripts under 'build\' may not be used,
+    so we pack other scripts under 'buildMultiTargeting\' just to import those under `build\`.
   -->
 
   <ItemGroup>
@@ -31,6 +30,9 @@
     </None>
     <None Include="OrchardCore.Module.Targets.targets" Pack="true">
       <PackagePath>build\OrchardCore.Module.Targets.targets</PackagePath>
+    </None>
+    <None Include="buildMultiTargeting\OrchardCore.Module.Targets.targets" Pack="true">
+      <PackagePath>buildMultiTargeting\OrchardCore.Module.Targets.targets</PackagePath>
     </None>
     <None Include="Package.Build.props" Pack="true">
       <PackagePath>build\Package.Build.props</PackagePath>
