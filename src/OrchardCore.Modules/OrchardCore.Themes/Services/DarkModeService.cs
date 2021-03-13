@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin.Models;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Themes.Services
@@ -15,11 +16,15 @@ namespace OrchardCore.Themes.Services
 
         public DarkModeService(
             IHttpContextAccessor httpContextAccessor,
-            ISiteService siteService)
+            ISiteService siteService,
+            ShellSettings shellSettings)
         {
             _httpContextAccessor = httpContextAccessor;
             _siteService = siteService;
+            CurrentTenant = shellSettings.Name;
         }
+
+        public string CurrentTenant { get; }
 
         public string CurrentTheme { get; set; } = "default";
 
@@ -27,12 +32,13 @@ namespace OrchardCore.Themes.Services
         {
             var result = false;
             var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+            var cookieName = $"{CurrentTenant}-adminPreferences";
 
             if (adminSettings.DisplayDarkMode)
             {
-                if (!String.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]))
+                if (!String.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies[cookieName]))
                 {
-                    var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]);
+                    var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies[cookieName]);
 
                     if (adminPreferences.RootElement.TryGetProperty("darkMode", out var darkMode))
                     {

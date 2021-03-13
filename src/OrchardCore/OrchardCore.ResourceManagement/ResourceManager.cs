@@ -13,7 +13,6 @@ namespace OrchardCore.ResourceManagement
     {
         private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new Dictionary<ResourceTypeName, RequireSettings>();
         private readonly Dictionary<string, ResourceRequiredContext[]> _builtResources;
-        private readonly IEnumerable<IResourceManifestProvider> _providers;
         private readonly IFileVersionProvider _fileVersionProvider;
         private ResourceManifest _dynamicManifest;
 
@@ -24,40 +23,18 @@ namespace OrchardCore.ResourceManagement
         private List<IHtmlContent> _styles;
         private HashSet<string> _localScripts;
         private HashSet<string> _localStyles;
-
-        private readonly IResourceManifestState _resourceManifestState;
         private readonly ResourceManagementOptions _options;
 
         public ResourceManager(
-            IEnumerable<IResourceManifestProvider> resourceProviders,
-            IResourceManifestState resourceManifestState,
             IOptions<ResourceManagementOptions> options,
             IFileVersionProvider fileVersionProvider)
         {
-            _resourceManifestState = resourceManifestState;
             _options = options.Value;
-            _providers = resourceProviders;
             _fileVersionProvider = fileVersionProvider;
 
             _builtResources = new Dictionary<string, ResourceRequiredContext[]>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public IEnumerable<ResourceManifest> ResourceManifests
-        {
-            get
-            {
-                if (_resourceManifestState.ResourceManifests == null)
-                {
-                    var builder = new ResourceManifestBuilder();
-                    foreach (var provider in _providers)
-                    {
-                        provider.BuildManifests(builder);
-                    }
-                    _resourceManifestState.ResourceManifests = builder.ResourceManifests;
-                }
-                return _resourceManifestState.ResourceManifests;
-            }
-        }
 
         public ResourceManifest InlineManifest => _dynamicManifest ??= new ResourceManifest();
 
@@ -180,7 +157,7 @@ namespace OrchardCore.ResourceManagement
             var name = settings.Name ?? "";
             var type = settings.Type;
 
-            var stream = ResourceManifests.SelectMany(x => x.GetResources(type));
+            var stream = _options.ResourceManifests.SelectMany(x => x.GetResources(type));
             var resource = FindMatchingResource(stream, settings, name);
 
             if (resource == null && _dynamicManifest != null)

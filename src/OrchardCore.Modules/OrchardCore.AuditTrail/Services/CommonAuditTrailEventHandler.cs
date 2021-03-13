@@ -66,10 +66,10 @@ namespace OrchardCore.AuditTrail.Services
                 Categories: auditTrailManager.DescribeCategories().ToArray(),
                 Category: category);
 
-            context.FilterDisplay.Add(dateFromFilterDisplay);
-            context.FilterDisplay.Add(dateToFilterDisplay);
-            context.FilterDisplay.Add(categoryFilterDisplay);
-            context.FilterDisplay.Add(userNameFilterDisplay);
+            context.FilterDisplay.AddAsync(dateFromFilterDisplay, string.Empty);
+            context.FilterDisplay.AddAsync(dateToFilterDisplay, string.Empty);
+            context.FilterDisplay.AddAsync(categoryFilterDisplay, string.Empty);
+            context.FilterDisplay.AddAsync(userNameFilterDisplay, string.Empty);
         }
 
         private DateTime? GetDateFromFilter(Filters filters, string fieldName, string prefix)

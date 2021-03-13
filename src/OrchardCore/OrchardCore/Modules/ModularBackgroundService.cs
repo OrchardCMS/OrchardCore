@@ -14,6 +14,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Modules
@@ -110,6 +111,18 @@ namespace OrchardCore.Modules
                     {
                         break;
                     }
+
+                    var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
+
+                    // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
+                    (var locker, var locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
+                    if (!locked)
+                    {
+                        _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                        return;
+                    }
+
+                    await using var acquiredLock = locker;
 
                     await shellScope.UsingAsync(async scope =>
                     {
@@ -368,7 +381,7 @@ namespace OrchardCore.Modules
 
             context.Request.Scheme = "https";
 
-            var urlHost = settings.RequestUrlHost?.Split('/',
+            var urlHost = settings.RequestUrlHost?.Split(new[] { ',', ' ' },
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
             context.Request.Host = new HostString(urlHost ?? "localhost");
