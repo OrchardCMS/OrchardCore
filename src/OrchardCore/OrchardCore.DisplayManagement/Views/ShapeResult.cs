@@ -169,7 +169,7 @@ namespace OrchardCore.DisplayManagement.Views
                 }
             }
 
-            dynamic parentShape = context.Shape;
+            var parentShape = context.Shape;
 
             if (placement.IsLayoutZone())
             {
@@ -186,16 +186,15 @@ namespace OrchardCore.DisplayManagement.Views
                     break;
                 }
 
-                var zoneProperty = parentShape.Zones;
-                if (zoneProperty != null)
+                if (parentShape is IZoneHolding layout)
                 {
                     // parentShape is a ZoneHolding
-                    parentShape = zoneProperty[zone];
+                    parentShape = layout.Zones[zone];
                 }
                 else
                 {
                     // try to access it as a member
-                    parentShape = parentShape[zone];
+                    parentShape = parentShape.GetProperty<IShape>(zone);
                 }
             }
 
