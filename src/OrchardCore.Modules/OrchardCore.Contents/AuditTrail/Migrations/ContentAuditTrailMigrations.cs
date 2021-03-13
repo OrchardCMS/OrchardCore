@@ -1,9 +1,11 @@
 using OrchardCore.Contents.AuditTrail.Indexes;
 using OrchardCore.Data.Migration;
+using OrchardCore.Modules;
 using YesSql.Sql;
 
 namespace OrchardCore.Contents.AuditTrail.Migrations
 {
+    [RequireFeatures("OrchardCore.AuditTrail")]
     public class ContentAuditTrailMigrations : DataMigration
     {
         public int Create()

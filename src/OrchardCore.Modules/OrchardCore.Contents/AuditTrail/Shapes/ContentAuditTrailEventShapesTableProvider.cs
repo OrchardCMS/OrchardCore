@@ -11,10 +11,12 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.AuditTrail.Extensions;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.Contents.AuditTrail.Shapes
 {
+    [RequireFeatures("OrchardCore.AuditTrail")]
     public class ContentAuditTrailEventShapesTableProvider : IShapeTableProvider
     {
         public void Discover(ShapeTableBuilder builder)

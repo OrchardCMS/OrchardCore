@@ -4,9 +4,11 @@ using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Providers;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Entities;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Users.AuditTrail.Providers
 {
+    [RequireFeatures("OrchardCore.AuditTrail")]
     public class UserAuditTrailEventProvider : AuditTrailEventProviderBase
     {
         public const string SignedUp = nameof(SignedUp);

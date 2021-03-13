@@ -7,9 +7,11 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Entities;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.AuditTrail.Providers
 {
+    [RequireFeatures("OrchardCore.AuditTrail")]
     public class ContentAuditTrailEventProvider : AuditTrailEventProviderBase
     {
         public const string Created = nameof(Created);

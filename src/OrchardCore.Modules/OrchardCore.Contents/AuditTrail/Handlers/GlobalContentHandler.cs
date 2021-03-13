@@ -18,6 +18,7 @@ using IYesSqlSession = YesSql.ISession;
 
 namespace OrchardCore.Contents.AuditTrail.Handlers
 {
+    [RequireFeatures("OrchardCore.AuditTrail")]
     public class GlobalContentHandler : ContentHandlerBase
     {
         private readonly IYesSqlSession _session;

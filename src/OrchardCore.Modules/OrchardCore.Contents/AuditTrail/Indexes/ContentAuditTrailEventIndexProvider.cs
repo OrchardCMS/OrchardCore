@@ -1,10 +1,12 @@
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Entities;
+using OrchardCore.Modules;
 using YesSql.Indexes;
 
 namespace OrchardCore.Contents.AuditTrail.Indexes
 {
+    [RequireFeatures("OrchardCore.AuditTrail")]
     public class ContentAuditTrailEventIndexProvider : IndexProvider<AuditTrailEvent>
     {
         public override void Describe(DescribeContext<AuditTrailEvent> context) =>

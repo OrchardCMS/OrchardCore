@@ -7,12 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.Modules;
 using OrchardCore.Users.AuditTrail.Providers;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 
 namespace OrchardCore.Users.AuditTrail.Handlers
 {
+    [RequireFeatures("OrchardCore.AuditTrail")]
     public class UserEventHandler : ILoginFormEvent, IPasswordRecoveryFormEvents, IRegistrationFormEvents, IUserEventHandler
     {
         private readonly IAuditTrailManager _auditTrailManager;
