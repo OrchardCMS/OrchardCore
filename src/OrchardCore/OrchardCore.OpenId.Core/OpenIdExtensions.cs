@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenIddict.Abstractions;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Services.Managers;
@@ -24,6 +25,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
+
+            // Configure support for an OpenId collection.
+            builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));  
 
             return builder;
         }
