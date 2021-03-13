@@ -1,18 +1,6 @@
 [
   {
     "inputs": [
-      "Assets/scss/audittrail-disabledcontent.scss"
-    ],
-    "output": "wwwroot/Styles/audittrail-disabledcontent.css"
-  },
-  {
-    "inputs": [
-      "Assets/js/audittrail-disabledcontent.js"
-    ],
-    "output": "wwwroot/Scrips/audittrail-disabledcontent.js"
-  },
-  {
-    "inputs": [
       "node_modules/diff/dist/diff.js"
     ],
     "output": "wwwroot/Scripts/diff.js"
