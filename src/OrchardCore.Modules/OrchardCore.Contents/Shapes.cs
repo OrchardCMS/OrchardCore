@@ -4,7 +4,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Contents
 {
@@ -88,7 +87,7 @@ namespace OrchardCore.Contents
                         displayShape.Metadata.Alternates.Add(alternate);
                     }
 
-                    await ((Shape)content).AddAsync(displayShape, "");
+                    await context.Shape.AddAsync(displayShape, "");
                 });
         }
 
