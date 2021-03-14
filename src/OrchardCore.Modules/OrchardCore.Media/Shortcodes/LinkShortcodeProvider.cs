@@ -90,15 +90,16 @@ namespace OrchardCore.Media.Shortcodes
             }
 
             string url;
+            var mediaResolver = new MediaResolver(_httpContextAccessor.HttpContext.Request.PathBase, _options.CdnBaseUrl, _mediaFileStore);
             // sort out and infer as necessary the description (content) and resource location (url and href)
             if (arguments.NamedOrDefault(LinkShortcodeProperties.Url.Name) is null)
             {
-                url = UrlFixer(content);
+                url = mediaResolver.Resolve(content);
                 content = url;
             }
             else
             {
-                url = UrlFixer(arguments.NamedOrDefault(LinkShortcodeProperties.Url.Name));
+                url = mediaResolver.Resolve(arguments.NamedOrDefault(LinkShortcodeProperties.Url.Name));
                 if (String.IsNullOrWhiteSpace(content))
                 {
                     content = url;
@@ -133,40 +134,5 @@ namespace OrchardCore.Media.Shortcodes
 
         private static string FormatArguement(Arguments arguments, LinkShortcodeProperties property) => FormatAsAttributePair(property, arguments.Named(property.Name));
 
-        private string UrlFixer(string url)
-        {
-
-            if (IsSchemeless(url) || IsHttpOrHttps(url))
-            {
-                return url;
-            }
-
-            if (IsVirtualPath(url))
-            {
-                // add tenant path part
-                var requestPath = _httpContextAccessor.HttpContext.Request.PathBase;
-                url = requestPath.Add(url[1..]).Value;
-                // using a cdn?
-                if (IsUsingCdn())
-                {
-                    // add cdn part
-                    url = _options.CdnBaseUrl + url;
-                }
-            }
-            else
-            {
-                // add media store part
-                url = _mediaFileStore.MapPathToPublicUrl(url);
-            }
-
-            return url;
-        }
-
-        private bool IsUsingCdn() => !String.IsNullOrEmpty(_options.CdnBaseUrl);
-
-        // Serve static files from virtual path (multi-tenancy)
-        private static bool IsVirtualPath(string url) => url.StartsWith("~/", StringComparison.Ordinal);
-        private static bool IsHttpOrHttps(string url) => url.StartsWith("http", StringComparison.OrdinalIgnoreCase);
-        private static bool IsSchemeless(string url) => url.StartsWith("//", StringComparison.Ordinal);
     }
 }
