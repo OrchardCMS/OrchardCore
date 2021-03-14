@@ -215,6 +215,40 @@ The final workflow should look like this:
 
 ![Contact Form Workflow](./assets/contact-form-workflow-1.png)
 
+## Validate Rule Usage
+validate plug : [validator.js](https://github.com/validatorjs/validator.js)
+Validate rule is a validate option only used by input widget and textarea widget.It can validate input in frontend and backend.Now these functions are implemented:
+
+|Validator|Description|Options|
+|--|--|--|
+|None|don't validate value|none|
+|Contains|check if the string contains the seed( case sensitive always) | compare string |
+|Equals|check if the string matches the comparison( no case sensitive always)|compare string |
+|IsAfter|check if the string is a date that's after the specified date(needed).| datetime,like 2020-3-3 |
+|IsBefore|check if the string is a date that's before the specified date(needed).| datetime,like 2020-3-3 |
+|IsBoolean|check if a string is a boolean.|none|
+|IsByteLength|check if the string's length (in UTF-8 bytes) falls in a range.| {"min":0, "max": 20} |
+|IsDate|Check if the input is a valid date|same as validator.js|
+|IsDecimal|check if the string represents a decimal number, such as 0.1, .3, 1.1, 1.00003, 4.0, etc.|same as validator.js|
+|IsDivisibleBy|check if the string is a number that's divisible by another.|Divisor,like 3
+|IsEmpty|check if the string has a length of zero.|same as validator.js.|
+|IsFloat|check if the string is a float.|{ "min": 7.22, "max": 9.55 } |
+|IsInt|check if the string is an integer.|same as validator.js|
+|IsJSON|check if the string is valid JSON (note: uses JSON.parse).|same as validator.js|
+|IsLength|check if the string's length falls in a range.|{ "min": 7.22, "max": 20.0 }|
+|IsNumeric|check if the string contains only numbers.|same as validator.js|
+|Matches|check if string matches the pattern.|regex pattern string like : ^\\\\d{n}$,double backslash need if you want to input single backslash |
+
+
+It can seen from below pic,the submit button will be available only without validate rule errors.
+![Form Frontend Use Validate Rule](./assets/form-validation-rule-frontend.png)
+
+
+if you want to use validate rule in backend, you should create validate rule workflow like this:
+![Form Backend Use Validate Rule Workflow](./assets/form-validation-rule-backend.png)
+
+
+
 ## Future Improvements
 
 Implementing a workflow that handles form submissions is easy, but the workflow becomes big quite quickly as soon as you start adding validation logic to the mix. In the next version of the Forms module, there will be an easier way to validate Form submissions in combination with the Form widget. The Form widget will contain all of the validation settings, and there will be a single workflow activity that validates the submitted values against those settings.  

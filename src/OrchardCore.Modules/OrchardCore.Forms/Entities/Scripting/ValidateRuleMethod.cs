@@ -22,7 +22,6 @@ namespace OrchardCore.Forms.Entities.Scripting
         private readonly GlobalMethod _isDivisibleBy;
         private readonly GlobalMethod _isEmpty;
         private readonly GlobalMethod _isFloat;
-        private readonly GlobalMethod _isIn;
         private readonly GlobalMethod _isInt;
         private readonly GlobalMethod _isJSON;
         private readonly GlobalMethod _isLength;
@@ -36,7 +35,7 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Name = "contains",
                 Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
                 {
-                    return str.Contains(compare, StringComparison.InvariantCultureIgnoreCase);
+                    return str.Contains(compare, StringComparison.InvariantCulture);
                 })
             };
             _equals = new GlobalMethod
@@ -110,12 +109,12 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Name = "isDivisibleBy",
                 Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
                 {
-                    int originalNumber;
-                    int compareNumber;
-                    if(Int32.TryParse(str, out originalNumber) && Int32.TryParse(compare, out compareNumber))
+                    float originalNumber;
+                    int divisor;
+                    if(Single.TryParse(str, out originalNumber) && Int32.TryParse(compare, out divisor))
                     {
-                        if (compareNumber == 0) return false;
-                        return originalNumber % compareNumber == 0;
+                        if (divisor == 0) return false;
+                        return originalNumber % divisor == 0;
                     }
                     else
                     {
@@ -134,19 +133,17 @@ namespace OrchardCore.Forms.Entities.Scripting
             _isFloat = new GlobalMethod
             {
                 Name = "isFloat",
-                Method = serviceProvider => (Func<string, bool>)((str) =>
-                {
-                    float result;
-                    return Single.TryParse(str, out result);
-                })
-            };
-            _isIn = new GlobalMethod
-            {
-                Name = "isIn",
                 Method = serviceProvider => (Func<string,string, bool>)((str,option) =>
                 {
-                    if (String.IsNullOrEmpty(option)) return false;
-                    return option.Contains(str);
+                    float original;
+                    if(!Single.TryParse(str, out original)) return false;
+                    float min = 0;
+                    var max = Single.MaxValue;
+                    var obj = JToken.Parse(option);
+                    Single.TryParse(obj["max"]?.ToString(), out max);
+                    Single.TryParse(obj["min"]?.ToString(), out min);
+                    if (original >= min && (max == 0 || original <= max)) return true;
+                    return false;
                 })
             };
             _isInt = new GlobalMethod
@@ -214,7 +211,7 @@ namespace OrchardCore.Forms.Entities.Scripting
             {
                 _contains,_equals,_isAfter,_isBefore,_isBoolean,_isByteLength,
                 _isDate,_isDecimal,_isDivisibleBy,_isEmpty,_isFloat,
-                _isIn,_isInt,_isJSON,_isLength,_isNumeric,_matches
+                _isInt,_isJSON,_isLength,_isNumeric,_matches
             };
         }
 
@@ -223,12 +220,11 @@ namespace OrchardCore.Forms.Entities.Scripting
             try
             {
                 var min = 0;
-                var max = 0;
+                var max = Int32.MaxValue;
                 var obj = JToken.Parse(option);
-                if (Int32.TryParse(obj["min"]?.ToString(), out min) && Int32.TryParse(obj["max"]?.ToString(), out max))
-                {
-                    if (len >= min && (max == 0 || len <= max)) return true;
-                }
+                Int32.TryParse(obj["max"]?.ToString(), out max);
+                Int32.TryParse(obj["min"]?.ToString(), out min);
+                if (len >= min && (max == 0 || len <= max)) return true;
                 return false;
             }
             catch (JsonReaderException)
