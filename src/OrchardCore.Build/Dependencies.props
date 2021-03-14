@@ -16,7 +16,7 @@
     <PackageManagement Include="BenchmarkDotNet" Version="0.12.1" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="Fluid.Core" Version="2.0.0-beta-1008" />
+    <PackageManagement Include="Fluid.Core" Version="2.0.0-beta-1009" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-1914" />
     <PackageManagement Include="HtmlSanitizer" Version="5.0.376" />
@@ -44,13 +44,13 @@
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.3" />
-    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1754" />
-    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1754" />
-    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1754" />
-    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1754" />
-    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1754" />
-    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1754" />
-    <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.0.0" /> 
+    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1770" />
+    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1770" />
+    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1770" />
+    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1770" />
+    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1770" />
+    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1770" />
+    <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

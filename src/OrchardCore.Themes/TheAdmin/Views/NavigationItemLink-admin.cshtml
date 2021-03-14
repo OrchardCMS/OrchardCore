@@ -1,3 +1,4 @@
+@using OrchardCore.Localization
 @{
     // Morphing the shape to keep Model untouched
     Model.Metadata.Alternates.Clear();
@@ -44,7 +45,7 @@
 
     if (Model.HasItems)
     {
-        tag.InnerHtml.AppendHtml(Html.Raw("<div class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span></div>"));
+        tag.InnerHtml.AppendHtml(Html.Raw("<div class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-" + (Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left") + " fa-xs chevron\"></i></span></div>"));
     }
 }
 
