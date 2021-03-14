@@ -105,7 +105,8 @@ nav:
         - Contributing to the docs: docs/topics/docs-contributions/README.md
         - Publishing a new release: docs/topics/publishing-releases/README.md
         - Using Docker: docs/topics/docker/README.md
-    - Reference: 
+    - Reference:
+        - docs/reference/README.md
         - CMS Modules: 
             - Content Types: docs/reference/modules/ContentTypes/README.md
             - Content Parts: 
@@ -115,7 +116,7 @@ nav:
                 - Alias: docs/reference/modules/Alias/README.md
                 - Html: docs/reference/modules/Html/README.md
                 - Markdown: docs/reference/modules/Markdown/README.md
-                - List: docs/reference/modules/List/README.md
+                - List: docs/reference/modules/Lists/README.md
                 - Flow: docs/reference/modules/Flow/README.md 
                 - Bag: docs/reference/modules/Flow/BagPart.md
                 - Publish Later: docs/reference/modules/PublishLater/README.md
@@ -130,6 +131,7 @@ nav:
             - Themes: docs/reference/modules/Themes/README.md
             - Liquid: docs/reference/modules/Liquid/README.md
             - Indexing: docs/reference/modules/Indexing/README.md
+            - Rules: docs/reference/modules/Rules/README.md
             - SQL: docs/reference/modules/SQL/README.md
             - Lucene: docs/reference/modules/Lucene/README.md
             - Queries: docs/reference/modules/Queries/README.md
@@ -145,6 +147,7 @@ nav:
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
             - Admin: docs/reference/modules/Admin/README.md
+            - Admin Dashboard: docs/reference/modules/AdminDashboard/README.md
             - Admin Menu: docs/reference/modules/AdminMenu/README.md
             - Taxonomies: docs/reference/modules/Taxonomies/README.md
             - Authentication:
@@ -154,13 +157,16 @@ nav:
                 - GitHub: docs/reference/modules/GitHub/README.md
                 - Google: docs/reference/modules/Google/README.md
             - Users: 
-                - Configuration: docs/reference/modules/Users/Configuration/README.md
+                - Overview: docs/reference/modules/Users/README.md
                 - Custom User Settings: docs/reference/modules/Users/CustomUserSettings/README.md
+            - Home Route: docs/reference/modules/HomeRoute/README.md
+            - Feeds: docs/reference/modules/Feeds/README.md
         - Core Modules: 
-    #        - How to use Core Modules: docs/reference/core/README.md
+            - Auto Setup: docs/reference/modules/AutoSetup/README.md
             - Features: docs/reference/modules/Features/README.md
             - Contents: docs/reference/modules/Contents/README.md
             - Configuration: docs/reference/core/Configuration/README.md
+            - Cors: docs/reference/modules/Cors/README.md
             - Custom Settings: docs/reference/modules/CustomSettings/README.md
             - Placement: docs/reference/core/Placement/README.md
             - Data: docs/reference/core/Data/README.md
@@ -170,8 +176,9 @@ nav:
             - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
             - Health Check: docs/reference/modules/HealthChecks/README.md
             - HTTPS: docs/reference/modules/Https/README.md
+            - Key Vault (Azure): docs/reference/core/KeyVault.Azure/README.md
             - Localization: docs/reference/modules/Localize/README.md
-            - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
+            - Logging Serilog: docs/reference/core/Logging.Serilog/README.md
             - Mini Profiler: docs/reference/modules/MiniProfiler/README.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
@@ -186,6 +193,8 @@ nav:
             - Tenants: docs/reference/modules/Tenants/README.md
             - Workflows: docs/reference/modules/Workflows/README.md
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
+            - Background Tasks: docs/reference/modules/BackgroundTasks/README.md
+            - Reverse Proxy: docs/reference/modules/ReverseProxy/README.md
     - Resources: 
         - Learning: docs/resources/README.md
         - Tutorials: docs/resources/tutorials/README.md

@@ -23,7 +23,7 @@
         </div>
         <div class="btn-group float-right">
             <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
-            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge badge-light">@Model.WorkflowCount</span></a>
+            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge ta-badge">@Model.WorkflowCount</span></a>
         </div>
     </div>
 </div>

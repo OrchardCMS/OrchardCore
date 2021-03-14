@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Email</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Provides email settings configuration and a default email service based on SMTP.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

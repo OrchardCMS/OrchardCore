@@ -59,8 +59,8 @@ namespace OrchardCore.Taxonomies.Drivers
                     .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
                 var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
                 taxonomyContentItemIds = taxonomyContentItemIds.Intersect(fieldTaxonomyContentItemIds).ToArray();
-                
-                if (!taxonomyContentItemIds.Any()) 
+
+                if (!taxonomyContentItemIds.Any())
                 {
                     return null;
                 }
@@ -73,7 +73,7 @@ namespace OrchardCore.Taxonomies.Drivers
             foreach (var taxonomy in taxonomies)
             {
                 results.Add(
-                    Initialize<TaxonomyContentsAdminFilterViewModel>("ContentsAdminList__TaxonomyFilter", m =>
+                    Initialize<TaxonomyContentsAdminFilterViewModel>("ContentsAdminListTaxonomyFilter", m =>
                     {
                         var termEntries = new List<FilterTermEntry>();
                         PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);

@@ -52,8 +52,10 @@
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
+        "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
@@ -967,12 +969,30 @@
       "Layers": [
         {
           "Name": "Always",
-          "Rule": "true",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
           "Name": "Homepage",
-          "Rule": "isHomepage()",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -1071,6 +1091,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Services",
                 "LinkMenuItemPart": {
                   "Name": "Services",
                   "Url": "~/#services"
@@ -1079,6 +1100,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Portfolio",
                 "LinkMenuItemPart": {
                   "Name": "Portfolio",
                   "Url": "~/#portfolio"
@@ -1087,6 +1109,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "About",
                 "LinkMenuItemPart": {
                   "Name": "About",
                   "Url": "~/#about"
@@ -1095,6 +1118,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Team",
                 "LinkMenuItemPart": {
                   "Name": "Team",
                   "Url": "~/#team"
@@ -1103,6 +1127,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Contact",
                 "LinkMenuItemPart": {
                   "Name": "Contact",
                   "Url": "~/#contact"

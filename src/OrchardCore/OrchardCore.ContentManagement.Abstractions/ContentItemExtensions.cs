@@ -29,6 +29,16 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <summary>
+        /// Removes a content part by its type.
+        /// </summary>
+        /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
+        /// <typeparam name="TPart">The type of the content part.</typeparam>
+        public static void Remove<TPart>(this ContentItem contentItem) where TPart : ContentPart, new()
+        {
+            contentItem.Remove(typeof(TPart).Name);
+        }
+
+        /// <summary>
         /// Adds a content part by its type.
         /// </summary>
         /// <param name="contentItem">The <see cref="ContentItem"/>.</param>

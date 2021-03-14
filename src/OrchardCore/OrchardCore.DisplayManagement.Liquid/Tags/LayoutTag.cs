@@ -1,25 +1,21 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class LayoutTag : ExpressionTag
+    public class LayoutTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression)
+        public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
-            {
-                throw new ArgumentException("Services missing while invoking 'helper'");
-            }
-
-            var services = servicesValue as IServiceProvider;
+            var services = ((LiquidTemplateContext)context).Services;
 
             var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;

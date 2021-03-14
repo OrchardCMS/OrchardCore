@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.ContentPreview</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore ContentPreview Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for ContentPreview Module</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

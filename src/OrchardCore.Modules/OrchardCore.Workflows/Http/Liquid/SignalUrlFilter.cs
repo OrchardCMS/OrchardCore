@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Models;
@@ -12,17 +14,19 @@ namespace OrchardCore.Workflows.Http.Liquid
 {
     public class SignalUrlFilter : ILiquidFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            if (!context.AmbientValues.TryGetValue("UrlHelper", out var urlHelperObj))
-            {
-                throw new ArgumentException("UrlHelper missing while invoking 'signal_url'");
-            }
+        private readonly IUrlHelperFactory _urlHelperFactory;
+        private readonly ISecurityTokenService _securityTokenService;
 
-            if (!context.AmbientValues.TryGetValue("SignalService", out var signalServiceObj))
-            {
-                throw new ArgumentException("SignalService missing while invoking 'signal_url'");
-            }
+        public SignalUrlFilter(IUrlHelperFactory urlHelperFactory, ISecurityTokenService securityTokenService)
+        {
+            _urlHelperFactory = urlHelperFactory;
+            _securityTokenService = securityTokenService;
+        }
+
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        {
+            var context = (LiquidTemplateContext)ctx;
+            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
             var workflowContextValue = context.GetValue("Workflow");
 
@@ -37,10 +41,9 @@ namespace OrchardCore.Workflows.Http.Liquid
                 ? SignalPayload.ForWorkflow(signalName, workflowContext.WorkflowId)
                 : SignalPayload.ForCorrelation(signalName, workflowContext.CorrelationId);
 
-            var urlHelper = (IUrlHelper)urlHelperObj;
-            var signalService = (ISecurityTokenService)signalServiceObj;
-            var token = signalService.CreateToken(payload, TimeSpan.FromDays(7));
+            var token = _securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
             var urlValue = new StringValue(urlHelper.Action("Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token }));
+
             return new ValueTask<FluidValue>(urlValue);
         }
     }

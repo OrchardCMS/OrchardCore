@@ -6,6 +6,8 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.MiniProfiler
 {
@@ -31,9 +33,13 @@ namespace OrchardCore.MiniProfiler
             if ((context.Result is ViewResult || context.Result is PageResult) &&
                 (_options.AllowOnAdmin || !AdminAttribute.IsApplied(context.HttpContext)))
             {
-                dynamic layout = await _layoutAccessor.GetLayoutAsync();
+                var layout = await _layoutAccessor.GetLayoutAsync();
                 var footerZone = layout.Zones["Footer"];
-                footerZone.Add(await _shapeFactory.CreateAsync("MiniProfiler"));
+
+                if (footerZone is Shape shape)
+                {
+                    await shape.AddAsync(await _shapeFactory.CreateAsync("MiniProfiler"));
+                }
             }
 
             await next.Invoke();

@@ -1,7 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Scripting</Title>
+    <Description>$(OCFrameworkDescription)
+
+    The Scripting module adds scripting capabilities.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
