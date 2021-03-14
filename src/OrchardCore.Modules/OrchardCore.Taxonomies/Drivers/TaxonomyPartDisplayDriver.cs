@@ -17,11 +17,11 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
-        private readonly ITaxonomyService _taxonomyFieldService;
+        private readonly ITaxonomyService _taxonomyService;
 
-        public TaxonomyPartDisplayDriver(ITaxonomyService taxonomyFieldService)
+        public TaxonomyPartDisplayDriver(ITaxonomyService taxonomyService)
         {
-            _taxonomyFieldService = taxonomyFieldService;
+            _taxonomyService = taxonomyService;
         }
 
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
@@ -71,7 +71,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 // Update order of existing content if enable ordering has been turned on
                 if (part.EnableOrdering != model.EnableOrdering && model.EnableOrdering == true)
                 {
-                    await _taxonomyFieldService.InitializeCategorizedItemsOrderAsync(part.ContentItem.ContentItemId);
+                    await _taxonomyService.InitializeCategorizedItemsOrderAsync(part.ContentItem.ContentItemId);
                 }
 
                 part.TermContentType = model.TermContentType;

@@ -22,18 +22,18 @@ namespace OrchardCore.Taxonomies.Drivers
     {
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
-        private readonly ITaxonomyService _taxonomyFieldService;
+        private readonly ITaxonomyService _taxonomyService;
         private readonly IStringLocalizer S;
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,
             ISession session,
-            ITaxonomyService taxonomyFieldService,
+            ITaxonomyService taxonomyService,
             IStringLocalizer<TaxonomyFieldDisplayDriver> localizer)
         {
             _contentManager = contentManager;
             _session = session;
-            _taxonomyFieldService = taxonomyFieldService;
+            _taxonomyService = taxonomyService;
             S = localizer;
         }
 
@@ -98,8 +98,8 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 if (taxonomy.As<TaxonomyPart>().EnableOrdering)
                 {
-                    await _taxonomyFieldService.SyncTaxonomyFieldProperties(field);
-                    await _taxonomyFieldService.EnsureUniqueOrderValues(field);
+                    await _taxonomyService.SyncTaxonomyFieldProperties(field);
+                    await _taxonomyService.EnsureUniqueOrderValues(field);
                 }
             }
 

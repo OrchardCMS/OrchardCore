@@ -30,7 +30,7 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly ITaxonomyService _taxonomyFieldService;
+        private readonly ITaxonomyService _taxonomyService;
         private readonly dynamic New;
 
         public AdminController(
@@ -42,7 +42,7 @@ namespace OrchardCore.Taxonomies.Controllers
             INotifier notifier,
             IHtmlLocalizer<AdminController> localizer,
             IUpdateModelAccessor updateModelAccessor,
-            ITaxonomyService taxonomyFieldService,
+            ITaxonomyService taxonomyService,
             IShapeFactory shapeFactory)
         {
             _contentManager = contentManager;
@@ -52,7 +52,7 @@ namespace OrchardCore.Taxonomies.Controllers
             _session = session;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            _taxonomyFieldService = taxonomyFieldService;
+            _taxonomyService = taxonomyService;
             H = localizer;
             New = shapeFactory;
         }
@@ -343,7 +343,7 @@ namespace OrchardCore.Taxonomies.Controllers
             var termPart = contentItem.As<TermPart>();
             model.TaxonomyContentItemId = termPart.TaxonomyContentItemId;
             model.ContentItem = termPart.ContentItem;
-            model.ContentItems = (await _taxonomyFieldService.QueryCategorizedItemsAsync(termPart, enableOrdering, pager)).ToArray();
+            model.ContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(termPart, enableOrdering, pager)).ToArray();
             model.Pager = await New.PagerSlim(pager);
 
             return View(model);
@@ -379,14 +379,14 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var pager = new PagerSlim(pagerSlimParameters, pageSize);
 
-            var categorizedContentItems = (await _taxonomyFieldService.QueryCategorizedItemsAsync(termPart, true, pager)).ToList();
+            var categorizedContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(termPart, true, pager)).ToList();
 
             // Find the lower and higher bounds of the affected area (between the old and new position of the moved item)
             var lowerIndex = Math.Min(newIndex, oldIndex);
             var higherIndex = Math.Max(newIndex, oldIndex);
 
             // Find the lower order value
-            var lowerOrderValue = _taxonomyFieldService.GetTaxonomyTermOrder(categorizedContentItems[higherIndex], taxonomyItemId);
+            var lowerOrderValue = _taxonomyService.GetTaxonomyTermOrder(categorizedContentItems[higherIndex], taxonomyItemId);
 
             // Move the element to it's new position
             var categorizedContentItem = categorizedContentItems[oldIndex];
@@ -397,7 +397,7 @@ namespace OrchardCore.Taxonomies.Controllers
             categorizedContentItems = categorizedContentItems.GetRange(lowerIndex, higherIndex - lowerIndex + 1);
 
             // Apply and save the new order values
-            await _taxonomyFieldService.SaveCategorizedItemsOrder(categorizedContentItems, taxonomyItemId, lowerOrderValue);
+            await _taxonomyService.SaveCategorizedItemsOrder(categorizedContentItems, taxonomyItemId, lowerOrderValue);
 
             return Ok();
         }

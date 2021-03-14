@@ -20,16 +20,16 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
-        private readonly ITaxonomyService _taxonomyFieldService;
+        private readonly ITaxonomyService _taxonomyService;
         private readonly IStringLocalizer S;
 
         public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,
-            ITaxonomyService taxonomyFieldService,
+            ITaxonomyService taxonomyService,
             IStringLocalizer<TaxonomyFieldDisplayDriver> s)
         {
             _contentManager = contentManager;
-            _taxonomyFieldService = taxonomyFieldService;
+            _taxonomyService = taxonomyService;
             S = s;
         }
 
@@ -103,8 +103,8 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 if (taxonomy.As<TaxonomyPart>().EnableOrdering)
                 {
-                    await _taxonomyFieldService.SyncTaxonomyFieldProperties(field);
-                    await _taxonomyFieldService.EnsureUniqueOrderValues(field);
+                    await _taxonomyService.SyncTaxonomyFieldProperties(field);
+                    await _taxonomyService.EnsureUniqueOrderValues(field);
                 }
             }
 

@@ -24,18 +24,18 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
-        private readonly ITaxonomyService _taxonomyFieldService;
+        private readonly ITaxonomyService _taxonomyService;
 
         public TermPartContentDriver(
             ISession session,
             ISiteService siteService,
             IContentManager contentManager,
-            ITaxonomyService taxonomyFieldService)
+            ITaxonomyService taxonomyService)
         {
             _session = session;
             _siteService = siteService;
             _contentManager = contentManager;
-            _taxonomyFieldService = taxonomyFieldService;
+            _taxonomyService = taxonomyService;
         }
 
         public override Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
@@ -50,7 +50,7 @@ namespace OrchardCore.Taxonomies.Drivers
                     var pager = await GetPagerAsync(context.Updater, siteSettings.PageSize);
                     m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                     m.ContentItem = part.ContentItem;
-                    m.ContentItems = (await _taxonomyFieldService.QueryCategorizedItemsAsync(part, enableOrdering, pager)).ToArray();
+                    m.ContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(part, enableOrdering, pager)).ToArray();
                     m.Pager = await context.New.PagerSlim(pager);
 
                 })
