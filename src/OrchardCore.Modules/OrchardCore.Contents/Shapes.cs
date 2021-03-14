@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
-
+using OrchardCore.DisplayManagement.Shapes;
 namespace OrchardCore.Contents
 {
     public class Shapes : IShapeTableProvider
