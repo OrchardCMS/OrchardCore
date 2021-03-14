@@ -1,7 +1,9 @@
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -19,25 +21,28 @@ namespace OrchardCore.Google.Authentication.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly ILogger _logger;
 
         public GoogleAuthenticationSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            ILogger<GoogleAuthenticationSettingsDisplayDriver> logger)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
             _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _logger = logger;
         }
 
         public override async Task<IDisplayResult> EditAsync(GoogleAuthenticationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
             {
                 return null;
             }
@@ -47,8 +52,17 @@ namespace OrchardCore.Google.Authentication.Drivers
                 model.ClientID = settings.ClientID;
                 if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
-                    model.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                    try
+                    {
+                        var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
+                        model.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                    }
+                    catch (CryptographicException)
+                    {
+                        _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
+                        model.ClientSecret = string.Empty;
+                        model.HasDecryptionError = true;
+                    }
                 }
                 else
                 {
@@ -67,7 +81,7 @@ namespace OrchardCore.Google.Authentication.Drivers
             if (context.GroupId == GoogleConstants.Features.GoogleAuthentication)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
                 {
                     return null;
                 }

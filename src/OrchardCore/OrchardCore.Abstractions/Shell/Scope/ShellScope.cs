@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Scope
@@ -18,7 +20,6 @@ namespace OrchardCore.Environment.Shell.Scope
     public class ShellScope : IServiceScope
     {
         private static readonly AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
-        private static readonly Dictionary<string, SemaphoreSlim> _semaphores = new Dictionary<string, SemaphoreSlim>();
 
         private readonly IServiceScope _serviceScope;
         private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
@@ -270,41 +271,33 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            SemaphoreSlim semaphore;
-            lock (_semaphores)
+            // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
+            (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
+            if (!locked)
             {
-                if (!_semaphores.TryGetValue(ShellContext.Settings.Name, out semaphore))
-                {
-                    _semaphores[ShellContext.Settings.Name] = semaphore = new SemaphoreSlim(1);
-                }
+                throw new TimeoutException($"Fails to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
             }
 
-            await semaphore.WaitAsync();
-            try
+            await using var acquiredLock = locker;
+
+            // The tenant gets activated here.
+            if (!ShellContext.IsActivated)
             {
-                // The tenant gets activated here.
-                if (!ShellContext.IsActivated)
+                await new ShellScope(ShellContext).UsingAsync(async scope =>
                 {
-                    await new ShellScope(ShellContext).UsingAsync(async scope =>
+                    var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                    foreach (var tenantEvent in tenantEvents)
                     {
-                        var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-                        foreach (var tenantEvent in tenantEvents)
-                        {
-                            await tenantEvent.ActivatingAsync();
-                        }
+                        await tenantEvent.ActivatingAsync();
+                    }
 
-                        foreach (var tenantEvent in tenantEvents.Reverse())
-                        {
-                            await tenantEvent.ActivatedAsync();
-                        }
-                    }, activateShell: false);
+                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    {
+                        await tenantEvent.ActivatedAsync();
+                    }
+                }, activateShell: false);
 
-                    ShellContext.IsActivated = true;
-                }
-            }
-            finally
-            {
-                semaphore.Release();
+                ShellContext.IsActivated = true;
             }
         }
 

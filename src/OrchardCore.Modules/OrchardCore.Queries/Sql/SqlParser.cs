@@ -446,7 +446,11 @@ namespace OrchardCore.Queries.Sql
             IList<string> arguments;
             var tempBuilder = _builder;
 
-            if (funCall.ChildNodes[1].ChildNodes[0].Term.Name == "selectStatement")
+            if (funCall.ChildNodes[1].ChildNodes.Count == 0) 
+            {
+                arguments = Array.Empty<string>();
+            }
+            else if (funCall.ChildNodes[1].ChildNodes[0].Term.Name == "selectStatement")
             {
                 // selectStatement
                 _builder = new StringBuilder();
@@ -524,14 +528,22 @@ namespace OrchardCore.Queries.Sql
                     EvaluateAliasList(joinStatement.ChildNodes[2]);
 
                     _builder.Append(" ON ");
-                    _modes.Push(FormattingModes.SelectClause);
 
-                    EvaluateId(joinStatement.ChildNodes[4]);
+                    var joinConditions = joinStatement.ChildNodes[4].ChildNodes;
 
-                    _builder.Append(" = ");
-
-                    EvaluateId(joinStatement.ChildNodes[6]);
-                    _modes.Pop();
+                    for (var i = 0; i < joinConditions.Count; i++)
+                    {
+                        if (i > 0)
+                        {
+                            _builder.Append(" AND ");
+                        }
+                        _modes.Push(FormattingModes.SelectClause);
+                        var joinCondition = joinConditions[i];
+                        EvaluateExpression(joinCondition.ChildNodes[0].ChildNodes[0]);
+                        _builder.Append(" = ");
+                        EvaluateExpression(joinCondition.ChildNodes[2].ChildNodes[0]);
+                        _modes.Pop();
+                    }
                 }
             }
 

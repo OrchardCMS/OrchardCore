@@ -9,8 +9,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     {
         private const string AspPrefix = "asp-";
         public readonly static LiquidTagHelperMatching None = new LiquidTagHelperMatching();
-        public readonly IEnumerable<TagMatchingRuleDescriptor> _rules = Enumerable.Empty<TagMatchingRuleDescriptor>();
-
+        public readonly TagMatchingRuleDescriptor[] _rules = Array.Empty<TagMatchingRuleDescriptor>();
         public LiquidTagHelperMatching()
         {
         }
@@ -25,54 +24,67 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public string Name { get; } = String.Empty;
         public string AssemblyName { get; } = String.Empty;
 
-        public bool Match(string helper, IEnumerable<string> arguments)
+        private static bool Predicate(TagMatchingRuleDescriptor rule, string helper, IEnumerable<string> arguments)
         {
-            return _rules.Any(rule =>
+            // Does it match the required tag name
+            if (rule.TagName != "*" && !String.Equals(rule.TagName, helper, StringComparison.OrdinalIgnoreCase))
             {
-                // Does it match the required tag name
-                if (rule.TagName != "*" && !String.Equals(rule.TagName, helper, StringComparison.OrdinalIgnoreCase))
+                return false;
+            }
+
+            // Does it expect any specific attribute?
+            if (!rule.Attributes.Any())
+            {
+                return true;
+            }
+
+            // Are all required attributes present?
+            var allRequired = rule.Attributes.All(attr => arguments.Any(name =>
+            {
+                // Exact match
+                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                 {
-                    return false;
+                    return true;
                 }
 
-                // Does it expect any specific attribute?
-                if (!rule.Attributes.Any())
+                // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
+                name = name.Replace('_', '-');
+
+                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
 
-                // Are all required attributes present?
-                var allRequired = rule.Attributes.All(attr => arguments.Any(name =>
+                if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal))
                 {
-                    // Exact match
-                    if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
+                    if (name.AsSpan().Equals(attr.Name.AsSpan(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
-
-                    // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
-                    name = name.Replace('_', '-');
-
-                    if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal) && String.Equals(name, attr.Name.Substring(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-
-                    if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                }));
-
-                if (allRequired)
-                {
-                    return true;
                 }
 
                 return false;
-            });
+            }));
+
+            if (allRequired)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        
+        public bool Match(string helper, IEnumerable<string> arguments)
+        {
+            foreach (var rule in _rules)
+            {
+                if (Predicate(rule, helper, arguments))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

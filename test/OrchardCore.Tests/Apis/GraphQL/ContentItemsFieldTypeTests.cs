@@ -60,14 +60,28 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             if (File.Exists(_tempFilename))
             {
-                File.Delete(_tempFilename);
+                try
+                {
+                    File.Delete(_tempFilename);
+                }
+                catch
+                {
+
+                }
             }
 
             var prefixFilename = _tempFilename + _prefix;
 
             if (File.Exists(prefixFilename))
             {
-                File.Delete(prefixFilename);
+                try
+                {
+                    File.Delete(prefixFilename);
+                }
+                catch
+                {
+
+                }
             }
         }
 
@@ -543,9 +557,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     return new AnimalIndex
                     {
-                        Name = contentItem.As<Animal>() != null ?
-                                contentItem.As<Animal>().Name
-                                : contentItem.As<AnimalPart>().Name
+                        Name = contentItem.As<Animal>() != null
+                            ? contentItem.As<Animal>().Name
+                            : contentItem.As<AnimalPart>().Name
                     };
                 });
         }

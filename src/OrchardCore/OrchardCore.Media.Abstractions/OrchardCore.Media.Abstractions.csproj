@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Media</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Media Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for Media module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

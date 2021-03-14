@@ -11,7 +11,7 @@ describe('Headless Recipe test', function () {
 
     it('Displays the login screen when accessing the root of the Headless theme', function(){
         cy.visit(`${tenant.prefix}`);
-        cy.get('h4').should('contain.text', 'Use a local account to log in.');
+        cy.get('h4').should('contain.text', 'Log in');
      })
 
     it('Headless admin login should work', function(){

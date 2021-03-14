@@ -1,6 +1,8 @@
-
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.ViewModels;
@@ -13,6 +15,7 @@ namespace OrchardCore.Shortcodes.Services
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly HashSet<string> _identifiers = new HashSet<string>();
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
 
@@ -34,6 +37,16 @@ namespace OrchardCore.Shortcodes.Services
                 return null;
             }
 
+            // Check if a shortcode template is recursively called.
+            if (_identifiers.Contains(identifier))
+            {
+                return null;
+            }
+            else
+            {
+                _identifiers.Add(identifier);
+            }
+
             var model = new ShortcodeViewModel
             {
                 Args = arguments,
@@ -41,13 +54,27 @@ namespace OrchardCore.Shortcodes.Services
                 Context = context
             };
 
-            return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
-                scope =>
-                {
-                    scope.SetValue("Content", model.Content);
-                    scope.SetValue("Args", model.Args);
-                    scope.SetValue("Context", model.Context);
-                });
+            var parameters = new Dictionary<string, FluidValue>();
+            parameters[identifier] = new StringValue("");
+
+            // TODO: Fix 'Content' property conflict differently, see #8259
+
+            // var c = context.GetValue("Content").ToObjectValue();
+            // if (c is LiquidContentAccessor contentAccessor)
+            // {
+            //     contentAccessor.Content = model.Content ?? "";
+            //     parameters["Content"] = contentAccessor;
+            // }
+            // else
+            // {
+            //     parameters["Content"] = model.Content ?? "";
+            // }
+
+            parameters["Args"] = new ObjectValue(model.Args);
+            parameters["Content"] = new StringValue(model.Content);
+            parameters["Context"] = new ObjectValue(model.Context);
+
+            return await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
         }
     }
 }

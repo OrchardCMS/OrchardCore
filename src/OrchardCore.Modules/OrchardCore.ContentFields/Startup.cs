@@ -27,29 +27,7 @@ namespace OrchardCore.ContentFields
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
-        static Startup()
-        {
-            // Registering both field types and shape types are necessary as they can
-            // be accessed from inner properties.
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<BooleanField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<HtmlField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<LinkField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<NumericField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<TextField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTextFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DateTimeField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DateField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<TimeField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
-        }
-
+        
         public Startup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
@@ -57,6 +35,32 @@ namespace OrchardCore.ContentFields
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<BooleanField>();
+                o.MemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
+                o.MemberAccessStrategy.Register<HtmlField>();
+                o.MemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
+                o.MemberAccessStrategy.Register<LinkField>();
+                o.MemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
+                o.MemberAccessStrategy.Register<NumericField>();
+                o.MemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
+                o.MemberAccessStrategy.Register<TextField>();
+                o.MemberAccessStrategy.Register<DisplayTextFieldViewModel>();
+                o.MemberAccessStrategy.Register<DateTimeField>();
+                o.MemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
+                o.MemberAccessStrategy.Register<DateField>();
+                o.MemberAccessStrategy.Register<DisplayDateFieldViewModel>();
+                o.MemberAccessStrategy.Register<TimeField>();
+                o.MemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
+                o.MemberAccessStrategy.Register<MultiTextField>();
+                o.MemberAccessStrategy.Register<DisplayMultiTextFieldViewModel>();
+                o.MemberAccessStrategy.Register<UserPickerField>();
+                o.MemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
+                o.MemberAccessStrategy.Register<ContentPickerField>();
+                o.MemberAccessStrategy.Register<DisplayContentPickerFieldViewModel>();
+            });
+
             // Boolean Field
             services.AddContentField<BooleanField>()
                 .UseDisplayDriver<BooleanFieldDisplayDriver>();
@@ -83,6 +87,12 @@ namespace OrchardCore.ContentFields
                 .UseDisplayDriver<LinkFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
+
+            // MultiText Field
+            services.AddContentField<MultiTextField>()
+                .UseDisplayDriver<MultiTextFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, MultiTextFieldIndexHandler>();
 
             // Numeric Field
             services.AddContentField<NumericField>()
@@ -181,7 +191,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, UserPickerFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, MultiTextFieldIndexProvider>();
         }
     }
 
@@ -190,16 +200,6 @@ namespace OrchardCore.ContentFields
     {
         private readonly AdminOptions _adminOptions;
 
-        static UserPickerStartup()
-        {
-            // Registering both field types and shape types are necessary as they can
-            // be accessed from inner properties.
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<UserPickerField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayUserPickerFieldUserNamesViewModel>();
-        }
-
         public UserPickerStartup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
@@ -207,6 +207,13 @@ namespace OrchardCore.ContentFields
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<UserPickerField>();
+                o.MemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
+                o.MemberAccessStrategy.Register<DisplayUserPickerFieldUserNamesViewModel>();
+            });
+
             services.AddContentField<UserPickerField>()
                 .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
                 .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase));
@@ -227,7 +234,7 @@ namespace OrchardCore.ContentFields
         }
     }
 
-    [RequireFeatures("OrchardCore.Users", "OrchardCore.ContentFields.Indexing.SQL")]
+    [Feature("OrchardCore.ContentFields.Indexing.SQL.UserPicker")]
     public class UserPickerSqlIndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

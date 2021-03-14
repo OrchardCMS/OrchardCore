@@ -1,7 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+     <!-- NuGet properties-->
+    <Title>OrchardCore ContentManagement</Title>
+    <Description>$(OCCMSDescription)
+
+    Implementation for ContentManagement</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

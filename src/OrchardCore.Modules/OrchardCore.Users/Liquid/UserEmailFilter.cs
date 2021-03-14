@@ -16,7 +16,7 @@ namespace OrchardCore.Users.Liquid
             _userManager = userManager;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments args, TemplateContext context)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments args, LiquidTemplateContext ctx)
         {
             if (input.ToObjectValue() is ClaimsPrincipal claimsPrincipal)
             {
@@ -29,12 +29,13 @@ namespace OrchardCore.Users.Liquid
                     return NilValue.Instance;
                 }
 
-                return FluidValue.Create(email);
+                return FluidValue.Create(email, ctx.Options);
             }
 
             if (input.ToObjectValue() is IUser user)
             {
-                return FluidValue.Create(await _userManager.GetEmailAsync(user));
+
+                return FluidValue.Create(await _userManager.GetEmailAsync(user), ctx.Options);
             }
 
             return NilValue.Instance;

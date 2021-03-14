@@ -1,11 +1,11 @@
-@inject DarkModeService DarkModeService;
-@inject IOptions<AdminOptions> AdminOptions;
+@inject DarkModeService DarkModeService
+@inject IOptions<AdminOptions> AdminOptions
 @{
     var adminSettings = Site.As<AdminSettings>();
     var darkMode = await DarkModeService.IsDarkModeAsync();
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-tenant="@DarkModeService.CurrentTenant" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -20,7 +20,7 @@
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
-    <script asp-name="jscookie" at="Foot" version="2.1.4"></script>
+    <script asp-name="js-cookie" at="Foot" version="2"></script>
     <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery" at="Foot"></script>
     <resources type="Header" />
 
@@ -31,40 +31,34 @@
 <body class="preload">
     <div class="ta-wrapper">
         <div class="ta-navbar-top navbar-expand-lg bg-primary">
-            <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src="/TheAdmin/logo.png" /><span>@Site.SiteName</span></a>
-            <div class="mr-auto">
-                @if (adminSettings.DisplayTitlesInTopbar)
-                {
-                    @await RenderSectionAsync("Title", required: false)
-                }
+            <div class="d-flex w-100">
+                <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src=@Url.Content("~/TheAdmin/logo.png") alt="@Site.SiteName" /><span>@Site.SiteName</span></a>
+
+                <div class="flex-grow-1">
+                    @if (adminSettings.DisplayTitlesInTopbar)
+                    {
+                        @await RenderSectionAsync("Title", required: false)
+                    }
                 </div>
-                @await RenderSectionAsync("NavbarTop", required: false)
-                <button class="navbar-toggler pull-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="@T["Toggle navigation"]">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
-                    <ul class="navbar-nav">
-                        @await RenderSectionAsync("NavbarLinks", required: false)
-                        <li class="nav-item">
-                            @if (adminSettings.DisplayDarkMode)
+                <div class="d-flex align-items-center">
+                    @await RenderSectionAsync("NavbarTop", required: false)
+                    @if (adminSettings.DisplayDarkMode)
+                    {
+                        <a id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                            @if (darkMode)
                             {
-                            <a id="btn-darkmode" class="nav-link" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
-                                @if (darkMode)
-                                {
-                                    <i class="fas fa-sun"></i>
-                                }
-                                else
-                                {
-                                    <i class="fas fa-moon"></i>
-                                }
-                            </a>
+                                <i class="fas fa-sun"></i>
                             }
-                        </li>
-                        <li class="nav-item">
-                            <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]"><i class="fa fa-external-link"></i></a>
-                        </li>
-                        <li class="nav-item">@await DisplayAsync(await New.UserMenu())</li>
-                    </ul>
+                            else
+                            {
+                                <i class="fas fa-moon"></i>
+                            }
+                        </a>
+                    }
+                    <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]" role="button">
+                        <i class="fa fa-fw fa-external-link"></i>
+                    </a>
+                    @await DisplayAsync(await New.UserMenu())
                 </div>
             </div>
         </div>
@@ -84,14 +78,13 @@
             {
                 @await RenderSectionAsync("Title", required: false)
             }
-                @await RenderBodyAsync()
-            </div>
+            @await RenderBodyAsync()
         </div>
 
         @await RenderSectionAsync("Footer", required: false)
 
-        <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
-
-        <resources type="Footer" />
-    </body>
-    </html>
+    </div>
+    <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+    <resources type="Footer" />
+</body>
+</html>

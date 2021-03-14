@@ -64,8 +64,10 @@
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
+        "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
         "OrchardCore.Taxonomies",
         "OrchardCore.Title",
         "OrchardCore.Templates",
@@ -982,6 +984,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js: uuid()]",
+                "DisplayText": "Home",
                 "LinkMenuItemPart": {
                   "Name": "Home",
                   "Url": "~/"
@@ -990,6 +993,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js: uuid()]",
+                "DisplayText": "About",
                 "LinkMenuItemPart": {
                   "Name": "About",
                   "Url": "~/about"
@@ -1278,12 +1282,30 @@
       "Layers": [
         {
           "Name": "Always",
-          "Rule": "true",
+          "LayerRule": {
+            "ConditionId":"[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
           "Name": "Homepage",
-          "Rule": "isHomepage()",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -1306,7 +1328,7 @@
       "data": [
         {
           "Id": "baef6f85ad13481681cde70ada401333",
-          "Name": "Admin menu from blog recipe",
+          "Name": "Admin menus",
           "Enabled": true,
           "MenuItems": [
             {
