@@ -14,8 +14,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Navigation")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic menu = displaying.Shape;
-                    string menuName = menu.MenuName;
+                    var menu = displaying.Shape;
+                    var menuName = menu.GetProperty<string>("MenuName");
 
                     menu.Classes.Add("menu-" + menuName.HtmlClassify());
                     menu.Classes.Add("menu");
