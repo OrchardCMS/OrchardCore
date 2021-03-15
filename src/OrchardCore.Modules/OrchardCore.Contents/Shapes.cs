@@ -87,7 +87,7 @@ namespace OrchardCore.Contents
                         displayShape.Metadata.Alternates.Add(alternate);
                     }
 
-                    content.Add(displayShape);
+                    await context.Shape.AddAsync(displayShape, "");
                 });
         }
 
