@@ -88,11 +88,11 @@ namespace OrchardCore.Menu
             builder.Describe("MenuItem")
                 .OnDisplaying(async context =>
                 {
-                    dynamic menuItem = context.Shape;
-                    ContentItem menuContentItem = menuItem.ContentItem;
-                    var menu = menuItem.Menu;
-                    int level = menuItem.Level;
-                    string differentiator = menuItem.Metadata.Differentiator;
+                    var menuItem = context.Shape;
+                    var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
+                    var menu = menuItem.GetProperty<IShape>("Menu");
+                    var level = menuItem.GetProperty<int>("Level");
+                    var differentiator = menuItem.Metadata.Differentiator;
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
@@ -143,11 +143,11 @@ namespace OrchardCore.Menu
             builder.Describe("MenuItemLink")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic menuItem = displaying.Shape;
-                    int level = menuItem.Level;
-                    string differentiator = menuItem.Metadata.Differentiator;
+                    var menuItem = displaying.Shape;
+                    var level = menuItem.GetProperty<int>("Level");
+                    var differentiator = menuItem.Metadata.Differentiator;
 
-                    ContentItem menuContentItem = menuItem.ContentItem;
+                    var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
 
                     var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
 
