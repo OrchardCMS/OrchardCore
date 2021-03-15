@@ -153,11 +153,10 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                // Check the max recursion depth.
+                // Check the max recursion depth of workflow executions.
                 if (_maxRecursionDepth > MaxRecursionDepth)
                 {
                     _logger.LogError("The max recursion depth of 'Workflow' executions has been reached");
-
                     break;
                 }
 
@@ -205,11 +204,10 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                // Check the max recursion depth.
+                // Check the max recursion depth of workflow executions.
                 if (_maxRecursionDepth > MaxRecursionDepth)
                 {
                     _logger.LogError("The max recursion depth of 'Workflow' executions has been reached");
-
                     break;
                 }
 
@@ -464,18 +462,16 @@ namespace OrchardCore.Workflows.Services
 
         private void IncrementRecursion(Workflow workflow)
         {
-            _maxRecursionDepth++;
-
             _recursions[workflow.WorkflowId] = _recursions.TryGetValue(workflow.WorkflowId, out var count) ? ++count : 1;
             _recursions[workflow.WorkflowTypeId] = _recursions.TryGetValue(workflow.WorkflowTypeId, out count) ? ++count : 1;
+            _maxRecursionDepth++;
         }
 
         private void DecrementRecursion(Workflow workflow)
         {
-            _maxRecursionDepth--;
-
             _recursions[workflow.WorkflowId]--;
             _recursions[workflow.WorkflowTypeId]--;
+            _maxRecursionDepth--;
         }
 
         private async Task PersistAsync(WorkflowExecutionContext workflowContext)
