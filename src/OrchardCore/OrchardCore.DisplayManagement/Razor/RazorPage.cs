@@ -297,7 +297,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout.Zones[name];
+            dynamic zone = ThemeLayout.Zones[name];
 
             return zone != null;
         }
@@ -365,7 +365,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout.Zones[name];
+            dynamic zone = ThemeLayout.Zones[name];
 
             if (required && zone != null)
             {
