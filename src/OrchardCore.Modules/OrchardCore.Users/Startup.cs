@@ -233,26 +233,13 @@ namespace OrchardCore.Users
 
                 o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, context) =>
                 {
-                    var liquidTemplateContext = (LiquidTemplateContext)context;
+                    if (name != "Current")
+                    {
+                        return NilValue.Instance;
+                    }
 
-                    var httpContextAccessor = liquidTemplateContext.Services.GetRequiredService<IHttpContextAccessor>();
-                    var user = httpContextAccessor.HttpContext.User;
-
-                    //    FluidValue result = name switch
-                    //    {
-                    //    nameof(User.UserId) => user.UserId,
-                    //    nameof(User.UserName),
-                    //    nameof(User.NormalizedUserName),
-                    //    nameof(User.Email),
-                    //    nameof(User.NormalizedEmail),
-                    //    nameof(User.EmailConfirmed),
-                    //    nameof(User.IsEnabled),
-                    //    nameof(User.RoleNames),
-                    //    nameof(User.Properties)
-                    //_ => NilValue.Instance
-                    //    };
-
-                    return NilValue.Instance;
+                    var httpContextAccessor = ((LiquidTemplateContext)context).Services.GetRequiredService<IHttpContextAccessor>();
+                    return FluidValue.Create(httpContextAccessor.HttpContext.User, context.Options);
                 });
             })
            .AddLiquidFilter<UsersByIdFilter>("users_by_id")
