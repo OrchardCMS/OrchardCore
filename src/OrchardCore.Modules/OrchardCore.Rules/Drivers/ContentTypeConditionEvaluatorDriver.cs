@@ -31,10 +31,10 @@ namespace OrchardCore.Rules.Drivers
         public override Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
             // Do not include Widgets or any display type other than detail.
-            if (context.DisplayType == "Detail" && context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype))
+            if (context.DisplayType == "Detail" && !context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype))
             {
                 _contentTypes.Add(contentItem.ContentType);
-            }
+            }            
 
             return Task.FromResult<IDisplayResult>(null);
         }
