@@ -13,42 +13,76 @@ namespace OrchardCore.Tests.Apis.Lucene
 {
     public class LuceneQueryTests
     {
-        [Theory]
-        [InlineData("^2", "", true)]
-        [InlineData("", "^2", false)]
-        public async Task BoostedFieldsShouldAffectScore(string titleBoost, string bodyBoost, bool containsOrchardText)
+        [Fact]
+        public async Task BoostingTitleShouldHaveTitlesContainingOrchardAppearFirst()
         {
             using (var context = new LuceneContext())
             {
                 await context.InitializeAsync();
 
                 // Act
-                string index = "ArticleIndex";
+                var index = "ArticleIndex";
                 // { "from": 0, "size": 2, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText.Normalized^2", "HtmlBodyPart"], "query": "orchard*" } } }
-                object dynamicQuery = new {
+                var dynamicQuery = new {
                     from = 0,
                     size = 2,
                     query = new {
                         simple_query_string = new
                         {
                             analyze_wildcard = true,
-                            fields = new string[] { "Content.ContentItem.DisplayText.Normalized{0}", "HtmlBodyPart{1}" },
+                            fields = new string[] { "Content.ContentItem.DisplayText.Normalized^2", "HtmlBodyPart" },
                             query = "orchard*"
                         }
                     }
                 };
 
-                string baseQuery = JsonConvert.SerializeObject(dynamicQuery);
-                string titleBoostQuery = baseQuery.Replace("{0}", titleBoost).Replace("{1}", bodyBoost);
+                var query = JsonConvert.SerializeObject(dynamicQuery);
 
-                var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={titleBoostQuery}");
+                var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
                 var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
 
                 // Test
                 Assert.Equal(2, queryResults.Items.Count());
                 var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
 
-                Assert.Equal(containsOrchardText, contentItems.All(x => x.DisplayText.Contains("Orchard", StringComparison.OrdinalIgnoreCase)));
+                Assert.True(contentItems.All(x => x.DisplayText.Contains("Orchard", StringComparison.OrdinalIgnoreCase)));
+            }
+        }
+
+        [Fact]
+        public async Task BoostingBodyShouldHaveTitlesNotContainingOrchardAppearFirst()
+        {
+            using (var context = new LuceneContext())
+            {
+                await context.InitializeAsync();
+
+                // Act
+                var index = "ArticleIndex";
+                // { "from": 0, "size": 2, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText.Normalized", "HtmlBodyPart^2"], "query": "orchard*" } } }
+                var dynamicQuery = new
+                {
+                    from = 0,
+                    size = 2,
+                    query = new
+                    {
+                        simple_query_string = new
+                        {
+                            analyze_wildcard = true,
+                            fields = new string[] { "Content.ContentItem.DisplayText.Normalized", "HtmlBodyPart^2" },
+                            query = "orchard*"
+                        }
+                    }
+                };
+
+                var query = JsonConvert.SerializeObject(dynamicQuery);
+                var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
+                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+
+                // Test
+                Assert.Equal(2, queryResults.Items.Count());
+                var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+
+                Assert.False(contentItems.All(x => x.DisplayText.Contains("Orchard", StringComparison.OrdinalIgnoreCase)));
             }
         }
 
@@ -121,8 +155,8 @@ namespace OrchardCore.Tests.Apis.Lucene
 
                 Assert.Contains("Orchard", contentItems.ElementAt(0).As<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains("Orchard", contentItems.ElementAt(1).As<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains("Orchard", contentItems.ElementAt(contentItems.Count() - 2).DisplayText, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains("Orchard", contentItems.ElementAt(contentItems.Count() - 1).DisplayText, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("Orchard", contentItems.ElementAt(2).DisplayText, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains("Orchard", contentItems.ElementAt(3).DisplayText, StringComparison.OrdinalIgnoreCase);
             };
         }
     }
