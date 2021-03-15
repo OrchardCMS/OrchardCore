@@ -1,12 +1,25 @@
 using System;
+using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
+using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.OpenId.YesSql.Indexes;
+using YesSql;
 using YesSql.Sql;
 
 namespace OrchardCore.OpenId.YesSql.Migrations
 {
     public class OpenIdMigrations : DataMigration
     {
+        private const string OpenIdTokenCollection = OpenIdToken.OpenIdCollection;
+        private const string OpenIdAuthorizationCollection = OpenIdAuthorization.OpenIdCollection;
+
+        private readonly ISession _session;
+
+        public OpenIdMigrations(ISession session)
+        {
+            _session = session;
+        }
+
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable<OpenIdApplicationIndex>(table => table
@@ -53,23 +66,26 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<string>(nameof(OpenIdAuthorizationIndex.Status))
                 .Column<string>(nameof(OpenIdAuthorizationIndex.Subject))
                 .Column<string>(nameof(OpenIdAuthorizationIndex.Type))
-                .Column<DateTime>(nameof(OpenIdAuthorizationIndex.CreationDate)));
+                .Column<DateTime>(nameof(OpenIdAuthorizationIndex.CreationDate)),
+                collection: OpenIdAuthorizationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_ApplicationId",
+                .CreateIndex("IDX_COL_OpenIdAuth_DocumentId_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdAuthorizationIndex.ApplicationId),
                     nameof(OpenIdAuthorizationIndex.Status),
-                    nameof(OpenIdAuthorizationIndex.Subject))
+                    nameof(OpenIdAuthorizationIndex.Subject)),
+                collection: OpenIdAuthorizationCollection
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_AuthorizationId",
+                .CreateIndex("IDX_COL_OpenIdAuth_DocumentId_AuthorizationId",
                     "DocumentId",
                     nameof(OpenIdAuthorizationIndex.AuthorizationId),
                     nameof(OpenIdAuthorizationIndex.Status),
                     nameof(OpenIdAuthorizationIndex.Type),
-                    nameof(OpenIdAuthorizationIndex.CreationDate))
+                    nameof(OpenIdAuthorizationIndex.CreationDate)),
+                collection: OpenIdAuthorizationCollection
             );
 
             SchemaBuilder.CreateMapIndexTable<OpenIdScopeIndex>(table => table
@@ -101,35 +117,39 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<string>(nameof(OpenIdTokenIndex.Status))
                 .Column<string>(nameof(OpenIdTokenIndex.Subject))
                 .Column<string>(nameof(OpenIdTokenIndex.Type))
-                .Column<DateTime>(nameof(OpenIdTokenIndex.CreationDate)));
+                .Column<DateTime>(nameof(OpenIdTokenIndex.CreationDate)),
+                collection: OpenIdTokenCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_ApplicationId",
+                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.ApplicationId),
                     nameof(OpenIdTokenIndex.Status),
-                    nameof(OpenIdTokenIndex.Subject))
+                    nameof(OpenIdTokenIndex.Subject)),
+                collection: OpenIdTokenCollection
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_AuthorizationId",
+                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_AuthorizationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.AuthorizationId),
                     nameof(OpenIdTokenIndex.Status),
                     nameof(OpenIdTokenIndex.Type),
                     nameof(OpenIdTokenIndex.CreationDate),
-                    nameof(OpenIdTokenIndex.ExpirationDate))
+                    nameof(OpenIdTokenIndex.ExpirationDate)),
+                collection: OpenIdTokenCollection
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_TokenId",
+                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_TokenId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.TokenId),
-                    nameof(OpenIdTokenIndex.ReferenceId))
+                    nameof(OpenIdTokenIndex.ReferenceId)),
+                collection: OpenIdTokenCollection
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 6;
+            return 7;
         }
 
         // This code can be removed in a later version.
@@ -265,6 +285,111 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             return 6;
+        }
+
+        // This code can be removed in a later version.
+        public async Task<int> UpdateFrom6Async()
+        {
+            // Create all index tables with the new collection value.
+            SchemaBuilder.CreateMapIndexTable<OpenIdTokenIndex>(table => table
+                .Column<string>(nameof(OpenIdTokenIndex.TokenId), column => column.WithLength(48))
+                .Column<string>(nameof(OpenIdTokenIndex.ApplicationId), column => column.WithLength(48))
+                .Column<string>(nameof(OpenIdTokenIndex.AuthorizationId), column => column.WithLength(48))
+                .Column<DateTime>(nameof(OpenIdTokenIndex.ExpirationDate))
+                .Column<string>(nameof(OpenIdTokenIndex.ReferenceId))
+                .Column<string>(nameof(OpenIdTokenIndex.Status))
+                .Column<string>(nameof(OpenIdTokenIndex.Subject))
+                .Column<string>(nameof(OpenIdTokenIndex.Type))
+                .Column<DateTime>(nameof(OpenIdTokenIndex.CreationDate)),
+                collection: OpenIdTokenCollection);
+
+            SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
+                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_ApplicationId",
+                    "DocumentId",
+                    nameof(OpenIdTokenIndex.ApplicationId),
+                    nameof(OpenIdTokenIndex.Status),
+                    nameof(OpenIdTokenIndex.Subject)),
+                collection: OpenIdTokenCollection
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
+                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_AuthorizationId",
+                    "DocumentId",
+                    nameof(OpenIdTokenIndex.AuthorizationId),
+                    nameof(OpenIdTokenIndex.Status),
+                    nameof(OpenIdTokenIndex.Type),
+                    nameof(OpenIdTokenIndex.CreationDate),
+                    nameof(OpenIdTokenIndex.ExpirationDate)),
+                collection: OpenIdTokenCollection
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
+                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_TokenId",
+                    "DocumentId",
+                    nameof(OpenIdTokenIndex.TokenId),
+                    nameof(OpenIdTokenIndex.ReferenceId)),
+                collection: OpenIdTokenCollection
+            );
+
+            SchemaBuilder.CreateMapIndexTable<OpenIdAuthorizationIndex>(table => table
+                .Column<string>(nameof(OpenIdAuthorizationIndex.AuthorizationId), column => column.WithLength(48))
+                .Column<string>(nameof(OpenIdAuthorizationIndex.ApplicationId), column => column.WithLength(48))
+                .Column<string>(nameof(OpenIdAuthorizationIndex.Status))
+                .Column<string>(nameof(OpenIdAuthorizationIndex.Subject))
+                .Column<string>(nameof(OpenIdAuthorizationIndex.Type))
+                .Column<DateTime>(nameof(OpenIdAuthorizationIndex.CreationDate)),
+                collection: OpenIdAuthorizationCollection);
+
+            SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
+                .CreateIndex("IDX_COL_OpenIdAuth_DocumentId_ApplicationId",
+                    "DocumentId",
+                    nameof(OpenIdAuthorizationIndex.ApplicationId),
+                    nameof(OpenIdAuthorizationIndex.Status),
+                    nameof(OpenIdAuthorizationIndex.Subject)),
+                collection: OpenIdAuthorizationCollection
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
+                .CreateIndex("IDX_COL_OpenIdAuth_DocumentId_AuthorizationId",
+                    "DocumentId",
+                    nameof(OpenIdAuthorizationIndex.AuthorizationId),
+                    nameof(OpenIdAuthorizationIndex.Status),
+                    nameof(OpenIdAuthorizationIndex.Type),
+                    nameof(OpenIdAuthorizationIndex.CreationDate)),
+                collection: OpenIdAuthorizationCollection
+            );
+
+            // Retrieve all existing tokens and authorizations from original Document table.
+            var tokens = await _session.Query<OpenIdToken, OpenIdTokenIndex>().ListAsync();
+            var authorizations = await _session.Query<OpenIdAuthorization, OpenIdAuthorizationIndex>().ListAsync();
+
+            // Enlist the old documents in the new collection and remove from the old collections.
+            foreach (var token in tokens)
+            {
+                // Set the id to 0 or it will be considered an updated entity.
+                token.Id = 0;
+                _session.Save(token, collection: OpenIdTokenCollection);
+
+                // Delete from the original collection.
+                _session.Delete(token);
+            }
+
+            // Enlist the old documents in the new collection and remove from the old collections.
+            foreach (var authorization in authorizations)
+            {
+                // Set the id to 0 or it will be considered an updated entity.
+                authorization.Id = 0;
+                _session.Save(authorization, collection: OpenIdTokenCollection);
+
+                // Delete from the original collection.
+                _session.Delete(authorization);
+            }
+
+            // This can be safely dropped here as the index provider now only writes to the new collection table.
+            SchemaBuilder.DropMapIndexTable<OpenIdTokenIndex>();
+            SchemaBuilder.DropMapIndexTable<OpenIdAuthorizationIndex>();
+
+            return 7;
         }
     }
 }

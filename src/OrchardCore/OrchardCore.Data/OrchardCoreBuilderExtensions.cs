@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -34,6 +35,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
+
+                services.AddOptions<StoreCollectionOptions>();
 
                 // Adding supported databases
                 services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
@@ -92,6 +95,12 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
 
                     var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
+                    var options = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
+                    foreach (var collection in options.Collections)
+                    {
+                        store.InitializeCollectionAsync(collection).GetAwaiter().GetResult();
+                    }
+
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);

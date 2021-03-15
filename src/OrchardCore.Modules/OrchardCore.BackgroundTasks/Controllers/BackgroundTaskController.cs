@@ -99,6 +99,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 model.Schedule = settings.Schedule;
                 model.DefaultSchedule = settings.Schedule;
                 model.Description = settings.Description;
+                model.LockTimeout = settings.LockTimeout;
+                model.LockExpiration = settings.LockExpiration;
             }
 
             return View(model);
@@ -127,7 +129,9 @@ namespace OrchardCore.BackgroundTasks.Controllers
                     Name = model.Name,
                     Enable = model.Enable,
                     Schedule = model.Schedule?.Trim(),
-                    Description = model.Description
+                    Description = model.Description,
+                    LockTimeout = model.LockTimeout,
+                    LockExpiration = model.LockExpiration
                 };
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, settings);
@@ -162,7 +166,9 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Enable = settings.Enable,
                 Schedule = settings.Schedule,
                 DefaultSchedule = task?.GetDefaultSettings().Schedule,
-                Description = settings.Description
+                Description = settings.Description,
+                LockTimeout = settings.LockTimeout,
+                LockExpiration = settings.LockExpiration
             };
 
             return View(model);
@@ -191,7 +197,9 @@ namespace OrchardCore.BackgroundTasks.Controllers
                     Name = model.Name,
                     Enable = model.Enable,
                     Schedule = model.Schedule?.Trim(),
-                    Description = model.Description
+                    Description = model.Description,
+                    LockTimeout = model.LockTimeout,
+                    LockExpiration = model.LockExpiration
                 };
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, settings);
