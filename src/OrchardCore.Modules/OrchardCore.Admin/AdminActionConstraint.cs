@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Admin
 {
@@ -16,14 +18,13 @@ namespace OrchardCore.Admin
 
         public bool Accept(ActionConstraintContext context)
         {
-            if (context.RouteContext.HttpContext.Request.Path.StartsWithSegments(_adminUrlPrefix))
+            if (!context.RouteContext.HttpContext.Request.Path.StartsWithSegments(_adminUrlPrefix))
             {
-                return true;
+                var logger = context.RouteContext.HttpContext.RequestServices.GetService<ILogger<AdminActionConstraint>>();
+                logger.LogWarning("An incorrect admin route is used : {Path}", context.RouteContext.HttpContext.Request.Path);
             }
-            else
-            {
-                return false;
-            }
+
+            return true;
         }
     }
 }

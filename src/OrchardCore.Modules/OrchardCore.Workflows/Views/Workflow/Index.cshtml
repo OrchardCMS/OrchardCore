@@ -104,36 +104,7 @@
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
                                 <div class="info">
                                     <span class="badge badge-@statusCss">
-                                        @switch (entry.Workflow.Status)
-                                        {
-                                            case WorkflowStatus.Idle:
-                                                @T["Idle"]
-                                                break;
-                                            case WorkflowStatus.Starting:
-                                                @T["Starting"]
-                                                break;
-                                            case WorkflowStatus.Resuming:
-                                                @T["Resuming"]
-                                                break;
-                                            case WorkflowStatus.Executing:
-                                                @T["Executing"]
-                                                break;
-                                            case WorkflowStatus.Halted:
-                                                @T["Halted"]
-                                                break;
-                                            case WorkflowStatus.Finished:
-                                                @T["Finished"]
-                                                break;
-                                            case WorkflowStatus.Faulted:
-                                                @T["Faulted"]
-                                                break;
-                                            case WorkflowStatus.Aborted:
-                                                @T["Aborted"]
-                                                break;
-                                            default:
-                                                @entry.Workflow.Status
-                                                break;
-                                        }
+                                        @entry.Workflow.Status.GetLocalizedStatus(T)
                                     </span>
                                 </div>
                             </div>

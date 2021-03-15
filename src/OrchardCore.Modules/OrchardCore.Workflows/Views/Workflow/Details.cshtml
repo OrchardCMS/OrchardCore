@@ -43,7 +43,7 @@
                     </div>
                     <div class="col">
                         <label>@T["Status"]</label>
-                        <span>@Model.Workflow.Status</span>
+                        <span>@Model.Workflow.Status.GetLocalizedStatus(T)</span>
                     </div>
                     @if (Model.Workflow.Status == WorkflowStatus.Faulted)
                     {

@@ -1,29 +1,34 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace OrchardCore.Admin
 {
     /// <summary>
-    /// This filter makes an controller that starts with Admin behave as
+    /// This filter makes an controller that starts with Admin and Razor Pages in /Pages/Admin folder behave as
     /// it had the <see cref="AdminAttribute"/>.
     /// </summary>
-    public class AdminZoneFilter : IActionFilter
+    public class AdminZoneFilter : IAsyncResourceFilter
     {
-        public void OnActionExecuted(ActionExecutedContext context)
+        public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
-        }
-
-        public void OnActionExecuting(ActionExecutingContext context)
-        {
-            var controller = context.Controller as Controller;
-            if (controller != null)
+            if (context.ActionDescriptor is ControllerActionDescriptor action)
             {
-                if(controller.GetType().Name.StartsWith("Admin", StringComparison.OrdinalIgnoreCase))
+                if (action.ControllerName == "Admin")
                 {
                     AdminAttribute.Apply(context.HttpContext);
                 }
             }
+            else if (context.ActionDescriptor is PageActionDescriptor page)
+            {
+                if (page.ViewEnginePath.Contains("/Admin/"))
+                {
+                    AdminAttribute.Apply(context.HttpContext);
+                }
+            }
+
+            return next();
         }
     }
 }

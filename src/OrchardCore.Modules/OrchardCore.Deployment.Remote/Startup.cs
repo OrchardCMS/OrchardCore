@@ -87,6 +87,14 @@ namespace OrchardCore.Deployment
                 pattern: _adminOptions.AdminUrlPrefix + "/Deployment/RemoteInstance/Edit/{id}",
                 defaults: new { controller = remoteInstanceControllerName, action = nameof(RemoteInstanceController.Edit) }
             );
+
+            //ExportRemoteInstance
+            routes.MapAreaControllerRoute(
+                name: "DeploymentExportRemoteInstanceExecute",
+                areaName: "OrchardCore.Deployment.Remote",
+                pattern: _adminOptions.AdminUrlPrefix + "/Deployment/ExportRemoteInstance/Execute",
+                defaults: new { controller = typeof(ExportRemoteInstanceController).ControllerName(), action = nameof(ExportRemoteInstanceController.Execute) }
+            );
         }
     }
 }

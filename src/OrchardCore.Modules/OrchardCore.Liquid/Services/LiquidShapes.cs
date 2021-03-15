@@ -20,7 +20,9 @@ namespace OrchardCore.Liquid.Services
         {
             var model = shapeDisplayContext.Shape as LiquidPartViewModel;
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
-            model.Html = await liquidTemplateManager.RenderAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value);
+
+            model.Html = await liquidTemplateManager.RenderAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
+                scope => scope.SetValue("ContentItem", model.ContentItem));
         }
 
         public void Discover(ShapeTableBuilder builder)

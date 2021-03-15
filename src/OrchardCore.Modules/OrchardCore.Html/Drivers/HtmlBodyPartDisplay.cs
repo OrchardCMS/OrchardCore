@@ -69,7 +69,8 @@ namespace OrchardCore.Html.Drivers
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;
 
-            model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model);
+            model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model,
+                scope => scope.SetValue("ContentItem", model.ContentItem));
         }
     }
 }

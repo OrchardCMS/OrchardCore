@@ -26,6 +26,12 @@ namespace OrchardCore.Lucene.Handlers
 
         private Task AddContextAsync(ContentContextBase context)
         {
+            // A previewed content item is transient, and is marked as such with a negative id.
+            if (context.ContentItem.Id == -1)
+            {
+                return Task.CompletedTask;
+            }
+
             if (_contexts.Count == 0)
             {
                 var contexts = _contexts;

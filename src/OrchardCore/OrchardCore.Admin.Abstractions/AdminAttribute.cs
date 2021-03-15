@@ -5,25 +5,22 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OrchardCore.Admin
 {
-
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     /// <summary>
-    /// When applied to an action or a controller, intercepts any request to check whether it applies to the admin site.
+    /// When applied to an action or a controller or a page model, intercepts any request to check whether it applies to the admin site.
     /// If so it marks the request as such and ensures the user has the right to access it.
     /// </summary>
-    public class AdminAttribute : ActionFilterAttribute
+    public class AdminAttribute : Attribute, IAsyncResourceFilter
     {
         public AdminAttribute()
         {
-            // Ordered to call 'Apply' before any global filter, with a default order of 0, might call 'IsApplied'.
-            Order = -1000;
         }
 
-        public override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
             Apply(context.HttpContext);
 
-            return base.OnActionExecutionAsync(context, next);
+            return next();
         }
 
         public static void Apply(HttpContext context)
@@ -34,8 +31,7 @@ namespace OrchardCore.Admin
 
         public static bool IsApplied(HttpContext context)
         {
-            object value;
-            return context.Items.TryGetValue(typeof(AdminAttribute), out value);
+            return context.Items.TryGetValue(typeof(AdminAttribute), out var value);
         }
     }
 }

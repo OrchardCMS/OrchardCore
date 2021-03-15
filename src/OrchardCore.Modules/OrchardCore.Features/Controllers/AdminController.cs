@@ -19,7 +19,6 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Features.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly IModuleService _moduleService;
@@ -34,7 +33,6 @@ namespace OrchardCore.Features.Controllers
             IModuleService moduleService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
-            IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             ShellSettings shellSettings,
@@ -51,7 +49,7 @@ namespace OrchardCore.Features.Controllers
 
         public async Task<ActionResult> Features()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures)) // , H["Not allowed to manage features."]
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
                 return Unauthorized();
             }

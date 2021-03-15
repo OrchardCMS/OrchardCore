@@ -21,7 +21,9 @@ namespace OrchardCore.Facebook.Widgets.Services
         {
             var model = shapeDisplayContext.Shape as FacebookPluginPartViewModel;
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
-            model.Html = await liquidTemplateManager.RenderAsync(model.FacebookPluginPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value);
+
+            model.Html = await liquidTemplateManager.RenderAsync(model.FacebookPluginPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
+                scope => scope.SetValue("ContentItem", model.ContentItem));
         }
 
         public void Discover(ShapeTableBuilder builder)

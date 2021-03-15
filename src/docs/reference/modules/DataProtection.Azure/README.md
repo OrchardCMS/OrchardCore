@@ -54,7 +54,7 @@ If not supplied the `BlobName` will automatically default to a folder per tenant
 ```
 
 !!! note
-Only the default liquid filters and tags are available during parsing of the liquid template.
-Extra filters like `slugify` will not be available.
+    Only the default liquid filters and tags are available during parsing of the liquid template.
+    Extra filters like `slugify` will not be available.
 
 Refer also to the [Configuration Section](../../core/Configuration/README.md).

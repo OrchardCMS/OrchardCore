@@ -926,6 +926,9 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.AlterTypePart(viewModel);
 
+            // Refresh the local part variable in case it has been altered
+            part = _contentDefinitionManager.LoadTypeDefinition(id).Parts.FirstOrDefault(x => x.Name == viewModel.Name);
+
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
 
             if (!ModelState.IsValid)

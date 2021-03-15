@@ -9,10 +9,12 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Controllers;
 using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Drivers;
 using OrchardCore.Workflows.Evaluators;
@@ -80,32 +82,35 @@ namespace OrchardCore.Workflows
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var activityControllerName = typeof(ActivityController).ControllerName();
             routes.MapAreaControllerRoute(
                 name: "AddActivity",
                 areaName: "OrchardCore.Workflows",
                 pattern: _adminOptions.AdminUrlPrefix + "/Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add",
-                defaults: new { controller = "Activity", action = "Create" }
+                defaults: new { controller = activityControllerName, action = nameof(ActivityController.Create) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "EditActivity",
                 areaName: "OrchardCore.Workflows",
                 pattern: _adminOptions.AdminUrlPrefix + "/Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit",
-                defaults: new { controller = "Activity", action = "Edit" }
+                defaults: new { controller = activityControllerName, action = nameof(ActivityController.Edit) }
             );
 
+            var workflowControllerName = typeof(WorkflowController).ControllerName();
             routes.MapAreaControllerRoute(
                 name: "Workflows",
                 areaName: "OrchardCore.Workflows",
                 pattern: _adminOptions.AdminUrlPrefix + "/Workflows/Types/{workflowTypeId}/Instances/{action}",
-                defaults: new { controller = "Workflow", action = "Index" }
+                defaults: new { controller = workflowControllerName, action = nameof(WorkflowController.Index) }
             );
 
+            var workflowTypeControllerName = typeof(WorkflowTypeController).ControllerName();
             routes.MapAreaControllerRoute(
                 name: "WorkflowTypes",
                 areaName: "OrchardCore.Workflows",
                 pattern: _adminOptions.AdminUrlPrefix + "/Workflows/Types/{action}/{id?}",
-                defaults: new { controller = "WorkflowType", action = "Index" }
+                defaults: new { controller = workflowTypeControllerName, action = nameof(WorkflowTypeController.Index) }
             );
         }
     }

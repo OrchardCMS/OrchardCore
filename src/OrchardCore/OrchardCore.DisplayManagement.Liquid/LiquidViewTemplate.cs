@@ -119,7 +119,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
-                await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
+                await context.EnterScopeAsync(page.ViewContext, (object)page.Model, scopeAction: null);
                 await template.RenderAsync(page.Output, htmlEncoder, context);
             }
 
@@ -189,7 +189,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidViewTemplateExtensions
     {
-        public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model)
+        public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model, Action<Scope> scopeAction)
         {
             var viewContext = context.Services.GetRequiredService<ViewContextAccessor>().ViewContext;
 
@@ -200,7 +200,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
-                await context.EnterScopeAsync(viewContext, model);
+                await context.EnterScopeAsync(viewContext, model, scopeAction);
                 return await template.RenderAsync(context, encoder);
             }
 
@@ -210,7 +210,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
         }
 
-        public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model)
+        public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model, Action<Scope> scopeAction)
         {
             var viewContext = context.Services.GetRequiredService<ViewContextAccessor>().ViewContext;
 
@@ -221,7 +221,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
-                await context.EnterScopeAsync(viewContext, model);
+                await context.EnterScopeAsync(viewContext, model, scopeAction);
                 await template.RenderAsync(writer, encoder, context);
             }
 
@@ -288,7 +288,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
     public static class LiquidTemplateContextExtensions
     {
-        internal static async Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+        internal static async Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model, Action<Scope> scopeAction)
         {
             if (!context.IsInitialized)
             {
@@ -340,6 +340,8 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
 
             context.SetValue("Model", model);
+
+            scopeAction?.Invoke(context.LocalScope);
         }
 
         internal static void AddAsyncFilters(this LiquidTemplateContext context, LiquidOptions options)

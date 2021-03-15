@@ -85,8 +85,8 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 ```
 
 !!! note
-Only the default liquid filters and tags are available during parsing of the liquid template.
-Extra filters like `slugify` will not be available.
+    Only the default liquid filters and tags are available during parsing of the liquid template.
+    Extra filters like `slugify` will not be available.
 
 ## Media Cache
 
@@ -100,7 +100,6 @@ You might choose to use the Purging feature if you are fronting the media assets
 After allowing a long enough period of time for the CDN to have fetched a significant amount of
 Media assets, both resized, and full size, from the Media Cache you might consider purging the cache.
 
-!!! note
 However please bear in mind that your CDN provider will likely have multiple Points of Presence
 worldwide, and each of these will maintain their own cache, so while a local CDN PoP might have the asset
 another PoP may not, until it is requested. At this stage the Media Cache will, if necessary, refetch the
@@ -111,5 +110,5 @@ are a valuable caching and performance asset, it is important that they are alwa
 re-fetch the source file, as and when required, which the Media Cache Module will automatically handle.
 
 !!! note
-The Media Feature is designed to support one storage provider at a time, whether that is
-local File Storage, the default, or Azure Blob Storage.
+    The Media Feature is designed to support one storage provider at a time, whether that is
+    local File Storage, the default, or Azure Blob Storage.

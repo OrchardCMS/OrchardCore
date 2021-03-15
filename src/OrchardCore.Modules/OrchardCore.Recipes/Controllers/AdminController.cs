@@ -18,7 +18,6 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Recipes.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
         private readonly ShellSettings _shellSettings;
@@ -33,7 +32,6 @@ namespace OrchardCore.Recipes.Controllers
         public AdminController(
             ShellSettings shellSettings,
             ISiteService siteService,
-            IAdminThemeService adminThemeService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
             IAuthorizationService authorizationService,

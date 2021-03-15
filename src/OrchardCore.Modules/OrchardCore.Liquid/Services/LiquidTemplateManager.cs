@@ -23,7 +23,7 @@ namespace OrchardCore.Liquid.Services
 
         public LiquidTemplateContext Context => _context ??= LiquidViewTemplate.Context;
 
-        public Task<string> RenderAsync(string source, TextEncoder encoder, object model)
+        public Task<string> RenderAsync(string source, TextEncoder encoder, object model, Action<Scope> scopeAction)
         {
             if (String.IsNullOrWhiteSpace(source))
             {
@@ -32,10 +32,10 @@ namespace OrchardCore.Liquid.Services
 
             var result = GetCachedTemplate(source);
 
-            return result.RenderAsync(encoder, Context, model);
+            return result.RenderAsync(encoder, Context, model, scopeAction);
         }
 
-        public Task RenderAsync(string source, TextWriter writer, TextEncoder encoder, object model)
+        public Task RenderAsync(string source, TextWriter writer, TextEncoder encoder, object model, Action<Scope> scopeAction)
         {
             if (String.IsNullOrWhiteSpace(source))
             {
@@ -44,7 +44,7 @@ namespace OrchardCore.Liquid.Services
 
             var result = GetCachedTemplate(source);
 
-            return result.RenderAsync(writer, encoder, Context, model);
+            return result.RenderAsync(writer, encoder, Context, model, scopeAction);
         }
 
         private LiquidViewTemplate GetCachedTemplate(string source)

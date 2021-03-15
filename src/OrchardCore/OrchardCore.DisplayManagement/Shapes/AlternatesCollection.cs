@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public string this[int index] => _collection[index];
 
-        public string Last => _collection[_collection.Count - 1];
+        public string Last => _collection.LastOrDefault() ?? "";
 
         public void Add(string alternate)
         {

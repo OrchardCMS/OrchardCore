@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
+using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement;
@@ -125,8 +126,15 @@ namespace OrchardCore.Autoroute.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model);
+                part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
+
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
+
+                if (part.Path?.Length > AutoroutePartDisplay.MaxPathLength)
+                {
+                    part.Path = part.Path.Substring(0, AutoroutePartDisplay.MaxPathLength);
+                }
 
                 if (!await IsPathUniqueAsync(part.Path, part))
                 {
@@ -175,6 +183,13 @@ namespace OrchardCore.Autoroute.Handlers
 
             while (true)
             {
+                // Unversioned length + seperator char + version length.
+                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePartDisplay.MaxPathLength;
+                if (quantityCharactersToTrim > 0)
+                {
+                    unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);
+                }
+
                 var versionedPath = $"{unversionedPath}-{version++}";
                 if (await IsPathUniqueAsync(versionedPath, context))
                 {

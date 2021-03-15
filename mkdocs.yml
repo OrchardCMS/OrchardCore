@@ -45,6 +45,7 @@ nav:
     - About Orchard Core: README.md
     - Getting started: 
         - Create a CMS Web application: docs/getting-started/README.md
+        - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
         - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
     - How-to guides: 
@@ -93,6 +94,7 @@ nav:
             - Lucene: docs/reference/modules/Lucene/README.md
             - Queries: docs/reference/modules/Queries/README.md
             - Media: docs/reference/modules/Media/README.md
+            - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
             - Menu: docs/reference/modules/Menu/README.md
@@ -120,7 +122,6 @@ nav:
             - Health Check: docs/reference/modules/HealthChecks/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
-            - Media Azure: docs/reference/modules/Media.Azure/README.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
             - Recipes: docs/reference/modules/Recipes/README.md

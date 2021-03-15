@@ -41,7 +41,7 @@ install:
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 # Uncomment to download a specific version of dotnet
 #  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-# - ps: .\dotnet-install.ps1 --Version 3.1.100
+# - ps: .\dotnet-install.ps1 --Version 3.1.101
 
 build_script:
   - dotnet build -c Release

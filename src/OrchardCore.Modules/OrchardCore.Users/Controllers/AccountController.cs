@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -396,8 +395,7 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                            ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email);
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
                 if (!string.IsNullOrWhiteSpace(email))
                     user = await _userManager.FindByEmailAsync(email);
@@ -514,8 +512,7 @@ namespace OrchardCore.Users.Controllers
 
             if (model.NoEmail)
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email);
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
                 model.Email = email;
             }
 
@@ -566,8 +563,7 @@ namespace OrchardCore.Users.Controllers
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             var info = await _signInManager.GetExternalLoginInfoAsync();
 
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email)
-            ?? info.Principal.FindFirstValue(OpenIdConnectConstants.Claims.Email);
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
             var user = await _userManager.FindByEmailAsync(email);
 

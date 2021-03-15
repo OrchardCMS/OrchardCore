@@ -18,7 +18,9 @@
 }
 
 @await Html.PartialAsync("Header", Model)
+
 <h2>Hello from @ViewContext.RouteData.Values["page"]</h2>
+
 <p>
     @T[Model.Message]
 </p>

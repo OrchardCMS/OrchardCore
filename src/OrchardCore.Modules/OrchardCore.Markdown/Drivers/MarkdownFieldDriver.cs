@@ -34,7 +34,9 @@ namespace OrchardCore.Markdown.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.Markdown = await _liquidTemplateManager.RenderAsync(field.Markdown, _htmlEncoder, model);
+                model.Markdown = await _liquidTemplateManager.RenderAsync(field.Markdown, _htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", field.ContentItem));
+
                 model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
             })
             .Location("Content")

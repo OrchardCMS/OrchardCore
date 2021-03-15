@@ -40,7 +40,9 @@ namespace OrchardCore.Html.Handlers
                         ContentItem = part.ContentItem
                     };
 
-                    var result = await _liquidTemplateManager.RenderAsync(part.Html, _htmlEncoder, model);
+                    var result = await _liquidTemplateManager.RenderAsync(part.Html, _htmlEncoder, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
+
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);
                 }
                 catch

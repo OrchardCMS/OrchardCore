@@ -66,10 +66,10 @@ We will change the route of the view in this module to handle the home page.
 In the `Startup.cs` file of `MyModule`, add this code in the `Configure()` method.
 
 ```csharp
-    routes.MapAreaRoute(
+    routes.MapAreaControllerRoute(
         name: "Home",
         areaName: "MyModule",
-        template: "",
+        pattern: "",
         defaults: new { controller = "Home", action = "Index" }
     );
 ```

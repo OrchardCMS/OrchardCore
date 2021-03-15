@@ -17,8 +17,7 @@ namespace OrchardCore.Markdown.GraphQL
             Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
 
             Field("markdown", x => x.Markdown, nullable: true)
-                .Description(S["the markdown value"])
-                .Type(new StringGraphType());
+                .Description(S["the markdown value"]);
 
             Field<StringGraphType>()
                 .Name("html")
@@ -28,6 +27,11 @@ namespace OrchardCore.Markdown.GraphQL
 
         private static async Task<object> ToHtml(ResolveFieldContext<MarkdownField> ctx)
         {
+            if (string.IsNullOrEmpty(ctx.Source.Markdown))
+            {
+                return ctx.Source.Markdown;
+            }
+
             var serviceProvider = ctx.ResolveServiceProvider();
             var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
             var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();

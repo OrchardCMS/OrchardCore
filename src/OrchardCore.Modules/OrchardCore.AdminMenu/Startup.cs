@@ -122,6 +122,18 @@ namespace OrchardCore.AdminMenu
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Edit",
                 defaults: new { controller = nodeControllerName, action = nameof(NodeController.Edit) }
             );
+            routes.MapAreaControllerRoute(
+                name: "AdminMenuNodeToggle",
+                areaName: "OrchardCore.AdminMenu",
+                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Toggle",
+                defaults: new { controller = nodeControllerName, action = nameof(NodeController.Toggle) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "AdminMenuNodeMoveNode",
+                areaName: "OrchardCore.AdminMenu",
+                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/MoveNode",
+                defaults: new { controller = nodeControllerName, action = nameof(NodeController.MoveNode) }
+            );
         }
     }
 }

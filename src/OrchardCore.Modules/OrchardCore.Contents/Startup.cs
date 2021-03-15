@@ -162,6 +162,41 @@ namespace OrchardCore.Contents
                 pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentTypeId?}",
                 defaults: new {controller = adminControllerName, action = nameof(AdminController.List) }
             );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminPublishContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Publish",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Publish) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminDiscardDraftContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/DiscardDraft",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.DiscardDraft) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminDeleteContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Delete",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Remove) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminCloneContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Clone",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Clone) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "AdminUnpublishContentItem",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Unpublish",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Unpublish) }
+            );
         }
     }
 
