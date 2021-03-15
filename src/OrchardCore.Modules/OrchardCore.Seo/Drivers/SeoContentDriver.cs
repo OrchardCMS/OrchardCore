@@ -37,7 +37,7 @@ namespace OrchardCore.Seo.Drivers
 
         public override async Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
-            // We only apply this on the primary content item, which is considered the first call to BuildDisplay
+            // We only apply this on the primary content item, which is considered the first call to BuildDisplay.
             if (_primaryContentRendered)
             {
                 return null;
@@ -45,7 +45,8 @@ namespace OrchardCore.Seo.Drivers
 
             _primaryContentRendered = true;
 
-            if (!String.Equals(context.DisplayType, "Detail", StringComparison.OrdinalIgnoreCase))
+            // Do not include Widgets or any display type other than detail.
+            if (!String.Equals(context.DisplayType, "Detail", StringComparison.OrdinalIgnoreCase) || context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype))
             {
                 return null;
             }
@@ -109,8 +110,7 @@ namespace OrchardCore.Seo.Drivers
                     await RenderAsync(customMetaTag.Charset, contentItem)));
             }
 
-            // OpenGraph
-
+            // OpenGraph.
             if (!String.IsNullOrEmpty(aspect.OpenGraphType))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
@@ -192,8 +192,7 @@ namespace OrchardCore.Seo.Drivers
                 });
             }
 
-            // Twitter
-
+            // Twitter.
             if (!String.IsNullOrEmpty(aspect.TwitterCard))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
