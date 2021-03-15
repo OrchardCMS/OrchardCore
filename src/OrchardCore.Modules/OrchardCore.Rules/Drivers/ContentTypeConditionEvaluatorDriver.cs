@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
@@ -31,7 +32,7 @@ namespace OrchardCore.Rules.Drivers
         public override Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
             // Do not include Widgets or any display type other than detail.
-            if (context.DisplayType == "Detail" && !context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype))
+            if (String.Equals("Detail", context.DisplayType, StringComparison.OrdinalIgnoreCase) && !context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype))
             {
                 _contentTypes.Add(contentItem.ContentType);
             }            
