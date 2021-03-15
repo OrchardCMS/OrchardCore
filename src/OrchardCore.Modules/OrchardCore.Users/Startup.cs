@@ -212,7 +212,7 @@ namespace OrchardCore.Users
             services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
 
             services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
-            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();            
+            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
         }
     }
 
@@ -233,13 +233,13 @@ namespace OrchardCore.Users
 
                 o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, context) =>
                 {
-                    if (name != "Current")
+                    if (name == "Current")
                     {
-                        return NilValue.Instance;
+                        var httpContextAccessor = ((LiquidTemplateContext)context).Services.GetRequiredService<IHttpContextAccessor>();
+                        return FluidValue.Create(httpContextAccessor.HttpContext.User, context.Options);
                     }
 
-                    var httpContextAccessor = ((LiquidTemplateContext)context).Services.GetRequiredService<IHttpContextAccessor>();
-                    return FluidValue.Create(httpContextAccessor.HttpContext.User, context.Options);
+                    return NilValue.Instance;
                 });
             })
            .AddLiquidFilter<UsersByIdFilter>("users_by_id")
