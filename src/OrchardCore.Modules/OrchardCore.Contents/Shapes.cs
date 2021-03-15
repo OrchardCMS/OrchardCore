@@ -14,8 +14,8 @@ namespace OrchardCore.Contents
             builder.Describe("Content")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic shape = displaying.Shape;
-                    ContentItem contentItem = shape.ContentItem;
+                    var shape = displaying.Shape;
+                    var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
                     if (contentItem != null)
                     {
@@ -44,15 +44,15 @@ namespace OrchardCore.Contents
             builder.Describe("ContentItem")
                 .OnProcessing(async context =>
                 {
-                    dynamic content = context.Shape;
-                    string handle = content.Handle;
-                    string displayType = content.DisplayType;
-                    string alternate = content.Alternate;
+                    var content = context.Shape;
+                    var handle = content.GetProperty<string>("Handle");
+                    var displayType = content.GetProperty<string>("DisplayType");
+                    var alternate = content.GetProperty<string>("Alternate");
 
                     if (String.IsNullOrEmpty(handle))
                     {
                         // This code is provided for backwards compatability and can be removed in a future version.
-                        handle = content.Alias;
+                        handle = content.GetProperty<string>("Alias");
                         if (String.IsNullOrEmpty(handle))
                         {
                             return;
@@ -78,7 +78,7 @@ namespace OrchardCore.Contents
                         return;
                     }
 
-                    content.ContentItem = contentItem;
+                    content.Properties["ContentItem"] = contentItem;
 
                     var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
 
