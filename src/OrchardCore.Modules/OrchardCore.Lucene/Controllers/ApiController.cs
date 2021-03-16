@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene.Controllers
 {
@@ -26,71 +27,71 @@ namespace OrchardCore.Lucene.Controllers
 
         [HttpGet]
         [Route("content")]
-        public async Task<IActionResult> Content([FromQuery] LuceneQueryDTO queryDto)
+        public async Task<IActionResult> Content([FromQuery] LuceneQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
                 return this.ChallengeOrForbid();
             }
 
-            var result = await LuceneQueryApiAsync(queryDto, returnContentItems: true);
+            var result = await LuceneQueryApiAsync(queryModel, returnContentItems: true);
 
             return new ObjectResult(result);
         }
         
         [HttpPost]
         [Route("content")]
-        public async Task<IActionResult> ContentPost(LuceneQueryDTO queryDto)
+        public async Task<IActionResult> ContentPost(LuceneQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
                 return this.ChallengeOrForbid();
             }
 
-            var result = await LuceneQueryApiAsync(queryDto, returnContentItems: true);
+            var result = await LuceneQueryApiAsync(queryModel, returnContentItems: true);
 
             return new ObjectResult(result);
         }
 
         [HttpGet]
         [Route("documents")]
-        public async Task<IActionResult> Documents([FromQuery] LuceneQueryDTO queryDto)
+        public async Task<IActionResult> Documents([FromQuery] LuceneQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
                 return this.ChallengeOrForbid();
             } 
 
-            var result = await LuceneQueryApiAsync(queryDto);
+            var result = await LuceneQueryApiAsync(queryModel);
 
             return new ObjectResult(result);
         }
 
         [HttpPost]
         [Route("documents")]
-        public async Task<IActionResult> DocumentsPost(LuceneQueryDTO queryDto)
+        public async Task<IActionResult> DocumentsPost(LuceneQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
                 return this.ChallengeOrForbid();
             }
 
-            var result = await LuceneQueryApiAsync(queryDto);
+            var result = await LuceneQueryApiAsync(queryModel);
 
             return new ObjectResult(result);
         }
 
-        private Task<Queries.IQueryResults> LuceneQueryApiAsync(LuceneQueryDTO queryDto, bool returnContentItems = false)
+        private Task<Queries.IQueryResults> LuceneQueryApiAsync(LuceneQueryModel queryModel, bool returnContentItems = false)
         {
             var luceneQuery = new LuceneQuery
             {
-                Index = queryDto.IndexName,
-                Template = queryDto.Query,
+                Index = queryModel.IndexName,
+                Template = queryModel.Query,
                 ReturnContentItems = returnContentItems
             };
 
-            var queryParameters = queryDto.Parameters != null ?
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(queryDto.Parameters)
+            var queryParameters = queryModel.Parameters != null ?
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
                 : new Dictionary<string, object>();
 
             var result = _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
