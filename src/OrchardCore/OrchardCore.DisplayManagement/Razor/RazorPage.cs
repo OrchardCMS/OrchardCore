@@ -297,9 +297,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout.Zones[name];
-
-            return !zone.IsNullOrEmpty();
+            return ThemeLayout.Zones.IsEmpty(name);
         }
 
         /// <summary>
