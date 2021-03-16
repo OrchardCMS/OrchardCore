@@ -33,7 +33,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 foreach (var zone in ThemeLayout.Properties.ToArray())
                 {
                     // Check if the zone hasn't been processed and is not empty.
-                    if (zone.Value is IShape shape && !(shape is ZoneOnDemand))
+                    if (zone.Value is IShape shape && !shape.IsNullOrEmpty())
                     {
                         ThemeLayout.Zones[zone.Key] = new PositionWrapper(await DisplayAsync(shape), "");
                     }

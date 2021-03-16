@@ -541,7 +541,7 @@ namespace OrchardCore.Navigation
 
         private IHtmlContent CoerceHtmlString(object value)
         {
-            if (value == null || value is ZoneOnDemand)
+            if (value == null)
             {
                 return HtmlString.Empty;
             }

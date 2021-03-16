@@ -299,7 +299,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout.Zones[name];
 
-            return !(zone is ZoneOnDemand);
+            return !zone.IsNullOrEmpty();
         }
 
         /// <summary>
@@ -367,7 +367,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout.Zones[name];
 
-            if (required && zone is ZoneOnDemand)
+            if (required && zone.IsNullOrEmpty())
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }

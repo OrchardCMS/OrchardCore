@@ -40,7 +40,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public Task<IHtmlContent> InvokeAsync(string name, INamedEnumerable<object> parameters)
         {
-            if (!string.IsNullOrEmpty(name))
+            if (!String.IsNullOrEmpty(name))
             {
                 return ShapeTypeExecuteAsync(name, parameters);
             }
@@ -67,7 +67,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public Task<IHtmlContent> ShapeExecuteAsync(IShape shape)
         {
-            if (shape == null || shape is ZoneOnDemand)
+            if (shape.IsNullOrEmpty())
             {
                 return Task.FromResult<IHtmlContent>(HtmlString.Empty);
             }

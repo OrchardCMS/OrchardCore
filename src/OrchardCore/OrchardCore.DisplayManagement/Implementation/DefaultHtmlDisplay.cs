@@ -43,7 +43,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             var shape = context.Value;
 
             // non-shape arguments are returned as a no-op
-            if (shape == null || shape is ZoneOnDemand)
+            if (shape.IsNullOrEmpty())
             {
                 return HtmlString.Empty;
             }
