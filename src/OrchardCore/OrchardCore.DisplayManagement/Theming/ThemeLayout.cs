@@ -32,9 +32,20 @@ namespace OrchardCore.DisplayManagement.Theming
                 // Render each layout zone.
                 foreach (var zone in ThemeLayout.Properties.ToArray())
                 {
-                    // Check if the zone hasn't been processed already and is not empty.
-                    if (zone.Value is IShape shape && !(shape is IHtmlContent) && !shape.IsNullOrEmpty())
+                    if (zone.Value is IShape shape)
                     {
+                        // Check if the shape is null or empty.
+                        if (shape.IsNullOrEmpty())
+                        {
+                            continue;
+                        }
+
+                        // Check if the shape is pre-rendered.
+                        if (shape is IHtmlContent)
+                        {
+                            continue;
+                        }
+
                         ThemeLayout.Zones[zone.Key] = new PositionWrapper(await DisplayAsync(shape), "");
                     }
                 }

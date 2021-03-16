@@ -44,12 +44,12 @@ namespace OrchardCore.DisplayManagement.Implementation
                 return ShapeTypeExecuteAsync(name, parameters);
             }
 
-            if (parameters.Positional.Count() == 1)
+            if (parameters.Positional.Count == 1)
             {
                 return ShapeExecuteAsync(parameters.Positional.First() as IShape);
             }
 
-            if (parameters.Positional.Any())
+            if (parameters.Positional.Count > 0)
             {
                 return ShapeExecuteAsync(parameters.Positional.Cast<IShape>());
             }
@@ -66,11 +66,13 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public Task<IHtmlContent> ShapeExecuteAsync(IShape shape)
         {
+            // Check if the shape is null or empty.
             if (shape.IsNullOrEmpty())
             {
                 return Task.FromResult<IHtmlContent>(HtmlString.Empty);
             }
 
+            // Check if the shape is pre-rendered.
             if (shape is IHtmlContent htmlContent)
             {
                 return Task.FromResult(htmlContent);
