@@ -103,7 +103,6 @@ namespace OrchardCore.Modules
             return results;
         }
 
-
         /// <summary>
         /// Safely invoke methods by catching non fatal exceptions and logging them
         /// </summary>

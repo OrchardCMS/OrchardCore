@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.GraphQL

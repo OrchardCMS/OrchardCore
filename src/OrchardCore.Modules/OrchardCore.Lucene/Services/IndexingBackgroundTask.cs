@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
-using OrchardCore.BackgroundTasks;
-using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.BackgroundTasks;
 
 namespace OrchardCore.Lucene
 {

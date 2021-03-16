@@ -1,11 +1,9 @@
-using Newtonsoft.Json.Linq;
-using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
     /// <summary>
-    /// Builds a contentitem based on its the type definition (<seealso cref="ContentTypeDefinition"/>).
+    /// Builds a content item based on its the type definition (<seealso cref="ContentTypeDefinition"/>).
     /// </summary>
     public class ContentItemBuilder
     {

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
@@ -19,12 +20,15 @@ namespace OrchardCore.Contents.Indexing
             var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(context.ContentItem);
 
             // Index each segment as a new value to prevent from allocation a new string
-            foreach(var segment in result.Segments)
+            foreach (var segment in result.Segments)
             {
-                context.DocumentIndex.Set(
-                    IndexingConstants.FullTextKey,
-                    segment,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+                if (!String.IsNullOrEmpty(segment))
+                {
+                    context.DocumentIndex.Set(
+                        IndexingConstants.FullTextKey,
+                        segment,
+                        DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+                }
             }
         }
     }

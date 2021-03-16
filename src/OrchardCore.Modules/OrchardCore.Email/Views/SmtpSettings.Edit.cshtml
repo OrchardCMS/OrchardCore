@@ -7,7 +7,7 @@
     <label asp-for="DefaultSender">@T["Sender email address"]</label>
     <input asp-for="DefaultSender" class="form-control" type="text" />
     <span asp-validation-for="DefaultSender"></span>
-    <span class="hint">@T["The default email address to use as a sender."]</span>
+    <span class="hint">@T["The default email address to use as a sender, unless the email sender is set."]</span>
 </div>
 
 <div class="form-group" asp-validation-class-for="DeliveryMethod">
@@ -75,7 +75,7 @@
                         <input type="checkbox" class="custom-control-input" asp-for="AutoSelectEncryption">
                         <span asp-validation-for="AutoSelectEncryption"></span>
                         <label class="custom-control-label" asp-for="AutoSelectEncryption">@T["Auto Select Encryption method"]</label>
-                        <span class="hint">— @T["Check to let the system select the encryption method based on port."]</span>
+                        <span class="hint dashed">@T["Check to let the system select the encryption method based on port."]</span>
                     </div>
                 </div>
 
@@ -93,7 +93,7 @@
                             <input type="checkbox" class="custom-control-input" asp-for="UseDefaultCredentials" data-toggle="collapse-toggle" data-target=".useCustomCredential">
                             <span asp-validation-for="UseDefaultCredentials"></span>
                             <label class="custom-control-label" asp-for="UseDefaultCredentials">@T["Use Windows authentication"]</label>
-                            <span class="hint d-block">@T["When this option is selected, the aplication pool or host-process identity is used to authenticate with the mail server."]</span>
+                            <span class="hint d-block">@T["When this option is selected, the application pool or host-process identity is used to authenticate with the mail server."]</span>
                         </div>
                     </div>
 
@@ -130,7 +130,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 

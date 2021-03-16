@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using OrchardCore.Modules.Manifest;
 
@@ -12,7 +11,7 @@ namespace OrchardCore.Environment.Extensions
         string Type { get; }
         string Author { get; }
         string Website { get; }
-        Version Version { get; }
+        string Version { get; }
         IEnumerable<string> Tags { get; }
         ModuleAttribute ModuleInfo { get; }
     }

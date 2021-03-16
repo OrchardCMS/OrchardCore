@@ -6,7 +6,7 @@ using Microsoft.Extensions.FileProviders;
 namespace OrchardCore.Scripting.Files
 {
     /// <summary>
-    /// Provides 
+    /// Provides
     /// </summary>
     public class FilesScriptEngine : IScriptingEngine
     {

@@ -18,9 +18,9 @@ namespace OrchardCore.Tests.DisplayManagement
 {
     public class DefaultDisplayManagerTests
     {
-        ShapeTable _defaultShapeTable;
-        TestShapeBindingsDictionary _additionalBindings;
-        IServiceProvider _serviceProvider;
+        private ShapeTable _defaultShapeTable;
+        private TestShapeBindingsDictionary _additionalBindings;
+        private IServiceProvider _serviceProvider;
 
         public DefaultDisplayManagerTests()
         {
@@ -51,18 +51,27 @@ namespace OrchardCore.Tests.DisplayManagement
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        class TestDisplayEvents : IShapeDisplayEvents
+        private class TestDisplayEvents : IShapeDisplayEvents
         {
             public Action<ShapeDisplayContext> Displaying = ctx => { };
             public Action<ShapeDisplayContext> Displayed = ctx => { };
             public Action<ShapeDisplayContext> Finalized = ctx => { };
 
-            Task IShapeDisplayEvents.DisplayingAsync(ShapeDisplayContext context) { Displaying(context); return Task.CompletedTask; }
-            Task IShapeDisplayEvents.DisplayedAsync(ShapeDisplayContext context) { Displayed(context); return Task.CompletedTask; }
-            Task IShapeDisplayEvents.DisplayingFinalizedAsync(ShapeDisplayContext context) { Finalized(context); return Task.CompletedTask; }
+            Task IShapeDisplayEvents.DisplayingAsync(ShapeDisplayContext context)
+            {
+                Displaying(context); return Task.CompletedTask;
+            }
+            Task IShapeDisplayEvents.DisplayedAsync(ShapeDisplayContext context)
+            {
+                Displayed(context); return Task.CompletedTask;
+            }
+            Task IShapeDisplayEvents.DisplayingFinalizedAsync(ShapeDisplayContext context)
+            {
+                Finalized(context); return Task.CompletedTask;
+            }
         }
 
-        void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
+        private void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
         {
             _defaultShapeTable.Descriptors[shapeDescriptor.ShapeType] = shapeDescriptor;
             foreach (var binding in shapeDescriptor.Bindings)
@@ -71,7 +80,7 @@ namespace OrchardCore.Tests.DisplayManagement
             }
         }
 
-        static DisplayContext CreateDisplayContext(Shape shape)
+        private static DisplayContext CreateDisplayContext(Shape shape)
         {
             return new DisplayContext
             {

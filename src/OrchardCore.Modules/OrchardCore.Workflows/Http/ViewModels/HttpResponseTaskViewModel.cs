@@ -1,5 +1,3 @@
-using System.Net;
-
 namespace OrchardCore.Workflows.Http.ViewModels
 {
     public class HttpResponseTaskViewModel

@@ -6,9 +6,15 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
+using OrchardCore.Markdown.Services;
+using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.Drivers
 {
@@ -16,18 +22,29 @@ namespace OrchardCore.Markdown.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IStringLocalizer<MarkdownBodyPartDisplay> S;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
+        private readonly IShortcodeService _shortcodeService;
+        private readonly IMarkdownService _markdownService;
+        private readonly IStringLocalizer S;
 
-        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<MarkdownBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
+        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager,
+            HtmlEncoder htmlEncoder,
+            IHtmlSanitizerService htmlSanitizerService,
+            IShortcodeService shortcodeService,
+            IMarkdownService markdownService,
+            IStringLocalizer<MarkdownBodyPartDisplay> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
+            _htmlSanitizerService = htmlSanitizerService;
+            _shortcodeService = shortcodeService;
+            _markdownService = markdownService;
             S = localizer;
         }
 
-        public override IDisplayResult Display(MarkdownBodyPart MarkdownBodyPart, BuildPartDisplayContext context)
+        public override IDisplayResult Display(MarkdownBodyPart markdownBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>("MarkdownBodyPart", m => BuildViewModel(m, MarkdownBodyPart))
+            return Initialize<MarkdownBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, markdownBodyPart, context))
                 .Location("Detail", "Content:10")
                 .Location("Summary", "Content:10");
         }
@@ -47,12 +64,12 @@ namespace OrchardCore.Markdown.Drivers
         {
             var viewModel = new MarkdownBodyPartViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Markdown))
+            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown))
             {
                 if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(model.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {
@@ -63,16 +80,36 @@ namespace OrchardCore.Markdown.Drivers
             return Edit(model, context);
         }
 
-        private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart)
+        private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart markdownBodyPart, BuildPartDisplayContext context)
         {
-            model.Markdown = MarkdownBodyPart.Markdown;
-            model.MarkdownBodyPart = MarkdownBodyPart;
-            model.ContentItem = MarkdownBodyPart.ContentItem;
+            model.Markdown = markdownBodyPart.Markdown;
+            model.MarkdownBodyPart = markdownBodyPart;
+            model.ContentItem = markdownBodyPart.ContentItem;
 
-            model.Markdown = await _liquidTemplateManager.RenderAsync(MarkdownBodyPart.Markdown, _htmlEncoder, model,
-                scope => scope.SetValue("ContentItem", model.ContentItem));
+            // The default Markdown option is to entity escape html
+            // so filters must be run after the markdown has been processed.
+            model.Html = _markdownService.ToHtml(model.Markdown ?? "");
 
-            model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
+            var settings = context.TypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+
+            // The liquid rendering is for backwards compatability and can be removed in a future version.
+            if (!settings.SanitizeHtml)
+            {
+                model.Html = await _liquidTemplateManager.RenderAsync(model.Html, _htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
+            }
+
+            model.Html = await _shortcodeService.ProcessAsync(model.Html,
+                new Context
+                {
+                    ["ContentItem"] = markdownBodyPart.ContentItem,
+                    ["TypePartDefinition"] = context.TypePartDefinition
+                });
+
+            if (settings.SanitizeHtml)
+            {
+                model.Html = _htmlSanitizerService.Sanitize(model.Html ?? "");
+            }
         }
     }
 }

@@ -13,9 +13,7 @@ namespace OrchardCore.Menu.Drivers
     {
         private readonly IContentManager _contentManager;
 
-        public LinkMenuItemPartDisplayDriver(
-            IContentManager contentManager
-            )
+        public LinkMenuItemPartDisplayDriver(IContentManager contentManager)
         {
             _contentManager = contentManager;
         }

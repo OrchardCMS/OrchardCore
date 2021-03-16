@@ -8,9 +8,7 @@ using OrchardCore.OpenId.YesSql.Stores;
 
 namespace OrchardCore.OpenId.YesSql.Resolvers
 {
-    /// <summary>
-    /// Exposes a method allowing to resolve an application store.
-    /// </summary>
+    /// <inheritdoc/>
     public class OpenIdApplicationStoreResolver : IOpenIddictApplicationStoreResolver
     {
         private readonly TypeResolutionCache _cache;
@@ -22,12 +20,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
             _provider = provider;
         }
 
-        /// <summary>
-        /// Returns an application store compatible with the specified application type or throws an
-        /// <see cref="InvalidOperationException"/> if no store can be built using the specified type.
-        /// </summary>
-        /// <typeparam name="TApplication">The type of the Application entity.</typeparam>
-        /// <returns>An <see cref="IOpenIddictApplicationStore{TApplication}"/>.</returns>
+        /// <inheritdoc/>
         public IOpenIddictApplicationStore<TApplication> Get<TApplication>() where TApplication : class
         {
             var store = _provider.GetService<IOpenIddictApplicationStore<TApplication>>();
@@ -51,7 +44,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
                 return typeof(OpenIdApplicationStore<>).MakeGenericType(key);
             });
 
-            return (IOpenIddictApplicationStore<TApplication>) _provider.GetRequiredService(type);
+            return (IOpenIddictApplicationStore<TApplication>)_provider.GetRequiredService(type);
         }
 
         // Note: OrchardCore YesSql resolvers are registered as scoped dependencies as their inner

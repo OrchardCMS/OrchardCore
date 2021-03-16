@@ -7,7 +7,7 @@
     {
         @await DisplayAsync(Model.Editor.Content)
     }
-    
+
     @if (Model.Editor.Content != null)
     {
         <div class="form-group">
@@ -16,5 +16,4 @@
     }
 
     <input type="hidden" asp-for="SourceName" />
-
 </form>

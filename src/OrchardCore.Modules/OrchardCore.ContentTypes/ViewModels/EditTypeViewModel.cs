@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -32,6 +32,5 @@ namespace OrchardCore.ContentTypes.ViewModels
 
         [BindNever]
         public dynamic Editor { get; set; }
-
     }
 }

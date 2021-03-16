@@ -1,5 +1,5 @@
 @model OrchardCore.Media.ViewModels.EditMediaFieldViewModel
-@using OrchardCore.Media.Settings;
+@using OrchardCore.Media.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
@@ -7,7 +7,47 @@
     var mediaFieldId = Html.IdFor(m => m);
 }
 
-<partial name="Shared/MediaFieldEditResources.cshtml" />
+<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable"></script>
+<style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
+
+<div class="form-group" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
+    <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
+    @if (!string.IsNullOrWhiteSpace(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+
+    <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
+
+    <div class="form-control-plaintext media-field-toolbar" v-cloak>
+        <div class="btn-group" role="group" >
+            <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
+                <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fas fa-compress-alt"></i></span>
+                <span v-show="smallThumbs" title="@T[" Large Thumbs"]"><i class="fas fa-expand-alt"></i></span>
+            </button>
+            <label v-show="canAddMedia" class="btn btn-sm btn-secondary fileinput-button">
+                <input id="@mediaFieldId-field-file-upload" type="file" name="files" multiple="multiple">
+                <i class="fa fa-upload"></i>
+            </label>
+            <a href="javascript:;" v-show="allowMediaText" v-on:click="showMediaTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="far fa-comment"></i></a>
+            <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-crosshairs"></i></a>
+            <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-trash-alt"></i></a>
+        </div>
+        <label class="selected-media-name">
+            <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+        </label>
+    </div>
+
+    <upload-list id-of-upload-input-field="@mediaFieldId"></upload-list>
+        
+    <media-field-thumbs-container :media-items="mediaItems" :thumb-size="thumbSize" :selected-media="selectedMedia" :id-prefix="idPrefix"></media-field-thumbs-container>
+    
+    <partial name="Shared/MediaFieldEditMediaTextModal.cshtml" />
+    <partial name="Shared/MediaFieldEditAnchorModal.cshtml" />
+
+</div>
+
+<partial name="Shared/MediaFieldEditLocalization.cshtml" />
 
 <script at="Foot">
     initializeAttachedMediaField(
@@ -15,50 +55,8 @@
         '@mediaFieldId-field-file-upload',
         '@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })',
         '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
-         @(settings.Multiple ? "true" : "false"),
+        @(settings.Multiple ? "true" : "false"),
+        @(settings.AllowMediaText ? "true" : "false"),
+        @(settings.AllowAnchors ? "true" : "false"),
         '@Model.TempUploadFolder');
 </script>
-
-<div class="mediafield-editor" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
-    <div class="media-field">
-        <div class="form-group">
-            <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
-            @if (!string.IsNullOrWhiteSpace(settings.Hint))
-            {
-                <span class="hint">@settings.Hint</span>
-            }
-
-            <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
-
-            <nav class="media-field-toolbar" v-cloak>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
-                        <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
-                        <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
-                    </button>
-                    <label v-show="canAddMedia" class="btn btn-sm btn-secondary fileinput-button">
-                        <input id="@mediaFieldId-field-file-upload" type="file" name="files" multiple="multiple">
-                        <i class="fa fa-upload"></i>
-                    </label>
-                    <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
-                </div>
-                <div class="selected-media-name">
-                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
-                </div>
-            </nav>
-
-        </div>
-        <upload-list id-of-upload-input-field="@mediaFieldId"></upload-list>
-        <div class="form-group">
-            <media-field-thumbs-container :media-items="mediaItems"
-                                          :thumb-size="thumbSize"
-                                          :selected-media="selectedMedia">
-            </media-field-thumbs-container>
-        </div>
-    </div>
-</div>
-
-
-<partial name="Shared/MediaFieldEditLocalization.cshtml" />
-
-

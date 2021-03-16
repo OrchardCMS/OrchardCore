@@ -67,14 +67,33 @@
 			"processId": 0
 		},
 		{
-			"name": ".NET Core Launch (web publish)",
+			"name": ".NET Core Launch (publish framework dependent)",
 			"type": "coreclr",
 			"request": "launch",
 			"internalConsoleOptions": "openOnSessionStart",
-			"preLaunchTask": "Web App: Dotnet Publish",
-			"program": "${workspaceRoot}/../publish/OrchardCore.Cms.Web.dll",
+			"preLaunchTask": "Web App: Dotnet Publish (framework dependent)",
+			"program": "${workspaceRoot}/build/release/OrchardCore.Cms.Web.dll",
 			"args": [],
-			"cwd": "${workspaceRoot}/../publish",
+			"cwd": "${workspaceRoot}/build/release",
+			"stopAtEntry": false,
+			"launchBrowser": {
+				"enabled": true,
+				"args": "${auto-detect-url}",
+				"windows": {
+					"command": "cmd.exe",
+					"args": "/C start http://localhost:5000"
+				}
+			}
+		},
+		{
+			"name": ".NET Core Launch (publish self-contained)",
+			"type": "coreclr",
+			"request": "launch",
+			"internalConsoleOptions": "openOnSessionStart",
+			"preLaunchTask": "Web App: Dotnet Publish (self-contained)",
+			"program": "${workspaceRoot}/build/release/OrchardCore.Cms.Web.dll",
+			"args": [],
+			"cwd": "${workspaceRoot}/build/release",
 			"stopAtEntry": false,
 			"launchBrowser": {
 				"enabled": true,
@@ -96,7 +115,7 @@
 			"runtimeArgs": [
 				"--nolazy"
 			],
-			"console": "internalConsole",
+			"console": "internalConsole"
 		}
 	]
 }

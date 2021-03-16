@@ -18,11 +18,11 @@
     </div>
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Create"]</button>
+        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
     </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
 //<![CDATA[
     $(function(){
         var $name = $("#@Html.IdFor(m => m.Name)");
@@ -35,7 +35,7 @@
 
         var compute = function() {
             // stop processing automatically if altered by the user
-            if(nameAltered) {
+            if (nameAltered) {
                 return true;
             }
 

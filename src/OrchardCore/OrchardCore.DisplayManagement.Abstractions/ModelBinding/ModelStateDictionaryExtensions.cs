@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Mvc.ModelBinding
 {
@@ -18,6 +18,30 @@ namespace OrchardCore.Mvc.ModelBinding
         {
             var fullKey = string.IsNullOrEmpty(prefix) ? key : $"{prefix}.{key}";
             modelState.AddModelError(fullKey, errorMessage);
+        }
+
+        /// <summary>
+        /// Adds the specified error message to the errors collection for the model-state dictionary that is associated with the specified key.
+        /// </summary>
+        /// <param name="modelState">The model state.</param>
+        /// <param name="prefix">The prefix of the key.</param>
+        /// <param name="validationResults">The <see cref="ValidationResult"/>.</param>
+        public static void BindValidationResults(this ModelStateDictionary modelState, string prefix, IEnumerable<ValidationResult> validationResults)
+        {
+            foreach (var item in validationResults)
+            {
+                if (!item.MemberNames.Any())
+                {
+                    modelState.AddModelError(prefix, string.Empty, item.ErrorMessage);
+                }
+                else
+                {
+                    foreach (var memberName in item.MemberNames)
+                    {
+                        modelState.AddModelError(prefix, memberName, item.ErrorMessage);
+                    }
+                }
+            }
         }
     }
 }

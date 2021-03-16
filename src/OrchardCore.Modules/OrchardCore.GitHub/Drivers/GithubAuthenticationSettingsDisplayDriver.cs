@@ -58,6 +58,7 @@ namespace OrchardCore.GitHub.Drivers
                 {
                     model.CallbackUrl = settings.CallbackPath.Value;
                 }
+                model.SaveTokens = settings.SaveTokens;
             }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }
 
@@ -81,7 +82,8 @@ namespace OrchardCore.GitHub.Drivers
                     settings.ClientID = model.ClientID;
                     settings.ClientSecret = protector.Protect(model.ClientSecret);
                     settings.CallbackPath = model.CallbackUrl;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    settings.SaveTokens = model.SaveTokens;
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

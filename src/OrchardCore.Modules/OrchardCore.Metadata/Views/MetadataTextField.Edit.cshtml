@@ -1,8 +1,7 @@
 @model OrchardCore.Metadata.ViewModels.EditMetadataTextFieldViewModel
-@using OrchardCore.Metadata.Settings
-@using OrchardCore.ContentManagement.Metadata.Models
+
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<MetadataTextFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<MetadataTextFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 <script asp-src="~/OrchardCore.Metadata/Scripts/character-count.min.js" debug-src="~/OrchardCore.Metadata/Scripts/character-count.js" at="Foot"></script>
@@ -12,6 +11,6 @@
     <input asp-for="Value" class="form-control" data-counter data-counter-max-length="@settings.MaxCharacterLength" dir="@culture.GetLanguageDirection()" />
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
-        <span class="hint">@settings.Hint</span>
+    <span class="hint">@settings.Hint</span>
     }
 </div>

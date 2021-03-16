@@ -1,24 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Environment.Extensions.Features
 {
     public class FeaturesProvider : IFeaturesProvider
     {
-        public const string FeatureProviderCacheKey = "FeatureProvider:Features";
+        public const string FeatureProviderStateKey = "FeatureProvider:Features";
 
         private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
 
-        private readonly ILogger L;
-
-        public FeaturesProvider(
-            IEnumerable<IFeatureBuilderEvents> featureBuilderEvents,
-            ILogger<FeaturesProvider> logger)
+        public FeaturesProvider(IEnumerable<IFeatureBuilderEvents> featureBuilderEvents)
         {
             _featureBuilderEvents = featureBuilderEvents;
-            L = logger;
         }
 
         public IEnumerable<IFeatureInfo> GetFeatures(
@@ -89,7 +83,7 @@ namespace OrchardCore.Environment.Extensions.Features
                     {
                         builder.Built(featureInfo);
                     }
-                    
+
                     featuresInfos.Add(featureInfo);
                 }
             }

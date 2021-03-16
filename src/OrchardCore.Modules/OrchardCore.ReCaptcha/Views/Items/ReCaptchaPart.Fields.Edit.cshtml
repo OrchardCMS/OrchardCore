@@ -1,11 +1,11 @@
 @using OrchardCore.ReCaptcha.Forms
 @model OrchardCore.ReCaptcha.Forms.ReCaptchaPartViewModel
 
-@{	
-    var settingsUrl = Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = OrchardCore.ReCaptcha.Drivers.ReCaptchaSettingsDisplayDriver.GroupId });	
-    var hyperLinkAttributes = $"class=alert-link target=_blank href={settingsUrl}";	
-    var successMessage = T["<a {0}>ReCaptcha settings</a> are configured.", hyperLinkAttributes];	
-    var warningMessage = T["<a {0}>ReCaptcha settings</a> are not configured. The captcha will not be displayed.", hyperLinkAttributes];	
+@{
+    var settingsUrl = Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = OrchardCore.ReCaptcha.Drivers.ReCaptchaSettingsDisplayDriver.GroupId });
+    var hyperLinkAttributes = $"class=alert-link target=_blank href={settingsUrl}";
+    var successMessage = T["<a {0}>ReCaptcha settings</a> are configured.", hyperLinkAttributes];
+    var warningMessage = T["<a {0}>ReCaptcha settings</a> are not configured. The captcha will not be displayed.", hyperLinkAttributes];
 }
 
 @{

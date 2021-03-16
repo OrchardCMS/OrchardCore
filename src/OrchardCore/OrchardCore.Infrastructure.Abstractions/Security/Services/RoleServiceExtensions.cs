@@ -9,7 +9,7 @@ namespace OrchardCore.Security.Services
         public static async Task<IEnumerable<string>> GetRoleNamesAsync(this IRoleService roleService)
         {
             var roles = await roleService.GetRolesAsync();
-            
+
             return roles.Select(r => r.RoleName);
         }
     }

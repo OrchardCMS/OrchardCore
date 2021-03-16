@@ -2,35 +2,30 @@
 @using OrchardCore.Modules;
 @model FeaturesViewModel
 
-@{
-}
 <div class="row">
     <div class="form-group col mb-n1">
         <h1>@RenderTitleSegments(T["Features"])</h1>
     </div>
-    <div class="form-group col mb-n1">
-        <div class="dropdown float-right order-md-1">
-            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @T["Bulk Actions"]
-            </button>
-            <div class="dropdown-menu" aria-labelledby="bulk-action-menu-button">
-                <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a>
-                <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a>
-                <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a>
-            </div>
-        </div>
-    </div>
 </div>
-
-<form autocomplete="off">
+<form autocomplete="off" class="position-sticky action-bar">
     <div class="card mb-3">
-        <div class="card-body bg-light p-3">
+        <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50">
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
                     <div class="input-group-prepend">
                         <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                     </div>
-                    <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+                    <input id="search-box" class="form-control mr-sm-2" placeholder="@T["Search"]" type="search" autofocus>
+                </div>
+                <div class="dropdown float-right order-md-1">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Bulk Actions"]
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                        <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a>
+                        <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a>
+                        <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -39,6 +34,7 @@
 
 <form asp-action="Features" method="post">
     <input name="BulkAction" type="hidden" />
+    <input name="Force" type="hidden" value="true" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
     @{
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
@@ -80,7 +76,7 @@
                             var featureState = feature.IsEnabled ? "enabled" : "disabled";
 
                             var dependencies = (from d in feature.FeatureDependencies
-                                                select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);                            
+                                                select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
                             var dependenciesNames = String.Join(" ", dependencies.Select(d => d.Descriptor.Name));
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
@@ -125,17 +121,17 @@
                                     <div class="col-md-2 text-right">
                                         @if (showEnable && !feature.IsEnabled)
                                         {
-                                            <a asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                                            <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
                                         }
                                         @if (showDisable && feature.IsEnabled)
                                         {
-                                            var confirmationMessage = T["Are you sure you want to disable this feature? Continue?"];
-                                            if (feature.DependentFeatures.Any())
+                                            var confirmationMessage = T["Are you sure you want to disable the {0} feature? Continue?", feature.Descriptor.Name];
+                                            if (feature.EnabledDependentFeatures.Any())
                                             {
-                                                var dependentFeatures = new HtmlString($"<ul>{String.Join("", feature.DependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
-                                                confirmationMessage = T["Disabling this feature will also disable the following dependent features:{0}Continue?", dependentFeatures];
+                                                var enabledDependentFeatures = new HtmlString($"<ul>{String.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
+                                                confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", feature.Descriptor.Name, enabledDependentFeatures];
                                             }
-                                            <a asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                            <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                         }
                                     </div>
                                 </div>
@@ -143,14 +139,14 @@
                         }
                     }
                 </ul>
-                <div id="list-alert" class="alert alert-info d-none" role="alert">
-                    @T["<strong>Nothing here!</strong> Your search returned no results."]
-                </div>
             </div>
         }
+        <div id="list-alert" class="alert alert-info d-none" role="alert">
+            @T["<strong>Nothing here!</strong> Your search returned no results."]
+        </div>
     }
 </form>
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         var searchBox = $('#search-box');
 
@@ -189,9 +185,12 @@
             }
         });
 
-        $(".dropdown-menu a").on('click', function () {
+        $(".dropdown-menu a").filter(function() {
+            return $(this).data("action");
+        }).on('click', function () {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
         });
+
     });
 </script>

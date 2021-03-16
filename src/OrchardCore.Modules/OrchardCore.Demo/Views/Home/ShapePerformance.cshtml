@@ -1,9 +1,8 @@
 @* This page compares the performance of View Components and shapes *@
 
-
 @using OrchardCore.DisplayManagement
 
-@{ 
+@{
     var iterations = 100;
 }
 
@@ -24,7 +23,7 @@ VIEW COMPONENTS
 
 @sw.Elapsed.TotalMilliseconds ms
 
-<br/>
+<br />
 SHAPES (Arguments)
 
 @{
@@ -54,7 +53,6 @@ SHAPES (Method call)
 
 @sw.Elapsed.TotalMilliseconds ms
 
-
 <br />
 SHAPES (Dynamic Proxy - Dynamic View Model)
 
@@ -66,7 +64,7 @@ SHAPES (Dynamic Proxy - Dynamic View Model)
 @for (int i = 0; i < iterations; i++)
 {
     var proxy = await Factory.CreateAsync<OrchardCore.Demo.Models.FakeShape>("Fake", f => f.Value = "666");
-    
+
     buffer.AppendHtml(await DisplayAsync(proxy));
 }
 
@@ -125,7 +123,6 @@ SHAPES (Reuse instance)
 }
 
 @sw.Elapsed.TotalMilliseconds ms
-
 
 <br />
 SHAPES (Just instantiation)

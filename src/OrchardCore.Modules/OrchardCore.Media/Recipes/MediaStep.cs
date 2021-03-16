@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Recipes.Models;
@@ -13,6 +14,7 @@ namespace OrchardCore.Media.Recipes
     public class MediaStep : IRecipeStepHandler
     {
         private readonly IMediaFileStore _mediaFileStore;
+        private readonly static HttpClient _httpClient = new HttpClient();
 
         public MediaStep(IMediaFileStore mediaFileStore)
         {
@@ -42,12 +44,24 @@ namespace OrchardCore.Media.Recipes
 
                     stream = fileInfo.CreateReadStream();
                 }
+                else if (!String.IsNullOrWhiteSpace(file.SourceUrl))
+                {
+                    var response = await _httpClient.GetAsync(file.SourceUrl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        stream = await response.Content.ReadAsStreamAsync();
+                    }
+                }
 
                 if (stream != null)
                 {
-                    using (stream)
+                    try
                     {
                         await _mediaFileStore.CreateFileFromStreamAsync(file.TargetPath, stream, true);
+                    }
+                    finally
+                    {
+                        stream?.Dispose();
                     }
                 }
             }
@@ -90,6 +104,14 @@ namespace OrchardCore.Media.Recipes
             /// non-null values, the Base64 property will be used.
             /// </summary>
             public string SourcePath { get; set; }
+
+            /// <summary>
+            /// URL where the content is read from. Use when the file
+            /// will be available on a remote website.
+            /// If Base64 property or SourcePath property are set, they take
+            /// precedence over SourceUrl.
+            /// </summary>
+            public string SourceUrl { get; set; }
         }
     }
 }

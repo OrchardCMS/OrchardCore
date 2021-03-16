@@ -1,8 +1,6 @@
 @using System.Linq
-@using OrchardCore.Security.Services
 
 @model OrchardCore.Roles.ViewModels.RolesViewModel
-@inject IRoleService RoleService
 
 <div class="row">
     <div class="form-group col mb-n1">
@@ -10,11 +8,10 @@
     </div>
 </div>
 <form autocomplete="off">
-
     <div class="row">
         <div class="form-group col-xl-4 col-sm-6">
             <div class="input-group input-group-sm filter-options">
-                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" />
+                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
             </div>
         </div>
         <div class="form-group col-xl-8 col-sm-6">
@@ -23,7 +20,6 @@
             </div>
         </div>
     </div>
-
 </form>
 
 <form asp-action="Index">
@@ -31,12 +27,6 @@
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
             var message = T["Are you sure you want to delete this role?"];
-            var claims = await RoleService.GetRoleClaimsAsync(Model.RoleEntries[i].Name);
-
-            if(claims.Any())
-            {
-                message = T["The role is associated to existing user(s). Are you sure you want to remove it?"];
-            }
 
             <li class="list-group-item" data-role="@Model.RoleEntries[i].Name">
                 <div class="properties">
@@ -56,7 +46,7 @@
     </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         var searchBox = $('#search-box');
 
@@ -82,10 +72,10 @@
                 $('#roles > li').toggle(true);
                 var visible = $('#roles > li:visible');
                 if (visible.length == 0) {
-                    $('#list-alert').removeClass("d-none");
+                    $('#list-alert').addClass("d-none");
                 }
                 else {
-                    $('#list-alert').addClass("d-none");
+                    $('#list-alert').removeClass("d-none");
                 }
             }
             else {

@@ -32,7 +32,6 @@ namespace OrchardCore.ContentLocalization.Liquid
 
                 var localizationSets = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
 
-
                 return FluidValue.Create(await innoFieldsService.GetItemsForSetsAsync(localizationSets, locale));
             }
             else

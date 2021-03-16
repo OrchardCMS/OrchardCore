@@ -55,13 +55,8 @@ namespace OrchardCore.Environment.Commands
                 object value = ConvertToType(propertyInfo.PropertyType, commandSwitch.Value);
                 propertyInfo.SetValue(this, value, null /*index*/);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                if (ex.IsFatal())
-                {
-                    throw;
-                }
-
                 //TODO: (ngm) fix this message
                 string message = S["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
                     commandSwitch.Value,
@@ -70,7 +65,6 @@ namespace OrchardCore.Environment.Commands
                 throw new InvalidOperationException(message, ex);
             }
         }
-
 
         private async Task InvokeAsync(CommandContext context)
         {

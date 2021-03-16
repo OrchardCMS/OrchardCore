@@ -55,7 +55,6 @@
     <div class="custom-control custom-switch">
         <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" />
         <label asp-for="IsEnabled" class="custom-control-label cursor-pointer">@T["Is enabled?"]</label>
-        <span class="hint">— @T["Uncheck to disable this user account."]</span>
+        <span class="hint dashed">@T["Uncheck to disable this user account."]</span>
     </div>
-    
 </div>

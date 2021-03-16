@@ -13,7 +13,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer<BindModelStateTask> S;
+        private readonly IStringLocalizer S;
 
         public BindModelStateTask(
             IHttpContextAccessor httpContextAccessor,
@@ -27,9 +27,9 @@ namespace OrchardCore.Forms.Workflows.Activities
         }
 
         public override string Name => nameof(BindModelStateTask);
-        
+
         public override LocalizedString DisplayText => S["Bind Model State Task"];
-        
+
         public override LocalizedString Category => S["Validation"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

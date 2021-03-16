@@ -12,7 +12,7 @@ namespace OrchardCore.GitHub.Services
     public class GitHubAuthenticationService : IGitHubAuthenticationService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<GitHubAuthenticationService> S;
+        private readonly IStringLocalizer S;
 
         public GitHubAuthenticationService(
             ISiteService siteService,
@@ -61,6 +61,5 @@ namespace OrchardCore.GitHub.Services
                 yield return new ValidationResult(S["ClientSecret is required"], new string[] { nameof(settings.ClientSecret) });
             }
         }
-
     }
 }

@@ -9,7 +9,7 @@ namespace OrchardCore.Twitter.Workflows.Drivers
     {
         protected override void EditActivity(UpdateTwitterStatusTask activity, UpdateTwitterStatusTaskViewModel model)
         {
-            model.StatusTemplate= activity.StatusTemplate.Expression;
+            model.StatusTemplate = activity.StatusTemplate.Expression;
         }
 
         protected override void UpdateActivity(UpdateTwitterStatusTaskViewModel model, UpdateTwitterStatusTask activity)

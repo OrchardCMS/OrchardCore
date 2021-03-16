@@ -6,9 +6,9 @@ namespace OrchardCore.Deployment.Deployment
 {
     public class DeploymentPlanDeploymentSource : IDeploymentSource
     {
-        private readonly DeploymentPlanService _deploymentPlanService;
+        private readonly IDeploymentPlanService _deploymentPlanService;
 
-        public DeploymentPlanDeploymentSource(DeploymentPlanService deploymentPlanService)
+        public DeploymentPlanDeploymentSource(IDeploymentPlanService deploymentPlanService)
         {
             _deploymentPlanService = deploymentPlanService;
         }
@@ -34,11 +34,11 @@ namespace OrchardCore.Deployment.Deployment
                          {
                              plan.Name,
                              Steps = (from step in plan.DeploymentSteps
-                                     select new
-                                     {
-                                         Type = step.GetType().Name,
-                                         Step = step
-                                     }).ToArray()
+                                      select new
+                                      {
+                                          Type = step.GetType().Name,
+                                          Step = step
+                                      }).ToArray()
                          }).ToArray();
 
             // Adding deployment plans

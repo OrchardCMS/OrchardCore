@@ -8,7 +8,7 @@ namespace OrchardCore.Workflows.Activities
 {
     public class ForkTask : TaskActivity
     {
-        private readonly IStringLocalizer<ForkTask> S;
+        private readonly IStringLocalizer S;
 
         public ForkTask(IStringLocalizer<ForkTask> localizer)
         {
@@ -16,9 +16,9 @@ namespace OrchardCore.Workflows.Activities
         }
 
         public override string Name => nameof(ForkTask);
-        
+
         public override LocalizedString DisplayText => S["Fork Task"];
-        
+
         public override LocalizedString Category => S["Control Flow"];
 
         public IList<string> Forks

@@ -2,15 +2,23 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Users",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
 
 [assembly: Feature(
     Id = "OrchardCore.Users",
     Name = "Users",
     Description = "The users module enables authentication UI and user management.",
+    Category = "Security"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Users.ChangeEmail",
+    Name = "Users Change Email",
+    Description = "The Change email feature allows users to change their email address.",
+    Dependencies = new[] { "OrchardCore.Users" },
     Category = "Security"
 )]
 
@@ -34,5 +42,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Users.TimeZone",
     Name = "User Time Zone",
     Description = "Provides a way to set the time zone per user.",
+    Dependencies = new[] { "OrchardCore.Users" },
     Category = "Settings"
 )]

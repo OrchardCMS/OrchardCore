@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 using OrchardCore.Layers.Models;
 using YesSql.Indexes;
 
@@ -17,10 +17,10 @@ namespace OrchardCore.Layers.Indexes
                 .Map(contentItem =>
                 {
                     var layerMetadata = contentItem.As<LayerMetadata>();
-                    if(layerMetadata != null)
+                    if (layerMetadata != null)
                     {
                         return new LayerMetadataIndex
-						{
+                        {
                             Zone = layerMetadata.Zone,
                         };
                     }

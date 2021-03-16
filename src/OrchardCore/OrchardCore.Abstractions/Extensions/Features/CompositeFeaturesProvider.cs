@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Extensions.Features
 {
@@ -12,7 +11,7 @@ namespace OrchardCore.Environment.Extensions.Features
         {
             _featuresProviders = featuresProviders ?? new IFeaturesProvider[0];
         }
-        
+
         public CompositeFeaturesProvider(IEnumerable<IFeaturesProvider> featuresProviders)
         {
             if (featuresProviders == null)
@@ -26,7 +25,7 @@ namespace OrchardCore.Environment.Extensions.Features
             IExtensionInfo extensionInfo,
             IManifestInfo manifestInfo)
         {
-            List<IFeatureInfo> featureInfos = 
+            List<IFeatureInfo> featureInfos =
                 new List<IFeatureInfo>();
 
             foreach (var provider in _featuresProviders)

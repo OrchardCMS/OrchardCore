@@ -9,8 +9,8 @@
         @await DisplayAsync(Model.ActivityEditor)
 
         <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
         </div>
     </form>
 </div>

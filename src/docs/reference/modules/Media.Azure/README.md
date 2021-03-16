@@ -18,10 +18,10 @@ The following configuration values are used by default and can be customized:
 ```json
 {
    "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Set to the Azure Blob container name.
+      // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "somecontainer",
       // Optionally, set to a path to store media in a subdirectory inside your container.
       "BasePath": "some/base/path",
@@ -48,15 +48,18 @@ or a single container with a base path per tenant.
 The `ShellSettings` property is made available to the liquid template.
 The `ContainerName` property and the `BasePath` property are the only templatable properties.
 
+!!! note
+    When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
+
 ### Configuring a container per tenant.
  
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Optionally configure with liquid.
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "{{ ShellSettings.Name }}-media",
       // Optionally configure with liquid.
       "BasePath": "Media",
@@ -71,10 +74,10 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Optionally configure with liquid.
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "somecontainer",
       // Optionally configure with liquid.
       "BasePath": "{{ ShellSettings.Name }}/Media",

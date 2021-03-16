@@ -37,7 +37,7 @@
                             <label class="custom-control-label" asp-for="PartSelections[i].PartName">@partSelection.PartDisplayName</label>
                             @if (!String.IsNullOrEmpty(partSelection.PartDescription))
                             {
-                                <span class="hint">— @partSelection.PartDescription</span>
+                                <span class="hint dashed">@partSelection.PartDescription</span>
                             }
                         </div>
                     </li>
@@ -53,14 +53,13 @@
     <div class="form-group">
         @if (Model.PartSelections.Any())
         {
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
         }
-        <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
     </div>
 </form>
 
-
-<script at="Foot" type="text/javascript">
+<script at="Foot">
 //<![CDATA[
     $(function(){
         var $name = $("#@Html.IdFor(m => m.Name)");
@@ -73,7 +72,7 @@
 
         var compute = function() {
             // stop processing automatically if altered by the user
-            if(nameAltered) {
+            if (nameAltered) {
                 return true;
             }
 

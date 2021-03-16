@@ -1,4 +1,3 @@
-using OrchardCore.Environment.Shell;
 using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Tenants.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;
@@ -12,7 +11,7 @@ namespace OrchardCore.Tenants.Workflows.Drivers
             model.TenantNameExpression = activity.TenantName.Expression;
             model.SiteNameExpression = activity.SiteName.Expression;
             model.AdminUsernameExpression = activity.AdminUsername.Expression;
-            model.AdminEmailExpression= activity.AdminEmail.Expression;
+            model.AdminEmailExpression = activity.AdminEmail.Expression;
             model.AdminPasswordExpression = activity.AdminPassword.Expression;
             model.DatabaseProviderExpression = activity.DatabaseProvider.Expression;
             model.DatabaseConnectionStringExpression = activity.DatabaseConnectionString.Expression;

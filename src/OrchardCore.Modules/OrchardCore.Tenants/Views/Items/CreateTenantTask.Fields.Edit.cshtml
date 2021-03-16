@@ -7,6 +7,12 @@
     <span class="hint">@T["Select the name of the tenant to create."]</span>
 </div>
 
+<div class="form-group" asp-validation-class-for="DescriptionExpression">
+    <label asp-for="DescriptionExpression">@T["Description"] <span asp-validation-for="DescriptionExpression"></span></label>
+    <input type="text" asp-for="DescriptionExpression" class="form-control code" autofocus />
+    <span class="hint">@T["(Optional) the description of the tenant to create."]</span>
+</div>
+
 <div class="form-group" asp-validation-class-for="RequestUrlPrefixExpression">
     <label asp-for="RequestUrlPrefixExpression">@T["Url Prefix"] <span asp-validation-for="RequestUrlPrefixExpression"></span></label>
     <input type="text" asp-for="RequestUrlPrefixExpression" class="form-control code" />
@@ -39,6 +45,7 @@
     <input type="text" asp-for="RecipeNameExpression" class="form-control code" />
 </div>
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>

@@ -1,0 +1,75 @@
+.ta-navbar-top {
+    @extend .navbar, .navbar-expand-md, .fixed-top;
+    border-bottom: $border-content;
+    z-index: $zindex-fixed;
+    padding: 0.3rem 1rem;
+    padding-left: 0;
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03),
+        0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+
+    .nav-link {
+        font-size: 14px;
+    }
+
+    .nav-item {
+        text-align: right;
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        margin-top: 1rem;
+    }
+
+    .btn.nav-link {
+        display: inline-block;
+    }
+
+    @include media-breakpoint-down(sm) {
+        .navbar-collapse {
+            li:first-child .nav-link {
+                padding-top: 15px;
+            }
+
+            li:last-child .nav-link {
+                padding-bottom: 0px;
+            }
+        }
+    }
+}
+
+.ta-navbar-brand {
+    @extend .navbar-brand;
+    overflow: hidden;
+    height: 42px;
+    margin-left: 11px;
+    margin-right: 24px;
+    padding-left: 36px;
+    padding-top: 10px;
+    background-image: url(/TheAdmin/logo.png);
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 28px auto;
+    white-space: nowrap;
+    font-size: 14px;
+    transition: width 0.2s ease-in-out;
+
+    span:first-child {
+        margin-left: 5px;
+    }
+
+    span:last-child {
+        font-weight: bold;
+        color: rgba(0, 120, 212, 1);
+    }
+}
+
+// When left-sidebar is compact nav brand is compacted too.
+// It displays logo only, not text.
+.left-sidebar-compact .ta-navbar-brand {
+    width: 30px;
+    height: 42px;
+
+    span {
+        display: none;
+    }
+}

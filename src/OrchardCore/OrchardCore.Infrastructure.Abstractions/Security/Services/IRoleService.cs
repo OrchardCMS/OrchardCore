@@ -10,5 +10,4 @@ namespace OrchardCore.Security.Services
         Task<IEnumerable<IRole>> GetRolesAsync();
         Task<IEnumerable<Claim>> GetRoleClaimsAsync(string role, CancellationToken cancellationToken = default);
     }
-
 }

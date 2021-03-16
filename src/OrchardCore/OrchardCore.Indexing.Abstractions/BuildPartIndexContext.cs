@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -7,12 +7,12 @@ namespace OrchardCore.Indexing
     public class BuildPartIndexContext : BuildIndexContext
     {
         public BuildPartIndexContext(
-            DocumentIndex documentIndex, 
+            DocumentIndex documentIndex,
             ContentItem contentItem,
-            IList<string> keys, 
-            ContentTypePartDefinition typePartDefinition, 
+            IList<string> keys,
+            ContentTypePartDefinition typePartDefinition,
             ContentIndexSettings settings)
-            :base(documentIndex, contentItem, keys)
+            : base(documentIndex, contentItem, keys)
         {
             ContentTypePartDefinition = typePartDefinition;
             Settings = settings;

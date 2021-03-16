@@ -6,19 +6,28 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Services
 {
+    /// <summary>
+    /// Represents a localization service.
+    /// </summary>
     public class LocalizationService : ILocalizationService
     {
         private static readonly string DefaultCulture = CultureInfo.InstalledUICulture.Name;
         private static readonly string[] SupportedCultures = new[] { CultureInfo.InstalledUICulture.Name };
 
         private readonly ISiteService _siteService;
+
         private LocalizationSettings _localizationSettings;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="LocalizationService"/>.
+        /// </summary>
+        /// <param name="siteService">The <see cref="ISiteService"/>.</param>
         public LocalizationService(ISiteService siteService)
         {
             _siteService = siteService;
         }
 
+        /// <inheritdocs />
         public async Task<string> GetDefaultCultureAsync()
         {
             await InitializeLocalizationSettingsAsync();
@@ -26,6 +35,7 @@ namespace OrchardCore.Localization.Services
             return _localizationSettings.DefaultCulture ?? DefaultCulture;
         }
 
+        /// <inheritdocs />
         public async Task<string[]> GetSupportedCulturesAsync()
         {
             await InitializeLocalizationSettingsAsync();

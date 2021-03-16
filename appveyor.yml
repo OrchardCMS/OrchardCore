@@ -6,6 +6,7 @@ branches:
   only:
     - master
     - dev
+    - /release\/.*/
 
 # Do not build if there are only documentation changes
 skip_commits:
@@ -15,6 +16,7 @@ skip_commits:
     - src/docs/**/*
 
 environment:
+  nodejs_version: "12"
   global:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -25,9 +27,9 @@ environment:
     MYGET_API_KEY:
         secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
     NUGET_API_KEY:
-        secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
+        secure: nhxlp80FeVXTBsSsLok7RVUPbSa+DKEwbhqa4EJrf8vzK+vD9Jff1v+eA6HUP402
 
-stack: node 9, docker
+stack: node 12, docker
 
 # build cache to preserve files/folders between builds
 cache:
@@ -36,24 +38,28 @@ cache:
 
 # Install scripts. (runs after repo cloning)
 install:
+  - ps: Install-Product node $env:nodejs_version
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+  - ps: $IsReleaseBranch = ($env:APPVEYOR_REPO_BRANCH -eq "release/rc2" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+  - ps: $GeneratePackages = ($IsMasterBranch -or $IsDevBranch -or $IsReleaseBranch)
+
 # Uncomment to download a specific version of dotnet
 #  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-# - ps: .\dotnet-install.ps1 --Version 3.1.101
+# - ps: .\dotnet-install.ps1 --Version 3.1.403
 
 build_script:
   - dotnet build -c Release
-  - ps: if ($IsMasterBranch -or $IsDevBranch) { dotnet pack -c Release --no-build }
+  - ps: if ($GeneratePackages) { dotnet pack -c Release --no-build }
 
 init:
   - dotnet --version
-  - node --version
-  - npm --version
   - git config --global core.autocrlf true
 
 test_script:
+  - node --version
+  - npm --version
   - dotnet test -c Release --no-build .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
   - cd .\test\Functional
   - test-setup.cmd
@@ -66,29 +72,20 @@ artifacts:
 - path: 'src\**\*.nupkg'
 
 deploy:
+# all packages go to CloudSmith
   - provider: NuGet
-    on:
-      branch: dev
-    server: https://www.myget.org/F/orchardcore-preview/api/v2/package
+    server: https://nuget.cloudsmith.io/orchardcore/preview/v2/package
     api_key:
-      secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
+      secure: ql3vT7BSpSrlvrZjpsf2zbw9A41J43ZhJUaibyI7Y3QHFFk69ecNXHOcXf0ykvm3
     skip_symbols: true
     artifact: /.*\.nupkg/
-  - provider: NuGet
-    on:
-      branch: dev
-    server: https://nuget.pkg.github.com/OrchardCMS/index.json
-    username: sebastienros
-    api_key:
-      secure: AJx82moR9XibIs1lxvDToOle/7BqC+XX6ztrJ6CMSU+85/dqM3dvHUdf0LVymAzV
-    skip_symbols: true
-    artifact: /.*\.nupkg/
+# only packages from master branch go to NuGet
   - provider: NuGet
     on:
       branch: master
     server: https://www.nuget.org/api/v2/package
     api_key:
-      secure: bR0JuO8NuLOxL18tQ7ZtQXOHNHjqCJXlkUOzEyNQniptTszwYcwufYhKTyoybqei
+      secure: fPTpi6T2Ioy0r39I2B0SW/RGDgZrduX//a1uSqMOTnGj0vkTdBk0gULMCMS7xc/I
     skip_symbols: true
     artifact: /.*\.nupkg/
 
@@ -101,7 +98,7 @@ after_deploy:
       Get-ChildItem -path ".\App_Data\" | Remove-Item -Recurse -Confirm:$false -Force
       dotnet publish -c Release --no-build -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
-      docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-rc1 .
+      docker build -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-rc2 .
       echo "$env:DOCKER_PASS" | docker login -u="$env:DOCKER_USER" --password-stdin
       docker push orchardproject/orchardcore-cms-windows
     }

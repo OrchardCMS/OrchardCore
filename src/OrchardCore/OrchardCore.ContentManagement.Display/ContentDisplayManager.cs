@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentManagement.Display
@@ -31,8 +31,9 @@ namespace OrchardCore.ContentManagement.Display
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShapeFactory _shapeFactory;
-        private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
+        private readonly ILogger _logger;
+        private readonly IContentPartHandlerResolver _contentPartHandlerResolver;
 
         public ContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
@@ -40,23 +41,21 @@ namespace OrchardCore.ContentManagement.Display
             IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
-            IThemeManager themeManager,
+            IEnumerable<IShapePlacementProvider> placementProviders,
             ILogger<ContentItemDisplayManager> logger,
+            IContentPartHandlerResolver contentPartHandlerResolver,
             ILayoutAccessor layoutAccessor
-            ) : base(shapeTableManager, shapeFactory, themeManager)
+            ) : base(shapeFactory, placementProviders)
         {
             _handlers = handlers;
             _contentHandlers = contentHandlers;
             _shapeTableManager = shapeTableManager;
             _contentDefinitionManager = contentDefinitionManager;
             _shapeFactory = shapeFactory;
-            _themeManager = themeManager;
             _layoutAccessor = layoutAccessor;
-
-            Logger = logger;
+            _logger = logger;
+            _contentPartHandlerResolver = contentPartHandlerResolver;
         }
-
-        ILogger Logger { get; set; }
 
         public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
         {
@@ -98,7 +97,7 @@ namespace OrchardCore.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildDisplayAsync(contentItem, context), contentItem, context, Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildDisplayAsync(contentItem, context), contentItem, context, _logger);
 
             return context.Shape;
         }
@@ -118,6 +117,7 @@ namespace OrchardCore.ContentManagement.Display
 
             dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
+            itemShape.Stereotype = stereotype;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
@@ -134,9 +134,23 @@ namespace OrchardCore.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, _logger);
 
             return context.Shape;
+        }
+
+        private async Task<ValidationResult[]> ValidateAsync(string partName, object model)
+        {
+            var part = model as ContentPart;
+            var handlers = _contentPartHandlerResolver.GetHandlers(partName);
+            var validateContentContext = new ValidateContentContext(part.ContentItem);
+            await handlers.InvokeAsync((handler, validateContentContext) => handler.ValidatingAsync(validateContentContext, part), validateContentContext, _logger);
+            await handlers.InvokeAsync((handler, validateContentContext) => handler.ValidatedAsync(validateContentContext, part), validateContentContext, _logger);
+            if (!validateContentContext.ContentValidateResult.Succeeded)
+            {
+                return validateContentContext.ContentValidateResult.Errors.ToArray();
+            }
+            return Array.Empty<ValidationResult>();
         }
 
         public async Task<IShape> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
@@ -152,6 +166,7 @@ namespace OrchardCore.ContentManagement.Display
 
             dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
+            itemShape.Stereotype = stereotype;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
@@ -170,9 +185,10 @@ namespace OrchardCore.ContentManagement.Display
 
             var updateContentContext = new UpdateContentContext(contentItem);
 
-            await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, Logger);
-            await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, Logger);
-            await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, Logger);
+            await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, _logger);
+            context.SetValidationHandler(new UpdateEditorContext.ValidationHandler(ValidateAsync));
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, _logger);
+            await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, _logger);
 
             return context.Shape;
         }

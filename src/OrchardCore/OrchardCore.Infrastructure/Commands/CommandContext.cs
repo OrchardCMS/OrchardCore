@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 
 namespace OrchardCore.Environment.Commands
@@ -7,7 +7,6 @@ namespace OrchardCore.Environment.Commands
     {
         public TextReader Input { get; set; }
         public TextWriter Output { get; set; }
-
 
         public string Command { get; set; }
         public IEnumerable<string> Arguments { get; set; }

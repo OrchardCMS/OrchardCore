@@ -27,7 +27,7 @@ namespace OrchardCore.MiniProfiler
             {
                 SqlDialectFactory.SqlDialects[ConnectionName] = SqlDialectFactory.SqlDialects[connection.GetType().Name.ToLower()];
             }
-            
+
             return new ProfiledDbConnection(connection, new CurrentDbProfiler(() => StackExchange.Profiling.MiniProfiler.Current));
         }
     }

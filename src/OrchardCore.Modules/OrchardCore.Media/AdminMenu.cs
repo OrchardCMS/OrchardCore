@@ -7,12 +7,12 @@ namespace OrchardCore.Media
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -24,11 +24,19 @@ namespace OrchardCore.Media
             builder
                 .Add(S["Content"], content => content
                     .AddClass("media").Id("media")
-                    .Add(S["Media Library"], "1.1", layers => layers
-                        .Permission(Permissions.ManageOwnMedia)
+                    .Add(S["Media Library"], S["Media Library"].PrefixPosition(), layers => layers
+                        .Permission(Permissions.ManageMedia)
                         .Action("Index", "Admin", new { area = "OrchardCore.Media" })
                         .LocalNav()
                     ));
+
+            builder.Add(S["Configuration"], configuration => configuration
+                .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+                    .Add(S["Media Profiles"], S["Media Profiles"].PrefixPosition(), mediaProfiles => mediaProfiles
+                        .Action("Index", "MediaProfiles", new { area = "OrchardCore.Media" })
+                        .Permission(Permissions.ManageMediaProfiles)
+                        .LocalNav())
+            ));
 
             return Task.CompletedTask;
         }
@@ -36,12 +44,12 @@ namespace OrchardCore.Media
 
     public class MediaCacheAdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -51,7 +59,7 @@ namespace OrchardCore.Media
             }
 
             builder.Add(S["Content"], content => content
-                .Add(S["Media Cache"], "1.2", contentItems => contentItems
+                .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), contentItems => contentItems
                     .Action("Index", "MediaCache", new { area = "OrchardCore.Media" })
                     .Permission(MediaCachePermissions.ManageAssetCache)
                     .LocalNav())

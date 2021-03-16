@@ -2,16 +2,16 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Layers",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
 
 [assembly: Feature(
     Id = "OrchardCore.Layers",
     Name = "Layers",
     Description = "Enables users to render Widgets across pages of the site based on conditions.",
-    Dependencies = new []
+    Dependencies = new[]
     {
         "OrchardCore.Widgets",
         "OrchardCore.Scripting"

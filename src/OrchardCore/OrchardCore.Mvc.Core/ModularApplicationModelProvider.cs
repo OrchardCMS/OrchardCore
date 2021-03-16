@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Mvc
@@ -20,7 +19,6 @@ namespace OrchardCore.Mvc
         public ModularApplicationModelProvider(
             ITypeFeatureProvider typeFeatureProvider,
             IHostEnvironment hostingEnvironment,
-            ShellDescriptor shellDescriptor,
             ShellSettings shellSettings)
         {
             _typeFeatureProvider = typeFeatureProvider;

@@ -15,10 +15,9 @@ namespace OrchardCore.Google
 
         public class GoogleAuthentication : IPermissionProvider
         {
-
             public Task<IEnumerable<Permission>> GetPermissionsAsync()
             {
-                return Task.FromResult(new []
+                return Task.FromResult(new[]
                 {
                     ManageGoogleAuthentication
                 }
@@ -30,7 +29,7 @@ namespace OrchardCore.Google
                 yield return new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new []
+                    Permissions = new[]
                     {
                         ManageGoogleAuthentication
                     }
@@ -40,10 +39,9 @@ namespace OrchardCore.Google
 
         public class GoogleAnalytics : IPermissionProvider
         {
-
             public Task<IEnumerable<Permission>> GetPermissionsAsync()
             {
-                return Task.FromResult(new []
+                return Task.FromResult(new[]
                 {
                     ManageGoogleAnalytics
                 }
@@ -55,7 +53,7 @@ namespace OrchardCore.Google
                 yield return new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new []
+                    Permissions = new[]
                     {
                         ManageGoogleAnalytics
                     }

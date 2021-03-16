@@ -58,7 +58,7 @@
 //            serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 //            serviceCollection.AddSingleton<IThemeManager>(x =>
 //                new MockThemeManager(testFeature.Descriptor.Extension)
-            
+
 //            );
 
 //            serviceCollection.AddSingleton<IMemoryCache>(x => new MemoryCache(new MemoryCacheOptions()));

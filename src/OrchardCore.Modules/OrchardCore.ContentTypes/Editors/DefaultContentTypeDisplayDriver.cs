@@ -9,7 +9,7 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class DefaultContentTypeDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<DefaultContentTypeDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public DefaultContentTypeDisplayDriver(IStringLocalizer<DefaultContentTypeDisplayDriver> localizer)
         {

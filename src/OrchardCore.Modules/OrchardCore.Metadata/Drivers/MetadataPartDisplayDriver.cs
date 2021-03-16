@@ -181,7 +181,6 @@ namespace OrchardCore.Metadata.Drivers
                 model.MetadataPart = metadataPart;
                 model.Settings = settings;
 
-                return Task.CompletedTask;
             }).Location("Parts#Metadata:10");
         }
 
@@ -194,11 +193,11 @@ namespace OrchardCore.Metadata.Drivers
             return Edit(model);
         }
 
-        public MetadataPartSettings GetSettings(MetadataPart metadataPart)
+        public SocialMetadataPartSettings GetSettings(MetadataPart metadataPart)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(metadataPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(MetadataPart), StringComparison.Ordinal));
-            return contentTypePartDefinition.Settings.ToObject<MetadataPartSettings>();
+            return contentTypePartDefinition.Settings.ToObject<SocialMetadataPartSettings>();
         }
 
         private async Task BuildViewModelAsync(MetadataPartViewModel viewModel, MetadataPart part)

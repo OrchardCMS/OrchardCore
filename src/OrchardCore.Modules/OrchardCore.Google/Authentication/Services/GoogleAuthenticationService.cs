@@ -2,7 +2,6 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
 using OrchardCore.Google.Authentication.Settings;
 using OrchardCore.Google.Authentication.ViewModels;
@@ -13,14 +12,10 @@ namespace OrchardCore.Google.Authentication.Services
     public class GoogleAuthenticationService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<GoogleAuthenticationService> T;
 
-        public GoogleAuthenticationService(
-            ISiteService siteService,
-            IStringLocalizer<GoogleAuthenticationService> stringLocalizer)
+        public GoogleAuthenticationService(ISiteService siteService)
         {
             _siteService = siteService;
-            T = stringLocalizer;
         }
 
         public async Task<GoogleAuthenticationSettings> GetSettingsAsync()

@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Services
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly IStringLocalizer<UserService> S;
+        private readonly IStringLocalizer S;
 
         public UserService(
             SignInManager<IUser> signInManager,
@@ -69,6 +69,13 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
+            if (!(user as User).IsEnabled)
+            {
+                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
+
+                return null;
+            }
+
             return user;
         }
 
@@ -88,8 +95,21 @@ namespace OrchardCore.Users.Services
                 ProcessValidationErrors(identityResult.Errors, newUser, reportError);
                 return null;
             }
-            
+
             return user;
+        }
+
+        public async Task<bool> ChangeEmailAsync(IUser user, string newEmail, Action<string, string> reportError)
+        {
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+            var identityResult = await _userManager.ChangeEmailAsync(user, newEmail, token);
+
+            if (!identityResult.Succeeded)
+            {
+                ProcessValidationErrors(identityResult.Errors, (User)user, reportError);
+            }
+
+            return identityResult.Succeeded;
         }
 
         public async Task<bool> ChangePasswordAsync(IUser user, string currentPassword, string newPassword, Action<string, string> reportError)
@@ -189,7 +209,7 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Gets the user, if any, associated with the normalized value of the specified identifier, which can refer both to username or email
         /// </summary>
-        /// <param name="userIdentification">The username or email address to refer to</param>
+        /// <param name="userIdentifier">The username or email address to refer to</param>
         private async Task<IUser> FindByUsernameOrEmailAsync(string userIdentifier)
             => await _userManager.FindByNameAsync(userIdentifier) ??
                await _userManager.FindByEmailAsync(userIdentifier);
@@ -238,6 +258,9 @@ namespace OrchardCore.Users.Services
                         break;
 
                     // Email
+                    case "DuplicateEmail":
+                        reportError("Email", S["Email '{0}' is already used.", user.Email]);
+                        break;
                     case "InvalidEmail":
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;

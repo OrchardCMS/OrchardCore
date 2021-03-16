@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -12,9 +14,26 @@ namespace OrchardCore.Users.Drivers
     public class ResetPasswordSettingsDisplayDriver : SectionDisplayDriver<ISite, ResetPasswordSettings>
     {
         public const string GroupId = "ResetPasswordSettings";
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-        public override IDisplayResult Edit(ResetPasswordSettings section)
+        public ResetPasswordSettingsDisplayDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
+        }
+
+        public override async Task<IDisplayResult> EditAsync(ResetPasswordSettings section, BuildEditorContext context)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            {
+                return null;
+            }
+
             return Initialize<ResetPasswordSettings>("ResetPasswordSettings_Edit", model =>
             {
                 model.AllowResetPassword = section.AllowResetPassword;
@@ -24,11 +43,19 @@ namespace OrchardCore.Users.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ResetPasswordSettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            {
+                return null;
+            }
+
             if (context.GroupId == GroupId)
             {
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
             }
-            return Edit(section);
+
+            return await EditAsync(section, context);
         }
     }
 }

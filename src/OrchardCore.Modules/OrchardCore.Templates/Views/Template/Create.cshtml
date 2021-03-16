@@ -3,6 +3,7 @@
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
@@ -11,7 +12,7 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
-<script asp-src="~/OrchardCore.Templates/templatepreview.edit.js" at="Foot"></script>
+<script asp-name="templatepreview-edit" at="Foot"></script>
 
 <h1>@RenderTitleSegments(T["Create Template"])</h1>
 
@@ -35,30 +36,30 @@
     <div class="form-group" asp-validation-class-for="Content">
         <label asp-for="Content">@T["Content"]</label>
         <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+        <span asp-validation-for="Content"></span>
         <span class="hint">@T["The Liquid template."]</span>
     </div>
 
     <div class="form-group">
         <div class="btn-group">
-            <button type="submit" name="submit" class="btn btn-secondary">@T["Save"]</button>
+            <button type="submit" name="submit" class="btn btn-secondary save">@T["Save"]</button>
             <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">@T["Toggle Dropdown"]</span>
             </button>
             <div class="dropdown-menu">
-                <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+                <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
             </div>
         </div>
 
         @if (Url.IsLocalUrl(returnUrl))
         {
-            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
         }
 
         @if (!Model.AdminTemplates)
         {
-            <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+            <a class="btn btn-info" role="button" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
         }
-
     </div>
 </form>
 
@@ -69,5 +70,4 @@
             document.getElementById('@Html.IdFor(x => x.Name)'),
             document.getElementById('@Html.IdFor(x => x.Content)'));
     });
-
 </script>

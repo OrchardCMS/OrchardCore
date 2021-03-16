@@ -12,18 +12,17 @@
         <ul> <li v-for="e in errors"> <p>{{e}}</p> </li> </ul>
     </div>
 
-
     <div id="mediaContainer" class="align-items-stretch">
-        <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak >
+        <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak>
             <ol id="folder-tree">
                 <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
                 </folder>
             </ol>
         </div>
 
-        <div id="mediaContainerMain" class="pl-0 ml-4 mr-4" v-cloak>
+        <div id="mediaContainerMain" v-cloak>
             <div class="media-container-top-bar">
-                <nav class="nav action-bar pb-2">
+                <nav class="nav action-bar pb-3 pt-3 pl-3">
                     <div class="form-inline mr-auto">
                         <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click="selectAll">
                             @T["Select All"]
@@ -38,8 +37,24 @@
                             @T["Delete"] <span class="badge badge-pill badge-light" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
                         </a>
                     </div>
+                    <div class="btn-group visibility-buttons">
+                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: gridView}" v-on:click="gridView = true">
+                            <span title="@T["Grid View"]"><i class="fa fa-th-large"></i></span>
+                        </button>
+                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: !gridView}" v-on:click="gridView = false">
+                            <span title="@T["List View"]"><i class="fa fa-th-list"></i></span>
+                        </button>
+                    </div>
+                    <div class="btn-group visibility-buttons" v-show="gridView">
+                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm" :class="{selected: smallThumbs}" v-on:click="smallThumbs = true">
+                            <span title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
+                        </button>
+                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm mr-2" :class="{selected: !smallThumbs}" v-on:click="smallThumbs = false">
+                            <span title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
+                        </button>
+                    </div>
 
-                    <div class="nav-item">
+                    <div class="nav-item ml-2">
                         <div class="media-filter">
                             <div class="input-group input-group-sm">
                                 <span class="fa fa-filter icon-inside-input"></span>
@@ -61,36 +76,19 @@
                     </div>
                 </nav>
 
-                <nav id="breadcrumb" class="d-flex justify-content-end align-items-end pl-3 pr-3 mb-4">
-                    <div class="breadcrumb-path">
-                        <span class="breadcrumb-item" :class="{ active: isHome }"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
+                <nav id="breadcrumb" class="d-flex justify-content-end align-items-end">
+                    <div class="breadcrumb-path p-3">
+                        <span class="breadcrumb-item" :class="{ active: isHome }"><a id="t-mediaLibrary" :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
                         <span v-for="(folder, i) in parents" v-cloak
                               class="breadcrumb-item"
                               :class="{active: parents.length - i == 1}">
                             <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
                         </span>
-
-                    </div>
-                    <div class="btn-group visibility-buttons" v-show="gridView">
-                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm" :class="{selected: smallThumbs}" v-on:click="smallThumbs = true">
-                            <span title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
-                        </button>
-                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm mr-2" :class="{selected: !smallThumbs}" v-on:click="smallThumbs = false">
-                            <span title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
-                        </button>
-                    </div>
-                    <div class="btn-group visibility-buttons">
-                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: gridView}" v-on:click="gridView = true">
-                            <span title="@T["Grid View"]"><i class="fa fa-th-large"></i></span>
-                        </button>
-                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: !gridView}" v-on:click="gridView = false">
-                            <span title="@T["List View"]"><i class="fa fa-th-list"></i></span>
-                        </button>
                     </div>
                 </nav>
             </div>
-            <div class="media-container-middle mb-2">
-                <upload-list />
+            <div class="media-container-middle p-3">
+                <upload-list></upload-list>
 
                 <media-items-table :sort-by="sortBy" :sort-asc="sortAsc"
                                    :filtered-media-items="itemsInPage"
@@ -105,13 +103,10 @@
 
                 <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">@T["Nothing to show with this filter"]</div>
                 <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length < 1">@T["This folder is empty"]</div>
-
-
             </div>
-            <div v-show="filteredMediaItems.length > 0" class="media-container-footer pt-2">
+            <div v-show="filteredMediaItems.length > 0" class="media-container-footer p-3">
                 <pager :source-items="filteredMediaItems"> </pager>
             </div>
-
         </div>
     </div>
 </div>
@@ -136,7 +131,6 @@
 <input type="hidden" id="t-delete-button" value="@T["Delete"]" />
 <input type="hidden" id="t-view-button" value="@T["View"]" />
 
-
 @*Localizable Strings for uploadListcomponent*@
 <input type="hidden" id="t-uploads" value="@T["Uploads"]" />
 <input type="hidden" id="t-errors" value="@T["Errors"]" />
@@ -145,6 +139,7 @@
 @*Localizable Strings for mediaItemsTableComponent*@
 <input type="hidden" id="t-image-header" value="@T["Image"]" />
 <input type="hidden" id="t-name-header" value="@T["Name"]" />
+<input type="hidden" id="t-lastModify-header" value="@T["Last modification"]" />
 <input type="hidden" id="t-size-header" value="@T["Size"]" />
 <input type="hidden" id="t-type-header" value="@T["Type"]" />
 
@@ -156,7 +151,6 @@
 <input type="hidden" id="t-pager-page-size-label" value="@T["Page Size"]" />
 <input type="hidden" id="t-pager-page-label" value="@T["Page:"]" />
 <input type="hidden" id="t-pager-total-label" value="@T["Total items:"]" />
-
 
 <div class="modal" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModal" aria-hidden="true">
     <div class="modal-dialog" role="document">

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -27,7 +26,7 @@ namespace OrchardCore.Facebook
             {
                 builder.Add(S["Configuration"], configuration => configuration
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Facebook App"], S["Facebook App"], settings => settings
+                            .Add(S["Facebook App"], S["Facebook App"].PrefixPosition(), settings => settings
                             .AddClass("facebookApp").Id("facebookApp")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
                             .Permission(Permissions.ManageFacebookApp)
@@ -59,7 +58,7 @@ namespace OrchardCore.Facebook
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Facebook"], "12", settings => settings
+                        .Add(S["Facebook"], S["Facebook"].PrefixPosition(), settings => settings
                         .AddClass("facebook").Id("facebook")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Login })
                             .Permission(Permissions.ManageFacebookApp)

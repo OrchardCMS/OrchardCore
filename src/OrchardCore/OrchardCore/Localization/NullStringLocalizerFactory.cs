@@ -52,7 +52,7 @@ namespace OrchardCore.Localization
                 => Enumerable.Empty<LocalizedString>();
 
             public IStringLocalizer WithCulture(CultureInfo culture) => Instance;
-            
+
             public LocalizedString GetString(string name) => this[name];
 
             public LocalizedString GetString(string name, params object[] arguments) => this[name, arguments];

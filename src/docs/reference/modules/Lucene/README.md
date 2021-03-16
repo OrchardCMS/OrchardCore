@@ -1,4 +1,4 @@
-# Lucene (OrchardCore.Lucene)
+# Lucene (`OrchardCore.Lucene`)
 
 The Lucene module allows to manage Lucene indices.
 

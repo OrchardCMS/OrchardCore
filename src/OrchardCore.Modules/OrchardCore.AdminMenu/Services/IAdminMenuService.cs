@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.AdminMenu
 {
@@ -9,12 +8,12 @@ namespace OrchardCore.AdminMenu
     public interface IAdminMenuService
     {
         /// <summary>
-        /// Returns all the admin menus for udpate.
+        /// Loads the admin menus from the store for updating and that should not be cached.
         /// </summary>
         Task<Models.AdminMenuList> LoadAdminMenuListAsync();
 
         /// <summary>
-        /// Returns all the admin menus in read-only.
+        /// Gets the admin menus from the cache for sharing and that should not be updated.
         /// </summary>
         Task<Models.AdminMenuList> GetAdminMenuListAsync();
 
@@ -36,10 +35,5 @@ namespace OrchardCore.AdminMenu
         /// <param name="tree"></param>
         /// <returns>The count of deleted items</returns>
         Task<int> DeleteAsync(Models.AdminMenu tree);
-
-        /// <summary>
-        /// Gets a change token that is set when the admin menu has changed.
-        /// </summary>
-        IChangeToken ChangeToken { get; }
     }
 }

@@ -1,23 +1,18 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using YesSql;
-using YesSql.Services;
 
 namespace OrchardCore.Lists.Drivers
 {
     public class ListPartLocalizationHandler : ContentLocalizationPartHandlerBase<ListPart>
     {
-
         private readonly ISession _session;
+
         public ListPartLocalizationHandler(ISession session)
         {
             _session = session;
@@ -37,17 +32,16 @@ namespace OrchardCore.Lists.Drivers
                 return;
             }
 
-            foreach(var item in containedList)
+            foreach (var item in containedList)
             {
-                var localizationPart  = item.As<LocalizationPart>();
-                if(localizationPart.Culture == context.Culture)
+                var localizationPart = item.As<LocalizationPart>();
+                if (localizationPart.Culture == context.Culture)
                 {
                     var cp = item.As<ContainedPart>();
                     cp.ListContentItemId = context.ContentItem.ContentItemId;
                     cp.Apply();
                     _session.Save(item);
                 }
-               
             }
         }
     }

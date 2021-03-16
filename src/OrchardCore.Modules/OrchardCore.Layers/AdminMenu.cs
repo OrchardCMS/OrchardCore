@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using OrchardCore.Layers.Drivers;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Layers
 {
@@ -25,12 +25,12 @@ namespace OrchardCore.Layers
             builder
                 .Add(S["Design"], design => design
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Zones"], S["Zones"], zones => zones
+                        .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
                             .Permission(Permissions.ManageLayers)
                             .LocalNav()
                         ))
-                    .Add(S["Widgets"], S["Widgets"], widgets => widgets
+                    .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
                         .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()

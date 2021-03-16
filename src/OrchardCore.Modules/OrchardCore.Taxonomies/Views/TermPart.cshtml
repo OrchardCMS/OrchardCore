@@ -1,0 +1,25 @@
+@model TermPartViewModel
+
+@if (Model.ContentItems.Any())
+{
+    <ul class="list-group">
+        @foreach (var contentItem in Model.ContentItems)
+        {
+            var contentItemSummary = await Orchard.DisplayAsync(contentItem, "Summary");
+
+            <li class="list-group-item">
+                @await DisplayAsync(contentItemSummary)
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="alert alert-warning">@T["The list is empty"]</p>
+}
+
+@await DisplayAsync(Model.Pager)
+
+@* To render the hierarchy of inherited terms use the Term shape here
+    <shape type="term" TaxonomyContentItemId="@Model.TaxonomyContentItemId" TermContentItemId="@Model.TermContentItemId" />
+*@

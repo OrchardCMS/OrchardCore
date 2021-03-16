@@ -20,6 +20,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
+
         public override IDisplayResult Display(ListsAdminNode treeNode)
         {
             return Combine(
@@ -56,7 +57,6 @@ namespace OrchardCore.Lists.AdminNodes
 
             return Edit(treeNode);
         }
-
 
         private List<SelectListItem> GetContenTypesSelectList()
         {

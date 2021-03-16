@@ -15,6 +15,7 @@ namespace OrchardCore.Flows.Settings
     public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IStringLocalizer S;
 
         public BagPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -23,8 +24,6 @@ namespace OrchardCore.Flows.Settings
             _contentDefinitionManager = contentDefinitionManager;
             S = localizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {

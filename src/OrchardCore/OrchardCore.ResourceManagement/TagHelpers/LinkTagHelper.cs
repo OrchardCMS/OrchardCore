@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-
     [HtmlTargetElement("link", Attributes = SrcAttributeName)]
     public class LinkTagHelper : TagHelper
     {

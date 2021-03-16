@@ -13,9 +13,9 @@
     "esModuleInterop": true
   },
   "include": [
-      "./Assets/js/**/*"
+    "./Assets/js/**/*"
   ],
   "exclude": [
-      "node_modules"
+    "node_modules"
   ]
 }

@@ -18,16 +18,30 @@ namespace OrchardCore.Autoroute.Routing
             _options = options.Value;
         }
 
-        public override ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
+        public override async ValueTask<RouteValueDictionary> TransformAsync(HttpContext httpContext, RouteValueDictionary values)
         {
-            if (_entries.TryGetContentItemId(httpContext.Request.Path.Value, out var contentItemId))
+            (var found, var entry) = await _entries.TryGetEntryByPathAsync(httpContext.Request.Path.Value);
+
+            if (found)
             {
-                var routeValues = new RouteValueDictionary(_options.GlobalRouteValues);
-                routeValues[_options.ContentItemIdKey] = contentItemId;
-                return new ValueTask<RouteValueDictionary>(routeValues);
+                var routeValues = new RouteValueDictionary(_options.GlobalRouteValues)
+                {
+                    [_options.ContentItemIdKey] = entry.ContentItemId
+                };
+
+                if (!string.IsNullOrEmpty(entry.JsonPath))
+                {
+                    routeValues[_options.JsonPathKey] = entry.JsonPath;
+                }
+
+                // Prevents the original values from being re-added to the dynamic ones.
+                values.Clear();
+
+                return routeValues;
+
             }
 
-            return new ValueTask<RouteValueDictionary>((RouteValueDictionary)null);
+            return null;
         }
     }
 }

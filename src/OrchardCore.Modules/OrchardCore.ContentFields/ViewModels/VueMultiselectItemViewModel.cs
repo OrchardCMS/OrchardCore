@@ -1,4 +1,3 @@
-
 namespace OrchardCore.ContentFields.ViewModels
 {
     public class VueMultiselectItemViewModel

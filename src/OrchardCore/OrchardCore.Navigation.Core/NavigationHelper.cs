@@ -17,6 +17,7 @@ namespace OrchardCore.Navigation
         /// <param name="parentShape">The menu parent shape.</param>
         /// <param name="menu">The menu shape.</param>
         /// <param name="menuItems">The current level to populate.</param>
+        /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
         public static async Task PopulateMenuAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
             await PopulateMenuLevelAsync(shapeFactory, parentShape, menu, menuItems, viewContext);
@@ -30,6 +31,7 @@ namespace OrchardCore.Navigation
         /// <param name="parentShape">The menu parent shape.</param>
         /// <param name="menu">The menu shape.</param>
         /// <param name="menuItems">The current level to populate.</param>
+        /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
         public static async Task PopulateMenuLevelAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
             foreach (MenuItem menuItem in menuItems)
@@ -52,6 +54,7 @@ namespace OrchardCore.Navigation
         /// <param name="parentShape">The parent shape.</param>
         /// <param name="menu">The menu shape.</param>
         /// <param name="menuItem">The menu item to build the shape for.</param>
+        /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
         /// <returns>The menu item shape.</returns>
         private static async Task<dynamic> BuildMenuItemShapeAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, MenuItem menuItem, ViewContext viewContext)
         {
@@ -117,7 +120,8 @@ namespace OrchardCore.Navigation
         /// <summary>
         /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
         /// </summary>
-        /// <param name="parentShape">The menu shape.</param>    
+        /// <param name="parentShape">The menu shape.</param>
+        /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
         private static void ApplySelection(dynamic parentShape, ViewContext viewContext)
         {
             var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
@@ -139,7 +143,7 @@ namespace OrchardCore.Navigation
         /// Traverses the menu and returns the selected item with the highest priority
         /// </summary>
         /// <param name="parentShape">The menu shape.</param>
-        /// /// <returns>The selected menu item shape</returns>
+        /// <returns>The selected menu item shape</returns>
         private static dynamic GetHighestPrioritySelectedMenuItem(dynamic parentShape)
         {
             dynamic result = null;

@@ -79,32 +79,32 @@
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <input name="BulkAction" type="hidden" />
 
-    <div class="row">
-        <div class="form-group col-xl-4 col-sm-6">
-            <div class="input-group input-group-sm filter-options">
-                <div class="input-group-prepend">
-                    <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                        @T["Filters"]
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                        <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
-                        <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
-                        <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
+    <div class="card mb-3 position-sticky action-bar">
+        <div class="card-body bg-primary p-3">
+            <div class="form-group mb-n1">
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Filters"]
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                            <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
+                            <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
+                            <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
+                        </div>
                     </div>
+                    <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" />
-            </div>
-        </div>
-        <div class="form-group col-xl-8 col-sm-6">
-            <div class="btn-group float-right">
-                <a asp-route-action="Create" class="btn btn-sm btn-primary float-rights" role="button">@T["Add Tenant"]</a>
+                <div class="dropdown float-right order-md-1">
+                    <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Tenant"]</a>
+                </div>
             </div>
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        <li class="list-group-item bg-light">
+        <li class="list-group-item bg-primary">
             <div class="row">
-                <div class="form-group col-xl-4 mb-xl-n1">
+                <div class="form-group col mb-n1 text-nowrap">
                     <div class="custom-control custom-checkbox mt-2 mr-n2">
                         <input type="checkbox" class="custom-control-input" id="select-all">
                         <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
@@ -112,25 +112,23 @@
                         <label id="selected-items" class="text-muted" for="select-all"></label>
                     </div>
                 </div>
-                <div class="col-xl-4 mb-xl-n1">
-                    <span class="dropdown" id="actions" style="display:none">
-                        <button class="btn btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @T["Actions"]
                         </button>
                         <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
                             @foreach (var item in Model.Options.TenantsBulkAction)
                             {
-                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
+                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
                             }
                         </span>
                     </span>
                 </div>
-                <div class="col-xl-4 d-flex justify-content-xl-end">
-                    <div class="filter pr-xl-3">
-                        <select asp-for="Options.Filter" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" title="@T["State"]"></select>
-                    </div>
-                    <div class="filter pr-xl-3">
-                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Sort"]"></select>
+                <div class="form-group col mb-n1 filter">
+                    <div class="btn-group float-right mt-1">
+                        <select asp-for="Options.Filter" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick mr-2" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["State"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
                     </div>
                 </div>
             </div>
@@ -142,7 +140,7 @@
                 <li class="list-group-item">
                     <div class="custom-control custom-checkbox float-left">
                         <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
-                        <label class="custom-control-label" for="tenantNames-@entry.Name">&nbsp;</label>
+                        <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
                     </div>
                     <div class="properties">
                         <div class="related">
@@ -163,6 +161,10 @@
                         </div>
                         <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
+                        @if (!string.IsNullOrEmpty(entry.Description))
+                        {
+                            <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
+                        }
                         <div class="metadata">
                             @switch (entry.ShellSettings.State)
                             {
@@ -200,26 +202,28 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
-        $('select').selectpicker();
+        $('.selectpicker').selectpicker();
 
         var actions = $("#actions");
         var items = $("#items");
         var filters = $(".filter");
         var selectAllCtrl = $("#select-all");
         var selectedItems = $("#selected-items");
-        var tenantItemsCheckboxes = $(":checkbox[name='tenantNames']");
+        var itemsCheckboxes = $(":checkbox[name='tenantNames']");
 
         $(".filter-options select, .filter-options input").on("change", function () {
             $("[name='submit.Filter']").click();
         });
 
-        $('select').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 
-        $(".dropdown-menu .dropdown-item").on("click", function () {
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).on("click", function () {
             if ($(":checkbox[name='tenantNames']:checked").length > 1) {
                 var $this = $(this);
                 confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
@@ -247,13 +251,19 @@
         }
 
         selectAllCtrl.click(function(){
-            tenantItemsCheckboxes.not(this).prop("checked", this.checked);
+            itemsCheckboxes.not(this).prop("checked", this.checked);
             selectedItems.text($(":checkbox[name='tenantNames']:checked").length + ' @T["selected"]');
             displayActionsOrFilters();
         });
 
-        tenantItemsCheckboxes.on("click", function () {
-            selectedItems.text($(":checkbox[name='tenantNames']:checked").length + ' @T["selected"]');
+        itemsCheckboxes.on("click", function () {
+            var itemsCount = $(":checkbox[name='tenantNames']").length;
+            var selectedItemsCount = $(":checkbox[name='tenantNames']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
             displayActionsOrFilters();
         });
     });

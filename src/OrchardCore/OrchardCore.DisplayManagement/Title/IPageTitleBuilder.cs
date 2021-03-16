@@ -13,8 +13,9 @@ namespace OrchardCore.DisplayManagement.Title
         /// Adds a segment to the title.
         /// </summary>
         /// <param name="segment">A segments to add at the specific location in the title.</param>
+        /// <param name="position">The position, defaults to 0.</param>
         void AddSegment(IHtmlContent segment, string position = "0");
-        
+
         /// <summary>
         /// Concatenates every title segments using the separator defined in settings.
         /// </summary>

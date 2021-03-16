@@ -24,8 +24,7 @@ namespace OrchardCore.OpenId.Controllers
     public class ScopeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<ScopeController> S;
-        private readonly IHtmlLocalizer<ScopeController> H;
+        private readonly IStringLocalizer S;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
@@ -50,7 +49,6 @@ namespace OrchardCore.OpenId.Controllers
             New = shapeFactory;
             _siteService = siteService;
             S = stringLocalizer;
-            H = htmlLocalizer;
             _authorizationService = authorizationService;
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
@@ -62,7 +60,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -74,7 +72,7 @@ namespace OrchardCore.OpenId.Controllers
                 Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
 
-            foreach (var scope in await _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
+            await foreach (var scope in _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
             {
                 model.Scopes.Add(new OpenIdScopeEntry
                 {
@@ -93,7 +91,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateOpenIdScopeViewModel();
@@ -116,7 +114,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (await _scopeManager.FindByNameAsync(model.Name) != null)
@@ -161,7 +159,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);
@@ -204,7 +202,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
@@ -264,7 +262,7 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var scope = await _scopeManager.FindByPhysicalIdAsync(id);

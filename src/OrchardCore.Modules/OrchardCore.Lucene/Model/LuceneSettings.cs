@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Lucene.Net.Util;
 using OrchardCore.Contents.Indexing;
 
@@ -16,9 +15,6 @@ namespace OrchardCore.Lucene.Model
 
         public string[] DefaultSearchFields { get; set; } = FullTextField;
 
-        /// <summary>
-        /// Gets the list of indices and their settings.
-        /// </summary>
-        public Dictionary<string, LuceneIndexSettings> IndexSettings { get; } = new Dictionary<string, LuceneIndexSettings>();
+        public bool AllowLuceneQueriesInSearch { get; set; } = false;
     }
 }

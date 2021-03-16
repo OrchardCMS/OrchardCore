@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
-using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Deployment
 {

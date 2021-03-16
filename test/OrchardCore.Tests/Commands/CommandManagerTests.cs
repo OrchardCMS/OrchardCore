@@ -41,7 +41,9 @@ namespace OrchardCore.Tests.Commands
 
         public class MyCommand : DefaultCommandHandler
         {
-            public MyCommand() : base(null) { }
+            public MyCommand() : base(null)
+            {
+            }
 
             public string FooBar()
             {

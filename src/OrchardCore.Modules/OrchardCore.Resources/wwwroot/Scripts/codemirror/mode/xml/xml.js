@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
@@ -507,6 +507,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       helperType: config.htmlMode ? "html" : "xml",
       skipAttribute: function skipAttribute(state) {
         if (state.state == attrValueState) state.state = attrState;
+      },
+      xmlCurrentTag: function xmlCurrentTag(state) {
+        return state.tagName ? {
+          name: state.tagName,
+          close: state.type == "closeTag"
+        } : null;
+      },
+      xmlCurrentContext: function xmlCurrentContext(state) {
+        var context = [];
+
+        for (var cx = state.context; cx; cx = cx.prev) {
+          if (cx.tagName) context.push(cx.tagName);
+        }
+
+        return context.reverse();
       }
     };
   });

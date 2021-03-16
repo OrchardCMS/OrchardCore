@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Tenants.Workflows.Drivers
 {
-    public abstract class TenantTaskDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> 
+    public abstract class TenantTaskDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel>
         where TActivity : TenantTask where TViewModel : TenantTaskViewModel<TActivity>, new()
     {
         public string TenantName { get; set; }

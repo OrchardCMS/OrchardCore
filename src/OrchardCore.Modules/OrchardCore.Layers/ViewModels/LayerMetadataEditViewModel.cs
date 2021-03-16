@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using OrchardCore.Layers.Models;
 
 namespace OrchardCore.Layers.ViewModels
@@ -8,6 +7,6 @@ namespace OrchardCore.Layers.ViewModels
     {
         public string Title { get; set; }
         public LayerMetadata LayerMetadata { get; set; }
-		public List<Layer> Layers { get; set; }
+        public List<Layer> Layers { get; set; }
     }
 }

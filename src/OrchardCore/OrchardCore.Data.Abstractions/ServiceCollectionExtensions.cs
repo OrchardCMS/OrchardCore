@@ -9,7 +9,7 @@ namespace OrchardCore.Data
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="name">The database provider name.</param>
@@ -34,7 +34,7 @@ namespace OrchardCore.Data
                 }
             }
 
-            services.AddSingleton(new DatabaseProvider { Name = name, Value = value, HasConnectionString = hasConnectionString, HasTablePrefix = hasTablePrefix , IsDefault = isDefault, SampleConnectionString = sampleConnectionString });
+            services.AddSingleton(new DatabaseProvider { Name = name, Value = value, HasConnectionString = hasConnectionString, HasTablePrefix = hasTablePrefix, IsDefault = isDefault, SampleConnectionString = sampleConnectionString });
 
             return services;
         }

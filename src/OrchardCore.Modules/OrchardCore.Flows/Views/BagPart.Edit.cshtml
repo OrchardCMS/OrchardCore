@@ -25,28 +25,29 @@
             //Create a Card Shape
             dynamic contentCard = await New.ContentCard(
                 // FOR Updater
-                CollectionShape: Model, 
+                CollectionShape: Model,
                 //Shape Specific
                 CollectionShapeType: nameof(BagPart),
                 ContentItem: widget,
-                BuildEditor: true,                        
+                BuildEditor: true,
                 ParentContentType: parentContentType,
                 CollectionPartName :partName,
                 //Card Specific Properties
                 TargetId: widgetTemplatePlaceholderId,
-                Inline: false,                        
+                Inline: false,
                 CanMove: true,
                 CanDelete: true,
                 //Input hidden
                 //Prefixes
-                HtmlFieldPrefix: htmlFieldPrefix,                        
+                PrefixValue: widget.ContentItemId,
+                HtmlFieldPrefix: htmlFieldPrefix,
                 PrefixesId: Html.IdFor(x => x.Prefixes),
                 PrefixesName: Html.NameFor(x => x.Prefixes),
                 //Content Types
                 ContentTypesId: Html.IdFor(x => x.ContentTypes),
                 ContentTypesName: Html.NameFor(x => x.ContentTypes)
             );
-            @await DisplayAsync(contentCard)       
+            @await DisplayAsync(contentCard)
         }
     </div>
 
@@ -64,12 +65,11 @@
                    data-widget-type="@type.Name"
                    data-flowmetadata="false"
                    data-parent-content-type="@parentContentType"
-                   data-part-name="@partName"                   
+                   data-part-name="@partName"
                    href="javascript:;">@type.DisplayName</a>
             }
         </div>
     </div>
-
 
     @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
     @if (Context.Items["BagPart.Edit"] == null)

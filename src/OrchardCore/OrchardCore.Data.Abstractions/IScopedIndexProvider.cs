@@ -8,6 +8,5 @@ namespace OrchardCore.Data
     /// </summary>
     public interface IScopedIndexProvider : IIndexProvider
     {
-
     }
 }

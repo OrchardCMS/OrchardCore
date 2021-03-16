@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
@@ -7,7 +7,7 @@ namespace OrchardCore.Deployment
 {
     public class FileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
     {
-        private readonly IStringLocalizer<FileDownloadDeploymentTargetProvider> S;
+        private readonly IStringLocalizer S;
 
         public FileDownloadDeploymentTargetProvider(IStringLocalizer<FileDownloadDeploymentTargetProvider> stringLocalizer)
         {
@@ -17,7 +17,7 @@ namespace OrchardCore.Deployment
         public Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
         {
             return Task.FromResult<IEnumerable<DeploymentTarget>>(
-                new [] {
+                new[] {
                     new DeploymentTarget(
                         name: S["File Download"],
                         description: S["Download a deployment plan locally."],

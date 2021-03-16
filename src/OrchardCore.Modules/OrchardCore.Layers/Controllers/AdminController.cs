@@ -10,8 +10,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Documents;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Cache;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
@@ -21,7 +21,7 @@ using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -29,42 +29,43 @@ namespace OrchardCore.Layers.Controllers
         private readonly ILayerService _layerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
-        private readonly ISignal _signal;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
 
         public AdminController(
-            ISignal signal,
-            IAuthorizationService authorizationService,
-            ISession session,
-            ILayerService layerService,
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             ISiteService siteService,
-            IStringLocalizer<AdminController> s,
-            IHtmlLocalizer<AdminController> h,
-            INotifier notifier
-            )
+            ILayerService layerService,
+            IAuthorizationService authorizationService,
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor,
+            IVolatileDocumentManager<LayerState> layerStateManager,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            INotifier notifier)
         {
-            _signal = signal;
-            _authorizationService = authorizationService;
-            _session = session;
-            _layerService = layerService;
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
-            S = s;
-            H = h;
+            _layerService = layerService;
+            _authorizationService = authorizationService;
+            _session = session;
+            _updateModelAccessor = updateModelAccessor;
+            _layerStateManager = layerStateManager;
             _notifier = notifier;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
-
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.GetLayersAsync();
@@ -86,7 +87,7 @@ namespace OrchardCore.Layers.Controllers
                     model.Widgets.Add(zone, list = new List<dynamic>());
                 }
 
-                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, this, "SummaryAdmin"));
+                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
             }
 
             return View(model);
@@ -97,7 +98,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return RedirectToAction("Index");
@@ -107,7 +108,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View();
@@ -118,7 +119,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.LoadLayersAsync();
@@ -146,7 +147,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.GetLayersAsync();
@@ -173,7 +174,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.LoadLayersAsync();
@@ -206,7 +207,7 @@ namespace OrchardCore.Layers.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var layers = await _layerService.LoadLayersAsync();
@@ -287,8 +288,8 @@ namespace OrchardCore.Layers.Controllers
                 }
             }
 
-            // Clear the cache after the session is committed.
-            _signal.DeferredSignalToken(LayerMetadataHandler.LayerChangeToken);
+            // The state will be updated once the ambient session is committed.
+            await _layerStateManager.UpdateAsync(new LayerState());
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {

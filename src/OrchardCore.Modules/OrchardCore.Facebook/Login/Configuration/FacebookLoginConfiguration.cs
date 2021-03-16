@@ -23,7 +23,7 @@ namespace OrchardCore.Facebook.Login.Configuration
         private readonly IFacebookService _coreService;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<FacebookLoginConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public FacebookLoginConfiguration(
             IFacebookService coreService,
@@ -86,13 +86,15 @@ namespace OrchardCore.Facebook.Login.Configuration
             }
             catch
             {
-                _logger.LogError("The Facebook secret keycould not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The Facebook secret key could not be decrypted. It may have been encrypted using a different key.");
             }
 
             if (loginSettings.CallbackPath.HasValue)
             {
                 options.CallbackPath = loginSettings.CallbackPath;
             }
+
+            options.SaveTokens = loginSettings.SaveTokens;
         }
 
         public void Configure(FacebookOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
@@ -121,6 +123,5 @@ namespace OrchardCore.Facebook.Login.Configuration
 
             return settings;
         }
-
     }
 }

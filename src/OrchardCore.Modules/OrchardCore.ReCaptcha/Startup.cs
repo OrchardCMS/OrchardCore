@@ -1,17 +1,16 @@
-using Fluid;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.Data.Migration;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Core;
 using OrchardCore.ReCaptcha.Drivers;
-using OrchardCore.ReCaptcha.Forms;
 using OrchardCore.ReCaptcha.Users.Handlers;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha
@@ -25,6 +24,22 @@ namespace OrchardCore.ReCaptcha
 
             services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+        }
+    }
+
+    [Feature("OrchardCore.ReCaptcha")]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ReCaptchaSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<ReCaptchaSettings>(S["ReCaptcha settings"], S["Exports the ReCaptcha settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ReCaptchaSettings>());
         }
     }
 

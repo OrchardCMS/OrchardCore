@@ -18,7 +18,7 @@
     <div class="row">
         <div class="form-group col-xl-4 col-sm-6">
             <div class="input-group input-group-sm filter-options">
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" />
+                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
             </div>
         </div>
         <div class="form-group col-xl-8 col-sm-6">
@@ -28,10 +28,10 @@
         </div>
     </div>
 
-    <ul class="list-group">
-        <li class="list-group-item bg-light">
+    <ul class="list-group with-checkbox">
+        <li class="list-group-item bg-primary">
             <div class="row">
-                <div class="form-group col-xl-4 mb-xl-n1">
+                <div class="form-group col mb-n1 text-nowrap">
                     <div class="custom-control custom-checkbox mt-2 mr-n2">
                         <input type="checkbox" class="custom-control-input" id="select-all">
                         <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
@@ -39,9 +39,9 @@
                         <label id="selected-items" class="text-muted" for="select-all"></label>
                     </div>
                 </div>
-                <div class="col-xl-4 mb-xl-n1">
-                    <span class="dropdown" id="actions" style="display:none">
-                        <button class="btn btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @T["Actions"]
                         </button>
                         <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
@@ -70,7 +70,7 @@
 
                         <div class="custom-control custom-checkbox float-left">
                             <input type="checkbox" class="custom-control-input" value="@entry.Id" name="itemIds" id="itemIds-@entry.Id">
-                            <label class="custom-control-label" for="itemIds-@entry.Id">&nbsp;</label>
+                            <label class="custom-control-label" for="itemIds-@entry.Id"></label>
                         </div>
                         <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
 
@@ -90,7 +90,7 @@
         }
         else
         {
-            <li>
+            <li class="list-group-item">
                 <div class="alert alert-info" role="alert">
                     @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>
@@ -100,7 +100,7 @@
 </form>
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         $('select').selectpicker();
 
@@ -115,7 +115,9 @@
             $("[name='submit.Filter']").click();
         });
 
-        $(".dropdown-menu .dropdown-item").on("click", function () {
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
                 confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
@@ -149,7 +151,13 @@
         });
 
         itemsCheckboxes.on("click", function () {
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+            
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
             displayActionsOrFilters();
         });
     });

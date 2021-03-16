@@ -1,0 +1,33 @@
+{
+  "name": "",
+  "displayName": "",
+  "description": "",
+  "author": "",
+  "website": "",
+  "version": "",
+  "issetuprecipe": false,
+  "categories": [],
+  "tags": [],
+  "variables": {
+    "exportContentToDeploymentTargetStep": "[js:uuid()]"
+  },
+  "steps": [
+    {
+      "name": "deployment",
+      "Plans": [
+        {
+          "Name": "Export content to deployment plan target",
+          "Steps": [
+            {
+              "Type": "ExportContentToDeploymentTargetDeploymentStep",
+              "Step": {
+                "Id": "[js: variables('exportContentToDeploymentTargetStep')]",
+                "Name": "ExportContentToDeploymentTargetDeploymentStep"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

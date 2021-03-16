@@ -8,40 +8,42 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageManagement Include="Castle.Core" Version="4.4.0" />
+    <PackageManagement Include="AngleSharp" Version="0.14.0" />
+    <PackageManagement Include="Azure.Storage.Blobs" Version="12.6.0" />
+    <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9626" />
+    <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9693" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
-    <PackageManagement Include="Jint" Version="3.0.0-beta-1632" />
-    <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00007" />
-    <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00007" />
-    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00007" />
-    <PackageManagement Include="MailKit" Version="2.4.1" />
-    <PackageManagement Include="Markdig" Version="0.18.0" />
-    <PackageManagement Include="MessagePack" Version="2.0.323" />
+    <PackageManagement Include="Jint" Version="3.0.0-beta-1828" />
+    <PackageManagement Include="HtmlSanitizer" Version="5.0.355" />
+    <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00012" />
+    <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00012" />
+    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00012" />
+    <PackageManagement Include="MailKit" Version="2.9.0" />
+    <PackageManagement Include="Markdig" Version="0.22.0" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0" />
-    <PackageManagement Include="Moq" Version="4.13.1" />
-    <PackageManagement Include="Nancy" Version="2.0.0" />
+    <PackageManagement Include="MimeKit" Version="2.9.2" />
+    <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.1" />
+    <PackageManagement Include="Moq" Version="4.14.7" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.0" />
-    <PackageManagement Include="NodaTime" Version="2.4.7" />
-    <PackageManagement Include="OpenIddict" Version="2.0.1" />
-    <PackageManagement Include="OpenIddict.Core" Version="2.0.1" />
-    <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc1-100729" />
-    <PackageManagement Include="Serilog.AspNetCore" Version="3.2.0" />
-    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0009" />
-    <PackageManagement Include="Microsoft.Azure.Storage.Blob" Version="11.1.1" />
+    <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.3" />
+    <PackageManagement Include="NodaTime" Version="3.0.3" />
+    <PackageManagement Include="OpenIddict.AspNetCore" Version="[3.0.0-beta6.20527.75]" />
+    <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-beta6.20527.75]" />
+    <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
+    <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
+    <PackageManagement Include="Shortcodes" Version="1.0.0-beta-175913881" />
+    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1460" />
-    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1460" />
-    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1460" />
-    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1460" />
-    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1460" />
-    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1460" />
+    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1514" />
   </ItemGroup>
 
 </Project>

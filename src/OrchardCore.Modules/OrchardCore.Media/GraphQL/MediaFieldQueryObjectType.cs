@@ -18,7 +18,7 @@ namespace OrchardCore.Media.GraphQL
                 .Description("the media paths")
                 .PagingArguments()
                 .Resolve(x => x.Page(x.Source.Paths));
-            
+
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
                 .Name("urls")
                 .Description("the absolute urls of the media items")

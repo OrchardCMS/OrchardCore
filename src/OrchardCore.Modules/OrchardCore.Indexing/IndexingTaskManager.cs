@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentPreview;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
@@ -24,6 +26,9 @@ namespace OrchardCore.Indexing.Services
     {
         private readonly IClock _clock;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
+
         private readonly string _tablePrefix;
         private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
 
@@ -31,11 +36,13 @@ namespace OrchardCore.Indexing.Services
             IClock clock,
             ShellSettings shellSettings,
             IDbConnectionAccessor dbConnectionAccessor,
+            IHttpContextAccessor httpContextAccessor,
             ILogger<IndexingTaskManager> logger)
         {
             _clock = clock;
             _dbConnectionAccessor = dbConnectionAccessor;
-            Logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
 
             _tablePrefix = shellSettings["TablePrefix"];
 
@@ -45,8 +52,6 @@ namespace OrchardCore.Indexing.Services
             }
         }
 
-        public ILogger Logger { get; set; }
-
         public Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type)
         {
             if (contentItem == null)
@@ -54,10 +59,15 @@ namespace OrchardCore.Indexing.Services
                 throw new ArgumentNullException("contentItem");
             }
 
+            // Do not index a preview content item.
+            if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
+            {
+                return Task.CompletedTask;
+            }
+
             if (contentItem.Id == 0)
             {
-                // Ignore that case, when Update is called on a content item which has not be "created" yet
-
+                // Ignore that case, when Update is called on a content item which has not be "created" yet.
                 return Task.CompletedTask;
             }
 
@@ -87,6 +97,7 @@ namespace OrchardCore.Indexing.Services
 
             var serviceProvider = scope.ServiceProvider;
 
+            var session = serviceProvider.GetService<YesSql.ISession>();
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var shellSettings = serviceProvider.GetService<ShellSettings>();
             var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();
@@ -122,7 +133,7 @@ namespace OrchardCore.Indexing.Services
             {
                 await connection.OpenAsync();
 
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel))
                 {
                     var dialect = SqlDialectFactory.For(transaction.Connection);
 
@@ -147,7 +158,6 @@ namespace OrchardCore.Indexing.Services
                                 await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
                                 ids = ids.Skip(pageSize).ToArray();
                             }
-
                         } while (ids.Any());
 
                         var insertCmd = $"insert into {dialect.QuoteForTableName(table)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
@@ -192,7 +202,7 @@ namespace OrchardCore.Indexing.Services
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "An error occurred while reading indexing tasks");
+                    _logger.LogError(e, "An error occurred while reading indexing tasks");
                     throw;
                 }
             }

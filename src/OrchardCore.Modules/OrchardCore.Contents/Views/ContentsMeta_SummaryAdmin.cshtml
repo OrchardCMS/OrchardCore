@@ -1,0 +1,12 @@
+@using OrchardCore.ContentManagement
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+}
+
+@if (contentItem.ModifiedUtc.HasValue)
+{
+    <div>
+        <span class="hint">@T["Last modified {0} by {1}", (object)(await DisplayAsync(await New.TimeSpan(Utc: contentItem.ModifiedUtc))), contentItem.Author]</span>
+    </div>
+}

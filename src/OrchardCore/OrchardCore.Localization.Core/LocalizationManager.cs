@@ -36,12 +36,12 @@ namespace OrchardCore.Localization
             _cache = cache;
         }
 
-        /// <inheritdocs />
+        /// <inheritdoc />
         public CultureDictionary GetDictionary(CultureInfo culture)
         {
             var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
             {
-                PluralizationRuleDelegate rule = DefaultPluralRule;
+                var rule = DefaultPluralRule;
 
                 foreach (var provider in _pluralRuleProviders)
                 {

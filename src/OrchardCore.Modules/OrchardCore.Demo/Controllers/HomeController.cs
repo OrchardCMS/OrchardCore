@@ -41,7 +41,7 @@ namespace OrchardCore.Demo.Controllers
             _contentDisplay = contentDisplay;
         }
 
-        dynamic Shape { get; set; }
+        private dynamic Shape { get; set; }
 
         public ActionResult Index()
         {
@@ -94,7 +94,6 @@ namespace OrchardCore.Demo.Controllers
 
             return View("Display", contentItem);
         }
-
 
         public async Task<ActionResult> DisplayShape(string contentItemId)
         {

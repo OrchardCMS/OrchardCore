@@ -1,4 +1,4 @@
-# Custom Settings (OrchardCore.CustomSettings)
+# Custom Settings (`OrchardCore.CustomSettings`)
 
 Custom Settings allow a site administrator to create a customized set of properties that are global to the web sites.  
 These settings are edited in the standard Settings section and can be protected with specific permissions.
@@ -34,7 +34,7 @@ For instance the `HtmlBodyPart` of a custom settings section named `BlogSettings
 Custom Settings are a ContentItem, and by accessing it as a `ContentItem` you can access its parts and metadata.
 
 !!! note
-    You will need to register your `ContentPart` with Dependency Injection as demonstrated in the [ContentTypes documentation](../../OrchardCore.Modules/OrchardCore.ContentTypes/).
+    You will need to register your `ContentPart` with Dependency Injection as demonstrated in the [ContentTypes documentation](../ContentTypes/README.md).
 
 Here is an example of getting the `HtmlBodyPart` of a custom settings section named `BlogSettings`:
 
@@ -59,3 +59,7 @@ public class MyController : Controller
     }
 }
 ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/RuDsBx4wdT0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

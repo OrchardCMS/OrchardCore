@@ -54,7 +54,7 @@ namespace OrchardCore.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new [] { Base64, Html, GZip };
+            return new[] { Base64, Html, GZip };
         }
     }
 }

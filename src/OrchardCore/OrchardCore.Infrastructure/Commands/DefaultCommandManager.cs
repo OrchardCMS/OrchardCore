@@ -50,7 +50,7 @@ namespace OrchardCore.Environment.Commands
 
         private IEnumerable<Match> MatchCommands(CommandParameters parameters)
         {
-            // Commands are matched with arguments. first argument 
+            // Commands are matched with arguments. first argument
             // is the command others are arguments to the command.
             return _commandHandlers.SelectMany(h =>
                     MatchCommands(parameters, parameters.Arguments.Count(), _builder.Build(h.GetType()), h)).ToList();

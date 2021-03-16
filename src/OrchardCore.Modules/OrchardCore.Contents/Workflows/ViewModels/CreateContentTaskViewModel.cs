@@ -9,6 +9,7 @@ namespace OrchardCore.Contents.Workflows.ViewModels
     {
         [BindNever]
         public IList<SelectListItem> AvailableContentTypes { get; set; }
+
         public string ContentType { get; set; }
         public bool Publish { get; set; }
         public string ContentProperties { get; set; }

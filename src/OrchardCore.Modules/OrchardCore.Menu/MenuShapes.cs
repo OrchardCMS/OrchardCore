@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Menu.Models;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Menu
 {
@@ -31,10 +32,10 @@ namespace OrchardCore.Menu
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-                    var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
+                    var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
                     string contentItemId = menu.Alias != null
-                        ? await aliasManager.GetContentItemIdAsync(menu.Alias)
+                        ? await handleManager.GetContentItemIdAsync(menu.Alias)
                         : menu.ContentItemId;
 
                     if (contentItemId == null)
@@ -60,13 +61,14 @@ namespace OrchardCore.Menu
                         return;
                     }
 
-                    string differentiator = FormatName((string)menu.MenuName);
+                    var differentiator = FormatName((string)menu.MenuName);
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {
                         // Menu__[MenuName] e.g. Menu-MainMenu
                         menu.Metadata.Alternates.Add("Menu__" + differentiator);
-                        menu.Differentiator = differentiator;
+                        menu.Metadata.Differentiator = differentiator;
+                        menu.Classes.Add(("menu-" + differentiator).HtmlClassify());
                     }
 
                     // The first level of menu item shapes is created.
@@ -78,14 +80,14 @@ namespace OrchardCore.Menu
                         {
                             ContentItem = contentItem,
                             Level = 0,
-                            Menu = menu,
-                            Differentiator = differentiator
+                            Menu = menu
                         }));
+
+                        shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted
                         menu.Add(shape);
                     }
-
                 });
 
             builder.Describe("MenuItem")
@@ -95,7 +97,7 @@ namespace OrchardCore.Menu
                     ContentItem menuContentItem = menuItem.ContentItem;
                     var menu = menuItem.Menu;
                     int level = menuItem.Level;
-                    string differentiator = menuItem.Differentiator;
+                    string differentiator = menuItem.Metadata.Differentiator;
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
@@ -109,9 +111,10 @@ namespace OrchardCore.Menu
                             {
                                 ContentItem = contentItem,
                                 Level = level + 1,
-                                Menu = menu,
-                                Differentiator = differentiator
+                                Menu = menu
                             }));
+
+                            shape.Metadata.Differentiator = differentiator;
 
                             // Don't use Items.Add() or the collection won't be sorted
                             menuItem.Add(shape);
@@ -147,7 +150,7 @@ namespace OrchardCore.Menu
                 {
                     dynamic menuItem = displaying.Shape;
                     int level = menuItem.Level;
-                    string differentiator = menuItem.Differentiator;
+                    string differentiator = menuItem.Metadata.Differentiator;
 
                     ContentItem menuContentItem = menuItem.ContentItem;
 

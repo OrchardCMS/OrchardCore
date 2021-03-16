@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Recipes
@@ -31,7 +33,7 @@ namespace OrchardCore.Recipes
             };
         }
 
-        public IScriptingManager ScriptingManager { get; set; }
+        public IScriptingManager ScriptingManager => ShellScope.Services.GetRequiredService<IScriptingManager>();
 
         public IEnumerable<GlobalMethod> GetMethods()
         {

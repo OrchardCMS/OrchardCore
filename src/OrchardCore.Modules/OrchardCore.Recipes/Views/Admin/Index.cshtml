@@ -6,15 +6,15 @@
         <h1>@RenderTitleSegments(T["Recipes"])</h1>
     </div>
 </div>
-<form autocomplete="off">
+<form autocomplete="off" class="position-sticky action-bar">
     <div class="card mb-3">
-        <div class="card-body bg-light p-3">
+        <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
                 <div class="input-group input-group-sm w-lg-50">
                     <div class="input-group-prepend">
                         <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                     </div>
-                    <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+                    <input id="search-box" class="form-control mr-sm-2" placeholder="@T["Search"]" type="search" autofocus>
                 </div>
             </div>
         </div>
@@ -30,16 +30,16 @@
 
             <div class="recipe-group">
                 @{
-                    var groupRecipeNames = String.Join(" ", recipeGroup.Select(r => r.Name));
+                    var groupRecipeNames = String.Join(" ", recipeGroup.Select(r => r.DisplayName));
                 }
                 <h4 class="mb-2 mt-3" data-filter-value="@groupName @groupRecipeNames">@groupName</h4>
                 <ul class="list-group" data-filter-value="@groupName @groupRecipeNames">
                     @foreach (var recipe in recipeGroup)
                     {
-                        <li class="list-group-item" data-filter-value="@groupName @recipe.Name">
+                        <li class="list-group-item" data-filter-value="@groupName @recipe.DisplayName">
                             <div class="row">
                                 <div class="col-md-10">
-                                    <h6>@recipe.Name</h6>
+                                    <h6>@recipe.DisplayName</h6>
                                     <p class="text-muted">@recipe.Description</p>
                                     <div>
                                         @if (recipe.IsSetupRecipe)
@@ -61,7 +61,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-2 text-right">
-                                    <a asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm" data-title="@T["Recipes"]" data-message="@T["Are you sure you want to run the recipe?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" itemprop="RemoveUrl UnsafeUrl">@T["Run"]</a>
+                                    <a id="btn-run-@Html.GenerateIdFromName(recipe.Name)" asp-action="Execute" asp-route-basePath="@recipe.BasePath" asp-route-fileName="@recipe.FileName" role="button" class="btn btn-primary btn-sm" data-title="@T["Recipes"]" data-message="@T["Are you sure you want to run the recipe?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" itemprop="RemoveUrl UnsafeUrl">@T["Run"]</a>
                                 </div>
                             </div>
                         </li>
@@ -74,7 +74,7 @@
         }
     }
 </form>
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         var searchBox = $('#search-box');
 
@@ -87,7 +87,7 @@
             if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
                 elementsToFilter.toggle(true);
-            } 
+            }
             else {
                 elementsToFilter.each(function () {
                     var text = $(this).data('filter-value').toLowerCase();

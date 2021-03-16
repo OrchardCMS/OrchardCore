@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.Handlers
             var httpContext = _httpContextAccessor.HttpContext;
             if (context.ContentItem.Owner == null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
             {
-                context.ContentItem.Owner = httpContext.User.Identity.Name;
+                context.ContentItem.Owner = context.ContentItem.Author = httpContext.User.Identity.Name;
             }
 
             return Task.CompletedTask;
@@ -65,8 +65,8 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             var utcNow = _clock.UtcNow;
 
-            // The first time the content is published, reassign the CreateUtc value
-            if (!context.ContentItem.PublishedUtc.HasValue)
+            // The first time the content is published, reassign the CreateUtc value if it has not already been set.
+            if (!context.ContentItem.PublishedUtc.HasValue && !context.ContentItem.CreatedUtc.HasValue)
             {
                 context.ContentItem.CreatedUtc = utcNow;
             }

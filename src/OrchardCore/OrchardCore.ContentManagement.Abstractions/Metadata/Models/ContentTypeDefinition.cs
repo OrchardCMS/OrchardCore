@@ -30,11 +30,12 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
         [Required, StringLength(1024)]
         public string DisplayName { get; private set; }
+
         public IEnumerable<ContentTypePartDefinition> Parts { get; private set; }
 
         /// <summary>
         /// Returns the <see cref="DisplayName"/> value of the type if defined,
-        /// or the <see cref="Name"/> otherwise.
+        /// or the <see cref="ContentDefinition.Name"/> otherwise.
         /// </summary>
         /// <returns></returns>
         public override string ToString()

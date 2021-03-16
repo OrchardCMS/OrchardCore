@@ -9,43 +9,49 @@
  * @link https://github.com/NextStepWebs/simplemde-markdown-editor
  * @license MIT
  */
-.CodeMirror {
+[dir] .simplemde-editor .icon-shortcode {
+  margin-top: 7px; }
+
+.simplemde-editor .CodeMirror {
   height: auto;
   min-height: 300px;
   font: inherit;
   z-index: 1; }
-[dir] .CodeMirror {
+
+[dir] .simplemde-editor .CodeMirror {
   border: 1px solid #dee2e6;
   padding: 10px; }
-[dir=ltr] .CodeMirror {
+
+[dir=ltr] .simplemde-editor .CodeMirror {
   border-bottom-left-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem; }
-[dir=rtl] .CodeMirror {
+
+[dir=rtl] .simplemde-editor .CodeMirror {
   border-bottom-right-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem; }
 
-.CodeMirror-scroll {
+.simplemde-editor .CodeMirror-scroll {
   min-height: 300px; }
 
-.CodeMirror-fullscreen {
+.simplemde-editor .CodeMirror-fullscreen {
   position: fixed !important;
   top: 39px;
   bottom: 0;
   height: auto;
   z-index: 1200; }
 
-[dir] .CodeMirror-fullscreen {
+[dir] .simplemde-editor .CodeMirror-fullscreen {
   background: #fff; }
 
-[dir=ltr] .CodeMirror-fullscreen {
+[dir=ltr] .simplemde-editor .CodeMirror-fullscreen {
   left: 0;
   right: 0; }
 
-[dir=rtl] .CodeMirror-fullscreen {
+[dir=rtl] .simplemde-editor .CodeMirror-fullscreen {
   right: 0;
   left: 0; }
 
-.CodeMirror-sided {
+.simplemde-editor .CodeMirror-sided {
   width: 50% !important; }
 
 .editor-toolbar {

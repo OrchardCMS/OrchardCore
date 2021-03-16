@@ -9,7 +9,7 @@ namespace OrchardCore.Templates.Settings
 {
     public class TemplateContentTypeDefinitionDriver : ContentTypeDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<TemplateContentTypeDefinitionDriver> S;
+        private readonly IStringLocalizer S;
 
         public TemplateContentTypeDefinitionDriver(IStringLocalizer<TemplateContentTypeDefinitionDriver> localizer)
         {
@@ -40,7 +40,6 @@ namespace OrchardCore.Templates.Settings
                         Key = $"{stereotype}_Summary__{contentTypeDefinition.Name}",
                         Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
                     });
-
             }).Location("Content");
         }
     }

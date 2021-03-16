@@ -1,1 +1,4 @@
-﻿<input type="hidden" name="ListPart.ContainerId" value="@Model.ContainerId" />
+@model OrchardCore.Lists.ViewModels.EditContainedPartViewModel
+<input type="hidden" name="ListPart.ContainerId" value="@Model.ContainerId" />
+<input type="hidden" name="ListPart.ContentType" value="@Model.ContentType.ToString()" />
+<input type="hidden" name="ListPart.EnableOrdering" value="@Model.EnableOrdering.ToString()" />

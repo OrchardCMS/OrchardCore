@@ -10,7 +10,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="LayerMetadata.RenderTitle" checked="@Model.LayerMetadata.RenderTitle">
         <label class="custom-control-label" asp-for="LayerMetadata.RenderTitle">@T["Render title"]</label>
-        <span class="hint">— @T["If checked, the title will be rendered with the widget."]</span>
+        <span class="hint dashed">@T["If checked, the title will be rendered with the widget."]</span>
     </div>
 </div>
 
@@ -19,7 +19,8 @@
     <select asp-for="LayerMetadata.Layer" class="form-control">
         @foreach (var layer in Model.Layers)
         {
-            <option value="@layer.Name" selected="@(Model.LayerMetadata.Layer == layer.Name)">@layer.Name</option>}
+            <option value="@layer.Name" selected="@(Model.LayerMetadata.Layer == layer.Name)">@layer.Name</option>
+}
     </select>
 </div>
 

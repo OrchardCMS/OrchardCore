@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Services
     /// Provides the theme defined in the site configuration for the current scope (request).
     /// This selector provides AdminTheme as default or fallback for Account|Registration|ResetPassword
     /// controllers based on SiteSettings.
-    /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times 
+    /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
     /// during the same scope.
     /// </summary>
     public class UsersThemeSelector : IThemeSelector
@@ -38,7 +38,7 @@ namespace OrchardCore.Users.Services
 
             if (routeValues["area"]?.ToString() == "OrchardCore.Users")
             {
-                bool useSiteTheme = false;
+                bool useSiteTheme;
 
                 switch (routeValues["controller"]?.ToString())
                 {
@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Services
                         return null;
                 }
 
-                string adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
+                var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
 
                 if (String.IsNullOrEmpty(adminThemeName))
                 {

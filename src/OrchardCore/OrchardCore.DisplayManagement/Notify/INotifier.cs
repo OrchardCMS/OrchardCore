@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace OrchardCore.DisplayManagement.Notify
@@ -7,7 +7,7 @@ namespace OrchardCore.DisplayManagement.Notify
     /// Notification manager for UI notifications
     /// </summary>
     /// <remarks>
-    /// Where such notifications are displayed depends on the theme used. Default themes contain a 
+    /// Where such notifications are displayed depends on the theme used. Default themes contain a
     /// Messages zone for this.
     /// </remarks>
     public interface INotifier

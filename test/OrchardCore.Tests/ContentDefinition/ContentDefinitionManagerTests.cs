@@ -1,4 +1,4 @@
-﻿//using Microsoft.Extensions.DependencyInjection;
+//using Microsoft.Extensions.DependencyInjection;
 //using Microsoft.Extensions.Logging;
 //using OrchardCore.ContentManagement.Metadata;
 //using OrchardCore.ContentManagement.Metadata;
@@ -232,7 +232,6 @@
 //        //                    .OfType("DateTimeField")
 //        //                    .WithSetting("DateTimeFieldSettings.Display", "DateAndTime"))
 //        //        );
-
 
 //        //    Assert.That(manager.ListPartDefinitions().Count(), Is.EqualTo(1));
 

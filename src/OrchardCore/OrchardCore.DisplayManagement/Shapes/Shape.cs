@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -5,7 +6,8 @@ using System.Dynamic;
 using System.Linq;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using OrchardCore.UI;
+using Newtonsoft.Json;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
@@ -14,15 +16,29 @@ namespace OrchardCore.DisplayManagement.Shapes
     {
         private List<string> _classes;
         private Dictionary<string, string> _attributes;
-        private readonly List<IPositioned> _items = new List<IPositioned>();
+        private List<IPositioned> _items = new List<IPositioned>();
         private bool _sorted = false;
 
         public ShapeMetadata Metadata { get; } = new ShapeMetadata();
 
         public string Id { get; set; }
-        public IList<string> Classes => _classes = _classes ?? new List<string>();
-        public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
-        public IEnumerable<dynamic> Items => _items;
+        public string TagName { get; set; }
+        public IList<string> Classes => _classes ??= new List<string>();
+        public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
+        public IEnumerable<dynamic> Items
+        {
+            get
+            {
+                if (!_sorted)
+                {
+                    _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+                    _sorted = true;
+                }
+
+                return _items;
+            }
+        }
+
         public bool HasItems => _items.Count > 0;
 
         public string Position
@@ -105,11 +121,24 @@ namespace OrchardCore.DisplayManagement.Shapes
             return null;
         }
 
+        public IShape NormalizedNamed(string shapeName)
+        {
+            for (var i = 0; i < _items.Count; i++)
+            {
+                if (_items[i] is IShape shape && shape.Metadata.Name?.Replace("__", "-") == shapeName)
+                {
+                    return shape;
+                }
+            }
+
+            return null;
+        }
+
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
             if (!_sorted)
             {
-                _items.Sort(FlatPositionComparer.Instance);
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;
             }
 
@@ -120,7 +149,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (!_sorted)
             {
-                _items.Sort(FlatPositionComparer.Instance);
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;
             }
 
@@ -140,21 +169,22 @@ namespace OrchardCore.DisplayManagement.Shapes
             return base.TryConvert(binder, out result);
         }
 
-        public static TagBuilder GetTagBuilder(dynamic shape, string defaultTag = "span")
+        public static TagBuilder GetTagBuilder(Shape shape, string defaultTagName = "span")
         {
-            string tagName = shape.Tag;
+            var tagName = defaultTagName;
 
-            // Dont replace by ?? as shape.Tag is dynamic
-            if (tagName == null)
+            // We keep this for backward compatibility
+            if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
             {
-                tagName = defaultTag;
+                tagName = valueString;
             }
 
-            string id = shape.Id;
-            IEnumerable<string> classes = shape.Classes;
-            IDictionary<string, string> attributes = shape.Attributes;
+            if (!String.IsNullOrEmpty(shape.TagName))
+            {
+                tagName = shape.TagName;
+            }
 
-            return GetTagBuilder(tagName, id, classes, attributes);
+            return GetTagBuilder(tagName, shape.Id, shape.Classes, shape.Attributes);
         }
 
         public static TagBuilder GetTagBuilder(string tagName, string id, IEnumerable<string> classes, IDictionary<string, string> attributes)
@@ -171,21 +201,91 @@ namespace OrchardCore.DisplayManagement.Shapes
                 tagBuilder.AddCssClass(cssClass);
             }
 
-            if (!string.IsNullOrWhiteSpace(id))
+            if (!String.IsNullOrWhiteSpace(id))
             {
                 tagBuilder.Attributes["id"] = id;
             }
             return tagBuilder;
         }
 
-        public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             var name = binder.Name;
+
             if (!base.TryGetMember(binder, out result) || (null == result))
             {
-                //Try to get Named shape
-                result = Named(name.Replace("__", "-"));
+                // Try to get a Named shape
+                result = Named(name);
+
+                if (result == null)
+                {
+                    result = NormalizedNamed(name.Replace("__", "-"));
+                }
             }
+
+            return true;
+        }
+
+        protected override bool TrySetMemberImpl(string name, object value)
+        {
+            // We set the Shape real properties for Razor
+            if (name == "Id")
+            {
+                Id = value as string;
+
+                return true;
+            }
+
+            if (name == "TagName")
+            {
+                TagName = value as string;
+
+                return true;
+            }
+
+            if (name == "Attributes")
+            {
+                if (value is Dictionary<string, string> attributes)
+                {
+                    foreach (var attribute in attributes)
+                    {
+                        Attributes.TryAdd(attribute.Key, attribute.Value);
+                    }
+                }
+
+                if (value is string stringValue)
+                {
+                    attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
+
+                    foreach (var attribute in attributes)
+                    {
+                        Attributes.TryAdd(attribute.Key, attribute.Value);
+                    }
+                }
+            }
+
+            if (name == "Classes")
+            {
+                if (value is List<string> classes)
+                {
+                    foreach (var item in classes)
+                    {
+                        Classes.Add(item);
+                    }
+                }
+
+                if (value is string stringValue)
+                {
+                    var values = stringValue.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var item in values)
+                    {
+                        Classes.Add(item);
+                    }
+                }
+            }
+
+            base.TrySetMemberImpl(name, value);
+
             return true;
         }
     }

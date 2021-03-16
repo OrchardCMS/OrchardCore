@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace OrchardCore.ContentFields.Settings
 {
     public class TextFieldHeaderDisplaySettings

@@ -1,0 +1,59 @@
+@model MediaProfileIndexViewModel
+
+@{
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.MediaProfiles.Count - 1;
+}
+
+<form asp-action="Index">
+    @* the form is necessary to generate and antiforgery token for the delete action *@
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <h1>@RenderTitleSegments(T["Media Profiles"])</h1>
+        </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Profile"]</a>
+            </div>
+        </div>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item bg-primary">
+            <div class="row">
+                <div class="form-group col-xl-4 mb-xl-n1">
+                    <label id="items" for="select-all">@T.Plural(Model.MediaProfiles.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                    <label id="selected-items" class="text-muted" for="select-all"></label>
+                </div>
+            </div>
+        </li>
+        @if (Model.MediaProfiles.Any())
+        {
+            @foreach (var entry in Model.MediaProfiles)
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        </div>
+                        <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
+                        @if (!String.IsNullOrWhiteSpace(entry.MediaProfile.Hint))
+                        {
+                            <span class="hint dashed">@entry.MediaProfile.Hint</span>
+                        }
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no media profiles for the moment."]
+                </div>
+            </li>
+        }
+    </ul>
+</form>
+
+@await DisplayAsync(Model.Pager)

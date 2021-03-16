@@ -25,7 +25,7 @@
         </div>
     </div>
     <ul class="list-group">
-        <li class="list-group-item bg-light">
+        <li class="list-group-item bg-primary">
             <div class="row">
                 <div class="form-group col-xl-4 mb-xl-n1">
                     <label id="items" for="select-all">@T.Plural(Model.Templates.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
@@ -46,9 +46,7 @@
                         <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.Template.Description))
                         {
-                            <span class="hint">
-                                — @entry.Template.Description
-                            </span>
+                            <span class="hint dashed">@entry.Template.Description</span>
                         }
                     </div>
                 </li>

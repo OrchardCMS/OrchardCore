@@ -1,8 +1,6 @@
-using OrchardCore.Environment.Commands;
 using System.Linq;
+using OrchardCore.Environment.Commands;
 using Xunit;
-using System.Reflection;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Tests.Commands
 {
@@ -27,7 +25,8 @@ namespace OrchardCore.Tests.Commands
 
         public class MyCommand : DefaultCommandHandler
         {
-            public MyCommand() : base(null) {
+            public MyCommand() : base(null)
+            {
             }
 
             public void FooBar()
@@ -61,6 +60,7 @@ namespace OrchardCore.Tests.Commands
         }
 
 #pragma warning disable 660,661
+
         public class PublicMethodsOnly
         {
 #pragma warning restore 660,661

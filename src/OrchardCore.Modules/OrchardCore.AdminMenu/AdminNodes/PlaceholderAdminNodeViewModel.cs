@@ -6,6 +6,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
     {
         [Required]
         public string LinkText { get; set; }
+
         public string IconClass { get; set; }
     }
 }

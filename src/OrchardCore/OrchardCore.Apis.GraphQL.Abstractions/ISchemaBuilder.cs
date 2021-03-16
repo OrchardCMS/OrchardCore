@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using GraphQL.Types;
-using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -13,8 +12,12 @@ namespace OrchardCore.Apis.GraphQL
         /// Updates <paramref name="schema"/>.
         /// </summary>
         /// <param name="schema">The <see cref="ISchema"/> instance to update.</param>
-        /// <returns>A <see cref="IChangeToken"/> instance that is invalidated when the data that is used in the <see cref="ISchema"/> 
-        /// instance has changed, or <c>null</c> if it has no dependencies.</returns>
-        Task<IChangeToken> BuildAsync(ISchema schema);
+        Task BuildAsync(ISchema schema);
+
+        /// <summary>
+        /// Returns an unique identifier that is updated when the data that is used in the <see cref="ISchema"/> instance
+        /// has changed, or an empty string if it has no dependencies, null being a valid value not yet updated.
+        /// </summary>
+        Task<string> GetIdentifierAsync();
     }
 }

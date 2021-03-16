@@ -69,6 +69,9 @@ ipch/
 _ReSharper*/
 *.[Rr]e[Ss]harper
 
+# Rider is a IDE fm JetBrains
+.idea
+
 # TeamCity is a build add-in
 _TeamCity*
 

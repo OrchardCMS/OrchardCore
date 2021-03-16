@@ -1,4 +1,4 @@
-# Data (OrchardCore.Data)
+# Data (`OrchardCore.Data`)
 
 ## Running SQL queries
 

@@ -34,7 +34,7 @@ namespace OrchardCore.Workflows.Http
             services.AddScoped<IWorkflowHandler, WorkflowRoutesHandler>();
 
             services.AddSingleton<IWorkflowTypeRouteEntries, WorkflowTypeRouteEntries>();
-            services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowRouteEntries>();
+            services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowInstanceRouteEntries>();
             services.AddSingleton<IGlobalMethodProvider, HttpMethodsProvider>();
             services.AddScoped<IWorkflowExecutionContextHandler, SignalWorkflowExecutionContextHandler>();
 
@@ -49,8 +49,6 @@ namespace OrchardCore.Workflows.Http
 
             services.AddScoped<ILiquidTemplateEventHandler, SignalLiquidTemplateHandler>();
             services.AddLiquidFilter<SignalUrlFilter>("signal_url");
-
-            services.AddTransient<IModularTenantEvents, HttpRequestRouteActivator>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Themes
 {
@@ -24,7 +24,6 @@ namespace OrchardCore.Themes
             builder
                 .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
                     .AddClass("themes").Id("themes")
-                    .Permission(Permissions.ApplyTheme)
                     .Add(S["Themes"], "Themes", installed => installed
                         .Action("Index", "Admin", new { area = "OrchardCore.Themes" })
                         .Permission(Permissions.ApplyTheme)

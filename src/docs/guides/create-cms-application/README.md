@@ -10,16 +10,15 @@ In this guide you will setup Orchard Core as a Content Management System from a 
 ## Creating the projects
 
 There are different ways to create sites and modules for Orchard Core. You can learn more about them [here](../../getting-started/templates/README.md).  
-In this guide we will use our "Code Generation Templates".
 
-You can install the latest released templates using this command:
+In this guide we will use our "Code Generation Templates". You can install the latest stable release of the templates using this command:
 
 ```dotnet new -i OrchardCore.ProjectTemplates::1.0.0-*```
 
 !!! note
-    To use the development branch of the template add `--nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+    To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
 
-Create an empty folder that will contain your site. Open a terminal, navigate to that folder and run this:
+Create an empty folder that will contain your site. Open a terminal, navigate to that folder and run the following command:
 
 ```dotnet new occms -n MySite```
 
@@ -34,9 +33,9 @@ Run the application by executing this command:
 `dotnet run --project .\MySite\MySite.csproj`
 
 !!! note
-    If you are using the development branch of the templates, run `dotnet restore .\MySite\MySite.csproj --source https://www.myget.org/F/orchardcore-preview/api/v3/index.json` before running the application
+    If you are using the development branch of the templates, run `dotnet restore .\MySite\MySite.csproj --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json` before running the application
 
-Your application should now be running and contain the open ports:
+Your application should now be running and listening on the following ports:
 
 ```
 Now listening on: https://localhost:5001
@@ -44,11 +43,11 @@ Now listening on: http://localhost:5000
 Application started. Press Ctrl+C to shut down.
 ```
 
-Open a browser on <https://localhost:5001>, it should display the setup screen.
+Open a browser and navigate to <https://localhost:5001> to display the setup screen.
 
-In order to build a site with all the features of a CMS with are going to use the __Blog__ recipe. Recipes contains a list of modules and steps to configure an Orchard Core website.
+For demonstration purposes, we will create the website using the __Blog__ recipe. The __Blog__ recipe is a [starter recipe](../../getting-started/starter-recipes.md) included with Orchard Core that contains a list of features and steps to configure an Orchard Core website.
 
-Fill the form and select the __Blog__ recipe and __SQLite__ for the database.
+Complete the setup form and select the __Blog__ recipe and __SQLite__ for the database.
 
 ![image](assets/setup-screen.jpg)
 

@@ -1,7 +1,7 @@
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email
@@ -32,9 +32,12 @@ namespace OrchardCore.Email
         /// Gets or sets the SMTP server/host.
         /// </summary>
         public string Host { get; set; }
-        [Range(0, 65535)]
 
-        ///Gets or sets the SMTP port number. Defaults to <c>5</c>.
+
+        /// <summary>
+        /// Gets or sets the SMTP port number. Defaults to <c>25</c>.
+        /// </summary>
+        [Range(0, 65535)]
         public int Port { get; set; } = 25;
 
         /// <summary>

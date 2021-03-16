@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentFields.Fields;
@@ -21,6 +20,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     Description = "Boolean field",
                     FieldType = typeof(BooleanGraphType),
+                    UnderlyingType = typeof(BooleanField),
                     FieldAccessor = field => (bool)field.Content.Value
                 }
             },
@@ -30,6 +30,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     Description = "Date field",
                     FieldType = typeof(DateGraphType),
+                    UnderlyingType = typeof(DateField),
                     FieldAccessor = field => (DateTime?)field.Content.Value
                 }
             },
@@ -39,6 +40,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     Description = "Date & time field",
                     FieldType = typeof(DateTimeGraphType),
+                    UnderlyingType = typeof(DateTimeField),
                     FieldAccessor = field => (DateTime?)field.Content.Value
                 }
             },
@@ -48,6 +50,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     Description = "Html field",
                     FieldType = typeof(StringGraphType),
+                    UnderlyingType = typeof(HtmlField),
                     FieldAccessor = field => field.Content.Html
                 }
             },
@@ -57,6 +60,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     Description = "Numeric field",
                     FieldType = typeof(DecimalGraphType),
+                    UnderlyingType = typeof(NumericField),
                     FieldAccessor = field => (decimal?)field.Content.Value
                 }
             },
@@ -66,6 +70,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     Description = "Text field",
                     FieldType = typeof(StringGraphType),
+                    UnderlyingType = typeof(TextField),
                     FieldAccessor = field => field.Content.Text
                 }
             },
@@ -75,6 +80,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     Description = "Time field",
                     FieldType = typeof(TimeSpanGraphType),
+                    UnderlyingType = typeof(TimeField),
                     FieldAccessor = field => (TimeSpan?)field.Content.Value
                 }
             }
@@ -94,17 +100,17 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     // Check if part has been collapsed by trying to get the parent part.
                     var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                    if(contentPart == null)
+                    if (contentPart == null)
                     {
                         // Part is not collapsed, access field directly.
                         contentPart = context.Source;
                     }
 
-                    var contentField = contentPart?.Get(typeof(ContentField), field.Name);
+                    var contentField = contentPart?.Get(fieldDescriptor.UnderlyingType, field.Name);
 
                     if (contentField == null)
                     {
-                        contentField = context.Source.Get(typeof(ContentField), field.Name);
+                        contentField = context.Source.Get(fieldDescriptor.UnderlyingType, field.Name);
                     }
 
                     return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
@@ -112,10 +118,11 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             };
         }
 
-        class FieldTypeDescriptor
+        private class FieldTypeDescriptor
         {
             public string Description { get; set; }
             public Type FieldType { get; set; }
+            public Type UnderlyingType { get; set; }
             public Func<ContentElement, object> FieldAccessor { get; set; }
         }
     }

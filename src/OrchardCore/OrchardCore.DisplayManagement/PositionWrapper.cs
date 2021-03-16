@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
-using OrchardCore.DisplayManagement.Shapes;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement
 {
@@ -15,6 +15,8 @@ namespace OrchardCore.DisplayManagement
         public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
 
         public string Id { get; set; }
+
+        public string TagName { get; set; }
 
         public IList<string> Classes { get; }
 

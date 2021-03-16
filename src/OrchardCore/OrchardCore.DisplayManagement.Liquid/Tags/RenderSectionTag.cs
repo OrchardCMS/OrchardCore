@@ -6,6 +6,7 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -30,7 +31,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var required = arguments.HasNamed("required") && Convert.ToBoolean(arguments["required"].ToStringValue());
             var zone = layout[name];
 
-            if (required && zone != null && zone.Items.Count == 0)
+            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
             {
                 throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
             }

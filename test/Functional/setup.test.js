@@ -13,6 +13,7 @@ jest.setTimeout(debug ? 60000 : 30000);
 
 beforeAll(async () => {
     try {
+        orchard.cleanAppData('../../src/OrchardCore.Cms.Web');
         basePath = orchard.run('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll');
         browser = await puppeteer.launch(debug ? { headless: false, slowMo: 100 } : {});
         page = await browser.newPage();
@@ -27,7 +28,6 @@ afterAll(async () => {
     }
 
     orchard.stop();
-    orchard.cleanAppData('../../src/OrchardCore.Cms.Web');
     orchard.printLog();
 });
 
@@ -118,11 +118,11 @@ describe('Create Tenants', () => {
         await page.goto(`${basePath}/Admin/Tenants/Create`);
         
         await page.type('#Name', 'Agency');
-        await page.type('#RequestUrlPrefix', 'agency');
+        await page.type('#RequestUrlPrefix', 'agency');        
 
         await Promise.all([
             page.waitForNavigation(),
-            (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
+            (await page.click(".btn.create"))
         ]);
 
         await expect(await page.url()).toBe(`${basePath}/Admin/Tenants`);
@@ -165,7 +165,7 @@ describe('Create Tenants', () => {
 
         await Promise.all([
             page.waitForNavigation(),
-            (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
+            (await page.click(".btn.create"))
         ]);
 
         await expect(await page.url()).toBe(`${basePath}/Admin/Tenants`);

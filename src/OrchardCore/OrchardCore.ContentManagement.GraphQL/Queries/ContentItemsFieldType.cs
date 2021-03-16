@@ -125,7 +125,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var transaction = await session.DemandAsync();
 
-            IPredicateQuery predicateQuery = new PredicateQuery(SqlDialectFactory.For(transaction.Connection), context.ServiceProvider.GetService<ShellSettings>());
+            IPredicateQuery predicateQuery = new PredicateQuery(
+                dialect: SqlDialectFactory.For(transaction.Connection),
+                shellSettings: context.ServiceProvider.GetService<ShellSettings>(),
+                propertyProviders: context.ServiceProvider.GetServices<IIndexPropertyProvider>());
 
             // Create the default table alias
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));

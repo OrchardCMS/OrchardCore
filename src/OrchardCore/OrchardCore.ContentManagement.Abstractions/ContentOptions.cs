@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OrchardCore.ContentManagement
 {
@@ -11,44 +12,56 @@ namespace OrchardCore.ContentManagement
         private readonly List<ContentPartOption> _contentParts = new List<ContentPartOption>();
         private readonly List<ContentFieldOption> _contentFields = new List<ContentFieldOption>();
 
-        public ContentPartOption AddContentPart<T>() where T : ContentPart
+        private IReadOnlyDictionary<string, ContentPartOption> _contentPartOptionsLookup;
+        public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup => _contentPartOptionsLookup ??= ContentPartOptions.ToDictionary(k => k.Type.Name);
+
+        public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
+        public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
+
+        internal void AddHandler(Type contentPartType, Type handlerType)
         {
-            return AddContentPart(typeof(T));
+            var option = GetOrAddContentPart(contentPartType);
+            option.AddHandler(handlerType);
         }
 
-        public ContentPartOption AddContentPart(Type contentPartType)
+        internal void RemoveHandler(Type contentPartType, Type handlerType)
+        {
+            var option = GetOrAddContentPart(contentPartType);
+            option.RemoveHandler(handlerType);
+        }
+
+        internal ContentPartOption GetOrAddContentPart(Type contentPartType)
         {
             if (!contentPartType.IsSubclassOf(typeof(ContentPart)))
             {
                 throw new ArgumentException("The type must inherit from " + nameof(ContentPart));
             }
 
-            var option = new ContentPartOption(contentPartType);
-            _contentParts.Add(option);
+            var option = _contentParts.FirstOrDefault(x => x.Type == contentPartType);
+            if (option == null)
+            {
+                option = new ContentPartOption(contentPartType);
+                _contentParts.Add(option);
+            }
 
             return option;
         }
 
-        public ContentFieldOption AddContentField<T>() where T : ContentField
-        {
-            return AddContentField(typeof(T));
-        }
-
-        public ContentFieldOption AddContentField(Type contentFieldType)
+        internal ContentFieldOption GetOrAddContentField(Type contentFieldType)
         {
             if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
             {
                 throw new ArgumentException("The type must inherit from " + nameof(ContentField));
             }
 
-            var option = new ContentFieldOption(contentFieldType);
-            _contentFields.Add(option);
+            var option = _contentFields.FirstOrDefault(o => o.Type == contentFieldType);
+            if (option == null)
+            {
+                option = new ContentFieldOption(contentFieldType);
+                _contentFields.Add(option);
+            }
 
             return option;
         }
-
-        public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
-
-        public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
     }
 }

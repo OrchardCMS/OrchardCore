@@ -7,7 +7,6 @@ namespace OrchardCore.Contents.Workflows.Drivers
 {
     public class UnpublishContentTaskDisplay : ContentTaskDisplayDriver<UnpublishContentTask, UnpublishContentTaskViewModel>
     {
-
         protected override void EditActivity(UnpublishContentTask activity, UnpublishContentTaskViewModel model)
         {
             model.Expression = activity.Content.Expression;

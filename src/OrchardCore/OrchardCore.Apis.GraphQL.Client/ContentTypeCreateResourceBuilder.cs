@@ -48,7 +48,8 @@ namespace OrchardCore.Apis.GraphQL.Client
                 {
                     sbo.Append(key).Append(": ").Append(((bool)value.Value).ToString().ToLowerInvariant()).AppendLine();
                 }
-                else {
+                else
+                {
                     sbo.Append(key).Append(": ").Append(value.Value).AppendLine();
                 }
             }
@@ -57,7 +58,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             {
                 sbo.Append(contentPartBuilders[i].Build()).AppendLine((i == (contentPartBuilders.Count - 1)) ? "" : ",");
             }
-            
+
             sbo.Append('}').AppendLine();
 
             return sbo.ToString();

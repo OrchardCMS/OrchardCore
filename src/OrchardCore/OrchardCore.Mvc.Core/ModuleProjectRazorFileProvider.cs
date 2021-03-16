@@ -54,7 +54,7 @@ namespace OrchardCore.Mvc
                         if (assets.Any())
                         {
                             var asset = assets.First();
-                            var index = asset.ModuleAssetPath.IndexOf(module.Root);
+                            var index = asset.ModuleAssetPath.IndexOf(module.Root, StringComparison.Ordinal);
 
                             // Resolve the physical "{ModuleProjectDirectory}" from the project asset.
                             var filePath = asset.ModuleAssetPath.Substring(index + module.Root.Length);
@@ -216,7 +216,6 @@ namespace OrchardCore.Mvc
 
             // The view engine uses a watch on "Pages/**/*.cshtml" but only for razor pages.
             // So here, we only use file providers for modules which have a "Pages" folder.
-
             else if (path.Equals("Pages/**/*.cshtml"))
             {
                 var changeTokens = new List<IChangeToken>();

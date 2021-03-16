@@ -5,7 +5,7 @@ namespace OrchardCore.Workflows.Activities
 {
     public class ActivityExecutionResult
     {
-        public static readonly ActivityExecutionResult Empty  = new ActivityExecutionResult(Array.Empty<string>());
+        public static readonly ActivityExecutionResult Empty = new ActivityExecutionResult(Array.Empty<string>());
 
         public static readonly ActivityExecutionResult Halted = new ActivityExecutionResult(Array.Empty<string>()) { IsHalted = true };
 

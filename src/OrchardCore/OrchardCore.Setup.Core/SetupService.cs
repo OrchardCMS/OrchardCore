@@ -28,7 +28,7 @@ namespace OrchardCore.Setup.Services
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<SetupService> S;
+        private readonly IStringLocalizer S;
         private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
@@ -39,7 +39,6 @@ namespace OrchardCore.Setup.Services
         /// <param name="shellHost">The <see cref="IShellHost"/>.</param>
         /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>
         /// <param name="shellContextFactory">The <see cref="IShellContextFactory"/>.</param>
-        /// <param name="runningShellTable">The <see cref="IRunningShellTable"/>.</param>
         /// <param name="recipeHarvesters">A list of <see cref="IRecipeHarvester"/>s.</param>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
@@ -48,7 +47,6 @@ namespace OrchardCore.Setup.Services
             IShellHost shellHost,
             IHostEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
-            IRunningShellTable runningShellTable,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
             IStringLocalizer<SetupService> stringLocalizer,
@@ -147,7 +145,7 @@ namespace OrchardCore.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                await shellContext.CreateScope().UsingAsync(async scope =>
+                await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
                 {
                     IStore store;
 
@@ -189,48 +187,45 @@ namespace OrchardCore.Setup.Services
 
                 await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new
                 {
-                    SiteName = context.SiteName,
-                    AdminUsername = context.AdminUsername,
-                    AdminEmail = context.AdminEmail,
-                    AdminPassword = context.AdminPassword,
-                    DatabaseProvider = context.DatabaseProvider,
-                    DatabaseConnectionString = context.DatabaseConnectionString,
-                    DatabaseTablePrefix = context.DatabaseTablePrefix
+                    context.SiteName,
+                    context.AdminUsername,
+                    context.AdminEmail,
+                    context.AdminPassword,
+                    context.DatabaseProvider,
+                    context.DatabaseConnectionString,
+                    context.DatabaseTablePrefix
                 },
                 _applicationLifetime.ApplicationStopping);
             }
 
-            // Reloading the shell context as the recipe  has probably updated its features
-            using (var shellContext = await _shellHost.CreateShellContextAsync(shellSettings))
+            // Reloading the shell context as the recipe has probably updated its features
+            await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
-                await shellContext.CreateScope().UsingAsync(async scope =>
+                void reportError(string key, string message)
                 {
-                    void reportError(string key, string message)
-                    {
-                        context.Errors[key] = message;
-                    }
-
-                    // Invoke modules to react to the setup event
-                    var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
-
-                    await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
-                        context.SiteName,
-                        context.AdminUsername,
-                        context.AdminEmail,
-                        context.AdminPassword,
-                        context.DatabaseProvider,
-                        context.DatabaseConnectionString,
-                        context.DatabaseTablePrefix,
-                        context.SiteTimeZone,
-                        reportError
-                    ), context, logger);
-                });
-
-                if (context.Errors.Any())
-                {
-                    return executionId;
+                    context.Errors[key] = message;
                 }
+
+                // Invoke modules to react to the setup event
+                var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
+
+                await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
+                    context.SiteName,
+                    context.AdminUsername,
+                    context.AdminEmail,
+                    context.AdminPassword,
+                    context.DatabaseProvider,
+                    context.DatabaseConnectionString,
+                    context.DatabaseTablePrefix,
+                    context.SiteTimeZone,
+                    reportError
+                ), context, logger);
+            });
+
+            if (context.Errors.Any())
+            {
+                return executionId;
             }
 
             // Update the shell state

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -101,6 +100,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         private dynamic _themeLayout;
+
         public dynamic ThemeLayout
         {
             get
@@ -156,6 +156,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         private IPageTitleBuilder _pageTitleBuilder;
+
         public IPageTitleBuilder Title
         {
             get
@@ -242,7 +243,7 @@ namespace OrchardCore.DisplayManagement.Razor
             return Shape.GetTagBuilder(shape, tag);
         }
 
-        // <summary>
+        /// <summary>
         /// In a Razor layout page, renders the portion of a content page that is not within a named zone.
         /// </summary>
         /// <returns>The HTML content to render.</returns>
@@ -267,7 +268,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout[name];
 
-            return zone != null && zone.Items.Count > 0;
+            return zone != null;
         }
 
         /// <summary>
@@ -335,7 +336,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout[name];
 
-            if (required && zone != null && zone.Items.Count == 0)
+            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }

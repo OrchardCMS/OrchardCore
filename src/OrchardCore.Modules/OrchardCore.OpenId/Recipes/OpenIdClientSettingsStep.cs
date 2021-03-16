@@ -47,8 +47,10 @@ namespace OrchardCore.OpenId.Recipes
     public class OpenIdClientSettingsStepModel
     {
         public string DisplayName { get; set; }
+
         [Url]
         public string Authority { get; set; }
+
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string CallbackPath { get; set; }

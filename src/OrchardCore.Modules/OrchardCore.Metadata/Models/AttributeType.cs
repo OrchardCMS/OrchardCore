@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace OrchardCore.Metadata.Models
@@ -9,7 +10,11 @@ namespace OrchardCore.Metadata.Models
     /// </summary>
     public enum AttributeType
     {
+        [Display(Name = "NAME")]
         name,
-        property
+        [Display(Name = "PROPERTY")]
+        property,
+        [Display(Name = "Not applicable")]
+        notApplicable
     }
 }

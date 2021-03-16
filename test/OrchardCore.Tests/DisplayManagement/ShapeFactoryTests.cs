@@ -16,8 +16,8 @@ namespace OrchardCore.Tests.DisplayManagement
 {
     public class ShapeFactoryTests
     {
-        IServiceProvider _serviceProvider;
-        ShapeTable _shapeTable;
+        private IServiceProvider _serviceProvider;
+        private ShapeTable _shapeTable;
 
         public ShapeFactoryTests()
         {
@@ -121,7 +121,6 @@ namespace OrchardCore.Tests.DisplayManagement
 
         private class SubShape : Shape
         {
-
         }
     }
 }

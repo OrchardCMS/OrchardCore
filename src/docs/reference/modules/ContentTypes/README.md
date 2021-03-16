@@ -88,7 +88,7 @@ Each part can also be configured in the context of a type. For instance the `Aut
 
 ```csharp
 _contentDefinitionManager.AlterTypeDefinition("Product", type => type
-    .WithPart("Product", part => part
+    .WithPart("AutoroutePart", part => part
         // sets the position among other parts
         .WithPosition("2")
         // sets all the settings on the AutoroutePart
@@ -104,14 +104,18 @@ For a list of all the settings each type can use, please refer to their respecti
 Fields can not be attached directly to a Content Type. To add fields to a content type, create a part with the same name as the type, and add fields to this part.
 
 ```csharp
- _contentDefinitionManager.AlterTypeDefinition("Product", type => type
-    .WithPart("Product", part => part
-        .WithField("Image", field => field
-            .OfType("MediaField")
-            .WithDisplayName("Main image"))
-        .WithField("Price", field => field
-            .OfType("NumericField")
-            .WithDisplayName("Price"))
+_contentDefinitionManager.AlterTypeDefinition("Product", type => type
+    .WithPart("Product")
+);
+
+_contentDefinitionManager.AlterPartDefinition("Product", part => part
+    .WithField("Image", field => field
+        .OfType("MediaField")
+        .WithDisplayName("Main image")
+    )
+    .WithField("Price", field => field
+        .OfType("NumericField")
+        .WithDisplayName("Price")
     )
 );
 ```

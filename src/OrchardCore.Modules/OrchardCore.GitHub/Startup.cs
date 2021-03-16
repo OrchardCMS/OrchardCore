@@ -3,15 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
 using OrchardCore.GitHub.Configuration;
 using OrchardCore.GitHub.Drivers;
+using OrchardCore.GitHub.Recipes;
 using OrchardCore.GitHub.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Recipes;
-using OrchardCore.GitHub.Recipes;
 
 namespace OrchardCore.GitHub
 {

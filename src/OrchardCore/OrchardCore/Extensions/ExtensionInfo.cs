@@ -9,8 +9,8 @@ namespace OrchardCore.Environment.Extensions
         public ExtensionInfo(
             string subPath,
             IManifestInfo manifestInfo,
-            Func<IManifestInfo, IExtensionInfo, IEnumerable<IFeatureInfo>> features) {
-
+            Func<IManifestInfo, IExtensionInfo, IEnumerable<IFeatureInfo>> features)
+        {
             SubPath = subPath;
             Manifest = manifestInfo;
             Features = features(manifestInfo, this);

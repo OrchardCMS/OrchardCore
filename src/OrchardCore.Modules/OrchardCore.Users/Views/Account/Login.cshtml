@@ -16,6 +16,8 @@
     var disableLocalLogin = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
 }
 
+<style asp-name="font-awesome" version="5"></style>
+
 <div class="row">
     @if (!disableLocalLogin)
     {
@@ -37,8 +39,12 @@
                             <a asp-controller="ResetPassword" asp-action="ForgotPassword" class="label-link">@T["Forgot your password?"]</a>
                         }
                     </label>
-
-                    <input asp-for="Password" class="form-control" tabindex="2" />
+                    <div class="input-group">
+                        <input asp-for="Password" class="form-control" tabindex="2" />
+                        <div class="input-group-append">
+                            <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
+                        </div>
+                    </div>
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
                 <div class="form-group custom-control custom-checkbox">
@@ -81,3 +87,23 @@
         </div>
     }
 </div>
+<script at="Foot">
+    togglePassword = document.querySelector('#togglePassword');
+    password = document.querySelector('#Password');
+
+    togglePassword.addEventListener('click', function (e) {
+        @* toggle the type attribute *@
+        type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+
+        @* toggle the eye slash icon *@
+        icon = this.getElementsByClassName('icon')[0];
+        if (icon.getAttribute('data-icon')){ @* if the icon is rendered as a svg *@
+            type === 'password' ? icon.setAttribute('data-icon', 'eye') : icon.setAttribute('data-icon', 'eye-slash');
+        }
+        else{ @* if the icon is still a <i> element *@
+            type === 'password' ? icon.classList.remove('fa-eye-slash') : icon.classList.remove('fa-eye');
+            type === 'password' ? icon.classList.add('fa-eye') : icon.classList.add('fa-eye-slash');
+        }
+    });
+</script>

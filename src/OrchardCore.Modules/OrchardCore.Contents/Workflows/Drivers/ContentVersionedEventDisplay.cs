@@ -8,7 +8,6 @@ namespace OrchardCore.Contents.Workflows.Drivers
     {
         public ContentVersionedEventDisplay(IContentDefinitionManager contentDefinitionManager) : base(contentDefinitionManager)
         {
-
         }
     }
 }

@@ -13,7 +13,9 @@ namespace OrchardCore.Users.TimeZone
     [Feature("OrchardCore.Users.TimeZone")]
     public class Startup : StartupBase
     {
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) { }
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+        }
 
         public override void ConfigureServices(IServiceCollection services)
         {

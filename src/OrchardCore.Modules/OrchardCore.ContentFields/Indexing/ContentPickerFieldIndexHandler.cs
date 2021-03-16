@@ -20,7 +20,8 @@ namespace OrchardCore.ContentFields.Indexing
                     }
                 }
             }
-            else {
+            else
+            {
                 foreach (var key in context.Keys)
                 {
                     context.DocumentIndex.Set(key, "NULL", options);

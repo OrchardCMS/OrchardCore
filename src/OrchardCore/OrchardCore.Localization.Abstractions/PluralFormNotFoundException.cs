@@ -25,6 +25,16 @@ namespace OrchardCore.Localization
         }
 
         /// <summary>
+        /// Creates new instance of <see cref="PluralFormNotFoundException"/> with a message.
+        /// </summary>
+        /// <param name="message">The exception message.</param>
+        /// <param name="form">The <see cref="PluralForm"/> that causes the exception.</param>
+        public PluralFormNotFoundException(string message, PluralForm form) : base(message)
+        {
+            Form = form;
+        }
+
+        /// <summary>
         /// Creates new instance of <see cref="PluralFormNotFoundException"/> with a message and inner exception.
         /// </summary>
         /// <param name="message">The exception message.</param>
@@ -33,5 +43,10 @@ namespace OrchardCore.Localization
         {
 
         }
+
+        /// <summary>
+        /// Gets the pluralization form.
+        /// </summary>
+        public PluralForm Form { get; }
     }
 }

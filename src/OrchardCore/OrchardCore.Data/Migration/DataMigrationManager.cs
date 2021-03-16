@@ -115,7 +115,7 @@ namespace OrchardCore.Data.Migration
                 var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
                 if (uninstallAsyncMethod != null)
                 {
-                    await (Task) uninstallAsyncMethod.Invoke(migration, new object[0]);
+                    await (Task)uninstallAsyncMethod.Invoke(migration, new object[0]);
                 }
 
                 if (dataMigrationRecord == null)
@@ -178,7 +178,8 @@ namespace OrchardCore.Data.Migration
                 var current = 0;
                 if (dataMigrationRecord != null)
                 {
-                    current = dataMigrationRecord.Version.Value;
+                    // This can be null if a failed create migration has occurred and the data migration record was saved.
+                    current = dataMigrationRecord.Version.HasValue ? dataMigrationRecord.Version.Value : current;
                 }
                 else
                 {
@@ -220,11 +221,11 @@ namespace OrchardCore.Data.Migration
                         var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
                         if (isAwaitable)
                         {
-                            current = await (Task<int>) methodInfo.Invoke(migration, new object[0]);
+                            current = await (Task<int>)methodInfo.Invoke(migration, new object[0]);
                         }
                         else
                         {
-                            current = (int) methodInfo.Invoke(migration, new object[0]);
+                            current = (int)methodInfo.Invoke(migration, new object[0]);
                         }
                     }
 
@@ -369,13 +370,8 @@ namespace OrchardCore.Data.Migration
                 {
                     await UpdateAsync(featureId);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!ex.IsFatal())
                 {
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
-
                     _logger.LogError(ex, "Could not run migrations automatically on '{FeatureName}'", featureId);
                 }
             }

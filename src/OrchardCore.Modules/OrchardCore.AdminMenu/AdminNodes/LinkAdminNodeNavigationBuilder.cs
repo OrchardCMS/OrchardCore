@@ -11,7 +11,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
 {
     public class LinkAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
-        private readonly ILogger<LinkAdminNodeNavigationBuilder> _logger;
+        private readonly ILogger _logger;
 
         public LinkAdminNodeNavigationBuilder(ILogger<LinkAdminNodeNavigationBuilder> logger)
         {
@@ -31,13 +31,12 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
             return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
             {
-
                 // Add the actual link
                 itemBuilder.Url(node.LinkUrl);
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
 
-                // Add adminNode's IconClass property values to menuItem.Classes. 
+                // Add adminNode's IconClass property values to menuItem.Classes.
                 // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
                 node.IconClass?.Split(' ').ToList().ForEach(c => itemBuilder.AddClass("icon-class-" + c));
 
@@ -58,7 +57,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
             });
         }
 
-        // Add adminNode's IconClass property values to menuItem.Classes. 
+        // Add adminNode's IconClass property values to menuItem.Classes.
         // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
         private void AddIconPickerClassToLink(string iconClass, NavigationItemBuilder itemBuilder)
         {

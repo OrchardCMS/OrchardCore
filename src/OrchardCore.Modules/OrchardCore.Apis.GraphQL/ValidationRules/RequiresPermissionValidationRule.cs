@@ -14,7 +14,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         public INodeVisitor Validate(ValidationContext validationContext)
         {
-            var context = (GraphQLContext) validationContext.UserContext;
+            var context = (GraphQLContext)validationContext.UserContext;
 
             return new EnterLeaveListener(_ =>
             {
@@ -44,7 +44,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                     if (fieldDef.HasPermissions() && !Authorize(fieldDef, context))
                     {
                         var localizer = context.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
-         
+
                         validationContext.ReportError(new ValidationError(
                             validationContext.OriginalQuery,
                             ErrorCode,

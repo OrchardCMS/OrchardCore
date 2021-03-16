@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
@@ -40,6 +42,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinition Build()
         {
+            if (!_name[0].IsLetter())
+            {
+                throw new ArgumentException("Content type name must start with a letter", "name");
+            }
+            if (!String.Equals(_name, _name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("Content type name contains invalid characters", "name");
+            }
             return new ContentTypeDefinition(_name, _displayName, _parts, _settings);
         }
 
@@ -129,7 +139,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder WithPart(string name, ContentPartDefinition partDefinition, Action<ContentTypePartDefinitionBuilder> configuration)
         {
-            var existingPart = _parts.FirstOrDefault(x => x.Name == name );
+            var existingPart = _parts.FirstOrDefault(x => x.Name == name);
             if (existingPart != null)
             {
                 _parts.Remove(existingPart);
@@ -146,7 +156,40 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        class PartConfigurerImpl : ContentTypePartDefinitionBuilder
+        public Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
+        {
+            return WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);
+        }
+
+        public Task<ContentTypeDefinitionBuilder> WithPartAsync(string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
+        {
+            return WithPartAsync(partName, new ContentPartDefinition(partName), configurationAsync);
+        }
+
+        public async Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, ContentPartDefinition partDefinition, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
+        {
+            var existingPart = _parts.FirstOrDefault(x => x.Name == name);
+
+            if (existingPart != null)
+            {
+                _parts.Remove(existingPart);
+            }
+            else
+            {
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject());
+                existingPart.ContentTypeDefinition = Current;
+            }
+
+            var configurer = new PartConfigurerImpl(existingPart);
+
+            await configurationAsync(configurer);
+
+            _parts.Add(configurer.Build());
+
+            return this;
+        }
+
+        private class PartConfigurerImpl : ContentTypePartDefinitionBuilder
         {
             private readonly ContentPartDefinition _partDefinition;
 
@@ -159,6 +202,15 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             public override ContentTypePartDefinition Build()
             {
+                if (!Current.Name[0].IsLetter())
+                {
+                    throw new ArgumentException("Content part name must start with a letter", "name");
+                }
+                if (!String.Equals(Current.Name, Current.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new ArgumentException("Content part name contains invalid characters", "name");
+                }
+
                 return new ContentTypePartDefinition(Current.Name, _partDefinition, _settings)
                 {
                     ContentTypeDefinition = Current.ContentTypeDefinition,

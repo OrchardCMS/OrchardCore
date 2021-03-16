@@ -157,7 +157,7 @@ namespace OrchardCore.Localization.PortableObject
                 {
                     case PoContext.MessageId:
                         {
-                            // If the MessageId has been set to an empty string and now gets set again 
+                            // If the MessageId has been set to an empty string and now gets set again
                             // before flushing the values should be reset.
                             if (string.IsNullOrEmpty(MessageId))
                             {

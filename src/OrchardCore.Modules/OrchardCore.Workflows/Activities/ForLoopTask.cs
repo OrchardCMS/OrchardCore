@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Activities
     public class ForLoopTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<ForLoopTask> S;
+        private readonly IStringLocalizer S;
 
         public ForLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ForLoopTask> localizer)
         {
@@ -19,9 +19,9 @@ namespace OrchardCore.Workflows.Activities
         }
 
         public override string Name => nameof(ForLoopTask);
-        
+
         public override LocalizedString DisplayText => S["For Loop Task"];
-        
+
         public override LocalizedString Category => S["Control Flow"];
 
         /// <summary>

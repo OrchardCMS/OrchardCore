@@ -10,7 +10,7 @@ namespace OrchardCore.Media.Services
     /// <summary>
     /// Check if the path passed as resource is inside the AttachedMediaFieldsFolder
     /// and in case it is, It checks if the user has ManageAttachedMediaFieldsFolder permission
-    /// </summary>     
+    /// </summary>
     public class AttachedMediaFieldsFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
@@ -61,8 +61,7 @@ namespace OrchardCore.Media.Services
 
             // Lazy load to prevent circular dependencies
             var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
-
-            if (await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnMedia))
+            if (await authorizationService.AuthorizeAsync(context.User, Permissions.ManageMedia))
             {
                 context.Succeed(requirement);
             }

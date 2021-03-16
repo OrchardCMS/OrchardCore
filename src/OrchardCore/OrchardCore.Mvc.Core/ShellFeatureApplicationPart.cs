@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -27,7 +26,6 @@ namespace OrchardCore.Mvc
         /// <summary>
         /// Initalizes a new <see cref="AssemblyPart"/> instance.
         /// </summary>
-        /// <param name="assembly"></param>
         public ShellFeatureApplicationPart()
         {
         }
@@ -61,7 +59,6 @@ namespace OrchardCore.Mvc
                         }
                     }
                 }
-
 
                 return _shellBlueprint
                     .Dependencies.Keys

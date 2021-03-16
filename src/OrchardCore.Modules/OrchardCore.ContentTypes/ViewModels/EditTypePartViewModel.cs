@@ -27,5 +27,10 @@ namespace OrchardCore.ContentTypes.ViewModels
         /// The editor name of the part
         /// </summary>
         public string Editor { get; set; }
+
+        /// <summary>
+        /// The display mode of the part
+        /// </summary>
+        public string DisplayMode { get; set; }
     }
 }

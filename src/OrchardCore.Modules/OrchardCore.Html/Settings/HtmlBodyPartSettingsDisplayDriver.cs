@@ -5,6 +5,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
+using OrchardCore.Html.ViewModels;
 
 namespace OrchardCore.Html.Settings
 {
@@ -17,8 +18,13 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            return Initialize<HtmlBodyPartSettings>("HtmlBodyPartSettings_Edit", model => contentTypePartDefinition.PopulateSettings<HtmlBodyPartSettings>(model))
-                .Location("Editor");
+            return Initialize<HtmlBodyPartSettingsViewModel>("HtmlBodyPartSettings_Edit", model =>
+            {
+                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+
+                model.SanitizeHtml = settings.SanitizeHtml;
+            })
+            .Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -28,11 +34,15 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            var model = new HtmlBodyPartSettings();
+            var model = new HtmlBodyPartSettingsViewModel();
+            var settings = new HtmlBodyPartSettings();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            {
+                settings.SanitizeHtml = model.SanitizeHtml;
 
-            context.Builder.WithSettings(model);
+                context.Builder.WithSettings(settings);
+            }
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

@@ -7,7 +7,7 @@
 
 <div class="form-group" asp-validation-class-for="AppId">
     <label>@T["Application Identifier"]</label>
-    <input asp-for="AppId" class="form-control" autocomplete="off"/>
+    <input asp-for="AppId" class="form-control" autocomplete="off" />
     <span asp-validation-for="AppId"></span>
     <span class="hint">@T["The Application ID found on the Facebook developer portal parameters."]</span>
 </div>
@@ -53,4 +53,3 @@
     <span asp-validation-for="FBInitParams"></span>
     <span class="hint">@T["AppId and Version are filled automatically. Check the <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">reference doc for the <code>FB.init</code></a> function for more info"]</span>
 </div>
-

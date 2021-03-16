@@ -1,19 +1,16 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene.Deployment
 {
     public class LuceneSettingsDeploymentSource : IDeploymentSource
     {
         private readonly LuceneIndexingService _luceneIndexingService;
-        private readonly ISiteService _siteService;
 
-        public LuceneSettingsDeploymentSource(LuceneIndexingService luceneIndexingService, ISiteService siteService)
+        public LuceneSettingsDeploymentSource(LuceneIndexingService luceneIndexingService)
         {
             _luceneIndexingService = luceneIndexingService;
-            _siteService = siteService;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)

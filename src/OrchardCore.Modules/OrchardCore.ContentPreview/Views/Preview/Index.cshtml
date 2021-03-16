@@ -5,7 +5,7 @@
 
 <style asp-name="bootstrap"></style>
 <script asp-name="bootstrap" at="Foot"></script>
-<script asp-src="~/OrchardCore.Templates/js.cookie.js" depends-on="jquery" at="Foot"></script>
+<script asp-name="jscookie" at="Foot"></script>
 
 <resources type="Header" />
 
@@ -32,12 +32,11 @@
     <ul></ul>
 </div>
 
-
 <div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview", new { area = "OrchardCore.ContentPreview" })"></div>
 
 <resources type="Footer" />
 
-<script type="text/javascript">
+<script>
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
     var iframe = document.getElementById('iframe');
     var iframe2 = document.getElementById('iframe2');
@@ -143,7 +142,7 @@
                         var ul = $('#serverErrorWarning ul').empty();
                         data.responseJSON.errors.forEach(function (error) {
                             console.error(error);
-                            $('<li/>').text(error).appendTo(ul);
+                            $('<li />').text(error).appendTo(ul);
                         });
                         $(serverErrorWarning).show();
                     }
@@ -155,5 +154,4 @@
             console.log('Error while previewing: ' + e);
         }
     }
-
 </script>

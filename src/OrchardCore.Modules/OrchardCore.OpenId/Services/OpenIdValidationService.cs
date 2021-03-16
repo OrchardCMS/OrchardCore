@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.OpenId.Abstractions.Managers;
@@ -20,7 +22,7 @@ namespace OrchardCore.OpenId.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdValidationService> S;
+        private readonly IStringLocalizer S;
 
         public OpenIdValidationService(
             ShellDescriptor shellDescriptor,
@@ -122,6 +124,14 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
+            if (settings.Authority == null && settings.DisableTokenTypeValidation)
+            {
+                results.Add(new ValidationResult(S["Token type validation can only be disabled for remote servers."], new[]
+                {
+                    nameof(settings.DisableTokenTypeValidation)
+                }));
+            }
+
             if (!string.IsNullOrEmpty(settings.Audience) &&
                 settings.Audience.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.OrdinalIgnoreCase))
             {
@@ -146,6 +156,15 @@ namespace OrchardCore.OpenId.Services
 
                     await shellScope.UsingAsync(async scope =>
                     {
+                        var options = scope.ServiceProvider.GetRequiredService<IOptionsMonitor<OpenIddictServerOptions>>().CurrentValue;
+                        if (options.UseReferenceAccessTokens)
+                        {
+                            results.Add(new ValidationResult(S["Selecting a server tenant for which reference access tokens are enabled is currently not supported."], new[]
+                            {
+                                nameof(settings.Tenant)
+                            }));
+                        }
+
                         var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
                         if (manager == null)
                         {
@@ -157,8 +176,7 @@ namespace OrchardCore.OpenId.Services
                         else
                         {
                             var resource = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-                            var scopes = await manager.FindByResourceAsync(resource);
-                            if (scopes.IsDefaultOrEmpty)
+                            if (!await manager.FindByResourceAsync(resource).AnyAsync())
                             {
                                 results.Add(new ValidationResult(S["No appropriate scope was found."], new[]
                                 {

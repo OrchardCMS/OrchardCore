@@ -35,7 +35,7 @@ namespace OrchardCore.Lists.Feeds
 
             await updater.TryUpdateModelAsync(model, Prefix, t => t.FeedProxyUrl, t => t.FeedItemsCount);
 
-            part.ContentItem.Content.ListPart.FeedProxyUrl= model.FeedProxyUrl;
+            part.ContentItem.Content.ListPart.FeedProxyUrl = model.FeedProxyUrl;
             part.ContentItem.Content.ListPart.FeedItemsCount = model.FeedItemsCount;
 
             return Edit(part);

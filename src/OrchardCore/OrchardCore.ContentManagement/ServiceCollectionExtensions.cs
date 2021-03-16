@@ -27,9 +27,10 @@ namespace OrchardCore.ContentManagement
             services.AddSingleton<ITypeActivatorFactory<ContentField>, ContentFieldFactory>();
 
             services.AddSingleton<IContentItemIdGenerator, DefaultContentItemIdGenerator>();
-            services.AddScoped<IContentAliasManager, ContentAliasManager>();
+            services.AddScoped<IContentHandleManager, ContentHandleManager>();
 
             services.AddOptions<ContentOptions>();
+            services.AddScoped<IContentPartHandlerResolver, ContentPartHandlerResolver>();
 
             return services;
         }
@@ -37,9 +38,7 @@ namespace OrchardCore.ContentManagement
         public static IServiceCollection AddFileContentDefinitionStore(this IServiceCollection services)
         {
             services.RemoveAll<IContentDefinitionStore>();
-            services.AddSingleton<IContentDefinitionStore, FileContentDefinitionStore>();
-            services.AddScoped<FileContentDefinitionScopedCache>();
-
+            services.AddScoped<IContentDefinitionStore, FileContentDefinitionStore>();
             return services;
         }
     }

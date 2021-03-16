@@ -43,15 +43,15 @@ namespace OrchardCore.ReCaptcha
             var settings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
             if (!settings.IsValid())
-            { 
+            {
                 await next();
-                return; 
+                return;
             }
 
             dynamic layout = await _layoutAccessor.GetLayoutAsync();
 
             var afterLoginZone = layout.Zones["AfterLogin"];
-            
+
             if (_reCaptchaService.IsThisARobot())
             {
                 afterLoginZone.Add(await _shapeFactory.New.ReCaptcha());

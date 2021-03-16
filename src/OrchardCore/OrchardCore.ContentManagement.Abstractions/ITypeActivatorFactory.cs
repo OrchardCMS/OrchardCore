@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 
 namespace OrchardCore.ContentManagement
 {
     /// <summary>
-    /// Represents a service that can provide an <see cref="ITypeActivator{TInstance}"/> instance for a 
-    /// <see cref="TInstance"/> name.
+    /// Represents a service that can provide an <see cref="ITypeActivator{TInstance}"/> instance.
     /// </summary>
     public interface ITypeActivatorFactory<TInstance>
     {

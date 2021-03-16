@@ -10,7 +10,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets the order for <see cref="IPluralRuleProvider"/> implementation to be executed.
         /// </summary>
-        /// <remarks>Set the <see cref="Order"/> to a negative value in order to get called before the default implementation, or a 
+        /// <remarks>Set the <see cref="Order"/> to a negative value in order to get called before the default implementation, or a
         /// positive value to be used as a fallback one.</remarks>
         int Order { get; }
 

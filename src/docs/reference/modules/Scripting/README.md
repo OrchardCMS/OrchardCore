@@ -1,4 +1,4 @@
-# Scripting `OrchardCore.Scripting`
+# Scripting (`OrchardCore.Scripting`)
 
 ## Purpose
 
@@ -25,7 +25,7 @@ To return the current date and time as a string we could do something like this:
 
 ```csharp
 var scriptingManager = serviceProvider.GetService<IScriptingManager>();
-var date = scriptingManager.Evaluate("js: Date().toISOString()");
+var date = scriptingManager.Evaluate("js: new Date().toISOString()");
 ```
 
 The `js:` prefix is used to describe in which language the code is written. Any module can provide
@@ -75,8 +75,9 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `base64(String): String` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64. |
 | `html(String): String` | Decodes the specified string from HTML encoding. |
 | `gzip(String): String` | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
-| `variables()` | TODO |
-| `parameters()` | TODO |
+| `variables()` | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"` |
+| `parameters()` | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUsername')]"` See the available [Setup Recipe parameters](../Setup/#recipe-parameters) |
+| `configuration()` | Retrieves the specified configuration setting by its name. |
 
 #### Content (`OrchardCore.Contents`)
 
@@ -85,6 +86,7 @@ Here is a list of javascript methods provided by Orchard Modules.
 |`newContentItem(contentTypeName: String): IContent`| Creates a new instance of a ContentType (does not persist)|
 |`createContentItem(contentTypeName: String, publish: Boolean, properties: Object): IContent`| Creates and persists a new ContentItem. Conditionally publishes it. |
 |`updateContentItem(contentItem: IContent, properties: Object)`| Updates an existing content item with the properties |
+|`deleteContentItem(contentItem: IContent)`| Deletes an existing content item |
 |`getUrlPrefix(path: String): String `| Prefixes the path with the Tenant prefix (if specified) |
 
 #### Layers (`OrchardCore.Layers`)

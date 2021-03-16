@@ -1,10 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.Layers.Models;
@@ -21,7 +20,9 @@ namespace OrchardCore.Layers.GraphQL
             S = localizer;
         }
 
-        public Task<IChangeToken> BuildAsync(ISchema schema)
+        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+
+        public Task BuildAsync(ISchema schema)
         {
             var field = new FieldType
             {
@@ -33,7 +34,7 @@ namespace OrchardCore.Layers.GraphQL
 
             schema.Query.AddField(field);
 
-            return Task.FromResult<IChangeToken>(null);
+            return Task.CompletedTask;
         }
 
         private async Task<IEnumerable<Layer>> ResolveAsync(ResolveFieldContext resolveContext)

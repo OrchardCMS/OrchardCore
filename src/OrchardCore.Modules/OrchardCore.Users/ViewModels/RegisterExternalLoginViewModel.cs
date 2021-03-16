@@ -1,20 +1,21 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Email;
 
 namespace OrchardCore.Users.ViewModels
 {
     public class RegisterExternalLoginViewModel : IValidatableObject
     {
         public bool NoUsername { get; set; }
+
         public bool NoEmail { get; set; }
+
         public bool NoPassword { get; set; }
 
         public string UserName { get; set; }
 
-        [EmailAddress]
         public string Email { get; set; }
 
         [DataType(DataType.Password)]
@@ -25,10 +26,19 @@ namespace OrchardCore.Users.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
             var S = validationContext.GetService<IStringLocalizer<RegisterExternalLoginViewModel>>();
-            if (string.IsNullOrWhiteSpace(Email) && !NoEmail)
+
+            if (string.IsNullOrWhiteSpace(Email))
             {
-                yield return new ValidationResult(S["Email is required!"], new[] { "Email" });
+                if (!NoEmail)
+                {
+                    yield return new ValidationResult(S["Email is required!"], new[] { "Email" });
+                }
+            }
+            else if (!emailAddressValidator.Validate(Email))
+            {
+                yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
             }
 
             if (string.IsNullOrWhiteSpace(UserName) && !NoUsername)

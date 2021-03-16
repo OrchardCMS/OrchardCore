@@ -15,8 +15,8 @@ namespace OrchardCore.Settings.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var settingsState = step as SiteSettingsDeploymentStep;
-            if (settingsState == null)
+            var settingsStep = step as SiteSettingsDeploymentStep;
+            if (settingsStep == null)
             {
                 return;
             }
@@ -25,7 +25,7 @@ namespace OrchardCore.Settings.Deployment
 
             var data = new JObject(new JProperty("name", "Settings"));
 
-            foreach (var settingName in settingsState.Settings)
+            foreach (var settingName in settingsStep.Settings)
             {
                 switch (settingName)
                 {
@@ -87,6 +87,10 @@ namespace OrchardCore.Settings.Deployment
 
                     case "HomeRoute":
                         data.Add(new JProperty(nameof(ISite.HomeRoute), JObject.FromObject(site.HomeRoute)));
+                        break;
+
+                    case "CacheMode":
+                        data.Add(new JProperty(nameof(ISite.CacheMode), site.CacheMode));
                         break;
 
                     default:

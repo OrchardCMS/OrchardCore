@@ -2,9 +2,9 @@
   "name": "ComingSoon",
   "displayName": "Coming Soon",
   "description": "Coming Soon website.",
-  "author": "The Orchard Team",
-  "website": "https://orchardproject.net",
-  "version": "2.0",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc2",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "comingsoon" ],
@@ -47,7 +47,6 @@
         "OrchardCore.HomeRoute",
         "OrchardCore.Html",
 
-        "OrchardCore.Liquid",
         "OrchardCore.Localization",
 
         "OrchardCore.Media",
@@ -57,9 +56,9 @@
         "OrchardCore.Resources",
         "OrchardCore.Roles",
 
-
         "OrchardCore.Scripting",
         "OrchardCore.Settings",
+        "OrchardCore.Shortcodes.Templates",
 
         "OrchardCore.Templates",
         "OrchardCore.Tenants",
@@ -273,7 +272,7 @@
               "Name": "ComingSoon",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "4"
+                  "Position": "5"
                 }
               }
             },
@@ -307,7 +306,7 @@
                 "ContentTypePartSettings": {
                   "DisplayName": "Social Icons",
                   "Description": "The list of social icons to display in the Coming Soon page",
-                  "Position": "5"
+                  "Position": "6"
                 },
                 "BagPartSettings": {
                   "ContainedContentTypes": [
@@ -321,13 +320,22 @@
               "Name": "FlowPart",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "3"
+                  "Position": "4"
                 }
               }
             },
             {
               "PartName": "FormPart",
               "Name": "FormPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "3"
+                }
+              }
+            },
+            {
+              "PartName": "FormElementPart",
+              "Name": "FormElementPart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"

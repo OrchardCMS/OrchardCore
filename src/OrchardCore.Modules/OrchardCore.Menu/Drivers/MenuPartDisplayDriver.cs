@@ -68,7 +68,7 @@ namespace OrchardCore.Menu.Drivers
         {
             ContentItem menuItem = null;
 
-            foreach(var index in indexes)
+            foreach (var index in indexes)
             {
                 menuItem = menuItems.MenuItems[index];
                 menuItems = menuItem.As<MenuItemsListPart>();
@@ -82,7 +82,7 @@ namespace OrchardCore.Menu.Drivers
 
             return newObj;
         }
-        
+
         private JObject ProcessItem(MenuItemsListPart originalItems, JObject item)
         {
             var contentItem = GetMenuItemAt(originalItems, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());

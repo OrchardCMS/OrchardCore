@@ -10,29 +10,31 @@ using YesSql;
 public static class ContentRazorHelperExtensions
 {
     /// <summary>
-    /// Returns a content item id from an alias.
+    /// Returns a content item id by its handle.
     /// </summary>
-    /// <param name="alias">The alias.</param>
-    /// <example>GetContentItemIdByAliasAsync("alias:carousel")</example>
-    /// <example>GetContentItemIdByAliasAsync("slug:myblog/my-blog-post")</example>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
+    /// <param name="handle">The handle.</param>
+    /// <example>GetContentItemIdByHandleAsync("alias:carousel")</example>
+    /// <example>GetContentItemIdByHandleAsync("slug:myblog/my-blog-post")</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
-    public static Task<string> GetContentItemIdByAliasAsync(this IOrchardHelper orchardHelper, string alias)
+    public static Task<string> GetContentItemIdByHandleAsync(this IOrchardHelper orchardHelper, string handle)
     {
-        var contentAliasManager = orchardHelper.HttpContext.RequestServices.GetService<IContentAliasManager>();
-        return contentAliasManager.GetContentItemIdAsync(alias);
+        var contentHandleManager = orchardHelper.HttpContext.RequestServices.GetService<IContentHandleManager>();
+        return contentHandleManager.GetContentItemIdAsync(handle);
     }
 
     /// <summary>
-    /// Loads a content item by its alias.
+    /// Loads a content item by its handle.
     /// </summary>
-    /// <param name="alias">The alias to load.</param>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
+    /// <param name="handle">The handle to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemByAliasAsync("alias:carousel")</example>
-    /// <example>GetContentItemByAliasAsync("slug:myblog/my-blog-post", true)</example>
-    /// <returns>A content item with the specific alias, or <c>null</c> if it doesn't exist.</returns>
-    public static async Task<ContentItem> GetContentItemByAliasAsync(this IOrchardHelper orchardHelper, string alias, bool latest = false)
+    /// <example>GetContentItemByHandleAsync("alias:carousel")</example>
+    /// <example>GetContentItemByHandleAsync("slug:myblog/my-blog-post", true)</example>
+    /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
+    public static async Task<ContentItem> GetContentItemByHandleAsync(this IOrchardHelper orchardHelper, string handle, bool latest = false)
     {
-        var contentItemId = await GetContentItemIdByAliasAsync(orchardHelper, alias);
+        var contentItemId = await GetContentItemIdByHandleAsync(orchardHelper, handle);
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         return await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
     }
@@ -40,6 +42,7 @@ public static class ContentRazorHelperExtensions
     /// <summary>
     /// Loads a content item by its id.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemId">The content item id to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
     /// <example>GetContentItemByIdAsync("4xxxxxxxxxxxxxxxx")</example>
@@ -53,6 +56,7 @@ public static class ContentRazorHelperExtensions
     /// <summary>
     /// Loads a list of content items by their ids.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemIds">The content item ids to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
     /// <returns>A list of content items with the specific ids.</returns>
@@ -65,6 +69,7 @@ public static class ContentRazorHelperExtensions
     /// <summary>
     /// Loads a content item by its version id.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemVersionId">The content item version id to load.</param>
     /// <example>GetContentItemByVersionIdAsync("4xxxxxxxxxxxxxxxx")</example>
     /// <returns>A content item with the specific version id, or <c>null</c> if it doesn't exist.</returns>
@@ -90,7 +95,9 @@ public static class ContentRazorHelperExtensions
     /// <summary>
     /// Loads content items of a specific type.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentType">The content type to load.</param>
+    /// <param name="maxContentItems">The maximum content items to return.</param>
     public static Task<IEnumerable<ContentItem>> GetRecentContentItemsByContentTypeAsync(this IOrchardHelper orchardHelper, string contentType, int maxContentItems = 10)
     {
         return orchardHelper.QueryContentItemsAsync(query => query.Where(x => x.ContentType == contentType && x.Published == true).OrderByDescending(x => x.CreatedUtc).Take(maxContentItems));

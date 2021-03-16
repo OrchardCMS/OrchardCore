@@ -1,12 +1,12 @@
 /*!
- * Start Bootstrap - Clean Blog v5.0.8 (https://startbootstrap.com/template-overviews/clean-blog)
+ * Start Bootstrap - Clean Blog v5.0.9 (https://startbootstrap.com/themes/clean-blog)
  * Copyright 2013-2020 Start Bootstrap
- * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-clean-blog/blob/master/LICENSE)
+ * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-clean-blog/blob/master/LICENSE)
  */
 
 /*
 Bootstrap customization for The Blog theme
-By Orchard Core
+By Orchard Core Team
  */
 .flow {
   display: flex;
@@ -24,31 +24,31 @@ By Orchard Core
 }
 
 .message-primary {
-  color: #004085;
-  background-color: #cce5ff;
-  border-color: #b8daff;
+  color: #004554;
+  background-color: #cce7ec;
+  border-color: #b8dde5;
 }
 
 .message-primary hr {
-  border-top-color: #9fcdff;
+  border-top-color: #a5d4de;
 }
 
 .message-primary .alert-link {
-  color: #002752;
+  color: #001b21;
 }
 
 .message-secondary {
-  color: #383d41;
-  background-color: #e2e3e5;
-  border-color: #d6d8db;
+  color: #464a4e;
+  background-color: #e7e8ea;
+  border-color: #dddfe2;
 }
 
 .message-secondary hr {
-  border-top-color: #c8cbcf;
+  border-top-color: #cfd2d6;
 }
 
 .message-secondary .alert-link {
-  color: #202326;
+  color: #2e3133;
 }
 
 .message-success {
@@ -240,4 +240,79 @@ By Orchard Core
     flex: 0 0 75%;
     max-width: 75%;
   }
+}
+
+ul.pager {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  border-radius: 0.25rem;
+}
+
+ul.pager li a {
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.75rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: #0085A1;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+}
+
+ul.pager li a:hover {
+  z-index: 2;
+  color: #004655;
+  text-decoration: none;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+ul.pager li a:focus {
+  z-index: 2;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 133, 161, 0.25);
+}
+
+ul.pager li:first-child .page-link {
+  margin-left: 0;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+ul.pager li:last-child .page-link {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+ul.pager li.active .page-link {
+  z-index: 1;
+  color: #fff;
+  background-color: #0085A1;
+  border-color: #0085A1;
+}
+
+ul.pager li.disabled .page-link {
+  color: #868e96;
+  pointer-events: none;
+  cursor: auto;
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+ul.pager {
+  margin-top: 1rem;
+}
+
+.term-badge > a {
+  text-decoration: none;
+}
+
+.term-badge .badge-secondary:hover {
+  background-color: #0085A1;
+}
+
+.taxonomy-tag ul {
+  padding-left: 0;
+  list-style: none;
 }

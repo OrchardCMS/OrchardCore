@@ -41,13 +41,20 @@ Properties inherited from the `List` shape:
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
-| `Id` | `string` | The HTML id used for the pager, default: _none_. |
-| `Tag` | `string` | The HTML tag used for the pager, default: `ul`. |
-| `ItemTag` | `string` | The HTML tag used for the pages, default: `li`. |
-| `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
-| `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
+| `ItemTagName` | `string` | The HTML tag used for the pages, default: `li`. |
 | `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
+| `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
+| `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
+
+Properties inherited from the base Shape class:
+
+| Parameter | Type | Description |
+| --------- | ---- |------------ |
+| `Id` | `string` | The HTML id used for the pager, default: _none_. |
+| `TagName` | `string` | The HTML tag used for the pager, default: `ul`. |
+| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
+| `Classes` | `Dictionary<string, string>` | CSS classes to add to the main Tag element. |
 
 The `PagerId` property is used to create templates for specific instances. For instance, assigning
 the value `MainBlog` to `PagerId` and then rendering the pager will look for a template named 
@@ -76,18 +83,26 @@ This shape renders a pager that is comprised of two links: _Previous_ and _Next_
 | `NextClass` | `string` | The HTML class used for the _Next_ link, default: _none_. |
 | `PreviousText` | `object` | Text of the "Previous" link, default: `S["<"]`. |
 | `NextText` | `object` | Text of the "Next" link, default: `S[">"]`. |
+| `UrlParams` | `Dictionary<string, string>` | QueryString params to pass to the pager. Parameter name and value in that order |
 
 Properties inherited from the `List` shape:
 
 | Parameter | Type | Description |
 | --------- | ---- |------------ |
-| `Id` | `string` | The HTML id used for the pager, default: _none_. |
-| `Tag` | `string` | The HTML tag used for the pager, default: `ul`. |
-| `ItemTag` | `string` | The HTML tag used for the pages, default: `li`. |
-| `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
-| `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
+| `ItemTagName` | `string` | The HTML tag used for the pages, default: `li`. |
 | `ItemClasses` | `List<string>` | Classes that are assigned to the pages, default: _none_. |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages. |
+| `FirstClass` | `string` | The HTML class used for the first page, default: `first`. |
+| `LastClass` | `string` | The HTML tag used for last page, default: `last`. |
+
+Properties inherited from the base Shape class:
+
+| Parameter | Type | Description |
+| --------- | ---- |------------ |
+| `Id` | `string` | The HTML id used for the pager, default: _none_. |
+| `TagName` | `string` | The HTML tag used for the pager, default: `ul`. |
+| `Attributes` | `Dictionary<string, string>` | Attributes that are assigned to the main container. |
+| `Classes` | `Dictionary<string, string>` | CSS classes to add to the main Tag element. |
 
 A slim pager can be further customized by defining templates for the following shapes:
 
@@ -104,8 +119,25 @@ Examples of Liquid alternates or templates for `Pager_Next` and `Pager_Previous`
 ```
 
 Each of these shapes are ultimately morphed into `Pager_Link`.
-Alternates for each of these shapes are created using the `PagerId` like `Pager`Previous``[PagerId]` which
+Alternates for each of these shapes are created using the `PagerId` like `Pager_Previous` `[PagerId]` which
 would in turn look for the template `Pager-MainBlog.Previous.cshtml`.
+
+## SEO
+
+In order to block search engines from crawling all your pagers links, it is possible to override the Pager anchors "rel" attributes with "no-follow". To achieve this, you can simply do this: 
+
+=== "Liquid"
+
+    ``` liquid
+    {% shape_pager Model.Pager attributes: "{\"rel\": \"no-follow\"}" %}
+    ```
+
+=== "C#"
+
+    ``` html
+    Model.Pager.Attributes["rel"] = "no-follow;
+    @await DisplayAsync(Model.Pager)
+    ```
 
 ## Extending Navigation
 
@@ -149,3 +181,46 @@ Examples of extending the admin navigation can be found in various OrchardCore m
 - `OrchardCore.Modules/OrchardCore.Media/AdminMenu.cs`
 
 At this time, the Admin Menu is the only navigation with code dynamically adding items in the OrchardCore git repository. However, as the example above shows, the pattern can be used to control any named navigation.
+
+## Pager Code examples
+
+=== "Liquid"
+
+    ``` liquid
+    {% assign previousText = "← Newer Posts" | t %}
+    {% assign nextText = "Older Posts →" | t %}
+    {% assign previousClass = "previous" | t %}
+    {% assign nextClass = "next" | t %}
+    {% assign itemClasses = "itemclass1 itemclass2" | split: " " %}
+
+    {% shape_pager Model.Pager previous_text: previousText, next_text: nextText,
+        previous_class: previousClass, next_class: nextClass, tag_name: "div", item_tag_name: "div", attributes: "{\"key1\": \"value1\",\"key2\":\"value2\"}", item_attributes: "{\"key1\": \"value1\",\"key2\":\"value2\"}", classes: "class1 class2", item_classes: itemClasses %}
+
+    {{ Model.Pager | shape_render }}
+    ```
+
+=== "C#"
+
+    ``` html
+    public async Task<IActionResult> List(MyViewModel viewModel, PagerParameters pagerParameters)
+    {
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var pager = new Pager(pagerParameters, siteSettings.PageSize);
+        var query = _session.Query<ContentItem, ContentItemIndex>();
+        var maxPagedCount = siteSettings.MaxPagedCount;
+        
+        if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
+            pager.PageSize = maxPagedCount;
+                    
+        var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData).TagName("div").ItemTagName("div").Classes("class1 class2").ItemClasses(new List<string>(){ "itemclass1", "itemclass2" }).Attributes(new Dictionary<string, string>() { { "attribute", "value" } }).ItemAttributes(new Dictionary<string, string>() { { "itemattribute", "value" } });
+
+        // Or you can also set the Shape base properties this way too :
+        pagerShape.Id = "myid";
+        pagerShape.TagName = "span";
+        pagerShape.Attributes.Add("myattribute", "value");
+        pagerShape.Classes.Add("myclassname");
+
+        model.Pager = pagerShape;
+        return View(viewModel);
+    }
+    ```

@@ -7,6 +7,7 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid.Ast;
@@ -15,7 +16,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheStatement : TagStatement
     {
-        private static readonly char[] SplitChars = new [] { ',', ' ' };
+        private static readonly char[] SplitChars = new[] { ',', ' ' };
         private readonly ArgumentsExpression _arguments;
 
         public CacheStatement(ArgumentsExpression arguments, List<Statement> statements = null) : base(statements)
@@ -36,20 +37,18 @@ namespace OrchardCore.DynamicCache.Liquid
             var cacheScopeManager = services.GetService<ICacheScopeManager>();
             var loggerFactory = services.GetService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<CacheStatement>();
+            var cacheOptions = services.GetRequiredService<IOptions<CacheOptions>>().Value;
 
             if (dynamicCache == null || cacheScopeManager == null)
             {
-                logger.LogInformation(@"Liquid cache block entered without an available IDynamicCacheService or ICacheScopeManager. 
-                                        The contents of the cache block will not be cached. 
+                logger.LogInformation(@"Liquid cache block entered without an available IDynamicCacheService or ICacheScopeManager.
+                                        The contents of the cache block will not be cached.
                                         To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService and ICacheScopeManager is enabled (for example, 'Dynamic Cache').");
 
                 await writer.WriteAsync(await EvaluateStatementsAsync(encoder, context));
 
                 return Completion.Normal;
             }
-            
-            // TODO: Create a configuration setting in the UI
-            var debugMode = false;
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
             var cacheKey = arguments.At(0).ToStringValue();
@@ -71,7 +70,7 @@ namespace OrchardCore.DynamicCache.Liquid
             {
                 cacheContext.WithExpirySliding(slidingDuration);
             }
-            
+
             var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext);
             if (cacheResult != null)
             {
@@ -79,7 +78,7 @@ namespace OrchardCore.DynamicCache.Liquid
 
                 return Completion.Normal;
             }
-            
+
             cacheScopeManager.EnterScope(cacheContext);
             String content;
 
@@ -92,9 +91,11 @@ namespace OrchardCore.DynamicCache.Liquid
                 cacheScopeManager.ExitScope();
             }
 
-            if (debugMode)
+            if (cacheOptions.DebugMode)
             {
+                // No need to optimize this code as it will be used for debugging purpose.
                 var debugContent = new StringWriter();
+                debugContent.WriteLine();
                 debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
                 debugContent.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
                 debugContent.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
@@ -102,14 +103,17 @@ namespace OrchardCore.DynamicCache.Liquid
                 debugContent.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
                 debugContent.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
                 debugContent.WriteLine("-->");
+
                 debugContent.WriteLine(content);
+
+                debugContent.WriteLine();
                 debugContent.WriteLine($"<!-- END CACHE BLOCK: {cacheContext.CacheId} -->");
 
                 content = debugContent.ToString();
             }
 
             await dynamicCache.SetCachedValueAsync(cacheContext, content);
-            
+
             await writer.WriteAsync(content);
 
             return Completion.Normal;

@@ -1,8 +1,8 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using System;
-using OrchardCore.Environment.Shell;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Tenants
 {
@@ -33,7 +33,7 @@ namespace OrchardCore.Tenants
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(S["Tenants"], S["Tenants"], deployment => deployment
+                    .Add(S["Tenants"], "am-" + S["Tenants"], deployment => deployment
                         .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenants)
                         .LocalNav()

@@ -6,10 +6,9 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Settings;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.ViewModels;
-using OrchardCore.Settings;
-using OrchardCore.Twitter.Services;
 
 namespace OrchardCore.Twitter.Drivers
 {
@@ -22,7 +21,6 @@ namespace OrchardCore.Twitter.Drivers
         private readonly ShellSettings _shellSettings;
 
         public TwitterSettingsDisplayDriver(
-            ITwitterSettingsService twitterService,
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
@@ -90,7 +88,7 @@ namespace OrchardCore.Twitter.Drivers
                     settings.ConsumerSecret = protector.Protect(model.APISecretKey);
                     settings.AccessToken = model.AccessToken;
                     settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace OrchardCore.ReCaptcha
 {
     public static class Constants

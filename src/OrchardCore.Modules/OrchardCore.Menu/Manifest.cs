@@ -2,11 +2,11 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Menu",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "The Menu module provides menu management features.",
-    Dependencies = new []
+    Dependencies = new[]
     {
         "OrchardCore.Contents",
         "OrchardCore.Title",

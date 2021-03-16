@@ -8,8 +8,8 @@ namespace OrchardCore.Html.Indexing
     {
         public override Task BuildIndexAsync(HtmlBodyPart part, BuildPartIndexContext context)
         {
-            var options = context.Settings.ToOptions() 
-                | DocumentIndexOptions.Sanitize 
+            var options = context.Settings.ToOptions()
+                | DocumentIndexOptions.Sanitize
                 | DocumentIndexOptions.Analyze
                 ;
 

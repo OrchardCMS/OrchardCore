@@ -5,7 +5,6 @@ namespace OrchardCore.Tenants.ViewModels
 {
     public class SetupApiViewModel
     {
-
         [Required]
         public string Name { get; set; }
 
@@ -22,7 +21,6 @@ namespace OrchardCore.Tenants.ViewModels
         public string UserName { get; set; }
 
         [Required]
-        [EmailAddress]
         public string Email { get; set; }
 
         [DataType(DataType.Password)]

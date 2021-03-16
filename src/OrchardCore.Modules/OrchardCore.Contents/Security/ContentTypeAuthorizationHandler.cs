@@ -26,6 +26,7 @@ namespace OrchardCore.Contents.Security
                 return;
             }
 
+            // If we are not evaluating a ContentItem then return.
             if (context.Resource == null)
             {
                 return;
@@ -43,7 +44,7 @@ namespace OrchardCore.Contents.Security
                 }
             }
 
-            var contentTypePermission = ContentTypePermissions.ConvertToDynamicPermission(permission ?? requirement.Permission);
+            var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission ?? requirement.Permission);
 
             if (contentTypePermission != null)
             {
@@ -55,7 +56,7 @@ namespace OrchardCore.Contents.Security
 
                 if (!String.IsNullOrEmpty(contentType))
                 {
-                    permission = ContentTypePermissions.CreateDynamicPermission(contentTypePermission, contentType);
+                    permission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentType);
                 }
             }
 
@@ -75,29 +76,34 @@ namespace OrchardCore.Contents.Security
 
         private static Permission GetOwnerVariation(Permission permission)
         {
-            if (permission.Name == Permissions.PublishContent.Name)
+            if (permission.Name == CommonPermissions.PublishContent.Name)
             {
-                return Permissions.PublishOwnContent;
+                return CommonPermissions.PublishOwnContent;
             }
 
-            if (permission.Name == Permissions.EditContent.Name)
+            if (permission.Name == CommonPermissions.EditContent.Name)
             {
-                return Permissions.EditOwnContent;
+                return CommonPermissions.EditOwnContent;
             }
 
-            if (permission.Name == Permissions.DeleteContent.Name)
+            if (permission.Name == CommonPermissions.DeleteContent.Name)
             {
-                return Permissions.DeleteOwnContent;
+                return CommonPermissions.DeleteOwnContent;
             }
 
-            if (permission.Name == Permissions.ViewContent.Name)
+            if (permission.Name == CommonPermissions.ViewContent.Name)
             {
-                return Permissions.ViewOwnContent;
+                return CommonPermissions.ViewOwnContent;
             }
 
-            if (permission.Name == Permissions.PreviewContent.Name)
+            if (permission.Name == CommonPermissions.PreviewContent.Name)
             {
-                return Permissions.PreviewOwnContent;
+                return CommonPermissions.PreviewOwnContent;
+            }
+
+            if (permission.Name == CommonPermissions.CloneContent.Name)
+            {
+                return CommonPermissions.CloneOwnContent;
             }
 
             return null;

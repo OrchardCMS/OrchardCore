@@ -21,7 +21,7 @@ namespace Microsoft.AspNetCore.Builder
         }
 
         /// <summary>
-        /// Configures wethere use or not the Header X-Powered-By and its value.
+        /// Configures whether use or not the Header X-Powered-By and its value.
         /// Default value is OrchardCore.
         /// </summary>
         /// <param name="app">The modular application builder</param>

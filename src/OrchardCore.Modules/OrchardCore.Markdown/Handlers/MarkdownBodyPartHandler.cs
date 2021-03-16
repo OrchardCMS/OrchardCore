@@ -1,22 +1,44 @@
+using System;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
+using OrchardCore.Markdown.Services;
+using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.Handlers
 {
     public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
     {
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IShortcodeService _shortcodeService;
+        private readonly IMarkdownService _markdownService;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private HtmlString _bodyAspect;
+        private int _contentItemId;
 
-        public MarkdownBodyPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
+        public MarkdownBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
+            IShortcodeService shortcodeService,
+            IMarkdownService markdownService,
+            IHtmlSanitizerService htmlSanitizerService,
+            ILiquidTemplateManager liquidTemplateManager,
+            HtmlEncoder htmlEncoder)
         {
+            _contentDefinitionManager = contentDefinitionManager;
+            _shortcodeService = shortcodeService;
+            _markdownService = markdownService;
+            _htmlSanitizerService = htmlSanitizerService;
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
         }
@@ -25,31 +47,57 @@ namespace OrchardCore.Markdown.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                if (_bodyAspect != null)
+                if (bodyAspect != null && part.ContentItem.Id == _contentItemId)
                 {
                     bodyAspect.Body = _bodyAspect;
+
                     return;
                 }
 
                 try
                 {
-                    var model = new MarkdownBodyPartViewModel()
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
+                    var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+
+                    // The default Markdown option is to entity escape html
+                    // so filters must be run after the markdown has been processed.
+                    var html = _markdownService.ToHtml(part.Markdown);
+
+                    // The liquid rendering is for backwards compatability and can be removed in a future version.
+                    if (!settings.SanitizeHtml)
                     {
-                        Markdown = part.Markdown,
-                        MarkdownBodyPart = part,
-                        ContentItem = part.ContentItem
-                    };
+                        var model = new MarkdownBodyPartViewModel()
+                        {
+                            Markdown = part.Markdown,
+                            Html = html,
+                            MarkdownBodyPart = part,
+                            ContentItem = part.ContentItem
+                        };
 
-                    var markdown = await _liquidTemplateManager.RenderAsync(part.Markdown, _htmlEncoder, model,
-                        scope => scope.SetValue("ContentItem", model.ContentItem));
+                        html = await _liquidTemplateManager.RenderAsync(html, _htmlEncoder, model,
+                            scope => scope.SetValue("ContentItem", model.ContentItem));
+                    }
 
-                    var result = Markdig.Markdown.ToHtml(markdown ?? "");
+                    html = await _shortcodeService.ProcessAsync(html,
+                        new Context
+                        {
+                            ["ContentItem"] = part.ContentItem,
+                            ["TypePartDefinition"] = contentTypePartDefinition
+                        });
 
-                    bodyAspect.Body = _bodyAspect = new HtmlString(result);
+                    if (settings.SanitizeHtml)
+                    {
+                        html = _htmlSanitizerService.Sanitize(html);
+                    }
+
+                    bodyAspect.Body = _bodyAspect = new HtmlString(html);
+                    _contentItemId = part.ContentItem.Id;
                 }
                 catch
                 {
                     bodyAspect.Body = HtmlString.Empty;
+                    _contentItemId = default;
                 }
             });
         }

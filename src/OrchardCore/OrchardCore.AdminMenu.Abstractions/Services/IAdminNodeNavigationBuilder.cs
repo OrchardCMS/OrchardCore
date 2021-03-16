@@ -11,6 +11,5 @@ namespace OrchardCore.AdminMenu.Services
         string Name { get; }
 
         Task BuildNavigationAsync(MenuItem treeNode, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders);
-        
     }
 }

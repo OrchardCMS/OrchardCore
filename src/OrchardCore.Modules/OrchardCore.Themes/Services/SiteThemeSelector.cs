@@ -6,7 +6,7 @@ namespace OrchardCore.Themes.Services
 {
     /// <summary>
     /// Provides the theme defined in the site configuration for the current scope (request).
-    /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times 
+    /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
     /// during the same scope.
     /// </summary>
     public class SiteThemeSelector : IThemeSelector

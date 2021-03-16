@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -101,7 +103,15 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 {
                     return Awaited(task);
                 }
-                return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
+
+                StringValue value;
+                using (var writer = new StringWriter())
+                {
+                    task.Result.WriteTo(writer, NullHtmlEncoder.Default);
+                    value = new StringValue(writer.ToString());
+                }
+
+                return new ValueTask<FluidValue>(value);
             }
 
             return new ValueTask<FluidValue>(NilValue.Instance);

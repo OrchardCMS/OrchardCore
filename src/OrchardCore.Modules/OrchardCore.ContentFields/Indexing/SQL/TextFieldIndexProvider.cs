@@ -12,6 +12,9 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 {
     public class TextFieldIndex : ContentFieldIndex
     {
+        // Maximum length that MySql can support in an index under utf8 collation.
+        public const int MaxTextSize = 768;
+
         public string Text { get; set; }
         public string BigText { get; set; }
     }
@@ -38,19 +41,29 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         return null;
                     }
 
-                    if (!contentItem.Latest && !contentItem.Published)
-                    {
-                        return null;
-                    }
-
                     // Lazy initialization because of ISession cyclic dependency
                     _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                    // Search for Text fields
-                    var fieldDefinitions = _contentDefinitionManager
-                        .GetTypeDefinition(contentItem.ContentType)
+                    // Search for TextField
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                    // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
+                    if (contentTypeDefinition == null)
+                    {
+                        _ignoredTypes.Add(contentItem.ContentType);
+                        return null;
+                    }
+
+                    var fieldDefinitions = contentTypeDefinition
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TextField)))
                         .ToArray();
+
+                   // This type doesn't have any TextField, ignore it
+                    if (fieldDefinitions.Length == 0)
+                    {
+                        _ignoredTypes.Add(contentItem.ContentType);
+                        return null;
+                    }
 
                     var results = new List<TextFieldIndex>();
 
@@ -81,7 +94,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                             ContentType = contentItem.ContentType,
                             ContentPart = fieldDefinition.PartDefinition.Name,
                             ContentField = fieldDefinition.Name,
-                            Text = field.Text?.Substring(0, Math.Min(field.Text.Length, 4000)),
+                            Text = field.Text?.Substring(0, Math.Min(field.Text.Length, TextFieldIndex.MaxTextSize)),
                             BigText = field.Text
                         });
                     }

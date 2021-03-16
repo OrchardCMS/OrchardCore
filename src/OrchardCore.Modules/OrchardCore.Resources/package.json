@@ -2,14 +2,20 @@
   "name": "orchardcore.resources",
   "version": "1.0.0",
   "dependencies": {
-    "bootstrap": "4.4.1",
-    "bootstrap-select": "1.13.12",
-    "bootstrap-scss": "4.4.1",
-    "bootstrap-slider": "10.6.2",
-    "codemirror": "5.48.4",
-    "jquery": "3.4.1",
+    "@fortawesome/fontawesome-free": "5.15.1",
+    "bootstrap": "4.5.3",
+    "bootstrap-scss": "4.5.3",
+    "bootstrap-select": "1.13.18",
+    "bootstrap-slider": "11.0.2",
+    "codemirror": "5.58.2",
+    "jquery": "3.5.1",
+    "jquery.easing": "1.4.1",
     "jquery-resizable-dom": "0.35.0",
-    "popper.js": "1.16.0",
-    "trumbowyg": "2.21.0"
+    "popper.js": "1.16.1",
+    "sortablejs": "^1.10.2",
+    "trumbowyg": "2.21.0",
+    "vue": "^2.6.12",
+    "vue-multiselect": "^2.1.6",
+    "vuedraggable": "^2.24.3"
   }
 }

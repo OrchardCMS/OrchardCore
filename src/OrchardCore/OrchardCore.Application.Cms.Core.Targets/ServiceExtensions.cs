@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceExtensions
     {
         /// <summary>
-        /// Adds Orchard CMS services to the application. 
+        /// Adds Orchard CMS services to the application.
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCms(this IServiceCollection services)
         {
@@ -20,6 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddCommands()
 
                 .AddMvc()
+                .AddEmailAddressValidator()
+                .AddHtmlSanitizer()
                 .AddSetupFeatures("OrchardCore.Setup")
 
                 .AddDataAccess()

@@ -1,5 +1,4 @@
 using GraphQL.Types;
-using OrchardCore.ContentManagement;
 using OrchardCore.Forms.Models;
 
 namespace OrchardCore.Forms.GraphQL

@@ -10,6 +10,5 @@ namespace OrchardCore.Recipes.Services
         /// Returns a collection of all recipes.
         /// </summary>
         Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync();
-
     }
 }

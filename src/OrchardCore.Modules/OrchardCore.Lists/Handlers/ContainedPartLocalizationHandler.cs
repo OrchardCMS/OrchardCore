@@ -1,12 +1,9 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Records;
-using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using YesSql;
 
@@ -15,10 +12,12 @@ namespace OrchardCore.Lists.Drivers
     public class ContainedPartLocalizationHandler : ContentLocalizationPartHandlerBase<LocalizationPart>
     {
         private readonly ISession _session;
+
         public ContainedPartLocalizationHandler(ISession session)
         {
             _session = session;
         }
+
         /// <summary>
         /// Assign the Localized version of the List when localizing the Contained Item
         /// </summary>
@@ -40,10 +39,10 @@ namespace OrchardCore.Lists.Drivers
         }
     }
 
-    public class ContainedPartHandler : ContentPartHandler<LocalizationPart>
+    public class LocalizationContainedPartHandler : ContentPartHandler<LocalizationPart>
     {
         private readonly ISession _session;
-        public ContainedPartHandler(ISession session)
+        public LocalizationContainedPartHandler(ISession session)
         {
             _session = session;
         }

@@ -14,14 +14,12 @@ namespace OrchardCore.Facebook.Login.Services
     public class FacebookLoginService : IFacebookLoginService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<FacebookLoginService> T;
 
         public FacebookLoginService(
             ISiteService siteService,
             IStringLocalizer<FacebookLoginService> stringLocalizer)
         {
             _siteService = siteService;
-            T = stringLocalizer;
         }
 
         public async Task<FacebookLoginSettings> GetSettingsAsync()

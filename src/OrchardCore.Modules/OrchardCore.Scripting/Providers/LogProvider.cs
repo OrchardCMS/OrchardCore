@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Scripting.Providers
@@ -15,13 +14,36 @@ namespace OrchardCore.Scripting.Providers
             {
                 Name = "log",
                 Method = serviceProvider => (Action<string, string, object>)((level, text, param) =>
-                {
-                    if (!Enum.TryParse<LogLevel>(level, true, out var logLevel))
-                    {
-                        logLevel = LogLevel.Information;
-                    }
-                    logger.Log(logLevel, text, param);
-                })
+                 {
+                     try
+                     {
+                         if (!Enum.TryParse<LogLevel>(level, true, out var logLevel))
+                         {
+                             logLevel = LogLevel.Information;
+                         }
+                         if (param == null)
+                         {
+                             logger.Log(logLevel, text);
+                         }
+                         else
+                         {
+                             object[] args;
+                             if (!(param is Array))
+                             {
+                                 args = new[] { param };
+                             }
+                             else
+                             {
+                                 args = (object[])param;
+                             }
+                             logger.Log(logLevel, text, args);
+                         }
+                     }
+                     catch (Exception ex)
+                     {
+                         logger.Log(LogLevel.Error, ex, "Error logging text template {text} with param {param} from Scripting Engine.", text, param);
+                     }
+                 })
             };
         }
 

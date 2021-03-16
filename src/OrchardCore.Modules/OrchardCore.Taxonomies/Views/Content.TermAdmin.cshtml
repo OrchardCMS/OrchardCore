@@ -1,11 +1,3 @@
-@*
-    Main shape for Admin display types of MenuItem stereotype items, which is used to render
-    a menu item in the hierarchy editor.
-    It is recursive so that if the menu item has MenuItemsListPart the sub items will also
-    be rendered.
-*@
-
-@using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
@@ -29,11 +21,11 @@
                    class="btn btn-success btn-sm">
                     @T["Edit"]
                 </a>
-                <a class="btn btn-primary btn-sm" 
-                    asp-route-action="Create" 
-                    asp-route-controller="Admin" 
-                    asp-route-id="@Model.TaxonomyPart.TermContentType" 
-                    asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId" 
+                <a class="btn btn-primary btn-sm"
+                    asp-route-action="Create"
+                    asp-route-controller="Admin"
+                    asp-route-id="@Model.TaxonomyPart.TermContentType"
+                    asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
                     asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
                     asp-route-area="OrchardCore.Taxonomies">
                     @T["Add"]
@@ -48,9 +40,9 @@
                     @T["Delete"]
                 </a>
             </div>
-            
+
             <span>@contentItem</span>
-            
+
             @if (Model.Content != null)
             {
                 @await DisplayAsync(Model.Content)

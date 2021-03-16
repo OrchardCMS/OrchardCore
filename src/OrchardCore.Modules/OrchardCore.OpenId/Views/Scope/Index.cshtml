@@ -3,13 +3,11 @@
 
 <h1>@RenderTitleSegments(T["Scopes"])</h1>
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add a scope"]</a>
-        </li>
-    </ul>
-</nav>
+<div class="card mb-3">
+    <div class="card-body bg-primary p-3">
+        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add a scope"]</a>
+    </div>
+</div>
 
 @using (Html.BeginForm())
 {

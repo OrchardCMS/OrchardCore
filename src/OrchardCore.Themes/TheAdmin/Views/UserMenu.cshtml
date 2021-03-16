@@ -1,0 +1,10 @@
+<form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
+    <div class="dropdown">
+        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span><i class="fa fa-user" aria-hidden="true"></i></span>&nbsp;<span>@User.Identity.Name</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right w-25">
+            <button type="submit" class="dropdown-item"><span><i class="fa fa-sign-out-alt" aria-hidden="true"></i></span>&nbsp;<span> @T["Log off"]</span></button>
+        </div>
+    </div>
+</form>

@@ -45,8 +45,6 @@ namespace OrchardCore.Localization
         /// <inheritdocs />
         public bool TryGetRule(CultureInfo culture, out PluralizationRuleDelegate rule)
         {
-            rule = null;
-
             var cultureForPlural = GetBaseCulture(culture);
 
             if (Rules.TryGetValue(cultureForPlural.Name, out rule))

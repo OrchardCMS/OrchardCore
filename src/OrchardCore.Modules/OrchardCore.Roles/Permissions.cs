@@ -29,6 +29,5 @@ namespace OrchardCore.Roles
                 },
             };
         }
-
     }
 }

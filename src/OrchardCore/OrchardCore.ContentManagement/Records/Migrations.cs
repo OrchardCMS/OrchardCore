@@ -2,6 +2,7 @@ using System;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.ContentManagement.Records
 {
@@ -15,7 +16,7 @@ namespace OrchardCore.ContentManagement.Records
 
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<ContentItemIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                 .Column<bool>("Latest")
@@ -106,7 +107,6 @@ namespace OrchardCore.ContentManagement.Records
                         builder.WithPart(contentTypePartDefinition.Name, contentTypePartDefinition.PartDefinition, partBuilder =>
                         {
                             partBuilder.WithSettings(existingTypePartSettings);
-
                         });
                     }
                 });

@@ -7,7 +7,9 @@ namespace OrchardCore.OpenId.ViewModels
     {
         [Url]
         public string Authority { get; set; }
+
         public string Audience { get; set; }
+        public bool DisableTokenTypeValidation { get; set; }
         public string Tenant { get; set; }
         public IEnumerable<string> AvailableTenants { get; set; }
     }

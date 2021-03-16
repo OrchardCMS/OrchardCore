@@ -38,7 +38,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<ShellDescriptor>());
 
             var result = await controller.Create();
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<ForbidResult>(result);
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         }
 
         [Theory]
-        [InlineData(OpenIddictConstants.ClientTypes.Public,"ClientSecret", true,false, false)]
+        [InlineData(OpenIddictConstants.ClientTypes.Public, "ClientSecret", true, false, false)]
         [InlineData(OpenIddictConstants.ClientTypes.Public, "", true, false, true)]
         [InlineData(OpenIddictConstants.ClientTypes.Confidential, "ClientSecret", true, false, true)]
         [InlineData(OpenIddictConstants.ClientTypes.Confidential, "", true, false, false)]
@@ -119,7 +119,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             model.AllowAuthorizationCodeFlow = true;
             model.RedirectUris = uris;
 
-            foreach (var validation in model.Validate(new ValidationContext(model)))
+            var validationContext = new ValidationContext(model);
+            var localizerMock = new Mock<IStringLocalizer<CreateOpenIdApplicationViewModel>>();
+            localizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+                .Returns((string name, object[] args) => new LocalizedString(name, string.Format(name, args)));
+            validationContext.InitializeServiceProvider((t) => localizerMock.Object);
+
+            foreach (var validation in model.Validate(validationContext))
             {
                 controller.ModelState.AddModelError(validation.MemberNames.First(), validation.ErrorMessage);
             }
@@ -160,7 +166,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var localizerMock = new Mock<IStringLocalizer<ApplicationController>>();
             localizerMock.Setup(x => x[It.IsAny<string>()]).Returns(new LocalizedString("TextToLocalize", "localizedText"));
-            
+
             return localizerMock;
         }
     }

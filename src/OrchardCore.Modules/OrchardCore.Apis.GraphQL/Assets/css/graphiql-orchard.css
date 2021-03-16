@@ -22,3 +22,7 @@
 .graphiql-container .topBar {
     height: unset;
 }
+
+.graphiql-explorer-node svg{
+    margin-left: 0 !important;
+}

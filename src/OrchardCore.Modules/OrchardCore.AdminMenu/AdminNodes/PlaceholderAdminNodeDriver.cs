@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using OrchardCore.AdminMenu.Models;
-using OrchardCore.AdminMenu.AdminNodes;
-using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -34,12 +28,12 @@ namespace OrchardCore.AdminMenu.AdminNodes
         public override async Task<IDisplayResult> UpdateAsync(PlaceholderAdminNode treeNode, IUpdateModel updater)
         {
             var model = new PlaceholderAdminNodeViewModel();
-            if(await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkText, x => x.IconClass))
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkText, x => x.IconClass))
             {
                 treeNode.LinkText = model.LinkText;
                 treeNode.IconClass = model.IconClass;
             };
-            
+
             return Edit(treeNode);
         }
     }

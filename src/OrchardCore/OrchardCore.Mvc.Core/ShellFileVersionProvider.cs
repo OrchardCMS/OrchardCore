@@ -120,7 +120,6 @@ namespace OrchardCore.Mvc
                     else
                     {
                         _cache.Set(cacheKey, value, cacheEntryOptions);
-
                     }
 
                     return QueryHelpers.AddQueryString(path, VersionKey, value);
