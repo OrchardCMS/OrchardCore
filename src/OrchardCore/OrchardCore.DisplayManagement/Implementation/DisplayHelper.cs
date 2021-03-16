@@ -4,7 +4,6 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
@@ -70,6 +69,11 @@ namespace OrchardCore.DisplayManagement.Implementation
             if (shape.IsNullOrEmpty())
             {
                 return Task.FromResult<IHtmlContent>(HtmlString.Empty);
+            }
+
+            if (shape is IHtmlContent htmlContent)
+            {
+                return Task.FromResult(htmlContent);
             }
 
             var context = new DisplayContext

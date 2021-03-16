@@ -42,10 +42,15 @@ namespace OrchardCore.DisplayManagement.Implementation
         {
             var shape = context.Value;
 
-            // non-shape arguments are returned as a no-op
+            // A null or empty shape is returned as a no-op.
             if (shape.IsNullOrEmpty())
             {
                 return HtmlString.Empty;
+            }
+
+            if (shape is IHtmlContent htmlContent)
+            {
+                return htmlContent;
             }
 
             var shapeMetadata = shape.Metadata;
@@ -263,16 +268,6 @@ namespace OrchardCore.DisplayManagement.Implementation
             if (value is IHtmlContent result)
             {
                 return result;
-
-                // To prevent the result from being rendered lately, we can
-                // serialize it right away. But performance seems to be better
-                // like this, until we find this is an issue.
-
-                // using (var html = new StringWriter())
-                // {
-                //     result.WriteTo(html, htmlEncoder);
-                //     return new HtmlString(html.ToString());
-                // }
             }
 
             // Convert to a string and HTML-encode it
