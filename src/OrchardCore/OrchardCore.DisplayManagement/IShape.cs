@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement
 {
@@ -28,6 +29,8 @@ namespace OrchardCore.DisplayManagement
 
     public static class IShapeExtensions
     {
+        public static bool IsNullOrEmpty(this IShape shape) => shape == null || shape is ZoneOnDemand;
+
         public static bool TryGetProperty<T>(this IShape shape, string key, out T value)
         {
             if (shape.Properties != null && shape.Properties.TryGetValue(key, out var result))
@@ -45,7 +48,7 @@ namespace OrchardCore.DisplayManagement
 
         public static object GetProperty(this IShape shape, string key)
         {
-            return GetProperty(shape, key, (object) null);
+            return GetProperty(shape, key, (object)null);
         }
 
         public static T GetProperty<T>(this IShape shape, string key)

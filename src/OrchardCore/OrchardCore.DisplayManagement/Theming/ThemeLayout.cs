@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Theming
 {
@@ -17,30 +18,28 @@ namespace OrchardCore.DisplayManagement.Theming
     {
         public override async Task ExecuteAsync()
         {
-            // The View's body is rendered
+            // The View's body is rendered.
             var body = RenderLayoutBody();
 
             if (ThemeLayout != null)
             {
-                // Then is added to the Content zone of the Layout shape
+                // Then is added to the Content zone of the Layout shape.
                 await ThemeLayout.Zones["Content"].AddAsync(body);
 
-                // Pre-render all shapes and replace the zone content with it
+                // Pre-render all shapes and replace the zone content with it.
                 ThemeLayout.Zones["Content"] = new PositionWrapper(await DisplayAsync(ThemeLayout.Zones["Content"]), "");
 
-                // Render each layout zone
+                // Render each layout zone.
                 foreach (var zone in ThemeLayout.Properties.ToArray())
                 {
-                    if (zone.Value != null) // zone is not empty
+                    // Check if the zone hasn't been processed and is not empty.
+                    if (zone.Value is IShape shape && !(shape is ZoneOnDemand))
                     {
-                        if (zone.Value is IShape shape) // zone hasn't been processed already
-                        {
-                            ThemeLayout.Zones[zone.Key] = new PositionWrapper(await DisplayAsync(shape), "");
-                        }
+                        ThemeLayout.Zones[zone.Key] = new PositionWrapper(await DisplayAsync(shape), "");
                     }
                 }
 
-                // Finally we render the Layout Shape's HTML to the page's output
+                // Finally we render the Layout Shape's HTML to the page's output.
                 Write(await DisplayAsync(ThemeLayout));
             }
             else
