@@ -23,8 +23,8 @@
           "description": "Target net5.0"
         }
       ],
-      "replaces": "netcoreapp3.1",
-      "defaultValue": "netcoreapp3.1"
+      "replaces": "$(TemplateTargetPackageFramework)",
+      "defaultValue": "${TemplateTargetFramework}"
     },
     "Logger": {
       "type": "parameter",

@@ -511,8 +511,7 @@ namespace OrchardCore.Users.Controllers
             {
                 foreach (var item in state.Value.Errors)
                 {
-                    iix++;
-                    TempData[$"error_{iix}"] = item.ErrorMessage;
+                    TempData[$"error_{iix++}"] = item.ErrorMessage;
                 }
             }
             return RedirectToAction(nameof(Login), new { returnUrl });

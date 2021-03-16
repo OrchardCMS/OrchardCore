@@ -1,10 +1,12 @@
 using System;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Modules;
 using YesSql.Sql;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
 {
+    [Feature("OrchardCore.ContentFields.Indexing.SQL")]
     public class Migrations : DataMigration
     {
         public int Create()
@@ -228,7 +230,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_SelectedContentItemId",
+                .CreateIndex("IDX_ContentPickerField_DocumentId_SelectedItemId",
                     "DocumentId",
                     "SelectedContentItemId",
                     "Published",
@@ -581,7 +583,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_SelectedContentItemId",
+                .CreateIndex("IDX_ContentPickerField_DocumentId_SelectedItemId",
                     "DocumentId",
                     "SelectedContentItemId",
                     "Published",

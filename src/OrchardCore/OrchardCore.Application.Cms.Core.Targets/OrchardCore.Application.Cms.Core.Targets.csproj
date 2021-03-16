@@ -1,22 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
-     <!-- NuGet properties-->
+    <!-- NuGet properties-->
     <Title>Target for Modular OrchardCore CMS Application</Title>
     <Description>$(OCCMSDescription)
-    
+
     Converts the application into a modular OrchardCore CMS application with TheAdmin theme but without any front-end Themes.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
 
   <!-- Add ".props" and ".targets" files in the package specific to the "Cms.Core" bundle -->
+
   <ItemGroup>
     <None Include="OrchardCore.Application.Cms.Core.Targets.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Application.Cms.Core.Targets.props</PackagePath>
+      <PackagePath>build\OrchardCore.Application.Cms.Core.Targets.props</PackagePath>
     </None>
     <None Include="OrchardCore.Application.Cms.Core.Targets.targets" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Application.Cms.Core.Targets.targets</PackagePath>
+      <PackagePath>build\OrchardCore.Application.Cms.Core.Targets.targets</PackagePath>
     </None>
   </ItemGroup>
 
@@ -24,7 +24,7 @@
     When a package is not directly referenced, e.g only through the reference of this bundle package,
     the files in its build folder are not evaluated on building if this folder is marked as private.
     This can be defined by using the 'PrivateAssets' attribute.
-    
+
     Here, only project references are used but when packing the bundle they become package references,
     and with the same 'PrivateAssets' attribute.
   -->
@@ -32,8 +32,8 @@
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" PrivateAssets="none" />
 
-    <!-- 
-      When adding a reference to this list, please keep it ordered alphabetically, and set PrivateAssets="none" 
+    <!--
+      When adding a reference to this list, please keep it ordered alphabetically, and set PrivateAssets="none"
     -->
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Admin\OrchardCore.Admin.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.AdminDashboard\OrchardCore.AdminDashboard.csproj" PrivateAssets="none" />
@@ -41,6 +41,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Alias\OrchardCore.Alias.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Apis.GraphQL\OrchardCore.Apis.GraphQL.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Autoroute\OrchardCore.Autoroute.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.AutoSetup\OrchardCore.AutoSetup.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentFields\OrchardCore.ContentFields.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentLocalization\OrchardCore.ContentLocalization.csproj" PrivateAssets="none" />
@@ -89,8 +90,10 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Resources\OrchardCore.Resources.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ResponseCompression\OrchardCore.ResponseCompression.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ReverseProxy\OrchardCore.ReverseProxy.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Rules\OrchardCore.Rules.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Roles\OrchardCore.Roles.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Scripting\OrchardCore.Scripting.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Seo\OrchardCore.Seo.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Settings\OrchardCore.Settings.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Setup\OrchardCore.Setup.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Sitemaps\OrchardCore.Sitemaps.csproj" PrivateAssets="none" />

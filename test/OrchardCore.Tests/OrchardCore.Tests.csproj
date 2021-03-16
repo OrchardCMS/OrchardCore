@@ -3,10 +3,8 @@
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AssemblyName>OrchardCore.Tests</AssemblyName>
-    <PackageId>OrchardCore.Tests</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +30,7 @@
     <None Remove="Localization\PoFiles\MultipleEntries.po" />
     <None Remove="Localization\PoFiles\PoeditHeader.po" />
     <None Remove="Localization\PoFiles\SimpleEntry.po" />
+    <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
     <None Remove="Recipes\RecipeFiles\recipe1.json" />
     <None Remove="Recipes\RecipeFiles\recipe2.json" />
     <None Remove="Recipes\RecipeFiles\recipe3.json" />
@@ -56,6 +55,7 @@
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />
+    <EmbeddedResource Include="Apis\Lucene\Recipes\luceneQueryTest.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -75,7 +75,7 @@
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
+    <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="Moq" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.analyzers" />

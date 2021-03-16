@@ -19,16 +19,16 @@ namespace OrchardCore.Lists.Indexes
                 .Map(contentItem =>
                 {
                     var containedPart = contentItem.As<ContainedPart>();
-                    if (containedPart != null)
+                    if (containedPart == null)
                     {
-                        return new ContainedPartIndex
-                        {
-                            ListContentItemId = containedPart.ListContentItemId,
-                            Order = containedPart.Order
-                        };
+                        return null;
                     }
 
-                    return null;
+                    return new ContainedPartIndex
+                    {
+                        ListContentItemId = containedPart.ListContentItemId,
+                        Order = containedPart.Order
+                    };
                 });
         }
     }
