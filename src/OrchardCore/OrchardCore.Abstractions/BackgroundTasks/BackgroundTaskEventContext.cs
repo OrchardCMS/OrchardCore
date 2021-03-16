@@ -3,9 +3,9 @@ using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.BackgroundTasks
 {
-    public class BackgroundTaskContext
+    public class BackgroundTaskEventContext
     {
-        public BackgroundTaskContext(string name, ShellScope scope)
+        public BackgroundTaskEventContext(string name, ShellScope scope)
         {
             Name = name;
             Tenant = scope.ShellContext.Settings.Name;

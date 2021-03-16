@@ -5,7 +5,7 @@ namespace OrchardCore.BackgroundTasks
 {
     public interface IBackgroundTaskEventHandler
     {
-        Task ExecutingAsync(BackgroundTaskContext context, CancellationToken cancellationToken);
-        Task ExecutedAsync(BackgroundTaskContext context, CancellationToken cancellationToken);
+        Task ExecutingAsync(BackgroundTaskEventContext context, CancellationToken cancellationToken);
+        Task ExecutedAsync(BackgroundTaskEventContext context, CancellationToken cancellationToken);
     }
 }

@@ -148,7 +148,7 @@ namespace OrchardCore.Modules
                             }
                         }
 
-                        var context = new BackgroundTaskContext(taskName, scope);
+                        var context = new BackgroundTaskEventContext(taskName, scope);
                         var handlers = scope.ServiceProvider.GetServices<IBackgroundTaskEventHandler>();
 
                         await handlers.InvokeAsync((handler, context, token) => handler.ExecutingAsync(context, token), context, stoppingToken, _logger);
