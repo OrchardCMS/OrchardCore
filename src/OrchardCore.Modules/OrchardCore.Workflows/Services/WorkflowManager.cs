@@ -30,7 +30,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IClock _clock;
 
         private readonly Dictionary<string, int> _recursions = new Dictionary<string, int>();
-        private int _maxRecursionDepth;
+        private int _currentRecursionDepth;
 
         public WorkflowManager
         (
@@ -154,9 +154,9 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 // Check the max recursion depth of workflow executions.
-                if (_maxRecursionDepth > MaxRecursionDepth)
+                if (_currentRecursionDepth > MaxRecursionDepth)
                 {
-                    _logger.LogError("The max recursion depth of 'Workflow' executions has been reached");
+                    _logger.LogError("The max recursion depth of 'Workflow' executions has been reached.");
                     break;
                 }
 
@@ -205,9 +205,9 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 // Check the max recursion depth of workflow executions.
-                if (_maxRecursionDepth > MaxRecursionDepth)
+                if (_currentRecursionDepth > MaxRecursionDepth)
                 {
-                    _logger.LogError("The max recursion depth of 'Workflow' executions has been reached");
+                    _logger.LogError("The max recursion depth of 'Workflow' executions has been reached.");
                     break;
                 }
 
@@ -464,14 +464,14 @@ namespace OrchardCore.Workflows.Services
         {
             _recursions[workflow.WorkflowId] = _recursions.TryGetValue(workflow.WorkflowId, out var count) ? ++count : 1;
             _recursions[workflow.WorkflowTypeId] = _recursions.TryGetValue(workflow.WorkflowTypeId, out count) ? ++count : 1;
-            _maxRecursionDepth++;
+            _currentRecursionDepth++;
         }
 
         private void DecrementRecursion(Workflow workflow)
         {
             _recursions[workflow.WorkflowId]--;
             _recursions[workflow.WorkflowTypeId]--;
-            _maxRecursionDepth--;
+            _currentRecursionDepth--;
         }
 
         private async Task PersistAsync(WorkflowExecutionContext workflowContext)
