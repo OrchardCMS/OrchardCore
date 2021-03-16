@@ -48,7 +48,7 @@ namespace OrchardCore.Seo.Drivers
             _primaryContentRendered = true;
 
             // Do not include Widgets or any display type other than detail.
-            if (!String.Equals(context.DisplayType, "Detail", StringComparison.OrdinalIgnoreCase) || context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype))
+            if (context.DisplayType != "Detail" || context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string _))
             {
                 return null;
             }
