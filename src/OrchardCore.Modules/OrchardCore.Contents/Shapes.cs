@@ -67,7 +67,7 @@ namespace OrchardCore.Contents
 
                     var contentItemId = await handleManager.GetContentItemIdAsync(handle);
 
-                    if (string.IsNullOrEmpty(contentItemId))
+                    if (String.IsNullOrEmpty(contentItemId))
                     {
                         return;
                     }
@@ -97,7 +97,7 @@ namespace OrchardCore.Contents
         /// </summary>
         /// <param name="alternateElement"></param>
         /// <returns></returns>
-        private string EncodeAlternateElement(string alternateElement)
+        private static string EncodeAlternateElement(string alternateElement)
         {
             return alternateElement.Replace("-", "__").Replace('.', '_');
         }
