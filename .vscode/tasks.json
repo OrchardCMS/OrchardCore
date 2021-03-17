@@ -57,19 +57,21 @@
       ]
     },
     {
-      "label": "Web App: Dotnet Build Debug",
+      "label": "Web App: Dotnet Build net5.0 Debug",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "-c",
-        "Debug"
+        "Debug",
+        "-f",
+        "net5.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Rebuild Debug",
+      "label": "Web App: Dotnet Rebuild net5.0 Debug",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -77,19 +79,23 @@
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "--no-incremental",
         "-c",
-        "Debug"
+        "Debug",
+        "-f",
+        "net5.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Build Release",
+      "label": "Web App: Dotnet Build net5.0 Release",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "-c",
-        "Release"
+        "Release",
+        "-f",
+        "net5.0"
       ],
       "problemMatcher": "$msCompile"
     },

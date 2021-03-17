@@ -2,10 +2,10 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": ".NET Core Launch (console)",
+			"name": ".NET Core Launch (console net5.0 debug)",
 			"type": "coreclr",
 			"request": "launch",
-			"preLaunchTask": "Web App: Dotnet Build Debug",
+			"preLaunchTask": "Web App: Dotnet Build net5.0 Debug",
 			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net5.0/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
@@ -15,11 +15,11 @@
 			"stopAtEntry": false
 		},
 		{
-			"name": ".NET Core Launch (web debug)",
+			"name": ".NET Core Launch (web net5.0 debug)",
 			"type": "coreclr",
 			"request": "launch",
 			"internalConsoleOptions": "openOnSessionStart",
-			"preLaunchTask": "Web App: Dotnet Build Debug",
+			"preLaunchTask": "Web App: Dotnet Build net5.0 Debug",
 			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net5.0/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
@@ -43,10 +43,10 @@
 			}
 		},
 		{
-			"name": ".NET Core Launch (web release)",
+			"name": ".NET Core Launch (web net5.0 release)",
 			"type": "coreclr",
 			"request": "launch",
-			"preLaunchTask": "Web App: Dotnet Build Release",
+			"preLaunchTask": "Web App: Dotnet Build net5.0 Release",
 			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/net5.0/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
