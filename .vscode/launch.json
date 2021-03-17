@@ -50,7 +50,7 @@
 			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/net5.0/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
-      "env": {
+			"env": {
 				"ASPNETCORE_ENVIRONMENT": "Development"
 			},
 			"stopAtEntry": false,
@@ -78,7 +78,7 @@
 			"program": "${workspaceRoot}/.build/release/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/.build/release",
-      "env": {
+			"env": {
 				"ASPNETCORE_ENVIRONMENT": "Development"
 			},
 			"stopAtEntry": false,
@@ -100,7 +100,7 @@
 			"program": "${workspaceRoot}/.build/release/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/.build/release",
-      "env": {
+			"env": {
 				"ASPNETCORE_ENVIRONMENT": "Development"
 			},
 			"stopAtEntry": false,
