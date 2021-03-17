@@ -14,7 +14,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Navigation
 {
@@ -541,7 +540,7 @@ namespace OrchardCore.Navigation
 
         private IHtmlContent CoerceHtmlString(object value)
         {
-            if (value == null || value is ZoneOnDemand)
+            if (value == null)
             {
                 return HtmlString.Empty;
             }

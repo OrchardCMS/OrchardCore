@@ -271,9 +271,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout.Zones[name];
-
-            return zone != null;
+            return ThemeLayout.Zones.IsNotEmpty(name);
         }
 
         /// <summary>
@@ -304,7 +302,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
 
             var zone = ThemeLayout.Zones[name];
 
-            if (required && zone != null)
+            if (required && zone.IsNullOrEmpty())
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }
