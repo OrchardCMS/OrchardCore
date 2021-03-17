@@ -857,7 +857,7 @@ namespace OrchardCore.ContentManagement
 
             if (latestVersion != null)
             {
-                var publishedVersion = evictionVersions.FirstOrDefault(x => x.Published);
+                var publishedVersion = evictionVersions?.FirstOrDefault(x => x.Published);
 
                 var removeContext = new RemoveContentContext(contentItem, publishedVersion == null);
 

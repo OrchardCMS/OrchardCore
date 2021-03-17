@@ -1,2 +1,1 @@
-var tenantPrefix = document.currentScript.dataset.tenantPrefix;
-require.config( { paths: { 'vs': tenantPrefix + '/OrchardCore.Resources/Scripts/monaco/dev/vs' } });
+require.config({ paths: { 'vs': '/OrchardCore.Resources/Scripts/monaco/dev/vs' } });

@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -81,6 +81,31 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <param name="shape">The shape.</param>
         public Task<IHtmlContent> DisplayAsync(dynamic shape)
         {
+            if (shape is IShape s)
+            {
+                EnsureDisplayHelper();
+                return _displayHelper.ShapeExecuteAsync(s);
+            }
+
+            if (shape is IHtmlContent hc)
+            {
+                return Task.FromResult(hc);
+            }
+
+            if (shape is string str)
+            {
+                return Task.FromResult<IHtmlContent>(new StringHtmlContent(str));
+            }
+
+            throw new ArgumentException("DisplayAsync requires an instance of IShape");
+        }
+
+        /// <summary>
+        /// Renders a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        public Task<IHtmlContent> DisplayAsync(IShape shape)
+        {
             EnsureDisplayHelper();
             return _displayHelper.ShapeExecuteAsync(shape);
         }
@@ -99,9 +124,9 @@ namespace OrchardCore.DisplayManagement.Razor
             }
         }
 
-        private dynamic _themeLayout;
+        protected IZoneHolding _themeLayout;
 
-        public dynamic ThemeLayout
+        public IZoneHolding ThemeLayout
         {
             get
             {
@@ -233,14 +258,20 @@ namespace OrchardCore.DisplayManagement.Razor
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A new <see cref="TagBuilder"/>.</returns>
-        public TagBuilder Tag(dynamic shape)
+        public TagBuilder Tag(IShape shape)
         {
-            return Shape.GetTagBuilder(shape);
+            return shape.GetTagBuilder();
         }
 
-        public TagBuilder Tag(dynamic shape, string tag)
+        /// <summary>
+        /// Creates a <see cref="TagBuilder"/> to render a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <param name="tag">The tag name to use.</param>
+        /// <returns>A new <see cref="TagBuilder"/>.</returns>
+        public TagBuilder Tag(IShape shape, string tag)
         {
-            return Shape.GetTagBuilder(shape, tag);
+            return shape.GetTagBuilder(tag);
         }
 
         /// <summary>
@@ -249,7 +280,7 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <returns>The HTML content to render.</returns>
         public Task<IHtmlContent> RenderBodyAsync()
         {
-            return DisplayAsync(ThemeLayout.Content);
+            return DisplayAsync(ThemeLayout.Zones["Content"]);
         }
 
         /// <summary>
@@ -266,9 +297,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout[name];
-
-            return zone != null;
+            return ThemeLayout.Zones.IsNotEmpty(name);
         }
 
         /// <summary>
@@ -334,9 +363,9 @@ namespace OrchardCore.DisplayManagement.Razor
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout[name];
+            var zone = ThemeLayout.Zones[name];
 
-            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
+            if (required && zone.IsNullOrEmpty())
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }

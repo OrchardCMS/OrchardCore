@@ -5,8 +5,10 @@ namespace OrchardCore.Liquid
     /// </summary>
     public class LiquidContentAccessor
     {
-        public string Content { get; set; }
+        // TODO: Fix 'Content' property conflict differently, see #8259
 
-        public override string ToString() => Content;
+        // public string Content { get; set; }
+
+        // public override string ToString() => Content;
     }
 }
