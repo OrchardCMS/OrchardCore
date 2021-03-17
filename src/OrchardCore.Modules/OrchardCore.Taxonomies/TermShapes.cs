@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Mvc.Utilities;
@@ -19,9 +20,9 @@ namespace OrchardCore.Taxonomies
             builder.Describe("TermPart")
                 .OnDisplaying(context =>
                 {
-                    var shape = context.Shape;
+                    dynamic shape = context.Shape;
 
-                    var contentType = shape.GetProperty<ContentItem>("ContentItem")?.ContentType;
+                    var contentType = shape.ContentItem.ContentType;
                     var displayTypes = new[] { "", "_" + context.Shape.Metadata.DisplayType };
 
                     // [ShapeType]_[DisplayType], e.g. TermPart.Summary, TermPart.Detail
@@ -37,8 +38,8 @@ namespace OrchardCore.Taxonomies
             builder.Describe("Term")
                 .OnProcessing(async context =>
                 {
-                    var termShape = context.Shape;
-                    var identifier = termShape.GetProperty<string>("TaxonomyContentItemId") ?? termShape.GetProperty<string>("Alias");
+                    dynamic termShape = context.Shape;
+                    string identifier = termShape.TaxonomyContentItemId ?? termShape.Alias;
 
                     if (String.IsNullOrEmpty(identifier))
                     {
@@ -54,10 +55,12 @@ namespace OrchardCore.Taxonomies
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
+                    var orchardHelper = context.ServiceProvider.GetRequiredService<IOrchardHelper>();
+                    var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                    var taxonomyContentItemId = termShape.TryGetProperty("Alias", out object alias) && alias != null
-                        ? await handleManager.GetContentItemIdAsync(alias.ToString())
-                        : termShape.Properties["TaxonomyContentItemId"].ToString();
+                    string taxonomyContentItemId = termShape.Alias != null
+                        ? await handleManager.GetContentItemIdAsync(termShape.Alias)
+                        : termShape.TaxonomyContentItemId;
 
                     if (taxonomyContentItemId == null)
                     {
@@ -71,8 +74,8 @@ namespace OrchardCore.Taxonomies
                         return;
                     }
 
-                    termShape.Properties["TaxonomyContentItem"] = taxonomyContentItem;
-                    termShape.Properties["TaxonomyName"] = taxonomyContentItem.DisplayText;
+                    termShape.TaxonomyContentItem = taxonomyContentItem;
+                    termShape.TaxonomyName = taxonomyContentItem.DisplayText;
 
                     var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
                     if (taxonomyPart == null)
@@ -83,7 +86,7 @@ namespace OrchardCore.Taxonomies
                     // When a TermContentItemId is provided render the term and its child terms.
                     var level = 0;
                     List<ContentItem> termItems = null;
-                    var termContentItemId = termShape.GetProperty<string>("TermContentItemId");
+                    string termContentItemId = termShape.TermContentItemId;
                     if (!String.IsNullOrEmpty(termContentItemId))
                     {
                         level = FindTerm(taxonomyContentItem.Content.TaxonomyPart.Terms as JArray, termContentItemId, level, out var termContentItem);
@@ -108,7 +111,7 @@ namespace OrchardCore.Taxonomies
                         return;
                     }
 
-                    var differentiator = FormatName(termShape.GetProperty<string>("TaxonomyName"));
+                    var differentiator = FormatName((string)termShape.TaxonomyName);
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {
@@ -154,18 +157,18 @@ namespace OrchardCore.Taxonomies
             builder.Describe("TermItem")
                 .OnDisplaying(async context =>
                 {
-                    var termItem = context.Shape;
-                    var termShape = termItem.GetProperty<IShape>("Term");
-                    var level = termItem.GetProperty<int>("Level");
-                    var taxonomyContentItem = termItem.GetProperty<ContentItem>("TaxonomyContentItem");
+                    dynamic termItem = context.Shape;
+                    var termShape = termItem.Term;
+                    int level = termItem.Level;
+                    ContentItem taxonomyContentItem = termItem.TaxonomyContentItem;
                     var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
-                    var differentiator = termItem.Metadata.Differentiator;
+                    string differentiator = termItem.Metadata.Differentiator;
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
-                    if (termItem.GetProperty<ContentItem[]>("Terms")  != null)
+                    if (termItem.Terms != null)
                     {
-                        foreach (var termContentItem in termItem.GetProperty<ContentItem[]>("Terms"))
+                        foreach (var termContentItem in termItem.Terms)
                         {
                             ContentItem[] childTerms = null;
                             if (termContentItem.Content.Terms is JArray termsArray)
@@ -215,11 +218,11 @@ namespace OrchardCore.Taxonomies
             builder.Describe("TermContentItem")
                 .OnDisplaying(displaying =>
                 {
-                    var termItem = displaying.Shape;
-                    var level = termItem.GetProperty<int>("Level");
-                    var differentiator = termItem.Metadata.Differentiator;
+                    dynamic termItem = displaying.Shape;
+                    int level = termItem.Level;
+                    string differentiator = termItem.Metadata.Differentiator;
 
-                    var termContentItem = termItem.GetProperty<ContentItem>("TermContentItem");
+                    ContentItem termContentItem = termItem.TermContentItem;
 
                     var encodedContentType = EncodeAlternateElement(termContentItem.ContentItem.ContentType);
 
