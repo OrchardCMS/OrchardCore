@@ -1,0 +1,42 @@
+{
+  "MediaField": [
+    {
+      "place": "-",
+      "differentiator": "SeoMetaPart-DefaultSocialImage"
+    },
+    {
+      "place": "-",
+      "differentiator": "SeoMetaPart-OpenGraphImage"
+    },
+    {
+      "place": "-",
+      "differentiator": "SeoMetaPart-TwitterImage"
+    }
+  ],
+  "MediaField_Edit": [
+    {
+      "place": "Parts:20#SEO%Social;10|Content_4;1",
+      "differentiator": "SeoMetaPart-DefaultSocialImage"
+    },
+    {
+      "place": "Parts:25#SEO%Social;10|Col2_4;2",
+      "differentiator": "SeoMetaPart-OpenGraphImage"
+    },
+    {
+      "place": "Parts:30#SEO%Social;10|Col3_4;3",
+      "differentiator": "SeoMetaPart-TwitterImage"
+    },
+    {
+      "place": "Parts:20%Social;10|Content_4;1",
+      "differentiator": "SocialMetaSettings-DefaultSocialImage"
+    },
+    {
+      "place": "Parts:20%Social;10|Col2_4;1",
+      "differentiator": "SocialMetaSettings-OpenGraphImage"
+    },
+    {
+      "place": "Parts:20%Social;10|Col3_4;1",
+      "differentiator": "SocialMetaSettings-TwitterImage"
+    }
+  ]
+}

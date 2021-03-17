@@ -63,6 +63,8 @@ namespace OrchardCore.DisplayManagement.Zones
         private readonly Func<ValueTask<IShape>> _zoneFactory;
         private readonly ZoneHolding _parent;
 
+        public bool IsNotEmpty(string name) => !(this[name] is ZoneOnDemand);
+
         public Zones(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent)
         {
             _zoneFactory = zoneFactory;
