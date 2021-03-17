@@ -5,6 +5,7 @@ namespace OrchardCore.BackgroundTasks
 {
     /// <summary>
     /// Provides methods that get called around the execution of any <see cref="IBackgroundTask"/>.
+    /// Implement this interface to hook into background task execution.
     /// </summary>
     public interface IBackgroundTaskEventHandler
     {
