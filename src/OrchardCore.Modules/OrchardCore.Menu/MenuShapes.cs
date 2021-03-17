@@ -27,7 +27,7 @@ namespace OrchardCore.Menu
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
-                    string contentItemId = menu.TryGetProperty("Alias", out object alias) && alias != null
+                    var contentItemId = menu.TryGetProperty("Alias", out object alias) && alias != null
                         ? await handleManager.GetContentItemIdAsync(alias.ToString())
                         : menu.Properties["ContentItemId"].ToString();
 
@@ -178,7 +178,7 @@ namespace OrchardCore.Menu
         /// </summary>
         /// <param name="alternateElement"></param>
         /// <returns></returns>
-        private string EncodeAlternateElement(string alternateElement)
+        private static string EncodeAlternateElement(string alternateElement)
         {
             return alternateElement.Replace("-", "__").Replace('.', '_');
         }
