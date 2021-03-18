@@ -16,6 +16,8 @@ namespace OrchardCore.Workflows.Services
 {
     public class WorkflowManager : IWorkflowManager
     {
+        // The maximum recursion depth is used to limit the number of Workflow (of any type) that a given
+        // Workflow execution can trigger (directly or transitively) without reaching a blocking activity.
         private const int MaxRecursionDepth = 100;
 
         private readonly IActivityLibrary _activityLibrary;
