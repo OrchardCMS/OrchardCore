@@ -103,27 +103,38 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             if (o is Shape shape)
             {
-                if (shape.Properties.TryGetValue(n, out var result))
+                switch (n)
                 {
-                    return result;
-                }
+                    case "Id":
+                        return shape.Id;
+                    case "TagName":
+                        return shape.TagName;
+                    case "HasItems":
+                        return shape.HasItems;
+                    case "Classes":
+                        return shape.Classes;
+                    case "Attributes":
+                        return shape.Attributes;
+                    case "Items":
+                        return shape.Items;
+                    default:
+                        if (shape.Properties.TryGetValue(n, out var result))
+                        {
+                            return result;
+                        }
 
-                if (n == "Items")
-                {
-                    return shape.Items;
-                }
+                        // Resolves Model.Content.MyType-MyField-FieldType_Display__DisplayMode
+                        var namedShaped = shape.Named(n);
+                        if (namedShaped != null)
+                        {
+                            return namedShaped;
+                        }
 
-                // Resolves Model.Content.MyType-MyField-FieldType_Display__DisplayMode
-                var namedShaped = shape.Named(n);
-                if (namedShaped != null)
-                {
-                    return namedShaped;
+                        // Resolves Model.Content.MyNamedPart
+                        // Resolves Model.Content.MyType__MyField
+                        // Resolves Model.Content.MyType-MyField
+                        return shape.NormalizedNamed(n.Replace("__", "-"));
                 }
-
-                // Resolves Model.Content.MyNamedPart
-                // Resolves Model.Content.MyType__MyField
-                // Resolves Model.Content.MyType-MyField
-                return shape.NormalizedNamed(n.Replace("__", "-"));
             }
 
             return null;
