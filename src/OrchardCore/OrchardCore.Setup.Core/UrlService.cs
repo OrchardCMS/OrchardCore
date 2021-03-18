@@ -8,8 +8,8 @@ namespace OrchardCore.Setup.Core
 {
     public class UrlService : IUrlService
     {
-        private readonly HttpContextAccessor _httpContextAccessor;
-        public UrlService(HttpContextAccessor httpContextAccessor)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public UrlService(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
