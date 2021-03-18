@@ -15,9 +15,9 @@ namespace OrchardCore.Setup.Core
         }
         public string GetEncodedUrl(ShellSettings shellSettings, Dictionary<string, string> queryParams = null)
         {
-            string baseUrl = string.Empty;
-            var httpContext = _httpContextAccessor.HttpContext;
+            string baseUrl = string.Empty;            
             HostString hostString;
+            var httpContext = _httpContextAccessor.HttpContext;
 
             var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
@@ -35,7 +35,6 @@ namespace OrchardCore.Setup.Core
             {
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
-
 
             baseUrl = $"{httpContext.Request.Scheme}://{hostString.ToUriComponent() + pathString.ToUriComponent()}";
 

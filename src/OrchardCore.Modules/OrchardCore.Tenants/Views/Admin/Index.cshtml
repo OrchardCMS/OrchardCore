@@ -1,9 +1,8 @@
 @model AdminIndexViewModel
-@using Microsoft.AspNetCore.Http
-@using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
 @using OrchardCore.Setup.Core
 @inject IUrlService urlService
+
 @{
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
