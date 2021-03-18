@@ -12,12 +12,12 @@
     "react-dom": "16.14.0"
   },
   "devDependencies": {
-    "assert": "^2.0.0",
     "@babel/cli": "^7.13.10",
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.12.13",
     "@babel/preset-typescript": "^7.13.0",
+    "assert": "^2.0.0",
     "css-loader": "^5.1.2",
     "null-loader": "^4.0.1",
     "prop-types": "15.7.2",
