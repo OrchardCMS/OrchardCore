@@ -36,13 +36,41 @@ namespace OrchardCore.Setup.Core
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
 
-            baseUrl = $"{httpContext.Request.Scheme}://{hostString.ToUriComponent() + pathString.ToUriComponent()}";
+            baseUrl = $"{httpContext.Request.Scheme}://{hostString + pathString}";
 
             if (queryParams != null)
             {
                 var queryString = QueryString.Create(queryParams);
-                baseUrl += queryString.ToUriComponent();
+                baseUrl += queryString;
             }
+
+            return baseUrl;
+        }
+
+        public string GetDisplayUrl(ShellSettings shellSettings)
+        {
+            string baseUrl = string.Empty;
+            HostString hostString;
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+            if (string.IsNullOrEmpty(tenantUrlHost))
+            {
+                hostString = httpContext.Request.Host;
+            }
+            else
+            {
+                hostString = new HostString(tenantUrlHost);
+            }
+
+            var pathString = httpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
+            if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+            {
+                pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
+            }
+
+            baseUrl = $"{httpContext.Request.Scheme}://{hostString.Value + pathString.Value}";           
 
             return baseUrl;
         }
