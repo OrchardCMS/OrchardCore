@@ -301,10 +301,9 @@ namespace OrchardCore.Tenants.Controllers
         private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
             var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
             var hostString = host != null ? new HostString(host) : Request.Host;
-            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
 
+            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
             if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
