@@ -192,5 +192,21 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
+
+        [Theory]
+        [InlineData("select COUNT(1) over () from a", "SELECT COUNT(1) OVER () FROM [tp_a];")]
+        [InlineData("select COUNT(1) over () a from b", "SELECT COUNT(1) OVER () AS a FROM [tp_b];")]
+        [InlineData("select COUNT(1) over (partition by a) from b", "SELECT COUNT(1) OVER (PARTITION BY [a]) FROM [tp_b];")]
+        [InlineData("select COUNT(1) over (order by a) from b", "SELECT COUNT(1) OVER (ORDER BY [a]) FROM [tp_b];")]
+        [InlineData("select COUNT(1) over (order by a, b) from c", "SELECT COUNT(1) OVER (ORDER BY [a], [b]) FROM [tp_c];")]
+        [InlineData("select COUNT(1) over (order by a asc, b desc, c desc) from d", "SELECT COUNT(1) OVER (ORDER BY [a] ASC, [b] DESC, [c] DESC) FROM [tp_d];")]
+        [InlineData("select COUNT(1) over (partition by a order by b) from c", "SELECT COUNT(1) OVER (PARTITION BY [a] ORDER BY [b]) FROM [tp_c];")]
+        [InlineData("select COUNT(1) over () a, MAX(b) over () c from d", "SELECT COUNT(1) OVER () AS a, MAX([b]) OVER () AS c FROM [tp_d];")]
+        public void ShouldParseWindowFunction(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
     }
 }
