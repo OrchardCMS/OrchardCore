@@ -577,11 +577,11 @@ namespace OrchardCore.Navigation
 
         private class HtmlContentString : IHtmlContent
         {
-            private readonly string _input;
+            private readonly string _value;
 
-            public HtmlContentString(string input) => _input = input;
+            public HtmlContentString(string value) => _value = value;
 
-            public void WriteTo(TextWriter writer, HtmlEncoder encoder) => writer.Write(encoder.Encode(_input));
+            public void WriteTo(TextWriter writer, HtmlEncoder encoder) => writer.Write(encoder.Encode(_value));
         }
     }
 }
