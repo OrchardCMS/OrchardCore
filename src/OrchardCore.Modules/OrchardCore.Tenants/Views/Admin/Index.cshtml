@@ -5,8 +5,6 @@
 @using OrchardCore.Setup.Core
 @inject IUrlService urlService
 @{
-    var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase;
-
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
 }
@@ -22,25 +20,14 @@
                          {"token", shellSettingsEntry.Token},
                     };
 
-        return urlService.GetEncodedUrl(shellSettings);       
+        return urlService.GetEncodedUrl(shellSettings, tokenParams);
     }
 
-    public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
+    public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
 
-        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
-
-        var pathString = originalPathBase;
-
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
-        {
-            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
-        }
-
-        return $"{Context.Request.Scheme}://{hostString.Value + pathString.Value}";
+        return urlService.GetEncodedUrl(shellSettings);
     }
 }
 
@@ -154,7 +141,7 @@
                                 <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm edit">@T["Edit"]</a>
                                 @if (entry.ShellSettings.State == TenantState.Running)
                                 {
-                                    <a class="btn btn-info btn-sm view" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank">@T["View"]</a>
+                                    <a class="btn btn-info btn-sm view" href="@GetDisplayUrl(entry)" target="_blank">@T["View"]</a>
                                 }
                                 @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                                 {
