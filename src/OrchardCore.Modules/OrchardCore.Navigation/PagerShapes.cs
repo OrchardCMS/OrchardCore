@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -202,31 +204,17 @@ namespace OrchardCore.Navigation
             }
 
             // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
-            var shapeRoute = shape.GetProperty("RouteData");
-
-            if (shapeRoute != null)
+            var shapeRouteData = shape.GetProperty<RouteData>("RouteData");
+            if (shapeRouteData != null)
             {
-                var shapeRouteData = shapeRoute as RouteValueDictionary;
-                if (shapeRouteData == null)
+                foreach (var rd in shapeRouteData.Values)
                 {
-                    var route = shapeRoute as RouteData;
-                    if (route != null)
-                    {
-                        shapeRouteData = new RouteValueDictionary(route.Values);
-                    }
-                }
-
-                if (shapeRouteData != null)
-                {
-                    foreach (var rd in shapeRouteData)
-                    {
-                        routeData[rd.Key] = rd.Value;
-                    }
+                    routeData[rd.Key] = rd.Value;
                 }
             }
 
             var firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
-            var lastPage = Math.Min(totalPageCount, Page + (int)(numberOfPagesToShow / 2));
+            var lastPage = Math.Min(totalPageCount, Page + (numberOfPagesToShow / 2));
 
             var pageKey = String.IsNullOrEmpty(PagerId) ? "page" : PagerId;
 
@@ -546,20 +534,10 @@ namespace OrchardCore.Navigation
                 }
             }
 
-            var RouteValues = shape.GetProperty("RouteValues");
-            RouteValueDictionary rvd;
-            if (RouteValues == null)
-            {
-                rvd = new RouteValueDictionary();
-            }
-            else
-            {
-                rvd = RouteValues as RouteValueDictionary ?? new RouteValueDictionary(RouteValues);
-            }
-
+            var routeValues = shape.GetProperty<RouteValueDictionary>("RouteValues") ?? new RouteValueDictionary();
             if (!Disabled)
             {
-                shape.Attributes["href"] = Url.Action((string)rvd["action"], (string)rvd["controller"], rvd);
+                shape.Attributes["href"] = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
             }
             else
             {
@@ -594,7 +572,16 @@ namespace OrchardCore.Navigation
                 return result;
             }
 
-            return new StringHtmlContent(value.ToString());
+            return new HtmlContentString(value.ToString());
+        }
+
+        private class HtmlContentString : IHtmlContent
+        {
+            private readonly string _input;
+
+            public HtmlContentString(string input) => _input = input;
+
+            public void WriteTo(TextWriter writer, HtmlEncoder encoder) => writer.Write(encoder.Encode(_input));
         }
     }
 }
