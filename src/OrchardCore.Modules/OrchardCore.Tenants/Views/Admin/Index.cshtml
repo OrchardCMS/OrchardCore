@@ -2,7 +2,8 @@
 @using Microsoft.AspNetCore.Http
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
-
+@using OrchardCore.Setup.Core
+@inject IUrlService urlService
 @{
     var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase;
 
@@ -12,28 +13,16 @@
 
 @functions
 {
-    public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
+    public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
 
-        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        var tokenParams = new Dictionary<string, string>()
+                    {
+                         {"token", shellSettingsEntry.Token},
+                    };
 
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
-
-        var pathString = originalPathBase;
-
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
-        {
-            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
-        }
-
-        var queryString = String.Empty;
-        if (!String.IsNullOrEmpty(shellSettingsEntry.Token))
-        {
-            queryString = QueryString.Create("token", shellSettingsEntry.Token).ToString();
-        }
-
-        return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
+        return urlService.GetEncodedUrl(shellSettings);       
     }
 
     public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
@@ -67,7 +56,7 @@
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-50 d-inline-flex has-search">                    
+                <div class="input-group input-group-sm w-50 d-inline-flex has-search">
                     <i class="fa fa-search form-control-feedback"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
@@ -121,7 +110,7 @@
                                 <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
                             </div>
                             <div class="d-inline">
-                                <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                                <a class="text-break" href="@GetEncodedUrl(entry)">@entry.Name</a>
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
                                 {
                                     <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info"></i> @entry.ShellSettings["DatabaseProvider"]</span>
@@ -177,7 +166,7 @@
                                 }
                                 @if (entry.ShellSettings.State == TenantState.Uninitialized)
                                 {
-                                    <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
+                                    <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry)">@T["Setup"]</a>
                                 }
                                 <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" itemprop="UnsafeUrl">@T["Reload"]</a>
                             </div>
