@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-244-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-245-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -335,6 +335,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/petri-holopainen-tietotalo"><img src="https://avatars.githubusercontent.com/u/51475833?v=4" width="100px;" alt=""/><br /><sub><b>petri-holopainen-tietotalo</b></sub></a><br /><a href="#translation-petri-holopainen-tietotalo" title="Translation">🌍</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/philgdavies/"><img src="https://avatars.githubusercontent.com/u/12608907?v=4" width="100px;" alt=""/><br /><sub><b>Phil Davies</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=lazcool" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/dafergu2"><img src="https://avatars.githubusercontent.com/u/1692895?v=4" width="100px;" alt=""/><br /><sub><b>David Ferguson</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=dafergu2" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/hamdiRuwiss"><img src="https://avatars.githubusercontent.com/u/10530511?v=4" width="100px;" alt=""/><br /><sub><b>hamdiRuwiss</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=hamdiRuwiss" title="Code">💻</a></td>
   </tr>
 </table>
 

@@ -2280,6 +2280,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "hamdiRuwiss",
+      "name": "hamdiRuwiss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10530511?v=4",
+      "profile": "https://github.com/hamdiRuwiss",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
