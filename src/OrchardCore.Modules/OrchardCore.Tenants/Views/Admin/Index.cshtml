@@ -22,7 +22,7 @@
 
         var pathString = originalPathBase;
 
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }

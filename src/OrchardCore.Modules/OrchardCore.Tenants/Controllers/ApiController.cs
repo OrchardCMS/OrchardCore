@@ -300,18 +300,9 @@ namespace OrchardCore.Tenants.Controllers
 
         private string GetEncodedUrl(ShellSettings shellSettings, string token)
         {
-            var requestHost = Request.Host;
-            var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+            var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
-            var port = requestHost.Port;
-
-            if (port.HasValue)
-            {
-                host += ":" + port;
-            }
-
-            var hostString = new HostString(host);
-
+            var hostString = host != null ? new HostString(host) : Request.Host;
             var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
 
             if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
@@ -319,10 +310,10 @@ namespace OrchardCore.Tenants.Controllers
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
 
-            QueryString queryString = QueryString.Empty;
+            var queryString = String.Empty;
             if (!String.IsNullOrEmpty(token))
             {
-                queryString = QueryString.Create("token", token);
+                queryString = QueryString.Create("token", token).ToString();
             }
 
             return $"{Request.Scheme}://{hostString + pathString + queryString}";
