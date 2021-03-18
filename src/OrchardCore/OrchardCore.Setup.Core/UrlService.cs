@@ -50,19 +50,12 @@ namespace OrchardCore.Setup.Core
         public string GetDisplayUrl(ShellSettings shellSettings)
         {
             string baseUrl = string.Empty;
-            HostString hostString;
+            
             var httpContext = _httpContextAccessor.HttpContext;
 
             var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
-            if (string.IsNullOrEmpty(tenantUrlHost))
-            {
-                hostString = httpContext.Request.Host;
-            }
-            else
-            {
-                hostString = new HostString(tenantUrlHost);
-            }
+            var hostString = tenantUrlHost != null ? new HostString(tenantUrlHost) : httpContext.Request.Host;
 
             var pathString = httpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
             if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
