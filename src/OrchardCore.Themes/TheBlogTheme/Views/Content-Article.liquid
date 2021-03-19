@@ -21,6 +21,8 @@
         </div>
     </header>
 {% endzone %}
+{% assign user = '45ey53farnhhvygwc02a221bnr' | users_by_id %}
+{{ user.IsEnabled }}
 
 {{ Model.Content.ContentsMetadata.Value }}
 {{ Model.Content.ContentsMetadata | shape_render }}

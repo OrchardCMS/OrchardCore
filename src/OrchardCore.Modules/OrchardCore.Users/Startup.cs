@@ -236,13 +236,13 @@ namespace OrchardCore.Users
                     {
                         nameof(User.UserId) => StringValue.Create(user.UserId),
                         nameof(User.UserName) => StringValue.Create(user.UserName),
-                        // nameof(User.NormalizedUserName),
-                        // nameof(User.Email),
-                        // nameof(User.NormalizedEmail),
-                        // nameof(User.EmailConfirmed),
-                        // nameof(User.IsEnabled),
-                        // nameof(User.RoleNames),
-                        // nameof(User.Properties)
+                        nameof(User.NormalizedUserName) => StringValue.Create(user.NormalizedUserName),
+                        nameof(User.Email) => StringValue.Create(user.Email),
+                        nameof(User.NormalizedEmail) => StringValue.Create(user.NormalizedEmail),
+                        nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
+                        //nameof(User.RoleNames),
+                        //nameof(User.Properties)
                         _ => NilValue.Instance
                     };
                 });
