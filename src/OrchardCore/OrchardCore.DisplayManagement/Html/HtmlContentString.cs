@@ -15,8 +15,13 @@ namespace OrchardCore.DisplayManagement.Html
     {
         private readonly string _value;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="HtmlContentString"/>
+        /// </summary>
+        /// <param name="value"><see cref="string"/> to be HTML encoded when <see cref="WriteTo"/> is called.</param>
         public HtmlContentString(string value) => _value = value;
 
+        /// <inheritdoc />
         public void WriteTo(TextWriter writer, HtmlEncoder encoder) => writer.Write(encoder.Encode(_value));
 
         private string DebuggerToString()
