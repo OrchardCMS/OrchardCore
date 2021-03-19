@@ -243,7 +243,7 @@ namespace OrchardCore.Users
                         nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
                         nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
                         nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x))),
-                        //nameof(User.Properties)
+                        nameof(User.Properties) => new ObjectValue(user.Properties),
                         _ => NilValue.Instance
                     };
                 });

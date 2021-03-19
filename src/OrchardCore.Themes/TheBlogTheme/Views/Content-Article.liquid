@@ -22,13 +22,6 @@
     </header>
 {% endzone %}
 
-{% assign user = User | user_id | users_by_id %}
-{% for role in user.RoleNames %}
-    {{ role }}
-{% endfor %}
-
-
-
 {{ Model.Content.ContentsMetadata.Value }}
 {{ Model.Content.ContentsMetadata | shape_render }}
 
