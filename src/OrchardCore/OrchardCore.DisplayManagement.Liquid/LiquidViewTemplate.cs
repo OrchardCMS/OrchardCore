@@ -122,16 +122,14 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return obj;
                 }
 
-                // Resolves 'Model.Content.MyType-MyField-FieldType_Display__DisplayMode'.
+                // 'MyType-MyField-FieldType_Display__DisplayMode'.
                 var namedShaped = shape.Named(n);
                 if (namedShaped != null)
                 {
                     return namedShaped;
                 }
 
-                // Resolves 'Model.Content.MyNamedPart'.
-                // Resolves 'Model.Content.MyType__MyField'.
-                // Resolves 'Model.Content.MyType-MyField'.
+                // 'MyNamedPart', 'MyType__MyField' 'MyType-MyField'.
                 return shape.NormalizedNamed(n.Replace("__", "-"));
             }
 
