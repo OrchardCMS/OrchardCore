@@ -35,9 +35,9 @@
                 <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src=@Url.Content("~/TheAdmin/logo.png") alt="@Site.SiteName" /><span>@Site.SiteName</span></a>
 
                 <div class="flex-grow-1">
-                    @if (adminSettings.DisplayTitlesInTopbar)
+                    @if (adminSettings.DisplayBreadcrumbsInTopbar)
                     {
-                        @await RenderSectionAsync("Title", required: false)
+                        @await RenderSectionAsync("Breadcrumbs", required: false)
                     }
                 </div>
                 <div class="d-flex align-items-center">
@@ -73,11 +73,11 @@
         <div class="ta-content">
             @await RenderSectionAsync("Header", required: false)
             @await RenderSectionAsync("Messages", required: false)
-            @await RenderSectionAsync("Breadcrumbs", required: false)
-            @if (!adminSettings.DisplayTitlesInTopbar)
+            @if (!adminSettings.DisplayBreadcrumbsInTopbar)
             {
-                @await RenderSectionAsync("Title", required: false)
+                @await RenderSectionAsync("Breadcrumbs", required: false)
             }
+            @await RenderSectionAsync("Title", required: false)
             @await RenderBodyAsync()
         </div>
 

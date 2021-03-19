@@ -30,7 +30,9 @@
 
     .breadcrumb {
         background-color: transparent;
-        margin-top: 1rem;
+        padding: 0;
+        position: absolute;
+        top: 15px;
     }
 
     .btn.nav-link {

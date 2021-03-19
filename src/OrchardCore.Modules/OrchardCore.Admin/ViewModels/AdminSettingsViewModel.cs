@@ -8,6 +8,6 @@ namespace OrchardCore.Admin.ViewModels
 
         public bool DisplayNewMenu { get; set; }
 
-        public bool DisplayTitlesInTopbar { get; set; }
+        public bool DisplayBreadcrumbsInTopbar { get; set; }
     }
 }
