@@ -121,7 +121,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             /// <inheritdoc />
             public override string ToString()
             {
-                return new String(Value);
+                return new string(Value);
             }
         }
 
@@ -150,7 +150,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             /// <inheritdoc />
             public override string ToString()
             {
-                return new String(Value, Index, Length);
+                return new string(Value, Index, Length);
             }
         }
     }
