@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
@@ -58,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             // can't really cope with a shape that has no type information
             if (shapeMetadata == null || String.IsNullOrEmpty(shapeMetadata.Type))
             {
-                return new StringHtmlContent(context.Value.ToString());
+                return new HtmlContentString(context.Value.ToString());
             }
 
             // Copy the current context such that the rendering can customize it if necessary
