@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Web;
 using Fluid;
@@ -234,14 +235,14 @@ namespace OrchardCore.Users
                 {
                     return name switch
                     {
-                        nameof(User.UserId) => StringValue.Create(user.UserId),
-                        nameof(User.UserName) => StringValue.Create(user.UserName),
-                        nameof(User.NormalizedUserName) => StringValue.Create(user.NormalizedUserName),
-                        nameof(User.Email) => StringValue.Create(user.Email),
-                        nameof(User.NormalizedEmail) => StringValue.Create(user.NormalizedEmail),
+                        nameof(User.UserId) => new StringValue(user.UserId),
+                        nameof(User.UserName) => new StringValue(user.UserName),
+                        nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
+                        nameof(User.Email) => new StringValue(user.Email),
+                        nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
                         nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
                         nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
-                        //nameof(User.RoleNames),
+                        nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x))),
                         //nameof(User.Properties)
                         _ => NilValue.Instance
                     };
