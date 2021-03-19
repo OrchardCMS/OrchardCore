@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 
@@ -573,15 +571,6 @@ namespace OrchardCore.Navigation
             }
 
             return new HtmlContentString(value.ToString());
-        }
-
-        private class HtmlContentString : IHtmlContent
-        {
-            private readonly string _value;
-
-            public HtmlContentString(string value) => _value = value;
-
-            public void WriteTo(TextWriter writer, HtmlEncoder encoder) => writer.Write(encoder.Encode(_value));
         }
     }
 }
