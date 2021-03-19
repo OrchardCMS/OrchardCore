@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement
@@ -36,7 +36,7 @@ namespace OrchardCore.DisplayManagement
 
         public PositionWrapper(string value, string position)
         {
-            _value = new StringHtmlContent(value);
+            _value = new HtmlContentString(value);
             Position = position;
         }
 

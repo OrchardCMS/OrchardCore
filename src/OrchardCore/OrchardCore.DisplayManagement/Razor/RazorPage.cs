@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Settings;
@@ -94,7 +95,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             if (shape is string str)
             {
-                return Task.FromResult<IHtmlContent>(new StringHtmlContent(str));
+                return Task.FromResult<IHtmlContent>(new HtmlContentString(str));
             }
 
             throw new ArgumentException("DisplayAsync requires an instance of IShape");
@@ -238,7 +239,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             if (!String.IsNullOrEmpty(segment))
             {
-                Title.AddSegment(new StringHtmlContent(segment), position);
+                Title.AddSegment(new HtmlContentString(segment), position);
             }
 
             return Title.GenerateTitle(separator);
