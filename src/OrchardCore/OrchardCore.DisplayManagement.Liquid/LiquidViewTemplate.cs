@@ -40,7 +40,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
 
         internal static async Task RenderAsync(RazorPage<dynamic> page)
-        {            
+        {
             var services = page.Context.RequestServices;
             var liquidViewParser = services.GetRequiredService<LiquidViewParser>();
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
@@ -49,7 +49,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment);
             var context = new LiquidTemplateContext(services, templateOptions);
-            
+
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
             try
@@ -75,19 +75,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                     entry.ExpirationTokens.Add(fileProvider.Watch(path));
                 }
 
-                using (var stream = fileInfo.CreateReadStream())
+                using var stream = fileInfo.CreateReadStream();
+                using var sr = new StreamReader(stream);
+
+                if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
                 {
-                    using (var sr = new StreamReader(stream))
-                    {
-                        if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
-                        {
-                            return new LiquidViewTemplate(template);
-                        }
-                        else
-                        {
-                            throw new Exception($"Failed to parse liquid file {path}: {String.Join(System.Environment.NewLine, errors)}");
-                        }
-                    }
+                    return new LiquidViewTemplate(template);
+                }
+                else
+                {
+                    throw new Exception($"Failed to parse liquid file {path}: {String.Join(System.Environment.NewLine, errors)}");
                 }
             });
         }
@@ -103,38 +100,37 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             if (o is Shape shape)
             {
-                switch (n)
+                object obj = n switch
                 {
-                    case "Id":
-                        return shape.Id;
-                    case "TagName":
-                        return shape.TagName;
-                    case "HasItems":
-                        return shape.HasItems;
-                    case "Classes":
-                        return shape.Classes;
-                    case "Attributes":
-                        return shape.Attributes;
-                    case "Items":
-                        return shape.Items;
-                    default:
-                        if (shape.Properties.TryGetValue(n, out var result))
-                        {
-                            return result;
-                        }
+                    nameof(Shape.Id) => shape.Id,
+                    nameof(Shape.TagName) => shape.TagName,
+                    nameof(Shape.HasItems) => shape.HasItems,
+                    nameof(Shape.Classes) => shape.Classes,
+                    nameof(Shape.Attributes) => shape.Attributes,
+                    nameof(Shape.Metadata) => shape.Metadata,
+                    nameof(Shape.Items) => shape.Items,
+                    _ => null
+                };
 
-                        // Resolves Model.Content.MyType-MyField-FieldType_Display__DisplayMode
-                        var namedShaped = shape.Named(n);
-                        if (namedShaped != null)
-                        {
-                            return namedShaped;
-                        }
-
-                        // Resolves Model.Content.MyNamedPart
-                        // Resolves Model.Content.MyType__MyField
-                        // Resolves Model.Content.MyType-MyField
-                        return shape.NormalizedNamed(n.Replace("__", "-"));
+                if (obj != null)
+                {
+                    return obj;
                 }
+
+                if (shape.Properties.TryGetValue(n, out obj))
+                {
+                    return obj;
+                }
+
+                // 'MyType-MyField-FieldType_Display__DisplayMode'.
+                var namedShaped = shape.Named(n);
+                if (namedShaped != null)
+                {
+                    return namedShaped;
+                }
+
+                // 'MyNamedPart', 'MyType__MyField' 'MyType-MyField'.
+                return shape.NormalizedNamed(n.Replace("__", "-"));
             }
 
             return null;

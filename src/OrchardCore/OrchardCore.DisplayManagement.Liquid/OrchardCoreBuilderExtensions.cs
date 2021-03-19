@@ -3,11 +3,13 @@ using System.Globalization;
 using System.Linq;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Filters;
@@ -54,17 +56,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     o.MemberAccessStrategy.Register<CultureInfo, FluidValue>((culture, name) =>
                     {
-                        switch (name)
+                        return name switch
                         {
-                            case "Name": return new StringValue(culture.Name);
-                            case "Dir": return new StringValue(culture.GetLanguageDirection());
-
-                            default: return null;
-                        }
+                            nameof(CultureInfo.Name) => new StringValue(culture.Name),
+                            "Dir" => new StringValue(culture.GetLanguageDirection()),
+                            _ => null
+                        };
                     });
 
                     o.ValueConverters.Add(o => o is Shape s ? new ObjectValue(s) : null);
                     o.ValueConverters.Add(o => o is ZoneHolding z ? new ObjectValue(z) : null);
+                    o.ValueConverters.Add(o => !(o is IShape) && o is IHtmlContent c ? new HtmlContentValue(c) : null);
 
                     o.MemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
                     o.MemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
