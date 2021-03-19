@@ -20,7 +20,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var arguments = new NamedExpressionList(argumentsList);
 
-            var titleBuilder = ((IServiceProvider)services).GetRequiredService<IPageTitleBuilder>();
+            var titleBuilder = services.GetRequiredService<IPageTitleBuilder>();
 
             var segmentExpression = arguments["segment", 0] ?? throw new ArgumentException("page_title tag requires a segment argument");
             var segment = (await segmentExpression.EvaluateAsync(context)).ToStringValue();
