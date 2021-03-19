@@ -1,11 +1,11 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Web;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -212,7 +212,7 @@ namespace OrchardCore.Users
             services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
 
             services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
-            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();            
+            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
         }
     }
 
@@ -231,28 +231,21 @@ namespace OrchardCore.Users
 
                 o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
 
-                o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, context) =>
+                o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
                 {
-                    var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                    var httpContextAccessor = liquidTemplateContext.Services.GetRequiredService<IHttpContextAccessor>();
-                    var user = httpContextAccessor.HttpContext.User;
-
-                    //    FluidValue result = name switch
-                    //    {
-                    //    nameof(User.UserId) => user.UserId,
-                    //    nameof(User.UserName),
-                    //    nameof(User.NormalizedUserName),
-                    //    nameof(User.Email),
-                    //    nameof(User.NormalizedEmail),
-                    //    nameof(User.EmailConfirmed),
-                    //    nameof(User.IsEnabled),
-                    //    nameof(User.RoleNames),
-                    //    nameof(User.Properties)
-                    //_ => NilValue.Instance
-                    //    };
-
-                    return NilValue.Instance;
+                    return name switch
+                    {
+                        nameof(User.UserId) => new StringValue(user.UserId),
+                        nameof(User.UserName) => new StringValue(user.UserName),
+                        nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
+                        nameof(User.Email) => new StringValue(user.Email),
+                        nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
+                        nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x))),
+                        nameof(User.Properties) => new ObjectValue(user.Properties),
+                        _ => NilValue.Instance
+                    };
                 });
             })
            .AddLiquidFilter<UsersByIdFilter>("users_by_id")
