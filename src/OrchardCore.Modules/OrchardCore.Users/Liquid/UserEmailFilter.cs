@@ -41,7 +41,6 @@ namespace OrchardCore.Users.Liquid
 
             if (value is IUser user)
             {
-
                 return FluidValue.Create(await _userManager.GetEmailAsync(user), ctx.Options);
             }
 
