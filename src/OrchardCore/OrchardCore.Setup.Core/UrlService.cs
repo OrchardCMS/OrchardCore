@@ -18,7 +18,7 @@ namespace OrchardCore.Setup.Core
             string baseUrl = string.Empty;           
             var httpContext = _httpContextAccessor.HttpContext;
 
-            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+            var tenantUrlHost = shellSettings?.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
             var hostString = tenantUrlHost != null ? new HostString(tenantUrlHost) : httpContext.Request.Host;
 
@@ -45,7 +45,7 @@ namespace OrchardCore.Setup.Core
             
             var httpContext = _httpContextAccessor.HttpContext;
 
-            var tenantUrlHost = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+            var tenantUrlHost = shellSettings?.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
             var hostString = tenantUrlHost != null ? new HostString(tenantUrlHost) : httpContext.Request.Host;
 
