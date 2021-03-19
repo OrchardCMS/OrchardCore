@@ -5,7 +5,6 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -231,15 +230,21 @@ namespace OrchardCore.Users
 
                 o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
 
-                o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, context) =>
+                o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
                 {
-                    if (name == "Current")
+                    return name switch
                     {
-                        var httpContextAccessor = ((LiquidTemplateContext)context).Services.GetRequiredService<IHttpContextAccessor>();
-                        return FluidValue.Create(httpContextAccessor.HttpContext.User, context.Options);
-                    }
-
-                    return NilValue.Instance;
+                        nameof(User.UserId) => StringValue.Create(user.UserId),
+                        nameof(User.UserName) => StringValue.Create(user.UserName),
+                        // nameof(User.NormalizedUserName),
+                        // nameof(User.Email),
+                        // nameof(User.NormalizedEmail),
+                        // nameof(User.EmailConfirmed),
+                        // nameof(User.IsEnabled),
+                        // nameof(User.RoleNames),
+                        // nameof(User.Properties)
+                        _ => NilValue.Instance
+                    };
                 });
             })
            .AddLiquidFilter<UsersByIdFilter>("users_by_id")
