@@ -117,6 +117,8 @@ namespace OrchardCore.DisplayManagement.Liquid
                         return shape.Attributes;
                     case "Items":
                         return shape.Items;
+                    case "Metadata":
+                        return shape.Metadata;
                     default:
                         if (shape.Properties.TryGetValue(n, out var result))
                         {

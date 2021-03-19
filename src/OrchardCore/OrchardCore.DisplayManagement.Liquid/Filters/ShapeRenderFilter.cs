@@ -22,7 +22,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 return new HtmlContentValue(await task);
             }
 
-            if (input.ToObjectValue() is IShape shape)
+            var obj = input.ToObjectValue();
+            if (obj is IShape shape)
             {
                 var task = _displayHelper.ShapeExecuteAsync(shape);
                 if (!task.IsCompletedSuccessfully)
@@ -31,6 +32,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 }
 
                 return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
+            }
+            else if (obj is IHtmlContent html)
+            {
+                return new ValueTask<FluidValue>(new HtmlContentValue(html));
             }
 
             return new ValueTask<FluidValue>(new HtmlContentValue(HtmlString.Empty));
