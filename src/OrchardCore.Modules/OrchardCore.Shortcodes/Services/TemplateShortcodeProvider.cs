@@ -75,6 +75,7 @@ namespace OrchardCore.Shortcodes.Services
 
             var result = await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
 
+            // Allow multiple serial calls of this shortcode template.
             _identifiers.Remove(identifier);
 
             return result;
