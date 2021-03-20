@@ -49,21 +49,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IRazorViewExtensionProvider, LiquidViewExtensionProvider>();
                 services.AddSingleton<LiquidTagHelperFactory>();
 
-                services.AddScoped<ILiquidTemplateEventHandler, RequestLiquidTemplateEventHandler>();
-                services.AddScoped<ILiquidTemplateEventHandler, CultureLiquidTemplateEventHandler>();
-
                 services.Configure<TemplateOptions>(o =>
                 {
-                    o.MemberAccessStrategy.Register<CultureInfo, FluidValue>((culture, name) =>
-                    {
-                        return name switch
-                        {
-                            nameof(CultureInfo.Name) => new StringValue(culture.Name),
-                            "Dir" => new StringValue(culture.GetLanguageDirection()),
-                            _ => null
-                        };
-                    });
-
                     o.ValueConverters.Add(o => o is Shape s ? new ObjectValue(s) : null);
                     o.ValueConverters.Add(o => o is ZoneHolding z ? new ObjectValue(z) : null);
                     o.ValueConverters.Add(o => !(o is IShape) && o is IHtmlContent c ? new HtmlContentValue(c) : null);
@@ -72,28 +59,61 @@ namespace Microsoft.Extensions.DependencyInjection
                     o.MemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
                     o.MemberAccessStrategy.Register<ShapeMetadata>();
 
-                    o.MemberAccessStrategy.Register<HttpRequest, FluidValue>((request, name) =>
+                    o.Scope.SetValue("Culture", new ObjectValue(new LiquidCultureAccessor()));
+                    o.MemberAccessStrategy.Register<LiquidCultureAccessor, FluidValue>((obj, name, ctx) =>
                     {
-                        switch (name)
+                        return name switch
                         {
-                            case "QueryString": return new StringValue(request.QueryString.Value);
-                            case "ContentType": return new StringValue(request.ContentType);
-                            case "ContentLength": return NumberValue.Create(request.ContentLength ?? 0);
-                            case "Cookies": return new ObjectValue(new CookieCollectionWrapper(request.Cookies));
-                            case "Headers": return new ObjectValue(new HeaderDictionaryWrapper(request.Headers));
-                            case "Query": return new ObjectValue(request.Query);
-                            case "Form": return request.HasFormContentType ? (FluidValue)new ObjectValue(request.Form) : NilValue.Instance;
-                            case "Protocol": return new StringValue(request.Protocol);
-                            case "Path": return new StringValue(request.Path.Value);
-                            case "PathBase": return new StringValue(request.PathBase.Value);
-                            case "Host": return new StringValue(request.Host.Value);
-                            case "IsHttps": return BooleanValue.Create(request.IsHttps);
-                            case "Scheme": return new StringValue(request.Scheme);
-                            case "Method": return new StringValue(request.Method);
-                            case "Route": return new ObjectValue(new RouteValueDictionaryWrapper(request.RouteValues));
+                            nameof(CultureInfo.Name) => new StringValue(CultureInfo.CurrentUICulture.Name),
+                            "Dir" => new StringValue(CultureInfo.CurrentUICulture.GetLanguageDirection()),
+                            _ => NilValue.Instance
+                        };
+                    });
 
-                            default: return null;
+                    o.Scope.SetValue("Request", new ObjectValue(new LiquidRequestAccessor()));
+                    o.MemberAccessStrategy.Register<LiquidRequestAccessor, FluidValue>((obj, name, ctx) =>
+                    {
+                        var request = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.Request;
+                        if (request != null)
+                        {
+                            return name switch
+                            {
+                                nameof(HttpRequest.QueryString) => new StringValue(request.QueryString.Value),
+                                nameof(HttpRequest.ContentType) => new StringValue(request.ContentType),
+                                nameof(HttpRequest.ContentLength) => NumberValue.Create(request.ContentLength ?? 0),
+                                nameof(HttpRequest.Cookies) => new ObjectValue(new CookieCollectionWrapper(request.Cookies)),
+                                nameof(HttpRequest.Headers) => new ObjectValue(new HeaderDictionaryWrapper(request.Headers)),
+                                nameof(HttpRequest.Query) => new ObjectValue(request.Query),
+                                nameof(HttpRequest.Form) => request.HasFormContentType ? (FluidValue)new ObjectValue(request.Form) : NilValue.Instance,
+                                nameof(HttpRequest.Protocol) => new StringValue(request.Protocol),
+                                nameof(HttpRequest.Path) => new StringValue(request.Path.Value),
+                                nameof(HttpRequest.PathBase) => new StringValue(request.PathBase.Value),
+                                nameof(HttpRequest.Host) => new StringValue(request.Host.Value),
+                                nameof(HttpRequest.IsHttps) => BooleanValue.Create(request.IsHttps),
+                                nameof(HttpRequest.Scheme) => new StringValue(request.Scheme),
+                                nameof(HttpRequest.Method) => new StringValue(request.Method),
+                                nameof(HttpRequest.RouteValues) => new ObjectValue(new RouteValueDictionaryWrapper(request.RouteValues)),
+                                _ => NilValue.Instance
+                            };
                         }
+
+                        return NilValue.Instance;
+                    });
+
+                    o.Scope.SetValue("HttpContext", new ObjectValue(new LiquidHttpContextAccessor()));
+                    o.MemberAccessStrategy.Register<LiquidHttpContextAccessor, FluidValue>((obj, name, ctx) =>
+                    {
+                        var httpContext = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                        if (httpContext != null)
+                        {
+                            return name switch
+                            {
+                                nameof(HttpContext.Items) => new ObjectValue(new HttpContextItemsWrapper(httpContext.Items)),
+                                _ => NilValue.Instance
+                            };
+                        }
+
+                        return NilValue.Instance;
                     });
 
                     o.MemberAccessStrategy.Register<FormCollection, FluidValue>((forms, name) =>
@@ -104,15 +124,6 @@ namespace Microsoft.Extensions.DependencyInjection
                         }
 
                         return new ArrayValue(forms[name].Select(x => new StringValue(x)).ToArray());
-                    });
-
-                    o.MemberAccessStrategy.Register<HttpContext, FluidValue>((httpcontext, name) =>
-                    {
-                        switch (name)
-                        {
-                            case "Items": return new ObjectValue(new HttpContextItemsWrapper(httpcontext.Items));
-                            default: return null;
-                        }
                     });
 
                     o.MemberAccessStrategy.Register<HttpContextItemsWrapper, object>((httpContext, name) => httpContext.Items[name]);

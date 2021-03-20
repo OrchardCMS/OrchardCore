@@ -231,7 +231,6 @@ namespace OrchardCore.Users
                 o.MemberAccessStrategy.Register<ClaimsIdentity>();
 
                 o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
-
                 o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
                 {
                     var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;

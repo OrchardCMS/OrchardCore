@@ -20,6 +20,7 @@ namespace OrchardCore.Liquid
             _getter = getter;
             _context = context;
         }
+
         public Task<FluidValue> GetValueAsync(string identifier)
         {
             return _getter(identifier, _context);

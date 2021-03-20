@@ -88,9 +88,6 @@ namespace OrchardCore.Contents
                 o.Filters.AddFilter("display_text", DisplayTextFilter.DisplayText);
 
                 o.Scope.SetValue("Content", new ObjectValue(new LiquidContentAccessor()));
-
-                o.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
-
                 o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", (obj, context) =>
                 {
                     var liquidTemplateContext = (LiquidTemplateContext)context;
