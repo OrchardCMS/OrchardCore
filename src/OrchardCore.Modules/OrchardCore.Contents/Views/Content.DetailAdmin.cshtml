@@ -11,7 +11,7 @@
     var tag = Tag(Model, "article");
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(contentItem.DisplayText)</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Admin Details of {0}", contentItem.DisplayText])</h1></zone>
 
 <article>
     <header>
