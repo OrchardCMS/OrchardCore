@@ -6,6 +6,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -230,6 +231,21 @@ namespace OrchardCore.Users
                 o.MemberAccessStrategy.Register<ClaimsIdentity>();
 
                 o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
+
+                o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+                {
+                    var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
+                    if (user != null)
+                    {
+                        return name switch
+                        {
+                            nameof(ClaimsPrincipal.Identity) => new ObjectValue(user.Identity),
+                            _ => NilValue.Instance
+                        };
+                    }
+
+                    return NilValue.Instance;
+                });
 
                 o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
                 {
