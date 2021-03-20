@@ -45,17 +45,17 @@ namespace OrchardCore.Autoroute
                 {
                     var liquidTemplateContext = (LiquidTemplateContext)context;
 
-                    return new LiquidPropertyAccessor(liquidTemplateContext, async (alias, context) =>
+                    return new LiquidPropertyAccessor(liquidTemplateContext, async (slug, context) =>
                     {
                         var autorouteEntries = context.Services.GetRequiredService<IAutorouteEntries>();
                         var contentManager = context.Services.GetRequiredService<IContentManager>();
 
-                        if (!alias.StartsWith('/'))
+                        if (!slug.StartsWith('/'))
                         {
-                            alias = "/" + alias;
+                            slug = "/" + slug;
                         }
 
-                        (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(alias);
+                        (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
 
                         if (found)
                         {

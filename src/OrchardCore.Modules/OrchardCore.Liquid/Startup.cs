@@ -32,6 +32,9 @@ namespace OrchardCore.Liquid
                 options.Filters.AddFilter("html_class", LiquidViewFilters.HtmlClass);
                 options.Filters.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
 
+                // Used to provide a factory to return a value based on a property name that is unknown at registration time.
+                options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
+
                 // When a property of a JObject value is accessed, try to look into its properties
                 options.MemberAccessStrategy.Register<JObject, object>((source, name) => source[name]);
 
