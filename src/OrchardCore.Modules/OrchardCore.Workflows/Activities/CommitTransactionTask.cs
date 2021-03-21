@@ -22,7 +22,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override LocalizedString DisplayText => S["Commit Transaction Task"];
 
-        public override LocalizedString Category => S["Primitives"];
+        public override LocalizedString Category => S["Session"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
