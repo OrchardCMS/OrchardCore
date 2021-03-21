@@ -14,9 +14,9 @@ namespace OrchardCore.Shortcodes.Services
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly HashSet<string> _identifiers = new HashSet<string>();
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
+        private readonly HashSet<string> _identifiers = new HashSet<string>();
 
         public TemplateShortcodeProvider(
             ShortcodeTemplatesManager shortcodeTemplatesManager,
@@ -53,25 +53,13 @@ namespace OrchardCore.Shortcodes.Services
                 Context = context
             };
 
-            var parameters = new Dictionary<string, FluidValue>();
-            parameters[identifier] = new StringValue("");
-
-            // TODO: Fix 'Content' property conflict differently, see #8259
-
-            // var c = context.GetValue("Content").ToObjectValue();
-            // if (c is LiquidContentAccessor contentAccessor)
-            // {
-            //     contentAccessor.Content = model.Content ?? "";
-            //     parameters["Content"] = contentAccessor;
-            // }
-            // else
-            // {
-            //     parameters["Content"] = model.Content ?? "";
-            // }
-
-            parameters["Args"] = new ObjectValue(model.Args);
-            parameters["Content"] = new StringValue(model.Content);
-            parameters["Context"] = new ObjectValue(model.Context);
+            var parameters = new Dictionary<string, FluidValue>
+            {
+                [identifier] = new StringValue(""),
+                ["Args"] = new ObjectValue(model.Args),
+                ["Content"] = new ObjectValue(new Content(model.Content)),
+                ["Context"] = new ObjectValue(model.Context)
+            };
 
             var result = await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
 
@@ -79,6 +67,13 @@ namespace OrchardCore.Shortcodes.Services
             _identifiers.Remove(identifier);
 
             return result;
+        }
+
+        internal class Content : LiquidContentAccessor
+        {
+            public readonly string _content;
+            public Content(string content) => _content = content;
+            public override string ToString() => _content;
         }
     }
 }
