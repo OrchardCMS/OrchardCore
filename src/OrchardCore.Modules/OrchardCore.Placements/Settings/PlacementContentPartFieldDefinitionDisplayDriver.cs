@@ -29,6 +29,7 @@ namespace OrchardCore.Placements.Settings
                     {
                         ShapeType = shapeType,
                         Differentiator = differentiator,
+                        ContentPart = partName,
                         Description = S["Placement for the {0} field in a {1}", displayName, partName]
                     });
 
@@ -38,6 +39,7 @@ namespace OrchardCore.Placements.Settings
                         ShapeType = shapeType,
                         Differentiator = differentiator,
                         DisplayType = "Detail",
+                        ContentPart = partName,
                         Description = S["Placement for the {0} field in a {1} in detail views", displayName, partName]
                     });
 
@@ -47,6 +49,7 @@ namespace OrchardCore.Placements.Settings
                         ShapeType = shapeType,
                         Differentiator = differentiator,
                         DisplayType = "Summary",
+                        ContentPart = partName,
                         Description = S["Placement for the {0} field in a {1} in summary views", displayName, partName]
                     });
 
@@ -55,7 +58,29 @@ namespace OrchardCore.Placements.Settings
                     {
                         ShapeType = $"{shapeType}_Edit",
                         Differentiator = differentiator,
+                        DisplayType = "Edit",
+                        ContentPart = partName,
                         Description = S["Placement in admin editor for the {0} field in a {1}", displayName, partName]
+                    });
+
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = shapeType,
+                        Differentiator = differentiator,
+                        DisplayType = "SummaryAdmin",
+                        ContentPart = partName,
+                        Description = S["Placement in admin for summary views for the {0} field in a {1}", displayName, partName]
+                    });
+
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = shapeType,
+                        Differentiator = differentiator,
+                        DisplayType = "DetailAdmin",
+                        ContentPart = partName,
+                        Description = S["Placement in admin for Detail views for the {0} field in a {1}", displayName, partName]
                     });
 
             }).Location("Shortcuts");

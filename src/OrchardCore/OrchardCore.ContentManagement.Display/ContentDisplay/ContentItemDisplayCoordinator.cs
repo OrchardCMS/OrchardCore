@@ -135,11 +135,42 @@ namespace OrchardCore.ContentManagement.Display
 
                     if (part.GetType() == typeof(ContentPart) && partTypeName != contentTypePartDefinition.ContentTypeDefinition.Name)
                     {
-                        var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
+                        var displayMode = contentTypePartDefinition.DisplayMode();
+                        var hasDisplayMode = !String.IsNullOrEmpty(displayMode);
+                        var shapeType = hasDisplayMode ? $"ContentPart_Display__{displayMode}" : "ContentPart";
 
                         var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
                         shapeResult.Differentiator(partName);
+                        shapeResult.Name(partName);
                         shapeResult.Location("Content");
+
+                        shapeResult.Displaying(ctx =>
+                       {
+                           if (hasDisplayMode && ctx.Shape.Metadata.DisplayType == "Detail")
+                           {
+                                // Fall back to default template.
+                                ctx.Shape.Metadata.Alternates.Add("ContentPart");
+                           }
+
+                           ctx.Shape.Metadata.Alternates.Add(partTypeName);
+                           ctx.Shape.Metadata.Alternates.Add($"{contentType}__{partTypeName}");
+                           if (context.DisplayType != "Detail")
+                           {
+                               ctx.Shape.Metadata.Alternates.Add($"ContentPart_{context.DisplayType}");
+                               ctx.Shape.Metadata.Alternates.Add($"{partTypeName}_{context.DisplayType}");
+                               ctx.Shape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partTypeName}");
+                           }
+
+                           if (partName != partTypeName)
+                           {
+                               ctx.Shape.Metadata.Alternates.Add($"{contentType}__{partName}");
+
+                               if (context.DisplayType != "Detail")
+                               {
+                                   ctx.Shape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partName}");
+                               }
+                           }
+                       });
 
                         await shapeResult.ApplyAsync(context);
 
@@ -149,25 +180,6 @@ namespace OrchardCore.ContentManagement.Display
                         dynamic dynamicContentPartShape = contentPartShape;
                         dynamicContentPartShape[partTypeName] = part.Content;
                         dynamicContentPartShape["ContentItem"] = part.ContentItem;
-
-                        contentPartShape.Metadata.Alternates.Add(partTypeName);
-                        contentPartShape.Metadata.Alternates.Add($"{contentType}__{partTypeName}");
-
-                        if (context.DisplayType != "Detail")
-                        {
-                            contentPartShape.Metadata.Alternates.Add($"{partTypeName}_{context.DisplayType}");
-                            contentPartShape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partTypeName}");
-                        }
-
-                        if (partName != partTypeName)
-                        {
-                            contentPartShape.Metadata.Alternates.Add($"{contentType}__{partName}");
-
-                            if (context.DisplayType != "Detail")
-                            {
-                                contentPartShape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partName}");
-                            }
-                        }
 
                         context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater);
                         // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.

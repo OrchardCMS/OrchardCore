@@ -43,20 +43,16 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     stereotype = settings.Stereotype;
                 }
 
-                if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
-                {
-                    stereotype += "__";
-                }
-
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
                 var editorPartType = GetEditorShapeType(_typePartDefinition);
                 var displayMode = _typePartDefinition.DisplayMode();
                 var hasDisplayMode = !String.IsNullOrEmpty(displayMode);
+                var isDisplayModeShapeType = shapeType == partType + DisplaySeparator + displayMode;
 
                 // If the shape type and the field type only differ by the display mode
-                if (hasDisplayMode && shapeType == partType + DisplaySeparator + displayMode)
+                if (hasDisplayMode && isDisplayModeShapeType)
                 {
                     // Preserve the shape name regardless its differentiator
                     result.Name(partName);
@@ -134,7 +130,15 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                             if (hasDisplayMode)
                             {
-                                shapeType = $"{partType}__{displayMode}";
+                                if (isDisplayModeShapeType)
+                                {
+                                    // In case of display mode, update shape type to only include DisplayMode and DisplayToken
+                                    shapeType = $"{displayMode}";
+                                }
+                                else
+                                {
+                                    shapeType = $"{shapeType}__{displayMode}";
+                                }
 
                                 if (displayType == "")
                                 {
