@@ -64,6 +64,7 @@ namespace OrchardCore.Settings
                         nameof(ISite.AppendVersion) => BooleanValue.Create(site.AppendVersion),
                         nameof(ISite.CacheMode) => new StringValue(site.CacheMode.ToString()),
                         nameof(ISite.PageTitleFormat) => new StringValue(site.PageTitleFormat),
+                        nameof(ISite.Properties) => new ObjectValue(site.Properties),
                         _ => NilValue.Instance
                     };
 
