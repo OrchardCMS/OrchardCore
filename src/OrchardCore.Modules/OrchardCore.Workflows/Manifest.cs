@@ -36,7 +36,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Workflows.Session",
     Name = "Session Workflow Activities",
-    Description = "Provides 'YesSql' Session related activities.",
+    Description = "Provides 'YesSql' Session-related activities.",
     Dependencies = new[] { "OrchardCore.Workflows" },
     Category = "Workflows"
 )]
