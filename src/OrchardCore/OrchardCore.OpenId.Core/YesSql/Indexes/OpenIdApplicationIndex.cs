@@ -29,7 +29,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
     }
 
     public class OpenIdApplicationIndexProvider : IndexProvider<OpenIdApplication>
-    {        
+    {
         private const string OpenIdCollection = OpenIdApplication.OpenIdCollection;
 
         public OpenIdApplicationIndexProvider()
