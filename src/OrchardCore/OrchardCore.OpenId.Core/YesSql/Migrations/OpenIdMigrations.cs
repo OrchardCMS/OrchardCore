@@ -104,7 +104,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdScopeCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdScopeIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdScope_DocumentId",
+                .CreateIndex("IDX_COL_OpenIdScope",
                     "DocumentId",
                     nameof(OpenIdScopeIndex.Name),
                     nameof(OpenIdScopeIndex.ScopeId)),
