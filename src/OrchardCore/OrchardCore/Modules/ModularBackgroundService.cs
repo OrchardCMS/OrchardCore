@@ -148,6 +148,11 @@ namespace OrchardCore.Modules
                             }
                         }
 
+                        var context = new BackgroundTaskEventContext(taskName, scope);
+                        var handlers = scope.ServiceProvider.GetServices<IBackgroundTaskEventHandler>();
+
+                        await handlers.InvokeAsync((handler, context, token) => handler.ExecutingAsync(context, token), context, stoppingToken, _logger);
+
                         try
                         {
                             _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
@@ -160,7 +165,10 @@ namespace OrchardCore.Modules
                         catch (Exception ex) when (!ex.IsFatal())
                         {
                             _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            context.Exception = ex;
                         }
+
+                        await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);
                     });
                 }
             });

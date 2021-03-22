@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Models;
@@ -74,7 +73,12 @@ namespace OrchardCore.Shortcodes.Services
             parameters["Content"] = new StringValue(model.Content);
             parameters["Context"] = new ObjectValue(model.Context);
 
-            return await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
+            var result = await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
+
+            // Allow multiple serial calls of this shortcode template.
+            _identifiers.Remove(identifier);
+
+            return result;
         }
     }
 }

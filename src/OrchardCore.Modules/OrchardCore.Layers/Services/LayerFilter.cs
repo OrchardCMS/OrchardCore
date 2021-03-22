@@ -93,7 +93,7 @@ namespace OrchardCore.Layers.Services
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
-                var layout = await _layoutAccessor.GetLayoutAsync() as ZoneHolding;
+                var layout = await _layoutAccessor.GetLayoutAsync();
                 var updater = _modelUpdaterAccessor.ModelUpdater;
 
                 var layersCache = new Dictionary<string, bool>();

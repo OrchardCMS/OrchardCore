@@ -15,22 +15,19 @@
     public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
-
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
         var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
-
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        var queryString = String.Empty;
+        var queryString = QueryString.Empty;
         if (!String.IsNullOrEmpty(shellSettingsEntry.Token))
         {
-            queryString = QueryString.Create("token", shellSettingsEntry.Token).ToString();
+            queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
 
         return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
@@ -39,13 +36,10 @@
     public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
-
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
         var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
-
         if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
@@ -67,7 +61,7 @@
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-50 d-inline-flex has-search">                    
+                <div class="input-group input-group-sm w-50 d-inline-flex has-search">
                     <i class="fa fa-search form-control-feedback"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>

@@ -30,7 +30,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdApplicationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdApp_DocumentId",
+                .CreateIndex("IDX_COL_OpenIdApplication",
                     "DocumentId",
                     nameof(OpenIdApplicationIndex.ApplicationId),
                     nameof(OpenIdApplicationIndex.ClientId)),
@@ -80,7 +80,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdAuthorizationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAuth_DocumentId_ApplicationId",
+                .CreateIndex("IDX_COL_OpenIdAuthorization_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdAuthorizationIndex.ApplicationId),
                     nameof(OpenIdAuthorizationIndex.Status),
@@ -89,7 +89,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAuth_DocumentId_AuthorizationId",
+                .CreateIndex("IDX_COL_OpenIdAuthorization_AuthorizationId",
                     "DocumentId",
                     nameof(OpenIdAuthorizationIndex.AuthorizationId),
                     nameof(OpenIdAuthorizationIndex.Status),
@@ -135,7 +135,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdTokenCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_ApplicationId",
+                .CreateIndex("IDX_COL_OpenIdToken_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.ApplicationId),
                     nameof(OpenIdTokenIndex.Status),
@@ -144,7 +144,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_AuthorizationId",
+                .CreateIndex("IDX_COL_OpenIdToken_AuthorizationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.AuthorizationId),
                     nameof(OpenIdTokenIndex.Status),
@@ -155,7 +155,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_TokenId",
+                .CreateIndex("IDX_COL_OpenIdToken_TokenId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.TokenId),
                     nameof(OpenIdTokenIndex.ReferenceId)),
@@ -318,7 +318,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdTokenCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_ApplicationId",
+                .CreateIndex("IDX_COL_OpenIdToken_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.ApplicationId),
                     nameof(OpenIdTokenIndex.Status),
@@ -327,7 +327,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_AuthorizationId",
+                .CreateIndex("IDX_COL_OpenIdToken_AuthorizationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.AuthorizationId),
                     nameof(OpenIdTokenIndex.Status),
@@ -338,7 +338,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_DocumentId_TokenId",
+                .CreateIndex("IDX_COL_OpenIdToken_TokenId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.TokenId),
                     nameof(OpenIdTokenIndex.ReferenceId)),
@@ -355,7 +355,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdAuthorizationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAuth_DocumentId_ApplicationId",
+                .CreateIndex("IDX_COL_OpenIdAuthorization_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdAuthorizationIndex.ApplicationId),
                     nameof(OpenIdAuthorizationIndex.Status),
@@ -364,7 +364,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAuth_DocumentId_AuthorizationId",
+                .CreateIndex("IDX_COL_OpenIdAuthorization_AuthorizationId",
                     "DocumentId",
                     nameof(OpenIdAuthorizationIndex.AuthorizationId),
                     nameof(OpenIdAuthorizationIndex.Status),
@@ -415,7 +415,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdApplicationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdApp_DocumentId",
+                .CreateIndex("IDX_COL_OpenIdApplication",
                     "DocumentId",
                     nameof(OpenIdApplicationIndex.ApplicationId),
                     nameof(OpenIdApplicationIndex.ClientId)),
@@ -461,7 +461,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdScopeCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdScopeIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdScope_DocumentId",
+                .CreateIndex("IDX_COL_OpenIdScope",
                     "DocumentId",
                     nameof(OpenIdScopeIndex.Name),
                     nameof(OpenIdScopeIndex.ScopeId)),
