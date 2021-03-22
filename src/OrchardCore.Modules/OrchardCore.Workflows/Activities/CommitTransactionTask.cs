@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
 using YesSql;
@@ -11,10 +10,17 @@ namespace OrchardCore.Workflows.Activities
 {
     public class CommitTransactionTask : TaskActivity
     {
+        private readonly ISession _session;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IStringLocalizer S;
 
-        public CommitTransactionTask(IStringLocalizer<CommitTransactionTask> localizer)
+        public CommitTransactionTask(
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor,
+            IStringLocalizer<CommitTransactionTask> localizer)
         {
+            _session = session;
+            _updateModelAccessor = updateModelAccessor;
             S = localizer;
         }
 
@@ -26,13 +32,18 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Done"]);
+            return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            await ShellScope.Services.GetRequiredService<ISession>().CommitAsync();
-            return Outcomes("Done");
+            if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
+            {
+                return Outcomes("Done", "Invalid");
+            }
+
+            await _session.CommitAsync();
+            return Outcomes("Done", "Valid");
         }
     }
 }
