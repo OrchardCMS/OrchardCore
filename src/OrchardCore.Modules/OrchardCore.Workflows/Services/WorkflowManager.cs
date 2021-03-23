@@ -16,6 +16,10 @@ namespace OrchardCore.Workflows.Services
 {
     public class WorkflowManager : IWorkflowManager
     {
+        // The maximum recursion depth is used to limit the number of Workflow (of any type) that a given
+        // Workflow execution can trigger (directly or transitively) without reaching a blocking activity.
+        private const int MaxRecursionDepth = 100;
+
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowStore _workflowStore;
@@ -28,6 +32,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IClock _clock;
 
         private readonly Dictionary<string, int> _recursions = new Dictionary<string, int>();
+        private int _currentRecursionDepth;
 
         public WorkflowManager
         (
@@ -150,6 +155,13 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
+                // Check the max recursion depth of workflow executions.
+                if (_currentRecursionDepth > MaxRecursionDepth)
+                {
+                    _logger.LogError("The max recursion depth of 'Workflow' executions has been reached.");
+                    break;
+                }
+
                 var blockingActivities = haltedWorkflow.BlockingActivities.Where(x => x.Name == name).ToArray();
                 foreach (var blockingActivity in blockingActivities)
                 {
@@ -192,6 +204,13 @@ namespace OrchardCore.Workflows.Services
                     .Any(x => x.BlockingActivities.Any(x => x.Name == name && x.IsStart)))
                 {
                     continue;
+                }
+
+                // Check the max recursion depth of workflow executions.
+                if (_currentRecursionDepth > MaxRecursionDepth)
+                {
+                    _logger.LogError("The max recursion depth of 'Workflow' executions has been reached.");
+                    break;
                 }
 
                 var startActivity = workflowType.Activities.First(x => x.IsStart && x.Name == name);
@@ -447,12 +466,14 @@ namespace OrchardCore.Workflows.Services
         {
             _recursions[workflow.WorkflowId] = _recursions.TryGetValue(workflow.WorkflowId, out var count) ? ++count : 1;
             _recursions[workflow.WorkflowTypeId] = _recursions.TryGetValue(workflow.WorkflowTypeId, out count) ? ++count : 1;
+            _currentRecursionDepth++;
         }
 
         private void DecrementRecursion(Workflow workflow)
         {
             _recursions[workflow.WorkflowId]--;
             _recursions[workflow.WorkflowTypeId]--;
+            _currentRecursionDepth--;
         }
 
         private async Task PersistAsync(WorkflowExecutionContext workflowContext)

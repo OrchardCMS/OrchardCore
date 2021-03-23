@@ -42,7 +42,7 @@ namespace OrchardCore.DisplayManagement
                 }
             }
 
-            value = default(T);
+            value = default;
             return false;
         }
 

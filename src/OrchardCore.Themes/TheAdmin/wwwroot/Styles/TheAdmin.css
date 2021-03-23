@@ -27207,7 +27207,7 @@ a > :root[data-theme=darkmode] code {
 }
 [dir]:root[data-theme=darkmode] .custom-control-label::before {
   background-color: #181a1b;
-  border: #2a2d2f solid 1px;
+  border: #3c4144 solid 1px;
 }
 [dir=ltr]:root[data-theme=darkmode] .custom-control-label::before {
   left: -1.5rem;
@@ -27286,7 +27286,7 @@ a > :root[data-theme=darkmode] code {
   transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 [dir]:root[data-theme=darkmode] .custom-switch .custom-control-label::after {
-  background-color: #2a2d2f;
+  background-color: #3c4144;
   border-radius: 0.5rem;
 }
 [dir=ltr]:root[data-theme=darkmode] .custom-switch .custom-control-label::after {

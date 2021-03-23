@@ -38,9 +38,8 @@ namespace OrchardCore.Settings
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
-            {   
+            {
                 o.Scope.SetValue("Site", new ObjectValue(new LiquidSiteSettingsAccessor()));
-
                 o.MemberAccessStrategy.Register<LiquidSiteSettingsAccessor, FluidValue>(async (obj, name, context) =>
                 {
                     var liquidTemplateContext = (LiquidTemplateContext)context;
@@ -65,12 +64,14 @@ namespace OrchardCore.Settings
                         nameof(ISite.AppendVersion) => BooleanValue.Create(site.AppendVersion),
                         nameof(ISite.CacheMode) => new StringValue(site.CacheMode.ToString()),
                         nameof(ISite.PageTitleFormat) => new StringValue(site.PageTitleFormat),
+                        nameof(ISite.Properties) => new ObjectValue(site.Properties),
                         _ => NilValue.Instance
                     };
 
                     return result;
                 });
             });
+
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
