@@ -26,7 +26,7 @@ namespace OrchardCore.Google.Analytics.Drivers
         public override async Task<IDisplayResult> EditAsync(GoogleAnalyticsSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
             {
                 return null;
             }
@@ -42,7 +42,7 @@ namespace OrchardCore.Google.Analytics.Drivers
             if (context.GroupId == GoogleConstants.Features.GoogleAnalytics)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
                 {
                     return null;
                 }

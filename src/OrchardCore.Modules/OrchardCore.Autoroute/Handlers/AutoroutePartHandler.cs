@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -264,7 +265,10 @@ namespace OrchardCore.Autoroute.Handlers
                             path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
                         }
 
-                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path));
+                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path)
+                        {
+                            DocumentId = contentItem.Id
+                        });
                     }
 
                     var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
@@ -395,8 +399,8 @@ namespace OrchardCore.Autoroute.Handlers
                 var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
                 using (CultureScope.Create(cultureAspect.Culture))
                 {
-                    part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                        scope => scope.SetValue(nameof(ContentItem), model.ContentItem));
+                    part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
+                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
                 }
 
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);

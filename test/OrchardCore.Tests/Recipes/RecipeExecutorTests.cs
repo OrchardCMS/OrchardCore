@@ -12,6 +12,8 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -49,7 +51,7 @@ namespace OrchardCore.Recipes
                 // Act
                 var executionId = Guid.NewGuid().ToString("n");
                 var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
-                await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
+                await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
 
                 // Assert
                 var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
@@ -65,11 +67,15 @@ namespace OrchardCore.Recipes
             ServiceProvider = CreateServiceProvider(),
         };
 
-        private static IServiceProvider CreateServiceProvider() => new ServiceCollection().AddScripting().BuildServiceProvider();
+        private static IServiceProvider CreateServiceProvider() => new ServiceCollection()
+            .AddScripting()
+            .AddSingleton<IDistributedLock, LocalLock>()
+            .AddLogging()
+            .BuildServiceProvider();
 
         private IFileInfo GetRecipeFileInfo(string recipeName)
         {
-            var assembly = GetType().GetTypeInfo().Assembly;
+            var assembly = GetType().Assembly;
             var path = $"Recipes.RecipeFiles.{recipeName}.json";
 
             return new EmbeddedFileProvider(assembly).GetFileInfo(path);

@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
     <!-- NuGet properties-->
     <Title>The Blog theme</Title>
     <Description>$(OCCMSDescription)
-    
+
     Orchard Core CMS theme adapted for blogs.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Theme </PackageTags>
   </PropertyGroup>

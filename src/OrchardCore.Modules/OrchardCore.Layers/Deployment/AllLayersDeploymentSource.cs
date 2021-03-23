@@ -30,7 +30,7 @@ namespace OrchardCore.Layers.Deployment
             }
 
             var layers = await _layerService.GetLayersAsync();
-
+            
             result.Steps.Add(new JObject(
                 new JProperty("name", "Layers"),
                 new JProperty("Layers", layers.Layers.Select(JObject.FromObject))
@@ -44,5 +44,5 @@ namespace OrchardCore.Layers.Deployment
                 new JProperty("LayerSettings", JObject.FromObject(siteSettings.As<LayerSettings>()))
             ));
         }
-    }
+    }   
 }

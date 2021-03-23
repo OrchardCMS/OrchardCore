@@ -72,11 +72,11 @@ namespace OrchardCore.ContentManagement.Display
                 actualShapeType = actualShapeType + "_" + actualDisplayType;
             }
 
-            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
-            itemShape.ContentItem = contentItem;
-            itemShape.Stereotype = stereotype;
+            var itemShape = await CreateContentShapeAsync(actualShapeType);
+            itemShape.Properties["ContentItem"] = contentItem;
+            itemShape.Properties["Stereotype"] = stereotype;
 
-            ShapeMetadata metadata = itemShape.Metadata;
+            var metadata = itemShape.Metadata;
             metadata.DisplayType = actualDisplayType;
 
             // [Stereotype]_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
@@ -111,12 +111,12 @@ namespace OrchardCore.ContentManagement.Display
 
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
-            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
-            itemShape.ContentItem = contentItem;
-            itemShape.Stereotype = stereotype;
+            var itemShape = await CreateContentShapeAsync(actualShapeType);
+            itemShape.Properties["ContentItem"] = contentItem;
+            itemShape.Properties["Stereotype"] = stereotype;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
-            ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
+            itemShape.Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 
             var context = new BuildEditorContext(
                 itemShape,
@@ -146,12 +146,12 @@ namespace OrchardCore.ContentManagement.Display
             var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
-            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
-            itemShape.ContentItem = contentItem;
-            itemShape.Stereotype = stereotype;
+            var itemShape = await CreateContentShapeAsync(actualShapeType);
+            itemShape.Properties["ContentItem"] = contentItem;
+            itemShape.Properties["Stereotype"] = stereotype;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
-            ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
+            itemShape.Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 
             var context = new UpdateEditorContext(
                 itemShape,
