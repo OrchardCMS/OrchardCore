@@ -86,8 +86,6 @@ namespace OrchardCore.Workflows
             services.AddActivity<ScriptTask, ScriptTaskDisplayDriver>();
             services.AddActivity<LogTask, LogTaskDisplayDriver>();
 
-            services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>();
-
             services.AddRecipeExecutionStep<WorkflowTypeStep>();
         }
 
@@ -134,6 +132,15 @@ namespace OrchardCore.Workflows
             services.AddTransient<IDeploymentSource, AllWorkflowTypeDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllWorkflowTypeDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllWorkflowTypeDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Workflows.Session")]
+    public class SessionStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>();
         }
     }
 }
