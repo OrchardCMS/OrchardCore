@@ -479,7 +479,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdScopeCollection
             );
 
-              // Retrieve all existing applications and scopes from original Document table.
+            // Retrieve all existing applications and scopes from original Document table.
             var applications = await _session.Query<OpenIdApplication>().ListAsync();
             var scopes = await _session.Query<OpenIdScope>().ListAsync();
 
@@ -515,8 +515,8 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             SchemaBuilder.DropReduceIndexTable<OpenIdAppByRedirectUriIndex>();
             SchemaBuilder.DropReduceIndexTable<OpenIdAppByRoleNameIndex>();
 
-            SchemaBuilder.DropMapIndexTable<OpenIdScopeIndex>();   
-            SchemaBuilder.DropReduceIndexTable<OpenIdScopeByResourceIndex>(); 
+            SchemaBuilder.DropMapIndexTable<OpenIdScopeIndex>();
+            SchemaBuilder.DropReduceIndexTable<OpenIdScopeByResourceIndex>();
 
             return 8;
         }

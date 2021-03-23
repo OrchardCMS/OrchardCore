@@ -34,7 +34,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
 
         public OpenIdApplicationIndexProvider()
             => CollectionName = OpenIdCollection;
-            
+
         public override void Describe(DescribeContext<OpenIdApplication> context)
         {
             context.For<OpenIdApplicationIndex>()

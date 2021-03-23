@@ -21,7 +21,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
         private const string OpenIdCollection = OpenIdScope.OpenIdCollection;
 
         public OpenIdScopeIndexProvider()
-            => CollectionName = OpenIdCollection;  
+            => CollectionName = OpenIdCollection;
 
         public override void Describe(DescribeContext<OpenIdScope> context)
         {
