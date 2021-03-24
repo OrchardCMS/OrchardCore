@@ -1,20 +1,19 @@
 /*!
- * Start Bootstrap - Clean Blog v5.0.9 (https://startbootstrap.com/themes/clean-blog)
- * Copyright 2013-2020 Start Bootstrap
+ * Start Bootstrap - Clean Blog v5.0.10 (https://startbootstrap.com/theme/clean-blog)
+ * Copyright 2013-2021 Start Bootstrap
  * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-clean-blog/blob/master/LICENSE)
  */
 
 body {
   font-size: 20px;
   color: #212529;
-  font-family: 'Lora', 'Times New Roman', serif;
+  font-family: "Lora", "Times New Roman", serif;
 }
 
 p {
   line-height: 1.5;
   margin: 30px 0;
 }
-
 p a {
   text-decoration: underline;
 }
@@ -26,14 +25,13 @@ h4,
 h5,
 h6 {
   font-weight: 800;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #212529;
   transition: all 0.2s;
 }
-
 a:focus, a:hover {
   color: #0085A1;
 }
@@ -91,14 +89,12 @@ img::-moz-selection {
   position: absolute;
   border-bottom: 1px solid #e9ecef;
   background-color: white;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-
 #mainNav .navbar-brand {
   font-weight: 800;
   color: #343a40;
 }
-
 #mainNav .navbar-toggler {
   font-size: 12px;
   font-weight: 800;
@@ -106,14 +102,12 @@ img::-moz-selection {
   text-transform: uppercase;
   color: #343a40;
 }
-
 #mainNav .navbar-nav > li.nav-item > a {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
-
 @media only screen and (min-width: 992px) {
   #mainNav {
     border-bottom: 1px solid transparent;
@@ -134,13 +128,13 @@ img::-moz-selection {
     color: rgba(255, 255, 255, 0.8);
   }
 }
-
 @media only screen and (min-width: 992px) {
   #mainNav {
     transition: background-color 0.2s;
     /* Force Hardware Acceleration in WebKit */
     transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
   #mainNav.is-fixed {
     /* when the user scrolls down, we hide the header right above the viewport */
@@ -176,7 +170,6 @@ header.masthead {
   position: relative;
   background-size: cover;
 }
-
 header.masthead .overlay {
   position: absolute;
   top: 0;
@@ -186,33 +179,28 @@ header.masthead .overlay {
   background-color: #212529;
   opacity: 0.5;
 }
-
 header.masthead .page-heading,
 header.masthead .post-heading,
 header.masthead .site-heading {
   padding: 200px 0 150px;
   color: white;
 }
-
 @media only screen and (min-width: 768px) {
   header.masthead .page-heading,
-  header.masthead .post-heading,
-  header.masthead .site-heading {
+header.masthead .post-heading,
+header.masthead .site-heading {
     padding: 200px 0;
   }
 }
-
 header.masthead .page-heading,
 header.masthead .site-heading {
   text-align: center;
 }
-
 header.masthead .page-heading h1,
 header.masthead .site-heading h1 {
   font-size: 50px;
   margin-top: 0;
 }
-
 header.masthead .page-heading .subheading,
 header.masthead .site-heading .subheading {
   font-size: 24px;
@@ -220,44 +208,37 @@ header.masthead .site-heading .subheading {
   line-height: 1.1;
   display: block;
   margin: 10px 0 0;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-
 @media only screen and (min-width: 768px) {
   header.masthead .page-heading h1,
-  header.masthead .site-heading h1 {
+header.masthead .site-heading h1 {
     font-size: 80px;
   }
 }
-
 header.masthead .post-heading h1 {
   font-size: 35px;
 }
-
 header.masthead .post-heading .meta,
 header.masthead .post-heading .subheading {
   line-height: 1.1;
   display: block;
 }
-
 header.masthead .post-heading .subheading {
   font-size: 24px;
   font-weight: 600;
   margin: 10px 0 30px;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-
 header.masthead .post-heading .meta {
   font-size: 20px;
   font-weight: 300;
   font-style: italic;
-  font-family: 'Lora', 'Times New Roman', serif;
+  font-family: "Lora", "Times New Roman", serif;
 }
-
 header.masthead .post-heading .meta a {
   color: #fff;
 }
-
 @media only screen and (min-width: 768px) {
   header.masthead .post-heading h1 {
     font-size: 55px;
@@ -270,40 +251,33 @@ header.masthead .post-heading .meta a {
 .post-preview > a {
   color: #212529;
 }
-
 .post-preview > a:focus, .post-preview > a:hover {
   text-decoration: none;
   color: #0085A1;
 }
-
 .post-preview > a > .post-title {
   font-size: 30px;
   margin-top: 30px;
   margin-bottom: 10px;
 }
-
 .post-preview > a > .post-subtitle {
   font-weight: 300;
   margin: 0 0 10px;
 }
-
 .post-preview > .post-meta {
   font-size: 18px;
   font-style: italic;
   margin-top: 0;
   color: #868e96;
 }
-
 .post-preview > .post-meta > a {
   text-decoration: none;
   color: #212529;
 }
-
 .post-preview > .post-meta > a:focus, .post-preview > .post-meta > a:hover {
   text-decoration: underline;
   color: #0085A1;
 }
-
 @media only screen and (min-width: 768px) {
   .post-preview > a > .post-title {
     font-size: 36px;
@@ -317,7 +291,6 @@ header.masthead .post-heading .meta a {
   padding-bottom: 0.5em;
   border-bottom: 1px solid #dee2e6;
 }
-
 .floating-label-form-group input,
 .floating-label-form-group textarea {
   font-size: 1.5em;
@@ -329,15 +302,13 @@ header.masthead .post-heading .meta a {
   border-radius: 0;
   background: none;
   box-shadow: none !important;
-  font-family: 'Lora', 'Times New Roman', serif;
+  font-family: "Lora", "Times New Roman", serif;
 }
-
 .floating-label-form-group input::-webkit-input-placeholder,
 .floating-label-form-group textarea::-webkit-input-placeholder {
   color: #868e96;
-  font-family: 'Lora', 'Times New Roman', serif;
+  font-family: "Lora", "Times New Roman", serif;
 }
-
 .floating-label-form-group label {
   font-size: 0.85em;
   line-height: 1.764705882em;
@@ -349,7 +320,6 @@ header.masthead .post-heading .meta a {
   transition: top 0.3s ease, opacity 0.3s ease;
   opacity: 0;
 }
-
 .floating-label-form-group .help-block {
   margin: 15px 0;
 }
@@ -370,12 +340,10 @@ form .form-group:first-child .floating-label-form-group {
 footer {
   padding: 50px 0 65px;
 }
-
 footer .list-inline {
   margin: 0;
   padding: 0;
 }
-
 footer .copyright {
   font-size: 14px;
   margin-bottom: 0;
@@ -389,14 +357,13 @@ footer .copyright {
   letter-spacing: 1px;
   text-transform: uppercase;
   border-radius: 0;
-  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .btn-primary {
   background-color: #0085A1;
   border-color: #0085A1;
 }
-
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
   color: #fff;
   background-color: #00657b !important;

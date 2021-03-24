@@ -32,7 +32,7 @@ namespace OrchardCore.ReverseProxy.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ReverseProxySettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ReverseProxySettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -43,9 +43,9 @@ namespace OrchardCore.ReverseProxy.Drivers
 
             return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
             {
-                model.EnableXForwardedFor = section.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
-                model.EnableXForwardedHost = section.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
-                model.EnableXForwardedProto = section.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
+                model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
+                model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
+                model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 

@@ -18,7 +18,6 @@
   "steps": [
     {
       "name": "feature",
-      "disable": [],
       "enable": [
         // SaaS
         "OrchardCore.HomeRoute",
@@ -53,8 +52,10 @@
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
+        "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
@@ -947,7 +948,7 @@
           "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
             "Layer": "Always",
@@ -968,12 +969,30 @@
       "Layers": [
         {
           "Name": "Always",
-          "Rule": "true",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
           "Name": "Homepage",
-          "Rule": "isHomepage()",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -1061,7 +1080,7 @@
           "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "MenuPart": {},
           "TitlePart": {
@@ -1072,6 +1091,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Services",
                 "LinkMenuItemPart": {
                   "Name": "Services",
                   "Url": "~/#services"
@@ -1080,6 +1100,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Portfolio",
                 "LinkMenuItemPart": {
                   "Name": "Portfolio",
                   "Url": "~/#portfolio"
@@ -1088,6 +1109,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "About",
                 "LinkMenuItemPart": {
                   "Name": "About",
                   "Url": "~/#about"
@@ -1096,6 +1118,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Team",
                 "LinkMenuItemPart": {
                   "Name": "Team",
                   "Url": "~/#team"
@@ -1104,6 +1127,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Contact",
                 "LinkMenuItemPart": {
                   "Name": "Contact",
                   "Url": "~/#contact"
@@ -1122,7 +1146,7 @@
           "DisplayText": "[js: parameters('SiteName')]",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LandingPage": {},
           "AutoroutePart": {
@@ -1674,7 +1698,35 @@
           "Content": "[file:text('Snippets/landingpage.liquid')]"
         }
       }
-    }
-
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "medium": {
+          "Hint": "A medium image (480px x 480px)",
+          "Width": 480,
+          "Height": 480,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },        
+        "small": {
+          "Hint": "A small image (240px x 240px)",
+          "Width": 240,
+          "Height": 240,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },        
+        "extrasmall": {
+          "Hint": "A extra small image (160px x 160px)",
+          "Width": 160,
+          "Height": 160,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
+    }  
   ]
 }

@@ -9,13 +9,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
@@ -181,7 +181,7 @@ namespace OrchardCore.OpenId.Configuration
                         }
 
                         var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
-                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
+                        if (tenant == null || !String.Equals(tenant.Name, settings.Tenant))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
@@ -202,8 +202,8 @@ namespace OrchardCore.OpenId.Configuration
 
             // If the tokens are issued by an authorization server located in a separate tenant,
             // resolve the isolated data protection provider associated with the specified tenant.
-            if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name))
+            if (!String.IsNullOrEmpty(settings.Tenant) &&
+                !String.Equals(settings.Tenant, _shellSettings.Name))
             {
                 CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
                 {
@@ -236,7 +236,7 @@ namespace OrchardCore.OpenId.Configuration
         private ShellScope CreateTenantScope(string tenant)
         {
             // Optimization: if the specified name corresponds to the current tenant, use the current 'ShellScope'.
-            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name))
+            if (String.IsNullOrEmpty(tenant) || String.Equals(tenant, _shellSettings.Name))
             {
                 return ShellScope.Current;
             }
@@ -249,7 +249,10 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await service.GetSettingsAsync();
             if ((await service.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+                if (_shellSettings.State == TenantState.Running)
+                {
+                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+                }
 
                 return null;
             }
@@ -262,7 +265,10 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await _validationService.GetSettingsAsync();
             if ((await _validationService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+                if (_shellSettings.State == TenantState.Running)
+                {
+                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+                }
 
                 return null;
             }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using OrchardCore.Localization;
 using Xunit;
 
@@ -5,6 +7,7 @@ namespace OrchardCore.Tests.Localization
 {
     public class CultureDictionaryTests
     {
+        private static PluralizationRuleDelegate _arPluralRule = n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5);
         private static PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
 
         [Fact]
@@ -22,7 +25,7 @@ namespace OrchardCore.Tests.Localization
         public void MergeOverwritesTranslationsForSameKeys()
         {
             var dictionary = new CultureDictionary("cs", _csPluralRule);
-            var record = new CultureDictionaryRecord("ball","míč", "míče", "míčů");
+            var record = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
             var record2 = new CultureDictionaryRecord("ball", "balón", "balóny", "balónů");
 
             dictionary.MergeTranslations(new[] { record });
@@ -55,6 +58,29 @@ namespace OrchardCore.Tests.Localization
 
                 return dictionary[key, 5];
             });
+        }
+
+        [Fact]
+        public void EnumerateCultureDictionary()
+        {
+            // Arrange
+            var dictionary = new CultureDictionary("ar", _arPluralRule);
+            dictionary.MergeTranslations(new List<CultureDictionaryRecord>
+            {
+                new CultureDictionaryRecord("Hello", "مرحبا"),
+                new CultureDictionaryRecord("Bye", "مع السلامة")
+            });
+
+            // Act & Assert
+            Assert.NotEmpty(dictionary);
+
+            foreach (var record in dictionary)
+            {
+                Assert.NotNull(record.Key);
+                Assert.Single(record.Translations);
+            }
+
+            Assert.Equal(2, dictionary.Count());
         }
     }
 }

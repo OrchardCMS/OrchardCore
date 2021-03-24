@@ -1,12 +1,14 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
@@ -14,6 +16,7 @@ using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 namespace OrchardCore.Markdown.Drivers
@@ -60,8 +63,8 @@ namespace OrchardCore.Markdown.Drivers
                 // The liquid rendering is for backwards compatability and can be removed in a future version.
                 if (!settings.SanitizeHtml)
                 {
-                    model.Markdown = await _liquidTemplateManager.RenderAsync(model.Html, _htmlEncoder, model,
-                        scope => scope.SetValue("ContentItem", field.ContentItem));
+                    model.Markdown = await _liquidTemplateManager.RenderStringAsync(model.Html, _htmlEncoder, model,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
                 }
 
                 model.Html = await _shortcodeService.ProcessAsync(model.Html,

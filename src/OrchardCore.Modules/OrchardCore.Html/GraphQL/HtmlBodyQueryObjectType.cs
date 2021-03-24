@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -9,8 +12,8 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Liquid;
+using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 namespace OrchardCore.Html.GraphQL
@@ -51,14 +54,13 @@ namespace OrchardCore.Html.GraphQL
                 var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
-                html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) });
             }
 
             return await shortcodeService.ProcessAsync(html,
                 new Context
                 {
-                    ["ContentItem"] = ctx.Source.ContentItem ,
+                    ["ContentItem"] = ctx.Source.ContentItem,
                     ["TypePartDefinition"] = contentTypePartDefinition
                 });
         }

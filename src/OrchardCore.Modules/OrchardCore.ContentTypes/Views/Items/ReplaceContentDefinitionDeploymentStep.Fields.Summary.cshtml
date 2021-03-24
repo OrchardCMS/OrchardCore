@@ -1,0 +1,44 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.ContentTypes.Deployment
+@model ShapeViewModel<ReplaceContentDefinitionDeploymentStep>
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+<h5>@T["Replace Content Definitions"]</h5>
+
+@if (Model.Value.IncludeAll)
+{
+    <span class="badge ta-badge">All</span>
+}
+else
+{
+    var contentTypes = Model.Value.ContentTypes;
+    var contentParts = Model.Value.ContentParts;
+
+    var allTypes = ContentDefinitionManager.ListTypeDefinitions();
+    var allParts = ContentDefinitionManager.ListPartDefinitions();
+
+    var parts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
+
+    if (contentTypes?.Length > 0)
+    {
+        foreach (var def in ContentDefinitionManager.ListTypeDefinitions())
+        {
+            if (contentTypes.Contains(def.Name))
+            {
+                <span class="badge ta-badge">@def.DisplayName</span>
+            }
+        }
+    }
+
+    if (contentParts?.Length > 0)
+    {
+        foreach (var part in parts)
+        {
+            if (contentParts.Contains(part.Name))
+            {
+                <span class="badge ta-badge">@part.Name</span>
+            }
+        }
+    }
+}
+<span class="hint d-block">@T["Content Definitions should be placed before any content steps."]</span>

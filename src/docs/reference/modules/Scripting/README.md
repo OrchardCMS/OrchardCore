@@ -75,9 +75,6 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `base64(String): String` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64. |
 | `html(String): String` | Decodes the specified string from HTML encoding. |
 | `gzip(String): String` | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
-| `variables()` | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"` |
-| `parameters()` | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUsername')]"` See the available [Setup Recipe parameters](../Setup/#recipe-parameters) |
-| `configuration()` | Retrieves the specified configuration setting by its name. |
 
 #### Content (`OrchardCore.Contents`)
 
@@ -119,6 +116,13 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `queryStringAsJson(): JObject` | Returns the entire query string as a JSON object. Example: ` { "param1": [ "param1-value1", "param1-value2" ], "param2": [ "param2-value1", "param2-value2" ], ... }` |
 | `requestFormAsJson(): JObject` | Returns the entire request form as a JSON object. Example: ` { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
 
+#### Recipes (`OrchardCore.Recipes`)
+
+| Function | Description 
+| -------- | ----------- |
+| `variables()` | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"` |
+| `parameters()` | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/#recipe-parameters) |
+| `configuration(key: String, defaultValue: String)` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../../core/Configuration/README.md) |
 
 #### Workflows (`OrchardCore.Workflows.Http`)
 

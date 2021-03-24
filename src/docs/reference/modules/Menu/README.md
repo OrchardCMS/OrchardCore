@@ -30,7 +30,7 @@ The `Menu` shape is used to render a Menu.
             {% endfor %}
         </ul>
     </nav>
-```
+    ```
 
 === "Razor"
 
@@ -210,7 +210,7 @@ function activateLinks(options,cb)
     ...
         <resources type="Footer" />
     ...
-        <script type="text/javascript">
+        <script>
             (function ($) {
                 $('#mainNav').activateLinks({ selector: 'a', traverse: 2 }, function (items) {
                     var parents = $(items).closest(".has-treeview")
@@ -229,7 +229,7 @@ function activateLinks(options,cb)
     ...
     <resources type="Footer" />
     ...
-    <script type="text/javascript">
+    <script>
         (function ($) {
             $('#mainNav').activateLinks({ selector: 'a', traverse: 2 }, function (items) {
                 var parents = $(items).closest(".has-treeview")

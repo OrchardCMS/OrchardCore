@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 using Microsoft.AspNetCore.Html;
@@ -19,38 +18,35 @@ namespace OrchardCore.Benchmark
             new FakeWebHostEnvironment(),
             new MemoryCache(Options.Create(new MemoryCacheOptions())));
 
-        private static readonly OptionsWrapper<ResourceManagementOptions> _options = new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions());
-        private static readonly ResourceManifestState _resourceManifestState;
+        private static readonly OptionsWrapper<ResourceManagementOptions> _options;
 
         static ResourceManagerBenchmark()
         {
+            var options = new ResourceManagementOptions();
+
             var manifest1 = new ResourceManifest();
             manifest1.DefineStyle("some1").SetDependencies("dependency1").SetUrl("file://some1.txt").SetVersion("1.0.0");
+            options.ResourceManifests.Add(manifest1);
 
             var manifest2 = new ResourceManifest();
             manifest2.DefineStyle("some2").SetDependencies("dependency2").SetUrl("file://some2.txt").SetVersion("1.0.0");
+            options.ResourceManifests.Add(manifest2);
 
             var dependency1 = new ResourceManifest();
             dependency1.DefineStyle("dependency1").SetUrl("file://dependency1.txt").SetVersion("1.0.0");
+            options.ResourceManifests.Add(dependency1);
 
             var dependency2 = new ResourceManifest();
             dependency2.DefineStyle("dependency2").SetUrl("file://dependency2.txt").SetVersion("1.0.0");
+            options.ResourceManifests.Add(dependency2);
 
-            _resourceManifestState = new ResourceManifestState
-            {
-                ResourceManifests = new List<ResourceManifest>
-                {
-                    manifest1, manifest2, dependency1, dependency2
-                }
-            };
+            _options = new OptionsWrapper<ResourceManagementOptions>(options);
         }
 
         [Benchmark]
         public void RenderStylesheet()
         {
             var manager = new ResourceManager(
-                resourceProviders: null,
-                resourceManifestState: _resourceManifestState,
                 options: _options,
                 fileVersionProvider: _fileVersionProvider);
 

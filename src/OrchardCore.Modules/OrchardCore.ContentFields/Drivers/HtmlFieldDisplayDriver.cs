@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -9,10 +12,10 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 namespace OrchardCore.ContentFields.Drivers
@@ -50,8 +53,8 @@ namespace OrchardCore.ContentFields.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
                 if (!settings.SanitizeHtml)
                 {
-                    model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model,
-                        scope => scope.SetValue("ContentItem", field.ContentItem));
+                    model.Html = await _liquidTemplateManager.RenderStringAsync(field.Html, _htmlEncoder, model,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
                 }
 
                 model.Html = await _shortcodeService.ProcessAsync(model.Html,

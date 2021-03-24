@@ -17,7 +17,7 @@ namespace OrchardCore.Contents.Sitemaps
 
         public ContentTypeLimitedSitemapEntryViewModel[] LimitedContentTypes { get; set; } = new ContentTypeLimitedSitemapEntryViewModel[] { };
 
-        public string LimitedContentType { get; set; } 
+        public string LimitedContentType { get; set; }
 
         [BindNever]
         public SitemapSource SitemapSource { get; set; }

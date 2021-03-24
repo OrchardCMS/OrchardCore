@@ -45,9 +45,21 @@ else
             langs['_dir'] = '@culture.GetLanguageDirection()';
             </text>
         }
-
-        var settings = @Html.Raw(trumbowygSettings.Options);
-        settings['lang'] = '@culture.TwoLetterISOLanguageName';
+        @if (!string.IsNullOrEmpty(trumbowygSettings.Options))
+        {
+            <text>
+            var settings = @Html.Raw(trumbowygSettings.Options);
+            settings['lang'] = '@culture.TwoLetterISOLanguageName';
+            </text>
+        }
+        else
+        {   
+            <text>
+            var settings = { 
+                lang: '@culture.TwoLetterISOLanguageName'
+            }
+            </text>
+        }
 
         $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');

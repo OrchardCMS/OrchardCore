@@ -5,6 +5,11 @@ using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Zones
 {
+    public interface IZoneHolding : IShape
+    {
+        Zones Zones { get; }
+    }
+
     /// <summary>
     /// Provides the behavior of shapes that have a Zones property.
     /// Examples include Layout and Item
@@ -18,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Zones
     /// Foo.Alpha :same
     ///
     /// </summary>
-    public class ZoneHolding : Shape
+    public class ZoneHolding : Shape, IZoneHolding
     {
         private readonly Func<ValueTask<IShape>> _zoneFactory;
 
@@ -29,18 +34,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
         private Zones _zones;
 
-        public Zones Zones
-        {
-            get
-            {
-                if (_zones == null)
-                {
-                    return _zones = new Zones(_zoneFactory, this);
-                }
-
-                return _zones;
-            }
-        }
+        public Zones Zones => _zones ??= new Zones(_zoneFactory, this);
 
         public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
         {
@@ -59,18 +53,36 @@ namespace OrchardCore.DisplayManagement.Zones
     }
 
     /// <remarks>
-    /// InterfaceProxyBehavior()
-    /// ZonesBehavior(_zoneFactory, self, _layoutShape) => Create ZoneOnDemand if member access
+    /// Returns a ZoneOnDemand object the first time the indexer is invoked.
+    /// If an item is added to the ZoneOnDemand then the zoneFactory is invoked to create a zone shape and this item is added to the zone.
+    /// Then the zone shape is assigned in palce of the ZoneOnDemand. A ZoneOnDemand returns true when compared to null such that we can
+    /// do Zones["Foo"] == null to see if anything has been added to a zone, without instantiating a zone when accessing the indexer.
     /// </remarks>
     public class Zones : Composite
     {
         private readonly Func<ValueTask<IShape>> _zoneFactory;
-        private readonly object _parent;
+        private readonly ZoneHolding _parent;
 
-        public Zones(Func<ValueTask<IShape>> zoneFactory, object parent)
+        public bool IsNotEmpty(string name) => !(this[name] is ZoneOnDemand);
+
+        public Zones(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent)
         {
             _zoneFactory = zoneFactory;
             _parent = parent;
+        }
+
+        public IShape this[string name]
+        {
+            get
+            {
+                TryGetMemberImpl(name, out var result);
+                return result as IShape;
+            }
+
+            set
+            {
+                TrySetMemberImpl(name, value);
+            }
         }
 
         public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
@@ -80,20 +92,17 @@ namespace OrchardCore.DisplayManagement.Zones
 
         protected override bool TryGetMemberImpl(string name, out object result)
         {
-            var parentMember = ((dynamic)_parent)[name];
-            if (parentMember == null)
+            if (!_parent.Properties.TryGetValue(name, out result))
             {
                 result = new ZoneOnDemand(_zoneFactory, _parent, name);
-                return true;
             }
 
-            result = parentMember;
             return true;
         }
 
         protected override bool TrySetMemberImpl(string name, object value)
         {
-            ((dynamic)_parent)[name] = value;
+            _parent.Properties[name] = value;
             return true;
         }
     }
@@ -107,10 +116,10 @@ namespace OrchardCore.DisplayManagement.Zones
     public class ZoneOnDemand : Shape
     {
         private readonly Func<ValueTask<IShape>> _zoneFactory;
-        private readonly object _parent;
+        private readonly ZoneHolding _parent;
         private readonly string _potentialZoneName;
 
-        public ZoneOnDemand(Func<ValueTask<IShape>> zoneFactory, object parent, string potentialZoneName)
+        public ZoneOnDemand(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent, string potentialZoneName)
         {
             _zoneFactory = zoneFactory;
             _parent = parent;
@@ -199,54 +208,25 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             unchecked
             {
-                int hashCode = (_parent != null ? _parent.GetHashCode() : 0);
+                var hashCode = (_parent != null ? _parent.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (_potentialZoneName != null ? _potentialZoneName.GetHashCode() : 0);
                 return hashCode;
             }
         }
 
-        public override Shape Add(object item, string position = null)
+        public override async ValueTask<IShape> AddAsync(object item, string position)
         {
             if (item == null)
             {
-                return (Shape)_parent;
+                return _parent;
             }
 
-            dynamic parent = _parent;
+            var zone = await _zoneFactory();
+            zone.Properties["Parent"] = _parent;
+            zone.Properties["ZoneName"] = _potentialZoneName;
+            _parent.Properties[_potentialZoneName] = zone;
 
-            dynamic zone = _zoneFactory().GetAwaiter().GetResult();
-            zone.Parent = _parent;
-            zone.ZoneName = _potentialZoneName;
-            parent[_potentialZoneName] = zone;
-
-            if (position == null)
-            {
-                return zone.Add(item);
-            }
-
-            return zone.Add(item, position);
-        }
-
-        public async Task<Shape> AddAsync(object item, string position = null)
-        {
-            if (item == null)
-            {
-                return (Shape)_parent;
-            }
-
-            dynamic parent = _parent;
-
-            dynamic zone = await _zoneFactory();
-            zone.Parent = _parent;
-            zone.ZoneName = _potentialZoneName;
-            parent[_potentialZoneName] = zone;
-
-            if (position == null)
-            {
-                return zone.Add(item);
-            }
-
-            return zone.Add(item, position);
+            return await zone.AddAsync(item, position);
         }
     }
 }

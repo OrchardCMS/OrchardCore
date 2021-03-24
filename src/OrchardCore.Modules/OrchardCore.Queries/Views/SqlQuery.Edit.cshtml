@@ -12,7 +12,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="ReturnDocuments" checked="@Model.ReturnDocuments" />
         <label class="custom-control-label" asp-for="ReturnDocuments">@T["Return Documents"]</label>
-        <span class="hint">— @T["Check to return the corresponding documents."]</span>
+        <span class="hint dashed">@T["Check to return the corresponding documents."]</span>
     </div>
     <span class="hint">@T["When checked, the result has to be a list of document ids."]</span>
 </div>

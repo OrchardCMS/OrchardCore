@@ -11,7 +11,7 @@ namespace OrchardCore.Recipes
     {
         private readonly GlobalMethod _globalMethod;
 
-        public VariablesMethodProvider(JObject variables)
+        public VariablesMethodProvider(JObject variables, List<IGlobalMethodProvider> scopedMethodProviders)
         {
             _globalMethod = new GlobalMethod
             {
@@ -24,7 +24,7 @@ namespace OrchardCore.Recipes
                     while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         value = value.Trim('[', ']');
-                        value = (ScriptingManager.Evaluate(value, null, null, null) ?? "").ToString();
+                        value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
                         variables[name] = new JValue(value);
                     }
 

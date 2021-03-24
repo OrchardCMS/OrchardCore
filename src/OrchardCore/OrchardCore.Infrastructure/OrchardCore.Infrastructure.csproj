@@ -1,7 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Infrastructure</Title>
+    <Description>$(OCCMSDescription)
+
+    Implementation for OrchardCoreCMS Infrastructure </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Infrastructure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,9 +16,8 @@
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" />
     <PackageReference Include="MimeKit" />
-    <PackageReference Include="MessagePack" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Data\OrchardCore.Data.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />

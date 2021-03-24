@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Models;
@@ -13,7 +16,6 @@ namespace OrchardCore.Facebook.Widgets.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private HtmlString _bodyAspect;
 
         public FacebookPluginPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
@@ -25,12 +27,6 @@ namespace OrchardCore.Facebook.Widgets.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                if (_bodyAspect != null)
-                {
-                    bodyAspect.Body = _bodyAspect;
-                    return;
-                }
-
                 try
                 {
                     var model = new FacebookPluginPartViewModel()
@@ -40,10 +36,10 @@ namespace OrchardCore.Facebook.Widgets.Handlers
                         ContentItem = part.ContentItem
                     };
 
-                    var result = await _liquidTemplateManager.RenderAsync(part.Liquid, _htmlEncoder, model,
-                        scope => scope.SetValue("ContentItem", model.ContentItem));
+                    var result = await _liquidTemplateManager.RenderHtmlContentAsync(part.Liquid, _htmlEncoder, model,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
 
-                    bodyAspect.Body = _bodyAspect = new HtmlString(result);
+                    bodyAspect.Body = result;
                 }
                 catch
                 {

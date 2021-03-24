@@ -16,9 +16,10 @@ namespace OrchardCore.Sitemaps.Controllers
 {
     public class SitemapController : Controller
     {
+        private const int WarningLength = 47_185_920;
+        private const int ErrorLength = 52_428_800;
+
         private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>(StringComparer.OrdinalIgnoreCase);
-        private const int _warningLength = 47_185_920;
-        private const int _errorLength = 52_428_800;
 
         private readonly ISitemapManager _sitemapManager;
         private readonly ISiteService _siteService;
@@ -47,13 +48,12 @@ namespace OrchardCore.Sitemaps.Controllers
         public async Task<IActionResult> Index(CancellationToken cancellationToken, string sitemapId)
         {
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
-
             if (sitemap == null || !sitemap.Enabled)
             {
                 return NotFound();
             }
 
-            var fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap.Path);
+            var fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap.CacheFileName);
             if (fileResolver != null)
             {
                 // When multiple requests occur for the same sitemap it 
@@ -93,16 +93,16 @@ namespace OrchardCore.Sitemaps.Controllers
                         var stream = new MemoryStream();
                         await document.SaveAsync(stream, SaveOptions.None, cancellationToken);
 
-                        if (stream.Length >= _errorLength)
+                        if (stream.Length >= ErrorLength)
                         {
                             _logger.LogError("Sitemap 50MB maximum length limit exceeded");
                         }
-                        else if (stream.Length >= _warningLength)
+                        else if (stream.Length >= WarningLength)
                         {
                             _logger.LogWarning("Sitemap nearing 50MB length limit");
                         }
 
-                        await _sitemapCacheProvider.SetSitemapCacheAsync(stream, sitemap.Path, cancellationToken);
+                        await _sitemapCacheProvider.SetSitemapCacheAsync(stream, sitemap.CacheFileName, cancellationToken);
 
                         return stream;
                     }
@@ -125,4 +125,3 @@ namespace OrchardCore.Sitemaps.Controllers
         }
     }
 }
-

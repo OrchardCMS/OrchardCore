@@ -55,7 +55,7 @@
         </div>
 
         <div class="row">
-            <div class="col-xl-6 form-group" asp-validation-class-for="PageSize">
+            <div class="col-xl-4 form-group" asp-validation-class-for="PageSize">
                 <label asp-for="PageSize">@T["Page size"]</label>
                 <input asp-for="PageSize" type="number" class="form-control" />
                 <span asp-validation-for="PageSize"></span>
@@ -69,7 +69,7 @@
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" asp-for="@Model.AppendVersion" />
                 <label class="custom-control-label" asp-for="@Model.AppendVersion">@T["Use resources cache busting"]</label>
-                <span class="hint">— @T["Whether cache busting (append a version) is used for scripts and stylesheets"]</span>
+                <span class="hint dashed">@T["Whether cache busting (append a version) is used for scripts and stylesheets"]</span>
             </div>
         </div>
 
@@ -77,7 +77,7 @@
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" asp-for="@Model.UseCdn" />
                 <label class="custom-control-label" asp-for="@Model.UseCdn">@T["Use framework CDN (Content Delivery Network)"]</label>
-                <span class="hint">— @T["Whether a framework CDN is used for registered scripts and stylesheets, such as jQuery, or their local version"]</span>
+                <span class="hint dashed">@T["Whether a framework CDN is used for registered scripts and stylesheets, such as jQuery, or their local version"]</span>
             </div>
         </div>
 

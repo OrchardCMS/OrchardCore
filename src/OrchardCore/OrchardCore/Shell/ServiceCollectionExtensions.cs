@@ -5,6 +5,7 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
+using OrchardCore.Environment.Shell.Distributed;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -29,6 +30,8 @@ namespace OrchardCore.Environment.Shell
             }
 
             services.AddSingleton<IRunningShellTable, RunningShellTable>();
+
+            services.AddHostedService<DistributedShellHostedService>();
 
             return services;
         }

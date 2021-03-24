@@ -14,11 +14,11 @@ namespace OrchardCore.ContentManagement
             _contentHandleProviders = contentHandleProviders.OrderBy(x => x.Order);
         }
 
-        public async Task<string> GetContentItemIdAsync(string alias)
+        public async Task<string> GetContentItemIdAsync(string handle)
         {
             foreach (var provider in _contentHandleProviders)
             {
-                var result = await provider.GetContentItemIdAsync(alias);
+                var result = await provider.GetContentItemIdAsync(handle);
 
                 if (!String.IsNullOrEmpty(result))
                 {

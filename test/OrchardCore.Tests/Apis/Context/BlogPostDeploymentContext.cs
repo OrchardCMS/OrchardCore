@@ -17,7 +17,7 @@ namespace OrchardCore.Tests.Apis.Context
     {
         public const string RemoteDeploymentClientName = "testserver";
         public const string RemoteDeploymentApiKey = "testkey";
-        public static IShellHost ShellHost { get; private set; }
+        public static IShellHost ShellHost { get; }
 
         public string BlogPostContentItemId { get; private set; }
         public ContentItem OriginalBlogPost { get; private set; }
@@ -28,7 +28,7 @@ namespace OrchardCore.Tests.Apis.Context
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
         }
 
-        public override async Task InitializeAsync(PermissionsContext permissionsContext = null)
+        public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
 
@@ -46,15 +46,13 @@ namespace OrchardCore.Tests.Apis.Context
             OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();
             OriginalBlogPostVersionId = OriginalBlogPost.ContentItemVersionId;
 
-            using (var shellScope = await ShellHost.GetScopeAsync(TenantName))
+            var shellScope = await ShellHost.GetScopeAsync(TenantName);
+            await shellScope.UsingAsync(async scope =>
             {
-                await shellScope.UsingAsync(async scope =>
-                {
-                    var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
+                var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
 
-                    await remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey);
-                });
-            }
+                await remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey);
+            });
         }
 
         public JObject GetContentStepRecipe(ContentItem contentItem, Action<JObject> mutation)

@@ -1,7 +1,7 @@
 // <media-items-table> component
 Vue.component('media-items-table', {
     template: `
-        <table class="table media-items-table">
+        <table class="table media-items-table m-0">
             <thead>
                 <tr class="header-row">
                     <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th>
@@ -46,7 +46,7 @@ Vue.component('media-items-table', {
                                     <div class="buttons-container">
                                         <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a >
                                         <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a>
-                                        <a :href="media.url" class="btn btn-link btn-sm view-button"> {{ T.viewButton }} </a>
+                                        <a :href="media.url" target="_blank" class="btn btn-link btn-sm view-button"> {{ T.viewButton }} </a>
                                     </div>
                                 </div>
                             </td>

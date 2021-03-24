@@ -6,7 +6,7 @@ Orchard Core consists of two distinct projects:
 - __Orchard Core CMS__: A Web Content Management System (CMS) built on top of the Orchard Core Framework.
 
 [![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.txt)
+[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
@@ -20,8 +20,7 @@ Stable (master):
 
 Nightly (dev): 
 
-[![Build Status](https://api.travis-ci.org/OrchardCMS/OrchardCore.svg?branch=dev)](https://travis-ci.org/OrchardCMS/OrchardCore/branches)
-[![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchardcore/dev.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchardcore/branch/dev)
+[![Build status](https://github.com/OrchardCMS/OrchardCore/workflows/Release%20-%20CI/badge.svg?branch=dev)](https://github.com/OrchardCMS/OrchardCore/actions?query=workflow%3A%22Release+-+CI%22)
 [![Cloudsmith](https://api-prd.cloudsmith.io/badges/version/orchardcore/preview/nuget/OrchardCore.Application.Cms.Targets/latest/x/?render=true&badge_token=gAAAAABey9hKFD_C-ZIpLvayS3HDsIjIorQluDs53KjIdlxoDz6Ntt1TzvMNJp7a_UWvQbsfN5nS7_0IbxCyqHZsjhmZP6cBkKforo-NqwrH5-E6QCrJ3D8%3D)](https://cloudsmith.io/~orchardcore/repos/preview/packages/detail/nuget/OrchardCore.Application.Cms.Targets/latest/)
 
 ## Status
@@ -38,7 +37,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ### Command line
 
-- Install the latest version of the .NET Core SDK from this page <https://www.microsoft.com/net/download/core>
+- Install the latest version of the .NET SDK from this page <https://dotnet.microsoft.com/download>
 - Next, navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your folder is on the commandline in Administrator mode.
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
@@ -51,9 +50,10 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ### Docker
 
-- Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
+- Run `docker run --name orchardcms -p 8080:80 orchardproject/orchardcore-cms-linux:latest`
 
-Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>
+Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>  
+See [Docker documentation](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose) to expose different port.
 
 ### Documentation
 

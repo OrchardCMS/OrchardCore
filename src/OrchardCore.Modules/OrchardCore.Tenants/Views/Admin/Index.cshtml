@@ -15,29 +15,17 @@
     public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
-
-        var requestHost = Context.Request.Host;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
-
-        var port = requestHost.Port;
-
-        if (port.HasValue)
-        {
-            host += ":" + port;
-        }
-
-        var hostString = new HostString(host);
+        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
-
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        QueryString queryString;
-
-        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+        var queryString = QueryString.Empty;
+        if (!String.IsNullOrEmpty(shellSettingsEntry.Token))
         {
             queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
@@ -48,61 +36,43 @@
     public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
-
-        var requestHost = Context.Request.Host;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
-
-        var port = requestHost.Port;
-
-        if (port.HasValue)
-        {
-            host += ":" + port;
-        }
+        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
-
         if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        return $"{Context.Request.Scheme}://{host + pathString.Value}";
+        return $"{Context.Request.Scheme}://{hostString.Value + pathString.Value}";
     }
 }
 
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
-<style asp-name="bootstrap-select"></style>
 
-<h1>@RenderTitleSegments(T["Tenants"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
+
 <form asp-action="Index" method="post">
-    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
-    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
+    <input type="submit" name="submit.BulkAction" class="sr-only" />
     <input name="BulkAction" type="hidden" />
 
-    <div class="row">
-        <div class="form-group col-xl-4 col-sm-6">
-            <div class="input-group input-group-sm filter-options">
-                <div class="input-group-prepend">
-                    <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                        @T["Filters"]
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                        <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
-                        <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
-                        <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
-                    </div>
+    <div class="card mb-3 position-sticky action-bar">
+        <div class="card-body bg-primary p-3">
+            <div class="form-group mb-n1">
+                <div class="input-group input-group-sm w-50 d-inline-flex has-search">
+                    <i class="fa fa-search form-control-feedback"></i>
+                    <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-            </div>
-        </div>
-        <div class="form-group col-xl-8 col-sm-6">
-            <div class="btn-group float-right">
-                <a asp-route-action="Create" class="btn btn-sm btn-primary float-rights" role="button">@T["Add Tenant"]</a>
+                <div class="dropdown float-right order-md-1">
+                    <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Tenant"]</a>
+                </div>
             </div>
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        <li class="list-group-item bg-light">
+        <li class="list-group-item bg-primary">
             <div class="row">
                 <div class="form-group col mb-n1 text-nowrap">
                     <div class="custom-control custom-checkbox mt-2 mr-n2">
@@ -138,52 +108,73 @@
             @foreach (var entry in Model.ShellSettingsEntries)
             {
                 <li class="list-group-item">
-                    <div class="custom-control custom-checkbox float-left">
-                        <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
-                        <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
-                    </div>
-                    <div class="properties">
-                        <div class="related">
-                            <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
-                            {
-                                <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
-                            }
-                            @if (entry.ShellSettings.State == TenantState.Disabled)
-                            {
-                                <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
-                            }
-                            @if (entry.ShellSettings.State == TenantState.Uninitialized)
-                            {
-                                <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
-                            }
-                            <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
+                    <div class="row">
+                        <div class="col-lg-6 col-sm-12 title d-flex">
+                            <div class="custom-control custom-checkbox float-left flex-shrink-0">
+                                <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
+                                <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
+                            </div>
+                            <div class="d-inline">
+                                <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                                @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
+                                {
+                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info"></i> @entry.ShellSettings["DatabaseProvider"]</span>
+                                }
+                                @if (!string.IsNullOrEmpty(entry.ShellSettings["RecipeName"]))
+                                {
+                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-image text-info"></i> @entry.ShellSettings["RecipeName"]</span>
+                                }
+                                <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
+                                    @switch (entry.ShellSettings.State)
+                                    {
+                                        case TenantState.Uninitialized:
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-cog text-secondary"></i> @T["Uninitialized"]</span>
+                                            break;
+                                        case TenantState.Initializing:
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-hourglass-start text-info"></i> @T["Initializing"]</span>
+                                            break;
+                                        case TenantState.Running:
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-check text-success"></i> @T["Running"]</span>
+                                            break;
+                                        case TenantState.Disabled:
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-remove text-danger"></i> @T["Disabled"]</span>
+                                            break;
+                                        case TenantState.Invalid:
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-exclamation-triangle text-warning"></i> @T["Invalid"]</span>
+                                            break;
+                                    }
+                                </a>
+                                @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
+                                {
+                                    <p class="mb-0"><code data-toggle="tooltip" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
+                                }
+                                @if (!string.IsNullOrEmpty(entry.Description))
+                                {
+                                    <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
+                                }
+                            </div>
                         </div>
-                        <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
-                        <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
-                        @if (!string.IsNullOrEmpty(entry.Description))
-                        {
-                            <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
-                        }
-                        <div class="metadata">
-                            @switch (entry.ShellSettings.State)
-                            {
-                                case TenantState.Disabled:
-                                    <span class="badge badge-danger">@T["Disabled"]</span>
-                                    break;
-                                case TenantState.Initializing:
-                                    <span class="badge badge-info">@T["Initializing"]</span>
-                                    break;
-                                case TenantState.Invalid:
-                                    <span class="badge badge-warning">@T["Invalid"]</span>
-                                    break;
-                                case TenantState.Running:
-                                    <span class="badge badge-success">@T["Running"]</span>
-                                    break;
-                                case TenantState.Uninitialized:
-                                    <span class="badge badge-secondary">@T["Uninitialized"]</span>
-                                    break;
-                            }
+                        <div class="col-lg-6 col-sm-12 related">
+                            <div class="float-right">
+                                <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm edit">@T["Edit"]</a>
+                                @if (entry.ShellSettings.State == TenantState.Running)
+                                {
+                                    <a class="btn btn-info btn-sm view" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank">@T["View"]</a>
+                                }
+                                @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
+                                {
+                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" itemprop="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
+                                }
+                                @if (entry.ShellSettings.State == TenantState.Disabled)
+                                {
+                                    <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" itemprop="UnsafeUrl">@T["Enable"]</a>
+                                }
+                                @if (entry.ShellSettings.State == TenantState.Uninitialized)
+                                {
+                                    <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
+                                }
+                                <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" itemprop="UnsafeUrl">@T["Reload"]</a>
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -192,7 +183,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info">
+                <div class="alert alert-info mb-0">
                     @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>
             </li>
@@ -202,7 +193,7 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         $('.selectpicker').selectpicker();
 

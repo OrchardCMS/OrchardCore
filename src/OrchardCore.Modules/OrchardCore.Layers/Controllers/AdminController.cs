@@ -8,14 +8,16 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Documents;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Cache;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
+using OrchardCore.Rules;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -29,34 +31,46 @@ namespace OrchardCore.Layers.Controllers
         private readonly ILayerService _layerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
-        private readonly ISignal _signal;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
+        private readonly IDisplayManager<Condition> _conditionDisplayManager;
+        private readonly IDisplayManager<Rule> _ruleDisplayManager;
+        private readonly IConditionIdGenerator _conditionIdGenerator;
+        private readonly IEnumerable<IConditionFactory> _conditionFactories;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
-            ISignal signal,
-            IAuthorizationService authorizationService,
-            ISession session,
-            ILayerService layerService,
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             ISiteService siteService,
+            ILayerService layerService,
+            IAuthorizationService authorizationService,
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor,
+            IVolatileDocumentManager<LayerState> layerStateManager,
+            IDisplayManager<Condition> conditionDisplayManager,
+            IDisplayManager<Rule> ruleDisplayManager,
+            IConditionIdGenerator conditionIdGenerator,
+            IEnumerable<IConditionFactory> conditionFactories,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            INotifier notifier)
         {
-            _signal = signal;
-            _authorizationService = authorizationService;
-            _session = session;
-            _layerService = layerService;
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
-            _notifier = notifier;
+            _layerService = layerService;
+            _authorizationService = authorizationService;
+            _session = session;
             _updateModelAccessor = updateModelAccessor;
+            _layerStateManager = layerStateManager;
+            _conditionDisplayManager = conditionDisplayManager;
+            _ruleDisplayManager = ruleDisplayManager;
+            _conditionIdGenerator = conditionIdGenerator;
+            _conditionFactories = conditionFactories;
+            _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -128,12 +142,16 @@ namespace OrchardCore.Layers.Controllers
 
             if (ModelState.IsValid)
             {
-                layers.Layers.Add(new Layer
+                var layer = new Layer
                 {
                     Name = model.Name,
-                    Rule = model.Rule,
                     Description = model.Description
-                });
+                };
+                
+                layer.LayerRule = new Rule();
+                _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
+
+                layers.Layers.Add(layer);
 
                 await _layerService.UpdateAsync(layers);
 
@@ -159,11 +177,24 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
+            dynamic rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
+            rule.ConditionId = layer.LayerRule.ConditionId;
+
+            var thumbnails = new Dictionary<string, dynamic>();
+            foreach (var factory in _conditionFactories)
+            {
+                var condition = factory.Create();
+                dynamic thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Condition = condition;
+                thumbnails.Add(factory.Name, thumbnail);
+            }
+
             var model = new LayerEditViewModel
             {
                 Name = layer.Name,
-                Rule = layer.Rule,
-                Description = layer.Description
+                Description = layer.Description,
+                LayerRule = rule,
+                Thumbnails = thumbnails,
             };
 
             return View(model);
@@ -191,7 +222,6 @@ namespace OrchardCore.Layers.Controllers
                 }
 
                 layer.Name = model.Name;
-                layer.Rule = model.Rule;
                 layer.Description = model.Description;
 
                 await _layerService.UpdateAsync(layers);
@@ -288,8 +318,8 @@ namespace OrchardCore.Layers.Controllers
                 }
             }
 
-            // Clear the cache after the session is committed.
-            _signal.DeferredSignalToken(LayerMetadataHandler.LayerChangeToken);
+            // The state will be updated once the ambient session is committed.
+            await _layerStateManager.UpdateAsync(new LayerState());
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
@@ -310,11 +340,6 @@ namespace OrchardCore.Layers.Controllers
             else if (isNew && layers.Layers.Any(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name already exists."]);
-            }
-
-            if (String.IsNullOrWhiteSpace(model.Rule))
-            {
-                ModelState.AddModelError(nameof(LayerEditViewModel.Rule), S["The rule is required."]);
             }
         }
     }

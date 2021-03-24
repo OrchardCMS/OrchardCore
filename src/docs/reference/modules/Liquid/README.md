@@ -300,6 +300,52 @@ Returns the user's email.
 {{ User | user_email }}
 ```
 
+##### user_id filter
+
+Returns the user's unique identifier.
+
+```liquid
+{{ User | user_id }}
+```
+
+##### users_by_id filter
+
+Loads a single or multiple user objects from the database by id(s).
+
+The resulting object has access to the following properties:
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `UserId` | `42z3ps88pm8d40zn9cfwbee45c ` | The id of the authenticated user. |
+| `UserName` | `admin` | The name of the authenticated user. |
+| `NormalizedUserName` | `ADMIN` | The normailzed name of the authenticated user. |
+| `Email` | `admin@gmail.com` | The email of the authenticated user. |
+| `NormailizedEmail` | `ADMIN@GMAIL>COM` | The normalized email of the authenticated user. |
+| `EmailConfirmed` | `true` | True if the user has confirmed his email or if the email confirmation is not required |
+| `IsEnabled` | `true` | True if the user is enabled |
+| `RoleNames` | `[Editor,Contributor]`  | An array of role names assigned to the user |
+| `Properties` | `UserProfile.FirstName.Text` | Holds the Custom Users Settings of the user. |
+
+You can use this filter to load the user information of the current authenticated user like this.
+```liquid
+{% assign user = User | user_id | users_by_id %}
+
+{{ user.UserName }} - {{ user.Email }}
+
+```
+
+You can use this filter with the UserPicker field to load the picked user's information.
+
+```liquid
+{% assign users = Model.ContentItem.Content.SomeType.UserPicker.UserIds | users_by_id %}
+
+{% for user in users %}
+  {{ user.UserName }} - {{ user.Email }}
+{% endfor %}
+
+```
+
+
 #### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
@@ -333,12 +379,11 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | -------- | ------- |------------ |
 | `BaseUrl` |  | The base URL of the site. | 
 | `Calendar` |  | The site's calendar. | 
-| `Culture` | `en-us` | The site's default culture as an ISO language code. | 
 | `MaxPagedCount` | `0` | The maximum number of pages that can be paged. | 
 | `MaxPageSize` | `100` | The maximum page size that can be set by a user. | 
 | `PageSize` | `10` | The default page size of lists. | 
 | `SiteName` | `My Site` | The friendly name of the site. | 
-| `SuperUser` | `admin` | The user name of the site's super user. | 
+| `SuperUser` | `4kxfgfrxqmdpnt5n508cqvpvca` | The user id of the site's super user. | 
 | `TimeZoneId` | `America/Los_Angeles` | The site's time zone id as per the tz database, c.f., https://en.wikipedia.org/wiki/List_of_tz_database_time_zones | 
 | `UseCdn` | `false` | Enable/disable the use of a CDN. | 
 | `ResourceDebugMode` | `Disabled` | Provides options for whether src or debug-src is used for loading scripts and stylesheets | 
@@ -367,6 +412,7 @@ The following properties are available on the `Request` object.
 | `IsHttps` | `true` | True if the scheme of the request is `https`. |
 | `Scheme` | `https` | The scheme of the request. |
 | `Method` | `GET` | The HTTP method. |
+| `Route` | Usage: `Request.Route.controller` | The route values for this request. |
 
 ### Culture
 
@@ -603,7 +649,7 @@ Input
 
 Adds properties to a shape. This can be useful to pass values from a parent shape.  
 Property names get converted to PascalCase.  
-Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template.
+Ex: `prop_name1` can be accessed via `Model.Properties["PropName1"]` or `Model.Properties.PropName1` in the shape template.
 
 Input
 

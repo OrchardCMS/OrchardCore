@@ -29,8 +29,8 @@ namespace OrchardCore.Localization
         /// </summary>
         /// <param name="extensionsManager">The <see cref="IExtensionManager"/>.</param>
         /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>
-        /// <param name="shellOptions">The <see cref="IOptions"/> for the <see cref="ShellOptions"/>.</param>
-        /// <param name="localizationOptions">The <see cref="IOptions"/> for the <see cref="LocalizationOptions"/>.</param>
+        /// <param name="shellOptions">The <see cref="ShellOptions"/>.</param>
+        /// <param name="localizationOptions">The <see cref="LocalizationOptions"/>.</param>
         /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
         public ModularPoFileLocationProvider(
             IExtensionManager extensionsManager,

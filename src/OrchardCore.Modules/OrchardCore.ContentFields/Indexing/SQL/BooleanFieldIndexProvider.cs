@@ -31,6 +31,12 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             context.For<BooleanFieldIndex>()
                 .Map(contentItem =>
                 {
+                    // Remove index records of soft deleted items.
+                    if (!contentItem.Published && !contentItem.Latest)
+                    {
+                        return null;
+                    }
+
                     // Can we safely ignore this content item?
                     if (_ignoredTypes.Contains(contentItem.ContentType))
                     {
@@ -38,13 +44,28 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     }
 
                     // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+                    _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                    // Search for Text fields
-                    var fieldDefinitions = _contentDefinitionManager
-                        .GetTypeDefinition(contentItem.ContentType)
+                    // Search for BooleanField
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                    // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
+                    if (contentTypeDefinition == null)
+                    {
+                        _ignoredTypes.Add(contentItem.ContentType);
+                        return null;
+                    }
+
+                    var fieldDefinitions = contentTypeDefinition
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(BooleanField)))
                         .ToArray();
+
+                    // This type doesn't have any BooleanField, ignore it
+                    if (fieldDefinitions.Length == 0)
+                    {
+                        _ignoredTypes.Add(contentItem.ContentType);
+                        return null;
+                    }
 
                     var results = new List<BooleanFieldIndex>();
 

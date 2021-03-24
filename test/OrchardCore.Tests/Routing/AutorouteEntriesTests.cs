@@ -1,8 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement.Routing;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using Xunit;
 
 namespace OrchardCore.Tests.Routing
@@ -10,142 +16,248 @@ namespace OrchardCore.Tests.Routing
     public class AutorouteEntriesTests
     {
         [Fact]
-        public void ShouldGetContainedEntryByPath()
+        public async Task ShouldGetContainedEntryByPath()
         {
             // Setup
-            var entries = new AutorouteEntries();
+            var shellContext = CreateShellContext();
 
-            var initialEntries = new List<AutorouteEntry>()
+            await shellContext.CreateScope().UsingAsync(scope =>
             {
-                new AutorouteEntry("container", "container-path"),
-                new AutorouteEntry("container", "contained-path", "contained")
-            };
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
-            entries.AddEntries(initialEntries);
+                // Act
+                var initialEntries = new List<AutorouteEntry>()
+                {
+                    new AutorouteEntry("container", "container-path"),
+                    new AutorouteEntry("container", "contained-path", "contained")
+                };
 
-            // Act
-            var result = entries.TryGetEntryByPath("/contained-path", out var containedEntry);
+                entries.AddEntries(initialEntries);
 
-            // Test
-            Assert.True(result);
-            Assert.Equal("contained", containedEntry.ContainedContentItemId);
+                return Task.CompletedTask;
+            });
+
+            await shellContext.CreateScope().UsingAsync(async scope =>
+            {
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
+
+                // Test
+                (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path");
+
+                Assert.True(result);
+                Assert.Equal("contained", containedEntry.ContainedContentItemId);
+            });
         }
 
         [Fact]
-        public void ShouldGetEntryByContainedContentItemId()
+        public async Task ShouldGetEntryByContainedContentItemId()
         {
             // Setup
-            var entries = new AutorouteEntries();
+            var shellContext = CreateShellContext();
 
-            var initialEntries = new List<AutorouteEntry>()
+            await shellContext.CreateScope().UsingAsync(scope =>
             {
-                new AutorouteEntry("container", "container-path"),
-                new AutorouteEntry("container", "contained-path", "contained")
-            };
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
-            entries.AddEntries(initialEntries);
+                // Act
+                var initialEntries = new List<AutorouteEntry>()
+                {
+                    new AutorouteEntry("container", "container-path"),
+                    new AutorouteEntry("container", "contained-path", "contained")
+                };
 
-            // Act
-            var result = entries.TryGetEntryByContentItemId("contained", out var containedEntry);
+                entries.AddEntries(initialEntries);
 
-            // Test
-            Assert.True(result);
-            Assert.Equal("/contained-path", containedEntry.Path);
+                return Task.CompletedTask;
+            });
+
+            await shellContext.CreateScope().UsingAsync(async scope =>
+            {
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
+
+                // Test
+                (var result, var containedEntry) = await entries.TryGetEntryByContentItemIdAsync("contained");
+
+                Assert.True(result);
+                Assert.Equal("/contained-path", containedEntry.Path);
+            });
         }
 
         [Fact]
-        public void RemovesContainedEntriesWhenContainerRemoved()
+        public async Task RemovesContainedEntriesWhenContainerRemoved()
         {
             // Setup
-            var entries = new AutorouteEntries();
+            var shellContext = CreateShellContext();
 
-            var initialEntries = new List<AutorouteEntry>()
+            await shellContext.CreateScope().UsingAsync(scope =>
             {
-                new AutorouteEntry("container", "container-path"),
-                new AutorouteEntry("container", "contained-path", "contained")
-            };
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
-            entries.AddEntries(initialEntries);
+                // Act
+                var initialEntries = new List<AutorouteEntry>()
+                {
+                    new AutorouteEntry("container", "container-path"),
+                    new AutorouteEntry("container", "contained-path", "contained")
+                };
 
-            // Act
-            entries.RemoveEntry("container", "container-path");
-            var result = entries.TryGetEntryByPath("/contained-path", out var entry);
+                entries.AddEntries(initialEntries);
 
-            // Test
-            Assert.False(result);
+                entries.RemoveEntries(new[] { new AutorouteEntry("container", "container-path", null, null) });
+
+                return Task.CompletedTask;
+            });
+
+            await shellContext.CreateScope().UsingAsync(async scope =>
+            {
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
+
+                // Test
+                (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path");
+
+                Assert.False(result);
+            });
         }
 
         [Fact]
-        public void RemovesContainedEntriesWhenDeleted()
+        public async Task RemovesContainedEntriesWhenDeleted()
         {
             // Setup
-            var entries = new AutorouteEntries();
+            var shellContext = CreateShellContext();
 
-            var initialEntries = new List<AutorouteEntry>()
+            await shellContext.CreateScope().UsingAsync(scope =>
             {
-                new AutorouteEntry("container", "container-path"),
-                new AutorouteEntry("container", "contained-path1", "contained1"),
-                new AutorouteEntry("container", "contained-path2", "contained2")
-            };
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
-            entries.AddEntries(initialEntries);
+                // Act
+                var initialEntries = new List<AutorouteEntry>()
+                {
+                    new AutorouteEntry("container", "container-path"),
+                    new AutorouteEntry("container", "contained-path1", "contained1"),
+                    new AutorouteEntry("container", "contained-path2", "contained2")
+                };
 
-            // Act
-            var updatedEntries = new List<AutorouteEntry>()
+                entries.AddEntries(initialEntries);
+
+                var updatedEntries = new List<AutorouteEntry>()
+                {
+                    new AutorouteEntry("container", "container-path"),
+                    new AutorouteEntry("container", "contained-path1", "contained1")
+                };
+
+                entries.AddEntries(updatedEntries);
+
+                return Task.CompletedTask;
+            });
+
+            await shellContext.CreateScope().UsingAsync(async scope =>
             {
-                new AutorouteEntry("container", "container-path"),
-                new AutorouteEntry("container", "contained-path1", "contained1")
-            };
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
-            entries.AddEntries(updatedEntries);
-            var result = entries.TryGetEntryByPath("/contained-path2", out var entry);
+                // Test
+                (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path2");
 
-            // Test
-            Assert.False(result);
+                Assert.False(result);
+            });
         }
 
         [Fact]
-        public void RemovesOldContainedPaths()
+        public async Task RemovesOldContainedPaths()
         {
             // Setup
-            var entries = new AutorouteEntries();
+            var shellContext = CreateShellContext();
 
-            var initialEntries = new List<AutorouteEntry>()
+            await shellContext.CreateScope().UsingAsync(scope =>
             {
-                new AutorouteEntry("container", "container-path"),
-                new AutorouteEntry("container", "contained-path-old", "contained")
-            };
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
-            entries.AddEntries(initialEntries);
+                // Act
+                var initialEntries = new List<AutorouteEntry>()
+                {
+                    new AutorouteEntry("container", "container-path"),
+                    new AutorouteEntry("container", "contained-path-old", "contained")
+                };
 
-            // Act
-            var updatedEntries = new List<AutorouteEntry>()
+                entries.AddEntries(initialEntries);
+
+                var updatedEntries = new List<AutorouteEntry>()
+                {
+                    new AutorouteEntry("container", "container-path"),
+                    new AutorouteEntry("container", "contained-path-new", "contained")
+                };
+
+                entries.AddEntries(updatedEntries);
+
+                return Task.CompletedTask;
+            });
+
+            await shellContext.CreateScope().UsingAsync(async scope =>
             {
-                new AutorouteEntry("container", "container-path"),
-                new AutorouteEntry("container", "contained-path-new", "contained")
-            };
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
-            entries.AddEntries(updatedEntries);
-            var result = entries.TryGetEntryByPath("/contained-path-old", out var entry);
+                // Test
+                (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/contained-path-old");
 
-            // Test
-            Assert.False(result);
+                Assert.False(result);
+            });
         }
 
         [Fact]
-        public void RemovesOldPaths()
+        public async Task RemovesOldPaths()
         {
             // Setup
-            var entries = new AutorouteEntries();
+            var shellContext = CreateShellContext();
 
-            entries.AddEntry("container", "container-path");
+            await shellContext.CreateScope().UsingAsync(scope =>
+            {
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
-            // Act
-            entries.RemoveEntry("container", "container-path");
-            var result = entries.TryGetEntryByPath("/container-path", out var entry);
+                // Act
+                entries.AddEntries(new[] { new AutorouteEntry("container", "container-path", null, null) });
 
-            // Test
-            Assert.False(result);
+                entries.RemoveEntries(new[] { new AutorouteEntry("container", "container-path", null, null) });
+
+                return Task.CompletedTask;
+            });
+
+            await shellContext.CreateScope().UsingAsync(async scope =>
+            {
+                var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
+
+                // Test
+                (var result, var containedEntry) = await entries.TryGetEntryByPathAsync("/container-path");
+
+                Assert.False(result);
+            });
+        }
+
+        private static ShellContext CreateShellContext()
+        {
+            return new ShellContext()
+            {
+                Settings = new ShellSettings() { Name = ShellHelper.DefaultShellName, State = TenantState.Running },
+                ServiceProvider = CreateServiceProvider()
+            };
+        }
+
+        private static IServiceProvider CreateServiceProvider()
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<IStubAutorouteEntries, StubAutorouteEntries>();
+            services.AddSingleton<IDistributedLock, LocalLock>();
+            return services.AddLogging().BuildServiceProvider();
+        }
+
+        public interface IStubAutorouteEntries : IAutorouteEntries
+        {
+            void AddEntries(IEnumerable<AutorouteEntry> entries);
+            void RemoveEntries(IEnumerable<AutorouteEntry> entries);
+        }
+
+        private class StubAutorouteEntries : AutorouteEntries, IStubAutorouteEntries
+        {
+            public new void AddEntries(IEnumerable<AutorouteEntry> entries) => base.AddEntries(entries);
+            public new void RemoveEntries(IEnumerable<AutorouteEntry> entries) => base.RemoveEntries(entries);
+            protected override Task InitializeEntriesAsync() => Task.CompletedTask;
         }
     }
 }

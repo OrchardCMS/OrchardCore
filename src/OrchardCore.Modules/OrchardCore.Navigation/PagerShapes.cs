@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 
@@ -24,117 +24,112 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager")
                 .OnCreated(created =>
                 {
-                    // Intializes the common properties of a Pager shape
+                    // Initializes the common properties of a Pager shape
                     // such that views can safely add values to them.
                     created.Shape.Properties["ItemClasses"] = new List<string>();
                     created.Shape.Properties["ItemAttributes"] = new Dictionary<string, string>();
                 })
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
                     };
                 });
 
             builder.Describe("PagerSlim")
                 .OnCreated(created =>
                 {
-                    // Intializes the common properties of a Pager shape
+                    // Initializes the common properties of a Pager shape
                     // such that views can safely add values to them.
                     created.Shape.Properties["ItemClasses"] = new List<string>();
                     created.Shape.Properties["ItemAttributes"] = new Dictionary<string, string>();
+                })
+                .OnDisplaying(displaying =>
+                {
+                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
+                    {
+                        displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
+                    };
                 });
 
             builder.Describe("Pager_Gap")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    var shape = displaying.Shape;
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Gap__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Gap__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_First")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    var shape = displaying.Shape;
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_First__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_First__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_Previous")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    var shape = displaying.Shape;
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Previous__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Previous__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_Next")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    var shape = displaying.Shape;
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Next__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Next__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_Last")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    var shape = displaying.Shape;
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Last__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Last__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_CurrentPage")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    var shape = displaying.Shape;
+
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_CurrentPage__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_CurrentPage__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_Links")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + EncodeAlternateElement(pagerId));
                     }
                 });
         }
 
-        private string EncodeAlternateElement(string alternateElement)
+        private static string EncodeAlternateElement(string alternateElement)
         {
             return alternateElement.Replace("-", "__").Replace('.', '_');
         }
@@ -150,7 +145,7 @@ namespace OrchardCore.Navigation
         }
 
         [Shape]
-        public async Task<IHtmlContent> Pager_Links(Shape shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html, DisplayContext DisplayContext,
+        public async Task<IHtmlContent> Pager_Links(Shape shape, DisplayContext displayContext, IShapeFactory shapeFactory, IHtmlHelper Html,
             string PagerId,
             int Page,
             int PageSize,
@@ -161,13 +156,9 @@ namespace OrchardCore.Navigation
             object NextText,
             object LastText,
             object GapText,
-            bool ShowNext,
-            string ItemTagName,
-            IDictionary<string, string> ItemAttributes
-            // parameter omitted to workaround an issue where a NullRef is thrown
-            // when an anonymous object is bound to an object shape parameter
-            /*object RouteValues*/)
+            bool ShowNext)
         {
+            var noFollow = shape.Attributes.ContainsKey("rel") && shape.Attributes["rel"] == "no-follow";
             var currentPage = Page;
             if (currentPage < 1)
                 currentPage = 1;
@@ -184,7 +175,7 @@ namespace OrchardCore.Navigation
             if (totalPageCount < 2)
             {
                 shape.Metadata.Type = "List";
-                return await DisplayAsync(shape);
+                return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
             }
 
             var firstText = FirstText ?? S["<<"];
@@ -193,7 +184,7 @@ namespace OrchardCore.Navigation
             var lastText = LastText ?? S[">>"];
             var gapText = GapText ?? S["..."];
 
-            var httpContextAccessor = DisplayContext.ServiceProvider.GetService<IHttpContextAccessor>();
+            var httpContextAccessor = displayContext.ServiceProvider.GetService<IHttpContextAccessor>();
             var httpContext = httpContextAccessor.HttpContext;
 
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
@@ -211,31 +202,17 @@ namespace OrchardCore.Navigation
             }
 
             // specific cross-requests route data can be passed to the shape directly (e.g., OrchardCore.Users)
-            var shapeRoute = (object)((dynamic)shape).RouteData;
-
-            if (shapeRoute != null)
+            var shapeRouteData = shape.GetProperty<RouteData>("RouteData");
+            if (shapeRouteData != null)
             {
-                var shapeRouteData = shapeRoute as RouteValueDictionary;
-                if (shapeRouteData == null)
+                foreach (var rd in shapeRouteData.Values)
                 {
-                    var route = shapeRoute as RouteData;
-                    if (route != null)
-                    {
-                        shapeRouteData = new RouteValueDictionary(route.Values);
-                    }
-                }
-
-                if (shapeRouteData != null)
-                {
-                    foreach (var rd in shapeRouteData)
-                    {
-                        routeData[rd.Key] = rd.Value;
-                    }
+                    routeData[rd.Key] = rd.Value;
                 }
             }
 
             var firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
-            var lastPage = Math.Min(totalPageCount, Page + (int)(numberOfPagesToShow / 2));
+            var lastPage = Math.Min(totalPageCount, Page + (numberOfPagesToShow / 2));
 
             var pageKey = String.IsNullOrEmpty(PagerId) ? "page" : PagerId;
 
@@ -250,19 +227,50 @@ namespace OrchardCore.Navigation
             }
 
             // first
-            shape.Add(await New.Pager_First(Value: firstText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page < 2));
+            var firstItem = await shapeFactory.CreateAsync("Pager_First", Arguments.From(new
+            {
+                Value = firstText,
+                RouteValues = new RouteValueDictionary(routeData),
+                Pager = shape,
+                Disabled = Page < 2
+            }));
+
+            if (noFollow)
+            {
+                firstItem.Attributes["rel"] = "no-follow";
+            }
+
+            await shape.AddAsync(firstItem);
 
             // previous
             if ((Page > 1) && (currentPage > 2))
             { // also to keep from having "page=1" in the query string
                 routeData[pageKey] = currentPage - 1;
             }
-            shape.Add(await New.Pager_Previous(Value: previousText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page < 2));
+
+            var previousItem = await shapeFactory.CreateAsync("Pager_Previous", Arguments.From(new
+            {
+                Value = previousText,
+                RouteValues = new RouteValueDictionary(routeData),
+                Pager = shape,
+                Disabled = Page < 2
+            }));
+
+            if (noFollow)
+            {
+                previousItem.Attributes["rel"] = "no-follow";
+            }
+
+            await shape.AddAsync(previousItem);
 
             // gap at the beginning of the pager
             if (firstPage > 1 && numberOfPagesToShow > 0)
             {
-                shape.Add(await New.Pager_Gap(Value: gapText, Pager: shape));
+                await shape.AddAsync(await shapeFactory.CreateAsync("Pager_Gap", Arguments.From(new
+                {
+                    Value = gapText,
+                    Pager = shape
+                })));
             }
 
             // page numbers
@@ -273,15 +281,48 @@ namespace OrchardCore.Navigation
                     if (p == currentPage)
                     {
                         routeData[pageKey] = currentPage;
-                        shape.Add(await New.Pager_CurrentPage(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: shape));
+                        var currentPageItem = await shapeFactory.CreateAsync("Pager_CurrentPage", Arguments.From(new
+                        {
+                            Value = p,
+                            RouteValues = new RouteValueDictionary(routeData),
+                            Pager = shape
+                        }));
+
+                        if (noFollow)
+                        {
+                            currentPageItem.Attributes["rel"] = "no-follow";
+                        }
+
+                        await shape.AddAsync(currentPageItem);
                     }
                     else
                     {
                         if (p == 1)
+                        {
                             routeData.Remove(pageKey);
+                        }
                         else
+                        {
                             routeData[pageKey] = p;
-                        shape.Add(await New.Pager_Link(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: shape));
+                        }
+
+                        var pagerItem = await shapeFactory.CreateAsync("Pager_Link", Arguments.From(new
+                        {
+                            Value = p,
+                            RouteValues = new RouteValueDictionary(routeData),
+                            Pager = shape
+                        }));
+
+                        if (p > currentPage)
+                        {
+                            pagerItem.Attributes["rel"] = noFollow ? "no-follow" : "next";
+                        }
+                        else if (p < currentPage)
+                        {
+                            pagerItem.Attributes["rel"] = noFollow ? "no-follow" : "prev";
+                        }
+
+                        await shape.AddAsync(pagerItem);
                     }
                 }
             }
@@ -289,38 +330,67 @@ namespace OrchardCore.Navigation
             // gap at the end of the pager
             if (lastPage < totalPageCount && numberOfPagesToShow > 0)
             {
-                shape.Add(await New.Pager_Gap(Value: gapText, Pager: shape));
+                await shape.AddAsync(await shapeFactory.CreateAsync("Pager_Gap", Arguments.From(new
+                {
+                    Value = gapText,
+                    Pager = shape
+                })));
             }
 
             // Next
             routeData[pageKey] = Page + 1;
-            shape.Add(await New.Pager_Next(Value: nextText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page >= totalPageCount && !ShowNext));
+            var pagerNextItem = await shapeFactory.CreateAsync("Pager_Next", Arguments.From(new
+            {
+                Value = nextText,
+                RouteValues = new RouteValueDictionary(routeData),
+                Pager = shape,
+                Disabled = Page >= totalPageCount && !ShowNext
+            }));
+
+            if (noFollow)
+            {
+                pagerNextItem.Attributes["rel"] = "no-follow";
+            }
+
+            await shape.AddAsync(pagerNextItem);
 
             // Last
             routeData[pageKey] = totalPageCount;
-            shape.Add(await New.Pager_Last(Value: lastText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page >= totalPageCount));
+            var pagerLastItem = await shapeFactory.CreateAsync("Pager_Last", Arguments.From(new
+            {
+                Value = lastText,
+                RouteValues = new RouteValueDictionary(routeData),
+                Pager = shape,
+                Disabled = Page >= totalPageCount
+            }));
 
-            return await DisplayAsync(shape);
+            if (noFollow)
+            {
+                pagerLastItem.Attributes["rel"] = "no-follow";
+            }
+
+            await shape.AddAsync(pagerLastItem);
+
+            return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
         [Shape]
-        public Task<IHtmlContent> Pager(Shape shape, dynamic DisplayAsync)
+        public Task<IHtmlContent> Pager(Shape shape, DisplayContext displayContext)
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Links";
-            return DisplayAsync(shape);
+            return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
         [Shape]
-        public async Task<IHtmlContent> PagerSlim(Shape shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html, DisplayContext DisplayContext,
+        public async Task<IHtmlContent> PagerSlim(Shape shape, DisplayContext displayContext, IShapeFactory shapeFactory, IHtmlHelper Html,
             object PreviousText,
             object NextText,
             string PreviousClass,
             string NextClass,
-            string ItemTagName,
-            IDictionary<string, string> ItemAttributes,
             Dictionary<string, string> UrlParams)
         {
+            var noFollow = shape.Attributes.ContainsKey("rel") && shape.Attributes["rel"] == "no-follow";
             var previousText = PreviousText ?? S["<"];
             var nextText = NextText ?? S[">"];
 
@@ -339,77 +409,116 @@ namespace OrchardCore.Navigation
                 }
             }
 
-            if (shape.Properties.TryGetValue("Before", out var beforeValue) && beforeValue is string before)
+            if (shape.TryGetProperty("Before", out string before))
             {
                 var beforeRouteData = new RouteValueDictionary(routeData)
                 {
                     ["before"] = before
                 };
-                shape.Add(await New.Pager_Previous(Value: previousText, RouteValues: beforeRouteData, Pager: shape));
+
+                var previousItem = await shapeFactory.CreateAsync("Pager_Previous", Arguments.From(new
+                {
+                    Value = previousText,
+                    RouteValues = beforeRouteData,
+                    Pager = shape
+                }));
+
+                if (noFollow)
+                {
+                    previousItem.Attributes["rel"] = "no-follow";
+                }
+
+                await shape.AddAsync(previousItem);
                 shape.Properties["FirstClass"] = PreviousClass;
             }
 
-            if (shape.Properties.TryGetValue("After", out var afterValue) && afterValue is string after)
+            if (shape.TryGetProperty("After", out string after))
             {
                 var afterRouteData = new RouteValueDictionary(routeData)
                 {
                     ["after"] = after
                 };
-                shape.Add(await New.Pager_Next(Value: nextText, RouteValues: afterRouteData, Pager: shape));
+
+                var nextItem = await shapeFactory.CreateAsync("Pager_Next", Arguments.From(new
+                {
+                    Value = nextText,
+                    RouteValues = afterRouteData,
+                    Pager = shape
+                }));
+
+                if (noFollow)
+                {
+                    nextItem.Attributes["rel"] = "no-follow";
+                }
+
+                await shape.AddAsync(nextItem);
                 shape.Properties["LastClass"] = NextClass;
             }
 
-            return await DisplayAsync(shape);
+            return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
         [Shape]
-        public Task<IHtmlContent> Pager_First(Shape shape, dynamic DisplayAsync)
+        public Task<IHtmlContent> Pager_First(Shape shape, DisplayContext displayContext)
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            return DisplayAsync(shape);
+            return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
         [Shape]
-        public Task<IHtmlContent> Pager_Previous(Shape shape, dynamic DisplayAsync)
+        public Task<IHtmlContent> Pager_Previous(Shape shape, DisplayContext displayContext)
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            return DisplayAsync(shape);
+
+            if (!shape.Attributes.ContainsKey("rel"))
+            {
+                shape.Attributes["rel"] = "prev";
+            }
+
+            return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
         [Shape]
-        public Task<IHtmlContent> Pager_CurrentPage(Shape shape, dynamic DisplayAsync)
+        public Task<IHtmlContent> Pager_CurrentPage(Shape shape, DisplayContext displayContext)
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            var parentTag = (TagBuilder)shape.Properties["Tag"];
+            var parentTag = shape.GetProperty<TagBuilder>("Tag");
             parentTag.AddCssClass("active");
-            return DisplayAsync(shape);
+
+            return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
         [Shape]
-        public Task<IHtmlContent> Pager_Next(Shape shape, dynamic DisplayAsync)
+        public Task<IHtmlContent> Pager_Next(Shape shape, DisplayContext displayContext)
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            return DisplayAsync(shape);
+
+            if (!shape.Attributes.ContainsKey("rel"))
+            {
+                shape.Attributes["rel"] = "next";
+            }
+
+            return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
         [Shape]
-        public Task<IHtmlContent> Pager_Last(Shape shape, dynamic DisplayAsync)
+        public Task<IHtmlContent> Pager_Last(Shape shape, DisplayContext displayContext)
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            return DisplayAsync(shape);
+            return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
         [Shape]
-        public Task<IHtmlContent> Pager_Link(Shape shape, IHtmlHelper Html, dynamic DisplayAsync, object Value)
+        public Task<IHtmlContent> Pager_Link(Shape shape, DisplayContext displayContext)
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "ActionLink";
-            return DisplayAsync(shape);
+            return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
         [Shape]
@@ -417,45 +526,43 @@ namespace OrchardCore.Navigation
         {
             if (Disabled)
             {
-                if (shape.Properties.TryGetValue("Tag", out var value) && value is TagBuilder tagBuilder)
+                if (shape.TryGetProperty("Tag", out TagBuilder tagBuilder))
                 {
                     tagBuilder.AddCssClass("disabled");
                 }
             }
 
-            var RouteValues = (object)((dynamic)shape).RouteValues;
-            RouteValueDictionary rvd;
-            if (RouteValues == null)
+            var routeValues = shape.GetProperty<RouteValueDictionary>("RouteValues") ?? new RouteValueDictionary();
+            if (!Disabled)
             {
-                rvd = new RouteValueDictionary();
+                shape.Attributes["href"] = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
             }
             else
             {
-                rvd = RouteValues as RouteValueDictionary ?? new RouteValueDictionary(RouteValues);
+                shape.Attributes.Remove("href");
             }
 
-            shape.Attributes["href"] = Url.Action((string)rvd["action"], (string)rvd["controller"], rvd);
-            var tag = Shape.GetTagBuilder("a", null, shape.Classes, shape.Attributes);
+            var tag = shape.GetTagBuilder("a");
 
             tag.InnerHtml.AppendHtml(CoerceHtmlString(Value));
             return tag;
         }
 
         [Shape]
-        public Task<IHtmlContent> Pager_Gap(Shape shape, dynamic DisplayAsync)
+        public Task<IHtmlContent> Pager_Gap(IShape shape, DisplayContext displayContext)
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            var parentTag = (TagBuilder)shape.Properties["Tag"];
+            var parentTag = shape.GetProperty<TagBuilder>("Tag");
             parentTag.AddCssClass("disabled");
-            return DisplayAsync(shape);
+            return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
 
-        private IHtmlContent CoerceHtmlString(object value)
+        private static IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
             {
-                return null;
+                return HtmlString.Empty;
             }
 
             if (value is IHtmlContent result)
@@ -463,7 +570,7 @@ namespace OrchardCore.Navigation
                 return result;
             }
 
-            return new StringHtmlContent(value.ToString());
+            return new HtmlContentString(value.ToString());
         }
     }
 }

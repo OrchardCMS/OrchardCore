@@ -47,7 +47,7 @@ namespace OrchardCore.Scripting.JavaScript
             var parsedAst = _memoryCache.GetOrCreate(script, entry =>
             {
                 var parser = new JavaScriptParser(script);
-                return parser.ParseProgram();
+                return parser.ParseScript();
             });
 
             var result = jsScope.Engine.Execute(parsedAst).GetCompletionValue()?.ToObject();

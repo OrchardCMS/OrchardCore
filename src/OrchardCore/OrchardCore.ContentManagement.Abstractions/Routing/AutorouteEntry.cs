@@ -9,12 +9,17 @@ namespace OrchardCore.ContentManagement.Routing
             // Normalize path.
             Path = "/" + path.Trim('/');
 
-            ContainedContentItemId = containedContentItemId;//; ?? contentItemId;
+            ContainedContentItemId = containedContentItemId;
             JsonPath = jsonPath;
         }
 
         /// <summary>
-        /// The id of the database document.
+        /// The id of the document.
+        /// </summary>
+        public int DocumentId;
+
+        /// <summary>
+        /// The id of the content item.
         /// </summary>
         public string ContentItemId;
 

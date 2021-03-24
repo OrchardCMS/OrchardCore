@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Liquid
@@ -42,6 +43,11 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(char value)
         {
+            // perf: when a string is encoded (e.g. {{ value }} in a view) and the content contains some encoded chars,
+            // the TextWriter implementation will call Write(char) for the whole string, creating as many fragments as chars in the string.
+            // This could be optimized by creating a custom HTML encoder that finds blocks
+            // https://source.dot.net/#System.Text.Encodings.Web/System/Text/Encodings/Web/TextEncoder.cs,365
+
             if (value < _internedCharsLength)
             {
                 _fragments.Add(_internedChars[value]);
@@ -69,6 +75,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
         }
 
+        public override void Write(ReadOnlySpan<char> buffer)
+        {
+            _fragments.Add(new CharrArrayHtmlContent(buffer.ToArray()));
+        }
+
         // Invoked by IHtmlContent when rendered on the final output
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
@@ -78,8 +89,14 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
         }
 
+        public override Task FlushAsync()
+        {
+            // Override since the base implementation does unnecessary work
+            return Task.CompletedTask;
+        }
+
         /// <summary>
-        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see cref="char[]"/>.
+        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see langword="char[]"/>.
         /// </summary>
         private class CharrArrayHtmlContent : IHtmlContent
         {
@@ -104,12 +121,12 @@ namespace OrchardCore.DisplayManagement.Liquid
             /// <inheritdoc />
             public override string ToString()
             {
-                return new String(Value);
+                return new string(Value);
             }
         }
 
         /// <summary>
-        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see cref="char[]"/>.
+        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see langword="char[]"/>.
         /// </summary>
         private class CharrArrayFragmentHtmlContent : IHtmlContent
         {
@@ -133,7 +150,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             /// <inheritdoc />
             public override string ToString()
             {
-                return new String(Value, Index, Length);
+                return new string(Value, Index, Length);
             }
         }
     }

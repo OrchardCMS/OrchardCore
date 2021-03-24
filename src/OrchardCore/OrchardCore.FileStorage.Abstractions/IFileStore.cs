@@ -45,7 +45,7 @@ namespace OrchardCore.FileStorage
         /// <remarks>
         /// Results are grouped by entry type, where directories are followed by files.
         /// </remarks>
-        Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false);
+        IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false);
 
         /// <summary>
         /// Creates a directory in the file store if it doesn't already exist.
@@ -120,6 +120,7 @@ namespace OrchardCore.FileStorage
         /// <summary>
         /// Combines multiple path parts using the path delimiter semantics of the abstract virtual file store.
         /// </summary>
+        /// <param name="fileStore">The <see cref="IFileStore"/>.</param>
         /// <param name="paths">The path parts to combine.</param>
         /// <returns>The full combined path.</returns>
         public static string Combine(this IFileStore fileStore, params string[] paths)
@@ -154,7 +155,7 @@ namespace OrchardCore.FileStorage
             if (path == null)
                 return null;
 
-            return path.Replace('\\', '/').Trim('/');
+            return path.Replace('\\', '/').Trim('/', ' ');
         }
     }
 }

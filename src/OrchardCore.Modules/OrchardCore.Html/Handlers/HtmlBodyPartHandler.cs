@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -8,8 +11,8 @@ using OrchardCore.ContentManagement.Models;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Liquid;
+using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 namespace OrchardCore.Html.Handlers
@@ -20,8 +23,6 @@ namespace OrchardCore.Html.Handlers
         private readonly IShortcodeService _shortcodeService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private HtmlString _bodyAspect;
-        private int _contentItemId;
 
         public HtmlBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
             IShortcodeService shortcodeService,
@@ -38,13 +39,6 @@ namespace OrchardCore.Html.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                if (bodyAspect != null && part.ContentItem.Id == _contentItemId)
-                {
-                    bodyAspect.Body = _bodyAspect;
-
-                    return;
-                }
-
                 try
                 {
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
@@ -62,8 +56,8 @@ namespace OrchardCore.Html.Handlers
                             ContentItem = part.ContentItem
                         };
 
-                        html = await _liquidTemplateManager.RenderAsync(html, _htmlEncoder, model,
-                            scope => scope.SetValue("ContentItem", model.ContentItem));
+                        html = await _liquidTemplateManager.RenderStringAsync(html, _htmlEncoder, model,
+                            new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
                     }
 
                     html = await _shortcodeService.ProcessAsync(html,
@@ -73,13 +67,11 @@ namespace OrchardCore.Html.Handlers
                             ["TypePartDefinition"] = contentTypePartDefinition
                         });
 
-                    bodyAspect.Body = _bodyAspect = new HtmlString(html);
-                    _contentItemId = part.ContentItem.Id;
+                    bodyAspect.Body = new HtmlString(html);
                 }
                 catch
                 {
                     bodyAspect.Body = HtmlString.Empty;
-                    _contentItemId = default;
                 }
             });
         }

@@ -26,14 +26,6 @@ namespace OrchardCore.Flows
     {
         private readonly AdminOptions _adminOptions;
 
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<BagPartViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<FlowPartViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<FlowMetadata>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<FlowPart>();
-        }
-
         public Startup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
@@ -41,16 +33,24 @@ namespace OrchardCore.Flows
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<BagPartViewModel>();
+                o.MemberAccessStrategy.Register<FlowPartViewModel>();
+                o.MemberAccessStrategy.Register<FlowMetadata>();
+                o.MemberAccessStrategy.Register<FlowPart>();
+            });
+
             // Flow Part
             services.AddContentPart<FlowPart>()
-                .UseDisplayDriver<FlowPartDisplay>();
+                .UseDisplayDriver<FlowPartDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, FlowPartSettingsDisplayDriver>();
 
-            services.AddScoped<IContentDisplayDriver, FlowMetadataDisplay>();
+            services.AddScoped<IContentDisplayDriver, FlowMetadataDisplayDriver>();
 
             // Bag Part
             services.AddContentPart<BagPart>()
-                .UseDisplayDriver<BagPartDisplay>()
+                .UseDisplayDriver<BagPartDisplayDriver>()
                 .AddHandler<BagPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();

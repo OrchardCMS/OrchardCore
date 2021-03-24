@@ -48,7 +48,7 @@ A collection of content items of a certain type in a parent content item. The co
 ### List
 
 A list of content items to a parent container (Ex: A blog contains a list of blog posts). The content items are referenced.
-See [List](../reference/modules/List/README.md)
+See [Lists](../reference/modules/Lists/README.md)
 
 ### Taxonomy
 
@@ -150,6 +150,11 @@ It has the `Widget` stereotype in its content definition.
 
 Page Layout in which you can add widgets.  
 See [Flow](../reference/modules/Flow/README.md)
+
+### Shortcode
+
+A Shortcode is a small piece of code wrapped into [brackets] that can add some behavior to content editors, like embedding media files.  
+See [Shortcodes](../reference/modules/Shortcodes/README.md)
 
 ## Administrator
 

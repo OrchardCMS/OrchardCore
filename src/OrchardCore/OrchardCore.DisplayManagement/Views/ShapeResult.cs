@@ -24,6 +24,7 @@ namespace OrchardCore.DisplayManagement.Views
         private Action<CacheContext> _cache;
         private string _groupId;
         private Action<ShapeDisplayContext> _displaying;
+        private Func<Task<bool>> _renderPredicateAsync;
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
             : this(shapeType, shapeBuilder, null)
@@ -104,6 +105,12 @@ namespace OrchardCore.DisplayManagement.Views
                 return;
             }
 
+            // If a condition has been applied to this result evaluate it only if the shape has been placed.
+            if (_renderPredicateAsync != null && !(await _renderPredicateAsync()))
+            {
+                return;
+            }
+
             var newShape = Shape = await _shapeBuilder(context);
 
             // Ignore it if the driver returned a null shape.
@@ -162,7 +169,7 @@ namespace OrchardCore.DisplayManagement.Views
                 }
             }
 
-            dynamic parentShape = context.Shape;
+            var parentShape = context.Shape;
 
             if (placement.IsLayoutZone())
             {
@@ -179,28 +186,23 @@ namespace OrchardCore.DisplayManagement.Views
                     break;
                 }
 
-                var zoneProperty = parentShape.Zones;
-                if (zoneProperty != null)
+                if (parentShape is IZoneHolding layout)
                 {
                     // parentShape is a ZoneHolding
-                    parentShape = zoneProperty[zone];
+                    parentShape = layout.Zones[zone];
                 }
                 else
                 {
                     // try to access it as a member
-                    parentShape = parentShape[zone];
+                    parentShape = parentShape.GetProperty<IShape>(zone);
                 }
             }
 
             position = !String.IsNullOrEmpty(position) ? position : null;
 
-            if (parentShape is ZoneOnDemand zoneOnDemand)
+            if (parentShape is Shape shape)
             {
-                await zoneOnDemand.AddAsync(newShape, position);
-            }
-            else if (parentShape is Shape shape)
-            {
-                shape.Add(newShape, position);
+                await shape.AddAsync(newShape, position);
             }
         }
 
@@ -285,6 +287,16 @@ namespace OrchardCore.DisplayManagement.Views
         {
             _cacheId = cacheId;
             _cache = cache;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a condition that must return true for the shape to render.
+        /// The condition is only evaluated if the shape has been placed.
+        /// </summary>
+        public ShapeResult RenderWhen(Func<Task<bool>> renderPredicateAsync)
+        {
+            _renderPredicateAsync = renderPredicateAsync;
             return this;
         }
 
