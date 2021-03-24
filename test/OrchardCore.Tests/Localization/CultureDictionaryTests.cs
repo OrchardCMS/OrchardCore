@@ -76,7 +76,6 @@ namespace OrchardCore.Tests.Localization
 
             foreach (var record in dictionary)
             {
-                Assert.NotNull(record.Key);
                 Assert.Single(record.Translations);
             }
 
