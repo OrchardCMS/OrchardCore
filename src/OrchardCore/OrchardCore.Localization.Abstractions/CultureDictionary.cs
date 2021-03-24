@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Globalization;
 
 namespace OrchardCore.Localization
@@ -9,6 +7,7 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Represents a dictionary for a certain culture.
     /// </summary>
+    /// <remarks>This type is not thread safe.</remarks>
     public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
     {
         /// <summary>
@@ -18,7 +17,7 @@ namespace OrchardCore.Localization
         /// <param name="pluralRule">The pluralization rule.</param>
         public CultureDictionary(string cultureName, PluralizationRuleDelegate pluralRule)
         {
-            Translations = new ConcurrentDictionary<CultureDictionaryRecordKey, string[]>();
+            Translations = new Dictionary<CultureDictionaryRecordKey, string[]>();
             CultureName = cultureName;
             PluralRule = pluralRule;
         }
@@ -50,11 +49,6 @@ namespace OrchardCore.Localization
         {
             get
             {
-                if (key.Equals(null))
-                {
-                    throw new ArgumentNullException(nameof(key));
-                }
-
                 if (!Translations.TryGetValue(key, out var translations))
                 {
                     return null;
