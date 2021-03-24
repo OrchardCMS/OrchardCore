@@ -24,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             string cacheId = null;
             TimeSpan? cacheFixedDuration = null;
             TimeSpan? cacheSlidingDuration = null;
-            //string cacheDependency = null;
+            // string cacheDependency = null;
             string cacheContext = null;
             string cacheTag = null;
 
@@ -42,7 +42,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     case "cache_id": cacheId = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "cache_fixed_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var fd); cacheFixedDuration = fd; break;
                     case "cache_sliding_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var sd); cacheSlidingDuration = sd; break;
-                    //case "cache_dependency": cacheDependency = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    // case "cache_dependency": cacheDependency = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "cache_context": cacheContext = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "cache_tag": cacheTag = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
 
