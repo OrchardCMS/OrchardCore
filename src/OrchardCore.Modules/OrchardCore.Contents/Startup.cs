@@ -72,7 +72,7 @@ namespace OrchardCore.Contents
 
             services.Configure<LiquidViewOptions>(o =>
             {
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, new ContentItemTag().WriteToAsync));
+                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, ContentItemTag.WriteToAsync));
             });
 
             services.Configure<TemplateOptions>(o =>
