@@ -76,7 +76,7 @@ namespace OrchardCore.Lists.Drivers
                         model.EnableOrdering = settings.EnableOrdering;
                         model.Pager = await context.New.PagerSlim(pager);
                     })
-                    .Location("DisplayAdmin", "Content:10"),
+                    .Location("DetailAdmin", "Content:10"),
                     Initialize<ContentItemViewModel>("ListPart", model => model.ContentItem = listPart.ContentItem)
                     .Location("SummaryAdmin", "Actions:4")
                 );

@@ -453,7 +453,7 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "DisplayAdmin");
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "DetailAdmin");
 
             return View(model);
         }
