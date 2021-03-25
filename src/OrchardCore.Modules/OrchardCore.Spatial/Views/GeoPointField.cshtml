@@ -6,6 +6,6 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-<div class="field field-type-booleanfield field-name-@name">
+<div class="field field-type-geopointfield field-name-@name">
     @Model.Field.Latitude.ToString("F6"), @Model.Field.Longitude.ToString("F6")
 </div>

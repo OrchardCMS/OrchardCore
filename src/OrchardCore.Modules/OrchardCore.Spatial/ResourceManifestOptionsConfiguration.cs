@@ -13,18 +13,18 @@ namespace OrchardCore.Spatial
 
             _manifest
                 .DefineScript("leaflet")
-                .SetUrl("/OrchardCore.Spatial/leaflet/leaflet.js", "/OrchardCore.Spatial/leaflet/leaflet-src.js")
+                .SetUrl("/OrchardCore.Spatial/Scripts/leaflet/leaflet.js", "/OrchardCore.Spatial/Scripts/leaflet/leaflet-src.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js")
                 .SetCdnIntegrity("sha256-CNm+7c26DTTCGRQkM9vp7aP85kHFMqs9MhPEuytF+fQ=", "sha256-CNm+7c26DTTCGRQkM9vp7aP85kHFMqs9MhPEuytF+fQ=")
-                .SetVersion("1.3.1")
+                .SetVersion("1.7.1")
                 ;
 
             _manifest
                 .DefineStyle("leaflet")
-                .SetUrl("/OrchardCore.Spatial/leaflet/leaflet.css", "/OrchardCore.Spatial/leaflet/leaflet.css")
+                .SetUrl("/OrchardCore.Spatial/Styles/leaflet.min.css", "/OrchardCore.Spatial/Styles/leaflet.css")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.css", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.css")
                 .SetCdnIntegrity("sha256-iYUgmrapfDGvBrePJPrMWQZDcObdAcStKBpjP3Az+3s=", "sha256-iYUgmrapfDGvBrePJPrMWQZDcObdAcStKBpjP3Az+3s=")
-                .SetVersion("1.3.1")
+                .SetVersion("1.7.1")
                 ;
         }
 
