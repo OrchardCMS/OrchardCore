@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Placements.ViewModels;
@@ -17,70 +18,83 @@ namespace OrchardCore.Placements.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition contentPartFieldDefinition)
         {
-            return Initialize<ContentSettingsViewModel>("PlacementSettings", model =>
+            return Initialize<PlacementSettingViewModel>("PlacementSettings", model =>
             {
                 var shapeType = contentPartFieldDefinition.FieldDefinition.Name;
-                var partName = contentPartFieldDefinition.PartDefinition.Name;
+                var partTypeName = contentPartFieldDefinition.PartDefinition.Name;
+                var partDisplayName = contentPartFieldDefinition.PartDefinition.DisplayName();
                 var differentiator = $"{contentPartFieldDefinition.PartDefinition.Name}-{contentPartFieldDefinition.Name}";
                 var displayName = contentPartFieldDefinition.DisplayName();
 
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
+                model.PlacementSettingEntries.Add(
+                    new PlacementSettingEntry
                     {
                         ShapeType = shapeType,
                         Differentiator = differentiator,
-                        ContentPart = partName,
-                        Description = S["Placement for the {0} field in a {1}", displayName, partName]
+                        ContentPart = partTypeName,
+                        Description = S["{0} field in a {1} part", displayName, partDisplayName]
                     });
 
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
+                model.PlacementSettingEntries.Add(
+                    new PlacementSettingEntry
                     {
                         ShapeType = shapeType,
                         Differentiator = differentiator,
                         DisplayType = "Detail",
-                        ContentPart = partName,
-                        Description = S["Placement for the {0} field in a {1} in detail views", displayName, partName]
+                        ContentPart = partTypeName,
+                        Description = S["{0} field in a {1} part in detail views", displayName, partDisplayName]
                     });
 
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
+                model.PlacementSettingEntries.Add(
+                    new PlacementSettingEntry
                     {
                         ShapeType = shapeType,
                         Differentiator = differentiator,
                         DisplayType = "Summary",
-                        ContentPart = partName,
-                        Description = S["Placement for the {0} field in a {1} in summary views", displayName, partName]
+                        ContentPart = partTypeName,
+                        Description = S["{0} field in a {1} part in summary views", displayName, partDisplayName]
                     });
 
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
+                model.PlacementSettingEntries.Add(
+                    new PlacementSettingEntry
                     {
-                        ShapeType = $"{shapeType}_Edit",
-                        Differentiator = differentiator,
-                        DisplayType = "Edit",
-                        ContentPart = partName,
-                        Description = S["Placement in admin editor for the {0} field in a {1}", displayName, partName]
+                        Description = S["-"]
                     });
 
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
-                    {
-                        ShapeType = shapeType,
-                        Differentiator = differentiator,
-                        DisplayType = "SummaryAdmin",
-                        ContentPart = partName,
-                        Description = S["Placement in admin for summary views for the {0} field in a {1}", displayName, partName]
-                    });
-
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
+                model.PlacementSettingEntries.Add(
+                    new PlacementSettingEntry
                     {
                         ShapeType = shapeType,
                         Differentiator = differentiator,
                         DisplayType = "DetailAdmin",
-                        ContentPart = partName,
-                        Description = S["Placement in admin for Detail views for the {0} field in a {1}", displayName, partName]
+                        ContentPart = partTypeName,
+                        Description = S["{0} field in a {1} part in admin detail views", displayName, partDisplayName]
+                    });
+
+                model.PlacementSettingEntries.Add(
+                    new PlacementSettingEntry
+                    {
+                        ShapeType = shapeType,
+                        Differentiator = differentiator,
+                        DisplayType = "SummaryAdmin",
+                        ContentPart = partTypeName,
+                        Description = S["{0} field in a {1} part in admin summary views", displayName, partDisplayName]
+                    });
+
+                model.PlacementSettingEntries.Add(
+                    new PlacementSettingEntry
+                    {
+                        Description = S["-"]
+                    });
+
+                model.PlacementSettingEntries.Add(
+                    new PlacementSettingEntry
+                    {
+                        ShapeType = $"{shapeType}_Edit",
+                        Differentiator = differentiator,
+                        DisplayType = "Edit",
+                        ContentPart = partTypeName,
+                        Description = S["{0} field in a {1} part in admin editor", displayName, partDisplayName]
                     });
 
             }).Location("Shortcuts");

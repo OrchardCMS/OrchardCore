@@ -58,7 +58,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     result.Name(partName);
                 }
 
-                if (partType == shapeType || editorPartType == shapeType)
+                if (partType == shapeType || editorPartType == shapeType || isDisplayModeShapeType)
                 {
                     // HtmlBodyPart, Services
                     result.Differentiator(partName);
@@ -81,8 +81,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     {
                         displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
 
-                        // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
+                        if (!isDisplayModeShapeType)
+                        {
+                            // Do not add  Display type suffix to display mode shapes  
+                            // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
+                        }
                     }
 
                     if (shapeType == partType || shapeType == editorPartType)

@@ -85,6 +85,14 @@ namespace OrchardCore.ContentManagement.Display
                 }
             }
 
+            var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
+            var stereotype = "";
+
+            if (settings != null)
+            {
+                stereotype = settings.Stereotype;
+            }
+
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = contentTypePartDefinition.Name;
@@ -137,7 +145,9 @@ namespace OrchardCore.ContentManagement.Display
                     {
                         var displayMode = contentTypePartDefinition.DisplayMode();
                         var hasDisplayMode = !String.IsNullOrEmpty(displayMode);
-                        var shapeType = hasDisplayMode ? $"ContentPart_Display__{displayMode}" : "ContentPart";
+                        // e.g. if displaymode -  MyPart_Display__MyDisplayMode
+                        // else  MyPart
+                        var shapeType = hasDisplayMode ? $"{partTypeName}_Display__{displayMode}" : partTypeName;
 
                         var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
                         shapeResult.Differentiator(partName);
@@ -146,28 +156,86 @@ namespace OrchardCore.ContentManagement.Display
 
                         shapeResult.Displaying(ctx =>
                        {
-                           if (hasDisplayMode && ctx.Shape.Metadata.DisplayType == "Detail")
-                           {
-                                // Fall back to default template.
-                                ctx.Shape.Metadata.Alternates.Add("ContentPart");
-                           }
+                           string displayToken = "_Display";
+                           string[] displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
 
-                           ctx.Shape.Metadata.Alternates.Add(partTypeName);
-                           ctx.Shape.Metadata.Alternates.Add($"{contentType}__{partTypeName}");
-                           if (context.DisplayType != "Detail")
+                           foreach (var displayType in displayTypes)
                            {
-                               ctx.Shape.Metadata.Alternates.Add($"ContentPart_{context.DisplayType}");
-                               ctx.Shape.Metadata.Alternates.Add($"{partTypeName}_{context.DisplayType}");
-                               ctx.Shape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partTypeName}");
+                               // Fall back to default template of ContentPart, if there is not template for shape type(partTypeName)
+                               // eg. ContentPart or ContentPart.Summary
+                               ctx.Shape.Metadata.Alternates.Add($"ContentPart{displayType}");
+
+                               // If there is template defined for shape type (partTypeName) that should be used.
+                               // eg. MyPart or MyPart.Summary
+                               ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayType}");
+
+                               // [ContentType]_[DisplayType]__[PartType] e.g. LandingPage-ServicePart, LandingPage.ServicePart.Summary
+                               // eg. MyType-MyPart.Summary
+                               ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
+
+                               if (hasDisplayMode)
+                               {
+                                   var shapeTypeSuffix = $"{displayMode}";
+                                   var displayTypeMode = displayType;
+
+                                   if (displayType == "")
+                                   {
+                                       displayTypeMode = displayToken;
+                                   }
+                                   else
+                                   {
+                                       shapeTypeSuffix += displayToken;
+                                   }
+                                   // [PartType]_[DisplayType]__[DisplayMode]
+                                   // e.g. MyPart-MyDisplayMode.Display, MyPart-MyDisplayMode.Display.Summary
+                                   ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayTypeMode}__{shapeTypeSuffix}");
+
+                                   // [ContentType]_[DisplayType]__[PartType]__[DisplayMode]
+                                   // e.g. MyType-MyPart-MyDisplayMode.Display, MyType-MyPart-MyDisplayMode.Display.Summary
+                                   ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayTypeMode}__{partTypeName}__{shapeTypeSuffix}");
+                               }
                            }
 
                            if (partName != partTypeName)
                            {
-                               ctx.Shape.Metadata.Alternates.Add($"{contentType}__{partName}");
-
-                               if (context.DisplayType != "Detail")
+                               foreach (var displayType in displayTypes)
                                {
-                                   ctx.Shape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partName}");
+                                   // [ContentType]_[DisplayType]__[PartName]
+                                   // e.g.LandingPage-Services, LandingPage-Services.Summary
+                                   ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
+
+                                   if (!String.IsNullOrEmpty(stereotype))
+                                   {
+                                       // [Stereotype]_[DisplayType]__[PartName]
+                                       // e.g. Widget-Services, Widget-Services.Summary
+                                       ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partName}");
+                                   }
+
+                                   if (hasDisplayMode)
+                                   {
+                                       var shapeTypeSuffix = $"{displayMode}";
+                                       var displayTypeMode = displayType;
+
+                                       if (displayType == "")
+                                       {
+                                           displayTypeMode = displayToken;
+                                       }
+                                       else
+                                       {
+                                           shapeTypeSuffix += displayToken;
+                                       }
+
+                                       // [ContentType]_[DisplayType]__[PartName]
+                                       // e.g.LandingPage-Services-MyDisplayMode.Display, LandingPage-Services.MyDisplayMode.Display.Summary
+                                       ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayTypeMode}__{partName}__{shapeTypeSuffix}");
+
+                                       if (!String.IsNullOrEmpty(stereotype))
+                                       {
+                                           // [Stereotype]_[DisplayType]__[PartName]
+                                           // e.g. Widget-Services-MyDisplayMode.Display Widget-Services-MyDisplayMode.Display.Summary
+                                           ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayTypeMode}__{partName}__{shapeTypeSuffix}");
+                                       }
+                                   }
                                }
                            }
                        });

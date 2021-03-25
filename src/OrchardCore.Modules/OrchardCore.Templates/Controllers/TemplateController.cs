@@ -216,7 +216,7 @@ namespace OrchardCore.Templates.Controllers
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name, returnUrl });
+                return RedirectToAction("Create", new { name, returnUrl, adminTemplates });
             }
 
             var template = templatesDocument.Templates[name];

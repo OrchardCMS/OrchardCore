@@ -1,15 +1,33 @@
 @model EditTypePartViewModel
+@using System
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.DisplayManagement;
 
 @inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
 @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+@inject IEnumerable<IShapeBindingResolver> ShapeBindingResolvers;
 
 @{
     var typePart = Model.TypePartDefinition;
     var theme = await ThemeManager.GetThemeAsync();
     var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
+
+    Func<string, bool> displayPredicate = (x) => (x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase)
+                                  || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
+
+    // Build query from Shape Table
+    var displayShapes = shapeTable.Bindings.Keys
+                            .Where(x => displayPredicate(x));
+
+    // Build query from Admin Templates
+    var resolverShapes = ShapeBindingResolvers
+                            .Select(async y => await y.GetShapeBindingNamesAsync(displayPredicate, true))
+                            .Where(c => c.Result != null)
+                            .SelectMany(t => t.Result);
+
+    // Union and Execute Linq Qeuery
+    displayShapes = displayShapes.Union(resolverShapes).Distinct().OrderBy(x => x).ToList();
+
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
 }
 
