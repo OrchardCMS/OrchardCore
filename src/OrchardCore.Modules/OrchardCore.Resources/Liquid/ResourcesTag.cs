@@ -7,6 +7,7 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 
@@ -68,7 +69,9 @@ namespace OrchardCore.Resources.Liquid
                     break;
             }
 
-            buffer.WriteTo(writer, (HtmlEncoder)encoder);
+            using var content = new ViewBufferTextWriterContent();
+            buffer.WriteTo(content, (HtmlEncoder)encoder);
+            content.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }
