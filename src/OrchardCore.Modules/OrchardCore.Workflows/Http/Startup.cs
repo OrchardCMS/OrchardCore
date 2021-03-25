@@ -1,5 +1,4 @@
 using System;
-using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -49,9 +48,6 @@ namespace OrchardCore.Workflows.Http
             services.AddActivity<SignalEvent, SignalEventDisplayDriver>();
 
             services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
-
-            services.AddScoped<ILiquidTemplateEventHandler, SignalLiquidTemplateHandler>();
-            
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

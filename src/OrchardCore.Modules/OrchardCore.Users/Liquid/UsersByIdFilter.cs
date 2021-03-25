@@ -28,12 +28,10 @@ namespace OrchardCore.Users.Liquid
 
                 return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync(), ctx.Options);
             }
-            else
-            {
-                var userId = input.ToStringValue();
 
-                return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync(), ctx.Options);
-            }
+            var userId = input.ToStringValue();
+
+            return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync(), ctx.Options);
         }
     }
 }

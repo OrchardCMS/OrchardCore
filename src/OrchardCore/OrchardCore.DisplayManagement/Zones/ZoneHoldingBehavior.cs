@@ -63,6 +63,8 @@ namespace OrchardCore.DisplayManagement.Zones
         private readonly Func<ValueTask<IShape>> _zoneFactory;
         private readonly ZoneHolding _parent;
 
+        public bool IsNotEmpty(string name) => !(this[name] is ZoneOnDemand);
+
         public Zones(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent)
         {
             _zoneFactory = zoneFactory;
@@ -206,7 +208,7 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             unchecked
             {
-                int hashCode = (_parent != null ? _parent.GetHashCode() : 0);
+                var hashCode = (_parent != null ? _parent.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (_potentialZoneName != null ? _potentialZoneName.GetHashCode() : 0);
                 return hashCode;
             }

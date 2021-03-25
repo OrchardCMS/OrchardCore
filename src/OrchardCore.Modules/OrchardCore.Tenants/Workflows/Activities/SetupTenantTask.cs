@@ -195,7 +195,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                     { SetupConstants.SiteTimeZone, _clock.GetSystemTimeZone().TimeZoneId },
                     { SetupConstants.DatabaseProvider, databaseProvider },
                     { SetupConstants.DatabaseConnectionString, databaseConnectionString },
-                    { SetupConstants.DatabaseConnectionString, databaseTablePrefix },
+                    { SetupConstants.DatabaseTablePrefix, databaseTablePrefix },
                 }
             };
 

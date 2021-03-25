@@ -4,7 +4,6 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Models;
@@ -25,10 +24,9 @@ namespace OrchardCore.Workflows.Http.Liquid
 
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
-            var context = (LiquidTemplateContext)ctx;
-            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
+            var urlHelper = _urlHelperFactory.GetUrlHelper(ctx.ViewContext);
 
-            var workflowContextValue = context.GetValue("Workflow");
+            var workflowContextValue = ctx.GetValue("Workflow");
 
             if (workflowContextValue.IsNil())
             {
