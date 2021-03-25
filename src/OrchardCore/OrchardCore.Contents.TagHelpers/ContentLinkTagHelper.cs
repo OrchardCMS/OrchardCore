@@ -194,7 +194,7 @@ namespace OrchardCore.Contents.TagHelpers
         {
             foreach (var attribute in tagHelperContext.AllAttributes)
             {
-                if (attribute.Name.StartsWith(RoutePrefix, System.StringComparison.OrdinalIgnoreCase))
+                if (attribute.Name.StartsWith(RoutePrefix, StringComparison.OrdinalIgnoreCase))
                 {
                     route.Add(attribute.Name.Substring(RoutePrefix.Length), attribute.Value);
                 }

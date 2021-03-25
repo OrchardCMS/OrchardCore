@@ -114,7 +114,7 @@ namespace OrchardCore.Flows.Controllers
 
             return settings.ContainedContentTypes
                 .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+                .Where(t => t != null && t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
         }
     }
 }

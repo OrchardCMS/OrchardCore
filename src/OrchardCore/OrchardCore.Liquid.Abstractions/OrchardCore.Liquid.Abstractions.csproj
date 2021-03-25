@@ -1,7 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Liquid</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Liquid Abstractions</Title>
@@ -18,4 +17,5 @@
   <ItemGroup>
     <PackageReference Include="Fluid.Core" />
   </ItemGroup>
+
 </Project>

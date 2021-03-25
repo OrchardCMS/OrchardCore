@@ -306,6 +306,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       "string": true,
       "regexp": true,
       "this": true,
+      "import": true,
       "jsonld-keyword": true
     };
 
@@ -579,7 +580,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (type == "{") return contCommasep(objprop, "}", null, maybeop);
       if (type == "quasi") return pass(quasi, maybeop);
       if (type == "new") return cont(maybeTarget(noComma));
-      if (type == "import") return cont(expression);
       return cont();
     }
 
@@ -784,7 +784,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     function typeexpr(type, value) {
-      if (value == "keyof" || value == "typeof" || value == "infer") {
+      if (value == "keyof" || value == "typeof" || value == "infer" || value == "readonly") {
         cx.marked = "keyword";
         return cont(value == "typeof" ? expressionNoComma : typeexpr);
       }
@@ -807,7 +807,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     function typeprops(type) {
-      if (type == "}") return cont();
+      if (type.match(/[\}\)\]]/)) return cont();
       if (type == "," || type == ";") return cont(typeprops);
       return pass(typeprop, typeprops);
     }
@@ -1075,6 +1075,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function afterImport(type) {
       if (type == "string") return cont();
       if (type == "(") return pass(expression);
+      if (type == ".") return pass(maybeoperatorComma);
       return pass(importSpec, maybeMoreImports, maybeFrom);
     }
 

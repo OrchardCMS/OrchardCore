@@ -10,7 +10,7 @@ var fs = require("graceful-fs"),
     plumber = require("gulp-plumber"),
     sourcemaps = require("gulp-sourcemaps"),
     less = require("gulp-less"),
-    scss = require("gulp-sass"),
+    scss = require("gulp-dart-sass"),
     minify = require("gulp-minifier"),
     typescript = require("gulp-typescript"),
     terser = require("gulp-terser"),
@@ -21,9 +21,10 @@ var fs = require("graceful-fs"),
     util = require('gulp-util'),
     postcss = require('gulp-postcss'),
     rtl = require('postcss-rtl'),
-    babel = require('gulp-babel'),
-    blogtheme = require('./src/OrchardCore.Themes/TheBlogTheme/wwwroot/gulpfile');
-    comingsoontheme = require('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot/gulpfile');
+    babel = require('gulp-babel');
+    // The startbootstrap theme gulpfiles do not yet support node 15 so need to be installed and built seperately.
+    // blogtheme = require('./src/OrchardCore.Themes/TheBlogTheme/wwwroot/gulpfile');
+    // comingsoontheme = require('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot/gulpfile');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -104,8 +105,12 @@ gulp.task("build-themes", function(done){
     buildBlogTheme (() => buildComingSoonTheme(done));
 });
 
-gulp.task( 'build',  gulp.series([ 'build-assets', 'build-themes' ]) );
-gulp.task( 'rebuild',  gulp.series([ 'rebuild-assets', 'build-themes' ]) );
+
+// gulp.task( 'build',  gulp.series([ 'build-assets', 'build-themes' ]) );
+// gulp.task( 'rebuild',  gulp.series([ 'rebuild-assets', 'build-themes' ]) );
+
+gulp.task( 'build',  gulp.series([ 'build-assets' ]) );
+gulp.task( 'rebuild',  gulp.series([ 'rebuild-assets' ]) );
 gulp.task( 'default',  gulp.series([ 'build' ]) );
 
 /*

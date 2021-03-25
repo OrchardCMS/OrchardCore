@@ -146,11 +146,3 @@ You can disable this behavior by passing `false` as the second argument of the s
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/ofPKGsW5Ftg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-## CREDITS
-
-### Shortcodes
-
-<https://github.com/sebastienros/shortcodes>  
-Copyright (c) 2020 Sébastien Ros  
-MIT License

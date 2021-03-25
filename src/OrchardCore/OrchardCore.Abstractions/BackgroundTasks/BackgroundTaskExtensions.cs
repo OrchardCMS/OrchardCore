@@ -19,7 +19,9 @@ namespace OrchardCore.BackgroundTasks
                     Name = type.FullName,
                     Enable = attribute.Enable,
                     Schedule = attribute.Schedule,
-                    Description = attribute.Description
+                    Description = attribute.Description,
+                    LockTimeout = attribute.LockTimeout,
+                    LockExpiration = attribute.LockExpiration
                 };
             }
 

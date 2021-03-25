@@ -4,7 +4,7 @@ In this guide you will setup Orchard Core as a Content Management System from a 
 
 ## What you will need
 
-- The current version of the .NET Core SDK. You can download it from here [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core).
+- The current version of the .NET SDK. You can download it from here <https://dotnet.microsoft.com/download>.
 - A text editor and a terminal where you can type dotnet commands.
 
 ## Creating the projects

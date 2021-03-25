@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -21,7 +24,7 @@ namespace OrchardCore.ContentFields.GraphQL
     {
         public HtmlFieldQueryObjectType(IStringLocalizer<HtmlFieldQueryObjectType> S)
         {
-            Name = "HtmlBodyPart";
+            Name = nameof(HtmlField);
             Description = S["Content stored as HTML."];
 
             Field<StringGraphType>()
@@ -61,8 +64,8 @@ namespace OrchardCore.ContentFields.GraphQL
                 var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
-                html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", ctx.Source.ContentItem));
+                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
             }
 
             return await shortcodeService.ProcessAsync(html,

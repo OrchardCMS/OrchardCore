@@ -40,9 +40,6 @@
     }
 }
 
-#mediaModalBody.html-body-part {
-    z-index: 99999; //to make it visible when trumbowyg is full screen.
-}
 #createFolderModal, #renameMediaModal {
     z-index: 100000; // required only because of the issue with z-index of trumbowyg on full screen.
 }

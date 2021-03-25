@@ -23,7 +23,7 @@ namespace OrchardCore.Title.Drivers
         {
             var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
 
-            if (!settings.RenderTitle)
+            if (!settings.RenderTitle || string.IsNullOrWhiteSpace(titlePart.Title))
             {
                 return null;
             }
@@ -35,7 +35,8 @@ namespace OrchardCore.Title.Drivers
                 model.ContentItem = titlePart.ContentItem;
             })
             .Location("Detail", "Header:5")
-            .Location("Summary", "Header:5");
+            .Location("Summary", "Header:5")
+            .Location("DetailAdmin", "Header:5");
 
         }
 
