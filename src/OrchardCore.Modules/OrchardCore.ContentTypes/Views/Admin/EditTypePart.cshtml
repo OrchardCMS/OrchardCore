@@ -26,7 +26,7 @@
                             .SelectMany(t => t.Result);
 
     // Union and Execute Linq Qeuery
-    displayShapes = displayShapes.Union(resolverShapes).Distinct().OrderBy(x => x).ToList();
+    displayShapes = displayShapes.Union(resolverShapes, StringComparer.OrdinalIgnoreCase).OrderBy(x => x).ToList();
 
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
 }
