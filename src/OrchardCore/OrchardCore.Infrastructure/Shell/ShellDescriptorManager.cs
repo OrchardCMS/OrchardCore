@@ -61,8 +61,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
                     _shellConfiguration.Bind(configuredFeatures);
 
                     var features = _alwaysEnabledFeatures
-                        .Concat(configuredFeatures.Features
-                            .Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
+                        .Concat(configuredFeatures.Features.Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
                         .Concat(_shellDescriptor.Features)
                         .Distinct();
 

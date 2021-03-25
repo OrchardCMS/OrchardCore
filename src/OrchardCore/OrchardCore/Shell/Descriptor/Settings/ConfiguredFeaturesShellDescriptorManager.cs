@@ -16,6 +16,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
         private readonly IShellConfiguration _shellConfiguration;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IExtensionManager _extensionManager;
+
         private ShellDescriptor _shellDescriptor;
 
         public ConfiguredFeaturesShellDescriptorManager(
@@ -36,8 +37,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
                 _shellConfiguration.Bind(configuredFeatures);
 
                 var features = _alwaysEnabledFeatures
-                    .Concat(configuredFeatures.Features
-                        .Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
+                    .Concat(configuredFeatures.Features.Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
                     .Distinct();
 
                 var featureIds = features.Select(sf => sf.Id).ToArray();
