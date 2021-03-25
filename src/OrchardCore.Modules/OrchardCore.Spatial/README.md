@@ -1,6 +1,6 @@
 # Spatial (OrchardCore.Spatial)
 
-This modules provides a GeoPoint content type which can be used to give a geographic postion to content.
+This modules provides a GeoPoint content type which can be used to give a geographic position to content.
 
 ## Lucene Geo Queries
 See https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-queries.html for details.
