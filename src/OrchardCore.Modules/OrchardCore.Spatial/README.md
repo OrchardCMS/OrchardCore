@@ -40,7 +40,7 @@ Assuming a BlogPost content item has a `GeoPointField` named Location with the v
 
 ### Geo Distance
 
-Filters documents that include only hits that exists within a specific distance from a geo point. 
+Filters documents that include only hits that exist within a specific distance from a geo point.
 
 Assuming a BlogPost content item has a `GeoPointField` named Location with the value `[Lat:-33, Long:138]`
 

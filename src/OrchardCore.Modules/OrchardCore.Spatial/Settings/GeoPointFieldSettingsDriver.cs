@@ -6,7 +6,6 @@ using OrchardCore.Spatial.Fields;
 
 namespace OrchardCore.Spatial.Settings
 {
-
     public class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<GeoPointField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
