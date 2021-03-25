@@ -46,10 +46,12 @@ namespace OrchardCore.Tests.Localization
                 .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
                 .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, _translationProvider.Object, _memoryCache);
-
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
+            var key = new CultureDictionaryRecordKey("ball");
 
-            Assert.Equal(dictionary.Translations["ball"], dictionaryRecord.Translations);
+            dictionary.Translations.TryGetValue(key, out var translations);
+
+            Assert.Equal(translations, dictionaryRecord.Translations);
         }
 
         [Fact]
