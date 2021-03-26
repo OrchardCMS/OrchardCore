@@ -1,6 +1,6 @@
-namespace OrchardCore.Spatial.Settings
+namespace OrchardCore.Spatial.ViewModels
 {
-    public class GeoPointFieldSettings
+    public class GeoPointFieldSettingsViewModel
     {
         public string Hint { get; set; }
         public bool Required { get; set; }

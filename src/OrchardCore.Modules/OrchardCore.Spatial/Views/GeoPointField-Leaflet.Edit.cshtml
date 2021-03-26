@@ -1,7 +1,7 @@
-@using OrchardCore.Spatial.Settings
+@using OrchardCore.Spatial.ViewModels
 @model OrchardCore.Spatial.ViewModels.EditGeoPointFieldViewModel
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
+    var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettingsViewModel>();
 }
 
 <div class="form-row" id="GeoPointFields">
