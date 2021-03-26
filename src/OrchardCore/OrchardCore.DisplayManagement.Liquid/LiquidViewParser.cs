@@ -46,7 +46,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             RegisterParserTag("helper", ArgumentsList, FluidTagHelper.WriteArgumentsTagHelperAsync);
             RegisterParserBlock("block", ArgumentsList, FluidTagHelper.WriteArgumentsBlockHelperAsync);
 
-            RegisterParserTag("shape", ArgumentsList, new ShapeTag().WriteToAsync);
+            RegisterParserTag("shape", ArgumentsList, ShapeTag.WriteToAsync);
             RegisterParserBlock("zone", ArgumentsList, ZoneTag.WriteToAsync);
 
             RegisteredTags["a"] = ArgumentsList.AndSkip(TagEnd).And(Parsers.ZeroOrOne(AnyTagsList.AndSkip(CreateTag("enda")))).Then<Statement>(x => new ParserBlockStatement<List<FilterArgument>>(x.Item1, x.Item2, DefaultAnchorTag.WriteToAsync));

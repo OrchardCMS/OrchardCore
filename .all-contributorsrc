@@ -2289,6 +2289,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "BrentCarter",
+      "name": "Brent",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19171845?v=4",
+      "profile": "https://fuzl.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true

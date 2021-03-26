@@ -202,7 +202,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Start holding this shell scope along the async flow.
         /// </summary>
-        internal void StartAsyncFlow() => _current.Value = this;
+        public void StartAsyncFlow() => _current.Value = this;
 
         /// <summary>
         /// Executes a delegate using this shell scope in an isolated async flow,
