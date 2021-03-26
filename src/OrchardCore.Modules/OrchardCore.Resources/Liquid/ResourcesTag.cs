@@ -69,9 +69,18 @@ namespace OrchardCore.Resources.Liquid
                     break;
             }
 
-            using var content = new ViewBufferTextWriterContent();
-            buffer.WriteTo(content, (HtmlEncoder)encoder);
-            content.WriteTo(writer, (HtmlEncoder)encoder);
+            if (writer.GetType().Name == "ViewBufferTextWriter")
+            {
+                writer.Write(buffer);
+            }
+            else
+            {
+                buffer.WriteTo(writer, (HtmlEncoder)encoder);
+            }
+
+            //using var content = new ViewBufferTextWriterContent();
+            //buffer.WriteTo(content, (HtmlEncoder)encoder);
+            //content.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }

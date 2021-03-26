@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -56,6 +57,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
                 await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
+
+
+                //await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
+                //var content = await template.FluidTemplate.RenderAsync(context, htmlEncoder);
+                //page.Output.Write(new HtmlString(content));
             }
             finally
             {
