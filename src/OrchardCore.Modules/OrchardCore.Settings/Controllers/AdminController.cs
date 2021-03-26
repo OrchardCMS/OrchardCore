@@ -74,12 +74,14 @@ namespace OrchardCore.Settings.Controllers
             {
                 await _siteService.UpdateSiteSettingsAsync(site);
 
-                var culture = site.Properties
-                    .GetValue("LocalizationSettings")
-                    .Value<string>("DefaultCulture");
+                string culture = null;
+                if (site.Properties.TryGetValue("LocalizationSettings", out var settings))
+                {
+                    culture = settings.Value<string>("DefaultCulture");
+                }
 
                 // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
-                using (CultureScope.Create(culture))
+                using (culture != null ? CultureScope.Create(culture) : null)
                 {
                     _notifier.Success(H["Site settings updated successfully."]);
                 }

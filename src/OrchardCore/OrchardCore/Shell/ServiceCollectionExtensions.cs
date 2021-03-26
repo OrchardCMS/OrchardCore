@@ -45,11 +45,7 @@ namespace OrchardCore.Environment.Shell
 
         public static IServiceCollection AddSetFeaturesDescriptor(this IServiceCollection services)
         {
-            services.AddSingleton<IShellDescriptorManager>(sp =>
-            {
-                var shellFeatures = sp.GetServices<ShellFeature>();
-                return new SetFeaturesShellDescriptorManager(shellFeatures);
-            });
+            services.AddSingleton<IShellDescriptorManager, SetFeaturesShellDescriptorManager>();
 
             return services;
         }
