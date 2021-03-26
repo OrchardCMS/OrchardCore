@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.Environment.Shell.Descriptor.Settings
@@ -12,24 +13,36 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
     public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
     {
         private readonly IEnumerable<ShellFeature> _shellFeatures;
+        private readonly IExtensionManager _extensionManager;
+
         private ShellDescriptor _shellDescriptor;
 
-        public SetFeaturesShellDescriptorManager(IEnumerable<ShellFeature> shellFeatures)
+        public SetFeaturesShellDescriptorManager(IEnumerable<ShellFeature> shellFeatures, IExtensionManager extensionManager)
         {
             _shellFeatures = shellFeatures;
+            _extensionManager = extensionManager;
         }
 
-        public Task<ShellDescriptor> GetShellDescriptorAsync()
+        public async Task<ShellDescriptor> GetShellDescriptorAsync()
         {
             if (_shellDescriptor == null)
             {
+                var featureIds = _shellFeatures.Distinct().Select(sf => sf.Id).ToArray();
+
+                var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds))
+                    .Select(entry => entry.FeatureInfo.Id)
+                    .Except(featureIds)
+                    .Select(id => new ShellFeature(id));
+
                 _shellDescriptor = new ShellDescriptor
                 {
-                    Features = _shellFeatures.Distinct().ToList()
+                    Features = _shellFeatures
+                        .Concat(missingDependencies)
+                        .ToList()
                 };
             }
 
-            return Task.FromResult(_shellDescriptor);
+            return _shellDescriptor;
         }
 
         public Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellParameter> parameters)
