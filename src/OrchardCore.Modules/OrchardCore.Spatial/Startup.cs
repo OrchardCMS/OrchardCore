@@ -9,9 +9,8 @@ using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Spatial.Drivers;
 using OrchardCore.Spatial.Indexing;
-using OrchardCore.Spatial.Settings;
 using OrchardCore.Spatial.ViewModels;
-using GeoPointField = OrchardCore.Spatial.Fields.GeoPointField;
+using OrchardCore.Spatial.Fields;
 
 namespace OrchardCore.Spatial
 {

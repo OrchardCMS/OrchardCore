@@ -3,8 +3,9 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Spatial.Fields;
+using OrchardCore.Spatial.Settings;
 
-namespace OrchardCore.Spatial.Settings
+namespace OrchardCore.Spatial.Drivers
 {
     public class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<GeoPointField>
     {
