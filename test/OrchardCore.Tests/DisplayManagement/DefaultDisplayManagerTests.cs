@@ -435,5 +435,50 @@ namespace OrchardCore.Tests.DisplayManagement
 
             Assert.Equal("alpha", result.ToString());
         }
+
+        [Fact]
+        public async Task FilteringAdminShapesIShapeBindingResolverProvidedShapeNames()
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var resolvers = _serviceProvider.GetService<IEnumerable<IShapeBindingResolver>>();
+
+            // Set as Admin template
+            _additionalBindings.IsAdminShape = true;
+
+            _additionalBindings["Baz_DisplayOption"] = new ShapeBinding
+            {
+                BindingName = "Baz_DisplayOption",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi Baz, from IShapeBindingResolver."))
+            };
+
+            _additionalBindings["Foo_Edit"] = new ShapeBinding
+            {
+                BindingName = "Foo_Edit",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi Foo, from IShapeBindingResolver."))
+            };
+
+            var resolverEnumerator = resolvers.GetEnumerator();
+            resolverEnumerator.MoveNext();
+            var resolver = resolverEnumerator.Current; 
+
+            var shapeNames = await resolver.GetShapeBindingNamesAsync(t => t.EndsWith("_DisplayOption", StringComparison.OrdinalIgnoreCase), true);
+            var shapeEnumerator = shapeNames.GetEnumerator();
+            shapeEnumerator.MoveNext();
+            var shapeName = shapeEnumerator.Current;
+
+            var shape = new Shape();
+            shape.Metadata.Type = shapeName;
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+            Assert.Equal("Hi Baz, from IShapeBindingResolver.", result.ToString());
+            
+            // Cleanup
+            _additionalBindings.Clear();
+            // Reset
+            _additionalBindings.IsAdminShape = false;
+
+
+        }
     }
 }

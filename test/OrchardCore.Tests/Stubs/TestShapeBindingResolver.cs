@@ -8,6 +8,7 @@ namespace OrchardCore.Tests.Stubs
 {
     public class TestShapeBindingsDictionary : Dictionary<string, ShapeBinding>
     {
+        public bool IsAdminShape { get; set; } = false;
         public TestShapeBindingsDictionary()
             : base(StringComparer.OrdinalIgnoreCase) { }
     }
@@ -31,6 +32,25 @@ namespace OrchardCore.Tests.Stubs
             {
                 return Task.FromResult<ShapeBinding>(null);
             }
+        }
+
+        public async Task<IEnumerable<string>> GetShapeBindingNamesAsync(Func<string, bool> predicate, bool adminTemplate)
+        {
+            if (adminTemplate != _shapeBindings.IsAdminShape)
+            {
+                return null;
+            }
+
+            var shapeNames = new List<string>();
+            foreach (var key in _shapeBindings.Keys)
+            {
+                if (predicate(key))
+                {
+                    shapeNames.Add(key);
+                }
+            }
+
+            return await Task.FromResult(shapeNames);
         }
     }
 }
