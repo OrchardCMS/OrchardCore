@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -55,13 +56,9 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
-                await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
                 await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
-
-
-                //await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
-                //var content = await template.FluidTemplate.RenderAsync(context, htmlEncoder);
-                //page.Output.Write(new HtmlString(content));
+                var content = await template.FluidTemplate.RenderAsync(context, htmlEncoder);
+                page.Output.Write(new HtmlString(content));
             }
             finally
             {
