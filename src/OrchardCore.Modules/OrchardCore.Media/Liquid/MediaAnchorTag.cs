@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Liquid;
 
@@ -85,30 +84,14 @@ namespace OrchardCore.Media.Liquid
 
             tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
 
-            string content;
-            using (var sb = StringBuilderPool.GetInstance())
+            if (statements != null && statements.Count > 0)
             {
-                using (var output = new StringWriter(sb.Builder))
+                var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+
+                if (completion != Completion.Normal)
                 {
-                    if (statements != null && statements.Count > 0)
-                    {
-                        var completion = await statements.RenderStatementsAsync(output, encoder, context);
-
-                        if (completion != Completion.Normal)
-                        {
-                            return completion;
-                        }
-                    }
-
-                    await output.FlushAsync();
+                    return completion;
                 }
-
-                content = sb.Builder.ToString();
-            }
-
-            if (content != null)
-            {
-                writer.Write(content);
             }
 
             tagBuilder.RenderEndTag().WriteTo(writer, (HtmlEncoder)encoder);
