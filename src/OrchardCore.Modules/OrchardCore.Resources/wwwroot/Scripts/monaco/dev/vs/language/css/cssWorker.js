@@ -693,6 +693,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -5075,6 +5077,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -7625,23 +7629,13 @@ define('vscode-languageserver-types', ['vscode-languageserver-types/main'], func
 
 define('vscode-languageserver-textdocument', ['vscode-languageserver-textdocument/main'], function (main) { return main; });
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define('vscode-css-languageservice/cssLanguageTypes',["require", "exports", "vscode-languageserver-types", "vscode-languageserver-textdocument", "vscode-languageserver-types"], factory);
+        define('vscode-css-languageservice/cssLanguageTypes',["require", "exports", "vscode-languageserver-types", "vscode-languageserver-textdocument"], factory);
     }
 })(function (require, exports) {
     /*---------------------------------------------------------------------------------------------
@@ -7650,11 +7644,44 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
      *--------------------------------------------------------------------------------------------*/
     'use strict';
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.FileType = exports.ClientCapabilities = exports.TextDocument = void 0;
+    exports.FileType = exports.ClientCapabilities = exports.DocumentHighlightKind = exports.VersionedTextDocumentIdentifier = exports.TextDocumentEdit = exports.CodeActionKind = exports.TextEdit = exports.WorkspaceEdit = exports.DocumentLink = exports.DocumentHighlight = exports.CodeAction = exports.Command = exports.CodeActionContext = exports.MarkedString = exports.Hover = exports.Location = exports.DocumentSymbol = exports.SymbolKind = exports.SymbolInformation = exports.InsertTextFormat = exports.CompletionItemTag = exports.CompletionList = exports.CompletionItemKind = exports.CompletionItem = exports.DiagnosticSeverity = exports.Diagnostic = exports.SelectionRange = exports.FoldingRangeKind = exports.FoldingRange = exports.ColorPresentation = exports.ColorInformation = exports.Color = exports.MarkupKind = exports.MarkupContent = exports.Position = exports.Range = exports.TextDocument = void 0;
     var vscode_languageserver_types_1 = require("vscode-languageserver-types");
+    Object.defineProperty(exports, "Range", { enumerable: true, get: function () { return vscode_languageserver_types_1.Range; } });
+    Object.defineProperty(exports, "Position", { enumerable: true, get: function () { return vscode_languageserver_types_1.Position; } });
+    Object.defineProperty(exports, "MarkupContent", { enumerable: true, get: function () { return vscode_languageserver_types_1.MarkupContent; } });
+    Object.defineProperty(exports, "MarkupKind", { enumerable: true, get: function () { return vscode_languageserver_types_1.MarkupKind; } });
+    Object.defineProperty(exports, "Color", { enumerable: true, get: function () { return vscode_languageserver_types_1.Color; } });
+    Object.defineProperty(exports, "ColorInformation", { enumerable: true, get: function () { return vscode_languageserver_types_1.ColorInformation; } });
+    Object.defineProperty(exports, "ColorPresentation", { enumerable: true, get: function () { return vscode_languageserver_types_1.ColorPresentation; } });
+    Object.defineProperty(exports, "FoldingRange", { enumerable: true, get: function () { return vscode_languageserver_types_1.FoldingRange; } });
+    Object.defineProperty(exports, "FoldingRangeKind", { enumerable: true, get: function () { return vscode_languageserver_types_1.FoldingRangeKind; } });
+    Object.defineProperty(exports, "SelectionRange", { enumerable: true, get: function () { return vscode_languageserver_types_1.SelectionRange; } });
+    Object.defineProperty(exports, "Diagnostic", { enumerable: true, get: function () { return vscode_languageserver_types_1.Diagnostic; } });
+    Object.defineProperty(exports, "DiagnosticSeverity", { enumerable: true, get: function () { return vscode_languageserver_types_1.DiagnosticSeverity; } });
+    Object.defineProperty(exports, "CompletionItem", { enumerable: true, get: function () { return vscode_languageserver_types_1.CompletionItem; } });
+    Object.defineProperty(exports, "CompletionItemKind", { enumerable: true, get: function () { return vscode_languageserver_types_1.CompletionItemKind; } });
+    Object.defineProperty(exports, "CompletionList", { enumerable: true, get: function () { return vscode_languageserver_types_1.CompletionList; } });
+    Object.defineProperty(exports, "CompletionItemTag", { enumerable: true, get: function () { return vscode_languageserver_types_1.CompletionItemTag; } });
+    Object.defineProperty(exports, "InsertTextFormat", { enumerable: true, get: function () { return vscode_languageserver_types_1.InsertTextFormat; } });
+    Object.defineProperty(exports, "SymbolInformation", { enumerable: true, get: function () { return vscode_languageserver_types_1.SymbolInformation; } });
+    Object.defineProperty(exports, "SymbolKind", { enumerable: true, get: function () { return vscode_languageserver_types_1.SymbolKind; } });
+    Object.defineProperty(exports, "DocumentSymbol", { enumerable: true, get: function () { return vscode_languageserver_types_1.DocumentSymbol; } });
+    Object.defineProperty(exports, "Location", { enumerable: true, get: function () { return vscode_languageserver_types_1.Location; } });
+    Object.defineProperty(exports, "Hover", { enumerable: true, get: function () { return vscode_languageserver_types_1.Hover; } });
+    Object.defineProperty(exports, "MarkedString", { enumerable: true, get: function () { return vscode_languageserver_types_1.MarkedString; } });
+    Object.defineProperty(exports, "CodeActionContext", { enumerable: true, get: function () { return vscode_languageserver_types_1.CodeActionContext; } });
+    Object.defineProperty(exports, "Command", { enumerable: true, get: function () { return vscode_languageserver_types_1.Command; } });
+    Object.defineProperty(exports, "CodeAction", { enumerable: true, get: function () { return vscode_languageserver_types_1.CodeAction; } });
+    Object.defineProperty(exports, "DocumentHighlight", { enumerable: true, get: function () { return vscode_languageserver_types_1.DocumentHighlight; } });
+    Object.defineProperty(exports, "DocumentLink", { enumerable: true, get: function () { return vscode_languageserver_types_1.DocumentLink; } });
+    Object.defineProperty(exports, "WorkspaceEdit", { enumerable: true, get: function () { return vscode_languageserver_types_1.WorkspaceEdit; } });
+    Object.defineProperty(exports, "TextEdit", { enumerable: true, get: function () { return vscode_languageserver_types_1.TextEdit; } });
+    Object.defineProperty(exports, "CodeActionKind", { enumerable: true, get: function () { return vscode_languageserver_types_1.CodeActionKind; } });
+    Object.defineProperty(exports, "TextDocumentEdit", { enumerable: true, get: function () { return vscode_languageserver_types_1.TextDocumentEdit; } });
+    Object.defineProperty(exports, "VersionedTextDocumentIdentifier", { enumerable: true, get: function () { return vscode_languageserver_types_1.VersionedTextDocumentIdentifier; } });
+    Object.defineProperty(exports, "DocumentHighlightKind", { enumerable: true, get: function () { return vscode_languageserver_types_1.DocumentHighlightKind; } });
     var vscode_languageserver_textdocument_1 = require("vscode-languageserver-textdocument");
     Object.defineProperty(exports, "TextDocument", { enumerable: true, get: function () { return vscode_languageserver_textdocument_1.TextDocument; } });
-    __exportStar(require("vscode-languageserver-types"), exports);
     var ClientCapabilities;
     (function (ClientCapabilities) {
         ClientCapabilities.LATEST = {
@@ -7699,12 +7726,10 @@ define('vscode-uri', ['vscode-uri/index'], function (main) { return main; });
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
@@ -7728,7 +7753,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             paths[_i - 1] = arguments[_i];
         }
-        return vscode_uri_1.Utils.joinPath.apply(vscode_uri_1.Utils, __spreadArrays([vscode_uri_1.URI.parse(uriString)], paths)).toString();
+        return vscode_uri_1.Utils.joinPath.apply(vscode_uri_1.Utils, __spreadArray([vscode_uri_1.URI.parse(uriString)], paths)).toString();
     }
     exports.joinPath = joinPath;
 });
@@ -8058,7 +8083,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             this.completionParticipants = [];
         }
         CSSCompletion.prototype.configure = function (settings) {
-            this.settings = settings;
+            this.defaultSettings = settings;
         };
         CSSCompletion.prototype.getSymbolContext = function () {
             if (!this.symbolContext) {
@@ -8069,19 +8094,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         CSSCompletion.prototype.setCompletionParticipants = function (registeredCompletionParticipants) {
             this.completionParticipants = registeredCompletionParticipants || [];
         };
-        CSSCompletion.prototype.doComplete2 = function (document, position, styleSheet, documentContext) {
+        CSSCompletion.prototype.doComplete2 = function (document, position, styleSheet, documentContext, completionSettings) {
+            if (completionSettings === void 0) { completionSettings = this.defaultSettings; }
             return __awaiter(this, void 0, void 0, function () {
                 var participant, contributedParticipants, result, pathCompletionResult;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             if (!this.lsOptions.fileSystemProvider || !this.lsOptions.fileSystemProvider.readDirectory) {
-                                return [2 /*return*/, this.doComplete(document, position, styleSheet)];
+                                return [2 /*return*/, this.doComplete(document, position, styleSheet, completionSettings)];
                             }
                             participant = new pathCompletion_1.PathCompletionParticipant(this.lsOptions.fileSystemProvider.readDirectory);
                             contributedParticipants = this.completionParticipants;
                             this.completionParticipants = [participant].concat(contributedParticipants);
-                            result = this.doComplete(document, position, styleSheet);
+                            result = this.doComplete(document, position, styleSheet, completionSettings);
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, , 3, 4]);
@@ -8100,13 +8126,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
                 });
             });
         };
-        CSSCompletion.prototype.doComplete = function (document, position, styleSheet) {
+        CSSCompletion.prototype.doComplete = function (document, position, styleSheet, documentSettings) {
             this.offset = document.offsetAt(position);
             this.position = position;
             this.currentWord = getCurrentWord(document, this.offset);
             this.defaultReplaceRange = cssLanguageTypes_1.Range.create(cssLanguageTypes_1.Position.create(this.position.line, this.position.character - this.currentWord.length), this.position);
             this.textDocument = document;
             this.styleSheet = styleSheet;
+            this.documentSettings = documentSettings;
             try {
                 var result = { isIncomplete: false, items: [] };
                 this.nodePath = nodes.getNodePath(this.styleSheet, this.offset);
@@ -8294,24 +8321,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         };
         Object.defineProperty(CSSCompletion.prototype, "isTriggerPropertyValueCompletionEnabled", {
             get: function () {
-                if (!this.settings ||
-                    !this.settings.completion ||
-                    this.settings.completion.triggerPropertyValueCompletion === undefined) {
-                    return true;
-                }
-                return this.settings.completion.triggerPropertyValueCompletion;
+                var _a, _b;
+                return (_b = (_a = this.documentSettings) === null || _a === void 0 ? void 0 : _a.triggerPropertyValueCompletion) !== null && _b !== void 0 ? _b : true;
             },
             enumerable: false,
             configurable: true
         });
         Object.defineProperty(CSSCompletion.prototype, "isCompletePropertyWithSemicolonEnabled", {
             get: function () {
-                if (!this.settings ||
-                    !this.settings.completion ||
-                    this.settings.completion.completePropertyWithSemicolon === undefined) {
-                    return true;
-                }
-                return this.settings.completion.completePropertyWithSemicolon;
+                var _a, _b;
+                return (_b = (_a = this.documentSettings) === null || _a === void 0 ? void 0 : _a.completePropertyWithSemicolon) !== null && _b !== void 0 ? _b : true;
             },
             enumerable: false,
             configurable: true
@@ -9128,6 +9147,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -9653,7 +9674,11 @@ var __extends = (this && this.__extends) || (function () {
             this.cssDataManager = cssDataManager;
             this.selectorPrinting = new selectorPrinting_1.SelectorPrinting(cssDataManager);
         }
+        CSSHover.prototype.configure = function (settings) {
+            this.defaultSettings = settings;
+        };
         CSSHover.prototype.doHover = function (document, position, stylesheet, settings) {
+            if (settings === void 0) { settings = this.defaultSettings; }
             function getRange(node) {
                 return cssLanguageTypes_1.Range.create(document.positionAt(node.offset), document.positionAt(node.end));
             }
@@ -11163,7 +11188,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             return true;
         };
         LintVisitor.prefixes = [
-            '-ms-', '-moz-', '-o-', '-webkit-',
+            '-ms-', '-moz-', '-o-', '-webkit-', // Quite common
+            //		'-xv-', '-atsc-', '-wap-', '-khtml-', 'mso-', 'prince-', '-ah-', '-hp-', '-ro-', '-rim-', '-tc-' // Quite un-common
         ];
         return LintVisitor;
     }());
@@ -11235,6 +11261,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -11395,6 +11423,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -12224,6 +12254,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -12613,6 +12645,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -12702,6 +12736,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -13453,6 +13489,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -36086,6 +36124,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -36299,7 +36339,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
         return {
             configure: function (settings) {
                 validation.configure(settings);
-                completion.configure(settings);
+                completion.configure(settings === null || settings === void 0 ? void 0 : settings.completion);
+                hover.configure(settings === null || settings === void 0 ? void 0 : settings.hover);
             },
             setDataProviders: cssDataManager.setDataProviders.bind(cssDataManager),
             doValidation: validation.doValidation.bind(validation),

@@ -288,7 +288,7 @@ define('vs/basic-languages/cpp/cpp',["require", "exports"], function (require, e
                 // whitespace
                 { include: '@whitespace' },
                 // [[ attributes ]].
-                [/\[\[.*\]\]/, 'annotation'],
+                [/\[\s*\[/, { token: 'annotation', next: '@annotation' }],
                 [/^\s*#include/, { token: 'keyword.directive.include', next: '@include' }],
                 // Preprocessor directive
                 [/^\s*#\s*\w+/, 'keyword'],
@@ -361,6 +361,14 @@ define('vs/basic-languages/cpp/cpp',["require", "exports"], function (require, e
                     }
                 ],
                 [/.*/, 'string.raw']
+            ],
+            annotation: [
+                { include: '@whitespace' },
+                [/using|alignas/, 'keyword'],
+                [/[a-zA-Z0-9_]+/, 'annotation'],
+                [/[,:]/, 'delimiter'],
+                [/[()]/, '@brackets'],
+                [/\]\s*\]/, { token: 'annotation', next: '@pop' }]
             ],
             include: [
                 [

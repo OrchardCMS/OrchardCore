@@ -223,6 +223,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -624,6 +626,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getCompletionsAtPosition(resource.toString(), offset)];
                         case 2:
                             info = _a.sent();
@@ -790,6 +795,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getSignatureHelpItems(resource.toString(), offset, {
                                     triggerReason: SignatureHelpAdapter._toSignatureHelpTriggerReason(context)
                                 })];
@@ -857,6 +865,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getQuickInfoAtPosition(resource.toString(), offset)];
                         case 2:
                             info = _a.sent();
@@ -902,6 +913,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getOccurrencesAtPosition(resource.toString(), offset)];
                         case 2:
                             entries = _a.sent();
@@ -942,6 +956,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getDefinitionAtPosition(resource.toString(), offset)];
                         case 2:
                             entries = _a.sent();
@@ -995,6 +1012,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getReferencesAtPosition(resource.toString(), offset)];
                         case 2:
                             entries = _a.sent();
@@ -1046,6 +1066,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getNavigationBarItems(resource.toString())];
                         case 2:
                             items = _a.sent();
@@ -1228,6 +1251,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getFormattingEditsAfterKeystroke(resource.toString(), offset, ch, FormatHelper._convertOptions(options))];
                         case 2:
                             edits = _a.sent();
@@ -1272,6 +1298,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getCodeFixesAtPosition(resource.toString(), start, end, errorCodes, formatOptions)];
                         case 2:
                             codeFixes = _a.sent();
@@ -1338,6 +1367,9 @@ define('vs/language/typescript/languageFeatures',["require", "exports", "./lib/l
                             return [4 /*yield*/, this._worker(resource)];
                         case 1:
                             worker = _a.sent();
+                            if (model.isDisposed()) {
+                                return [2 /*return*/];
+                            }
                             return [4 /*yield*/, worker.getRenameInfo(fileName, offset, {
                                     allowRenameOfImportPath: false
                                 })];

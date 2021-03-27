@@ -123,7 +123,6 @@ define('vs/basic-languages/csharp/csharp',["require", "exports"], function (requ
             'event',
             'method',
             'param',
-            'property',
             'public',
             'protected',
             'internal',

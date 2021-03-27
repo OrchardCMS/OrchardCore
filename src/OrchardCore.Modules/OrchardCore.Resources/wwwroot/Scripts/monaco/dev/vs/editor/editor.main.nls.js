@@ -1,8 +1,8 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.22.3(479b2f825538cfa990b511b97574cb96d24a9db4)
+ * Version: 0.23.0(82e8ea39fc101d639262435542c7d43bc20d8aa2)
  * Released under the MIT license
- * https://github.com/microsoft/vscode/blob/master/LICENSE.txt
+ * https://github.com/microsoft/vscode/blob/main/LICENSE.txt
  *-----------------------------------------------------------*/
 
 /*---------------------------------------------------------
@@ -100,6 +100,9 @@ define("vs/editor/editor.main.nls", {
 		"editor",
 		"The editor is not accessible at this time. Press {0} for options."
 	],
+	"vs/editor/browser/core/keybindingCancellation": [
+		"Whether the editor runs a cancellable operation, e.g. like 'Peek References'"
+	],
 	"vs/editor/browser/editorExtensions": [
 		"&&Undo",
 		"Undo",
@@ -151,7 +154,7 @@ define("vs/editor/editor.main.nls", {
 		"Only suggest words from the active document.",
 		"Suggest words from all open documents of the same language.",
 		"Suggest words from all open documents.",
-		"Controls form what documents word based completions are computed.",
+		"Controls from what documents word based completions are computed.",
 		"Semantic highlighting enabled for all color themes.",
 		"Semantic highlighting disabled for all color themes.",
 		"Semantic highlighting is configured by the current color theme's `semanticHighlighting` setting.",
@@ -411,6 +414,38 @@ define("vs/editor/editor.main.nls", {
 		"Assumes that all characters are of the same width. This is a fast algorithm that works correctly for monospace fonts and certain scripts (like Latin characters) where glyphs are of equal width.",
 		"Delegates wrapping points computation to the browser. This is a slow algorithm, that might cause freezes for large files, but it works correctly in all cases.",
 		"Controls the algorithm that computes wrapping points."
+	],
+	"vs/editor/common/editorContextKeys": [
+		"Whether the editor text has focus (cursor is blinking)",
+		"Whether the editor or an editor widget has focus (e.g. focus is in the find widget)",
+		"Whether an editor or a rich text input has focus (cursor is blinking)",
+		"Whether the editor is read only",
+		"Whether the context is a diff editor",
+		"Whether `editor.columnSelection` is enabled",
+		"Whether the editor has text selected",
+		"Whether the editor has multiple selections",
+		"Whether `Tab` will move focus out of the editor",
+		"Whether the editor hover is visible",
+		"Whether the editor is part of a larger editor (e.g. notebooks)",
+		"The language identifier of the editor",
+		"Whether the editor has a completion item provider",
+		"Whether the editor has a code actions provider",
+		"Whether the editor has a code lens provider",
+		"Whether the editor has a definition provider",
+		"Whether the editor has a declaration provider",
+		"Whether the editor has an implementation provider",
+		"Whether the editor has a type definition provider",
+		"Whether the editor has a hover provider",
+		"Whether the editor has a document highlight provider",
+		"Whether the editor has a document symbol provider",
+		"Whether the editor has a reference provider",
+		"Whether the editor has a rename provider",
+		"Whether the editor has a signature help provider",
+		"Whether the editor has an inline hints provider",
+		"Whether the editor has a document formatting provider",
+		"Whether the editor has a document selection formatting provider",
+		"Whether the editor has multiple document formatting providers",
+		"Whether the editor has multiple document selection formatting providers"
 	],
 	"vs/editor/common/model/editStack": [
 		"Typing"
@@ -749,7 +784,7 @@ define("vs/editor/editor.main.nls", {
 		"Loading..."
 	],
 	"vs/editor/contrib/hover/markerHoverParticipant": [
-		"Peek Problem",
+		"View Problem",
 		"No quick fixes available",
 		"Checking for quick fixes...",
 		"No quick fixes available",
@@ -815,6 +850,7 @@ define("vs/editor/editor.main.nls", {
 		"Open Link"
 	],
 	"vs/editor/contrib/message/messageController": [
+		"Whether the editor is currently showing an inline message",
 		"Cannot edit in read-only editor"
 	],
 	"vs/editor/contrib/multicursor/multicursor": [
@@ -1073,6 +1109,12 @@ define("vs/editor/editor.main.nls", {
 		"Cannot register '{0}'. This matches property pattern '\\\\[.*\\\\]$' for describing language specific editor settings. Use 'configurationDefaults' contribution.",
 		"Cannot register '{0}'. This property is already registered."
 	],
+	"vs/platform/contextkey/browser/contextKeyService": [
+		"A command that returns information about context keys"
+	],
+	"vs/platform/contextkey/common/contextkeys": [
+		"Whether the operating system is Windows"
+	],
 	"vs/platform/keybinding/common/abstractKeybindingService": [
 		"({0}) was pressed. Waiting for second key of chord...",
 		"The key combination ({0}, {1}) is not a command."
@@ -1082,7 +1124,7 @@ define("vs/editor/editor.main.nls", {
 		"Maps to `Control` on Windows and Linux and to `Command` on macOS.",
 		"Maps to `Alt` on Windows and Linux and to `Option` on macOS.",
 		"The modifier to be used to add an item in trees and lists to a multi-selection with the mouse (for example in the explorer, open editors and scm view). The 'Open to Side' mouse gestures - if supported - will adapt such that they do not conflict with the multiselect modifier.",
-		"Controls how to open items in trees and lists using the mouse (if supported). For parents with children in trees, this setting will control if a single click expands the parent or a double click. Note that some trees and lists might choose to ignore this setting if it is not applicable. ",
+		"Controls how to open items in trees and lists using the mouse (if supported). Note that some trees and lists might choose to ignore this setting if it is not applicable.",
 		"Controls whether lists and trees support horizontal scrolling in the workbench. Warning: turning on this setting has a performance implication.",
 		"Controls tree indentation in pixels.",
 		"Controls whether the tree should render indent guides.",
@@ -1092,7 +1134,7 @@ define("vs/editor/editor.main.nls", {
 		"Filter keyboard navigation will filter out and hide all the elements which do not match the keyboard input.",
 		"Controls the keyboard navigation style for lists and trees in the workbench. Can be simple, highlight and filter.",
 		"Controls whether keyboard navigation in lists and trees is automatically triggered simply by typing. If set to `false`, keyboard navigation is only triggered when executing the `list.toggleKeyboardNavigation` command, for which you can assign a keyboard shortcut.",
-		"Controls how tree folders are expanded when clicking the folder names."
+		"Controls how tree folders are expanded when clicking the folder names. Note that some trees and lists might choose to ignore this setting if it is not applicable."
 	],
 	"vs/platform/markers/common/markers": [
 		"Error",
@@ -1167,6 +1209,7 @@ define("vs/editor/editor.main.nls", {
 		"Quick picker background color. The quick picker widget is the container for pickers like the command palette.",
 		"Quick picker foreground color. The quick picker widget is the container for pickers like the command palette.",
 		"Quick picker title background color. The quick picker widget is the container for pickers like the command palette.",
+		"Quick picker background color for the focused item.",
 		"Quick picker color for grouping labels.",
 		"Quick picker color for grouping borders.",
 		"Color of the editor selection.",
@@ -1198,11 +1241,13 @@ define("vs/editor/editor.main.nls", {
 		"Color of the diff editor's diagonal fill. The diagonal fill is used in side-by-side diff views.",
 		"List/Tree background color for the focused item when the list/tree is active. An active list/tree has keyboard focus, an inactive does not.",
 		"List/Tree foreground color for the focused item when the list/tree is active. An active list/tree has keyboard focus, an inactive does not.",
+		"List/Tree outline color for the focused item when the list/tree is active. An active list/tree has keyboard focus, an inactive does not.",
 		"List/Tree background color for the selected item when the list/tree is active. An active list/tree has keyboard focus, an inactive does not.",
 		"List/Tree foreground color for the selected item when the list/tree is active. An active list/tree has keyboard focus, an inactive does not.",
 		"List/Tree background color for the selected item when the list/tree is inactive. An active list/tree has keyboard focus, an inactive does not.",
 		"List/Tree foreground color for the selected item when the list/tree is inactive. An active list/tree has keyboard focus, an inactive does not.",
 		"List/Tree background color for the focused item when the list/tree is inactive. An active list/tree has keyboard focus, an inactive does not.",
+		"List/Tree outline color for the focused item when the list/tree is inactive. An active list/tree has keyboard focus, an inactive does not.",
 		"List/Tree background when hovering over items using the mouse.",
 		"List/Tree foreground when hovering over items using the mouse.",
 		"List/Tree drag and drop background when moving items around using the mouse.",
@@ -1210,6 +1255,7 @@ define("vs/editor/editor.main.nls", {
 		"Background color of the type filter widget in lists and trees.",
 		"Outline color of the type filter widget in lists and trees.",
 		"Outline color of the type filter widget in lists and trees, when there are no matches.",
+		"Tree stroke color for the indentation guides.",
 		"Tree stroke color for the indentation guides.",
 		"Border color of menus.",
 		"Foreground color of menu items.",

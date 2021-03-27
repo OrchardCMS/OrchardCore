@@ -1,8 +1,8 @@
 /*!-----------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
- * Version: 0.22.3(479b2f825538cfa990b511b97574cb96d24a9db4)
+ * Version: 0.23.0(82e8ea39fc101d639262435542c7d43bc20d8aa2)
  * Released under the MIT license
- * https://github.com/microsoft/vscode/blob/master/LICENSE.txt
+ * https://github.com/microsoft/vscode/blob/main/LICENSE.txt
  *-----------------------------------------------------------*/
 
 /*---------------------------------------------------------
@@ -65,6 +65,7 @@
 }
 
 .monaco-action-bar .action-item.disabled .action-label,
+.monaco-action-bar .action-item.disabled .action-label::before,
 .monaco-action-bar .action-item.disabled .action-label:hover {
 	opacity: 0.4;
 }
@@ -253,7 +254,7 @@
 	}
 }
 
-.codicon-sync.codicon-modifier-spin, .codicon-loading.codicon-modifier-spin{
+.codicon-sync.codicon-modifier-spin, .codicon-loading.codicon-modifier-spin, .codicon-gear.codicon-modifier-spin {
 	/* Use steps to throttle FPS to reduce CPU usage */
 	animation: codicon-spin 1.5s steps(30) infinite;
 }
@@ -735,7 +736,6 @@
 	padding: 0.4em;
 	font-size: 12px;
 	line-height: 17px;
-	min-height: 34px;
 	margin-top: -1px;
 	word-wrap: break-word;
 }
@@ -1101,8 +1101,7 @@
 	height: var(--sash-size);
 }
 
-.monaco-sash:not(.disabled).orthogonal-start::before,
-.monaco-sash:not(.disabled).orthogonal-end::after {
+.monaco-sash:not(.disabled) > .orthogonal-drag-handle {
 	content: " ";
 	height: calc(var(--sash-size) * 2);
 	width: calc(var(--sash-size) * 2);
@@ -1112,30 +1111,34 @@
 	position: absolute;
 }
 
-.monaco-sash.horizontal.orthogonal-edge-north:not(.disabled).orthogonal-start::before,
-.monaco-sash.horizontal.orthogonal-edge-south:not(.disabled).orthogonal-end::after {
+.monaco-sash.horizontal.orthogonal-edge-north:not(.disabled)
+	> .orthogonal-drag-handle.start,
+.monaco-sash.horizontal.orthogonal-edge-south:not(.disabled)
+	> .orthogonal-drag-handle.end {
 	cursor: nwse-resize;
 }
 
-.monaco-sash.horizontal.orthogonal-edge-north:not(.disabled).orthogonal-end::after,
-.monaco-sash.horizontal.orthogonal-edge-south:not(.disabled).orthogonal-start::before {
+.monaco-sash.horizontal.orthogonal-edge-north:not(.disabled)
+	> .orthogonal-drag-handle.end,
+.monaco-sash.horizontal.orthogonal-edge-south:not(.disabled)
+	> .orthogonal-drag-handle.start {
 	cursor: nesw-resize;
 }
 
-.monaco-sash.orthogonal-start.vertical::before {
-	left: -calc(var(--sash-size) / 2);
+.monaco-sash.vertical > .orthogonal-drag-handle.start {
+	left: calc(var(--sash-size) * -0.5);
 	top: calc(var(--sash-size) * -1);
 }
-.monaco-sash.orthogonal-end.vertical::after {
-	left: -calc(var(--sash-size) / 2);
+.monaco-sash.vertical > .orthogonal-drag-handle.end {
+	left: calc(var(--sash-size) * -0.5);
 	bottom: calc(var(--sash-size) * -1);
 }
-.monaco-sash.orthogonal-start.horizontal::before {
-	top: -calc(var(--sash-size) / 2);
+.monaco-sash.horizontal > .orthogonal-drag-handle.start {
+	top: calc(var(--sash-size) * -0.5);
 	left: calc(var(--sash-size) * -1);
 }
-.monaco-sash.orthogonal-end.horizontal::after {
-	top: -calc(var(--sash-size) / 2);
+.monaco-sash.horizontal > .orthogonal-drag-handle.end {
+	top: calc(var(--sash-size) * -0.5);
 	right: calc(var(--sash-size) * -1);
 }
 
@@ -1154,8 +1157,7 @@
 	background: rgba(0, 255, 255, 0.2);
 }
 
-.monaco-sash.debug:not(.disabled).orthogonal-start::before,
-.monaco-sash.debug:not(.disabled).orthogonal-end::after {
+.monaco-sash.debug:not(.disabled) > .orthogonal-drag-handle {
 	background: red;
 }
 
@@ -1347,6 +1349,73 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+.monaco-table {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	height: 100%;
+	width: 100%;
+	white-space: nowrap;
+}
+
+.monaco-table > .monaco-split-view2 {
+	border-bottom: 1px solid transparent;
+}
+
+.monaco-table > .monaco-list {
+	flex: 1;
+}
+
+.monaco-table-tr {
+	display: flex;
+}
+
+.monaco-table-th {
+	width: 100%;
+	height: 100%;
+	font-weight: bold;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.monaco-table-th,
+.monaco-table-td {
+	box-sizing: border-box;
+	padding-left: 10px;
+	flex-shrink: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.monaco-table-th[data-col-index="0"],
+.monaco-table-td[data-col-index="0"] {
+	padding-left: 20px;
+}
+
+.monaco-table > .monaco-split-view2 .monaco-sash.vertical::before {
+	content: "";
+	position: absolute;
+	left: calc(var(--sash-size) / 2);
+	width: 0;
+	border-left: 1px solid transparent;
+}
+
+.monaco-table > .monaco-split-view2,
+.monaco-table > .monaco-split-view2 .monaco-sash.vertical::before {
+	transition: border-color 0.2s ease-out;
+}
+/*
+.monaco-table:hover > .monaco-split-view2,
+.monaco-table:hover > .monaco-split-view2 .monaco-sash.vertical::before {
+	border-color: rgba(204, 204, 204, 0.2);
+} */
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 .monaco-tl-row {
 	display: flex;
 	height: 100%;
@@ -1398,6 +1467,10 @@
 .monaco-tl-contents {
 	flex: 1;
 	overflow: hidden;
+}
+
+.monaco-tl-twistie::before {
+	border-radius: 20px;
 }
 
 .monaco-tl-twistie.collapsed::before {
@@ -3732,17 +3805,16 @@
 	margin: 0;
 }
 
-/*
-In certain cases, the default positioning of the aria container (left: -999em) can cause scrollbars to appear.
-So here we try to avoid that by using a different technique. See https://stackoverflow.com/a/26032207
-*/
+/* See https://github.com/microsoft/monaco-editor/issues/2168#issuecomment-780078600 */
 .monaco-aria-container {
 	position: absolute !important;
 	height: 1px;
 	width: 1px;
-	left: inherit !important;
+	margin: -1px;
 	overflow: hidden;
+	padding: 0;
 	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
 }
 
 /* The hc-black theme is already high contrast optimized */
@@ -3964,7 +4036,6 @@ So here we try to avoid that by using a different technique. See https://stackov
 
 .monaco-action-bar .action-item.menu-entry .action-label {
 	background-image: var(--menu-entry-icon-light);
-	display: inline-flex;
 }
 
 .vs-dark .monaco-action-bar .action-item.menu-entry .action-label,

@@ -35,7 +35,6 @@ namespace OrchardCore.ContentFields.Settings
             .Location("Editor");
         }
 
-
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
             if (partFieldDefinition.Editor() == "Monaco")
