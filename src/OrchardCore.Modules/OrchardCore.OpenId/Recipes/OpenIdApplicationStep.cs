@@ -73,6 +73,7 @@ namespace OrchardCore.OpenId.Recipes
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
             }
+            
             if (model.AllowAuthorizationCodeFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
