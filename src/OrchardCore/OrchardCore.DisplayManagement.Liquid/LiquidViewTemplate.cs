@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -49,13 +51,13 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment);
             var context = new LiquidTemplateContext(services, templateOptions);
-
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
             try
             {
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
-                await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
+                var content = await template.FluidTemplate.RenderAsync(context, htmlEncoder);
+                page.Output.Write(new HtmlString(content));
             }
             finally
             {

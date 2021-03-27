@@ -4,10 +4,10 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -34,27 +34,36 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            ViewBufferTextWriterContent content = null;
-
-            if (statements != null && statements.Count > 0)
+            HtmlString content;
+            using (var sb = StringBuilderPool.GetInstance())
             {
-                content = new ViewBufferTextWriterContent();
-
-                var completion = await statements.RenderStatementsAsync(content, encoder, context);
-
-                if (completion != Completion.Normal)
+                using (var output = new StringWriter(sb.Builder))
                 {
-                    return completion;
+                    if (statements != null && statements.Count > 0)
+                    {
+                        var completion = await statements.RenderStatementsAsync(output, encoder, context);
+
+                        if (completion != Completion.Normal)
+                        {
+                            return completion;
+                        }
+                    }
+
+                    await output.FlushAsync();
                 }
+
+                content = new HtmlString(sb.Builder.ToString());
             }
 
-            var layout = await layoutAccessor.GetLayoutAsync();
-
-            var zone = layout.Zones[name];
-
-            if (zone is Shape shape)
+            if (content != null)
             {
-                await shape.AddAsync(content, position);
+                var layout = await layoutAccessor.GetLayoutAsync();
+
+                var zone = layout.Zones[name];
+                if (zone is Shape shape)
+                {
+                    await shape.AddAsync(content, position);
+                }
             }
 
             return Completion.Normal;
