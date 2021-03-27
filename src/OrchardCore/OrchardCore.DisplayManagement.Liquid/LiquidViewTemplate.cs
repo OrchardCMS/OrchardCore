@@ -51,7 +51,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment);
             var context = new LiquidTemplateContext(services, templateOptions);
-
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
             try
