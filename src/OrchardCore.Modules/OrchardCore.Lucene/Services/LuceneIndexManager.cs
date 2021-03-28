@@ -109,7 +109,7 @@ namespace OrchardCore.Lucene
                 {
                     reader.Dispose();
                 }
-                
+
                 _timestamps.TryRemove(indexName, out _);
 
                 var indexFolder = PathExtensions.Combine(_rootPath, indexName);
@@ -280,9 +280,9 @@ namespace OrchardCore.Lucene
 
                     case DocumentIndex.Types.GeoPoint:
                         var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
-                        if (entry.Value is DocumentIndex.GeoPoint point)
+                        if (entry.Value != null && entry.Value is DocumentIndex.GeoPoint point)
                         {
-                            var geoPoint = _ctx.MakePoint(point.Longitude, point.Latitude);
+                            var geoPoint = _ctx.MakePoint((double)point.Longitude, (double)point.Latitude);
                             foreach (var field in strategy.CreateIndexableFields(geoPoint))
                             {
                                 doc.Add(field);
@@ -290,6 +290,10 @@ namespace OrchardCore.Lucene
 
                             // Store it too
                             doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                        }
+                        else
+                        {
+                            doc.Add(new StringField(entry.Name, "NULL", store));
                         }
                         break;
                 }

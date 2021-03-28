@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Spatial.Fields;
+using OrchardCore.Spatial.Settings;
 using OrchardCore.Spatial.ViewModels;
 
 namespace OrchardCore.Spatial.Drivers
@@ -11,13 +12,13 @@ namespace OrchardCore.Spatial.Drivers
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<GeoPointFieldSettingsViewModel>("GeoPointFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
+            return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
                 .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
-            var model = new GeoPointFieldSettingsViewModel();
+            var model = new GeoPointFieldSettings();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 

@@ -7,5 +7,5 @@
 }
 
 <div class="field field-type-geopointfield field-name-@name">
-    @Model.Field.Latitude.ToString("F6"), @Model.Field.Longitude.ToString("F6")
+    @String.Format("{0:0.000000}", Model.Field.Latitude), @String.Format("{0:0.000000}", Model.Field.Longitude)
 </div>

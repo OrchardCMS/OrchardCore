@@ -11,11 +11,21 @@ namespace OrchardCore.Spatial.Indexing
             var options = context.Settings.ToOptions();
             foreach (var key in context.Keys)
             {
-                context.DocumentIndex.Set(key, new DocumentIndex.GeoPoint
+                DocumentIndex.GeoPoint value;
+                if (field.Longitude != null && field.Latitude != null)
                 {
-                    Longitude = field.Longitude,
-                    Latitude = field.Latitude
-                }, options);
+                    value = new DocumentIndex.GeoPoint
+                    {
+                        Longitude = (double)field.Longitude,
+                        Latitude = (double)field.Latitude
+                    };
+                }
+                else
+                {
+                    value = null;
+                }
+
+                context.DocumentIndex.Set(key, value, options);
             }
 
             return Task.CompletedTask;
