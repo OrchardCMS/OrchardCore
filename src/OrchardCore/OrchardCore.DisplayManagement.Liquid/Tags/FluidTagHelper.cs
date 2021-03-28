@@ -5,7 +5,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
@@ -64,25 +63,18 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tagHelper = factory.CreateTagHelper(activator, viewContext,
                 filterArguments, out var contextAttributes, out var outputAttributes);
 
-            HtmlString content;
-            using (var sb = StringBuilderPool.GetInstance())
+            ViewBufferTextWriterContent content = null;
+
+            if (statements != null && statements.Count > 0)
             {
-                using (var output = new StringWriter(sb.Builder))
+                content = new ViewBufferTextWriterContent();
+
+                var completion = await statements.RenderStatementsAsync(content, encoder, context);
+
+                if (completion != Completion.Normal)
                 {
-                    if (statements != null && statements.Count > 0)
-                    {
-                        var completion = await statements.RenderStatementsAsync(output, encoder, context);
-
-                        if (completion != Completion.Normal)
-                        {
-                            return completion;
-                        }
-                    }
-
-                    await output.FlushAsync();
+                    return completion;
                 }
-
-                content = new HtmlString(sb.Builder.ToString());
             }
 
             var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
