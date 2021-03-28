@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -15,8 +18,6 @@ namespace OrchardCore.Environment.Shell
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly ILogger _logger;
-
-        public FeatureDependencyNotificationHandler FeatureDependencyNotification { get; set; }
 
         public ShellDescriptorFeaturesManager(
             IExtensionManager extensionManager,
@@ -40,54 +41,73 @@ namespace OrchardCore.Environment.Shell
 
             var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
 
-            var AllFeaturesToDisable = featuresToDisable
+            var allFeaturesToDisable = featuresToDisable
                 .Where(f => !alwaysEnabledIds.Contains(f.Id))
                 .SelectMany(feature => GetFeaturesToDisable(feature, enabledFeatureIds, force))
                 .Distinct()
                 .ToList();
 
-            if (AllFeaturesToDisable.Count > 0)
+            foreach (var feature in allFeaturesToDisable)
             {
-                foreach (var feature in AllFeaturesToDisable)
-                {
-                    enabledFeatures.Remove(feature);
+                enabledFeatures.Remove(feature);
 
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation("Feature '{FeatureName}' was disabled", feature.Id);
-                    }
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Feature '{FeatureName}' was disabled", feature.Id);
                 }
             }
 
             enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
 
-            var AllFeaturesToEnable = featuresToEnable
+            var allFeaturesToEnable = featuresToEnable
                 .SelectMany(feature => GetFeaturesToEnable(feature, enabledFeatureIds, force))
                 .Distinct()
                 .ToList();
 
-            if (AllFeaturesToEnable.Count > 0)
+            if (_logger.IsEnabled(LogLevel.Information))
             {
-                if (_logger.IsEnabled(LogLevel.Information))
+                foreach (var feature in allFeaturesToEnable)
                 {
-                    foreach (var feature in AllFeaturesToEnable)
-                    {
-                        _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
-                    }
+                    _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
                 }
-
-                enabledFeatures = enabledFeatures.Concat(AllFeaturesToEnable).Distinct().ToList();
             }
 
-            if (AllFeaturesToDisable.Count > 0 || AllFeaturesToEnable.Count > 0)
+            if (allFeaturesToEnable.Count > 0)
+            {
+                enabledFeatures = enabledFeatures.Concat(allFeaturesToEnable).Distinct().ToList();
+            }
+
+            if (allFeaturesToDisable.Count > 0 || allFeaturesToEnable.Count > 0)
             {
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
                     enabledFeatures.Select(x => new ShellFeature(x.Id)).ToList(),
                     shellDescriptor.Parameters);
+
+                ShellScope.AddDeferredTask(async scope =>
+                {
+                    var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
+                    var featureEventHandlers = scope.ServiceProvider.GetServices<IFeatureEventHandler>();
+
+                    var orderedFeatures = extensionManager.GetFeatures();
+
+                    var featuresToDisable = orderedFeatures.Reverse().Where(f => allFeaturesToDisable.Any(d => d.Id == f.Id));
+                    foreach (var feature in featuresToDisable)
+                    {
+                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
+                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), feature, _logger);
+                    }
+
+                    var featuresToEnable = orderedFeatures.Where(f => allFeaturesToEnable.Any(d => d.Id == f.Id));
+                    foreach (var feature in featuresToEnable)
+                    {
+                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger);
+                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnabledAsync(featureInfo), feature, _logger);
+                    }
+                });
             }
 
-            return (AllFeaturesToDisable, AllFeaturesToEnable);
+            return (allFeaturesToDisable, allFeaturesToEnable);
         }
 
         /// <summary>
@@ -110,8 +130,6 @@ namespace OrchardCore.Environment.Shell
                 {
                     _logger.LogWarning(" To enable '{FeatureId}', additional features need to be enabled.", featureInfo.Id);
                 }
-
-                FeatureDependencyNotification?.Invoke("If {0} is enabled, then you'll also need to enable {1}.", featureInfo, featuresToEnable.Where(f => f.Id != featureInfo.Id));
 
                 return Enumerable.Empty<IFeatureInfo>();
             }
@@ -139,8 +157,6 @@ namespace OrchardCore.Environment.Shell
                 {
                     _logger.LogWarning(" To disable '{FeatureId}', additional features need to be disabled.", featureInfo.Id);
                 }
-
-                FeatureDependencyNotification?.Invoke("If {0} is disabled, then you'll also need to disable {1}.", featureInfo, featuresToDisable.Where(f => f.Id != featureInfo.Id));
 
                 return Enumerable.Empty<IFeatureInfo>();
             }

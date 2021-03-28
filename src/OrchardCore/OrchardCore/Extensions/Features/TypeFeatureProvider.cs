@@ -11,9 +11,7 @@ namespace OrchardCore.Environment.Extensions
 
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
-            IFeatureInfo feature = null;
-
-            if (_features.TryGetValue(dependency, out feature))
+            if (_features.TryGetValue(dependency, out var feature))
             {
                 return feature;
             }

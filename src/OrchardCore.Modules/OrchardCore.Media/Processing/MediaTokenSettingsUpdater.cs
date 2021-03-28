@@ -39,10 +39,6 @@ namespace OrchardCore.Media.Processing
             }
         }
 
-        Task IFeatureEventHandler.InstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.InstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
-
         Task IFeatureEventHandler.EnablingAsync(IFeatureInfo feature) => Task.CompletedTask;
 
         Task IFeatureEventHandler.EnabledAsync(IFeatureInfo feature) => SetMediaTokenSettingsAsync(feature);
@@ -50,10 +46,6 @@ namespace OrchardCore.Media.Processing
         Task IFeatureEventHandler.DisablingAsync(IFeatureInfo feature) => Task.CompletedTask;
 
         Task IFeatureEventHandler.DisabledAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.UninstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.UninstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
         private async Task SetMediaTokenSettingsAsync(IFeatureInfo feature)
         {
