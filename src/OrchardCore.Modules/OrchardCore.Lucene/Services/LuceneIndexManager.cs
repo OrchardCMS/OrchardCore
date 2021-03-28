@@ -288,8 +288,10 @@ namespace OrchardCore.Lucene
                                 doc.Add(field);
                             }
 
-                            // Store it too
-                            doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Store))
+                            {
+                                doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                            }
                         }
                         else
                         {
