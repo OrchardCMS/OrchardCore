@@ -21,8 +21,8 @@ namespace OrchardCore.Liquid.Services
         private readonly IServiceProvider _serviceProvider;
 
         public LiquidTemplateManager(
-            IMemoryCache memoryCache,
-            LiquidViewParser liquidViewParser,
+            IMemoryCache memoryCache, 
+            LiquidViewParser liquidViewParser, 
             IOptions<TemplateOptions> templateOptions,
             IServiceProvider serviceProvider
             )
@@ -72,9 +72,11 @@ namespace OrchardCore.Liquid.Services
                 }
             }
 
-            var content = await result.RenderAsync(encoder, context, model);
+            var htmlContentWriter = new ViewBufferTextWriterContent();
 
-            return new HtmlString(content);
+            await result.RenderAsync(htmlContentWriter, encoder, context, model);
+
+            return htmlContentWriter;
         }
 
         public Task RenderAsync(string source, TextWriter writer, TextEncoder encoder, object model = null, IEnumerable<KeyValuePair<string, FluidValue>> properties = null)
@@ -123,7 +125,7 @@ namespace OrchardCore.Liquid.Services
         public bool Validate(string template, out IEnumerable<string> errors)
         {
             var success = _liquidViewParser.TryParse(template, out _, out var error);
-            errors = new[] { error };
+            errors = new [] { error };
             return success;
         }
     }

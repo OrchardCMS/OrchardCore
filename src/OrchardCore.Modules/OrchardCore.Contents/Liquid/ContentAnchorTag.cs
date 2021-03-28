@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Liquid;
 
@@ -208,30 +207,14 @@ namespace OrchardCore.Contents.Liquid
 
             tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
 
-            string content;
-            using (var sb = StringBuilderPool.GetInstance())
+            if (statements != null && statements.Count > 0)
             {
-                using (var output = new StringWriter(sb.Builder))
+                var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+
+                if (completion != Completion.Normal)
                 {
-                    if (statements != null && statements.Count > 0)
-                    {
-                        var completion = await statements.RenderStatementsAsync(output, encoder, context);
-
-                        if (completion != Completion.Normal)
-                        {
-                            return completion;
-                        }
-                    }
-
-                    await output.FlushAsync();
+                    return completion;
                 }
-
-                content = sb.Builder.ToString();
-            }
-
-            if (content != null)
-            {
-                writer.Write(content);
             }
             else if (!String.IsNullOrEmpty(contentItem.DisplayText))
             {
