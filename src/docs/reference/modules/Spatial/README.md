@@ -66,5 +66,9 @@ Assuming a BlogPost content item has a `GeoPointField` named Location with the v
 
 ```
 
-Note: a 200km radius equates to approximately 1.7986 degrees of arc from the geo point centre. So searching
-at `[-34.8, 138]` should be greater than 200km from the content location and not return it as a result. 
+Note: a 200km radius equates to approximately 1.7986 degrees of arc from the geo point centre. So searching at `[-34.8, 138]` should be greater than 200km from the content location and not return it as a result.
+
+See :
+
+https://en.wikipedia.org/wiki/As_the_crow_flies
+https://en.wikipedia.org/wiki/Haversine_formula
