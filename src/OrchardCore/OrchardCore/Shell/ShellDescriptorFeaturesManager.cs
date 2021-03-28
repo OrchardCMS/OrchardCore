@@ -45,6 +45,7 @@ namespace OrchardCore.Environment.Shell
                 .Where(f => !alwaysEnabledIds.Contains(f.Id))
                 .SelectMany(feature => GetFeaturesToDisable(feature, enabledFeatureIds, force))
                 .Distinct()
+                .Reverse()
                 .ToList();
 
             foreach (var feature in allFeaturesToDisable)
@@ -86,20 +87,15 @@ namespace OrchardCore.Environment.Shell
 
                 ShellScope.AddDeferredTask(async scope =>
                 {
-                    var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
                     var featureEventHandlers = scope.ServiceProvider.GetServices<IFeatureEventHandler>();
 
-                    var orderedFeatures = extensionManager.GetFeatures();
-
-                    var featuresToDisable = orderedFeatures.Reverse().Where(f => allFeaturesToDisable.Any(d => d.Id == f.Id));
-                    foreach (var feature in featuresToDisable)
+                    foreach (var feature in allFeaturesToDisable)
                     {
                         await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
                         await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), feature, _logger);
                     }
 
-                    var featuresToEnable = orderedFeatures.Where(f => allFeaturesToEnable.Any(d => d.Id == f.Id));
-                    foreach (var feature in featuresToEnable)
+                    foreach (var feature in allFeaturesToEnable)
                     {
                         await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger);
                         await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnabledAsync(featureInfo), feature, _logger);
