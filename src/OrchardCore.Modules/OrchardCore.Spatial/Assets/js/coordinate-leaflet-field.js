@@ -3,8 +3,9 @@ function addMapPicker() {
     var lat = $('[data-latitude]').val();
     var long = $('[data-longitude]').val();
 
-    var mapCenter = [-34.92879716252353, 138.59996905763066];
-    var zoom = 5;
+    var mapCenter = [40.866667, 34.566667];
+    var zoom = 0;
+
     if (lat && long) {
         mapCenter = [lat, long];
         zoom = 14;
@@ -25,16 +26,16 @@ function addMapPicker() {
     };
 
     map.on('click', function (e) {
-       $('[data-latitude]').val(e.latlng.lat);
+        $('[data-latitude]').val(e.latlng.lat);
         $('[data-longitude]').val(e.latlng.lng);
         updateMarker(e.latlng.lat, e.latlng.lng);
     });
 
 
     var updateMarkerByInputs = function () {
-        return updateMarker( $('[data-latitude]').val(), $('[data-longitude]').val());
+        return updateMarker($('[data-latitude]').val(), $('[data-longitude]').val());
     }
-   $('[data-latitude]').on('input', updateMarkerByInputs);
+    $('[data-latitude]').on('input', updateMarkerByInputs);
     $('[data-longitude]').on('input', updateMarkerByInputs);
 }
 
