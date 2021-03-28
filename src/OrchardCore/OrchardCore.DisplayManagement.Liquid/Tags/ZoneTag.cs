@@ -4,7 +4,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
@@ -34,32 +33,21 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            HtmlString content;
-            using (var sb = StringBuilderPool.GetInstance())
+            if (statements != null && statements.Count > 0)
             {
-                using (var output = new StringWriter(sb.Builder))
+                var content = new ViewBufferTextWriterContent();
+
+                var completion = await statements.RenderStatementsAsync(content, encoder, context);
+
+                if (completion != Completion.Normal)
                 {
-                    if (statements != null && statements.Count > 0)
-                    {
-                        var completion = await statements.RenderStatementsAsync(output, encoder, context);
-
-                        if (completion != Completion.Normal)
-                        {
-                            return completion;
-                        }
-                    }
-
-                    await output.FlushAsync();
+                    return completion;
                 }
 
-                content = new HtmlString(sb.Builder.ToString());
-            }
-
-            if (content != null)
-            {
                 var layout = await layoutAccessor.GetLayoutAsync();
 
                 var zone = layout.Zones[name];
+
                 if (zone is Shape shape)
                 {
                     await shape.AddAsync(content, position);
