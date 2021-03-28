@@ -46,6 +46,9 @@ namespace OrchardCore.DisplayManagement.Liquid
                     {
                         pooledBuilder.Dispose();
                     }
+
+                    _previousPooledBuilders.Clear();
+                    _previousPooledBuilders = null;
                 }
             }
         }
@@ -63,6 +66,11 @@ namespace OrchardCore.DisplayManagement.Liquid
         // Invoked when used as TextWriter to intercept what is supposed to be written
         public override void Write(string value)
         {
+            if (value == null || value.Length == 0)
+            {
+                return;
+            }
+
             if (_builder.Length + value.Length <= _builder.Capacity)
             {
                 _builder.Append(value);
@@ -98,6 +106,11 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(char[] buffer)
         {
+            if (buffer == null || buffer.Length == 0)
+            {
+                return;
+            }
+
             if (_builder.Length + buffer.Length <= _builder.Capacity)
             {
                 _builder.Append(buffer);
@@ -123,7 +136,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(char[] buffer, int offset, int count)
         {
-            if (count == 0)
+            if (buffer == null || buffer.Length == 0 || count == 0)
             {
                 return;
             }
@@ -153,6 +166,11 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(ReadOnlySpan<char> buffer)
         {
+            if (buffer.Length == 0)
+            {
+                return;
+            }
+
             if (_builder.Length + buffer.Length <= _builder.Capacity)
             {
                 _builder.Append(buffer);
