@@ -295,7 +295,7 @@ namespace OrchardCore.Lucene
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(strategy.FieldName, "NULL", store));
                         }
                         break;
                 }
