@@ -8,7 +8,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Azure Storage Blobs for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.2.0/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage | 1.2.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Castle.Core](https://github.com/castleproject/Core) | Castle DynamicProxy. | 4.4.1 |[Apache-2.0](https://github.com/castleproject/Core/blob/master/LICENSE) |
 | [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 4.8.0-beta00013 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
-| [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 2.4.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
+| [GraphQL](https://github.com/graphql-dotnet/graphql-dotnet) | GraphQL. | 2.4.0 | [MIT]https://github.com/graphql-dotnet/graphql-dotnet/blob/master/LICENSE.md) |
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 5.0.376 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 1.0.2 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
@@ -55,11 +55,11 @@ The below table lists the different Client side libraries:
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.13 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
-| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.3.2 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
+| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.4.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp-cli) | Command Line Interface for gulp. | 2.3.0 | [MIT](https://github.com/gulpjs/gulp-cli/blob/master/LICENSE) |
 | [jsPlumb](https://github.com/jsplumb/jsplumb) | Visual connectivity for webapps. | 2.15.5 | [MIT and GPLv2](https://github.com/jsplumb/jsplumb/blob/master/jsPlumb-LICENSE.txt) |
-| [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
+| [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0.2 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
 | [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.2.3 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.11.0 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
 | [WebPack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.10.1 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
