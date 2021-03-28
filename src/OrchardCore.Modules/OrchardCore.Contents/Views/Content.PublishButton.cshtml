@@ -18,3 +18,26 @@ else
         </div>
     </div>
 }
+
+<script at="Foot">
+    $(function () {
+        const altKeyCode = 18;
+        const sKeyCode = 83;
+        const cKeyCode = 67;
+        var keysMap = {};
+
+        $(document).keydown(function (e) {
+            keysMap[e.keyCode] = true;
+
+            if (keysMap[altKeyCode] && keysMap[sKeyCode] && keysMap[cKeyCode]) {
+                $(":button[value='submit.PublishAndContinue']").click();
+            }
+            else if (keysMap[altKeyCode] && keysMap[sKeyCode]) {
+                $(":button[value='submit.Publish']").click();
+            }
+
+        }).keyup(function (e) {
+            keysMap[e.keyCode] = false;
+        })
+    });
+</script>
