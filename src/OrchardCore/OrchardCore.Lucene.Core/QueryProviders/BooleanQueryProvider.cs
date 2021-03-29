@@ -80,8 +80,7 @@ namespace OrchardCore.Lucene.QueryProviders
             return boolQuery;
         }
 
-        private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query,
-            JObject queryObj)
+        private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JObject queryObj)
         {
             var first = queryObj.Properties().First();
 
