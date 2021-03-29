@@ -337,9 +337,7 @@ namespace OrchardCore.Shortcodes.Controllers
         private static bool IsValidShortcodeName(string name)
         {
             var scanner = new Scanner(name);
-            var result = new TokenResult();
-            scanner.ReadIdentifier(result);
-            return result.Success && name.Length == result.Length;
+            return scanner.ReadIdentifier(out var result) && name.Length == result.Length;
         }
     }
 }
