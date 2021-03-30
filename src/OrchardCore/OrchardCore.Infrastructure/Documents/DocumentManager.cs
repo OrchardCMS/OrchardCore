@@ -159,7 +159,8 @@ namespace OrchardCore.Documents
             else
             {
                 // Otherwise, always get the id from the in memory distributed cache.
-                id = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+                id = _memoryCache.Get<string>(_options.CacheIdKey);
+                //id = await _distributedCache.GetStringAsync(_options.CacheIdKey);
             }
 
             if (id == null)
@@ -209,7 +210,7 @@ namespace OrchardCore.Documents
                 SlidingExpiration = _options.SlidingExpiration
             });
 
-            if (_isDistributed)
+            //if (_isDistributed)
             {
                 // Remove the id from the one second cache.
                 _memoryCache.Remove(_options.CacheIdKey);
@@ -242,7 +243,14 @@ namespace OrchardCore.Documents
 
                 if (stored.Identifier != document.Identifier)
                 {
-                    await _distributedCache.RemoveAsync(_options.CacheIdKey);
+                    if (_isDistributed)
+                    {
+                        await _distributedCache.RemoveAsync(_options.CacheIdKey);
+                    }
+                    else
+                    {
+                        _memoryCache.Remove(_options.CacheIdKey);
+                    }
                 }
             }
         }
@@ -274,9 +282,12 @@ namespace OrchardCore.Documents
             {
                 var data = await _options.Serializer.SerializeAsync(document, _options.CompressThreshold);
                 await _distributedCache.SetAsync(_options.CacheKey, data, _options);
+                await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options);
             }
-
-            await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options);
+            else
+            {
+                _memoryCache.Set(_options.CacheIdKey, document.Identifier ?? "NULL");
+            }
         }
     }
 }
