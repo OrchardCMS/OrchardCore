@@ -89,10 +89,9 @@ namespace OrchardCore.DynamicCache.EventHandlers
                 using var sb = StringBuilderPool.GetInstance();
                 using var sw = new StringWriter(sb.Builder);
 
-                context.ChildContent.WriteTo(sw, _htmlEncoder);
-
                 // 'ChildContent' may be a 'ViewBufferTextWriterContent' on which we can't
                 // call 'WriteTo()' twice, so here we update it with a new 'HtmlString()'.
+                context.ChildContent.WriteTo(sw, _htmlEncoder);
                 var contentHtmlString = new HtmlString(sw.ToString());
                 context.ChildContent = contentHtmlString;
 
