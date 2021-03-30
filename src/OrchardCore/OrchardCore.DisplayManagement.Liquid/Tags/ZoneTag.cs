@@ -7,7 +7,6 @@ using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -34,11 +33,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            ViewBufferTextWriterContent content = null;
-
             if (statements != null && statements.Count > 0)
             {
-                content = new ViewBufferTextWriterContent();
+                var content = new ViewBufferTextWriterContent();
 
                 var completion = await statements.RenderStatementsAsync(content, encoder, context);
 
@@ -46,15 +43,15 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 {
                     return completion;
                 }
-            }
 
-            var layout = await layoutAccessor.GetLayoutAsync();
+                var layout = await layoutAccessor.GetLayoutAsync();
 
-            var zone = layout.Zones[name];
+                var zone = layout.Zones[name];
 
-            if (zone is Shape shape)
-            {
-                await shape.AddAsync(content, position);
+                if (zone is Shape shape)
+                {
+                    await shape.AddAsync(content, position);
+                }
             }
 
             return Completion.Normal;
