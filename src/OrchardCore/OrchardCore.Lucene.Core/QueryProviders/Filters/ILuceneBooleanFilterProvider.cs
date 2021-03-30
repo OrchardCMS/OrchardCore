@@ -5,6 +5,6 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 {
     public interface ILuceneBooleanFilterProvider
     {
-        FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject queryObj, Query toFilter);
+        FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JToken token, Query toFilter);
     }
 }

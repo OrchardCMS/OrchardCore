@@ -8,7 +8,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 {
     public class TermFilterProvider : ILuceneBooleanFilterProvider
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject queryObj, Query toFilter)
+        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JToken filter, Query toFilter)
         {
             if (type != "term")
             {
@@ -20,6 +20,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
                 return null;
             }
 
+            var queryObj = filter as JObject;
             var first = queryObj.Properties().First();
 
             // A term query has only one member, which can either be a string or an object

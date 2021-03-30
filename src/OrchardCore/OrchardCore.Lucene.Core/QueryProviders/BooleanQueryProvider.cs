@@ -51,7 +51,7 @@ namespace OrchardCore.Lucene.QueryProviders
                         isProps = true;
                         break;
                     case "filter":
-                        return CreateFilteredQuery(builder, context, boolQuery, property.Value as JObject);
+                        return CreateFilteredQuery(builder, context, boolQuery, property.Value);
                     default: throw new ArgumentException($"Invalid property '{property.Name}' in boolean query");
                 }
 
@@ -80,20 +80,43 @@ namespace OrchardCore.Lucene.QueryProviders
             return boolQuery;
         }
 
-        private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JObject queryObj)
+        private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JToken filter)
         {
-            var first = queryObj.Properties().First();
-
             Query filteredQuery = null;
+            var queryObj = filter as JObject;
 
-            foreach (var queryProvider in _filters)
+            switch (filter.Type)
             {
-                filteredQuery = queryProvider.CreateFilteredQuery(builder, context, first.Name, (JObject)first.Value, query);
+                case JTokenType.Object:
+                    var first = queryObj.Properties().First();
 
-                if (filteredQuery != null)
-                {
+                    foreach (var queryProvider in _filters)
+                    {
+                        filteredQuery = queryProvider.CreateFilteredQuery(builder, context, first.Name, first.Value, query);
+
+                        if (filteredQuery != null)
+                        {
+                            break;
+                        }
+                    }
                     break;
-                }
+                case JTokenType.Array:
+                    foreach (var item in ((JArray)filter))
+                    {
+                        var firstQuery = item.First() as JProperty;
+
+                        foreach (var queryProvider in _filters)
+                        {
+                            filteredQuery = queryProvider.CreateFilteredQuery(builder, context, firstQuery.Name, firstQuery.Value, query);
+
+                            if (filteredQuery != null)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                default: throw new ArgumentException($"Invalid value in boolean query");
             }
 
             return filteredQuery;

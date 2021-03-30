@@ -12,8 +12,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 {
     public class GeoBoundingBoxFilterProvider : ILuceneBooleanFilterProvider
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type,
-            JObject queryObj, Query toFilter)
+        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JToken filter, Query toFilter)
         {
             if (type != "geo_bounding_box")
             {
@@ -25,6 +24,9 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
                 return null;
             }
 
+            var queryObj = filter as JObject;
+            var first = queryObj.Properties().First();
+
             var ctx = SpatialContext.GEO;
 
             var maxLevels = 11; //results in sub-meter precision for geohash
@@ -32,7 +34,6 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             //  This can also be constructed from SpatialPrefixTreeFactory
             SpatialPrefixTree grid = new GeohashPrefixTree(ctx, maxLevels);
 
-            var first = queryObj.Properties().First();
             var geoPropertyName = first.Name;
             var strategy = new RecursivePrefixTreeStrategy(grid, geoPropertyName);
 

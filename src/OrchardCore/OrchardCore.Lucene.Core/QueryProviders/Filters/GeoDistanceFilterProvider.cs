@@ -18,8 +18,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 {
     public class GeoDistanceFilterProvider : ILuceneBooleanFilterProvider
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type,
-            JObject queryObj, Query toFilter)
+        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JToken filter, Query toFilter)
         {
             if (type != "geo_distance")
             {
@@ -30,6 +29,8 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
             {
                 return null;
             }
+
+            var queryObj = filter as JObject;
 
             if (queryObj.Properties().Count() != 2)
             {
