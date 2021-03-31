@@ -75,8 +75,7 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Name = "isBoolean",
                 Method = serviceProvider => (Func<string, bool>)((str) =>
                 {
-                    bool flag;
-                    return Boolean.TryParse(str, out flag);
+                    return Boolean.TryParse(str, out var flag);
                 })
             };
             _isByteLength = new GlobalMethod
@@ -209,9 +208,9 @@ namespace OrchardCore.Forms.Entities.Scripting
         {
             return new[]
             {
-                _contains,_equals,_isAfter,_isBefore,_isBoolean,_isByteLength,
-                _isDate,_isDecimal,_isDivisibleBy,_isEmpty,_isFloat,
-                _isInt,_isJSON,_isLength,_isNumeric,_matches
+                _contains, _equals, _isAfter, _isBefore, _isBoolean, _isByteLength,
+                _isDate, _isDecimal, _isDivisibleBy, _isEmpty, _isFloat,
+                _isInt, _isJSON, _isLength, _isNumeric, _matches
             };
         }
 

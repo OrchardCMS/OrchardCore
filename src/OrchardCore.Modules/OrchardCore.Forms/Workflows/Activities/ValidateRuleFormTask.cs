@@ -78,9 +78,9 @@ namespace OrchardCore.Forms.Workflows.Activities
             {
                 foreach (var item in rules)
                 {
-                    string type = item.type.ToString();
-                    string option = item.option.ToString();
-                    if (option.Contains("\\"))
+                    var type = item.type.ToString();
+                    var option = item.option.ToString();
+                    if (option.Contains("\\", StringComparison.Ordinal))
                     {
                         option = option.Replace("\\", "|-BackslashPlaceholder-|");
                     }

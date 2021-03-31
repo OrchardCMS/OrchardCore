@@ -61,6 +61,7 @@ namespace OrchardCore.Forms
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("InputPart")
+                .WithPart("ValidationRulePart")
                 .Stereotype("Widget"));
 
             // TextArea
@@ -71,6 +72,7 @@ namespace OrchardCore.Forms
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("TextAreaPart")
+                .WithPart("ValidationRulePart")
                 .Stereotype("Widget"));
 
             // Select
@@ -143,11 +145,10 @@ namespace OrchardCore.Forms
         }
         public int UpdateFrom3()
         {
-            //ValidationRule
+            // ValidationRule
             _contentDefinitionManager.AlterPartDefinition("ValidationRulePart", part => part
                 .WithDescription("Provides the ability to use and configure validation rules for form fields.")
             );
-
 
             _contentDefinitionManager.AlterTypeDefinition("Input", type => type
                 .WithPart("ValidationRulePart", part => part

@@ -22,15 +22,17 @@
 </form>
 
 <script at="Foot">
-    $(function () {
-        var formId = '#'+ '@formId'
-        $(formId).on('click', function () {
-            $("<input />")
-                .attr("type", "hidden")
-                .attr("name", "validationRules")  
-                .attr("value", JSON.stringify(window.validatorObject))
-                .appendTo(formId);
-            return true;
+    (function ($) {
+        $(function () {
+            var formId = '#'+ '@formId'
+            $(formId).on('click', function () {
+                $('<input />')
+                    .attr('type', 'hidden')
+                    .attr('name', 'validationRules')  
+                    .attr('value', JSON.stringify(window.validatorObject))
+                    .appendTo(formId);
+                return true;
+            });
         });
-    });
+    })(jQuery);
 </script>
