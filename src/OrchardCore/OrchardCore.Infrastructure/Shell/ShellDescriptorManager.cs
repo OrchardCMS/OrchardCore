@@ -108,7 +108,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             }
 
             shellDescriptorRecord.Features = _alwaysEnabledFeatures.Concat(enabledFeatures).Distinct().ToList();
-            shellDescriptorRecord.Installed = _alwaysEnabledFeatures.Concat(installedFeatures).Distinct().ToList();
+            shellDescriptorRecord.Installed = shellDescriptorRecord.Features.Concat(installedFeatures).Distinct().ToList();
 
             if (_logger.IsEnabled(LogLevel.Information))
             {

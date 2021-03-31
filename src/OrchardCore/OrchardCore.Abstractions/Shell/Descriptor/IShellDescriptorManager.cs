@@ -21,6 +21,8 @@ namespace OrchardCore.Environment.Shell.Descriptor
         /// Prior SerialNumber used for optimistic concurrency, and an exception
         /// should be thrown if the number in storage doesn't match what's provided.
         /// </summary>
-        Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellFeature> installedFeatures);
+        Task UpdateShellDescriptorAsync(int priorSerialNumber,
+            IEnumerable<ShellFeature> enabledFeatures,
+            IEnumerable<ShellFeature> installedFeatures);
     }
 }
