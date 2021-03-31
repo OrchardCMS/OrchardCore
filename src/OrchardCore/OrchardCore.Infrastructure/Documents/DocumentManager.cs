@@ -158,9 +158,8 @@ namespace OrchardCore.Documents
             }
             else
             {
-                // Otherwise, always get the id from the in memory distributed cache.
+                // Otherwise, always get the id from the in memory cache.
                 id = _memoryCache.Get<string>(_options.CacheIdKey);
-                //id = await _distributedCache.GetStringAsync(_options.CacheIdKey);
             }
 
             if (id == null)
@@ -210,11 +209,8 @@ namespace OrchardCore.Documents
                 SlidingExpiration = _options.SlidingExpiration
             });
 
-            //if (_isDistributed)
-            {
-                // Remove the id from the one second cache.
-                _memoryCache.Remove(_options.CacheIdKey);
-            }
+            // Remove the id from the one second cache.
+            _memoryCache.Remove(_options.CacheIdKey);
 
             return document;
         }
