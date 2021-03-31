@@ -81,7 +81,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             return _shellDescriptor;
         }
 
-        public async Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellParameter> parameters)
+        public async Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellFeature> installedFeatures)
         {
             var shellDescriptorRecord = await GetShellDescriptorAsync();
             var serialNumber = shellDescriptorRecord == null
@@ -108,7 +108,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             }
 
             shellDescriptorRecord.Features = _alwaysEnabledFeatures.Concat(enabledFeatures).Distinct().ToList();
-            shellDescriptorRecord.Parameters = parameters.ToList();
+            shellDescriptorRecord.Installed = _alwaysEnabledFeatures.Concat(installedFeatures).Distinct().ToList();
 
             if (_logger.IsEnabled(LogLevel.Information))
             {

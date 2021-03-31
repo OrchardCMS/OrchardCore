@@ -144,7 +144,7 @@ namespace OrchardCore.Tests.Shell
         public static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
         {
             var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null, false, false);
-            shellBlueprint.Dependencies.Add(startupType, new NonCompiledFeatureEntry(featureInfo));
+            shellBlueprint.Dependencies.Add(startupType, new FeatureEntry(featureInfo, Array.Empty<Type>()));
 
             return featureInfo;
         }

@@ -260,6 +260,7 @@ namespace OrchardCore.Environment.Extensions
                     {
                         return Task.CompletedTask;
                     }
+
                     var manifestInfo = new ManifestInfo(module.ModuleInfo);
 
                     var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) =>
@@ -317,7 +318,7 @@ namespace OrchardCore.Environment.Extensions
                             featureTypes = Array.Empty<Type>();
                         }
 
-                        loadedFeatures.Add(feature.Id, new CompiledFeatureEntry(feature, featureTypes));
+                        loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));
                     }
                 };
 

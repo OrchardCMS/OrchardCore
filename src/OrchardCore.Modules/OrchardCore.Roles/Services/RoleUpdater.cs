@@ -31,13 +31,21 @@ namespace OrchardCore.Roles.Services
             _logger = logger;
         }
 
+        Task IFeatureEventHandler.InstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
+
+        Task IFeatureEventHandler.InstalledAsync(IFeatureInfo feature) => AddDefaultRolesForFeatureAsync(feature);
+
         Task IFeatureEventHandler.EnablingAsync(IFeatureInfo feature) => Task.CompletedTask;
 
-        Task IFeatureEventHandler.EnabledAsync(IFeatureInfo feature) => AddDefaultRolesForFeatureAsync(feature);
+        Task IFeatureEventHandler.EnabledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
         Task IFeatureEventHandler.DisablingAsync(IFeatureInfo feature) => Task.CompletedTask;
 
         Task IFeatureEventHandler.DisabledAsync(IFeatureInfo feature) => Task.CompletedTask;
+
+        Task IFeatureEventHandler.UninstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
+
+        Task IFeatureEventHandler.UninstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
 
         public async Task AddDefaultRolesForFeatureAsync(IFeatureInfo feature)
         {

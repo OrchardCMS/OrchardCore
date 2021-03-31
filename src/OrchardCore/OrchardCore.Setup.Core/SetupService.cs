@@ -202,7 +202,7 @@ namespace OrchardCore.Setup.Services
                         .GetService<IShellDescriptorManager>()
                         .UpdateShellDescriptorAsync(0,
                             shellContext.Blueprint.Descriptor.Features,
-                            shellContext.Blueprint.Descriptor.Parameters);
+                            Array.Empty<ShellFeature>());
                 });
 
                 if (context.Errors.Any())

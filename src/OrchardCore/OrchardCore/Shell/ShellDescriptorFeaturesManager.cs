@@ -34,11 +34,13 @@ namespace OrchardCore.Environment.Shell
         public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(ShellDescriptor shellDescriptor,
             IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
         {
+            var allOrderedFeatures = _extensionManager.GetFeatures();
+
+            var enabledFeatures = allOrderedFeatures
+                .Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id))
+                .ToList();
+
             var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
-
-            var enabledFeatures = _extensionManager.GetFeatures().Where(f =>
-                shellDescriptor.Features.Any(sf => sf.Id == f.Id)).ToList();
-
             var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
 
             var allFeaturesToDisable = featuresToDisable
@@ -73,32 +75,55 @@ namespace OrchardCore.Environment.Shell
                 }
             }
 
+            var installedFeatureIds = shellDescriptor.Installed.Select(sf => sf.Id).ToArray();
+
+            var allFeaturesToInstall = allFeaturesToEnable
+                .Where(f => !installedFeatureIds.Contains(f.Id))
+                .ToList();
+
             if (allFeaturesToEnable.Count > 0)
             {
                 enabledFeatures = enabledFeatures.Concat(allFeaturesToEnable).Distinct().ToList();
+
+                installedFeatureIds = installedFeatureIds
+                    .Concat(allFeaturesToInstall.Select(f => f.Id))
+                    .ToArray();
             }
 
             if (allFeaturesToDisable.Count > 0 || allFeaturesToEnable.Count > 0)
             {
+                var enabledShellFeatures = enabledFeatures.Select(f => new ShellFeature(f.Id)).ToList();
+
+                var installedShellFeatures = allOrderedFeatures
+                    .Where(f => !installedFeatureIds.Contains(f.Id))
+                    .Select(x => new ShellFeature(x.Id))
+                    .ToList();
+
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
-                    enabledFeatures.Select(x => new ShellFeature(x.Id)).ToList(),
-                    shellDescriptor.Parameters);
+                    enabledShellFeatures,
+                    installedShellFeatures);
 
                 ShellScope.AddDeferredTask(async scope =>
                 {
                     var featureEventHandlers = scope.ServiceProvider.GetServices<IFeatureEventHandler>();
 
-                    foreach (var feature in allFeaturesToDisable)
+                    foreach (var feature in allFeaturesToInstall)
                     {
-                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
-                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), feature, _logger);
+                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstallingAsync(featureInfo), feature, _logger);
+                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstalledAsync(featureInfo), feature, _logger);
                     }
 
                     foreach (var feature in allFeaturesToEnable)
                     {
                         await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger);
                         await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnabledAsync(featureInfo), feature, _logger);
+                    }
+
+                    foreach (var feature in allFeaturesToDisable)
+                    {
+                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
+                        await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), feature, _logger);
                     }
                 });
             }

@@ -9,19 +9,15 @@ namespace OrchardCore.Environment.Extensions
     {
         public NotFoundExtensionInfo(string extensionId)
         {
-            Features = Enumerable.Empty<IFeatureInfo>();
             Id = extensionId;
             Manifest = new NotFoundManifestInfo();
+            Features = Enumerable.Empty<IFeatureInfo>();
         }
 
-        public bool Exists => false;
-
-        public IEnumerable<IFeatureInfo> Features { get; }
-
         public string Id { get; }
-
-        public IManifestInfo Manifest { get; }
-
         public string SubPath => Id;
+        public IManifestInfo Manifest { get; }
+        public IEnumerable<IFeatureInfo> Features { get; }
+        public bool Exists => false;
     }
 }
