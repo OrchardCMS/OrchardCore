@@ -34,17 +34,18 @@ namespace OrchardCore.Environment.Shell
         public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(ShellDescriptor shellDescriptor,
             IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
         {
-            var enabledFeatures = _extensionManager.GetFeatures()
-                .Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id))
-                .ToList();
+            var featureEventHandlers = ShellScope.Services.GetServices<IFeatureEventHandler>();
 
-            var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
-            var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
+            var enabledFeatureIds = _extensionManager.GetFeatures()
+                .Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id))
+                .Select(f => f.Id)
+                .ToHashSet();
 
             var installedFeatureIds = enabledFeatureIds
                 .Concat(shellDescriptor.Installed.Select(sf => sf.Id))
-                .Distinct()
-                .ToArray();
+                .ToHashSet();
+
+            var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
 
             var allFeaturesToDisable = featuresToDisable
                 .Where(f => !alwaysEnabledIds.Contains(f.Id))
@@ -55,64 +56,56 @@ namespace OrchardCore.Environment.Shell
 
             foreach (var feature in allFeaturesToDisable)
             {
-                enabledFeatures.Remove(feature);
+                enabledFeatureIds.Remove(feature.Id);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Feature '{FeatureName}' was disabled", feature.Id);
+                    _logger.LogInformation("Disabling feature '{FeatureName}'", feature.Id);
                 }
-            }
 
-            enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
+                await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
+            }
 
             var allFeaturesToEnable = featuresToEnable
                 .SelectMany(feature => GetFeaturesToEnable(feature, enabledFeatureIds, force))
                 .Distinct()
                 .ToList();
 
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                foreach (var feature in allFeaturesToEnable)
-                {
-                    _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
-                }
-            }
-
             var allFeaturesToInstall = allFeaturesToEnable
                 .Where(f => !installedFeatureIds.Contains(f.Id))
                 .ToList();
 
+            foreach (var feature in allFeaturesToInstall)
+            {
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Installing feature '{FeatureName}'", feature.Id);
+                }
+
+                await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstallingAsync(featureInfo), feature, _logger);
+            }
+
+            foreach (var feature in allFeaturesToEnable)
+            {
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
+                }
+
+                await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger);
+            }
+
             if (allFeaturesToEnable.Count > 0)
             {
-                enabledFeatures = enabledFeatures.Concat(allFeaturesToEnable).Distinct().ToList();
-
-                installedFeatureIds = installedFeatureIds
-                    .Concat(allFeaturesToInstall.Select(f => f.Id))
-                    .ToArray();
+                enabledFeatureIds.UnionWith(allFeaturesToEnable.Select(f => f.Id));
+                installedFeatureIds.UnionWith(allFeaturesToInstall.Select(f => f.Id));
             }
 
             if (allFeaturesToDisable.Count > 0 || allFeaturesToEnable.Count > 0)
             {
-                var featureEventHandlers = ShellScope.Services.GetServices<IFeatureEventHandler>();
-
-                foreach (var feature in allFeaturesToInstall)
-                {
-                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstallingAsync(featureInfo), feature, _logger);
-                }
-
-                foreach (var feature in allFeaturesToEnable)
-                {
-                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger);
-                }
-
-                foreach (var feature in allFeaturesToDisable)
-                {
-                    await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisablingAsync(featureInfo), feature, _logger);
-                }
-
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
-                    enabledFeatures.Select(f => new ShellFeature(f.Id)).ToArray(),
+                    enabledFeatureIds.Select(id => new ShellFeature(id)).ToArray(),
                     installedFeatureIds.Select(id => new ShellFeature(id)).ToArray());
 
                 var logger = _logger;
@@ -123,16 +116,31 @@ namespace OrchardCore.Environment.Shell
 
                     foreach (var feature in allFeaturesToInstall)
                     {
+                        if (logger.IsEnabled(LogLevel.Information))
+                        {
+                            logger.LogInformation("Feature '{FeatureName}' was installed", feature.Id);
+                        }
+
                         await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstalledAsync(featureInfo), feature, logger);
                     }
 
                     foreach (var feature in allFeaturesToEnable)
                     {
+                        if (logger.IsEnabled(LogLevel.Information))
+                        {
+                            logger.LogInformation("Feature '{FeatureName}' was enabled", feature.Id);
+                        }
+
                         await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnabledAsync(featureInfo), feature, logger);
                     }
 
                     foreach (var feature in allFeaturesToDisable)
                     {
+                        if (logger.IsEnabled(LogLevel.Information))
+                        {
+                            logger.LogInformation("Feature '{FeatureName}' was disabled", feature.Id);
+                        }
+
                         await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.DisabledAsync(featureInfo), feature, logger);
                     }
                 });
