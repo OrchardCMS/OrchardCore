@@ -25,6 +25,9 @@ namespace OrchardCore.Spatial.Indexing
                 context.DocumentIndex.Set(key, value, options);
             }
 
+            // Also index as "Location" to be able to search on multiple Content Types
+            context.DocumentIndex.Set("Location", value, DocumentIndexOptions.Store);
+
             return Task.CompletedTask;
         }
     }
