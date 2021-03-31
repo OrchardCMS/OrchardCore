@@ -207,14 +207,14 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     foreach (var chunk in pooledBuilder.Builder.GetChunks())
                     {
-                        writer.Write(chunk);
+                        writer.Write(chunk.Span);
                     }
                 }
             }
 
             foreach (var chunk in _builder.GetChunks())
             {
-                writer.Write(chunk);
+                writer.Write(chunk.Span);
             }
 
             ReleasePooledBuffer();
