@@ -12,7 +12,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 5.0.376 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 1.0.2 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
-| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-1914 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
+| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2031 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
 | [Lucene.Net](https://github.com/apache/lucenenet) | .NET full-text search engine. | 4.8.0-beta00014 | [Apache-2.0](https://github.com/apache/lucenenet/blob/master/LICENSE.txt) |
 | [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 2.11.1 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [Markdig](https://github.com/lunet-io/markdig) | .NET Liquid template engine. | 0.24.0 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
