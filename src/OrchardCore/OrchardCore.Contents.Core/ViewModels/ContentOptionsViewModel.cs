@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.ContentManagement;
+using OrchardCore.Data.QueryParser;
 
 namespace OrchardCore.Contents.ViewModels
 {
@@ -16,6 +19,9 @@ namespace OrchardCore.Contents.ViewModels
 
         public string DisplayText { get; set; }
 
+        public string SearchText { get; set; }
+        public string OriginalSearchText { get; set; }        
+
         public string SelectedContentType { get; set; }
 
         public bool CanCreateSelectedContentType { get; set; }
@@ -25,6 +31,9 @@ namespace OrchardCore.Contents.ViewModels
         public ContentsStatus ContentsStatus { get; set; }
 
         public ContentsBulkAction BulkAction { get; set; }
+
+        [ModelBinder(BinderType = typeof(TermModelBinder<ContentItem>), Name = "SearchText")]
+        public TermList<ContentItem> TermList { get; set; }        
 
         #region Values to populate
 

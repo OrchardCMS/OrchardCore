@@ -25,14 +25,17 @@ namespace OrchardCore.Contents.Services
             _logger = logger;
         }
 
-        public async Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        public Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
             // Because admin filters can add a different index to the query this must be added as a Query<ContentItem>()
             var query = _session.Query<ContentItem>();
 
-            await _contentsAdminListFilters.InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
 
-            return query;
+            model.TermList.Build(query);
+
+            // await _contentsAdminListFilters.InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
+
+            return Task.FromResult<IQuery<ContentItem>>(query);
         }
     }
 }

@@ -19,6 +19,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
+using OrchardCore.Data.QueryParser;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -86,7 +87,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeId = "")
+        public async Task<IActionResult> List([ModelBinder(BinderType = typeof(TermModelBinder<ContentItem>), Name = "q")] TermList<ContentItem> termList, PagerParameters pagerParameters, string contentTypeId = "")
         {
             var context = _httpContextAccessor.HttpContext;
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions()
@@ -101,16 +102,18 @@ namespace OrchardCore.Contents.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
+            var options = new ContentOptionsViewModel();
+
             // This is used by the AdminMenus so needs to be passed into the options.
             if (!String.IsNullOrEmpty(contentTypeId))
             {
-                model.Options.SelectedContentType = contentTypeId;
+                options.SelectedContentType = contentTypeId;
             }
 
             // Populate the creatable types.
-            if (!String.IsNullOrEmpty(model.Options.SelectedContentType))
+            if (!String.IsNullOrEmpty(options.SelectedContentType))
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(options.SelectedContentType);
                 if (contentTypeDefinition == null)
                 {
                     return NotFound();
@@ -119,15 +122,15 @@ namespace OrchardCore.Contents.Controllers
                 var creatableList = new List<SelectListItem>();
 
                 // Allows non creatable types to be created by another admin page.
-                if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Creatable || model.Options.CanCreateSelectedContentType)
+                if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Creatable || options.CanCreateSelectedContentType)
                 {
                     creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
                 }
 
-                model.Options.CreatableTypes = creatableList;
+                options.CreatableTypes = creatableList;
             }
 
-            if (model.Options.CreatableTypes == null)
+            if (options.CreatableTypes == null)
             {
                 var creatableList = new List<SelectListItem>();
                 if (contentTypeDefinitions.Any())
@@ -144,39 +147,57 @@ namespace OrchardCore.Contents.Controllers
                     }
                 }
 
-                model.Options.CreatableTypes = creatableList;
+                options.CreatableTypes = creatableList;
+            }
+
+            var statusTerm = termList.Terms.FirstOrDefault(x => x.TermName == "status");
+            if (statusTerm != null)
+            {
+                if (Enum.TryParse<ContentsStatus>(statusTerm.Operation.ToString(), true, out var e))
+                {
+                    options.ContentsStatus = e;
+                }
             }
 
             // We populate the remaining SelectLists.
-            model.Options.ContentStatuses = new List<SelectListItem>()
+            options.ContentStatuses = new List<SelectListItem>()
             {
-                new SelectListItem() { Text = S["Latest"], Value = nameof(ContentsStatus.Latest) },
-                new SelectListItem() { Text = S["Published"], Value = nameof(ContentsStatus.Published) },
-                new SelectListItem() { Text = S["Unpublished"], Value = nameof(ContentsStatus.Draft) },
-                new SelectListItem() { Text = S["All versions"], Value = nameof(ContentsStatus.AllVersions) }
+                new SelectListItem() { Text = S["Latest"], Value = nameof(ContentsStatus.Latest), Selected = (options.ContentsStatus == ContentsStatus.Latest) },
+                new SelectListItem() { Text = S["Published"], Value = nameof(ContentsStatus.Published), Selected = (options.ContentsStatus == ContentsStatus.Published) },
+                new SelectListItem() { Text = S["Unpublished"], Value = nameof(ContentsStatus.Draft), Selected = (options.ContentsStatus == ContentsStatus.Draft) },
+                new SelectListItem() { Text = S["All versions"], Value = nameof(ContentsStatus.AllVersions), Selected = (options.ContentsStatus == ContentsStatus.AllVersions) }
             };
 
             if (await _authorizationService.AuthorizeAsync(context.User, Permissions.ListContent))
             {
-                model.Options.ContentStatuses.Insert(1, new SelectListItem() { Text = S["Owned by me"], Value = nameof(ContentsStatus.Owner) });
+                options.ContentStatuses.Insert(1, new SelectListItem() { Text = S["Owned by me"], Value = nameof(ContentsStatus.Owner) });
             }
 
-            model.Options.ContentSorts = new List<SelectListItem>()
+            var sortTerm = termList.Terms.FirstOrDefault(x => x.TermName == "status");
+            if (sortTerm != null)
             {
-                new SelectListItem() { Text = S["Recently created"], Value = nameof(ContentsOrder.Created) },
-                new SelectListItem() { Text = S["Recently modified"], Value = nameof(ContentsOrder.Modified) },
-                new SelectListItem() { Text = S["Recently published"], Value = nameof(ContentsOrder.Published) },
-                new SelectListItem() { Text = S["Title"], Value = nameof(ContentsOrder.Title) }
+                if (Enum.TryParse<ContentsOrder>(sortTerm.Operation.ToString(), true, out var e))
+                {
+                    options.OrderBy = e;
+                }
+            }
+
+            options.ContentSorts = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["Recently created"], Value = nameof(ContentsOrder.Created), Selected = (options.OrderBy == ContentsOrder.Created) },
+                new SelectListItem() { Text = S["Recently modified"], Value = nameof(ContentsOrder.Modified), Selected = (options.OrderBy == ContentsOrder.Modified) },
+                new SelectListItem() { Text = S["Recently published"], Value = nameof(ContentsOrder.Published), Selected = (options.OrderBy == ContentsOrder.Published) },
+                new SelectListItem() { Text = S["Title"], Value = nameof(ContentsOrder.Title), Selected = (options.OrderBy == ContentsOrder.Title) },
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            options.ContentsBulkAction = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["Publish Now"], Value = nameof(ContentsBulkAction.PublishNow) },
                 new SelectListItem() { Text = S["Unpublish"], Value = nameof(ContentsBulkAction.Unpublish) },
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            if ((String.IsNullOrEmpty(model.Options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)) && model.Options.ContentTypeOptions == null)
+            if ((String.IsNullOrEmpty(options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)) && options.ContentTypeOptions == null)
             {
                 var listableTypes = new List<ContentTypeDefinition>();
                 foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
@@ -198,25 +219,31 @@ namespace OrchardCore.Contents.Controllers
                     .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
                     .ToList().OrderBy(kvp => kvp.Value);
 
-                model.Options.ContentTypeOptions = new List<SelectListItem>
+                options.ContentTypeOptions = new List<SelectListItem>
                 {
                     new SelectListItem() { Text = S["All content types"], Value = "" }
                 };
 
                 foreach (var option in contentTypeOptions)
                 {
-                    model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key, Selected = (option.Value == model.Options.SelectedContentType) });
+                    options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key, Selected = (option.Value == options.SelectedContentType) });
                 }
             }
 
             // If ContentTypeOptions is not initialized by query string or by the code above, initialize it
-            if (model.Options.ContentTypeOptions == null)
+            if (options.ContentTypeOptions == null)
             {
-                model.Options.ContentTypeOptions = new List<SelectListItem>();
+                options.ContentTypeOptions = new List<SelectListItem>();
             }
 
-            // With the model populated we filter the query, allowing the filters to alter the model.
-            var query = await _contentsAdminListQueryService.QueryAsync(model.Options, _updateModelAccessor.ModelUpdater);
+
+
+            options.TermList = termList;
+            
+
+            // With the options populated we filter the query, allowing the filters to alter the options.
+            var query = await _contentsAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
+
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
@@ -225,12 +252,15 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // Populate route values to maintain previous route data when generating page links.
-            await _contentOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
+            await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
 
-            var routeData = new RouteData(model.Options.RouteValues);
+            var routeData = new RouteData(options.RouteValues);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
+
+            options.SearchText = termList.ToString();
+            options.OriginalSearchText = options.SearchText;
 
             // We prepare the content items SummaryAdmin shape
             var contentItemSummaries = new List<dynamic>();
@@ -241,32 +271,109 @@ namespace OrchardCore.Contents.Controllers
 
             // Populate options pager summary values.
             var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
-            model.Options.StartIndex = startIndex;
-            model.Options.EndIndex = startIndex + contentItemSummaries.Count - 1;
-            model.Options.ContentItemsCount = contentItemSummaries.Count;
-            model.Options.TotalItemCount = pagerShape.TotalItemCount;
+            options.StartIndex = startIndex;
+            options.EndIndex = startIndex + contentItemSummaries.Count - 1;
+            options.ContentItemsCount = contentItemSummaries.Count;
+            options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _contentOptionsDisplayManager.BuildEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
+            var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
 
             var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
             {
                 viewModel.ContentItems = contentItemSummaries;
                 viewModel.Pager = pagerShape;
-                viewModel.Options = model.Options;
+                viewModel.Options = options;
                 viewModel.Header = header;
             });
 
             return View(shapeViewModel);
         }
 
+        // [HttpPost, ActionName("List")]
+        // [FormValueRequired("submit.Filter")]
+        // public async Task<ActionResult> ListFilterPOST(ListContentsViewModel model)
+        // {
+        //     await _contentOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
+
+        //     return RedirectToAction("List", model.Options.RouteValues);
+        // }
+
+
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
-        public async Task<ActionResult> ListFilterPOST(ListContentsViewModel model)
+        public ActionResult ListFilterPOST(ContentOptionsViewModel options)
         {
+            // When the user has typed something into the search input no evaluation is required.
+            // But we might normalize it for them.
+            if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectToAction("List",
+                      new RouteValueDictionary
+                      {
+                        { "q", options.SearchText }
+                      }
+                  );
+            }
 
-            await _contentOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
+            // TODO this needs to move into the driver, so that other modules can also contribute.
 
-            return RedirectToAction("List", model.Options.RouteValues);
+            // Custom struct, and should also be provided on the options.model or
+            // as an accessor / helper method in the TermList. At a pinch it might become a func to map to.
+            // that's trickier as it _fixes_ the desired behaviour more.
+            // Possibly a func, with some standard helpers.
+            // the two possibilities are
+            // - single, i.e. always replaces
+            // - multiple, removes duplicates, but binds to an enumerable
+            //     i.e. for tags we could potentially multi select them.
+            //     but we'd need operators for between terms.
+
+            var searchValues = options.TermList.Terms.Select(x => new { name = x.TermName, value = x.ToString() }).ToList();
+            
+            var existingStatusIndex = searchValues.FindIndex(x => x.name == "status");
+            if (existingStatusIndex != -1)
+            {
+                searchValues.RemoveAt(existingStatusIndex);
+            }
+
+            if (options.ContentsStatus != ContentsStatus.Latest)
+            {                
+                // Here what happens is it needs to replace the existing status value in the string.
+                if (existingStatusIndex == -1)
+                {
+                    existingStatusIndex = searchValues.Count();
+                }
+                
+                searchValues.Insert(existingStatusIndex, new { name = "status", value = "status:" + options.ContentsStatus.ToString().ToLowerInvariant()});                
+            }
+
+            var existingSortIndex = searchValues.FindIndex(x => x.name == "sort");
+            if (existingSortIndex != -1)
+            {
+                searchValues.RemoveAt(existingSortIndex);
+            }
+
+            if (options.OrderBy != ContentsOrder.Modified)
+            {                
+                // Here what happens is it needs to replace the existing status value in the string.
+                if (existingSortIndex == -1)
+                {
+                    existingSortIndex = searchValues.Count();
+                }
+                
+                searchValues.Insert(existingSortIndex, new { name = "sort", value = "sort:" + options.OrderBy.ToString().ToLowerInvariant()});                
+            }            
+
+
+            return RedirectToAction("List", 
+                new RouteValueDictionary
+                {
+                    { "q", string.Join(' ', searchValues.Select(x => x.value)) }
+                });
+            
+            // await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+
+            // return RedirectToAction("List", options.RouteValues);
+            
         }
 
         [HttpPost, ActionName("List")]

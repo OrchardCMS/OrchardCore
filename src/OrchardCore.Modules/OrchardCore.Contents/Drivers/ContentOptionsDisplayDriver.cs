@@ -55,6 +55,12 @@ namespace OrchardCore.Contents.Drivers
             m.EndIndex = model.EndIndex;
             m.ContentItemsCount = model.ContentItemsCount;
             m.TotalItemCount = model.TotalItemCount;
+
+            m.SearchText = model.SearchText;
+            m.OriginalSearchText = model.OriginalSearchText;
+            m.ContentsStatus = model.ContentsStatus;
+            m.OrderBy = model.OrderBy;
+            m.SelectedContentType = model.SelectedContentType;
         }
     }
 }

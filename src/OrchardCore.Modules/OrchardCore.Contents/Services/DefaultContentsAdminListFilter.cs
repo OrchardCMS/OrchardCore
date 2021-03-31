@@ -42,11 +42,13 @@ namespace OrchardCore.Contents.Services
             var user = _httpContextAccessor.HttpContext.User;
             var userNameIdentifier = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            // done
             if (!String.IsNullOrEmpty(model.DisplayText))
             {
                 query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
             }
 
+            // done
             switch (model.ContentsStatus)
             {
                 case ContentsStatus.Published:
@@ -147,6 +149,8 @@ namespace OrchardCore.Contents.Services
                     }
                 }
             }
+
+            // done.
 
             // Apply OrderBy filters.
             switch (model.OrderBy)
