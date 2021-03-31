@@ -27,7 +27,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.0.0 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 4.1.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.0.0-beta-175913881 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
-| [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 2.0.0-beta-1583 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
+| [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 2.0.0-beta-1790 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
 
 The below table lists the different libraries used as Resources:
 
