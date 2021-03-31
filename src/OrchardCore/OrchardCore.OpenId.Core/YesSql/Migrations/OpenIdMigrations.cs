@@ -406,6 +406,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             return 7;
         }
 
+        // This code can be removed in a later version.
         public async Task<int> UpdateFrom7Async()
         {
             // Create all index tables with the new collection value.  
