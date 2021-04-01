@@ -53,6 +53,11 @@ namespace OrchardCore.Forms
                 .WithPart("LabelPart")
                 .Stereotype("Widget"));
 
+            // ValidationRule
+            _contentDefinitionManager.AlterPartDefinition("ValidationRulePart", part => part
+                .WithDescription("Provides the ability to use and configure validation rules for form fields.")
+            );
+
             // Input
             _contentDefinitionManager.AlterPartDefinition("InputPart", part => part
                 .WithDescription("Provides input field properties."));

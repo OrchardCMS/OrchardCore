@@ -51,10 +51,8 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Name = "isAfter",
                 Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
                 {
-                    DateTime originDate;
-                    var originResult = DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out originDate);
-                    DateTime compareDate;
-                    var compareResult =  DateTime.TryParse(compare, CultureInfo.InvariantCulture, DateTimeStyles.None, out compareDate);
+                    var originResult = DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out var originDate);
+                    var compareResult =  DateTime.TryParse(compare, CultureInfo.InvariantCulture, DateTimeStyles.None, out var compareDate);
                     return originResult && compareResult && originDate > compareDate;
                 })
             };
@@ -63,10 +61,8 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Name = "isBefore",
                 Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
                 {
-                    DateTime originDate;
-                    var originResult = DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out originDate);
-                    DateTime compareDate;
-                    var compareResult = DateTime.TryParse(compare, CultureInfo.InvariantCulture, DateTimeStyles.None, out compareDate);
+                    var originResult = DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out var originDate);
+                    var compareResult = DateTime.TryParse(compare, CultureInfo.InvariantCulture, DateTimeStyles.None, out var compareDate);
                     return originResult && compareResult && originDate < compareDate;
                 })
             };
@@ -91,8 +87,7 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Name = "isDate",
                 Method = serviceProvider => (Func<string, bool>)((str) =>
                 {
-                    DateTime result;
-                    return DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
+                    return DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out var result);
                 })
             };
             _isDecimal = new GlobalMethod
@@ -108,9 +103,7 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Name = "isDivisibleBy",
                 Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
                 {
-                    float originalNumber;
-                    int divisor;
-                    if(Single.TryParse(str, out originalNumber) && Int32.TryParse(compare, out divisor))
+                    if(Single.TryParse(str, out var originalNumber) && Int32.TryParse(compare, out var divisor))
                     {
                         if (divisor == 0) return false;
                         return originalNumber % divisor == 0;
@@ -134,8 +127,7 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Name = "isFloat",
                 Method = serviceProvider => (Func<string,string, bool>)((str,option) =>
                 {
-                    float original;
-                    if(!Single.TryParse(str, out original)) return false;
+                    if(!Single.TryParse(str, out var original)) return false;
                     float min = 0;
                     var max = Single.MaxValue;
                     var obj = JToken.Parse(option);
