@@ -20,6 +20,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
     public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApplication>
         where TApplication : OpenIdApplication, new()
     {
+        private const string OpenIdCollection = OpenIdAuthorization.OpenIdCollection;
         private readonly ISession _session;
 
         public OpenIdApplicationStore(ISession session)
@@ -32,7 +33,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TApplication>().CountAsync();
+            return await _session.Query<TApplication>(collection: OpenIdCollection).CountAsync();
         }
 
         /// <inheritdoc/>
@@ -49,7 +50,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(application);
+            _session.Save(application, collection: OpenIdCollection);
             await _session.CommitAsync();
         }
 
@@ -63,7 +64,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Delete(application);
+            _session.Delete(application, collection: OpenIdCollection);
             await _session.CommitAsync();
         }
 
@@ -77,7 +78,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ApplicationId == identifier).FirstOrDefaultAsync();
+            return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ApplicationId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
         }
 
         /// <inheritdoc/>
@@ -90,7 +91,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ClientId == identifier).FirstOrDefaultAsync();
+            return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ClientId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
         }
 
         /// <inheritdoc/>
@@ -103,7 +104,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TApplication>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return await _session.GetAsync<TApplication>(int.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
@@ -117,7 +118,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TApplication, OpenIdAppByLogoutUriIndex>(
-                index => index.LogoutRedirectUri == address).ToAsyncEnumerable();
+                index => index.LogoutRedirectUri == address,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -131,7 +133,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TApplication, OpenIdAppByRedirectUriIndex>(
-                index => index.RedirectUri == address).ToAsyncEnumerable();
+                index => index.RedirectUri == address,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -302,7 +305,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TApplication> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            var query = _session.Query<TApplication>();
+            var query = _session.Query<TApplication>(collection: OpenIdCollection);
 
             if (offset.HasValue)
             {
@@ -491,7 +494,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(application, checkConcurrency: true);
+            _session.Save(application, checkConcurrency: true, collection: OpenIdCollection);
 
             try
             {
@@ -525,7 +528,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
             }
 
-            return _session.Query<TApplication, OpenIdAppByRoleNameIndex>(index => index.RoleName == role).ToAsyncEnumerable();
+            return _session.Query<TApplication, OpenIdAppByRoleNameIndex>(index => index.RoleName == role, collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>

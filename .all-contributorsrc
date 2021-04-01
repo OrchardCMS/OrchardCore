@@ -2298,6 +2298,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "ropstah",
+      "name": "ropstah",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5072557?v=4",
+      "profile": "https://github.com/ropstah",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
