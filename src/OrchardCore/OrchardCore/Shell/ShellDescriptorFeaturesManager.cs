@@ -71,6 +71,16 @@ namespace OrchardCore.Environment.Shell
                 .Distinct()
                 .ToList();
 
+            foreach (var feature in allFeaturesToEnable)
+            {
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
+                }
+
+                await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger);
+            }
+
             var allFeaturesToInstall = allFeaturesToEnable
                 .Where(f => !installedFeatureIds.Contains(f.Id))
                 .ToList();
@@ -83,16 +93,6 @@ namespace OrchardCore.Environment.Shell
                 }
 
                 await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstallingAsync(featureInfo), feature, _logger);
-            }
-
-            foreach (var feature in allFeaturesToEnable)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Enabling feature '{FeatureName}'", feature.Id);
-                }
-
-                await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger);
             }
 
             if (allFeaturesToEnable.Count > 0)
