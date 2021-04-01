@@ -52,7 +52,7 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
                 {
                     var originResult = DateTime.TryParse(str, CultureInfo.InvariantCulture, DateTimeStyles.None, out var originDate);
-                    var compareResult =  DateTime.TryParse(compare, CultureInfo.InvariantCulture, DateTimeStyles.None, out var compareDate);
+                    var compareResult = DateTime.TryParse(compare, CultureInfo.InvariantCulture, DateTimeStyles.None, out var compareDate);
                     return originResult && compareResult && originDate > compareDate;
                 })
             };
@@ -77,10 +77,10 @@ namespace OrchardCore.Forms.Entities.Scripting
             _isByteLength = new GlobalMethod
             {
                 Name = "isByteLength",
-                Method = serviceProvider => (Func<string,string, bool>)((str, option) =>
-                {
-                    return ValidateLength(Encoding.UTF8.GetByteCount(str), option);
-                })
+                Method = serviceProvider => (Func<string, string, bool>)((str, option) =>
+                 {
+                     return ValidateLength(Encoding.UTF8.GetByteCount(str), option);
+                 })
             };
             _isDate = new GlobalMethod
             {
@@ -103,7 +103,7 @@ namespace OrchardCore.Forms.Entities.Scripting
                 Name = "isDivisibleBy",
                 Method = serviceProvider => (Func<string, string, bool>)((str, compare) =>
                 {
-                    if(Single.TryParse(str, out var originalNumber) && Int32.TryParse(compare, out var divisor))
+                    if (Single.TryParse(str, out var originalNumber) && Int32.TryParse(compare, out var divisor))
                     {
                         if (divisor == 0) return false;
                         return originalNumber % divisor == 0;
@@ -125,17 +125,17 @@ namespace OrchardCore.Forms.Entities.Scripting
             _isFloat = new GlobalMethod
             {
                 Name = "isFloat",
-                Method = serviceProvider => (Func<string,string, bool>)((str,option) =>
-                {
-                    if(!Single.TryParse(str, out var original)) return false;
-                    float min = 0;
-                    var max = Single.MaxValue;
-                    var obj = JToken.Parse(option);
-                    Single.TryParse(obj["max"]?.ToString(), out max);
-                    Single.TryParse(obj["min"]?.ToString(), out min);
-                    if (original >= min && (max == 0 || original <= max)) return true;
-                    return false;
-                })
+                Method = serviceProvider => (Func<string, string, bool>)((str, option) =>
+                 {
+                     if (!Single.TryParse(str, out var original)) return false;
+                     float min = 0;
+                     var max = Single.MaxValue;
+                     var obj = JToken.Parse(option);
+                     Single.TryParse(obj["max"]?.ToString(), out max);
+                     Single.TryParse(obj["min"]?.ToString(), out min);
+                     if (original >= min && (max == 0 || original <= max)) return true;
+                     return false;
+                 })
             };
             _isInt = new GlobalMethod
             {
@@ -171,10 +171,10 @@ namespace OrchardCore.Forms.Entities.Scripting
             _isLength = new GlobalMethod
             {
                 Name = "isLength",
-                Method = serviceProvider => (Func<string,string, bool>)((str,option) =>
-                {
-                    return ValidateLength(str.Length, option);
-                })
+                Method = serviceProvider => (Func<string, string, bool>)((str, option) =>
+                 {
+                     return ValidateLength(str.Length, option);
+                 })
             };
             _isNumeric = new GlobalMethod
             {

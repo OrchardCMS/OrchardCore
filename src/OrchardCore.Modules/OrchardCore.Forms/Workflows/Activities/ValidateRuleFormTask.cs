@@ -73,7 +73,7 @@ namespace OrchardCore.Forms.Workflows.Activities
                     updater.ModelState.SetModelValue(item.Key, item.Value, item.Value);
                 }
             }
-         
+
             if (rules.Count > 0)
             {
                 foreach (var item in rules)
