@@ -158,7 +158,7 @@ namespace OrchardCore.Documents
             }
             else
             {
-                // Otherwise, always get the id from the in memory cache.
+                // Otherwise, always get the id from the memory cache.
                 id = _memoryCache.Get<string>(_options.CacheIdKey);
             }
 
