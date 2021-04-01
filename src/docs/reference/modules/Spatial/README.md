@@ -93,7 +93,7 @@ Here is another Query that combines a `geo_bounding_box` with a `geo_distance` f
 
 Visual representation :
 
-![lucene geo queries](https://user-images.githubusercontent.com/3228637/113206242-34b6fd00-923d-11eb-8a58-99e630170ff3.jpg)
+![lucene geo queries](images/lucene-geo-queries.jpg)
 
 ```json{
   "query": {
