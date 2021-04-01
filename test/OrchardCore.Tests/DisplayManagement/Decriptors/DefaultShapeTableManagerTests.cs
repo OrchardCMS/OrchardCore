@@ -28,20 +28,15 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
         private class TestFeatureInfo : IFeatureInfo
         {
-            public string[] Dependencies { get; set; } = Array.Empty<string>();
-            public IExtensionInfo Extension { get; set; }
             public string Id { get; set; }
             public string Name { get; set; }
             public int Priority { get; set; }
             public string Category { get; set; }
             public string Description { get; set; }
+            public IExtensionInfo Extension { get; set; }
+            public string[] Dependencies { get; set; } = Array.Empty<string>();
             public bool DefaultTenantOnly { get; set; }
             public bool IsAlwaysEnabled { get; set; }
-
-            public bool DependencyOn(IFeatureInfo feature)
-            {
-                return false;
-            }
         }
 
         private class TestModuleExtensionInfo : IExtensionInfo
@@ -172,7 +167,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             };
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
-            serviceCollection.AddScoped<TestShapeProvider>((x => (TestShapeProvider)x.GetService<IShapeTableProvider>()));
+            serviceCollection.AddScoped(sp => (TestShapeProvider)sp.GetService<IShapeTableProvider>());
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -500,7 +495,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("DerivedTheme");
-            Assert.True(table.Bindings.TryGetValue("OverriddenShape", out var shapeBinding));
+            Assert.True(table.Bindings.TryGetValue("OverriddenShape", out _));
             Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
 

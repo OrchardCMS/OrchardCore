@@ -260,8 +260,8 @@ namespace OrchardCore.Environment.Extensions
                     {
                         return Task.CompletedTask;
                     }
-                    var manifestInfo = new ManifestInfo(module.ModuleInfo);
 
+                    var manifestInfo = new ManifestInfo(module.ModuleInfo);
                     var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (mi, ei) =>
                     {
                         return _featuresProvider.GetFeatures(ei, mi);

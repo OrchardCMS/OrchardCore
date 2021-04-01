@@ -11,12 +11,13 @@ namespace OrchardCore.Environment.Extensions
             IManifestInfo manifestInfo,
             Func<IManifestInfo, IExtensionInfo, IEnumerable<IFeatureInfo>> features)
         {
+            Id = Manifest.ModuleInfo.Id;
             SubPath = subPath;
             Manifest = manifestInfo;
             Features = features(manifestInfo, this);
         }
 
-        public string Id => Manifest.ModuleInfo.Id;
+        public string Id { get; }
         public string SubPath { get; }
         public IManifestInfo Manifest { get; }
         public IEnumerable<IFeatureInfo> Features { get; }

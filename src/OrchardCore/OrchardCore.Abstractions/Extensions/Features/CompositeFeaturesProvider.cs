@@ -7,6 +7,7 @@ namespace OrchardCore.Environment.Extensions.Features
     public class CompositeFeaturesProvider : IFeaturesProvider
     {
         private readonly IFeaturesProvider[] _featuresProviders;
+
         public CompositeFeaturesProvider(params IFeaturesProvider[] featuresProviders)
         {
             _featuresProviders = featuresProviders ?? new IFeaturesProvider[0];
@@ -18,16 +19,13 @@ namespace OrchardCore.Environment.Extensions.Features
             {
                 throw new ArgumentNullException(nameof(featuresProviders));
             }
+
             _featuresProviders = featuresProviders.ToArray();
         }
 
-        public IEnumerable<IFeatureInfo> GetFeatures(
-            IExtensionInfo extensionInfo,
-            IManifestInfo manifestInfo)
+        public IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
         {
-            List<IFeatureInfo> featureInfos =
-                new List<IFeatureInfo>();
-
+            var featureInfos = new List<IFeatureInfo>();
             foreach (var provider in _featuresProviders)
             {
                 featureInfos.AddRange(provider.GetFeatures(extensionInfo, manifestInfo));

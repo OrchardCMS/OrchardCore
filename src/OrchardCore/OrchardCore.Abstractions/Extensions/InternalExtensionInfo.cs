@@ -1,18 +1,17 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Extensions
 {
     public class InternalExtensionInfo : IExtensionInfo
     {
-        public InternalExtensionInfo(string subPath)
+        public InternalExtensionInfo(string extensionId)
         {
-            Id = Path.GetFileName(subPath);
-            SubPath = subPath;
-
+            Id = extensionId;
+            SubPath = Application.ModulesRoot + extensionId;
             Manifest = new NotFoundManifestInfo();
             Features = Enumerable.Empty<IFeatureInfo>();
         }
