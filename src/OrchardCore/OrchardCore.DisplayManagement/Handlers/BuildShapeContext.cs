@@ -1,11 +1,12 @@
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Handlers
 {
     public abstract class BuildShapeContext : IBuildShapeContext
     {
-        protected BuildShapeContext(IShape shape, string groupId, IShapeFactory shapeFactory, IShape layout, IUpdateModel updater)
+        protected BuildShapeContext(IShape shape, string groupId, IShapeFactory shapeFactory, IZoneHolding layout, IUpdateModel updater)
         {
             Shape = shape;
             ShapeFactory = shapeFactory;
@@ -19,7 +20,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         public IShape Shape { get; private set; }
         public IShapeFactory ShapeFactory { get; private set; }
         public dynamic New => ShapeFactory;
-        public IShape Layout { get; set; }
+        public IZoneHolding Layout { get; set; }
         public string GroupId { get; private set; }
         public string HtmlFieldPrefix { get; protected set; }
         public FindPlacementDelegate FindPlacement { get; set; }

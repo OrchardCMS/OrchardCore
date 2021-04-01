@@ -42,7 +42,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
         public override async Task<IDisplayResult> EditAsync(MicrosoftAccountSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
             {
                 return null;
             }
@@ -81,7 +81,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             if (context.GroupId == MicrosoftAuthenticationConstants.Features.MicrosoftAccount)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
                 {
                     return null;
                 }

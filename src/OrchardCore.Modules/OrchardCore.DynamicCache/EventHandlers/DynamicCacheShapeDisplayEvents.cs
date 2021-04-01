@@ -86,15 +86,17 @@ namespace OrchardCore.DynamicCache.EventHandlers
             if (!_cached.ContainsKey(cacheContext.CacheId) && context.ChildContent != null)
             {
                 // The content is pre-encoded in the cache so we don't have to do it every time it's rendered
-                using (var sb = StringBuilderPool.GetInstance())
-                {
-                    using (var sw = new StringWriter(sb.Builder))
-                    {
-                        context.ChildContent.WriteTo(sw, _htmlEncoder);
-                        await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
-                        await sw.FlushAsync();
-                    }
-                }
+                using var sb = StringBuilderPool.GetInstance();
+                using var sw = new StringWriter(sb.Builder);
+
+                // 'ChildContent' may be a 'ViewBufferTextWriterContent' on which we can't
+                // call 'WriteTo()' twice, so here we update it with a new 'HtmlString()'.
+                context.ChildContent.WriteTo(sw, _htmlEncoder);
+                var contentHtmlString = new HtmlString(sw.ToString());
+                context.ChildContent = contentHtmlString;
+
+                await _dynamicCacheService.SetCachedValueAsync(cacheContext, contentHtmlString.Value);
+                await sw.FlushAsync();
             }
         }
 

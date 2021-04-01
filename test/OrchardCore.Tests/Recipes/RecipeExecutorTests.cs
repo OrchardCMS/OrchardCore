@@ -12,6 +12,8 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -65,11 +67,15 @@ namespace OrchardCore.Recipes
             ServiceProvider = CreateServiceProvider(),
         };
 
-        private static IServiceProvider CreateServiceProvider() => new ServiceCollection().AddScripting().BuildServiceProvider();
+        private static IServiceProvider CreateServiceProvider() => new ServiceCollection()
+            .AddScripting()
+            .AddSingleton<IDistributedLock, LocalLock>()
+            .AddLogging()
+            .BuildServiceProvider();
 
         private IFileInfo GetRecipeFileInfo(string recipeName)
         {
-            var assembly = GetType().GetTypeInfo().Assembly;
+            var assembly = GetType().Assembly;
             var path = $"Recipes.RecipeFiles.{recipeName}.json";
 
             return new EmbeddedFileProvider(assembly).GetFileInfo(path);
