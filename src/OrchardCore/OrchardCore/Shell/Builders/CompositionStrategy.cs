@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
+using System.Collections.Specialized;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
@@ -32,29 +34,60 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             var featureNames = descriptor.Features.Select(x => x.Id).ToArray();
-
             var features = await _extensionManager.LoadFeaturesAsync(featureNames);
 
-            var entries = new Dictionary<Type, FeatureEntry>();
+            var dependenciesEntries = new OrderedDictionary();
+            var requireFeaturesEntries = new List<RequireFeaturesEntry>();
+            var lastIndexesByFeatureId = new Dictionary<string, int>();
 
-            foreach (var feature in features)
+            for (var i = 0; i < features.Count(); i++)
             {
-                foreach (var exportedType in feature.ExportedTypes)
+                var feature = features.ElementAt(i);
+                for (var n = 0; n < feature.ExportedTypes.Count(); n++)
                 {
-                    var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
+                    var exportedType = feature.ExportedTypes.ElementAt(n);
 
-                    if (requiredFeatures.All(x => featureNames.Contains(x)))
+                    var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
+                    if (requiredFeatures.All(id => featureNames.Contains(id)))
                     {
-                        entries.Add(exportedType, feature);
+                        if (requiredFeatures.Count > 0)
+                        {
+                            requireFeaturesEntries.Add(new RequireFeaturesEntry(exportedType, feature, requiredFeatures, i + n));
+                        }
+
+                        lastIndexesByFeatureId[feature.FeatureInfo.Id] = i + n;
+                        dependenciesEntries.Add(exportedType, feature);
                     }
                 }
             }
+
+            // Move down the types according to their required features.
+            foreach (var require in requireFeaturesEntries)
+            {
+                var requireIndex = require.Index;
+                foreach (var requiredFeature in require.RequiredFeatures)
+                {
+                    if (lastIndexesByFeatureId.TryGetValue(required, out var index) && index > requireIndex)
+                    {
+                        requireIndex = index;
+                    }
+                }
+
+                if (requireIndex != require.Index)
+                {
+                    dependenciesEntries.RemoveAt(require.Index);
+                    dependenciesEntries.Insert(requireIndex, require.Type, require.Feature);
+                }
+            }
+
+            var dependencies = dependenciesEntries.Cast<DictionaryEntry>()
+                .ToDictionary(e => (Type)e.Key, e => (FeatureEntry)e.Value);
 
             var result = new ShellBlueprint
             {
                 Settings = settings,
                 Descriptor = descriptor,
-                Dependencies = entries
+                Dependencies = dependencies
             };
 
             if (_logger.IsEnabled(LogLevel.Debug))
@@ -63,6 +96,22 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             return result;
+        }
+
+        internal class RequireFeaturesEntry
+        {
+            public RequireFeaturesEntry(Type type, FeatureEntry feature, IList<string> requiredFeatures, int index)
+            {
+                Type = type;
+                Feature = feature;
+                RequiredFeatures = requiredFeatures;
+                Index = index;
+            }
+
+            public Type Type { get; }
+            public FeatureEntry Feature { get; }
+            public IList<string> RequiredFeatures { get; }
+            public int Index { get; }
         }
     }
 }
