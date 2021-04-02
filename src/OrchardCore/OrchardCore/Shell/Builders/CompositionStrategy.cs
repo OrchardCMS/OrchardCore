@@ -65,7 +65,7 @@ namespace OrchardCore.Environment.Shell.Builders
             foreach (var require in requireFeaturesEntries)
             {
                 var requireIndex = require.Index;
-                foreach (var requiredFeature in require.RequiredFeatures)
+                foreach (var required in require.RequiredFeatures)
                 {
                     if (lastIndexesByFeatureId.TryGetValue(required, out var index) && index > requireIndex)
                     {
