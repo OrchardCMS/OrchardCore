@@ -20,7 +20,7 @@ Cypress.Commands.add("siteSetup",  ({ name, setupRecipe }) => {
       elem.val(setupRecipe);
     }
     const db = $body.find("#DatabaseProvider");
-    if (db) {
+    if(db.length > 0 && db.val() == "") {
       db.val("Sqlite");
     }
   });
@@ -45,7 +45,20 @@ Cypress.Commands.add("createTenant", ({ name, prefix, setupRecipe, description }
   cy.get("#Description").type(`Recipe: ${setupRecipe}. ${description || ''}`, {force:true});
   cy.get("#RequestUrlPrefix").type(prefix, {force:true});
   cy.get("#RecipeName").select(setupRecipe);
-  cy.get("#DatabaseProvider").select('Sqlite');
+  cy.get("body").then($body => {
+    const db = $body.find("#DatabaseProvider");
+    // if a database provider is already specified by an environment variable.. leave it as is
+    // this assumes that if you set the provider, you also set the connectionString
+    if (db.length > 0 && db.val() == "") {
+      db.val('Sqlite');
+    } else {
+        //set the tablePrefix to the name.
+        const prefix = $body.find("#TablePrefix");
+        if(prefix.length > 0){
+            prefix.val(name);
+        }
+    }
+  });
   cy.btnCreateClick();
 });
 

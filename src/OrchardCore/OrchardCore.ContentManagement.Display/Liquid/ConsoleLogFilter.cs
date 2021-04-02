@@ -1,8 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,18 +11,18 @@ namespace OrchardCore.ContentManagement.Display.Liquid
 {
     public class ConsoleLogFilter : ILiquidFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        private readonly IHostEnvironment _hostEnvironment;
+
+        public ConsoleLogFilter(IHostEnvironment hostEnvironment)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'console_log'");
-            }
+            _hostEnvironment = hostEnvironment;
+        }
 
-            var env = ((IServiceProvider)services).GetRequiredService<IHostEnvironment>();
-
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
+        {
             var content = input.ToObjectValue();
 
-            if (content == null || env.IsProduction())
+            if (content == null || _hostEnvironment.IsProduction())
             {
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }

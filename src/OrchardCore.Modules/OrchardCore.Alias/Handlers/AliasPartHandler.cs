@@ -1,10 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Alias.Drivers;
-using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
@@ -47,14 +47,9 @@ namespace OrchardCore.Alias.Handlers
                 return;
             }
 
-            if (part.Alias.Length > AliasPartDisplayDriver.MaxAliasLength)
+            await foreach (var item in part.ValidateAsync(S, _session))
             {
-                context.Fail(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPartDisplayDriver.MaxAliasLength], nameof(part.Alias));
-            }
-
-            if (!await IsAliasUniqueAsync(part.Alias, part))
-            {
-                context.Fail(S["Your alias is already in use."], nameof(part.Alias));
+                context.Fail(item);
             }
         }
 
@@ -77,17 +72,17 @@ namespace OrchardCore.Alias.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+                part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
+                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
 
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
-                if (part.Alias?.Length > AliasPartDisplayDriver.MaxAliasLength)
+                if (part.Alias?.Length > AliasPart.MaxAliasLength)
                 {
-                    part.Alias = part.Alias.Substring(0, AliasPartDisplayDriver.MaxAliasLength);
+                    part.Alias = part.Alias.Substring(0, AliasPart.MaxAliasLength);
                 }
 
-                if (!await IsAliasUniqueAsync(part.Alias, part))
+                if (!await part.IsAliasUniqueAsync(_session, part.Alias))
                 {
                     part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
                 }
@@ -130,7 +125,7 @@ namespace OrchardCore.Alias.Handlers
         private string GetPattern(AliasPart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AliasPart"));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AliasPart)));
             var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
 
             return pattern;
@@ -144,30 +139,25 @@ namespace OrchardCore.Alias.Handlers
             var versionSeparatorPosition = alias.LastIndexOf('-');
             if (versionSeparatorPosition > -1)
             {
-                int.TryParse(alias.Substring(versionSeparatorPosition).TrimStart('-'), out version);
+                Int32.TryParse(alias.Substring(versionSeparatorPosition).TrimStart('-'), out version);
                 unversionedAlias = alias.Substring(0, versionSeparatorPosition);
             }
 
             while (true)
             {
                 // Unversioned length + separator char + version length.
-                var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPartDisplayDriver.MaxAliasLength;
+                var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPart.MaxAliasLength;
                 if (quantityCharactersToTrim > 0)
                 {
                     unversionedAlias = unversionedAlias.Substring(0, unversionedAlias.Length - quantityCharactersToTrim);
                 }
 
                 var versionedAlias = $"{unversionedAlias}-{version++}";
-                if (await IsAliasUniqueAsync(versionedAlias, context))
+                if (await context.IsAliasUniqueAsync(_session, versionedAlias))
                 {
                     return versionedAlias;
                 }
             }
-        }
-
-        private async Task<bool> IsAliasUniqueAsync(string alias, AliasPart context)
-        {
-            return (await _session.QueryIndex<AliasPartIndex>(o => o.Alias == alias && o.ContentItemId != context.ContentItem.ContentItemId).CountAsync()) == 0;
         }
     }
 }

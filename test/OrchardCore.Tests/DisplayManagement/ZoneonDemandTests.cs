@@ -75,8 +75,11 @@ namespace OrchardCore.Tests.DisplayManagement
             Composite zoneComposite1 = zoneOnDemand, zoneComposite2 = zoneOnDemand;
             object zoneObject1 = zoneOnDemand, zoneObject2 = zoneOnDemand;
 
+#pragma warning disable 252,253
+            // Intended reference comparison
             Assert.True(zoneShape1 == zoneShape2);
             Assert.True(zoneComposite1 == zoneComposite2);
+#pragma warning restore 252,253
             Assert.True(zoneObject1 == zoneObject2);
         }
 

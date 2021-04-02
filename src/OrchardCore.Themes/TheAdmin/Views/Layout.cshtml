@@ -1,8 +1,11 @@
+@inject DarkModeService DarkModeService
+@inject IOptions<AdminOptions> AdminOptions
 @{
     var adminSettings = Site.As<AdminSettings>();
+    var darkMode = await DarkModeService.IsDarkModeAsync();
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-tenant="@DarkModeService.CurrentTenant" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -11,16 +14,14 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <style id="admin-default" media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
-    @if (adminSettings.DisplayDarkMode)
-    {
-        <style id="admin-darkmode" media="not all" asp-name="admin-darkmode" asp-src="~/TheAdmin/Styles/TheAdmin-darkmode.min.css" debug-src="~/TheAdmin/Styles/TheAdmin-darkmode.css" depends-on="jQuery-ui"></style>
-    }
+    <style media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css"></style>
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
-    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui, jQuery-ui-i18n" at="Foot"></script>
+    <script asp-name="js-cookie" at="Foot" version="2"></script>
+    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery" at="Foot"></script>
     <resources type="Header" />
 
     <!-- This script can't wait till the footer -->
@@ -30,15 +31,36 @@
 <body class="preload">
     <div class="ta-wrapper">
         <div class="ta-navbar-top navbar-expand-lg bg-primary">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")" target="_blank">@Site.SiteName</a>
-            <div class="mr-auto">
-                @await RenderSectionAsync("NavbarTop", required: false)
+            <div class="d-flex w-100">
+                <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src=@Url.Content("~/TheAdmin/logo.png") alt="@Site.SiteName" /><span>@Site.SiteName</span></a>
+
+                <div class="flex-grow-1">
+                    @if (adminSettings.DisplayTitlesInTopbar)
+                    {
+                        @await RenderSectionAsync("Title", required: false)
+                    }
+                </div>
+                <div class="d-flex align-items-center">
+                    @await RenderSectionAsync("NavbarTop", required: false)
+                    @if (adminSettings.DisplayDarkMode)
+                    {
+                        <a id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                            @if (darkMode)
+                            {
+                                <i class="fas fa-sun"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-moon"></i>
+                            }
+                        </a>
+                    }
+                    <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]" role="button">
+                        <i class="fa fa-fw fa-external-link"></i>
+                    </a>
+                    @await DisplayAsync(await New.UserMenu())
+                </div>
             </div>
-            @await DisplayAsync(await New.UserMenu())
-            @if (adminSettings.DisplayDarkMode)
-            {
-                <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]"><i class="fas fa-moon"></i></a>
-            }
         </div>
 
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
@@ -52,15 +74,17 @@
             @await RenderSectionAsync("Header", required: false)
             @await RenderSectionAsync("Messages", required: false)
             @await RenderSectionAsync("Breadcrumbs", required: false)
-
+            @if (!adminSettings.DisplayTitlesInTopbar)
+            {
+                @await RenderSectionAsync("Title", required: false)
+            }
             @await RenderBodyAsync()
         </div>
+
+        @await RenderSectionAsync("Footer", required: false)
+
     </div>
-
-    @await RenderSectionAsync("Footer", required: false)
-
     <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
-
     <resources type="Footer" />
 </body>
 </html>

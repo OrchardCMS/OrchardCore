@@ -1,0 +1,5 @@
+{% comment %}
+The HeadMeta zone is a convention for placement in the <head> section of a layout.
+The <head> section should not contain html, so by convention widgets are rendered with an empty wrapper.    
+{% endcomment %}
+{{ Model.Content | shape_render }}

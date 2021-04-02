@@ -1,20 +1,27 @@
 $('#btn-darkmode').click(function() {
-    if($('#admin-darkmode').attr('media') === 'all')
+    if($('html').attr('data-theme') === 'darkmode')
     {
-        $('#admin-default').attr('media', 'all');
-        $('#admin-darkmode').attr('media', 'not all');
-        $(document.body).removeClass('darkmode');
+        $('html').attr('data-theme', 'default');
         $(this).children(':first').removeClass('fa-sun');
         $(this).children(':first').addClass('fa-moon');
     }
     else
     {
-        $('#admin-default').attr('media', 'not all');
-        $('#admin-darkmode').attr('media', 'all');
-        $(document.body).addClass('darkmode');
+        $('html').attr('data-theme', 'darkmode');
         $(this).children(':first').removeClass('fa-moon');
         $(this).children(':first').addClass('fa-sun');
     }
 
     persistAdminPreferences();
+});
+
+$(function() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    {
+        if($('html').attr('data-theme') === 'darkmode')
+        {
+            $('#btn-darkmode').children(':first').removeClass('fa-moon');
+            $('#btn-darkmode').children(':first').addClass('fa-sun');
+        }
+    }
 });

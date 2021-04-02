@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Scope
@@ -18,7 +20,6 @@ namespace OrchardCore.Environment.Shell.Scope
     public class ShellScope : IServiceScope
     {
         private static readonly AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
-        private static readonly Dictionary<string, SemaphoreSlim> _semaphores = new Dictionary<string, SemaphoreSlim>();
 
         private readonly IServiceScope _serviceScope;
         private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
@@ -152,8 +153,8 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync()
         {
-            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
-            return shellHost.GetScopeAsync(ShellScope.Context.Settings);
+            var shellHost = Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(Context.Settings);
         }
 
         /// <summary>
@@ -161,7 +162,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync(ShellSettings settings)
         {
-            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            var shellHost = Services.GetRequiredService<IShellHost>();
             return shellHost.GetScopeAsync(settings);
         }
 
@@ -170,38 +171,38 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync(string tenant)
         {
-            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            var shellHost = Services.GetRequiredService<IShellHost>();
             return shellHost.GetScopeAsync(tenant);
         }
 
         /// <summary>
         /// Execute a delegate using a child scope created from the current one.
         /// </summary>
-        public static async Task UsingChildScopeAsync(Func<ShellScope, Task> execute)
+        public static async Task UsingChildScopeAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            await (await CreateChildScopeAsync()).UsingAsync(execute);
+            await (await CreateChildScopeAsync()).UsingAsync(execute, activateShell);
         }
 
         /// <summary>
         /// Execute a delegate using a child scope created from the current one.
         /// </summary>
-        public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute)
+        public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            await (await CreateChildScopeAsync(settings)).UsingAsync(execute);
+            await (await CreateChildScopeAsync(settings)).UsingAsync(execute, activateShell);
         }
 
         /// <summary>
         /// Execute a delegate using a child scope created from the current one.
         /// </summary>
-        public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute)
+        public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            await (await CreateChildScopeAsync(tenant)).UsingAsync(execute);
+            await (await CreateChildScopeAsync(tenant)).UsingAsync(execute, activateShell);
         }
 
         /// <summary>
         /// Start holding this shell scope along the async flow.
         /// </summary>
-        internal void StartAsyncFlow() => _current.Value = this;
+        public void StartAsyncFlow() => _current.Value = this;
 
         /// <summary>
         /// Executes a delegate using this shell scope in an isolated async flow,
@@ -270,41 +271,33 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            SemaphoreSlim semaphore;
-            lock (_semaphores)
+            // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
+            (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
+            if (!locked)
             {
-                if (!_semaphores.TryGetValue(ShellContext.Settings.Name, out semaphore))
-                {
-                    _semaphores[ShellContext.Settings.Name] = semaphore = new SemaphoreSlim(1);
-                }
+                throw new TimeoutException($"Fails to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
             }
 
-            await semaphore.WaitAsync();
-            try
+            await using var acquiredLock = locker;
+
+            // The tenant gets activated here.
+            if (!ShellContext.IsActivated)
             {
-                // The tenant gets activated here.
-                if (!ShellContext.IsActivated)
+                await new ShellScope(ShellContext).UsingAsync(async scope =>
                 {
-                    await new ShellScope(ShellContext).UsingAsync(async scope =>
+                    var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                    foreach (var tenantEvent in tenantEvents)
                     {
-                        var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-                        foreach (var tenantEvent in tenantEvents)
-                        {
-                            await tenantEvent.ActivatingAsync();
-                        }
+                        await tenantEvent.ActivatingAsync();
+                    }
 
-                        foreach (var tenantEvent in tenantEvents.Reverse())
-                        {
-                            await tenantEvent.ActivatedAsync();
-                        }
-                    }, activateShell: false);
+                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    {
+                        await tenantEvent.ActivatedAsync();
+                    }
+                }, activateShell: false);
 
-                    ShellContext.IsActivated = true;
-                }
-            }
-            finally
-            {
-                semaphore.Release();
+                ShellContext.IsActivated = true;
             }
         }
 

@@ -24,6 +24,7 @@ namespace OrchardCore.Media.TagHelpers
         private const string ImageFormatAttributeName = ImageSizeAttributePrefix + "format";
         private const string ImageProfileAttributeName = ImageSizeAttributePrefix + "profile";
         private const string ImageAnchorAttributeName = ImageSizeAttributePrefix + "anchor";
+        private const string ImageBackgroundColorAttributeName = ImageSizeAttributePrefix + "bgcolor";
 
         private readonly IMediaProfileService _mediaProfileService;
         private readonly MediaOptions _mediaOptions;
@@ -50,6 +51,9 @@ namespace OrchardCore.Media.TagHelpers
 
         [HtmlAttributeName(ImageAnchorAttributeName)]
         public Anchor ImageAnchor { get; set; }
+
+        [HtmlAttributeName(ImageBackgroundColorAttributeName)]
+        public string ImageBackgroundColor { get; set; }
 
         [HtmlAttributeName("src")]
         public string Src { get; set; }
@@ -85,11 +89,11 @@ namespace OrchardCore.Media.TagHelpers
                 queryStringParams = await _mediaProfileService.GetMediaProfileCommands(ImageProfile);
             }
 
-            var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, queryStringParams, ImageWidth, ImageHeight, ResizeMode, ImageQuality, ImageFormat, ImageAnchor);
+            var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, queryStringParams, ImageWidth, ImageHeight, ResizeMode, ImageQuality, ImageFormat, ImageAnchor, ImageBackgroundColor);
 
             if (_mediaOptions.UseTokenizedQueryString)
             {
-                resizedSrc = _mediaTokenService.TokenizePath(resizedSrc);
+                resizedSrc = _mediaTokenService.AddTokenToPath(resizedSrc);
             }
 
             output.Attributes.SetAttribute("src", resizedSrc);

@@ -44,16 +44,6 @@ namespace OrchardCore.Taxonomies
     {
         private readonly AdminOptions _adminOptions;
 
-        static Startup()
-        {
-            // Registering both field types and shape types are necessary as they can
-            // be accessed from inner properties.
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<TaxonomyField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
-        }
-
         public Startup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
@@ -61,6 +51,16 @@ namespace OrchardCore.Taxonomies
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<TaxonomyField>();
+                o.MemberAccessStrategy.Register<TermPartViewModel>();
+                o.MemberAccessStrategy.Register<DisplayTaxonomyFieldViewModel>();
+                o.MemberAccessStrategy.Register<DisplayTaxonomyFieldTagsViewModel>();
+            })
+            .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
+            .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
+
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IShapeTableProvider, TermShapes>();
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -92,9 +92,6 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IContentHandler, TermPartContentHandler>();
             services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
 
-            // Liquid
-            services.AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
-            services.AddLiquidFilter<InheritedTermsFilter>("inherited_terms");
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

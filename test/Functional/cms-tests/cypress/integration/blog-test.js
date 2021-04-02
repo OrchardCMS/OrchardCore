@@ -16,7 +16,7 @@ describe('Blog Tests', function () {
         cy.get('.subheading').should('contain.text', 'This is the description of your blog');
     })
 
-    it('Blog login should work', function(){
+    it('Blog admin login should work', function(){
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin`);
         cy.get('.ta-content').should('contain.text', 'Welcome to Orchard');

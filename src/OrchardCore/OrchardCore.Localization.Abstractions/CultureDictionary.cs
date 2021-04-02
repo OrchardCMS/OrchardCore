@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -7,7 +7,8 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Represents a dictionary for a certain culture.
     /// </summary>
-    public class CultureDictionary
+    /// <remarks>This type is not thread safe.</remarks>
+    public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
     {
         /// <summary>
         /// Creates a new instance of <see cref="CultureDictionary"/>.
@@ -16,7 +17,7 @@ namespace OrchardCore.Localization
         /// <param name="pluralRule">The pluralization rule.</param>
         public CultureDictionary(string cultureName, PluralizationRuleDelegate pluralRule)
         {
-            Translations = new Dictionary<string, string[]>();
+            Translations = new Dictionary<CultureDictionaryRecordKey, string[]>();
             CultureName = cultureName;
             PluralRule = pluralRule;
         }
@@ -35,18 +36,20 @@ namespace OrchardCore.Localization
         /// Gets the localized value.
         /// </summary>
         /// <param name="key">The resource key.</param>
+        /// <returns></returns>
+        public string this[CultureDictionaryRecordKey key] => this[key, null];
+
+        /// <summary>
+        /// Gets the localized value.
+        /// </summary>
+        /// <param name="key">The resource key.</param>
         /// <param name="count">The number to specify the pluralization form.</param>
         /// <returns></returns>
-        public string this[string key, int? count = null]
+        public string this[CultureDictionaryRecordKey key, int? count]
         {
             get
             {
-                if (key == null)
-                {
-                    throw new ArgumentNullException(nameof(key));
-                }
-
-                if (!Translations.TryGetValue(key, out string[] translations))
+                if (!Translations.TryGetValue(key, out var translations))
                 {
                     return null;
                 }
@@ -64,7 +67,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets a list of the culture translations including the plural forms.
         /// </summary>
-        public IDictionary<string, string[]> Translations { get; private set; }
+        public IDictionary<CultureDictionaryRecordKey, string[]> Translations { get; }
 
         /// <summary>
         /// Merges the translations from multiple dictionary records.
@@ -77,5 +80,15 @@ namespace OrchardCore.Localization
                 Translations[record.Key] = record.Translations;
             }
         }
+
+        public IEnumerator<CultureDictionaryRecord> GetEnumerator()
+        {
+            foreach (var item in Translations)
+            {
+                yield return new CultureDictionaryRecord(item.Key, null, item.Value);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

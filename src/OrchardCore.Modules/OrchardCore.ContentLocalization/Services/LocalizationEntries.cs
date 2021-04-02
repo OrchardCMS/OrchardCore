@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Models;
@@ -12,15 +14,26 @@ namespace OrchardCore.ContentLocalization.Services
 {
     public class LocalizationEntries : ILocalizationEntries
     {
+        private ImmutableDictionary<string, LocalizationEntry> _localizations = ImmutableDictionary<string, LocalizationEntry>.Empty;
+
+        private ImmutableDictionary<string, ImmutableList<LocalizationEntry>> _localizationSets =
+            ImmutableDictionary<string, ImmutableList<LocalizationEntry>>.Empty;
+
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
+        private int _lastIndexId;
+        private string _stateIdentifier;
+        private bool _initialized;
+
         public LocalizationEntries()
         {
         }
 
         public async Task<(bool, LocalizationEntry)> TryGetLocalizationAsync(string contentItemId)
         {
-            var document = await GetDocumentAsync();
+            await EnsureInitializedAsync();
 
-            if (document.Localizations.TryGetValue(contentItemId, out var localization))
+            if (_localizations.TryGetValue(contentItemId, out var localization))
             {
                 return (true, localization);
             }
@@ -30,9 +43,9 @@ namespace OrchardCore.ContentLocalization.Services
 
         public async Task<IEnumerable<LocalizationEntry>> GetLocalizationsAsync(string localizationSet)
         {
-            var document = await GetDocumentAsync();
+            await EnsureInitializedAsync();
 
-            if (document.LocalizationSets.TryGetValue(localizationSet, out var localizations))
+            if (_localizationSets.TryGetValue(localizationSet, out var localizations))
             {
                 return localizations;
             }
@@ -40,91 +53,165 @@ namespace OrchardCore.ContentLocalization.Services
             return Enumerable.Empty<LocalizationEntry>();
         }
 
-        public async Task AddEntriesAsync(IEnumerable<LocalizationEntry> entries)
+        public async Task UpdateEntriesAsync()
         {
-            var document = await LoadDocumentAsync();
-            AddEntries(document, entries);
-            await DocumentManager.UpdateAsync(document);
+            await EnsureInitializedAsync();
+
+            // Update the cache with a new state and then refresh entries as it would be done on a next request.
+            await LocalizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
-        public async Task RemoveEntriesAsync(IEnumerable<LocalizationEntry> entries)
+        private async Task EnsureInitializedAsync()
         {
-            var document = await LoadDocumentAsync();
-            RemoveEntries(document, entries);
-            await DocumentManager.UpdateAsync(document);
+            if (!_initialized)
+            {
+                await InitializeEntriesAsync();
+            }
+            else
+            {
+                var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
+                if (_stateIdentifier != state.Identifier)
+                {
+                    await RefreshEntriesAsync(state);
+                }
+            }
         }
 
-        private void AddEntries(LocalizationDocument document, IEnumerable<LocalizationEntry> entries)
+        protected void AddEntries(IEnumerable<LocalizationEntry> entries)
         {
             foreach (var entry in entries)
             {
-                if (document.Localizations.ContainsKey(entry.ContentItemId))
+                if (_localizations.ContainsKey(entry.ContentItemId))
                 {
                     continue;
                 }
 
-                document.Localizations[entry.ContentItemId] = entry;
+                _localizations = _localizations.SetItem(entry.ContentItemId, entry);
 
-                if (document.LocalizationSets.TryGetValue(entry.LocalizationSet, out var localizations))
+                if (_localizationSets.TryGetValue(entry.LocalizationSet, out var localizations))
                 {
-                    localizations.Add(entry);
+                    localizations = localizations.Add(entry);
                 }
                 else
                 {
-                    localizations = new List<LocalizationEntry>();
-                    document.LocalizationSets[entry.LocalizationSet] = localizations;
-                    localizations.Add(entry);
+                    localizations = ImmutableList.Create(entry);
                 }
+
+                _localizationSets = _localizationSets.SetItem(entry.LocalizationSet, localizations);
             }
         }
 
-        public void RemoveEntries(LocalizationDocument document, IEnumerable<LocalizationEntry> entries)
+        protected void RemoveEntries(IEnumerable<LocalizationEntry> entries)
         {
             foreach (var entry in entries)
             {
-                if (!document.Localizations.ContainsKey(entry.ContentItemId))
+                if (!_localizations.ContainsKey(entry.ContentItemId))
                 {
                     continue;
                 }
 
-                document.Localizations.Remove(entry.ContentItemId);
+                _localizations = _localizations.Remove(entry.ContentItemId);
 
-                if (document.LocalizationSets.TryGetValue(entry.LocalizationSet, out var localizations))
+                if (_localizationSets.TryGetValue(entry.LocalizationSet, out var localizations))
                 {
-                    localizations.RemoveAll(l => l.Culture == entry.Culture);
+                    localizations = localizations.RemoveAll(l => l.Culture == entry.Culture);
+                    _localizationSets = _localizationSets.SetItem(entry.LocalizationSet, localizations);
                 }
             }
         }
 
-        /// <summary>
-        /// Loads the localization document for updating and that should not be cached.
-        /// </summary>
-        private Task<LocalizationDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
-
-        /// <summary>
-        /// Gets the localization document for sharing and that should not be updated.
-        /// </summary>
-        private Task<LocalizationDocument> GetDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
-
-        private async Task<LocalizationDocument> CreateDocumentAsync()
+        private async Task RefreshEntriesAsync(LocalizationStateDocument state)
         {
-            var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published).ListAsync();
-
-            var document = new LocalizationDocument();
-
-            AddEntries(document, indexes.Select(i => new LocalizationEntry
+            if (_stateIdentifier == state.Identifier)
             {
-                ContentItemId = i.ContentItemId,
-                LocalizationSet = i.LocalizationSet,
-                Culture = i.Culture.ToLowerInvariant()
-            }));
+                return;
+            }
 
-            return document;
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (_stateIdentifier != state.Identifier)
+                {
+                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId).ListAsync();
+
+                    // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
+                    // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
+                    // is not updated for the published version that may be already scanned, so the entry may not be re-added.
+
+                    var entriesToRemove = indexes
+                        .Where(i => !i.Published || i.Culture == null)
+                        .SelectMany(i => _localizations.Values.Where(e =>
+                            // The item was removed.
+                            ((!i.Published && !i.Latest) ||
+                            // The part was removed.
+                            (i.Culture == null && i.Published) ||
+                            // The item was unpublished.
+                            (!i.Published && e.DocumentId == i.DocumentId)) &&
+                            (e.ContentItemId == i.ContentItemId)));
+
+                    var entriesToAdd = indexes.
+                        Where(i => i.Published && i.Culture != null)
+                        .Select(i => new LocalizationEntry
+                        {
+                            DocumentId = i.DocumentId,
+                            ContentItemId = i.ContentItemId,
+                            LocalizationSet = i.LocalizationSet,
+                            Culture = i.Culture.ToLowerInvariant()
+                        });
+
+                    RemoveEntries(entriesToRemove);
+                    AddEntries(entriesToAdd);
+
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+                    _stateIdentifier = state.Identifier;
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        protected virtual async Task InitializeEntriesAsync()
+        {
+            if (_initialized)
+            {
+                return;
+            }
+
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (!_initialized)
+                {
+                    var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
+
+                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null).ListAsync();
+                    var entries = indexes.Select(i => new LocalizationEntry
+                    {
+                        DocumentId = i.DocumentId,
+                        ContentItemId = i.ContentItemId,
+                        LocalizationSet = i.LocalizationSet,
+                        Culture = i.Culture.ToLowerInvariant()
+                    });
+
+                    AddEntries(entries);
+
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+                    _stateIdentifier = state.Identifier;
+
+                    _initialized = true;
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
 
-        private static IVolatileDocumentManager<LocalizationDocument> DocumentManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<LocalizationDocument>>();
+        private static IVolatileDocumentManager<LocalizationStateDocument> LocalizationStateManager
+            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<LocalizationStateDocument>>();
     }
 }

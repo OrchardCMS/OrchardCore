@@ -21,7 +21,7 @@
 
 @await Html.PartialAsync("Header", Model)
 
-<h1>@Model.Title</h1>
+<zone Name="Title"><h1>@Model.Title</h1></zone>
 <h2>Hello from @ViewContext.RouteData.Values["page"]</h2>
 
 <p>

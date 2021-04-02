@@ -108,7 +108,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                query = query.Where(w => w.Name.Contains(options.Search));
+                query = query.Where(x => x.Name.Contains(options.Search));
             }
 
             switch (options.Order)
@@ -232,6 +232,8 @@ namespace OrchardCore.Workflows.Controllers
                     Name = workflowType.Name,
                     IsEnabled = workflowType.IsEnabled,
                     IsSingleton = workflowType.IsSingleton,
+                    LockTimeout = workflowType.LockTimeout,
+                    LockExpiration = workflowType.LockExpiration,
                     DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
                     ReturnUrl = returnUrl
                 });
@@ -272,6 +274,8 @@ namespace OrchardCore.Workflows.Controllers
             workflowType.Name = viewModel.Name?.Trim();
             workflowType.IsEnabled = viewModel.IsEnabled;
             workflowType.IsSingleton = viewModel.IsSingleton;
+            workflowType.LockTimeout = viewModel.LockTimeout;
+            workflowType.LockExpiration = viewModel.LockExpiration;
             workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
 
             await _workflowTypeStore.SaveAsync(workflowType);
@@ -301,6 +305,8 @@ namespace OrchardCore.Workflows.Controllers
             {
                 Id = id,
                 IsSingleton = workflowType.IsSingleton,
+                LockTimeout = workflowType.LockTimeout,
+                LockExpiration = workflowType.LockExpiration,
                 Name = "Copy-" + workflowType.Name,
                 IsEnabled = workflowType.IsEnabled,
                 ReturnUrl = returnUrl
@@ -327,6 +333,8 @@ namespace OrchardCore.Workflows.Controllers
             workflowType.Name = viewModel.Name?.Trim();
             workflowType.IsEnabled = viewModel.IsEnabled;
             workflowType.IsSingleton = viewModel.IsSingleton;
+            workflowType.LockTimeout = viewModel.LockTimeout;
+            workflowType.LockExpiration = viewModel.LockExpiration;
             workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
             workflowType.Activities = existingWorkflowType.Activities;
             workflowType.Transitions = existingWorkflowType.Transitions;
@@ -454,7 +462,7 @@ namespace OrchardCore.Workflows.Controllers
 
             await _workflowTypeStore.SaveAsync(workflowType);
             await _session.CommitAsync();
-            _notifier.Success(H["Workflow type has been saved."]);
+            _notifier.Success(H["Workflow has been saved."]);
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 
@@ -474,7 +482,7 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             await _workflowTypeStore.DeleteAsync(workflowType);
-            _notifier.Success(H["Workflow type {0} deleted", workflowType.Name]);
+            _notifier.Success(H["Workflow {0} deleted", workflowType.Name]);
 
             return RedirectToAction("Index");
         }

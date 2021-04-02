@@ -1,18 +1,12 @@
 @model ListContentPartsViewModel
 
-<div class="row">
-    <div class="form-group col mb-n1">
-        <h1>@RenderTitleSegments(T["Content Parts"])</h1>
-    </div>
-</div>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Content Parts"])</h1></zone>
 
 <div class="card mb-3 position-sticky action-bar">
     <div class="card-body bg-primary p-3">
-        <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-            <div class="input-group-prepend">
-                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-            </div>
-            <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus="autofocus" />
+        <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
+            <i class="fa fa-search form-control-feedback"></i>
+            <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
         </div>
         <a asp-route-action="CreatePart" id="btnCreate" class="btn btn-sm btn-secondary d-inline-flex float-right create" role="button">@T["Create new part"]</a>
     </div>
@@ -31,7 +25,6 @@
 </div>
 
 <script at="Foot">
-    //<![CDATA[
     $(function () {
         var searchBox = $('#search-box');
 
@@ -43,13 +36,24 @@
             // On ESC, clear the search box and display all parts
             if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
-                elementsToFilter.toggle(true);
+                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             } else {
                 elementsToFilter.each(function () {
                     var text = $(this).data('filter-value').toLowerCase();
                     var found = text.indexOf(search) > -1;
-                    $(this).toggle(found);
+
+                    if (found)
+                    {
+                        $(this).removeClass("d-none first-child-visible last-child-visible");
+                    }
+                    else
+                    {
+                        $(this).addClass("d-none");
+                    }
                 });
+
+                elementsToFilter.filter(":not(.d-none)").first().addClass("first-child-visible");
+                elementsToFilter.filter(":not(.d-none)").last().addClass("last-child-visible");
 
                 // We display an alert if a search is not found
                 var visible = $('#content-parts > li:visible');
@@ -75,5 +79,4 @@
             }
         });
     });
-    //]]>
 </script>

@@ -52,7 +52,7 @@ namespace OrchardCore.Localization.Drivers
         }
 
         /// <inheritdocs />
-        public override async Task<IDisplayResult> EditAsync(LocalizationSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(LocalizationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -68,9 +68,9 @@ namespace OrchardCore.Localization.Drivers
                         {
                             return new CultureEntry
                             {
-                                Supported = section.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
+                                Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
                                 CultureInfo = cultureInfo,
-                                IsDefault = String.Equals(section.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                                IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
                             };
                         }).ToArray();
 
@@ -118,7 +118,11 @@ namespace OrchardCore.Localization.Drivers
                     // We always release the tenant for the default culture and also supported cultures to take effect
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-                    _notifier.Warning(H["The site has been restarted for the settings to take effect"]);
+                    // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
+                    using (CultureScope.Create(section.DefaultCulture))
+                    {
+                        _notifier.Warning(H["The site has been restarted for the settings to take effect."]);
+                    }
                 }
             }
 

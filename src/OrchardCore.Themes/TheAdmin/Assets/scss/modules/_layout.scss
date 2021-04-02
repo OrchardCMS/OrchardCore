@@ -8,6 +8,7 @@
 body {
     margin-bottom: $footer-height;
     cursor: default;
+    height: 100%;
 }
 
 @include cursor-class(move);
@@ -27,6 +28,10 @@ body {
 
 // Layout
 // -----------------------------
+
+.ta-wrapper {
+
+}
 
 .ta-content {
     padding: 15px;
@@ -94,4 +99,12 @@ body {
 .action-bar {
     top: 3.3rem;
     z-index: $zindex-sticky;
+}
+
+.list-group-item+.list-group-item {
+    border-top-width: 0px;
+}
+
+svg {
+    vertical-align: -.125em;
 }

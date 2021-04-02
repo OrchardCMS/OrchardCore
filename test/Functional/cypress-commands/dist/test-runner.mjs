@@ -1,8 +1,7 @@
 // This module was originally build by the OrchardCore team
 const child_process = require("child_process");
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require("path");
-const rimraf = require("rimraf");
 
 global.log = function(msg) {
   let now = new Date().toLocaleTimeString();
@@ -16,24 +15,27 @@ function build(dir) {
 }
 
 // destructive action that deletes the App_Data folder
-function clean(dir) {
-  rimraf(path.join(dir, "App_Data"), function() {
-    global.log("App_Data deleted");
-  });
+function deleteDirectory(dir) {
+  fs.removeSync(dir);
+  global.log(`${dir} deleted`);
 }
 
 // Host the dotnet application, does not rebuild
-function host(dir, assembly) {
-  if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
+function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net5.0' }={}) {
+  if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
     global.log("Application already built, skipping build");
   } else {
     build(dir);
   }
-  global.log("Starting application ...");
+  global.log("Starting application ..."); 
+  
+  const ocEnv = {};
+  ocEnv["ORCHARD_APP_DATA"] = appDataLocation;
+  
   let server = child_process.spawn(
     "dotnet",
-    ["bin/Release/netcoreapp3.1/" + assembly],
-    { cwd: dir }
+    [`bin/Release/${dotnetVersion}/` + assembly],
+    { cwd: dir, env: {...process.env, ...ocEnv} }
   );
 
   server.stdout.on("data", data => {
@@ -51,21 +53,9 @@ function host(dir, assembly) {
 }
 
 // combines the functions above, useful when triggering tests from CI
-function e2e(dir, assembly, performClean = false, rebuild = false) {
-  if (performClean === true) {
-    clean(dir);
-  }
-  if (rebuild === true) {
-    build(dir);
-  }
-
-  if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
-    global.log("Application already built, skipping build");
-  } else {
-    build(dir);
-  }
-
-  var server = host(dir, assembly);
+function e2e(dir, assembly, { dotnetVersion='net5.0' }={}) {
+  deleteDirectory(path.join(dir, "App_Data_Tests"));
+  var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
   let test = child_process.exec("npx cypress run");
   test.stdout.on("data", data => {
@@ -83,4 +73,4 @@ function e2e(dir, assembly, performClean = false, rebuild = false) {
   });
 }
 
-export { build, clean, e2e, host };
+export { build, deleteDirectory, e2e, host };

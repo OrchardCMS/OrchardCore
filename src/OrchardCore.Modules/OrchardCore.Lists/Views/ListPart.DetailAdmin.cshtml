@@ -1,8 +1,16 @@
+@using OrchardCore.Lists.ViewModels
+@using System.Globalization
+@using OrchardCore.Localization
 @model OrchardCore.Lists.ViewModels.ListPartViewModel
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @{
-    var enableOrdering = Model.EnableOrdering && Model.ContentItems.Count() > 1;
+    var enableOrdering =
+        Model.EnableOrdering &&
+        Model.ContentItems.Count() > 1 &&
+        Model.ListPartFilterViewModel.Status == ContentsStatus.Latest &&
+        string.IsNullOrEmpty(Model.ListPartFilterViewModel.DisplayText);
+
     if (enableOrdering)
     {
         <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="sortable, jQuery"></script>
@@ -17,54 +25,73 @@
 }
 else
 {
-    if (Model.ContainedContentTypeDefinitions.Count() == 1)
-    {
-        var contentTypeDefinition = Model.ContainedContentTypeDefinitions.FirstOrDefault();
-        <div class="row">
-            <div class="col form-group related">
-                <div class="float-right">
-                    <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
-                        @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
-                    </a>                
-                    <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                        @T["Create {0}", contentTypeDefinition.DisplayName]
-                    </a>
-                </div>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="row">
-            <div class="col form-group related">
-                <div class="float-right">
-                    <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
-                        @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
-                    </a>    
-                    <a class="btn btn-sm btn-success dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        @T["Create"]
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
-                        {
-                            <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@containedContentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                                @containedContentTypeDefinition.DisplayName
-                            </a>
-                        }
+    <form>
+        <div class="card mb-3 position-sticky action-bar">
+            <div class="card-body bg-primary p-3">
+                <div class="form-group mb-n1">
+                    <div class="input-group input-group-sm w-50 d-inline-flex has-filter">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-filter" title="@T["Filters"]"></i>
+                            </button>
+                            <div class="dropdown-menu @if (CultureInfo.CurrentUICulture.IsRightToLeft()) {<text>dropdown-menu-right</text>}" aria-labelledby="filter-dropdown">
+                                @* Latest not surfaced here to be consistent with the main content items list filter. *@
+                                <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
+                                <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
+                                <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
+                            </div>
+                        </div>
+                        <i class="fa fa-search form-control-feedback"></i>
+                        <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel.Status" class="form-control" type="hidden" />
+                        <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel.DisplayText" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    </div>
+
+                    <div class="form-group d-inline-flex float-right mb-0">
+                        <div class="float-right">
+                            @if (Model.ContainedContentTypeDefinitions.Count() == 1)
+                            {
+                                var contentTypeDefinition = Model.ContainedContentTypeDefinitions.FirstOrDefault();
+                                <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
+                                    @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
+                                </a>
+                                <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
+                                    @T["Create {0}", contentTypeDefinition.DisplayName]
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
+                                    @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
+                                </a>
+                                <a class="btn btn-sm btn-success dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    @T["Create"]
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
+                                    {
+                                        <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@containedContentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
+                                            @containedContentTypeDefinition.DisplayName
+                                        </a>
+                                    }
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    }
+    </form>
+
     @if (Model.ContentItems.Any())
     {
         <ul class="list-group" @if (enableOrdering) { <text> id="ci-sortable" </text> }>
+
             @foreach (var contentItem in Model.ContentItems)
             {
                 var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
                 if (enableOrdering)
                 {
-                    contentItemSummary.Selectors.Add(await New.ListPart_Sortable());
+                    await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
                 }
                 <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)

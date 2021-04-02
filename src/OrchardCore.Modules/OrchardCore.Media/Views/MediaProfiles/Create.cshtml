@@ -1,6 +1,6 @@
 @model MediaProfileViewModel
 
-<h1>@RenderTitleSegments(T["Create Media Profile"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Media Profile"])</h1></zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post">
@@ -63,6 +63,17 @@
         </div>
     </div>
 
+    <div class="form-group" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode == ResizeMode.Pad || Model.SelectedMode == ResizeMode.BoxPad ? "" : "display: none;")">
+        <div class="w-100 w-md-50">
+            <label asp-for="BackgroundColor">@T["Background Color"]</label>
+            <input type="text" asp-for="BackgroundColor" class="form-control" />
+            <span asp-validation-for="BackgroundColor"></span>
+        </div>
+        <div class="w-100">
+            <span class="hint">@T["Select the background color for the processed image. An empty value means a bgcolor command will not be applied. Examples of valid values: 'white', 'ffff00', 'ffff0080', '128,64,32' and '128,64,32,80'."]</span>
+        </div>
+    </div>
+
     <div class="form-group" asp-validation-class-for="SelectedFormat">
         <div class="w-100 w-md-50">
                 <label asp-for="SelectedFormat">@T["Format"]</label>
@@ -100,11 +111,17 @@
     </div>
 </form>
 
-
 <script at="Foot">
     $(function () {
+        $('#@Html.IdFor(x => x.SelectedMode)').on('change', function() {
+            if ((this.value === '@((int)ResizeMode.Pad)') || (this.value === '@((int)ResizeMode.BoxPad)')) {
+                $('#@Html.IdFor(x => x.BackgroundColor)').closest('.form-group').show();
+            } else {
+                $('#@Html.IdFor(x => x.BackgroundColor)').closest('.form-group').hide();
+                $('#@Html.IdFor(x => x.BackgroundColor)').val('');
+            }
+        });
         $('#@Html.IdFor(x => x.SelectedWidth)').on('change', function() {
-            console.log(this.value)
             if (this.value === "-1") {
                 $('#@Html.IdFor(x => x.CustomWidth)').show();
             } else {
@@ -113,7 +130,6 @@
             }
         });
         $('#@Html.IdFor(x => x.SelectedHeight)').on('change', function() {
-            console.log(this.value)
             if (this.value === "-1") {
                 $('#@Html.IdFor(x => x.CustomHeight)').show();
             } else {

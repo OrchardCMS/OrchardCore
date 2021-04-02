@@ -179,10 +179,10 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                     // When image is shrunk compare against the modal body.
                     var offset = (this.$refs.modalBody.clientWidth - this.$refs.anchorImage.clientWidth) / 2;
                     var position = (this.selectedMedia.anchor.x * this.$refs.anchorImage.clientWidth) + offset;
-                    if (position < 17) { // Adjust so the target doesn't show outside image.
-                        position = 17;
-                    } else {
-                        position = position - 8; // Adjust to hit the mouse pointer.
+                    var anchorIcon = Math.round(this.$refs.modalBody.querySelector('.icon-media-anchor').clientWidth);
+                    if(Number.isInteger(anchorIcon))
+                    {
+                        position = position - anchorIcon/2;
                     }
                     return position + 'px';
                 } else {
@@ -192,11 +192,6 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             anchorTop: function () {
                 if (this.$refs.anchorImage && this.selectedMedia) {
                     var position = this.selectedMedia.anchor.y * this.$refs.anchorImage.clientHeight;
-                    if (position < 15) { // Adjustment so the target doesn't show outside image.
-                        position = 15;
-                    } else {
-                        position = position + 5; // Adjust to hit the mouse pointer.
-                    }
                     return position + 'px';
                 } else {
                     return '0';

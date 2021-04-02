@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -16,14 +17,14 @@ namespace OrchardCore.ContentManagement.Handlers
     public static class ValidateContentContextExtensions
     {
 
-        public static void Fail(this ValidateContentContext context, params ValidationResult[] errors)
+        public static void Fail(this ValidateContentContext context, ValidationResult error)
         {
-            context.ContentValidateResult.Fail(errors);
+            context.ContentValidateResult.Fail(error);
         }
 
         public static void Fail(this ValidateContentContext context, string errorMessage, params string[] memberNames)
         {
-            if (memberNames.Any())
+            if (memberNames != null && memberNames.Any())
             {
                 context.ContentValidateResult.Fail(new ValidationResult(errorMessage, memberNames));
             }

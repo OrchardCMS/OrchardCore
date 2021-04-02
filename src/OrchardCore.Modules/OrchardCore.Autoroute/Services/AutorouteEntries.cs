@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Records;
@@ -13,15 +15,24 @@ namespace OrchardCore.Autoroute.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {
+        private ImmutableDictionary<string, AutorouteEntry> _paths = ImmutableDictionary<string, AutorouteEntry>.Empty;
+        private ImmutableDictionary<string, AutorouteEntry> _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
+        private int _lastIndexId;
+        private string _stateIdentifier;
+        private bool _initialized;
+
         public AutorouteEntries()
         {
+            _contentItemIds = _contentItemIds.WithComparers(StringComparer.OrdinalIgnoreCase);
         }
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByPathAsync(string path)
         {
-            var document = await GetDocumentAsync();
+            await EnsureInitializedAsync();
 
-            if (document.ContentItemIds.TryGetValue(path, out var entry))
+            if (_contentItemIds.TryGetValue(path.TrimEnd('/'), out var entry))
             {
                 return (true, entry);
             }
@@ -31,9 +42,9 @@ namespace OrchardCore.Autoroute.Services
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByContentItemIdAsync(string contentItemId)
         {
-            var document = await GetDocumentAsync();
+            await EnsureInitializedAsync();
 
-            if (document.Paths.TryGetValue(contentItemId, out var entry))
+            if (_paths.TryGetValue(contentItemId, out var entry))
             {
                 return (true, entry);
             }
@@ -41,100 +52,173 @@ namespace OrchardCore.Autoroute.Services
             return (false, entry);
         }
 
-        public async Task AddEntriesAsync(IEnumerable<AutorouteEntry> entries)
+        public async Task UpdateEntriesAsync()
         {
-            var document = await LoadDocumentAsync();
-            AddEntries(document, entries);
-            await DocumentManager.UpdateAsync(document);
+            await EnsureInitializedAsync();
+
+            // Update the cache with a new state and then refresh entries as it would be done on a next request.
+            await AutorouteStateManager.UpdateAsync(new AutorouteStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
-        public async Task RemoveEntriesAsync(IEnumerable<AutorouteEntry> entries)
+        private async Task EnsureInitializedAsync()
         {
-            var document = await LoadDocumentAsync();
-            RemoveEntries(document, entries);
-            await DocumentManager.UpdateAsync(document);
+            if (!_initialized)
+            {
+                await InitializeEntriesAsync();
+            }
+            else
+            {
+                var state = await AutorouteStateManager.GetOrCreateImmutableAsync();
+                if (_stateIdentifier != state.Identifier)
+                {
+                    await RefreshEntriesAsync(state);
+                }
+            }
         }
 
-        private static void AddEntries(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
+        protected void AddEntries(IEnumerable<AutorouteEntry> entries)
         {
             // Evict all entries related to a container item from autoroute entries.
             // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
             foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
             {
-                var entriesToRemove = document.Paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
-                foreach (var entryToRemove in entriesToRemove)
-                {
-                    document.Paths.Remove(entryToRemove.ContainedContentItemId);
-                    document.ContentItemIds.Remove(entryToRemove.Path);
-                }
+                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId &&
+                    !String.IsNullOrEmpty(x.ContainedContentItemId));
+
+                _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
+                _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
             }
 
             foreach (var entry in entries)
             {
-                if (document.Paths.TryGetValue(entry.ContentItemId, out var previousContainerEntry) && String.IsNullOrEmpty(entry.ContainedContentItemId))
+                if (_paths.TryGetValue(entry.ContentItemId, out var previousContainerEntry) &&
+                    String.IsNullOrEmpty(entry.ContainedContentItemId))
                 {
-                    document.ContentItemIds.Remove(previousContainerEntry.Path);
+                    _contentItemIds = _contentItemIds.Remove(previousContainerEntry.Path);
                 }
 
-                if (!String.IsNullOrEmpty(entry.ContainedContentItemId) && document.Paths.TryGetValue(entry.ContainedContentItemId, out var previousContainedEntry))
+                if (!String.IsNullOrEmpty(entry.ContainedContentItemId) &&
+                    _paths.TryGetValue(entry.ContainedContentItemId, out var previousContainedEntry))
                 {
-                    document.ContentItemIds.Remove(previousContainedEntry.Path);
+                    _contentItemIds = _contentItemIds.Remove(previousContainedEntry.Path);
                 }
 
-                document.ContentItemIds[entry.Path] = entry;
+                _contentItemIds = _contentItemIds.SetItem(entry.Path, entry);
 
                 if (!String.IsNullOrEmpty(entry.ContainedContentItemId))
                 {
-                    document.Paths[entry.ContainedContentItemId] = entry;
+                    _paths = _paths.SetItem(entry.ContainedContentItemId, entry);
                 }
                 else
                 {
-                    document.Paths[entry.ContentItemId] = entry;
+                    _paths = _paths.SetItem(entry.ContentItemId, entry);
                 }
             }
         }
 
-        private static void RemoveEntries(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
+        protected void RemoveEntries(IEnumerable<AutorouteEntry> entries)
         {
             foreach (var entry in entries)
             {
                 // Evict all entries related to a container item from autoroute entries.
-                var entriesToRemove = document.Paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
-                foreach (var entryToRemove in entriesToRemove)
-                {
-                    document.Paths.Remove(entryToRemove.ContainedContentItemId);
-                    document.ContentItemIds.Remove(entryToRemove.Path);
-                }
+                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId &&
+                    !String.IsNullOrEmpty(x.ContainedContentItemId));
 
-                document.Paths.Remove(entry.ContentItemId);
-                document.ContentItemIds.Remove(entry.Path);
+                _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
+                _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
+
+                _paths = _paths.Remove(entry.ContentItemId);
+                _contentItemIds = _contentItemIds.Remove(entry.Path);
             }
         }
 
-        /// <summary>
-        /// Loads the autoroute document for updating and that should not be cached.
-        /// </summary>
-        private Task<AutorouteDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
-
-        /// <summary>
-        /// Gets the autoroute document for sharing and that should not be updated.
-        /// </summary>
-        private Task<AutorouteDocument> GetDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
-
-        protected virtual async Task<AutorouteDocument> CreateDocumentAsync()
+        private async Task RefreshEntriesAsync(AutorouteStateDocument state)
         {
-            var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published).ListAsync();
-            var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
+            if (_stateIdentifier == state.Identifier)
+            {
+                return;
+            }
 
-            var document = new AutorouteDocument();
-            AddEntries(document, entries);
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (_stateIdentifier != state.Identifier)
+                {
+                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId).ListAsync();
 
-            return document;
+                    // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
+                    // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
+                    // is not updated for the published version that may be already scanned, so the entry may not be re-added.
+
+                    var entriesToRemove = indexes
+                        .Where(i => !i.Published || i.Path == null)
+                        .SelectMany(i => _paths.Values.Where(e =>
+                            // The item was removed.
+                            ((!i.Published && !i.Latest) ||
+                            // The part was disabled or removed.
+                            (i.Path == null && i.Published) ||
+                            // The item was unpublished.
+                            (!i.Published && e.DocumentId == i.DocumentId)) &&
+                            (e.ContentItemId == i.ContentItemId ||
+                            e.ContainedContentItemId == i.ContentItemId)));
+
+                    var entriesToAdd = indexes
+                        .Where(i => i.Published && i.Path != null)
+                        .Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
+                        {
+                            DocumentId = i.DocumentId
+                        });
+
+                    RemoveEntries(entriesToRemove);
+                    AddEntries(entriesToAdd);
+
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+                    _stateIdentifier = state.Identifier;
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        protected virtual async Task InitializeEntriesAsync()
+        {
+            if (_initialized)
+            {
+                return;
+            }
+
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (!_initialized)
+                {
+                    var state = await AutorouteStateManager.GetOrCreateImmutableAsync();
+
+                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null).ListAsync();
+                    var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
+                    {
+                        DocumentId = i.DocumentId
+                    });
+
+                    AddEntries(entries);
+
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+                    _stateIdentifier = state.Identifier;
+
+                    _initialized = true;
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
 
-        private static IVolatileDocumentManager<AutorouteDocument> DocumentManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteDocument>>();
+        private static IVolatileDocumentManager<AutorouteStateDocument> AutorouteStateManager
+            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteStateDocument>>();
     }
 }

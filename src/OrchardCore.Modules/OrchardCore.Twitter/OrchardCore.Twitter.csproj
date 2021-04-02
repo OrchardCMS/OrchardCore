@@ -1,8 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+     <!-- NuGet properties-->
+    <Title>OrchardCore Twitter</Title>
+    <Description>$(OCCMSDescription)
+
+    Provides Twitter related features.
+    - TwitterClient and Workflow Activities to integrate with twitter.
+    - Authenticates users with their Twitter Account.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

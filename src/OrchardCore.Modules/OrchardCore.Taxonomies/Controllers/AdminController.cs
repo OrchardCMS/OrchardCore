@@ -295,7 +295,7 @@ namespace OrchardCore.Taxonomies.Controllers
             taxonomyItem.Remove();
             _session.Save(taxonomy);
 
-            _notifier.Success(H["Taxonomy item deleted successfully"]);
+            _notifier.Success(H["Taxonomy item deleted successfully."]);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }

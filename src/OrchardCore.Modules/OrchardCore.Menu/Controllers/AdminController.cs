@@ -232,6 +232,9 @@ namespace OrchardCore.Menu.Controllers
                 MergeNullValueHandling = MergeNullValueHandling.Merge
             });
 
+            // Merge doesn't copy the properties
+            menuItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
+
             await _contentManager.SaveDraftAsync(menu);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
@@ -276,7 +279,7 @@ namespace OrchardCore.Menu.Controllers
 
             await _contentManager.SaveDraftAsync(menu);
 
-            _notifier.Success(H["Menu item deleted successfully"]);
+            _notifier.Success(H["Menu item deleted successfully."]);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
         }

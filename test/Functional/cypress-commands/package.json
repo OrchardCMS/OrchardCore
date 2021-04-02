@@ -1,6 +1,6 @@
 {
   "name": "cypress-orchardcore",
-  "version": "0.2.0",
+  "version": "0.4.5",
   "author": "The Orchard Team",
   "description": "Cypress commands for Orchard Core",
   "license": "MIT",
@@ -26,7 +26,7 @@
     "watch": "rollup -c -w"
   },
   "dependencies": {
-    "rimraf": "3.0.2"
+    "fs-extra": "^9.0.1"
   },
   "devDependencies": {
     "rollup": "^2.32.0",

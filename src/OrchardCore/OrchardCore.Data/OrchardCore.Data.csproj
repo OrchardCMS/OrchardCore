@@ -1,7 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Data</Title>
+    <Description>$(OCCMSDescription)
+
+    Provides data access functionality using YesSql</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Data</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

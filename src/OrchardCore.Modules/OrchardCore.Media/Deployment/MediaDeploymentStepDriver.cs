@@ -6,6 +6,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Deployment
@@ -62,25 +63,22 @@ namespace OrchardCore.Media.Deployment
 
         private async Task<IList<MediaStoreEntryViewModel>> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
         {
-            var fileStoreEntries = (await _mediaFileStore.GetDirectoryContentAsync(path)).ToArray();
-
-            var mediaStoreEntries = new List<MediaStoreEntryViewModel>(fileStoreEntries.Length);
-
-            foreach (var fileStoreEntry in fileStoreEntries)
-            {
-                var mediaStoreEntry = new MediaStoreEntryViewModel
+            var mediaStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(path)
+                .SelectAwait(async e => 
                 {
-                    Name = fileStoreEntry.Name,
-                    Path = fileStoreEntry.Path,
-                    Parent = parent
-                };
+                    var mediaStoreEntry = new MediaStoreEntryViewModel
+                    {
+                        Name = e.Name,
+                        Path = e.Path,
+                        Parent = parent
+                    };
 
-                mediaStoreEntry.Entries = fileStoreEntry.IsDirectory
-                    ? await GetMediaStoreEntries(fileStoreEntry.Path, mediaStoreEntry)
-                    : Array.Empty<MediaStoreEntryViewModel>();
+                    mediaStoreEntry.Entries = e.IsDirectory
+                        ? await GetMediaStoreEntries(e.Path, mediaStoreEntry)
+                        : Array.Empty<MediaStoreEntryViewModel>();   
 
-                mediaStoreEntries.Add(mediaStoreEntry);
-            }
+                    return mediaStoreEntry;     
+                }).ToListAsync();
 
             return mediaStoreEntries;
         }

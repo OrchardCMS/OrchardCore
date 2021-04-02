@@ -224,9 +224,10 @@ namespace OrchardCore.Contents.Controllers
                 pager.PageSize = maxPagedCount;
             }
 
-            // We prepare the pager
-            var routeData = new RouteData();
-            routeData.Values.Add("DisplayText", model.Options.DisplayText);
+            // Populate route values to maintain previous route data when generating page links.
+            await _contentOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
+
+            var routeData = new RouteData(model.Options.RouteValues);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
@@ -291,7 +292,7 @@ namespace OrchardCore.Contents.Controllers
 
                             await _contentManager.PublishAsync(item);
                         }
-                        _notifier.Success(H["Content successfully published."]);
+                        _notifier.Success(H["Content published successfully."]);
                         break;
                     case ContentsBulkAction.Unpublish:
                         foreach (var item in checkedContentItems)
@@ -305,7 +306,7 @@ namespace OrchardCore.Contents.Controllers
 
                             await _contentManager.UnpublishAsync(item);
                         }
-                        _notifier.Success(H["Content successfully unpublished."]);
+                        _notifier.Success(H["Content unpublished successfully."]);
                         break;
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
@@ -319,7 +320,7 @@ namespace OrchardCore.Contents.Controllers
 
                             await _contentManager.RemoveAsync(item);
                         }
-                        _notifier.Success(H["Content successfully removed."]);
+                        _notifier.Success(H["Content removed successfully."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

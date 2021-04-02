@@ -1,8 +1,13 @@
   <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Microsoft Authentication</Title>
+    <Description>$(OCCMSDescription)
+
+    Provide features to Authenticates users using  Microsoft Account, Azure Active Directory Account.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
     <ItemGroup>

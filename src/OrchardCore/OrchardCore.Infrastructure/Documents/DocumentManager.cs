@@ -57,15 +57,17 @@ namespace OrchardCore.Documents
             {
                 if (_volatileCache != null)
                 {
-                    return _volatileCache;
+                    document = _volatileCache;
                 }
-
-                _volatileCache = document = await GetFromDistributedCacheAsync()
-                    ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
-                    ?? new TDocument();
+                else
+                {
+                    document = _volatileCache = await GetFromDistributedCacheAsync()
+                        ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
+                        ?? new TDocument();
+                }
             }
 
-            document.Identifier = null;
+            document.Identifier = IdGenerator.GenerateId();
 
             return document;
         }
@@ -98,7 +100,7 @@ namespace OrchardCore.Documents
             return document;
         }
 
-        public Task UpdateAsync(TDocument document)
+        public Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null)
         {
             if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
             {
@@ -109,9 +111,14 @@ namespace OrchardCore.Documents
 
             if (!_isVolatile)
             {
-                return _documentStore.UpdateAsync(document, document =>
+                return _documentStore.UpdateAsync(document, async document =>
                 {
-                    return SetInternalAsync(document);
+                    await SetInternalAsync(document);
+
+                    if (afterUpdateAsync != null)
+                    {
+                        await afterUpdateAsync(document);
+                    }
                 },
                 _options.CheckConcurrency.Value);
             }
@@ -120,9 +127,14 @@ namespace OrchardCore.Documents
             _volatileCache = document;
 
             // But still update the shared cache after committing.
-            _documentStore.AfterCommitSuccess<TDocument>(() =>
+            _documentStore.AfterCommitSuccess<TDocument>(async () =>
             {
-                return SetInternalAsync(document);
+                await SetInternalAsync(document);
+
+                if (afterUpdateAsync != null)
+                {
+                    await afterUpdateAsync(document);
+                }
             });
 
             return Task.CompletedTask;
@@ -138,10 +150,10 @@ namespace OrchardCore.Documents
             string id;
             if (_isDistributed)
             {
-                // Cache the id locally for one second to prevent network contention.
+                // Cache the id locally for the synchronization latency time.
                 id = await _memoryCache.GetOrCreateAsync(_options.CacheIdKey, entry =>
                 {
-                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
+                    entry.AbsoluteExpirationRelativeToNow = _options.SynchronizationLatency;
                     return _distributedCache.GetStringAsync(_options.CacheIdKey);
                 });
             }

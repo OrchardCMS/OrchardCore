@@ -14,8 +14,6 @@ namespace OrchardCore.Alias.Drivers
 {
     public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
     {
-        // Maximum length that MySql can support in an index under utf8 collation.
-        public const int MaxAliasLength = 767;
 
         private readonly ISession _session;
         private readonly IStringLocalizer S;
@@ -38,8 +36,10 @@ namespace OrchardCore.Alias.Drivers
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
 
-            var errors = await context.ValidateAsync(model);
-            updater.ModelState.BindValidationResults(Prefix, errors);
+            await foreach (var item in model.ValidateAsync(S, _session))
+            {
+                updater.ModelState.BindValidationResult(Prefix, item);
+            }
 
             return Edit(model, context);
         }

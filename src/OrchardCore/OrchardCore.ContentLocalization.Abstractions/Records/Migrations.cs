@@ -25,25 +25,51 @@ namespace OrchardCore.ContentLocalization.Records
                 .Column<string>("LocalizationSet", col => col.WithLength(26))
                 .Column<string>("Culture", col => col.WithLength(16))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
-                .CreateIndex("IDX_LocalizationPartIndex_LocalizationSet_Culture", new[] { "LocalizationSet", "Culture" })
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+                .CreateIndex("IDX_LocalizationPartIndex_DocumentId",
+                "DocumentId",
+                "LocalizationSet",
+                "Culture",
+                "ContentItemId",
+                "Published",
+                "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
-                .CreateIndex("IDX_LocalizationPartIndex_ContentItemId", "ContentItemId")
-            );
-
-            return 1;
+            // Shortcut other migration steps on new content definition schemas.
+            return 3;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
                 .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
 
             return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+                .AddColumn<bool>(nameof(LocalizedContentItemIndex.Latest))
+            );
+
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+                .CreateIndex("IDX_LocalizationPartIndex_DocumentId",
+                "DocumentId",
+                "LocalizationSet",
+                "Culture",
+                "ContentItemId",
+                "Published",
+                "Latest")
+            );
+
+            return 3;
         }
     }
 }

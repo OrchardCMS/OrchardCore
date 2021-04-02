@@ -20,5 +20,6 @@ namespace OrchardCore.Media.Models
         public ResizeMode Mode { get; set; }
         public Format Format { get; set; }
         public int Quality { get; set; }
+        public string BackgroundColor { get; set; }
     }
 }
