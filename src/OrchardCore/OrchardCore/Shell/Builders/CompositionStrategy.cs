@@ -33,55 +33,58 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogDebug("Composing blueprint");
             }
 
-            var featureNames = descriptor.Features.Select(x => x.Id).ToArray();
-            var features = await _extensionManager.LoadFeaturesAsync(featureNames);
+            var featureIds = descriptor.Features.Select(x => x.Id).ToArray();
+            var features = await _extensionManager.LoadFeaturesAsync(featureIds);
 
-            var dependenciesEntries = new OrderedDictionary();
-            var requireFeaturesEntries = new List<RequireFeaturesEntry>();
-            var lastIndexesByFeatureId = new Dictionary<string, int>();
+            var typesFeatures = new List<TypeFeatureEntry>();
+            var typesRequiredFeatures = new List<TypeFeatureEntry>();
+            var typesFeaturesMaxOrders = new Dictionary<string, int>();
 
-            for (var i = 0; i < features.Count(); i++)
+            // Enlist all type feature entries in the current order of enabled features.
+            var order = 0;
+            foreach (var feature in features)
             {
-                var feature = features.ElementAt(i);
-                for (var n = 0; n < feature.ExportedTypes.Count(); n++)
+                foreach (var type in feature.ExportedTypes)
                 {
-                    var exportedType = feature.ExportedTypes.ElementAt(n);
-
-                    var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
-                    if (requiredFeatures.All(id => featureNames.Contains(id)))
+                    var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(type);
+                    if (requiredFeatures.All(id => featureIds.Contains(id)))
                     {
                         if (requiredFeatures.Count > 0)
                         {
-                            requireFeaturesEntries.Add(new RequireFeaturesEntry(exportedType, feature, requiredFeatures, i + n));
+                            // Add a type feature entry having at least a required feature.
+                            typesRequiredFeatures.Add(new TypeFeatureEntry(type, feature, order, requiredFeatures));
+                        }
+                        else
+                        {
+                            // Update the max order of entries for this feature.
+                            typesFeaturesMaxOrders[feature.FeatureInfo.Id] = order;
+                            typesFeatures.Add(new TypeFeatureEntry(type, feature, order));
                         }
 
-                        lastIndexesByFeatureId[feature.FeatureInfo.Id] = i + n;
-                        dependenciesEntries.Add(exportedType, feature);
+                        // Keep odd values that will be used for entries having required features.
+                        order += 2;
                     }
                 }
             }
 
-            // Move down the types according to their required features.
-            foreach (var require in requireFeaturesEntries)
+            // Adjust order of entries having required features.
+            foreach (var typeFeature in typesRequiredFeatures)
             {
-                var requireIndex = require.Index;
-                foreach (var required in require.RequiredFeatures)
+                foreach (var requiredFeature in typeFeature.RequiredFeatures)
                 {
-                    if (lastIndexesByFeatureId.TryGetValue(required, out var index) && index > requireIndex)
+                    if (typesFeaturesMaxOrders.TryGetValue(requiredFeature, out var maxOrder) &&
+                        maxOrder > typeFeature.Order)
                     {
-                        requireIndex = index;
+                        // Use odd values to move down the entry.
+                        typeFeature.Order = maxOrder + 1;
                     }
-                }
-
-                if (requireIndex != require.Index)
-                {
-                    dependenciesEntries.RemoveAt(require.Index);
-                    dependenciesEntries.Insert(requireIndex, require.Type, require.Feature);
                 }
             }
 
-            var dependencies = dependenciesEntries.Cast<DictionaryEntry>()
-                .ToDictionary(e => (Type)e.Key, e => (FeatureEntry)e.Value);
+            var dependencies = typesFeatures
+                .Concat(typesRequiredFeatures)
+                .OrderBy(e => e.Order)
+                .ToDictionary(e => e.Type, e => e.Feature);
 
             var result = new ShellBlueprint
             {
@@ -98,20 +101,20 @@ namespace OrchardCore.Environment.Shell.Builders
             return result;
         }
 
-        internal class RequireFeaturesEntry
+        internal class TypeFeatureEntry
         {
-            public RequireFeaturesEntry(Type type, FeatureEntry feature, IList<string> requiredFeatures, int index)
+            public TypeFeatureEntry(Type type, FeatureEntry feature, int order, IList<string> requiredFeatures = null)
             {
                 Type = type;
                 Feature = feature;
                 RequiredFeatures = requiredFeatures;
-                Index = index;
+                Order = order;
             }
 
             public Type Type { get; }
             public FeatureEntry Feature { get; }
             public IList<string> RequiredFeatures { get; }
-            public int Index { get; }
+            public int Order { get; set; }
         }
     }
 }
