@@ -5,10 +5,8 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -32,7 +30,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var zone = layout.Zones[name];
 
-            if (zone is ZoneOnDemand)
+            if (zone.IsNullOrEmpty())
             {
                 if (required)
                 {
@@ -42,7 +40,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 return Completion.Normal;
             }
 
-            IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(zone);
+            var htmlContent = await displayHelper.ShapeExecuteAsync(zone);
             htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;

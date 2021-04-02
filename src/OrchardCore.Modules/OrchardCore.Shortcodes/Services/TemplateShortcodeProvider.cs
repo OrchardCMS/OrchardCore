@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Models;
@@ -15,9 +14,9 @@ namespace OrchardCore.Shortcodes.Services
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly HashSet<string> _identifiers = new HashSet<string>();
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
+        private readonly HashSet<string> _identifiers = new HashSet<string>();
 
         public TemplateShortcodeProvider(
             ShortcodeTemplatesManager shortcodeTemplatesManager,
@@ -54,27 +53,27 @@ namespace OrchardCore.Shortcodes.Services
                 Context = context
             };
 
-            var parameters = new Dictionary<string, FluidValue>();
-            parameters[identifier] = new StringValue("");
+            var parameters = new Dictionary<string, FluidValue>
+            {
+                [identifier] = new StringValue(""),
+                ["Args"] = new ObjectValue(model.Args),
+                ["Content"] = new ObjectValue(new Content(model.Content)),
+                ["Context"] = new ObjectValue(model.Context)
+            };
 
-            // TODO: Fix 'Content' property conflict differently, see #8259
+            var result = await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
 
-            // var c = context.GetValue("Content").ToObjectValue();
-            // if (c is LiquidContentAccessor contentAccessor)
-            // {
-            //     contentAccessor.Content = model.Content ?? "";
-            //     parameters["Content"] = contentAccessor;
-            // }
-            // else
-            // {
-            //     parameters["Content"] = model.Content ?? "";
-            // }
+            // Allow multiple serial calls of this shortcode template.
+            _identifiers.Remove(identifier);
 
-            parameters["Args"] = new ObjectValue(model.Args);
-            parameters["Content"] = new StringValue(model.Content);
-            parameters["Context"] = new ObjectValue(model.Context);
+            return result;
+        }
 
-            return await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
+        internal class Content : LiquidContentAccessor
+        {
+            public readonly string _content;
+            public Content(string content) => _content = content;
+            public override string ToString() => _content;
         }
     }
 }

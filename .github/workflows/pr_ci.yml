@@ -20,6 +20,9 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "15"
     - name: Setup .NET Core 3.1 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:

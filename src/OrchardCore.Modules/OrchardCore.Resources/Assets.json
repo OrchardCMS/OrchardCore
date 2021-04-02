@@ -300,5 +300,34 @@
       "node_modules/js-cookie/src/js.cookie.js"
     ],
     "output": "wwwroot/Scripts/js.cookie.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/monaco-editor/dev/**/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/dev/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/monaco/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/monaco-editor/min/**/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/min/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/monaco-editor/min-maps/**/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/min-maps/@"
   }
+
 ]

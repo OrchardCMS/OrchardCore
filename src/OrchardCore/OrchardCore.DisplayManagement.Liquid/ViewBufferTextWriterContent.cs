@@ -10,148 +10,220 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     /// <summary>
     /// An <see cref="IHtmlContent"/> implementation that inherits from <see cref="TextWriter"/> to write to the ASP.NET ViewBufferTextWriter
-    /// in an optimal way. The ViewBufferTextWriter implementation in ASP.NET won't allocate if Write(object) is invoked with instances of
-    /// <see cref="IHtmlContent"/>.
+    /// in an optimal way.
     /// </summary>
     public class ViewBufferTextWriterContent : TextWriter, IHtmlContent
     {
-        private static readonly HtmlString[] _internedChars = InitInternedChars();
-        private const int _internedCharsLength = 256;
-
-        private readonly List<IHtmlContent> _fragments = new List<IHtmlContent>();
-
-        private static HtmlString[] InitInternedChars()
-        {
-            // Memoize all ASCII chars to prevent allocations
-            var internedChars = new HtmlString[_internedCharsLength];
-
-            for (var i = 0; i < _internedCharsLength; i++)
-            {
-                internedChars[i] = new HtmlString(((char)i).ToString());
-            }
-
-            return internedChars;
-        }
+        private StringBuilder _builder;
+        private StringBuilderPool _pooledBuilder;
+        private List<StringBuilderPool> _previousPooledBuilders;
 
         public override Encoding Encoding => Encoding.UTF8;
+
+        public ViewBufferTextWriterContent()
+        {
+            _pooledBuilder = StringBuilderPool.GetInstance();
+            _builder = _pooledBuilder.Builder;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            ReleasePooledBuffer();
+        }
+
+        private void ReleasePooledBuffer()
+        {
+            if (_pooledBuilder != null)
+            {
+                _pooledBuilder.Dispose();
+                _pooledBuilder = null;
+                _builder = null;
+
+                if (_previousPooledBuilders != null)
+                {
+                    foreach (var pooledBuilder in _previousPooledBuilders)
+                    {
+                        pooledBuilder.Dispose();
+                    }
+
+                    _previousPooledBuilders.Clear();
+                    _previousPooledBuilders = null;
+                }
+            }
+        }
+
+        private StringBuilder AllocateBuilder()
+        {
+            _previousPooledBuilders ??= new List<StringBuilderPool>();
+            _previousPooledBuilders.Add(_pooledBuilder);
+
+            _pooledBuilder = StringBuilderPool.GetInstance();
+            _builder = _pooledBuilder.Builder;
+            return _builder;
+        }
 
         // Invoked when used as TextWriter to intercept what is supposed to be written
         public override void Write(string value)
         {
-            _fragments.Add(new HtmlString(value));
+            if (value == null || value.Length == 0)
+            {
+                return;
+            }
+
+            if (_builder.Length + value.Length <= _builder.Capacity)
+            {
+                _builder.Append(value);
+            }
+            else
+            {
+                // The string doesn't fit in the buffer, rent more
+                var index = 0;
+                do
+                {
+                    var sizeToCopy = Math.Min(_builder.Capacity - _builder.Length, value.Length - index);
+                    _builder.Append(value.AsSpan(index, sizeToCopy));
+
+                    if (_builder.Length == _builder.Capacity)
+                    {
+                        AllocateBuilder();
+                    }
+
+                    index += sizeToCopy;
+                } while (index < value.Length);
+            }
         }
 
         public override void Write(char value)
         {
-            // perf: when a string is encoded (e.g. {{ value }} in a view) and the content contains some encoded chars,
-            // the TextWriter implementation will call Write(char) for the whole string, creating as many fragments as chars in the string.
-            // This could be optimized by creating a custom HTML encoder that finds blocks
-            // https://source.dot.net/#System.Text.Encodings.Web/System/Text/Encodings/Web/TextEncoder.cs,365
+            if (_builder.Length >= _builder.Capacity)
+            {
+                AllocateBuilder();
+            }
 
-            if (value < _internedCharsLength)
-            {
-                _fragments.Add(_internedChars[value]);
-            }
-            else
-            {
-                _fragments.Add(new HtmlString(value.ToString()));
-            }
+            _builder.Append(value);
         }
 
         public override void Write(char[] buffer)
         {
-            _fragments.Add(new CharrArrayHtmlContent(buffer));
-        }
-
-        public override void Write(char[] buffer, int index, int count)
-        {
-            if (index == 0 && buffer.Length == count)
+            if (buffer == null || buffer.Length == 0)
             {
-                _fragments.Add(new CharrArrayHtmlContent(buffer));
+                return;
+            }
+
+            if (_builder.Length + buffer.Length <= _builder.Capacity)
+            {
+                _builder.Append(buffer);
             }
             else
             {
-                _fragments.Add(new CharrArrayFragmentHtmlContent(buffer, index, count));
+                // The string doesn't fit in the buffer, rent more
+                var index = 0;
+                do
+                {
+                    var sizeToCopy = Math.Min(_builder.Capacity - _builder.Length, buffer.Length - index);
+                    _builder.Append(buffer.AsSpan(index, sizeToCopy));
+
+                    if (_builder.Length == _builder.Capacity)
+                    {
+                        AllocateBuilder();
+                    }
+
+                    index += sizeToCopy;
+                } while (index < buffer.Length);
+            }
+        }
+
+        public override void Write(char[] buffer, int offset, int count)
+        {
+            if (buffer == null || buffer.Length == 0 || count == 0)
+            {
+                return;
+            }
+
+            if (_builder.Length + count <= _builder.Capacity)
+            {
+                _builder.Append(buffer, offset, count);
+            }
+            else
+            {
+                // The string doesn't fit in the buffer, rent more
+                var index = 0;
+                do
+                {
+                    var sizeToCopy = Math.Min(_builder.Capacity - _builder.Length, count - index);
+                    _builder.Append(buffer.AsSpan(index + offset, sizeToCopy));
+
+                    if (_builder.Length == _builder.Capacity)
+                    {
+                        AllocateBuilder();
+                    }
+
+                    index += sizeToCopy;
+                } while (index < count);
             }
         }
 
         public override void Write(ReadOnlySpan<char> buffer)
         {
-            _fragments.Add(new CharrArrayHtmlContent(buffer.ToArray()));
+            if (buffer.Length == 0)
+            {
+                return;
+            }
+
+            if (_builder.Length + buffer.Length <= _builder.Capacity)
+            {
+                _builder.Append(buffer);
+            }
+            else
+            {
+                // The string doesn't fit in the buffer, rent more
+                var index = 0;
+                do
+                {
+                    var sizeToCopy = Math.Min(_builder.Capacity - _builder.Length, buffer.Length - index);
+                    _builder.Append(buffer.Slice(index, sizeToCopy));
+
+                    if (_builder.Length == _builder.Capacity)
+                    {
+                        AllocateBuilder();
+                    }
+
+                    index += sizeToCopy;
+                } while (index < buffer.Length);
+            }
         }
 
-        // Invoked by IHtmlContent when rendered on the final output
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
-            foreach (var fragment in _fragments)
+            if (_builder == null)
             {
-                writer.Write(fragment);
+                throw new InvalidOperationException("Buffer has already been rendered");
             }
+
+            if (_previousPooledBuilders != null)
+            {
+                foreach (var pooledBuilder in _previousPooledBuilders)
+                {
+                    foreach (var chunk in pooledBuilder.Builder.GetChunks())
+                    {
+                        writer.Write(chunk.Span);
+                    }
+                }
+            }
+
+            foreach (var chunk in _builder.GetChunks())
+            {
+                writer.Write(chunk.Span);
+            }
+
+            ReleasePooledBuffer();
         }
 
         public override Task FlushAsync()
         {
             // Override since the base implementation does unnecessary work
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see langword="char[]"/>.
-        /// </summary>
-        private class CharrArrayHtmlContent : IHtmlContent
-        {
-            public CharrArrayHtmlContent(char[] value)
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                Value = value;
-            }
-
-            public char[] Value { get; }
-
-            /// <inheritdoc />
-            public void WriteTo(TextWriter writer, HtmlEncoder encoder)
-            {
-                writer.Write(Value);
-            }
-
-            /// <inheritdoc />
-            public override string ToString()
-            {
-                return new String(Value);
-            }
-        }
-
-        /// <summary>
-        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see langword="char[]"/>.
-        /// </summary>
-        private class CharrArrayFragmentHtmlContent : IHtmlContent
-        {
-            public CharrArrayFragmentHtmlContent(char[] value, int index, int length)
-            {
-                Value = value;
-                Index = index;
-                Length = length;
-            }
-
-            public char[] Value { get; }
-            public int Index { get; }
-            public int Length { get; }
-
-            /// <inheritdoc />
-            public void WriteTo(TextWriter writer, HtmlEncoder encoder)
-            {
-                writer.Write(Value, Index, Length);
-            }
-
-            /// <inheritdoc />
-            public override string ToString()
-            {
-                return new String(Value, Index, Length);
-            }
         }
     }
 }
