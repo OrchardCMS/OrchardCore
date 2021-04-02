@@ -79,7 +79,7 @@ namespace OrchardCore.Taxonomies
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 5;
+            return 6;
         }
 
         // Migrate FieldSettings. This only needs to run on old content definition schemas.
@@ -168,7 +168,7 @@ namespace OrchardCore.Taxonomies
             return 5;
         }
 
-        public int UpdateFrom3()
+        public int UpdateFrom5()
         {
             SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
                 .AddColumn<int>("Order", column => column.WithDefault(0))
@@ -178,7 +178,7 @@ namespace OrchardCore.Taxonomies
                 .CreateIndex("IDX_TaxonomyIndex_Order", "Order")
             );
 
-            return 4;
+            return 6;
         }
     }
 
