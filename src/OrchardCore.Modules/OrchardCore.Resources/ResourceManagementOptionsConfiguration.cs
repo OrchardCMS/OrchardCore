@@ -22,7 +22,7 @@ namespace OrchardCore.Resources
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
-        public ResourceManagementOptionsConfiguration(ISiteService siteService, IHostEnvironment env, IHttpContextAccessor httpContextAccessor,ShellSettings shellSettings)
+        public ResourceManagementOptionsConfiguration(ISiteService siteService, IHostEnvironment env, IHttpContextAccessor httpContextAccessor, ShellSettings shellSettings)
         {
             _siteService = siteService;
             _env = env;
@@ -428,14 +428,14 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("monaco-loader")
-                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min/vs/loader.js", "~/OrchardCore.Resources/Scripts/monaco/dev/vs/loader.js")
+                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min/vs/loader.js")
                 .SetPosition(ResourcePosition.Last)
                 .SetVersion(monacoEditorVersion);
 
             manifest
                 .DefineScript("monaco")
                 .SetAttribute("data-tenant-prefix", _tenantPrefix)
-                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min.js", "~/OrchardCore.Resources/Scripts/monaco/dev.js")
+                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min.js")
                 .SetDependencies("monaco-loader")
                 .SetVersion(monacoEditorVersion);
 
