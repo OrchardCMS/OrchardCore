@@ -61,7 +61,7 @@ namespace OrchardCore.Environment.Shell.Builders
                             typesFeatures.Add(new TypeFeatureEntry(type, feature, order));
                         }
 
-                        // Keep odd values that will be used for entries having required features.
+                        // Keeping odd values will allow to move down entries having required features.
                         order += 2;
                     }
                 }
@@ -75,7 +75,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     if (typesFeaturesMaxOrders.TryGetValue(requiredFeature, out var maxOrder) &&
                         maxOrder > typeFeature.Order)
                     {
-                        // Use odd values to move down the entry.
+                        // Use the next odd value to move down the entry.
                         typeFeature.Order = maxOrder + 1;
                     }
                 }
