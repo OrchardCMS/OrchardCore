@@ -6,3 +6,94 @@ updates:
       interval: "daily"
     labels:
       - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.AdminDashboard"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.AdminMenu"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.Apis.GraphQL"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.Markdown"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.Media"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.Resources"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.Setup"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.Themes"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.Shortcodes"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Modules/OrchardCore.Workflows"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Themes/TheAdmin"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Themes/TheAgencyTheme"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/src/OrchardCore.Themes/TheTheme"
+    schedule:
+      interval: "daily"
+    labels:
+      - "dependencies"
