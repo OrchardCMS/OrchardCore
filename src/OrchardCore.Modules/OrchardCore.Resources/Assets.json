@@ -314,12 +314,5 @@
       "node_modules/monaco-editor/min/**/*"
     ],
     "output": "wwwroot/Scripts/monaco/min/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/monaco-editor/min-maps/**/*"
-    ],
-    "output": "wwwroot/Scripts/monaco/min-maps/@"
   }
 ]
