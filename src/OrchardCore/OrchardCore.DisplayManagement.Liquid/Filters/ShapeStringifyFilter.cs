@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
@@ -27,7 +22,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {
-                return new HtmlContentValue(await task);
+                using var writer = new StringWriter();
+                (await task).WriteTo(writer, NullHtmlEncoder.Default);
+                return new StringValue(writer.ToString(), false);
             }
 
             if (input.ToObjectValue() is IShape shape)
@@ -38,17 +35,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                     return Awaited(task);
                 }
 
-                StringValue value;
-                using (var writer = new StringWriter())
-                {
-                    task.Result.WriteTo(writer, NullHtmlEncoder.Default);
-                    value = new StringValue(writer.ToString(), false);
-                }
-
-                return new ValueTask<FluidValue>(value);
+                using var writer = new StringWriter();
+                task.Result.WriteTo(writer, NullHtmlEncoder.Default);
+                return new ValueTask<FluidValue>(new StringValue(writer.ToString(), false));
             }
 
-            return new ValueTask<FluidValue>(NilValue.Instance);
+            return new ValueTask<FluidValue>(StringValue.Empty);
         }
     }
 }
