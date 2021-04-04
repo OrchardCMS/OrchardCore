@@ -317,7 +317,7 @@ namespace OrchardCore.Environment.Extensions
                             featureTypes = Array.Empty<Type>();
                         }
 
-                        loadedFeatures.Add(feature.Id, new CompiledFeatureEntry(feature, featureTypes));
+                        loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));
                     }
                 };
 
