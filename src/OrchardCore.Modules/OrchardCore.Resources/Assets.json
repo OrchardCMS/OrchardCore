@@ -313,6 +313,6 @@
     "inputs": [
       "node_modules/monaco-editor/min/**/*"
     ],
-    "output": "wwwroot/Scripts/monaco/min/@"
+    "output": "wwwroot/Scripts/monaco/@"
   }
 ]

@@ -428,14 +428,14 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("monaco-loader")
-                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min/vs/loader.js")
+                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/vs/loader.js")
                 .SetPosition(ResourcePosition.Last)
                 .SetVersion(monacoEditorVersion);
 
             manifest
                 .DefineScript("monaco")
                 .SetAttribute("data-tenant-prefix", _tenantPrefix)
-                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min.js")
+                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/ocmonaco.js")
                 .SetDependencies("monaco-loader")
                 .SetVersion(monacoEditorVersion);
 
