@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -12,25 +14,26 @@ namespace OrchardCore.Contents.Recipes
     /// </summary>
     public class ContentStep : IRecipeStepHandler
     {
-        private readonly IContentManager _contentManager;
-
-        public ContentStep(IContentManager contentManager)
-        {
-            _contentManager = contentManager;
-        }
-
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var model = context.Step.ToObject<ContentStepModel>();
 
             var contentItems = model.Data.ToObject<ContentItem[]>();
 
-            await _contentManager.ImportAsync(contentItems);
+            // We defer the import of content items to ensure that all needed migrations are executed before,
+            // this prevents a workflow triggered by an handler to be executed before the worflows migrations.
+            ShellScope.AddDeferredTask(async scope =>
+            {
+                var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+                await contentManager.ImportAsync(contentItems);
+            });
+
+            return Task.CompletedTask;
         }
     }
 

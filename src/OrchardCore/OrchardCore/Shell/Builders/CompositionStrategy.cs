@@ -56,7 +56,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         }
                         else
                         {
-                            // Update the max order of entries for this feature.
+                            // Update the max entry order for this feature.
                             typesFeaturesMaxOrders[feature.FeatureInfo.Id] = order;
                             typesFeatures.Add(new TypeFeatureEntry(type, feature, order));
                         }
