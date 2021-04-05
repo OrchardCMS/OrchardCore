@@ -44,10 +44,11 @@ You can disable this by unchecking the `Sanitize HTML` setting, or further confi
 The __HtmlBody Part__ editor can be different for each content type. In the __HtmlBody Part__ settings of a 
 content type, just select the one that needs to be used.
 
-There are two predefined editor names:
+There are three predefined editor names:
 
 - `Default` is the editor that is used by default.
 - `Wysiwyg` is the editor that provides a WYSIWYG experience.
+- `Monaco` is the editor that provides a source code experience.
 
 ### Custom Editors
 

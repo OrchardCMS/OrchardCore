@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         public static ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
-            
+
             var antiforgery = services.GetRequiredService<IAntiforgery>();
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
 
@@ -24,9 +23,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tokenSet = antiforgery.GetAndStoreTokens(httpContext);
 
             writer.Write("<input name=\"");
-            encoder.Encode(writer, tokenSet.FormFieldName);
+            writer.Write(encoder.Encode(tokenSet.FormFieldName));
             writer.Write("\" type=\"hidden\" value=\"");
-            encoder.Encode(writer, tokenSet.RequestToken);
+            writer.Write(encoder.Encode(tokenSet.RequestToken));
             writer.Write("\" />");
 
             return new ValueTask<Completion>(Completion.Normal);
