@@ -371,7 +371,7 @@ namespace OrchardCore.Environment.Shell.Scope
                         scope = new ShellScope(ShellContext);
                     }
 
-                    // 'UsingAsync()' allows a deferred task to trigger a deferred task.
+                    // Don't use 'UsingServiceScopeAsync()' to allow a deferred task to trigger another one.
                     await scope.UsingAsync(async scope =>
                     {
                         var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
@@ -386,7 +386,9 @@ namespace OrchardCore.Environment.Shell.Scope
                                 "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
                                 task.GetType().FullName, ShellContext.Settings.Name);
                         }
-                    }, activateShell: false);
+                    },
+                    // But we still prevent the shell to be activated in a deferred task.
+                    activateShell: false);
                 }
             }
         }
