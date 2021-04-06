@@ -36,6 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
+                
+
                 services.AddOptions<StoreCollectionOptions>();
 
                 // Adding supported databases
@@ -138,6 +140,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
+
+            
 
             return builder;
         }

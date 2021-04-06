@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
@@ -129,6 +130,8 @@ namespace OrchardCore.Users
                 configuration.GetSection("OrchardCore_Users").Bind(userOptions);
             });
 
+            services.Configure<StoreCollectionOptions>(o => o.Collections.Add("User"));
+
             services.AddSecurity();
 
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
@@ -173,12 +176,17 @@ namespace OrchardCore.Users
                 options.LoginPath = "/" + userOptions.Value.LoginPath;
                 options.LogoutPath = "/" + userOptions.Value.LogoffPath;
                 options.AccessDeniedPath = "/Error/403";
+               
             });
 
-            services.AddSingleton<IIndexProvider, UserIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
+            //修改所有index的注册，增加collection
+            services.AddSingleton<IIndexProvider, UserIndexProvider>((s) => { return new UserIndexProvider { CollectionName="User" }; });
+            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>((s)=> { return new UserByRoleNameIndexProvider(s.GetService<ILookupNormalizer>()) { CollectionName = "User" }; });
+            services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>(s=> { return new UserByLoginInfoIndexProvider() { CollectionName="User"}; });
+            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>(s=> { return new UserByClaimIndexProvider() { CollectionName = "User" }; });
+
+            //services.AddSingleton<IOptions<StoreCollectionOptions>, StoreCollectionOptions>(s => { return new StoreCollectionOptions() { Collections=new System.Collections.Generic.HashSet<string>{""} }; });
+
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
