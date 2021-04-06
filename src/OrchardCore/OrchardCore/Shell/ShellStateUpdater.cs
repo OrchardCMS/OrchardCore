@@ -52,7 +52,7 @@ namespace OrchardCore.Environment.Shell
                 .Select(fe => new
                 {
                     Feature = fe,
-                    FeatureDescriptor = fe.FeatureInfo,
+                    FeatureInfo = fe.FeatureInfo,
                     FeatureState = shellState.Features.FirstOrDefault(s => s.Id == fe.FeatureInfo.Id),
                 })
                 .Where(entry => entry.FeatureState != null)
@@ -64,15 +64,12 @@ namespace OrchardCore.Environment.Shell
             // create additional stub entries for the sake of firing state change events on missing features
             var allEntries = loadedEntries.Concat(additionalState.Select(featureState =>
             {
-                var featureDescriptor = new InternalFeatureInfo(
-                    featureState.Id,
-                    new InternalExtensionInfo(featureState.Id)
-                    );
+                var featureInfo = new FeatureInfo(featureState.Id, new ExtensionInfo(featureState.Id));
 
                 return new
                 {
-                    Feature = (FeatureEntry)new NonCompiledFeatureEntry(featureDescriptor),
-                    FeatureDescriptor = (IFeatureInfo)featureDescriptor,
+                    Feature = new FeatureEntry(featureInfo),
+                    FeatureInfo = (IFeatureInfo)featureInfo,
                     FeatureState = featureState
                 };
             })).ToArray();
