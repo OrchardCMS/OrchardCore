@@ -40,7 +40,7 @@ namespace OrchardCore.Layers.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<LayerStepModel>();
+            var model = context.Step.ToObject<LayersStepModel>();
 
             var allLayers = await _layerService.LoadLayersAsync();
 
@@ -83,18 +83,18 @@ namespace OrchardCore.Layers.Recipes
 
                     // The conditions list is cleared, because we cannot logically merge conditions.
                     layer.LayerRule.Conditions.Clear();
-                    foreach (var condition in layerStep.LayerRule.Conditions)
+                    foreach (var jCondition in layerStep.LayerRule.Conditions)
                     {
-                        if (factories.TryGetValue(condition.Name, out var factory))
+                        var name = jCondition["Name"].ToString();
+                        if (factories.TryGetValue(name, out var factory))
                         {
-                            var jCondition = JObject.FromObject(condition);
                             var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType());
 
                             layer.LayerRule.Conditions.Add(factoryCondition);
                         }
                         else
                         {
-                             unknownTypes.Add(condition.Name);
+                             unknownTypes.Add(name);
                         }
                     }
                 }
@@ -126,8 +126,25 @@ namespace OrchardCore.Layers.Recipes
         }
     }
 
+    public class LayersStepModel
+    {
+        public LayerStepModel[] Layers { get; set; }
+    }
+
     public class LayerStepModel
     {
-        public Layer[] Layers { get; set; }
+        public string Name { get; set; }
+
+        public string Rule { get; set; }
+        public string Description { get; set; }
+
+        public RuleStepModel LayerRule { get; set; }
+    }    
+
+    public class RuleStepModel
+    {
+        public string Name { get; set; }
+        public string ConditionId { get; set; }
+        public JArray Conditions { get; set; }
     }
 }
