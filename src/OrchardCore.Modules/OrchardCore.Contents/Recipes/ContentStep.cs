@@ -22,11 +22,17 @@ namespace OrchardCore.Contents.Recipes
             }
 
             var model = context.Step.ToObject<ContentStepModel>();
-
             var contentItems = model.Data.ToObject<ContentItem[]>();
 
-            // We defer the import of content items to ensure that all required migrations are executed before,
-            // e.g. this prevents a workflow triggered by an handler to be executed before worflows migrations.
+            // If the shell is activated there is no migration in progress.
+            if (ShellScope.Context.IsActivated)
+            {
+                var contentManager = ShellScope.Services.GetRequiredService<IContentManager>();
+                return contentManager.ImportAsync(contentItems);
+            }
+
+            // Otherwise, the content items import is deferred after all migrations complete,
+            // this prevents e.g. an handler to trigger a workflow before worflows migrations.
             ShellScope.AddDeferredTask(scope =>
             {
                 var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
