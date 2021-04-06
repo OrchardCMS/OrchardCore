@@ -6,7 +6,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
-    public class PoParserTests
+    public class PortableObjectParserTests
     {
         [Fact]
         public void ParseRetursSimpleEntry()
@@ -183,8 +183,7 @@ namespace OrchardCore.Tests.Localization
 
         private CultureDictionaryRecord[] ParseText(string resourceName)
         {
-            var parser = new PoParser();
-
+            var parser = new PortableObjectParser();
             var testAssembly = typeof(PoParserTests).Assembly;
             using (var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po"))
             {
