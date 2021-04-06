@@ -31,8 +31,8 @@ namespace OrchardCore.Contents.Recipes
                 return contentManager.ImportAsync(contentItems);
             }
 
-            // Otherwise, the content items import is deferred after all migrations complete,
-            // this prevents e.g. an handler to trigger a workflow before worflows migrations.
+            // Otherwise, the import of content items is deferred after all migrations are completed,
+            // this prevents e.g. a content handler to trigger a workflow before worflows migrations.
             ShellScope.AddDeferredTask(scope =>
             {
                 var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
