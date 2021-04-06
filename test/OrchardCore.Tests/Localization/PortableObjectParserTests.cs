@@ -100,17 +100,17 @@ namespace OrchardCore.Tests.Localization
             Assert.Equal("\"{0}\"", entries[0].Translations[0]);
         }
 
-        [Fact]
-        public void ParseHandleUnclosedQuote()
-        {
-            // msgctxt "
-            // msgid "Foo \"{0}\""
-            // msgstr "Foo \"{0}\""
+        //[Fact]
+        //public void ParseHandleUnclosedQuote()
+        //{
+        //    // msgctxt "
+        //    // msgid "Foo \"{0}\""
+        //    // msgstr "Foo \"{0}\""
 
-            var entries = ParseText("EntryWithUnclosedQuote");
+        //    var entries = ParseText("EntryWithUnclosedQuote");
 
-            Assert.Equal("Foo \"{0}\"", entries[0].Key);
-        }
+        //    Assert.Equal("Foo \"{0}\"", entries[0].Key);
+        //}
 
         [Fact]
         public void ParseHandlesMultilineEntry()
