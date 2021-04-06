@@ -436,6 +436,8 @@ namespace OrchardCore.ContentManagement
         {
             var skip = 0;
 
+            var importedVersionIds = new HashSet<string>();
+
             var batchedContentItems = contentItems.Take(ImportBatchSize);
 
             while (batchedContentItems.Any())
@@ -468,6 +470,14 @@ namespace OrchardCore.ContentManagement
                     ContentItem originalVersion = null;
                     if (!String.IsNullOrEmpty(importingItem.ContentItemVersionId))
                     {
+                        if (importedVersionIds.Contains(importingItem.ContentItemVersionId))
+                        {
+                            _logger.LogInformation("Duplicate content item version id '{ContentItemVersionId}' skipped", importingItem.ContentItemVersionId);
+                            continue;
+                        }
+
+                        importedVersionIds.Add(importingItem.ContentItemVersionId);
+
                         originalVersion = versionsToUpdate.FirstOrDefault(x => String.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
                     }
 
@@ -478,7 +488,7 @@ namespace OrchardCore.ContentManagement
 
                         await Handlers.InvokeAsync((handler, context) => handler.ImportingAsync(context), context, _logger);
 
-                        var evictionVersions = versionsThatMaybeEvicted.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+                        var evictionVersions = versionsThatMaybeEvicted.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));                       
                         var result = await CreateContentItemVersionAsync(importingItem, evictionVersions);
                         if (!result.Succeeded)
                         {
