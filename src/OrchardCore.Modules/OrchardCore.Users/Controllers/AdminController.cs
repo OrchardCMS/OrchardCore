@@ -46,6 +46,7 @@ namespace OrchardCore.Users.Controllers
         private readonly dynamic New;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
+        private string userCollection = "User";
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
@@ -205,7 +206,7 @@ namespace OrchardCore.Users.Controllers
 
             if (itemIds?.Count() > 0)
             {
-                var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
+                var checkedUsers = await _session.Query<User, UserIndex>(userCollection).Where(x => x.UserId.IsIn(itemIds)).ListAsync();
 
                 // Bulk actions require the ManageUsers permission on all the checked users.
                 // To prevent html injection we authorize each user before performing any operations.

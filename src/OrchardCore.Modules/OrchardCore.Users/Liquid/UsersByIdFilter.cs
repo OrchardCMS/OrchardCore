@@ -13,6 +13,7 @@ namespace OrchardCore.Users.Liquid
     public class UsersByIdFilter : ILiquidFilter
     {
         private readonly ISession _session;
+        private string userCollection = "User";
 
         public UsersByIdFilter(ISession session)
         {
@@ -26,12 +27,12 @@ namespace OrchardCore.Users.Liquid
                 // List of user ids
                 var userIds = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
 
-                return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync(), ctx.Options);
+                return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds), userCollection).ListAsync(), ctx.Options);
             }
 
             var userId = input.ToStringValue();
 
-            return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId == userId).FirstOrDefaultAsync(), ctx.Options);
+            return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId == userId, userCollection).FirstOrDefaultAsync(), ctx.Options);
         }
     }
 }

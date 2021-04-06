@@ -15,6 +15,8 @@ namespace OrchardCore.Users.Services
         private readonly IEnumerable<IUsersAdminListFilter> _usersAdminListFilters;
         private readonly ILogger _logger;
 
+        private string userCollection = "User";
+
         public DefaultUsersAdminListQueryService(
             ISession session,
             IEnumerable<IUsersAdminListFilter> usersAdminListFilters,
@@ -28,7 +30,7 @@ namespace OrchardCore.Users.Services
         public async Task<IQuery<User>> QueryAsync(UserIndexOptions options, IUpdateModel updater)
         {
             // Because admin filters can add a different index to the query this must be added as a Query<User>()
-            var query = _session.Query<User>();
+            var query = _session.Query<User>(userCollection);
 
             await _usersAdminListFilters.InvokeAsync((filter, options, query, updater) => filter.FilterAsync(options, query, updater), options, query, updater, _logger);
 
