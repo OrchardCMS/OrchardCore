@@ -179,7 +179,6 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
         }
 
         [Fact]
-        
         public async Task ShouldIgnoreDuplicateContentItems()
         {
             using (var context = new BlogPostDeploymentContext())
@@ -187,7 +186,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 // Setup
                 await context.InitializeAsync();
 
-                // Create a recipe with two content items and the same id.
+                // Create a recipe with two content items and the same version id.
                 var firstRecipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
                 {
                     jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
@@ -202,7 +201,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     jItem[nameof(ContentItem.ContentItemVersionId)] = "dupversion";
                     jItem[nameof(ContentItem.DisplayText)] = "duplicate version";
                     jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
-                });                
+                });
 
                 var firstRecipeData = firstRecipe.SelectToken("steps[0].Data") as JArray;
 
@@ -223,6 +222,6 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     Assert.Equal(1, blogPostsCount);
                 });
             }
-        }        
+        }
     }
 }
