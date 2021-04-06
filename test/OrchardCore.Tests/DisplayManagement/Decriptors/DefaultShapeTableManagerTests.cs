@@ -13,7 +13,6 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;

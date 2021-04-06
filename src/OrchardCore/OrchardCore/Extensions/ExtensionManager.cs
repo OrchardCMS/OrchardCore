@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Modules;
