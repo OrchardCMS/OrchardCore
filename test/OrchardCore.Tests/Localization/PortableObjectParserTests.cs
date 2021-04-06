@@ -184,7 +184,7 @@ namespace OrchardCore.Tests.Localization
         private CultureDictionaryRecord[] ParseText(string resourceName)
         {
             var parser = new PortableObjectParser();
-            var testAssembly = typeof(PoParserTests).Assembly;
+            var testAssembly = typeof(PortableObjectParserTests).Assembly;
             using (var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po"))
             {
                 using (var reader = new StreamReader(resource))
