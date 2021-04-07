@@ -32,7 +32,7 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null,string _collection=null) where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
 
@@ -51,7 +51,7 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null, string _collection = null) where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
 
@@ -65,7 +65,7 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
+        public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false, string _collection = null)
         {
             var documentStore = ShellScope.Services.GetRequiredService<IDocumentStore>();
 
