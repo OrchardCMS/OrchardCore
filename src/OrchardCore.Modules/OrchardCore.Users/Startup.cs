@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Web;
@@ -52,6 +53,8 @@ namespace OrchardCore.Users
     {
         private readonly AdminOptions _adminOptions;
         private readonly string _tenantName;
+
+        private string _collection="User";
 
         public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
@@ -130,7 +133,7 @@ namespace OrchardCore.Users
                 configuration.GetSection("OrchardCore_Users").Bind(userOptions);
             });
 
-            services.Configure<StoreCollectionOptions>(o => o.Collections.Add("User"));
+            services.Configure<StoreCollectionOptions>(o => o.Collections["OrchardCore_Users"] = _collection);
 
             services.AddSecurity();
 
@@ -180,10 +183,10 @@ namespace OrchardCore.Users
             });
 
             //修改所有index的注册，增加collection
-            services.AddSingleton<IIndexProvider, UserIndexProvider>((s) => { return new UserIndexProvider { CollectionName="User" }; });
-            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>((s)=> { return new UserByRoleNameIndexProvider(s.GetService<ILookupNormalizer>()) { CollectionName = "User" }; });
-            services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>(s=> { return new UserByLoginInfoIndexProvider() { CollectionName="User"}; });
-            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>(s=> { return new UserByClaimIndexProvider() { CollectionName = "User" }; });
+            services.AddSingleton<IIndexProvider, UserIndexProvider>((s) => { return new UserIndexProvider { CollectionName= _collection }; });
+            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>((s)=> { return new UserByRoleNameIndexProvider(s.GetService<ILookupNormalizer>()) { CollectionName = _collection }; });
+            services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>(s=> { return new UserByLoginInfoIndexProvider() { CollectionName= _collection }; });
+            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>(s=> { return new UserByClaimIndexProvider() { CollectionName = _collection }; });
 
             //services.AddSingleton<IOptions<StoreCollectionOptions>, StoreCollectionOptions>(s => { return new StoreCollectionOptions() { Collections=new System.Collections.Generic.HashSet<string>{""} }; });
 

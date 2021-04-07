@@ -5,6 +5,6 @@ namespace OrchardCore.Data
 {
     public class StoreCollectionOptions
     {
-        public HashSet<string> Collections {get; } = new HashSet<string>();  
+        public Dictionary<string,string> Collections {get; } = new Dictionary<string, string>();  
     }
 }

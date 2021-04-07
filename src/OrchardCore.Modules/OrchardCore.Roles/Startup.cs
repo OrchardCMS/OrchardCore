@@ -29,6 +29,8 @@ namespace OrchardCore.Roles
     {
         private readonly AdminOptions _adminOptions;
 
+        private string _collection = "Role";
+
         public Startup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
@@ -47,7 +49,7 @@ namespace OrchardCore.Roles
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.Configure<StoreCollectionOptions>(o => o.Collections.Add("Role"));
+            services.Configure<StoreCollectionOptions>(o => o.Collections["OrchardCore.Roles"] =_collection);
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

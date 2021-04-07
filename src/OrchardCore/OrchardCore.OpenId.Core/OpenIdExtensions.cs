@@ -16,6 +16,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OpenIdExtensions
     {
+        private static string _collection = "OpenId";
+
         public static OpenIddictCoreBuilder AddOrchardMigrations(this OpenIddictCoreBuilder builder)
         {
             if (builder == null)
@@ -27,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
 
             // Configure support for an OpenId collection.
-            builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));  
+            builder.Services.Configure<StoreCollectionOptions>(o => o.Collections["OrchardCore.OpenId"] =_collection);  
 
             return builder;
         }

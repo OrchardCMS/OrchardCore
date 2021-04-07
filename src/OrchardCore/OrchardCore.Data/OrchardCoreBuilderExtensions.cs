@@ -100,7 +100,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     var options = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
                     foreach (var collection in options.Collections)
                     {
-                        store.InitializeCollectionAsync(collection).GetAwaiter().GetResult();
+                        store.InitializeCollectionAsync(collection.Value).GetAwaiter().GetResult();
                     }
 
                     var indexes = sp.GetServices<IIndexProvider>();
