@@ -15,6 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GraphQL.DataLoader" />
+    <PackageReference Include="GraphQL.NewtonsoftJson" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 

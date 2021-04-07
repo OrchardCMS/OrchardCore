@@ -2,7 +2,7 @@ using System;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
-using GraphQL.Http;
+using GraphQL.NewtonsoftJson;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -35,7 +35,7 @@ namespace OrchardCore.Apis.GraphQL
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
+            //services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
@@ -61,7 +61,7 @@ namespace OrchardCore.Apis.GraphQL
                     maxNumberOfResultsValidationMode = _hostingEnvironment.IsDevelopment() ? MaxNumberOfResultsValidationMode.Enabled : MaxNumberOfResultsValidationMode.Disabled;
                 }
 
-                c.BuildUserContext = ctx => new GraphQLContext
+                c.BuildUserContext = ctx => new GraphQLUserContext
                 {
                     HttpContext = ctx,
                     User = ctx.User,

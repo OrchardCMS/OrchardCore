@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -64,9 +65,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
-        private async Task<IEnumerable<ContentItem>> Resolve(ResolveFieldContext context)
+        private async Task<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
         {
-            var graphContext = (GraphQLContext)context.UserContext;
+            var graphContext = (GraphQLUserContext)context.UserContext;
 
             var versionOption = VersionOptions.Published;
 
@@ -114,9 +115,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         private IQuery<ContentItem> FilterWhereArguments(
             IQuery<ContentItem, ContentItemIndex> query,
             JObject where,
-            ResolveFieldContext fieldContext,
+            IResolveFieldContext fieldContext,
             ISession session,
-            GraphQLContext context)
+            GraphQLUserContext context)
         {
             if (where == null)
             {
@@ -183,7 +184,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentQuery;
         }
 
-        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context, GraphQLContext graphQLContext)
+        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, IResolveFieldContext context, GraphQLUserContext graphQLContext)
         {
             var first = context.GetArgument<int>("first");
 
@@ -216,9 +217,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private static IQuery<ContentItem, ContentItemIndex> FilterContentType(IQuery<ContentItem, ContentItemIndex> query, ResolveFieldContext context)
+        private static IQuery<ContentItem, ContentItemIndex> FilterContentType(IQuery<ContentItem, ContentItemIndex> query, IResolveFieldContext context)
         {
-            var contentType = ((ListGraphType)context.ReturnType).ResolvedType.Name;
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            //var contentType = ((ListGraphType)context.ReturnType).ResolvedType.Name;
+            var contentType = context.FieldDefinition.ResolvedType.Name;
 
             return query.Where(q => q.ContentType == contentType);
         }
@@ -241,7 +248,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return query;
         }
 
-        private void BuildWhereExpressions(JToken where, Junction expressions, string tableAlias, ResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
+        private void BuildWhereExpressions(JToken where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
         {
             if (where is JArray array)
             {
@@ -259,7 +266,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private void BuildExpressionsInternal(JObject where, Junction expressions, string tableAlias, ResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
+        private void BuildExpressionsInternal(JObject where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
         {
             foreach (var entry in where.Properties())
             {
@@ -359,7 +366,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         }
 
         private IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
-            ResolveFieldContext context)
+            IResolveFieldContext context)
         {
             if (context.HasPopulatedArgument("orderBy"))
             {

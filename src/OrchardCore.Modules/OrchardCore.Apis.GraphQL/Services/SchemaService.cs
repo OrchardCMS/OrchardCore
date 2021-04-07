@@ -67,8 +67,7 @@ namespace OrchardCore.Apis.GraphQL.Services
                     Query = new ObjectGraphType { Name = "Query" },
                     Mutation = new ObjectGraphType { Name = "Mutation" },
                     Subscription = new ObjectGraphType { Name = "Subscription" },
-                    FieldNameConverter = new OrchardFieldNameConverter(),
-                    DependencyResolver = serviceProvider.GetService<IDependencyResolver>()
+                    NameConverter = new OrchardFieldNameConverter()
                 };
 
                 foreach (var builder in _schemaBuilders)
