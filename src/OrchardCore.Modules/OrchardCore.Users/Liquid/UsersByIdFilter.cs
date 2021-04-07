@@ -2,6 +2,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using Microsoft.Extensions.Options;
+using OrchardCore.Data;
 using OrchardCore.Liquid;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -14,10 +16,13 @@ namespace OrchardCore.Users.Liquid
     {
         private readonly ISession _session;
         private string userCollection = "User";
+        IOptions<StoreCollectionOptions> _storeCollections;
 
-        public UsersByIdFilter(ISession session)
+        public UsersByIdFilter(ISession session, IOptions<StoreCollectionOptions> storeCollections)
         {
             _session = session;
+            _storeCollections = storeCollections;
+            userCollection = storeCollections.Value.Collections["OrchardCore.Users"] ?? "";
         }
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)

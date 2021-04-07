@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -10,12 +12,14 @@ namespace OrchardCore.Users
     public class Migrations : DataMigration
     {
         private readonly ISession _session;
-
+        IOptions<StoreCollectionOptions> _storeCollections;
         private string userCollection = "User";
 
-        public Migrations(ISession session)
+        public Migrations(ISession session, IOptions<StoreCollectionOptions> storeCollections)
         {
             _session = session;
+            _storeCollections = storeCollections;
+            userCollection = storeCollections.Value.Collections["OrchardCore.Users"] ?? "";
         }
 
         // This is a sequenced migration. On a new schemas this is complete after UpdateFrom2.

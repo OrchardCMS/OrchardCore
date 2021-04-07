@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Data;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
@@ -16,15 +18,19 @@ namespace OrchardCore.Users.Services
         private readonly ILogger _logger;
 
         private string userCollection = "User";
+        IOptions<StoreCollectionOptions> _storeCollections;
 
         public DefaultUsersAdminListQueryService(
             ISession session,
             IEnumerable<IUsersAdminListFilter> usersAdminListFilters,
-            ILogger<DefaultUsersAdminListQueryService> logger)
+            ILogger<DefaultUsersAdminListQueryService> logger,
+            IOptions<StoreCollectionOptions> storeCollections)
         {
             _session = session;
             _usersAdminListFilters = usersAdminListFilters;
             _logger = logger;
+            _storeCollections = storeCollections;
+            userCollection = storeCollections.Value.Collections["OrchardCore.Users"] ?? "";
         }
 
         public async Task<IQuery<User>> QueryAsync(UserIndexOptions options, IUpdateModel updater)

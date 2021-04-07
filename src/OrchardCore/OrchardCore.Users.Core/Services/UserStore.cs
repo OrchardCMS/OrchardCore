@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Data;
 using OrchardCore.Modules;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Handlers;
@@ -34,13 +36,17 @@ namespace OrchardCore.Users.Services
         private readonly ILogger _logger;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
+        private string userCollection = "User";
+        IOptions<StoreCollectionOptions> _storeCollections;
+
         public UserStore(ISession session,
             IRoleService roleService,
             ILookupNormalizer keyNormalizer,
             IUserIdGenerator userIdGenerator,
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
-            IDataProtectionProvider dataProtectionProvider)
+            IDataProtectionProvider dataProtectionProvider,
+            IOptions<StoreCollectionOptions> storeCollections)
         {
             _session = session;
             _roleService = roleService;
@@ -49,10 +55,12 @@ namespace OrchardCore.Users.Services
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
             Handlers = handlers;
+            _storeCollections = storeCollections;
+            userCollection = storeCollections.Value.Collections["OrchardCore.Users"] ?? "";
         }
         public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
-        private string userCollection = "User";
+        
 
         public void Dispose()
         {

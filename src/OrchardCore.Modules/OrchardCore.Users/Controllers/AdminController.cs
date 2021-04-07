@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -42,6 +44,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUsersAdminListQueryService _usersAdminListQueryService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
+        IOptions<StoreCollectionOptions> _storeCollections;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer H;
@@ -63,7 +66,8 @@ namespace OrchardCore.Users.Controllers
             IShapeFactory shapeFactory,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IOptions<StoreCollectionOptions> storeCollections)
         {
             _userDisplayManager = userDisplayManager;
             _userOptionsDisplayManager = userOptionsDisplayManager;
@@ -78,10 +82,12 @@ namespace OrchardCore.Users.Controllers
             _usersAdminListQueryService = usersAdminListQueryService;
             _updateModelAccessor = updateModelAccessor;
             _shapeFactory = shapeFactory;
+            _storeCollections = storeCollections;
 
             New = shapeFactory;
             H = htmlLocalizer;
             S = stringLocalizer;
+            userCollection = storeCollections.Value.Collections["OrchardCore.Users"] ??"";
         }
 
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
