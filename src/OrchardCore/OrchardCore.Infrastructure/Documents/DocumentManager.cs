@@ -40,13 +40,13 @@ namespace OrchardCore.Documents
             }
         }
 
-        public async Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null)
+        public async Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null,string _collection=null)
         {
             TDocument document = null;
 
             if (!_isVolatile)
             {
-                document = await _documentStore.GetOrCreateMutableAsync(factoryAsync);
+                document = await _documentStore.GetOrCreateMutableAsync(factoryAsync,_collection);
 
                 if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
                 {
@@ -72,7 +72,7 @@ namespace OrchardCore.Documents
             return document;
         }
 
-        public async Task<TDocument> GetOrCreateImmutableAsync(Func<Task<TDocument>> factoryAsync = null)
+        public async Task<TDocument> GetOrCreateImmutableAsync(Func<Task<TDocument>> factoryAsync = null,string _collection=null)
         {
             var document = await GetInternalAsync();
 
@@ -82,7 +82,7 @@ namespace OrchardCore.Documents
 
                 if (!_isVolatile)
                 {
-                    (cacheable, document) = await _documentStore.GetOrCreateImmutableAsync(factoryAsync);
+                    (cacheable, document) = await _documentStore.GetOrCreateImmutableAsync(factoryAsync,_collection);
                 }
                 else
                 {
@@ -100,7 +100,7 @@ namespace OrchardCore.Documents
             return document;
         }
 
-        public Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null)
+        public Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null,string _collection=null)
         {
             if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
             {
@@ -120,7 +120,7 @@ namespace OrchardCore.Documents
                         await afterUpdateAsync(document);
                     }
                 },
-                _options.CheckConcurrency.Value);
+                _options.CheckConcurrency.Value,_collection);
             }
 
             // Set the scoped cache in case of multiple updates.

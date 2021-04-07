@@ -24,6 +24,8 @@ namespace OrchardCore.Roles.Services
 
         private bool _updating;
 
+        private string roleCollection = "Role";
+
         public RoleStore(
             IServiceProvider serviceProvider,
             IDocumentManager<RolesDocument> documentManager,
@@ -41,12 +43,12 @@ namespace OrchardCore.Roles.Services
         /// <summary>
         /// Loads the roles document from the store for updating and that should not be cached.
         /// </summary>
-        private Task<RolesDocument> LoadRolesAsync() => _documentManager.GetOrCreateMutableAsync();
+        private Task<RolesDocument> LoadRolesAsync() => _documentManager.GetOrCreateMutableAsync(null,roleCollection);
 
         /// <summary>
         /// Gets the roles document from the cache for sharing and that should not be updated.
         /// </summary>
-        private Task<RolesDocument> GetRolesAsync() => _documentManager.GetOrCreateImmutableAsync();
+        private Task<RolesDocument> GetRolesAsync() => _documentManager.GetOrCreateImmutableAsync(null,roleCollection);
 
         /// <summary>
         /// Updates the store with the provided roles document and then updates the cache.
@@ -55,7 +57,7 @@ namespace OrchardCore.Roles.Services
         {
             _updating = true;
 
-            return _documentManager.UpdateAsync(roles);
+            return _documentManager.UpdateAsync(roles,null,roleCollection);
         }
 
         #region IRoleStore<IRole>

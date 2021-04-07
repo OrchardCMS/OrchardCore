@@ -13,19 +13,19 @@ namespace OrchardCore.Data.Documents
         /// Loads a single document (or create a new one) for updating and that should not be cached.
         /// For a full isolation, it needs to be used in pair with <see cref="GetOrCreateImmutableAsync{T}"/>.
         /// </summary>
-        Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new();
+        Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null, string _collection = null) where T : class, new();
 
         /// <summary>
         /// Gets a single document (or create a new one) for caching and that should not be updated,
         /// and a bool indicating if it can be cached, not if it has been already loaded for update.
         /// For a full isolation, it needs to be used in pair with <see cref="GetOrCreateMutableAsync{T}"/>.
         /// </summary>
-        Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new();
+        Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null, string _collection = null) where T : class, new();
 
         /// <summary>
         /// Updates the store with the provided document and then uses the delegate to update the cache.
         /// </summary>
-        Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false);
+        Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false, string _collection = null);
 
         /// <summary>
         /// Allows to cancel the current updating before calling <see cref="CommitAsync"/> at the end of the scope.

@@ -29,14 +29,14 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null,string _collection=null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
                 return loaded as T;
             }
 
-            var document = await _session.Query<T>().FirstOrDefaultAsync()
+            var document = await _session.Query<T>(_collection).FirstOrDefaultAsync()
                 ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
                 ?? new T();
 
@@ -46,7 +46,7 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null,string _collection=null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
@@ -61,18 +61,18 @@ namespace OrchardCore.Data.Documents
             {
                 // So we create a new session to not get a cached version from 'YesSql'.
                 using var session = _session.Store.CreateSession();
-                document = await session.Query<T>().FirstOrDefaultAsync();
+                document = await session.Query<T>(_collection).FirstOrDefaultAsync();
             }
             else
             {
-                document = await _session.Query<T>().FirstOrDefaultAsync();
+                document = await _session.Query<T>(_collection).FirstOrDefaultAsync();
             }
 
             if (document != null)
             {
                 if (!_committed)
                 {
-                    _session.Detach(document);
+                    _session.Detach(document, _collection);
                 }
 
                 return (true, document);
@@ -82,9 +82,9 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
+        public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false,string _collection=null)
         {
-            _session.Save(document, checkConcurrency);
+            _session.Save(document, checkConcurrency, _collection);
 
             AfterCommitSuccess<T>(() =>
             {

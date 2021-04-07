@@ -12,16 +12,16 @@ namespace OrchardCore.Documents
         /// <summary>
         /// Loads a single document from the store (or create a new one) for updating and that should not be cached.
         /// </summary>
-        Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null);
+        Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null,string _collection=null);
 
         /// <summary>
         /// Gets a single document from the cache (or create a new one) for sharing and that should not be updated.
         /// </summary>
-        Task<TDocument> GetOrCreateImmutableAsync(Func<Task<TDocument>> factoryAsync = null);
+        Task<TDocument> GetOrCreateImmutableAsync(Func<Task<TDocument>> factoryAsync = null,string _collcetion=null);
 
         /// <summary>
         /// Updates the store with the provided document and then updates the cache after the session is committed.
         /// </summary>
-        Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null);
+        Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null,string _collection=null);
     }
 }
