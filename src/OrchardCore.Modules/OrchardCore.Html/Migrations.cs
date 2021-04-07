@@ -91,7 +91,7 @@ namespace OrchardCore.Html
                     lastDocumentId = contentItemVersion.Id;
                 }
 
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
             }
 
             bool UpdateBody(JToken content)

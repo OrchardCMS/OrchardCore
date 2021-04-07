@@ -42,7 +42,7 @@ namespace OrchardCore.Workflows.Activities
                 return Outcomes("Done", "Invalid");
             }
 
-            await _session.CommitAsync();
+            await _session.SaveChangesAsync();
             return Outcomes("Done", "Valid");
         }
     }

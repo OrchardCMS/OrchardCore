@@ -13,7 +13,6 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
@@ -172,7 +171,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             _serviceProvider = serviceCollection.BuildServiceProvider();
 
             var typeFeatureProvider = _serviceProvider.GetService<ITypeFeatureProvider>();
-            typeFeatureProvider.TryAdd(typeof(TestShapeProvider), TestFeature());
+            typeFeatureProvider.TryAdd(typeof(TestShapeProvider), new FeatureInfo("Core", new ExtensionInfo("Core")));
         }
 
         private static IFeatureInfo TestFeature()
@@ -257,12 +256,12 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
             {
-                return Task.FromResult(new FeatureEntry(feature, Array.Empty<Type>()));
+                return Task.FromResult(new FeatureEntry(feature));
             }
 
             public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
             {
-                return Task.FromResult(features.Select(f => new FeatureEntry(f, Array.Empty<Type>())));
+                return Task.FromResult(features.Select(x => new FeatureEntry(x)));
             }
 
             public IEnumerable<IFeatureInfo> GetFeatures()
