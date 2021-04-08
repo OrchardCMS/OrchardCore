@@ -488,7 +488,7 @@ namespace OrchardCore.ContentManagement
 
                         await Handlers.InvokeAsync((handler, context) => handler.ImportingAsync(context), context, _logger);
 
-                        var evictionVersions = versionsThatMaybeEvicted.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));                       
+                        var evictionVersions = versionsThatMaybeEvicted.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
                         var result = await CreateContentItemVersionAsync(importingItem, evictionVersions);
                         if (!result.Succeeded)
                         {
