@@ -6,19 +6,25 @@ using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.TokenAttributes;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
+using Nest;
 
 namespace OrchardCore.Search.Elastic
 {
     public class ElasticQueryService : IElasticQueryService
     {
         private readonly IEnumerable<IElasticQueryProvider> _queryProviders;
+        private readonly IElasticClient _elasticClient;
 
-        public ElasticQueryService(IEnumerable<IElasticQueryProvider> queryProviders)
+        public ElasticQueryService(
+            IEnumerable<IElasticQueryProvider> queryProviders,
+            IElasticClient elasticClient
+            )
         {
             _queryProviders = queryProviders;
+            _elasticClient = elasticClient;
         }
 
-        public Task<ElasticTopDocs> SearchAsync(ElasticQueryContext context, JObject queryObj)
+        public async Task<ElasticTopDocs> SearchAsync(ElasticQueryContext context, JObject queryObj)
         {
             var queryProp = queryObj["query"] as JObject;
 
@@ -27,83 +33,27 @@ namespace OrchardCore.Search.Elastic
                 throw new ArgumentException("Query DSL requires a [query] property");
             }
 
-            var query = CreateQueryFragment(context, queryProp);
+            ElasticTopDocs elasticTopDocs = new ElasticTopDocs();
 
-            var sortProperty = queryObj["sort"];
-            var fromProperty = queryObj["from"];
-            var sizeProperty = queryObj["size"];
-
-            var size = sizeProperty?.Value<int>() ?? 50;
-            var from = fromProperty?.Value<int>() ?? 0;
-
-            string sortField = null;
-            string sortOrder = null;
-            string sortType = null;
-            var sortFields = new List<SortField>();
-
-            if (sortProperty != null)
-            {
-                if (sortProperty.Type == JTokenType.String)
-                {
-                    sortField = sortProperty.ToString();
-                    sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
-                }
-                else if (sortProperty.Type == JTokenType.Object)
-                {
-                    sortField = ((JProperty)sortProperty.First).Name;
-                    sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
-                    sortType = ((JProperty)sortProperty.First).Value["type"]?.ToString();
-                    var sortFieldType = SortFieldType.STRING;
-                    if (sortType != null)
-                    {
-                        sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
-                    }
-
-                    sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
-                }
-                else if (sortProperty.Type == JTokenType.Array)
-                {
-                    foreach (var item in sortProperty.Children())
-                    {
-                        sortField = ((JProperty)item.First).Name;
-                        sortOrder = ((JProperty)item.First).Value["order"].ToString();
-                        sortType = ((JProperty)item.First).Value["type"]?.ToString();
-                        var sortFieldType = SortFieldType.STRING;
-                        if (sortType != null)
-                        {
-                            sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
-                        }
-
-                        sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
-                    }
-                }
-            }
-
-            ElasticTopDocs result = null;
-            TopDocs topDocs = null;
-
-            if (size > 0)
-            {
-                topDocs = context.IndexSearcher.Search(
-                    query,
-                    size + from,
-                    sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
+            var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
+                .Index(context.IndexName)
+                .Query(q => new RawQuery(queryProp.ToString()))
                 );
 
-                if (from > 0)
-                {
-                    topDocs = new TopDocs(topDocs.TotalHits - from, topDocs.ScoreDocs.Skip(from).ToArray(), topDocs.MaxScore);
-                }
-
-                var collector = new TotalHitCountCollector();
-                context.IndexSearcher.Search(query, collector);
-
-                result = new LuceneTopDocs() { TopDocs = topDocs, Count = collector.TotalHits };
+            if (searchResponse.IsValid)
+            {
+                elasticTopDocs.Count = searchResponse.Documents.Count;
+                elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
             }
-
-            return Task.FromResult(result);
+            return elasticTopDocs;
         }
 
+        /// <summary>
+        /// May not be needed
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="queryObj"></param>
+        /// <returns></returns>
         public Query CreateQueryFragment(ElasticQueryContext context, JObject queryObj)
         {
             var first = queryObj.Properties().First();
@@ -123,6 +73,13 @@ namespace OrchardCore.Search.Elastic
             return query;
         }
 
+        /// <summary>
+        /// May not be neeeded
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="text"></param>
+        /// <param name="analyzer"></param>
+        /// <returns></returns>
         public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
         {
             if (string.IsNullOrEmpty(text))

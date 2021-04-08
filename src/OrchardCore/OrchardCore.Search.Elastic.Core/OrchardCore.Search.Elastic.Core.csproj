@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NEST" Version="7.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Queries.Abstractions\OrchardCore.Queries.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Search.Elastic.Abstractions\OrchardCore.Search.Elastic.Abstractions.csproj" />
   </ItemGroup>
