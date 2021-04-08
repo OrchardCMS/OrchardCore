@@ -254,7 +254,7 @@ namespace OrchardCore.Resources
                 .SetDependencies("codemirror-addon-hint-show-hint")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/hint/sql-hint.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/hint/sql-hint.js")
                 .SetCdn(codeMirrorUrl + "addon/hint/sql-hint.min.js", codeMirrorUrl + "addon/hint/sql-hint.js")
-                .SetCdnIntegrity("sha384-Np7YQViP3xBH20IYBUnj3atcXkXuBGHMsY9SHzxnREu7PRVWPzKZnyFtdrH1h+Fc", "sha384-sylDqzE6QFcRjCDnNQFeip9hZD++kTO6219Fv77pevPXS2/U3fEkuRbU4u1D07RR")
+                .SetCdnIntegrity("sha384-Np7YQViP3xBH20IYBUnj3atcXkXuBGHMsY9SHzxnREu7PRVWPzKZnyFtdrH1h+Fc", "sha384-CnIooEvOzoAsliTWO+BYwoTVFeqhBCympzDuwlhTlP7TWeAHB2h4Q0OeOqVkL5dP")
                 .SetVersion(codeMirrorVersion);
 
             manifest
