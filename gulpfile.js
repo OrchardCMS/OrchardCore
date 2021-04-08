@@ -22,9 +22,6 @@ var fs = require("graceful-fs"),
     postcss = require('gulp-postcss'),
     rtl = require('postcss-rtl'),
     babel = require('gulp-babel');
-// The startbootstrap theme gulpfiles do not yet support node 15 so need to be installed and built seperately.
-// blogtheme = require('./src/OrchardCore.Themes/TheBlogTheme/wwwroot/gulpfile');
-// comingsoontheme = require('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot/gulpfile');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
