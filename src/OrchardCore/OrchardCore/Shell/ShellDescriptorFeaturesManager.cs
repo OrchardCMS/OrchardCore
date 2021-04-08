@@ -108,11 +108,10 @@ namespace OrchardCore.Environment.Shell
                     enabledFeatureIds.Select(id => new ShellFeature(id)).ToArray(),
                     installedFeatureIds.Select(id => new ShellFeature(id)).ToArray());
 
-                var logger = _logger;
-
                 ShellScope.AddDeferredTask(async scope =>
                 {
                     var featureEventHandlers = scope.ServiceProvider.GetServices<IFeatureEventHandler>();
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellFeaturesManager>>();
 
                     foreach (var feature in allFeaturesToInstall)
                     {
