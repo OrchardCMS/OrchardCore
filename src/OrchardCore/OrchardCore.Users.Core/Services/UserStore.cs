@@ -111,7 +111,7 @@ namespace OrchardCore.Users.Services
 
                 _session.Save(user, userCollection);
 
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
 
                 var context = new UserContext(user);
                 await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
@@ -137,7 +137,7 @@ namespace OrchardCore.Users.Services
 
             try
             {
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
 
                 var context = new UserContext(user);
                 await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);

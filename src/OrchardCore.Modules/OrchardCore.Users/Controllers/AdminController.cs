@@ -453,7 +453,7 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                _session.Cancel();
+                await _session.CancelAsync();
 
                 _notifier.Error(H["Could not delete the user."]);
 

@@ -573,7 +573,7 @@ namespace OrchardCore.ContentManagement
 
             if (!validateContext.ContentValidateResult.Succeeded)
             {
-                _session.Cancel();
+                await _session.CancelAsync();
             }
 
             return validateContext.ContentValidateResult;

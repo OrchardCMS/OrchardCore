@@ -79,7 +79,7 @@ namespace OrchardCore.Data.Documents
             return Task.CompletedTask;
         }
 
-        public void Cancel() => throw new NotImplementedException();
+        public Task CancelAsync() => throw new NotImplementedException();
         public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess) => throw new NotImplementedException();
         public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommitFailure) => throw new NotImplementedException();
         public Task CommitAsync() => throw new NotImplementedException();

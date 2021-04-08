@@ -30,7 +30,7 @@ namespace OrchardCore.Data.Documents
         /// <summary>
         /// Allows to cancel the current updating before calling <see cref="CommitAsync"/> at the end of the scope.
         /// </summary>
-        void Cancel();
+        Task CancelAsync();
 
         /// <summary>
         /// Registers a <see cref="DocumentStoreCommitSuccessDelegate"/> that will get called after <see cref="CommitAsync"/> if it succeeded.
