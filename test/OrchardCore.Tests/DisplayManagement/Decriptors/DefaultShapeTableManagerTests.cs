@@ -25,19 +25,6 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
     {
         private IServiceProvider _serviceProvider;
 
-        private class TestFeatureInfo : IFeatureInfo
-        {
-            public string Id { get; set; }
-            public string Name { get; set; }
-            public int Priority { get; set; }
-            public string Category { get; set; }
-            public string Description { get; set; }
-            public IExtensionInfo Extension { get; set; }
-            public string[] Dependencies { get; set; } = Array.Empty<string>();
-            public bool DefaultTenantOnly { get; set; }
-            public bool IsAlwaysEnabled { get; set; }
-        }
-
         private class TestModuleExtensionInfo : IExtensionInfo
         {
             public TestModuleExtensionInfo(string name)
@@ -171,17 +158,12 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             _serviceProvider = serviceCollection.BuildServiceProvider();
 
             var typeFeatureProvider = _serviceProvider.GetService<ITypeFeatureProvider>();
-            typeFeatureProvider.TryAdd(typeof(TestShapeProvider), new FeatureInfo("Core", new ExtensionInfo("Core")));
+            typeFeatureProvider.TryAdd(typeof(TestShapeProvider), TestFeature());
         }
 
         private static IFeatureInfo TestFeature()
         {
-            return new TestFeatureInfo
-            {
-                Id = "Testing",
-                Dependencies = Array.Empty<string>(),
-                Extension = new TestModuleExtensionInfo("Testing")
-            };
+            return new FeatureInfo("Testing", new TestModuleExtensionInfo("Testing"));
         }
 
         public class TestShellFeaturesManager : IShellFeaturesManager
