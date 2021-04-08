@@ -93,23 +93,17 @@ gulp.task('help', function () {
     `);
 });
 
-//gulp.task("build-agencytheme", function (done) {
-//    return buildAgencyTheme(done);
-//});
+gulp.task("build-blogtheme", function (done) {
+    return buildBlogTheme(done);
+});
 
-//gulp.task("build-blogtheme", function (done) {
-//    return buildBlogTheme(done);
-//});
+gulp.task("build-comingsoontheme", function (done) {
+    return buildComingSoonTheme(done);
+});
 
-//gulp.task("build-comingsoontheme", function (done) {
-//    return buildComingSoonTheme(done);
-//});
-
-//gulp.task("build-theme", function (done) {
-//    return buildTheme(done);
-//});
-
-//gulp.task("build-themes", gulp.parallel('build-agencytheme', 'build-blogtheme', 'build-comingsoontheme', 'build-theme'));
+gulp.task("build-themes", function (done) {
+    buildBlogTheme(() => buildComingSoonTheme(done));
+});
 
 
 // gulp.task( 'build',  gulp.series([ 'build-assets', 'build-themes' ]) );
@@ -122,15 +116,6 @@ gulp.task('default', gulp.series(['build']));
 /*
 ** Build Themes
 */
-
-function buildAgencyTheme(done) {
-    var cwd = process.cwd();
-    process.chdir('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot');
-    agencytheme.build(() => {
-        process.chdir(cwd);
-        done();
-    });
-}
 
 function buildBlogTheme(done) {
     var cwd = process.cwd();
@@ -145,15 +130,6 @@ function buildComingSoonTheme(done) {
     var cwd = process.cwd();
     process.chdir('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot');
     comingsoontheme.build(() => {
-        process.chdir(cwd);
-        done();
-    });
-}
-
-function buildTheme(done) {
-    var cwd = process.cwd();
-    process.chdir('./src/OrchardCore.Themes/TheTheme/wwwroot');
-    theme.build(() => {
         process.chdir(cwd);
         done();
     });
