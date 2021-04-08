@@ -15,7 +15,6 @@ using OrchardCore.Search.Elastic.Controllers;
 using OrchardCore.Search.Elastic.Deployment;
 using OrchardCore.Search.Elastic.Drivers;
 using OrchardCore.Search.Elastic.Handlers;
-using OrchardCore.Search.Elastic.Model;
 using OrchardCore.Search.Elastic.Recipes;
 using OrchardCore.Search.Elastic.Services;
 using OrchardCore.Search.Elastic.Settings;
@@ -27,6 +26,10 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Search.Elastic;
+using OrchardCore.Environment.Shell.Configuration;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Search.Elastic.Configurations;
+using Nest;
 
 namespace OrchardCore.Lucene
 {
@@ -36,14 +39,27 @@ namespace OrchardCore.Lucene
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+        private readonly IShellConfiguration _configuration;
+        private readonly ILogger<Startup> _logger;
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        public Startup(IOptions<AdminOptions> adminOptions,
+            IShellConfiguration configuration,
+            ILogger<Startup> logger)
         {
             _adminOptions = adminOptions.Value;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            var url = _configuration[$"OrchardCore_Elastic:{nameof(ElasticConnectionOptions.Url)}"];
+            if (CheckOptions(url, _logger))
+            {
+                var settings = new ConnectionSettings(new Uri(url));
+                var client = new ElasticClient(settings);
+                services.AddSingleton<IElasticClient>(client);
+            }
             services.AddSingleton<ElasticIndexingState>();
             services.AddSingleton<ElasticIndexSettingsService>();
             services.AddSingleton<ElasticIndexManager>();
@@ -87,39 +103,52 @@ namespace OrchardCore.Lucene
             var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
-                name: "Lucene.Index",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Index",
+                name: "Elastic.Index",
+                areaName: "OrchardCore.Search.Elastic",
+                pattern: _adminOptions.AdminUrlPrefix + "/elastic/Index",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
 
             routes.MapAreaControllerRoute(
-                name: "Lucene.Delete",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Delete/{id}",
+                name: "Elastic.Delete",
+                areaName: "OrchardCore.Search.Elastic",
+                pattern: _adminOptions.AdminUrlPrefix + "/Elastic/Delete/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
             );
 
             routes.MapAreaControllerRoute(
-                name: "Lucene.Query",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Query",
+                name: "Elastic.Query",
+                areaName: "OrchardCore.Search.Elastic",
+                pattern: _adminOptions.AdminUrlPrefix + "/Elastic/Query",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Query) }
             );
 
             routes.MapAreaControllerRoute(
-                name: "Lucene.Rebuild",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Rebuild/{id}",
+                name: "Elastic.Rebuild",
+                areaName: "OrchardCore.Search.Elastic",
+                pattern: _adminOptions.AdminUrlPrefix + "/Elastic/Rebuild/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
             );
 
             routes.MapAreaControllerRoute(
-                name: "Lucene.Reset",
-                areaName: "OrchardCore.Lucene",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Reset/{id}",
+                name: "Elastic.Reset",
+                areaName: "OrchardCore.Search.Elastic",
+                pattern: _adminOptions.AdminUrlPrefix + "/Elastic/Reset/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
             );
+        }
+
+        private static bool CheckOptions(string url, ILogger logger)
+        {
+            var optionsAreValid = true;
+
+            if (String.IsNullOrWhiteSpace(url))
+            {
+                logger.LogError("Elastic Search is enabled but not active because the 'Url' is missing or empty in application configuration.");
+                optionsAreValid = false;
+            }
+
+            return optionsAreValid;
         }
     }
 
