@@ -133,7 +133,7 @@ namespace OrchardCore.Users
                 configuration.GetSection("OrchardCore_Users").Bind(userOptions);
             });
 
-            services.Configure<StoreCollectionOptions>(o => o.Collections["OrchardCore_Users"] = _collection);
+            services.Configure<StoreCollectionOptions>(o => o.Collections["OrchardCore.Users"] = _collection);
 
             services.AddSecurity();
 
