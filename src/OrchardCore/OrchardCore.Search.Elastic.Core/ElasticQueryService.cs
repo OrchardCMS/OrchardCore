@@ -7,6 +7,7 @@ using Lucene.Net.Analysis.TokenAttributes;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 using Nest;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Search.Elastic
 {
@@ -14,14 +15,17 @@ namespace OrchardCore.Search.Elastic
     {
         private readonly IEnumerable<IElasticQueryProvider> _queryProviders;
         private readonly IElasticClient _elasticClient;
+        private readonly ILogger<ElasticQueryService> _logger;
 
         public ElasticQueryService(
             IEnumerable<IElasticQueryProvider> queryProviders,
-            IElasticClient elasticClient
+            IElasticClient elasticClient,
+            ILogger<ElasticQueryService> logger
             )
         {
             _queryProviders = queryProviders;
             _elasticClient = elasticClient;
+            _logger = logger;
         }
 
         public async Task<ElasticTopDocs> SearchAsync(ElasticQueryContext context, JObject queryObj)
@@ -34,16 +38,28 @@ namespace OrchardCore.Search.Elastic
             }
 
             ElasticTopDocs elasticTopDocs = new ElasticTopDocs();
-
-            var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
-                .Index(context.IndexName)
-                .Query(q => new RawQuery(queryProp.ToString()))
-                );
-
-            if (searchResponse.IsValid)
+            if (_elasticClient == null)
             {
-                elasticTopDocs.Count = searchResponse.Documents.Count;
-                elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
+                _logger.LogWarning("Elastic Client is not setup, please validate your Elastic Configurations");
+            }
+
+            try
+            {
+                var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s
+                    => s.Index(context.IndexName).Query(q => new RawQuery(queryProp.ToString())));
+                if (searchResponse.IsValid)
+                {
+                    elasticTopDocs.Count = searchResponse.Documents.Count;
+                    elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
+                }
+                else
+                {
+                    _logger.LogError($"Received failure response from Elastic: { searchResponse.ServerError }");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while querying elastic with exception: { ex.Message}");
             }
             return elasticTopDocs;
         }
