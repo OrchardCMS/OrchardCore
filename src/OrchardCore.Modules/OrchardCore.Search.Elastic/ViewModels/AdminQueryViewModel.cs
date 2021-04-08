@@ -22,6 +22,6 @@ namespace OrchardCore.Search.Elastic.ViewModels
         public TimeSpan Elapsed { get; set; } = TimeSpan.Zero;
 
         [BindNever]
-        public IEnumerable<Document> Documents { get; set; } = Enumerable.Empty<Document>();
+        public IEnumerable<ElasticDocument> Documents { get; set; } = Enumerable.Empty<ElasticDocument>();
     }
 }

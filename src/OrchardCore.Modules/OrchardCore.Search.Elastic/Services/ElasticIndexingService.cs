@@ -255,10 +255,17 @@ namespace OrchardCore.Search.Elastic
         /// Deletes permanently an index
         /// </summary>
         /// <returns></returns>
-        public Task DeleteIndexAsync(string indexName)
+        public async Task<bool> DeleteIndexAsync(string indexName)
         {
-            _indexManager.DeleteIndex(indexName);
-            return _elasticIndexSettingsService.DeleteIndexAsync(indexName);
+            //Delete the Elastic Index first
+            bool result = await _indexManager.DeleteIndex(indexName);
+
+            if (result)
+            {
+                //Now delete it's setting
+                await _elasticIndexSettingsService.DeleteIndexAsync(indexName);
+            }
+            return result;
         }
 
         /// <summary>
@@ -276,9 +283,8 @@ namespace OrchardCore.Search.Elastic
         /// </summary>
         public async Task RebuildIndexAsync(string indexName)
         {
-            _indexManager.DeleteIndex(indexName);
+            await _indexManager.DeleteIndex(indexName);
             await _indexManager.CreateIndexAsync(indexName);
-
             ResetIndex(indexName);
         }
 

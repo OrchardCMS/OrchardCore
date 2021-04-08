@@ -88,7 +88,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 return BadRequest("Elastic Search is not configured.");
             }
 
-            if (searchSettings.SearchIndex != null && !_elasticIndexProvider.Exists(searchSettings.SearchIndex))
+            if (searchSettings.SearchIndex != null && ! await _elasticIndexProvider.Exists(searchSettings.SearchIndex))
             {
                 _logger.LogInformation("Couldn't execute Elastic search. The Elastic search index doesn't exist.");
                 return BadRequest("Elastic Search is not configured.");
@@ -122,7 +122,6 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             // We Query Lucene index
             var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(elasticIndexSettings.IndexName));
-            var queryParser = new MultiFieldQueryParser(ElasticSettings.DefaultVersion, elasticSettings.DefaultSearchFields, analyzer);
 
             // Fetch one more result than PageSize to generate "More" links
             var start = 0;
@@ -142,20 +141,21 @@ namespace OrchardCore.Search.Elastic.Controllers
             var terms = viewModel.Terms;
             if (!searchSettings.AllowElasticQueriesInSearch)
             {
-                terms = QueryParser.Escape(terms);
+                //Need to revisit this
+                //terms = QueryParser.Escape(terms);
             }
 
             IList<string> contentItemIds;
             try
             {
-                var query = queryParser.Parse(terms);
-                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
+                //var query = queryParser.Parse(terms);
+                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(viewModel.Terms, searchSettings.SearchIndex, start, end))
                     .ToList();
             }
-            catch (ParseException e)
+            catch (Exception e)
             {
                 ModelState.AddModelError("Terms", S["Incorrect query syntax."]);
-                _logger.LogError(e, "Incorrect Lucene search query syntax provided in search:");
+                _logger.LogError(e, "Incorrect Elastic search query syntax provided in search:");
 
                 // Return a SearchIndexViewModel without SearchResults or Pager shapes since there is an error.
                 return View(new SearchIndexViewModel

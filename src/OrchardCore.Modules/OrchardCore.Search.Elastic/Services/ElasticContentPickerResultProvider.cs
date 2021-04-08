@@ -30,44 +30,44 @@ namespace OrchardCore.Search.Elastic
                 indexName = fieldSettings.Index;
             }
 
-            if (!_elasticIndexProvider.Exists(indexName))
+            if (! await _elasticIndexProvider.Exists(indexName))
             {
                 return new List<ContentPickerResult>();
             }
 
             var results = new List<ContentPickerResult>();
 
-            await _elasticIndexProvider.SearchAsync(indexName, searcher =>
-            {
-                Query query = null;
+            //await _elasticIndexProvider.SearchAsync(indexName, searcher =>
+            //{
+            //    Query query = null;
 
-                if (string.IsNullOrWhiteSpace(searchContext.Query))
-                {
-                    query = new MatchAllDocsQuery();
-                }
-                else
-                {
-                    query = new WildcardQuery(new Term("Content.ContentItem.DisplayText.Analyzed", searchContext.Query.ToLowerInvariant() + "*"));
-                }
+            //    if (string.IsNullOrWhiteSpace(searchContext.Query))
+            //    {
+            //        query = new MatchAllDocsQuery();
+            //    }
+            //    else
+            //    {
+            //        query = new WildcardQuery(new Term("Content.ContentItem.DisplayText.Analyzed", searchContext.Query.ToLowerInvariant() + "*"));
+            //    }
 
-                var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType", searchContext.ContentTypes.ToArray());
+            //    var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType", searchContext.ContentTypes.ToArray());
 
-                var docs = searcher.Search(query, filter, 50, Sort.RELEVANCE);
+            //    var docs = searcher.Search(query, filter, 50, Sort.RELEVANCE);
 
-                foreach (var hit in docs.ScoreDocs)
-                {
-                    var doc = searcher.Doc(hit.Doc);
+            //    foreach (var hit in docs.ScoreDocs)
+            //    {
+            //        var doc = searcher.Doc(hit.Doc);
 
-                    results.Add(new ContentPickerResult
-                    {
-                        ContentItemId = doc.GetField("ContentItemId").GetStringValue(),
-                        DisplayText = doc.GetField("Content.ContentItem.DisplayText").GetStringValue(),
-                        HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue() == "true" ? true : false
-                    });
-                }
+            //        results.Add(new ContentPickerResult
+            //        {
+            //            ContentItemId = doc.GetField("ContentItemId").GetStringValue(),
+            //            DisplayText = doc.GetField("Content.ContentItem.DisplayText").GetStringValue(),
+            //            HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue() == "true" ? true : false
+            //        });
+            //    }
 
-                return Task.CompletedTask;
-            });
+            //    return Task.CompletedTask;
+            //});
 
             return results.OrderBy(x => x.DisplayText);
         }

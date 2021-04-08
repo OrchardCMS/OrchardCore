@@ -61,49 +61,41 @@ namespace OrchardCore.Search.Elastic
 
             //Should be renamed at OrchardCore.Queries to SearchQueryResults
 
-            var luceneQueryResults = new LuceneQueryResults();
+            var elasticQueryResults = new ElasticQueryResults();
 
-            await _elasticIndexProvider.SearchAsync(elasticQuery.Index, async searcher =>
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var parameterizedQuery = JObject.Parse(tokenizedContent);
+
+            var elasticSearchResult = await _elasticIndexProvider.SearchAsync(elasticQuery.Index, elasticQuery.Template);
+
+
+            if (elasticQuery.ReturnContentItems)
             {
-                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+                // We always return an empty collection if the bottom lines queries have no results.
+                elasticQueryResults.Items = new List<ContentItem>();
 
-                var parameterizedQuery = JObject.Parse(tokenizedContent);
+                // Load corresponding content item versions
+                var indexedContentItemVersionIds = elasticSearchResult.TopDocs.Select(x => x.Fields.GetValueOrDefault("Content.ContentItem.ContentItemVersionId").ToString()).ToArray();
+                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
-                var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(elasticQuery.Index));
-                var context = new ElasticQueryContext(searcher, ElasticSettings.DefaultVersion, analyzer);
-                var docs = await _queryService.SearchAsync(context, parameterizedQuery);
-                luceneQueryResults.Count = docs.Count;
-
-                if (elasticQuery.ReturnContentItems)
+                // Reorder the result to preserve the one from the lucene query
+                if (dbContentItems.Any())
                 {
-                    // We always return an empty collection if the bottom lines queries have no results.
-                    luceneQueryResults.Items = new List<ContentItem>();
-
-                    // Load corresponding content item versions
-                    var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("Content.ContentItem.ContentItemVersionId")).ToArray();
-                    var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
-
-                    // Reorder the result to preserve the one from the lucene query
-                    if (dbContentItems.Any())
-                    {
-                        var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
-                        var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
-                        luceneQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
-                    }
+                    var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
+                    var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
+                    elasticQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
                 }
-                else
+            }
+            else
+            {
+                var results = new List<JObject>();
+                foreach (var document in elasticSearchResult.TopDocs)
                 {
-                    var results = new List<JObject>();
-                    foreach (var document in docs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)))
-                    {
-                        results.Add(new JObject(document.Select(x => new JProperty(x.Name, x.GetStringValue()))));
-                    }
-
-                    luceneQueryResults.Items = results;
+                    results.Add(new JObject(document.Fields.Select(x => new JProperty(x.Key, x.Value.ToString()))));
                 }
-            });
-
-            return luceneQueryResults;
+                elasticQueryResults.Items = results;
+            }
+            return elasticQueryResults;
         }
     }
 }

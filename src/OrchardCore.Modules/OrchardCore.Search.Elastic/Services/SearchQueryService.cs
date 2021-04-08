@@ -15,29 +15,13 @@ namespace OrchardCore.Search.Elastic
             _elasticIndexManager = elasticIndexManager;
         }
 
-        public async Task<IList<string>> ExecuteQueryAsync(Query query, string indexName, int start, int end)
+        public async Task<IList<string>> ExecuteQueryAsync(string query, string indexName, int start, int end)
         {
             var contentItemIds = new List<string>();
 
-            await _elasticIndexManager.SearchAsync(indexName, searcher =>
-            {
-                if (end > 0)
-                {
-                    var collector = TopScoreDocCollector.Create(end, true);
+            await _elasticIndexManager.SearchAsync(indexName, query);
 
-                    searcher.Search(query, collector);
-                    var hits = collector.GetTopDocs(start, end);
-
-                    foreach (var hit in hits.ScoreDocs)
-                    {
-                        var d = searcher.Doc(hit.Doc, IdSet);
-                        contentItemIds.Add(d.GetField("ContentItemId").GetStringValue());
-                    }
-                }
-
-                return Task.CompletedTask;
-            });
-
+            //Here return the contentItemIds
             return contentItemIds;
         }
     }

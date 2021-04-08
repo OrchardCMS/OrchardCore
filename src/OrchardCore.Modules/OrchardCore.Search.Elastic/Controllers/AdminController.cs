@@ -193,14 +193,14 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             if (model.IsCreate)
             {
-                if (_elasticIndexManager.Exists(model.IndexName))
+                if (await _elasticIndexManager.Exists(model.IndexName))
                 {
                     ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", model.IndexName]);
                 }
             }
             else
             {
-                if (!_elasticIndexManager.Exists(model.IndexName))
+                if (! await _elasticIndexManager.Exists(model.IndexName))
                 {
                     ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", model.IndexName]);
                 }
@@ -263,7 +263,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 return Forbid();
             }
 
-            if (!_elasticIndexManager.Exists(id))
+            if (!await _elasticIndexManager.Exists(id))
             {
                 return NotFound();
             }
@@ -284,7 +284,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 return Forbid();
             }
 
-            if (!_elasticIndexManager.Exists(id))
+            if (! await _elasticIndexManager.Exists(id))
             {
                 return NotFound();
             }
@@ -305,7 +305,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 return Forbid();
             }
 
-            if (!_elasticIndexManager.Exists(model.IndexName))
+            if (! await _elasticIndexManager.Exists(model.IndexName))
             {
                 return NotFound();
             }
@@ -352,7 +352,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                 model.IndexName = model.Indices[0];
             }
 
-            if (!_elasticIndexManager.Exists(model.IndexName))
+            if (! await _elasticIndexManager.Exists(model.IndexName))
             {
                 return NotFound();
             }
@@ -370,36 +370,28 @@ namespace OrchardCore.Search.Elastic.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            await _elasticIndexManager.SearchAsync(model.IndexName, async searcher =>
+            var context = new ElasticQueryContext(model.IndexName);
+            var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
+            try
             {
-                var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(model.IndexName));
-                var context = new ElasticQueryContext(searcher, ElasticSettings.DefaultVersion, analyzer);
+                var parameterizedQuery = JObject.Parse(tokenizedContent);
+                var elasticTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
 
-                var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
-
-                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
-
-                try
+                if (elasticTopDocs != null)
                 {
-                    var parameterizedQuery = JObject.Parse(tokenizedContent);
-                    var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
-
-                    if (luceneTopDocs != null)
-                    {
-                        model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
-                        model.Count = luceneTopDocs.Count;
-                    }
+                    model.Documents = elasticTopDocs.TopDocs;
+                    model.Count = elasticTopDocs.Count;
                 }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Error while executing query");
-                    ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
-                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error while executing query");
+                ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
+            }
 
-                stopwatch.Stop();
-                model.Elapsed = stopwatch.Elapsed;
-            });
-
+            stopwatch.Stop();
+            model.Elapsed = stopwatch.Elapsed;
             return View(model);
         }
 
@@ -414,8 +406,8 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             if (itemIds?.Count() > 0)
             {
-                var luceneIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
-                var checkedContentItems = luceneIndexSettings.Where(x => itemIds.Contains(x.IndexName));
+                var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
+                var checkedContentItems = elasticIndexSettings.Where(x => itemIds.Contains(x.IndexName));
                 switch (options.BulkAction)
                 {
                     case ContentsBulkAction.None:
@@ -430,7 +422,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                     case ContentsBulkAction.Reset:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!_elasticIndexManager.Exists(item.IndexName))
+                            if (! await _elasticIndexManager.Exists(item.IndexName))
                             {
                                 return NotFound();
                             }
@@ -444,7 +436,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                     case ContentsBulkAction.Rebuild:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!_elasticIndexManager.Exists(item.IndexName))
+                            if (!await _elasticIndexManager.Exists(item.IndexName))
                             {
                                 return NotFound();
                             }
