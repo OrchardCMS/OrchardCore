@@ -45,17 +45,18 @@ namespace OrchardCore.DisplayManagement.Liquid
             var liquidViewParser = services.GetRequiredService<LiquidViewParser>();
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
             var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
-            var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
 
+            var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
             var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment);
             var context = new LiquidTemplateContext(services, templateOptions);
-
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
             try
             {
+                var content = new ViewBufferTextWriterContent();
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
-                await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
+                await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
+                content.WriteTo(page.Output, htmlEncoder);
             }
             finally
             {
