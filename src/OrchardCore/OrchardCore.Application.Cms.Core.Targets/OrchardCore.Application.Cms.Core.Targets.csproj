@@ -30,6 +30,7 @@
   -->
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search.Elastic\OrchardCore.Search.Elastic.csproj" />
     <ProjectReference Include="..\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" PrivateAssets="none" />
 
     <!--
@@ -110,8 +111,6 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.XmlRpc\OrchardCore.XmlRpc.csproj" PrivateAssets="none" />
 
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" PrivateAssets="none" />
-
-    <ProjectReference Include="..\OrchardCore.Search.Elastic.Core\OrchardCore.Search.Elastic.Core.csproj" />
   </ItemGroup>
 
 </Project>

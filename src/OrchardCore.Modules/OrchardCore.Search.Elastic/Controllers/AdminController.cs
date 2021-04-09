@@ -29,6 +29,7 @@ using OrchardCore.Routing;
 using OrchardCore.Search.Elastic.Services;
 using OrchardCore.Settings;
 using YesSql;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Search.Elastic.Controllers
 {
@@ -51,6 +52,7 @@ namespace OrchardCore.Search.Elastic.Controllers
         private readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
+        private readonly ShellSettings _shellSettings;
 
         public AdminController(
             ISession session,
@@ -69,7 +71,9 @@ namespace OrchardCore.Search.Elastic.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             ILogger<AdminController> logger,
-            IOptions<TemplateOptions> templateOptions)
+            IOptions<TemplateOptions> templateOptions,
+            ShellSettings shellSettings
+            )
         {
             _session = session;
             _elasticIndexManager = elasticIndexManager;
@@ -89,6 +93,7 @@ namespace OrchardCore.Search.Elastic.Controllers
             H = htmlLocalizer;
             _logger = logger;
             _templateOptions = templateOptions;
+            _shellSettings = shellSettings;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -189,10 +194,29 @@ namespace OrchardCore.Search.Elastic.Controllers
                 return Forbid();
             }
 
+            bool nameWasSplit = false;
+            //This was needed to work-around the name validation
+            if(!String.IsNullOrEmpty(model.IndexName))
+            {
+                //Just before validation we remove shellName
+                string[] indexNameParts = model.IndexName.Split("_");
+                if(indexNameParts.Length >= 1)
+                {
+                    if(indexNameParts[0].ToLower() == _shellSettings.Name.ToLower())
+                    {
+                        model.IndexName = indexNameParts[1];
+                        nameWasSplit = true;
+                    }
+                }
+            }
+            
             ValidateModel(model);
 
             if (model.IsCreate)
             {
+                //We will need to add ShellName here to keep the indexes unique/Scoped
+                model.IndexName = $"{_shellSettings.Name}_{model.IndexName}".ToLower();
+                
                 if (await _elasticIndexManager.Exists(model.IndexName))
                 {
                     ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", model.IndexName]);
@@ -200,6 +224,10 @@ namespace OrchardCore.Search.Elastic.Controllers
             }
             else
             {
+                if(nameWasSplit)
+                {
+                    model.IndexName = $"{_shellSettings.Name}_{model.IndexName}".ToLower();
+                }
                 if (! await _elasticIndexManager.Exists(model.IndexName))
                 {
                     ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", model.IndexName]);

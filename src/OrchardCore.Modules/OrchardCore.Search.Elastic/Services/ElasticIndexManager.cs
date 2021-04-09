@@ -31,33 +31,25 @@ namespace OrchardCore.Search.Elastic
     {
         private readonly IElasticClient _elasticClient;
 
+       
         private readonly IClock _clock;
         private readonly ILogger _logger;
-        private readonly string _rootPath;
         private bool _disposing;
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private static object _synLock = new object();
 
         public ElasticIndexManager(
             IClock clock,
-            IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings,
             ILogger<ElasticIndexManager> logger,
             ElasticAnalyzerManager elasticAnalyzerManager,
             ElasticIndexSettingsService elasticIndexSettingsService,
             IElasticClient elasticClient
             )
         {
+            
             _clock = clock;
             _logger = logger;
-            _rootPath = PathExtensions.Combine(
-                shellOptions.Value.ShellsApplicationDataPath,
-                shellOptions.Value.ShellsContainerName,
-                shellSettings.Name, "Elastic");
-
-            Directory.CreateDirectory(_rootPath);
             _elasticAnalyzerManager = elasticAnalyzerManager;
             _elasticIndexSettingsService = elasticIndexSettingsService;
             _elasticClient = elasticClient;
@@ -65,6 +57,7 @@ namespace OrchardCore.Search.Elastic
 
         public async Task<bool> CreateIndexAsync(string indexName)
         {
+            //Get Index name scoped by ShellName
             if (!await Exists(indexName))
             {
                 var response = await _elasticClient.Indices.CreateAsync(indexName);

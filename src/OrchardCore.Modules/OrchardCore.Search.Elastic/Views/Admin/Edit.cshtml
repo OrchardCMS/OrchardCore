@@ -13,6 +13,7 @@ else
     <div class="form-group" asp-validation-class-for="IndexName">
         <label asp-for="IndexName">@T["Index Name"]</label>
         <input asp-for="IndexName" class="form-control" readonly="@(!Model.IsCreate)" />
+        <span class="hint">@T["The shell name shall be prepended and automatically. Index name to be in lower."]</span>
         <span asp-validation-for="IndexName" class="text-danger"></span>
     </div>
 
