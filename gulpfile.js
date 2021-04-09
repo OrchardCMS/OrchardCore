@@ -90,43 +90,9 @@ gulp.task('help', function () {
     `);
 });
 
-gulp.task("build-blogtheme", function (done) {
-    return buildBlogTheme(done);
-});
-
-gulp.task("build-comingsoontheme", function (done) {
-    return buildComingSoonTheme(done);
-});
-
-gulp.task("build-themes", function (done) {
-    buildBlogTheme(() => buildComingSoonTheme(done));
-});
-
 gulp.task('build', gulp.series(['build-assets']));
 gulp.task('rebuild', gulp.series(['rebuild-assets']));
 gulp.task('default', gulp.series(['build']));
-
-/*
-** Build Themes
-*/
-
-function buildBlogTheme(done) {
-    var cwd = process.cwd();
-    process.chdir('./src/OrchardCore.Themes/TheBlogTheme/wwwroot');
-    blogtheme.build(() => {
-        process.chdir(cwd);
-        done();
-    });
-}
-
-function buildComingSoonTheme(done) {
-    var cwd = process.cwd();
-    process.chdir('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot');
-    comingsoontheme.build(() => {
-        process.chdir(cwd);
-        done();
-    });
-}
 
 /*
 ** ASSET GROUPS
