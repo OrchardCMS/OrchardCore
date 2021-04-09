@@ -427,9 +427,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
 
-                var returnType = new ListGraphType<StringGraphType>();
-                returnType.ResolvedType = new StringGraphType() { Name = "Animal" };
-
                 var animalWhereInput = new AnimalPartCollapsedWhereInput();
 
                 var context = new ResolveFieldContext
@@ -440,6 +437,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     FieldDefinition = new FieldType
                     {
                         Name = "Inputs",
+                        ResolvedType = new StringGraphType() { Name = "Animal" },
                         Arguments = new QueryArguments
                             {
                                 new QueryArgument<WhereInputObjectGraphType>
