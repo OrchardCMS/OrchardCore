@@ -226,7 +226,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
+            var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;s
             return query.Where(q => q.ContentType == contentType);
         }
 
