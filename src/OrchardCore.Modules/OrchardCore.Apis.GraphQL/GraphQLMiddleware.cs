@@ -166,7 +166,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
-                _.ValidationRules = DocumentValidator.CoreRules()
+                _.ValidationRules = DocumentValidator.CoreRules
                                     .Concat(context.RequestServices.GetServices<IValidationRule>());
                 _.ComplexityConfiguration = new ComplexityConfiguration
                 {
