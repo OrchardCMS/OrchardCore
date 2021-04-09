@@ -280,22 +280,22 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 // figure out table aliases for collapsed parts and ones with the part suffix removed by the dsl
                 if (tableAlias == null || !tableAlias.EndsWith("Part", StringComparison.OrdinalIgnoreCase))
                 {
-                    var whereArgument = fieldContext?.Arguments.FirstOrDefault(x => x.Key == "where");
+                    var whereArgument = fieldContext?.FieldDefinition.Arguments.FirstOrDefault(x => x.Name == "where");
 
                     if (whereArgument != null)
                     {
-                        //var whereInput = (WhereInputObjectGraphType)whereArgument..ResolvedType;
+                        var whereInput = (WhereInputObjectGraphType)whereArgument.ResolvedType;
 
-                        //foreach (var field in whereInput.Fields.Where(x => x.GetMetadata<string>("PartName") != null))
-                        //{
-                        //    var partName = field.GetMetadata<string>("PartName");
-                        //    if ((tableAlias == null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase)) ||
-                        //        (tableAlias != null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase)))
-                        //    {
-                        //        tableAlias = indexAliases.TryGetValue(partName, out var indexTableAlias) ? indexTableAlias : tableAlias;
-                        //        break;
-                        //    }
-                        //}
+                        foreach (var field in whereInput.Fields.Where(x => x.GetMetadata<string>("PartName") != null))
+                        {
+                            var partName = field.GetMetadata<string>("PartName");
+                            if ((tableAlias == null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase)) ||
+                                (tableAlias != null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                tableAlias = indexAliases.TryGetValue(partName, out var indexTableAlias) ? indexTableAlias : tableAlias;
+                                break;
+                            }
+                        }
                     }
                 }
 
