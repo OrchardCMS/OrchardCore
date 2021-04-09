@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
-using GQLNS = GraphQL.NewtonsoftJson;
+using GraphQL.NewtonsoftJson;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authentication;
@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
@@ -42,7 +43,7 @@ namespace OrchardCore.Apis.GraphQL
             _executer = executer;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService)
+        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService, IDocumentWriter documentWriter)
         {
             if (!IsGraphQLRequest(context))
             {
@@ -61,7 +62,7 @@ namespace OrchardCore.Apis.GraphQL
 
                 if (authorized)
                 {
-                    await ExecuteAsync(context, schemaService);
+                    await ExecuteAsync(context, schemaService, documentWriter);
                 }
                 else
                 {
@@ -75,7 +76,7 @@ namespace OrchardCore.Apis.GraphQL
             return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService)
+        private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService, IDocumentWriter documentWriter)
         {
             var schema = await schemaService.GetSchemaAsync();
 
@@ -83,66 +84,49 @@ namespace OrchardCore.Apis.GraphQL
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
 
-            if (HttpMethods.IsPost(context.Request.Method))
+            try
             {
-                var mediaType = new MediaType(context.Request.ContentType);
-
-                try
+                if (HttpMethods.IsPost(context.Request.Method))
                 {
-                    if (mediaType.IsSubsetOf(_jsonMediaType))
+                    var mediaType = new MediaType(context.Request.ContentType);
+
+                    if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
                     {
-                        using (var sr = new StreamReader(context.Request.Body))
+                        using var sr = new StreamReader(context.Request.Body);
+
+                        if (mediaType.IsSubsetOf(_graphQlMediaType))
                         {
-                            // Asynchronous read is mandatory.
-                            var json = await sr.ReadToEndAsync();
-                            request = JObject.Parse(json).ToObject<GraphQLRequest>();
+                            request = new GraphQLRequest
+                            {
+                                Query = await sr.ReadToEndAsync()
+                            };
+                        }
+                        else
+                        {
+                            using var jsonReader = new JsonTextReader(sr);
+                            var ser = new JsonSerializer();
+                            request = ser.Deserialize<GraphQLRequest>(jsonReader);
                         }
                     }
-                    else if (mediaType.IsSubsetOf(_graphQlMediaType))
+                    else
                     {
-                        request = new GraphQLRequest();
-
-                        using (var sr = new StreamReader(context.Request.Body))
-                        {
-                            request.Query = await sr.ReadToEndAsync();
-                        }
-                    }
-                    else if (context.Request.Query.ContainsKey("query"))
-                    {
-                        request = new GraphQLRequest
-                        {
-                            Query = context.Request.Query["query"]
-                        };
-
-                        if (context.Request.Query.ContainsKey("variables"))
-                        {
-                            request.Variables = JObject.Parse(context.Request.Query["variables"]);
-                        }
-
-                        if (context.Request.Query.ContainsKey("operationName"))
-                        {
-                            request.OperationName = context.Request.Query["operationName"];
-                        }
+                        request = CreateRequestFromQueryString(context);
                     }
                 }
-                catch (Exception e)
+                else if (HttpMethods.IsGet(context.Request.Method))
                 {
-                    await WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
-                    return;
+                    request = CreateRequestFromQueryString(context, true);
+                }
+
+                if (request == null)
+                {
+                    throw new InvalidOperationException("Unable to create a graphqlrequest from this request");
                 }
             }
-            else if (HttpMethods.IsGet(context.Request.Method))
+            catch (Exception e)
             {
-                if (!context.Request.Query.ContainsKey("query"))
-                {
-                    await WriteErrorAsync(context, "The 'query' query string parameter is missing");
-                    return;
-                }
-
-                request = new GraphQLRequest
-                {
-                    Query = context.Request.Query["query"]
-                };
+                await documentWriter.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
+                return;
             }
 
             var queryToExecute = request.Query;
@@ -165,9 +149,8 @@ namespace OrchardCore.Apis.GraphQL
                 _.Schema = schema;
                 _.Query = queryToExecute;
                 _.OperationName = request.OperationName;
-                _.Inputs = GQLNS::StringExtensions.ToInputs(request.Variables);
+                _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
-                _.ExposeExceptions = _settings.ExposeExceptions;
                 _.ValidationRules = DocumentValidator.CoreRules
                                     .Concat(context.RequestServices.GetServices<IValidationRule>());
                 _.ComplexityConfiguration = new ComplexityConfiguration
@@ -186,38 +169,37 @@ namespace OrchardCore.Apis.GraphQL
                     : HttpStatusCode.BadRequest);
 
             context.Response.ContentType = MediaTypeNames.Application.Json;
-
-            var writer = new GQLNS::DocumentWriter();
-            await writer.WriteAsync(context.Response.Body, result);
+            await documentWriter.WriteAsync(context.Response.Body, result);
         }
 
-        private async Task WriteErrorAsync(HttpContext context, string message, Exception e = null)
+        private GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
         {
-            if (message == null)
+            if (!context.Request.Query.ContainsKey("query"))
             {
-                throw new ArgumentNullException(nameof(message));
+                if (validateQueryKey)
+                {
+                    throw new InvalidOperationException("The 'query' query string parameter is missing");
+                }
+
+                return null;
             }
 
-            var errorResult = new ExecutionResult
+            var request = new GraphQLRequest
             {
-                Errors = new ExecutionErrors()
+                Query = context.Request.Query["query"]
             };
 
-            if (e == null)
+            if (context.Request.Query.ContainsKey("variables"))
             {
-                errorResult.Errors.Add(new ExecutionError(message));
-            }
-            else
-            {
-                errorResult.Errors.Add(new ExecutionError(message, e));
+                request.Variables = JObject.Parse(context.Request.Query["variables"]);
             }
 
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            context.Response.ContentType = MediaTypeNames.Application.Json;
+            if (context.Request.Query.ContainsKey("operationName"))
+            {
+                request.OperationName = context.Request.Query["operationName"];
+            }
 
-            // Asynchronous write to the response body is mandatory.
-            var encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(errorResult).ToString());
-            await context.Response.Body.WriteAsync(encodedBytes, 0, encodedBytes.Length);
+            return request;
         }
     }
 }

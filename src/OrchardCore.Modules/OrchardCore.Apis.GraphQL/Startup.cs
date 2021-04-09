@@ -40,6 +40,12 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
+            services.AddSingleton<IErrorInfoProvider>(services =>
+            {
+                var settings = services.GetRequiredService<IOptions<GraphQLSettings>>();
+                return new ErrorInfoProvider(new ErrorInfoProviderOptions { ExposeExceptionStackTrace = settings.Value.ExposeExceptions });
+            });
+
             services.AddSingleton<ISchemaFactory, SchemaService>();
             services.AddScoped<IValidationRule, MaxNumberOfResultsValidationRule>();
             services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
