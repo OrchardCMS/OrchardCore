@@ -102,10 +102,6 @@ gulp.task("build-themes", function (done) {
     buildBlogTheme(() => buildComingSoonTheme(done));
 });
 
-
-// gulp.task( 'build',  gulp.series([ 'build-assets', 'build-themes' ]) );
-// gulp.task( 'rebuild',  gulp.series([ 'rebuild-assets', 'build-themes' ]) );
-
 gulp.task('build', gulp.series(['build-assets']));
 gulp.task('rebuild', gulp.series(['rebuild-assets']));
 gulp.task('default', gulp.series(['build']));

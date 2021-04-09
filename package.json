@@ -16,6 +16,8 @@
     "install:orchardcore.workflows": "cd src/OrchardCore.Modules/OrchardCore.Workflows && npm install",
     "install:orchardcore.theadmin": "cd src/OrchardCore.Themes/TheAdmin && npm install",
     "install:orchardcore.theagencytheme": "cd src/OrchardCore.Themes/TheAgencyTheme && npm install",
+    "install:orchardcore.theblogtheme": "cd src/OrchardCore.Themes/TheBlogTheme && npm install",
+    "install:orchardcore.thecomingsoontheme": "cd src/OrchardCore.Themes/TheComingSoonTheme && npm install",
     "install:orchardcore.thetheme": "cd src/OrchardCore.Themes/TheTheme && npm install",
     "postinstall": "run-s install:*"
   },
