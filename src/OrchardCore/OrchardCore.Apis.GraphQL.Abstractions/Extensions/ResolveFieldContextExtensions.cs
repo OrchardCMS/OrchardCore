@@ -15,7 +15,7 @@ namespace OrchardCore.Apis.GraphQL
         {
             if (source.Arguments?.ContainsKey(argumentName) ?? false)
             {
-                return !string.IsNullOrEmpty(source.Arguments[argumentName].ToString());
+                return !string.IsNullOrEmpty((source.Arguments[argumentName].Value ?? string.Empty).ToString());
             };
 
             return false;
@@ -25,7 +25,7 @@ namespace OrchardCore.Apis.GraphQL
         {
             if (source.Arguments?.ContainsKey(argumentName) ?? false)
             {
-                return !string.IsNullOrEmpty(source.Arguments[argumentName].ToString());
+                return !string.IsNullOrEmpty((source.Arguments[argumentName].Value ?? string.Empty).ToString());
             };
 
             return false;
