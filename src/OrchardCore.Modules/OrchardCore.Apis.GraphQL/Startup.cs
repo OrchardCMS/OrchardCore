@@ -63,9 +63,7 @@ namespace OrchardCore.Apis.GraphQL
 
                 c.BuildUserContext = ctx => new GraphQLUserContext
                 {
-                    HttpContext = ctx,
                     User = ctx.User,
-                    ServiceProvider = ctx.RequestServices
                 };
                 c.ExposeExceptions = exposeExceptions;
                 c.MaxDepth = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 20;

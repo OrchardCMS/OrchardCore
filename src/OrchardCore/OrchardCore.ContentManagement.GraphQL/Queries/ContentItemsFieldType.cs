@@ -67,8 +67,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private async Task<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
         {
-            var graphContext = (GraphQLUserContext)context.UserContext;
-
             var versionOption = VersionOptions.Published;
 
             if (context.HasPopulatedArgument("status"))
@@ -82,11 +80,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 where = JObject.FromObject(context.Arguments["where"]);
             }
 
-            var session = graphContext.ServiceProvider.GetService<ISession>();
+            var session = context.RequestServices.GetService<ISession>();
 
             var preQuery = session.Query<ContentItem>();
 
-            var filters = graphContext.ServiceProvider.GetServices<IGraphQLFilter<ContentItem>>();
+            var filters = context.RequestServices.GetServices<IGraphQLFilter<ContentItem>>();
 
             foreach (var filter in filters)
             {
@@ -99,8 +97,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
-            var contentItemsQuery = FilterWhereArguments(query, where, context, session, graphContext);
-            contentItemsQuery = PageQuery(contentItemsQuery, context, graphContext);
+            var contentItemsQuery = FilterWhereArguments(query, where, context, session);
+            contentItemsQuery = PageQuery(contentItemsQuery, context);
 
             var contentItems = await contentItemsQuery.ListAsync();
 
@@ -116,8 +114,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             IQuery<ContentItem, ContentItemIndex> query,
             JObject where,
             IResolveFieldContext fieldContext,
-            ISession session,
-            GraphQLUserContext context)
+            ISession session)
         {
             if (where == null)
             {
@@ -128,15 +125,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             IPredicateQuery predicateQuery = new PredicateQuery(
                 dialect: session.Store.Configuration.SqlDialect,
-                shellSettings: context.ServiceProvider.GetService<ShellSettings>(),
-                propertyProviders: context.ServiceProvider.GetServices<IIndexPropertyProvider>());
+                shellSettings: fieldContext.RequestServices.GetService<ShellSettings>(),
+                propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>());
 
             // Create the default table alias
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));
             predicateQuery.CreateTableAlias(nameof(ContentItemIndex), defaultTableAlias);
 
             // Add all provided table alias to the current predicate query
-            var providers = context.ServiceProvider.GetServices<IIndexAliasProvider>();
+            var providers = fieldContext.RequestServices.GetServices<IIndexAliasProvider>();
             var indexes = new Dictionary<string, IndexAlias>(StringComparer.OrdinalIgnoreCase);
             var indexAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -184,7 +181,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentQuery;
         }
 
-        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, IResolveFieldContext context, GraphQLUserContext graphQLContext)
+        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, IResolveFieldContext context)
         {
             var first = context.GetArgument<int>("first");
 

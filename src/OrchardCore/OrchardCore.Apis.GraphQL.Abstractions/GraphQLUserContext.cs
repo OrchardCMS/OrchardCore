@@ -8,9 +8,9 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class GraphQLUserContext : Dictionary<string, object>
     {
-        public HttpContext HttpContext { get; set; }
+    //    public HttpContext HttpContext { get; set; }
         public ClaimsPrincipal User { get; set; }
-        public IServiceProvider ServiceProvider { get; set; }
+     //  public IServiceProvider ServiceProvider { get; set; }
         public SemaphoreSlim ExecutionContextLock { get; } = new SemaphoreSlim(1, 1);
     }
 }

@@ -64,11 +64,11 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         private static bool Authorize(IProvideMetadata type, GraphQLUserContext context)
         {
-            var authorizationManager = context.ServiceProvider.GetService<IAuthorizationService>();
+            //var authorizationManager = context.ServiceProvider.GetService<IAuthorizationService>();
 
-            // awaitable IValidationRule in graphql dotnet is coming soon:
-            // https://github.com/graphql-dotnet/graphql-dotnet/issues/1140
-            return type.GetPermissions().All(x => authorizationManager.AuthorizeAsync(context.User, x.Permission, x.Resource).GetAwaiter().GetResult());
+            //// awaitable IValidationRule in graphql dotnet is coming soon:
+            //// https://github.com/graphql-dotnet/graphql-dotnet/issues/1140
+            //return type.GetPermissions().All(x => authorizationManager.AuthorizeAsync(context.User, x.Permission, x.Resource).GetAwaiter().GetResult());
         }
     }
 }
