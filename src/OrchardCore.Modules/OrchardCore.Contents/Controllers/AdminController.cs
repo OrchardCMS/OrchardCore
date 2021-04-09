@@ -286,7 +286,7 @@ namespace OrchardCore.Contents.Controllers
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
                                 _notifier.Warning(H["Couldn't publish selected content."]);
-                                _session.Cancel();
+                                await _session.CancelAsync();
                                 return Forbid();
                             }
 
@@ -300,7 +300,7 @@ namespace OrchardCore.Contents.Controllers
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
                                 _notifier.Warning(H["Couldn't unpublish selected content."]);
-                                _session.Cancel();
+                                await _session.CancelAsync();
                                 return Forbid();
                             }
 
@@ -314,7 +314,7 @@ namespace OrchardCore.Contents.Controllers
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, item))
                             {
                                 _notifier.Warning(H["Couldn't remove selected content."]);
-                                _session.Cancel();
+                                await _session.CancelAsync();
                                 return Forbid();
                             }
 
@@ -418,7 +418,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                await _session.CancelAsync();
                 return View(model);
             }
 
@@ -541,7 +541,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                await _session.CancelAsync();
                 return View("Edit", model);
             }
 

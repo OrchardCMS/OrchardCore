@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AspNetCoreVersion>5.0.4</AspNetCoreVersion>
+    <AspNetCoreVersion>5.0.5</AspNetCoreVersion>
     <MicrosoftExtensionsVersion>5.0.1</MicrosoftExtensionsVersion>
   </PropertyGroup>
 
