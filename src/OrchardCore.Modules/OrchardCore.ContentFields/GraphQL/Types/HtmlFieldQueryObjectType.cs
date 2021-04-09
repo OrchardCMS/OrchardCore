@@ -36,7 +36,7 @@ namespace OrchardCore.ContentFields.GraphQL
 
         private static async Task<object> RenderHtml(IResolveFieldContext<HtmlField> ctx)
         {
-            var serviceProvider = ctx.ResolveServiceProvider();
+            var serviceProvider = ctx.RequestServices;
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 

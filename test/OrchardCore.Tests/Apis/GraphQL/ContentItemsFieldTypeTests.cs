@@ -138,23 +138,22 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var animalWhereInput = new AnimalPartWhereInput();
                 var inputs = new FieldType { Name = "Inputs", Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
 
-                var a = new GraphQLUserContext
-                {
-                    ServiceProvider = services
-                };
+                //var a = new GraphQLUserContext
+                //{
+                //    ServiceProvider = services
+                //};
 
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
                     UserContext = null,
-                    //ReturnType = returnType,
                     FieldDefinition = inputs
                 };
 
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = services.GetService<ISession>(); // context.RequestServices.GetService<ISession>();
                 session.Save(ci);
                 await session.SaveChangesAsync();
 
@@ -196,10 +195,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
-                    UserContext = new GraphQLUserContext
-                    {
-                        ServiceProvider = services
-                    },
+                    //UserContext = new GraphQLUserContext
+                    //{
+                    //    ServiceProvider = services
+                    //},
                     //ReturnType = returnType,
                     FieldDefinition = inputs
                 };
@@ -207,7 +206,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = services.GetService<ISession>(); // ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.SaveChangesAsync();
 
@@ -252,10 +251,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
-                    UserContext = new GraphQLUserContext
-                    {
-                        ServiceProvider = services
-                    },
+                    //UserContext = new GraphQLUserContext
+                    //{
+                    //    ServiceProvider = services
+                    //},
                     //ReturnType = returnType,
                     FieldDefinition = inputs
                 };
@@ -263,7 +262,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = services.GetService<ISession>(); // ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.SaveChangesAsync();
 
@@ -300,17 +299,17 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
-                    UserContext = new GraphQLUserContext
-                    {
-                        ServiceProvider = services
-                    },
+                    //UserContext = new GraphQLUserContext
+                    //{
+                    //    ServiceProvider = services
+                    //},
                     //ReturnType = returnType
                 };
 
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new Animal { Name = "doug" });
 
-                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = services.GetService<ISession>(); // ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.SaveChangesAsync();
 
@@ -356,10 +355,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
-                    UserContext = new GraphQLUserContext
-                    {
-                        ServiceProvider = services
-                    },
+                    //UserContext = new GraphQLUserContext
+                    //{
+                    //    ServiceProvider = services
+                    //},
                     //ReturnType = returnType
                 };
 
@@ -372,7 +371,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci2 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "3", ContentItemVersionId = "3" };
                 ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
 
-                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = services.GetService<ISession>(); // ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 session.Save(ci1);
                 session.Save(ci2);
@@ -415,10 +414,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
-                    UserContext = new GraphQLUserContext
-                    {
-                        ServiceProvider = services
-                    },
+                    //UserContext = new GraphQLUserContext
+                    //{
+                    //    ServiceProvider = services
+                    //},
                     //ReturnType = returnType,
                     FieldDefinition = inputs
                 };
@@ -426,7 +425,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = services.GetService<ISession>(); // ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.SaveChangesAsync();
 
@@ -464,10 +463,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
-                    UserContext = new GraphQLUserContext
-                    {
-                        ServiceProvider = services
-                    },
+                    //UserContext = new GraphQLUserContext
+                    //{
+                    //    ServiceProvider = services
+                    //},
                     //ReturnType = returnType,
                     FieldDefinition = new FieldType
                     {
@@ -487,7 +486,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = services.GetService<ISession>(); // ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.SaveChangesAsync();
 

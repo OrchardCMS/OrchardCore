@@ -31,7 +31,7 @@ namespace OrchardCore.Lists.GraphQL
                 .Argument<IntGraphType, int>("skip", "the number of elements to skip", 0)
                 .ResolveAsync(async g =>
                 {
-                    var serviceProvider = g.ResolveServiceProvider();
+                    var serviceProvider = g.RequestServices;
                     var session = serviceProvider.GetService<ISession>();
                     var accessor = serviceProvider.GetRequiredService<IDataLoaderContextAccessor>();
 

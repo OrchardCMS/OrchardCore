@@ -20,7 +20,7 @@ namespace OrchardCore.Media.GraphQL
                 {
                     var path = x.Source.Path;
                     var context = (GraphQLUserContext)x.UserContext;
-                    var mediaFileStore = context.ServiceProvider.GetService<IMediaFileStore>();
+                    var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
                     return mediaFileStore.MapPathToPublicUrl(path);
                 });
 

@@ -121,7 +121,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                 Schema = new ValidationSchema(),
                 UserContext = new GraphQLUserContext
                 {
-                    ServiceProvider = serviceProvider,
+                    //ServiceProvider = serviceProvider,
                     User = new ClaimsPrincipal(new StubIdentity())
                 },
                 ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>())
