@@ -6,6 +6,7 @@ using OrchardCore.BackgroundTasks;
 
 namespace OrchardCore.Search.Elastic
 {
+    
     /// <summary>
     /// This background task will index content items using.
     /// </summary>

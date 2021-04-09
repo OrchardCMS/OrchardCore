@@ -10,7 +10,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Search.Elastic.Recipes
 {
     /// <summary>
-    /// This recipe step creates a lucene index.
+    /// This recipe step creates a Elastic index.
     /// </summary>
     public class ElasticIndexStep : IRecipeStepHandler
     {

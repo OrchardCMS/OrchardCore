@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
@@ -25,13 +24,13 @@ using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Search.Elastic;
 using OrchardCore.Environment.Shell.Configuration;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Search.Elastic.Configurations;
 using Nest;
+using OrchardCore.Elastic.Search;
 
-namespace OrchardCore.Lucene
+namespace OrchardCore.Search.Elastic
 {
     /// <summary>
     /// These services are registered on the tenant service collection
@@ -80,7 +79,7 @@ namespace OrchardCore.Lucene
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
 
             services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
-            services.AddLuceneQueries();
+            services.AddElasticQueries();
 
             // LuceneQuerySource is registered for both the Queries module and local usage
             services.AddScoped<IQuerySource, ElasticQuerySource>();
@@ -94,8 +93,8 @@ namespace OrchardCore.Lucene
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
-                name: "Lucene.Search",
-                areaName: "OrchardCore.Lucene",
+                name: "Elastic.Search",
+                areaName: "OrchardCore.Search.Elastic",
                 pattern: "Search",
                 defaults: new { controller = "Search", action = "Search" }
             );

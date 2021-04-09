@@ -3,7 +3,7 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Elastic.GraphQL.Queries;
 
-namespace OrchardCore.Lucene.GraphQL
+namespace OrchardCore.Search.Elastic.GraphQL
 {
     /// <summary>
     /// These services are registered on the tenant service collection

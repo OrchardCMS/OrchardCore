@@ -40,7 +40,7 @@ namespace OrchardCore.Search.Elastic.Deployment
                 }
             }
 
-            // Adding Lucene settings
+            // Adding Elastic settings
             result.Steps.Add(new JObject(
                 new JProperty("name", "elastic-index"),
                 new JProperty("Indices", data)

@@ -78,7 +78,7 @@ namespace OrchardCore.Search.Elastic
                 var indexedContentItemVersionIds = elasticSearchResult.TopDocs.Select(x => x.Fields.GetValueOrDefault("Content.ContentItem.ContentItemVersionId").ToString()).ToArray();
                 var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
-                // Reorder the result to preserve the one from the lucene query
+                // Reorder the result to preserve the one from the Elastic query
                 if (dbContentItems.Any())
                 {
                     var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);

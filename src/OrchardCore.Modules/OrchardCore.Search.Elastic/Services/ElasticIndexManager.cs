@@ -1,25 +1,16 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Lucene.Net.Documents;
-using Lucene.Net.Index;
-using Lucene.Net.Search;
-using Lucene.Net.Store;
+
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Indexing;
-using OrchardCore.Search.Elastic.Model;
-using OrchardCore.Search.Elastic.Services;
-using OrchardCore.Modules;
-using Directory = System.IO.Directory;
-using LDirectory = Lucene.Net.Store.Directory;
+
 using Nest;
+
+using OrchardCore.Indexing;
+using OrchardCore.Modules;
+using OrchardCore.Search.Elastic.Services;
 
 namespace OrchardCore.Search.Elastic
 {

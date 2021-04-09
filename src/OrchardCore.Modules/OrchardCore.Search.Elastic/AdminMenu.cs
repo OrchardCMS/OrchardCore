@@ -5,7 +5,7 @@ using OrchardCore.Search.Elastic.Drivers;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Elastic;
 
-namespace OrchardCore.Lucene
+namespace OrchardCore.Search.Elastic
 {
     public class AdminMenu : INavigationProvider
     {
@@ -32,7 +32,7 @@ namespace OrchardCore.Lucene
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())
                         .Add(S["Run Elastic Query"], S["Run Elastic Query"].PrefixPosition(), queries => queries
-                            .Action("Query", "Admin", new { area = "OrchardCore.Search.Lucene" })
+                            .Action("Query", "Admin", new { area = "OrchardCore.Search.Elastic" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()))
                     .Add(S["Settings"], settings => settings

@@ -4,7 +4,7 @@ using Lucene.Net.Analysis;
 namespace OrchardCore.Search.Elastic.Services
 {
     /// <summary>
-    /// All Lucene related analyzers needs to replaced
+    /// All Elastic related analyzers needs to replaced
     /// </summary>
     public class ElasticAnalyzer : IElasticAnalyzer
     {

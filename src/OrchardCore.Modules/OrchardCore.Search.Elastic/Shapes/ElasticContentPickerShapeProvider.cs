@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Lucene
+namespace OrchardCore.Elastic.Search
 {
     [Feature("OrchardCore.Search.Elastic.ContentPicker")]
     public class ElasticContentPickerShapeProvider : IShapeAttributeProvider
@@ -18,7 +18,7 @@ namespace OrchardCore.Lucene
         }
 
         [Shape]
-        public IHtmlContent ContentPickerField_Option__Lucene(dynamic shape)
+        public IHtmlContent ContentPickerField_Option__Elastic(dynamic shape)
         {
             var selected = shape.Editor == "Elastic";
             if (selected)

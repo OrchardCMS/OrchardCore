@@ -18,9 +18,9 @@ namespace OrchardCore.Search.Elastic
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            var luceneIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
+            var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
             var result = new List<Permission>();
-            foreach (var index in luceneIndexSettings)
+            foreach (var index in elasticIndexSettings)
             {
                 var permission = new Permission("QueryElastic" + index.IndexName + "Index", "Query Elastic " + index.IndexName + " Index", new[] { ManageIndexes });
                 result.Add(permission);

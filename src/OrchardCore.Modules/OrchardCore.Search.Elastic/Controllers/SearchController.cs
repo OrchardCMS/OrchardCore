@@ -106,7 +106,7 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             if (elasticIndexSettings == null)
             {
-                _logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchSettings.SearchIndex}) index.");
+                _logger.LogInformation($"Couldn't execute search. No Elastic index settings was defined for ({searchSettings.SearchIndex}) index.");
                 return BadRequest($"Search index ({searchSettings.SearchIndex}) is not configured.");
             }
 
@@ -120,7 +120,7 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
 
-            // We Query Lucene index
+            // We Query Elastic index
             var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(elasticIndexSettings.IndexName));
 
             // Fetch one more result than PageSize to generate "More" links
@@ -181,7 +181,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                     .Take(pager.PageSize + 1);
             }
 
-            // Sort the content items by their rank in the search results returned by Lucene.
+            // Sort the content items by their rank in the search results returned by Elastic.
             var containedItems = (await queryDb.ListAsync()).OrderBy(x => contentItemIds.IndexOf(x.ContentItemId));
 
             // We set the PagerSlim before and after links

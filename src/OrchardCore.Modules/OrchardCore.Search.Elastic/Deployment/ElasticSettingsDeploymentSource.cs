@@ -24,7 +24,7 @@ namespace OrchardCore.Search.Elastic.Deployment
 
             var elasticSettings = await _elasticIndexingService.GetElasticSettingsAsync();
 
-            // Adding Lucene settings
+            // Adding Elastic settings
             result.Steps.Add(new JObject(
                 new JProperty("name", "Settings"),
                 new JProperty("ElaticSettings", JObject.FromObject(elasticSettings))

@@ -8,7 +8,7 @@ namespace OrchardCore.Search.Elastic
         /// <summary>
         /// Adds Lucene queries services.
         /// </summary>
-        public static IServiceCollection AddLuceneQueries(this IServiceCollection services)
+        public static IServiceCollection AddElasticQueries(this IServiceCollection services)
         {
             services.AddScoped<IElasticQueryService, ElasticQueryService>();
             return services;
