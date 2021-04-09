@@ -32,3 +32,9 @@
     <span class="hint">@T["For details, please visit <a href=\"{0}\">{0}</a>", "https://github.com/validatorjs/validator.js"]</span>
 </div>
 
+<div class="form-group">
+    <label asp-for="ValidationMessage">@T["Validation Message"]</label>
+    <input asp-for="ValidationMessage" type="text" class="form-control content-preview-text" />
+    <span class="hint">@T["Error message after the field verification fails"]</span>
+</div>
+

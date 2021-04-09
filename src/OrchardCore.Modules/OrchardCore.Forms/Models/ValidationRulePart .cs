@@ -6,5 +6,6 @@ namespace OrchardCore.Forms.Models
     {
         public string Type { get; set; }
         public string Option { get; set; }
+        public string ValidationMessage { get; set; }
     }
 }

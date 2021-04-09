@@ -25,7 +25,7 @@
     (function ($) {
         $(function () {
             var formId = '#'+ '@formId'
-            $(formId).on('click', function () {
+            $(formId).on('submit', function () {
                 $('<input />')
                     .attr('type', 'hidden')
                     .attr('name', 'validationRules')  

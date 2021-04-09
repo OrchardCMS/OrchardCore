@@ -3,6 +3,7 @@
 @{
     var type = Model.Value.Type;
     var option = Html.Raw(Model.Value.Option);
+    var validationMessage = Model.Value.ValidationMessage;
     var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
     var elementId = formElementPart.Id;
 }
@@ -10,10 +11,49 @@
 <script asp-src="~/OrchardCore.Forms/Scripts/validator.min.js" debug-src="~/OrchardCore.Forms/Scripts/validator.js" asp-name="validator" depends-on="jQuery" at="Foot"></script>
 
 <script at="Foot">
-    function validateElementFunction(type, originElementId, option) {
+    function checkIE() {
+        if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) {
+            var ieversion = new Number(RegExp.$1);
+            if (ieversion <= 8) return true;
+            return false;
+        }
+    }
+    function validateEvent(type, validationElementId, option, elementId, validationMessage, defaultValidationMessage) {
+        var validateResult = false;
+        if (window.validator.isEmpty(option)) {
+            validateResult = window.validator[type]($(elementId).val());
+        }
+        else if (window.validator.isJSON(option)) {
+            validateResult = window.validator[type]($(elementId).val(), JSON.parse(option));
+        }
+        else {
+            validateResult = window.validator[type]($(elementId).val(), option);
+        }
+        var validationElement = document.getElementById(validationElementId);
+        if (validateResult) {
+            if (validationElement) {
+                $(elementId).closest('form').find(':submit').removeAttr('disabled');
+                validationElement.remove();
+            }
+        }
+        else {
+            if (!validationElement) {
+                if (jQuery.isEmptyObject(validationMessage)) {
+                    validationMessage = defaultValidationMessage;
+                }
+                var dangerText = '<div id="' + validationElementId + '" class="text-danger">' + validationMessage + '</div>';
+                $(elementId).after(dangerText);
+                $(elementId).closest('form').find(':submit').attr('disabled', 'true');
+            }
+        }
+        return validateResult;
+    }
+    function validateElementFunction(type, originElementId, option, validationMessage) {
+        var isIE = checkIE();
         var elementId = '#' + originElementId;
         var timestamp = new Date().getTime();
         var validationElementId = originElementId + timestamp;
+        var defaultValidateMessage = '@T["Validation failed for \"{0}\".", type]';
         if (window.validatorObject) {
             var obj = { type: type, elementId: originElementId, option: option};
             window.validatorObject.push(obj);
@@ -24,35 +64,23 @@
             window.validatorObject.push(obj);
         }
         $(elementId).bind('change keyup', function (e) {
-            var validateResult = false;
-            if (window.validator.isEmpty(option)) {
-                validateResult = window.validator[type]($(elementId).val());
-            }
-            else if (window.validator.isJSON(option)) {
-                validateResult = window.validator[type]($(elementId).val(), JSON.parse(option));
-            }
-            else {
-                validateResult = window.validator[type]($(elementId).val(), option);
-            }
-            var validationElement = document.getElementById(validationElementId);
-            if (validateResult) {
-                if (validationElement) {
-                    $(elementId).closest('form').find(':submit').removeAttr('disabled');
-                    validationElement.remove();
-                }
-            }
-            else {
-                if (!validationElement) {
-                    var validationMessage =  '@T["{0} validation failed", type]';
-                    var dangerText = '<div id="' + validationElementId + '" class="text-danger">' + validationMessage + '</div>';
-                    $(elementId).after(dangerText);
-                    $(elementId).closest('form').find(':submit').attr('disabled', 'true');
-                }
-            }
+            validateEvent(type, validationElementId, option, elementId, validationMessage, defaultValidateMessage);
         })
+        var submitBtn = $(elementId).closest('form').find(':submit')[0];
+        if (submitBtn) {
+            if (isIE) {
+                submitBtn.attachEvent('click', function () {
+                    validateEvent(type, validationElementId, option, elementId, validationMessage, defaultValidateMessage);
+                })
+            } else {
+                submitBtn.addEventListener('click', function (e) {
+                    validateEvent(type, validationElementId, option, elementId, validationMessage, defaultValidateMessage);
+                })
+            }
+        }
     }
     if ('@type' != 'none') {
-        validateElementFunction('@type', '@elementId', '@option');
+        validateElementFunction('@type', '@elementId', '@option','@validationMessage');
     }
 </script>
 

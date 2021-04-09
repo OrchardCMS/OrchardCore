@@ -20,6 +20,7 @@ namespace OrchardCore.Forms.Drivers
             {
                 m.Type = part.Type;
                 m.Option = part.Option;
+                m.ValidationMessage = part.ValidationMessage;
             });
         }
 
@@ -31,6 +32,7 @@ namespace OrchardCore.Forms.Drivers
             {
                 part.Type = viewModel.Type?.Trim();
                 part.Option = viewModel.Option?.Trim();
+                part.ValidationMessage = viewModel.ValidationMessage?.Trim();
             }
 
             return Edit(part);
