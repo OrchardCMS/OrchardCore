@@ -2,10 +2,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
+using GQLNS = GraphQL.NewtonsoftJson;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
 using Microsoft.AspNetCore.Authentication;
@@ -163,7 +165,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.Schema = schema;
                 _.Query = queryToExecute;
                 _.OperationName = request.OperationName;
-                _.Inputs = request.Variables.ToInputs();
+                _.Inputs = GQLNS::StringExtensions.ToInputs(request.Variables);
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ExposeExceptions = _settings.ExposeExceptions;
                 _.ValidationRules = DocumentValidator.CoreRules
@@ -183,11 +185,10 @@ namespace OrchardCore.Apis.GraphQL
                     ? HttpStatusCode.Unauthorized
                     : HttpStatusCode.BadRequest);
 
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = MediaTypeNames.Application.Json;
 
-            // Asynchronous write to the response body is mandatory.
-            var encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(result).ToString());
-            await context.Response.Body.WriteAsync(encodedBytes, 0, encodedBytes.Length);
+            var writer = new GQLNS::DocumentWriter();
+            await writer.WriteAsync(context.Response.Body, result);
         }
 
         private async Task WriteErrorAsync(HttpContext context, string message, Exception e = null)
@@ -212,7 +213,7 @@ namespace OrchardCore.Apis.GraphQL
             }
 
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = MediaTypeNames.Application.Json;
 
             // Asynchronous write to the response body is mandatory.
             var encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(errorResult).ToString());
