@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="GraphQL.DataLoader" />
+    <PackageReference Include="GraphQL.MicrosoftDI" Version="4.2" />
     <PackageReference Include="GraphQL.NewtonsoftJson" />
   </ItemGroup>
 

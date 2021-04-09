@@ -78,7 +78,7 @@ namespace OrchardCore.Apis.GraphQL
 
         private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService, IDocumentWriter documentWriter)
         {
-            var schema = await schemaService.GetSchemaAsync();
+           
 
             GraphQLRequest request = null;
 
@@ -103,9 +103,8 @@ namespace OrchardCore.Apis.GraphQL
                         }
                         else
                         {
-                            using var jsonReader = new JsonTextReader(sr);
-                            var ser = new JsonSerializer();
-                            request = ser.Deserialize<GraphQLRequest>(jsonReader);
+                            var json = await sr.ReadToEndAsync();
+                            request = JObject.Parse(json).ToObject<GraphQLRequest>();
                         }
                     }
                     else
@@ -142,6 +141,7 @@ namespace OrchardCore.Apis.GraphQL
                 queryToExecute = queries[request.NamedQuery];
             }
 
+            var schema = await schemaService.GetSchemaAsync();
             var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
 
             var result = await _executer.ExecuteAsync(_ =>
@@ -173,7 +173,7 @@ namespace OrchardCore.Apis.GraphQL
             await documentWriter.WriteAsync(context.Response.Body, result);
         }
 
-        private GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
+        private static GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
         {
             if (!context.Request.Query.ContainsKey("query"))
             {

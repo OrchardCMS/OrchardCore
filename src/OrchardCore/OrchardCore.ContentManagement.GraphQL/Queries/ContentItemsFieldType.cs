@@ -77,7 +77,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             JObject where = null;
             if (context.HasArgument("where"))
             {
-                where = JObject.FromObject(context.Arguments["where"]);
+                var whereArgument = context.Arguments["where"];
+
+                if (whereArgument.Value != null)
+                {
+                    where = JObject.FromObject(whereArgument.Value);
+                }
             }
 
             var session = context.RequestServices.GetService<ISession>();
