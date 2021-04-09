@@ -19,7 +19,6 @@ namespace OrchardCore.Documents
         private readonly IMemoryCache _memoryCache;
         protected readonly DocumentOptions _options;
 
-        private TDocument _volatileCache;
         private readonly bool _isDistributed;
         protected bool _isVolatile;
 
@@ -59,15 +58,18 @@ namespace OrchardCore.Documents
             }
             else
             {
-                if (_volatileCache != null)
+                var volatileCache = ShellScope.Get<TDocument>(typeof(TDocument));
+                if (volatileCache != null)
                 {
-                    document = _volatileCache;
+                    document = volatileCache;
                 }
                 else
                 {
-                    document = _volatileCache = await GetFromDistributedCacheAsync()
+                    document = await GetFromDistributedCacheAsync()
                         ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
                         ?? new TDocument();
+
+                    ShellScope.Set(typeof(TDocument), document);
                 }
             }
 
@@ -128,7 +130,7 @@ namespace OrchardCore.Documents
             }
 
             // Set the scoped cache in case of multiple updates.
-            _volatileCache = document;
+            ShellScope.Set(typeof(TDocument), document);
 
             // But still update the shared cache after committing.
             DocumentStore.AfterCommitSuccess<TDocument>(async () =>
