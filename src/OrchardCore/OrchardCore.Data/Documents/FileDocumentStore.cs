@@ -106,11 +106,9 @@ namespace OrchardCore.Data.Documents
             {
                 T document;
 
-                using (var file = File.OpenText(filename))
-                {
-                    var serializer = new JsonSerializer();
-                    document = (T)serializer.Deserialize(file, typeof(T));
-                }
+                using var file = File.OpenText(filename);
+                var serializer = new JsonSerializer();
+                document = (T)serializer.Deserialize(file, typeof(T));
 
                 return document;
             }
