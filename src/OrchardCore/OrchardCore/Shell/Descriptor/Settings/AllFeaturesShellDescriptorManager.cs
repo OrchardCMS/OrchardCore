@@ -33,7 +33,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
             return Task.FromResult(_shellDescriptor);
         }
 
-        public Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellFeature> installedFeatures)
+        public Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures)
         {
             return Task.CompletedTask;
         }

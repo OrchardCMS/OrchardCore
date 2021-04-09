@@ -98,15 +98,13 @@ namespace OrchardCore.Environment.Shell
             if (allFeaturesToEnable.Count > 0)
             {
                 enabledFeatureIds.UnionWith(allFeaturesToEnable.Select(f => f.Id));
-                installedFeatureIds.UnionWith(allFeaturesToInstall.Select(f => f.Id));
             }
 
             if (allFeaturesToDisable.Count > 0 || allFeaturesToEnable.Count > 0)
             {
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
-                    enabledFeatureIds.Select(id => new ShellFeature(id)).ToArray(),
-                    installedFeatureIds.Select(id => new ShellFeature(id)).ToArray());
+                    enabledFeatureIds.Select(id => new ShellFeature(id)).ToArray());
 
                 ShellScope.AddDeferredTask(async scope =>
                 {
