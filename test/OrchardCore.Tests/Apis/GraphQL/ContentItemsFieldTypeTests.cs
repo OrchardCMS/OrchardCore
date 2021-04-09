@@ -133,13 +133,23 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Build();
 
                 var animalWhereInput = new AnimalPartWhereInput();
-                var inputs = new FieldType { Name = "Inputs", ResolvedType = new StringGraphType() { Name = "Animal" }, Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
 
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
                     UserContext = new GraphQLUserContext(),
-                    FieldDefinition = inputs,
+                    FieldDefinition = new FieldType
+                    {
+                        Name = "Inputs",
+                        ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
+                        Arguments = new QueryArguments {
+                            new QueryArgument<WhereInputObjectGraphType> {
+                                Name = "where",
+                                Description = "filters the animals",
+                                ResolvedType = animalWhereInput
+                            }
+                        }
+                    },
                     RequestServices = services
                 };
 
@@ -180,13 +190,23 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Build();
 
                 var animalWhereInput = new AnimalPartWhereInput();
-                var inputs = new FieldType { Name = "Inputs", ResolvedType = new StringGraphType() { Name = "Animal" }, Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
-
+  
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
                     UserContext = new GraphQLUserContext(),
-                    FieldDefinition = inputs,
+                    FieldDefinition = new FieldType
+                    {
+                        Name = "Inputs",
+                        ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
+                        Arguments = new QueryArguments {
+                            new QueryArgument<WhereInputObjectGraphType> {
+                                Name = "where",
+                                Description = "filters the animals",
+                                ResolvedType = animalWhereInput
+                            }
+                        }
+                    },
                     RequestServices = services
                 };
 
@@ -228,13 +248,22 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 // setup the whereinput fieldname with the test data
                 var animalWhereInput = new AnimalPartWhereInput(fieldName);
-                var inputs = new FieldType { Name = "Inputs", ResolvedType = new StringGraphType() { Name = "Animal" }, Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
 
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
+                    FieldDefinition = new FieldType {
+                        Name = "Inputs",
+                        ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
+                        Arguments = new QueryArguments {
+                            new QueryArgument<WhereInputObjectGraphType> {
+                                Name = "where",
+                                Description = "filters the animals",
+                                ResolvedType = animalWhereInput
+                            }
+                        }
+                    },
                     UserContext = new GraphQLUserContext(),
-                    FieldDefinition = inputs,
                     RequestServices = services
                 };
 
@@ -245,7 +274,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci);
                 await session.SaveChangesAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+                var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
                 context.Arguments["where"] = new ArgumentValue(JObject.Parse(string.Concat("{ ", fieldName, ": { name: \"doug\" } }")), ArgumentSource.Variable);
                 var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
@@ -279,7 +308,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
                     UserContext = new GraphQLUserContext(),
-                    FieldDefinition = new FieldType { ResolvedType = new StringGraphType() { Name = "Animal" } },
+                    FieldDefinition = new FieldType
+                    {
+                        ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" })
+                    },
                     RequestServices = services
                 };
 
@@ -326,17 +358,15 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalTraitsIndex>>();
                 services.Build();
 
-                var returnType = new ListGraphType<StringGraphType>();
-                returnType.ResolvedType = new StringGraphType() { Name = "Animal" };
-
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
-                    //UserContext = new GraphQLUserContext
-                    //{
-                    //    ServiceProvider = services
-                    //},
-                    //ReturnType = returnType
+                    UserContext = new GraphQLUserContext(),
+                    FieldDefinition = new FieldType
+                    {
+                        ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" })
+                    },
+                    RequestServices = services
                 };
 
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
@@ -382,15 +412,24 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
 
-
                 var animalWhereInput = new AnimalPartWhereInput();
-                var inputs = new FieldType { Name = "Inputs", ResolvedType = new StringGraphType() { Name = "Animal" }, Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
 
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, ArgumentValue>(),
                     UserContext = new GraphQLUserContext(),
-                    FieldDefinition = inputs,
+                    FieldDefinition = new FieldType
+                    {
+                        Name = "Inputs",
+                        ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
+                        Arguments = new QueryArguments {
+                            new QueryArgument<WhereInputObjectGraphType> {
+                                Name = "where",
+                                Description = "filters the animals",
+                                ResolvedType = animalWhereInput
+                            }
+                        }
+                    },
                     RequestServices = services
                 };
 
