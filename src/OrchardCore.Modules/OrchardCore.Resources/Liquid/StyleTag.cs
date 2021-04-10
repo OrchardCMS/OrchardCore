@@ -5,7 +5,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
@@ -51,7 +50,7 @@ namespace OrchardCore.Resources.Liquid
                     case "debug": debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
                     case "depends_on": dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "version": version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out at); break;
+                    case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), ignoreCase: true, out at); break;
                     default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
@@ -83,7 +82,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCondition(condition);
                 }
 
-                if (appendversion.HasValue == true)
+                if (appendversion.HasValue)
                 {
                     setting.ShouldAppendVersion(appendversion);
                 }
@@ -105,10 +104,7 @@ namespace OrchardCore.Resources.Liquid
 
                 if (at == ResourceLocation.Inline)
                 {
-                    var buffer = new HtmlContentBuilder();
-                    resourceManager.RenderLocalStyle(setting, buffer);
-
-                    buffer.WriteTo(writer, (HtmlEncoder)encoder);
+                    resourceManager.RenderLocalStyle(setting, writer);
                 }
             }
             else if (!String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))
@@ -154,7 +150,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCulture(culture);
                 }
 
-                if (appendversion.HasValue == true)
+                if (appendversion.HasValue)
                 {
                     setting.ShouldAppendVersion(appendversion);
                 }
@@ -182,10 +178,7 @@ namespace OrchardCore.Resources.Liquid
 
                 if (at == ResourceLocation.Inline)
                 {
-                    var buffer = new HtmlContentBuilder();
-                    resourceManager.RenderLocalStyle(setting, buffer);
-
-                    buffer.WriteTo(writer, (HtmlEncoder)encoder);
+                    resourceManager.RenderLocalStyle(setting, writer);
                 }
             }
             else if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(src))
@@ -257,10 +250,7 @@ namespace OrchardCore.Resources.Liquid
 
                 if (at == ResourceLocation.Inline)
                 {
-                    var buffer = new HtmlContentBuilder();
-                    resourceManager.RenderLocalStyle(setting, buffer);
-
-                    buffer.WriteTo(writer, (HtmlEncoder)encoder);
+                    resourceManager.RenderLocalStyle(setting, writer);
                 }
             }
             else if (String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))
