@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Documents;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
@@ -8,12 +10,10 @@ namespace OrchardCore.Sitemaps.Routing
 {
     public class SitemapEntries
     {
-        private readonly ISitemapManager _sitemapManager;
         private readonly IVolatileDocumentManager<SitemapRouteDocument> _documentManager;
 
-        public SitemapEntries(ISitemapManager sitemapManager, IVolatileDocumentManager<SitemapRouteDocument> documentManager)
+        public SitemapEntries(IVolatileDocumentManager<SitemapRouteDocument> documentManager)
         {
-            _sitemapManager = sitemapManager;
             _documentManager = documentManager;
         }
 
@@ -77,12 +77,14 @@ namespace OrchardCore.Sitemaps.Routing
 
         private async Task<SitemapRouteDocument> CreateDocumentAsync()
         {
-            var sitemaps = await _sitemapManager.GetSitemapsAsync();
+            var sitemaps = await SitemapManager.GetSitemapsAsync();
 
             var document = new SitemapRouteDocument();
             BuildEntries(document, sitemaps);
 
             return document;
         }
+
+        private static ISitemapManager SitemapManager => ShellScope.Services.GetRequiredService<ISitemapManager>();
     }
 }
