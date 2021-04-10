@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-247-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-248-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -340,6 +340,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/ropstah"><img src="https://avatars.githubusercontent.com/u/5072557?v=4" width="100px;" alt=""/><br /><sub><b>ropstah</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ropstah" title="Code">💻</a></td>
+    <td align="center"><a href="https://welshtechnologies.com/"><img src="https://avatars.githubusercontent.com/u/9756166?v=4" width="100px;" alt=""/><br /><sub><b>Kevin Welsh</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kdubious" title="Code">💻</a></td>
   </tr>
 </table>
 

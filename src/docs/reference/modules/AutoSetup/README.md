@@ -18,11 +18,11 @@ The auto-setup module allows to automatically install the application/tenants on
             "DatabaseProvider": "Sqlite",
             "DatabaseConnectionString": "",
             "DatabaseTablePrefix": "",
-            "RecipeName": "Agency"
+            "RecipeName": "SaaS"
         },
         {
             "ShellName": "AutoSetupTenant",
-            "SiteName": "AutoSetup Sub Tenant",
+            "SiteName": "AutoSetup Tenant",
             "SiteTimeZone": "Europe/Amsterdam",
             "AdminUsername": "tenantadmin",
             "AdminEmail": "tenant@orchardproject.net",
@@ -80,10 +80,10 @@ Since JSON configuration contains admin-sensitive information, it is recommended
 "OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider": "Sqlite"
 "OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseConnectionString": ""
 "OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseTablePrefix": ""
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName": "Agency"
+"OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName": "SaaS"
 
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__ShellName": "AutoSetupTenant"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__SiteName": "AutoSetup Sub Tenant"
+"OrchardCore__OrchardCore_AutoSetup__Tenants__1__SiteName": "AutoSetup Tenant"
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__SiteTimeZone": "Europe/Amsterdam"
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__AdminUsername": "tenantadmin"
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__AdminEmail": "tenant@orchardproject.net"
