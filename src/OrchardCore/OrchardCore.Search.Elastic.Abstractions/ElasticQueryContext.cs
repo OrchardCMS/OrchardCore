@@ -1,6 +1,4 @@
-using Lucene.Net.Analysis;
-using Lucene.Net.Search;
-using Lucene.Net.Util;
+using Nest;
 
 namespace OrchardCore.Search.Elastic
 {
@@ -19,9 +17,9 @@ namespace OrchardCore.Search.Elastic
         public string IndexName { get; set; }
 
         /// <summary>
-        /// The Analyzer later needs to be implemented from a list of Elastic Analyzers and Lucene reference needs to be removed
+        /// The Analyzer later needs to be implemented from a list of Elastic Analyzers
         /// </summary>
-        public Analyzer DefaultAnalyzer { get; }
+        public IAnalyzer DefaultAnalyzer { get; }
 
         //We may need to have configurable index searcher
         //public IndexSearcher IndexSearcher { get; set; }

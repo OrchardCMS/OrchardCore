@@ -1,4 +1,3 @@
-using Lucene.Net.Util;
 using OrchardCore.Contents.Indexing;
 
 namespace OrchardCore.Search.Elastic.Model
@@ -8,8 +7,6 @@ namespace OrchardCore.Search.Elastic.Model
         public static readonly string[] FullTextField = new string[] { IndexingConstants.FullTextKey };
 
         public static string StandardAnalyzer = "standardanalyzer";
-
-        public static LuceneVersion DefaultVersion = LuceneVersion.LUCENE_48;
 
         public string SearchIndex { get; set; }
 

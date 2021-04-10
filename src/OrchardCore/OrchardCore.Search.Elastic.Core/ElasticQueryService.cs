@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.TokenAttributes;
-using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
-using Nest;
 using Microsoft.Extensions.Logging;
+using Nest;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Search.Elastic
 {
@@ -37,7 +34,7 @@ namespace OrchardCore.Search.Elastic
                 throw new ArgumentException("Query DSL requires a [query] property");
             }
 
-            ElasticTopDocs elasticTopDocs = new ElasticTopDocs();
+            var elasticTopDocs = new ElasticTopDocs();
             if (_elasticClient == null)
             {
                 _logger.LogWarning("Elastic Client is not setup, please validate your Elastic Configurations");
@@ -70,11 +67,11 @@ namespace OrchardCore.Search.Elastic
         /// <param name="context"></param>
         /// <param name="queryObj"></param>
         /// <returns></returns>
-        public Query CreateQueryFragment(ElasticQueryContext context, JObject queryObj)
+        public IQuery CreateQueryFragment(ElasticQueryContext context, JObject queryObj)
         {
             var first = queryObj.Properties().First();
 
-            Query query = null;
+            IQuery query = null;
 
             foreach (var queryProvider in _queryProviders)
             {
@@ -96,27 +93,27 @@ namespace OrchardCore.Search.Elastic
         /// <param name="text"></param>
         /// <param name="analyzer"></param>
         /// <returns></returns>
-        public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
+        public static List<string> Tokenize(string fieldName, string text, IAnalyzer analyzer)
         {
-            if (string.IsNullOrEmpty(text))
+            if (String.IsNullOrEmpty(text))
             {
                 return new List<string>();
             }
 
             var result = new List<string>();
-            using (var tokenStream = analyzer.GetTokenStream(fieldName, text))
-            {
-                tokenStream.Reset();
-                while (tokenStream.IncrementToken())
-                {
-                    var termAttribute = tokenStream.GetAttribute<ICharTermAttribute>();
+            //using (var tokenStream = analyzer.GetTokenStream(fieldName, text))
+            //{
+            //    tokenStream.Reset();
+            //    while (tokenStream.IncrementToken())
+            //    {
+            //        var termAttribute = tokenStream.GetAttribute<ICharTermAttribute>();
 
-                    if (termAttribute != null)
-                    {
-                        result.Add(termAttribute.ToString());
-                    }
-                }
-            }
+            //        if (termAttribute != null)
+            //        {
+            //            result.Add(termAttribute.ToString());
+            //        }
+            //    }
+            //}
 
             return result;
         }

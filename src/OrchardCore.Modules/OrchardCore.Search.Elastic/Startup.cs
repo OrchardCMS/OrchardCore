@@ -26,6 +26,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Environment.Shell.Configuration;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Search.Elastic.Model;
 using OrchardCore.Search.Elastic.Configurations;
 using Nest;
 using OrchardCore.Elastic.Search;
@@ -71,9 +72,8 @@ namespace OrchardCore.Search.Elastic
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            //services.Configure<LuceneOptions>(o =>
-            //    o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
-            //        new StandardAnalyzer(LuceneSettings.DefaultVersion))));
+            services.Configure<ElasticOptions>(o =>
+                o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
 
             services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();

@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NEST" Version="7.12.0" />
+    <PackageReference Include="NEST" />
   </ItemGroup>
 
 </Project>

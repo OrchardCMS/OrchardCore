@@ -1,14 +1,13 @@
-using Lucene.Net.Analysis;
+using Nest;
 
 namespace OrchardCore.Search.Elastic
 {
     /// <summary>
-    /// Represents an <see cref="Analyzer"/> instance that is available in the system.
-    /// This is not being used in case of Elastic, We will need to implement it later
+    /// Represents an <see cref="IAnalyzer"/> instance that is available in the system.
     /// </summary>
     public interface IElasticAnalyzer
     {
         string Name { get; }
-        Analyzer CreateAnalyzer();
+        IAnalyzer CreateAnalyzer();
     }
 }

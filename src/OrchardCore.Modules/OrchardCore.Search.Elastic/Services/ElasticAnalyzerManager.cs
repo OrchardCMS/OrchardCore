@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Lucene.Net.Analysis;
+using Nest;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Search.Elastic.Services
@@ -28,7 +28,7 @@ namespace OrchardCore.Search.Elastic.Services
             return _analyzers.Values;
         }
 
-        public Analyzer CreateAnalyzer(string name)
+        public IAnalyzer CreateAnalyzer(string name)
         {
             if (_analyzers.TryGetValue(name, out var analyzer))
             {
