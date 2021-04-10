@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <RootNamespace>OrchardCore.Search.Elastic</RootNamespace>
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NEST" Version="7.12.0" />
+    <PackageReference Include="NEST" />
   </ItemGroup>
 
   <ItemGroup>
