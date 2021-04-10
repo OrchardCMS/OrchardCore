@@ -15,8 +15,8 @@ namespace OrchardCore.Spatial.Indexing
             {
                 value = new DocumentIndex.GeoPoint
                 {
-                    Longitude = (double)field.Longitude,
-                    Latitude = (double)field.Latitude
+                    Longitude = (decimal)field.Longitude,
+                    Latitude = (decimal)field.Latitude
                 };
             }
 

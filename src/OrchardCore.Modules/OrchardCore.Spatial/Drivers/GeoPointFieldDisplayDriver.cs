@@ -56,8 +56,8 @@ namespace OrchardCore.Spatial.Drivers
 
             if (modelUpdated)
             {
-                double latitude;
-                double longitude;
+                decimal latitude;
+                decimal longitude;
 
                 var settings = context.PartFieldDefinition.GetSettings<GeoPointFieldSettings>();
 
@@ -72,7 +72,7 @@ namespace OrchardCore.Spatial.Drivers
                         field.Latitude = null;
                     }
                 }
-                else if (!Double.TryParse(viewModel.Latitude, NumberStyles.Any, CultureInfo.CurrentUICulture, out latitude))
+                else if (!Decimal.TryParse(viewModel.Latitude, NumberStyles.Any, CultureInfo.CurrentUICulture, out latitude))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(viewModel.Latitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }
@@ -92,7 +92,7 @@ namespace OrchardCore.Spatial.Drivers
                         field.Longitude = null;
                     }
                 }
-                else if (!Double.TryParse(viewModel.Longitude, NumberStyles.Any, CultureInfo.CurrentUICulture, out longitude))
+                else if (!Decimal.TryParse(viewModel.Longitude, NumberStyles.Any, CultureInfo.CurrentUICulture, out longitude))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(viewModel.Longitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }

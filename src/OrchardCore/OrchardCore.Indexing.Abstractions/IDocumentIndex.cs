@@ -68,8 +68,8 @@ namespace OrchardCore.Indexing
 
         public class GeoPoint
         {
-            public double Longitude;
-            public double Latitude;
+            public decimal Longitude;
+            public decimal Latitude;
         }
 
         public class DocumentIndexEntry

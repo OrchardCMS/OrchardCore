@@ -66,7 +66,7 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 
             var strategy = new RecursivePrefixTreeStrategy(grid, geoProperty.Name);
 
-            if (!TryParseDistance((string)distanceProperty.Value, out double distanceDegrees))
+            if (!TryParseDistance((string)distanceProperty.Value, out var distanceDegrees))
             {
                 return null;
             }
@@ -95,14 +95,14 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 
             var distanceString = Regex.Match(distanceValue, @"^((\d+(\.\d*)?)|(\.\d+))").Value;
 
-            if (string.IsNullOrEmpty(distanceString))
+            if (String.IsNullOrEmpty(distanceString))
             {
                 return false;
             }
 
             var distanceUnits = distanceValue.Substring(distanceString.Length, distanceValue.Length - distanceString.Length).ToLower();
 
-            if (!double.TryParse(distanceString, out double distance))
+            if (!Double.TryParse(distanceString, out var distance))
             {
                 return false;
             }
@@ -166,12 +166,12 @@ namespace OrchardCore.Lucene.QueryProviders.Filters
 
                     if (geoStringSplit.Length == 2)
                     {
-                        if (!double.TryParse(geoStringSplit[0], out var lat))
+                        if (!Double.TryParse(geoStringSplit[0], out var lat))
                         {
                             return false;
                         }
 
-                        if (!double.TryParse(geoStringSplit[1], out var lon))
+                        if (!Double.TryParse(geoStringSplit[1], out var lon))
                         {
                             return false;
                         }
