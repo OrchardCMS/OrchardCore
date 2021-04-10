@@ -60,11 +60,11 @@ namespace OrchardCore.Sitemaps
 
             services.AddSingleton<IShellRouteValuesAddressScheme, SitemapValuesAddressScheme>();
             services.AddSingleton<SitemapRouteTransformer>();
+            services.AddSingleton<ISitemapManager, SitemapManager>();
             services.AddSingleton<SitemapEntries>();
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ISitemapManager, SitemapManager>();
             services.AddScoped<ISitemapHelperService, SitemapHelperService>();
             services.AddScoped<IDisplayManager<SitemapSource>, DisplayManager<SitemapSource>>();
             services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();

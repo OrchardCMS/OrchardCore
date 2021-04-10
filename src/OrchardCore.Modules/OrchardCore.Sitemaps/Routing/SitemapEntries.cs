@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Documents;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
@@ -10,8 +8,13 @@ namespace OrchardCore.Sitemaps.Routing
 {
     public class SitemapEntries
     {
-        public SitemapEntries()
+        private readonly ISitemapManager _sitemapManager;
+        private readonly IVolatileDocumentManager<SitemapRouteDocument> _documentManager;
+
+        public SitemapEntries(ISitemapManager sitemapManager, IVolatileDocumentManager<SitemapRouteDocument> documentManager)
         {
+            _sitemapManager = sitemapManager;
+            _documentManager = documentManager;
         }
 
         public async Task<(bool, string)> TryGetSitemapIdByPathAsync(string path)
@@ -42,7 +45,7 @@ namespace OrchardCore.Sitemaps.Routing
         {
             var document = await LoadDocumentAsync();
             BuildEntries(document, sitemaps);
-            await DocumentManager.UpdateAsync(document);
+            await _documentManager.UpdateAsync(document);
         }
 
         private void BuildEntries(SitemapRouteDocument document, IEnumerable<SitemapType> sitemaps)
@@ -65,26 +68,21 @@ namespace OrchardCore.Sitemaps.Routing
         /// <summary>
         /// Loads the sitemap route document for updating and that should not be cached.
         /// </summary>
-        private Task<SitemapRouteDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
+        private Task<SitemapRouteDocument> LoadDocumentAsync() => _documentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
 
         /// <summary>
         /// Gets the sitemap route document for sharing and that should not be updated.
         /// </summary>
-        private Task<SitemapRouteDocument> GetDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
+        private Task<SitemapRouteDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
 
         private async Task<SitemapRouteDocument> CreateDocumentAsync()
         {
-            var sitemaps = await SitemapManager.GetSitemapsAsync();
+            var sitemaps = await _sitemapManager.GetSitemapsAsync();
 
             var document = new SitemapRouteDocument();
             BuildEntries(document, sitemaps);
 
             return document;
         }
-
-        private static ISitemapManager SitemapManager => ShellScope.Services.GetRequiredService<ISitemapManager>();
-
-        private static IVolatileDocumentManager<SitemapRouteDocument> DocumentManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<SitemapRouteDocument>>();
     }
 }
