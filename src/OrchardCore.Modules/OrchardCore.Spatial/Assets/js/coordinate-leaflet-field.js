@@ -15,7 +15,7 @@ function addMapPicker() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    var marker = L.marker(mapCenter).addTo(map);
+    var marker = L.marker(mapCenter, { draggable: true }).addTo(map);
 
     function updateMarker(lat, lng) {
         marker
