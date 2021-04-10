@@ -10,7 +10,7 @@
 <div class="form-group">
     <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
     <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
-    <textarea asp-for="Html" hidden>@Html.Raw(Model.Html)</textarea>
+    <textarea asp-for="Html" class="content-preview-text" hidden>@Html.Raw(Model.Html)</textarea>
     <span class="hint">@T["The body of the content item."]</span>
 </div>
 
@@ -41,6 +41,12 @@
             setTheme();
 
             var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Html)_editor'), settings);
+            var textArea = document.getElementById('@Html.IdFor(x => x.Html)');
+
+            editor.getModel().onDidChangeContent((event) => {
+                textArea.value = editor.getValue();
+                $(document).trigger('contentpreview:render');
+            });
 
             const shortcodesAction = {
                 id: "shortcodes",
@@ -63,8 +69,6 @@
                 ]
             }
             editor.addAction(shortcodesAction);
-
-            var textArea = document.getElementById('@Html.IdFor(x => x.Html)');
 
             editor.getModel().setValue(textArea.value);
 
