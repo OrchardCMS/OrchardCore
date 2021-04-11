@@ -13,6 +13,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class ScriptTag
     {
+        private static readonly char[] Separators = new[] {',', ' '};
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
@@ -86,12 +87,12 @@ namespace OrchardCore.Resources.Liquid
 
                     if (!String.IsNullOrEmpty(culture))
                     {
-                        definition.SetCultures(culture.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                        definition.SetCultures(culture.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                     }
 
                     if (!String.IsNullOrEmpty(dependsOn))
                     {
-                        definition.SetDependencies(dependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                        definition.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                     }
 
                     if (appendVersion.HasValue)
@@ -189,31 +190,8 @@ namespace OrchardCore.Resources.Liquid
                 // This allows additions to the pre registered scripts dependencies.
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                 }
-
-                // TODO: scriptblock
-                //// Allow Inline to work with both named scripts, and named inline scripts.
-                //if (at != ResourceLocation.Unspecified)
-                //{
-                //    // Named inline declaration.
-                //    var childContent = await output.GetChildContentAsync();
-                //    if (!childContent.IsEmptyOrWhiteSpace)
-                //    {
-                //        // Inline content definition
-                //        resourceManager.InlineManifest.DefineScript(name)
-                //            .SetInnerContent(childContent.GetContent());
-                //    }
-
-                //    if (at == ResourceLocation.Inline)
-                //    {
-                //        resourceManager.RenderLocalScript(setting, output.Content);
-                //    }
-                //}
-                //else
-                //{
-                //    resourceManager.RenderLocalScript(setting, output.Content);
-                //}
             }
             else if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(src))
             {
@@ -234,12 +212,12 @@ namespace OrchardCore.Resources.Liquid
 
                 if (!String.IsNullOrEmpty(culture))
                 {
-                    definition.SetCultures(culture.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(culture.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
-                    definition.SetDependencies(dependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (appendVersion.HasValue)
@@ -293,35 +271,6 @@ namespace OrchardCore.Resources.Liquid
                     }
 
                 }
-            }
-            else if (String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))
-            {
-                // TODO: scriptblock
-                // Custom script content
-
-                //var childContent = await output.GetChildContentAsync();
-
-                //var builder = new TagBuilder("script");
-                //builder.InnerHtml.AppendHtml(childContent);
-                //builder.TagRenderMode = TagRenderMode.Normal;
-
-                //foreach (var attribute in customAttributes)
-                //{
-                //    builder.Attributes.Add(attribute.Key, attribute.Value);
-                //}
-
-                //if (at == ResourceLocation.Head)
-                //{
-                //    resourceManager.RegisterHeadScript(builder);
-                //}
-                //else if (at == ResourceLocation.Inline)
-                //{
-                //    output.Content.SetHtmlContent(builder);
-                //}
-                //else
-                //{
-                //    resourceManager.RegisterFootScript(builder);
-                //}
             }
 
             return Completion.Normal;

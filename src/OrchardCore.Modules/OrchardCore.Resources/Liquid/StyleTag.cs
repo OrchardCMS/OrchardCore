@@ -13,6 +13,8 @@ namespace OrchardCore.Resources.Liquid
 {
     public class StyleTag
     {
+        private static readonly char[] Separators = new[] {',', ' '};
+
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
@@ -99,7 +101,7 @@ namespace OrchardCore.Resources.Liquid
 
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (at == ResourceLocation.Inline)
@@ -163,18 +165,8 @@ namespace OrchardCore.Resources.Liquid
                 // This allows additions to the pre registered style dependencies.
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                 }
-
-                // TODO: implement styleblock
-
-                //var childContent = await output.GetChildContentAsync();
-                //if (!childContent.IsEmptyOrWhiteSpace)
-                //{
-                //    // Inline named style definition
-                //    resourceManager.InlineManifest.DefineStyle(name)
-                //        .SetInnerContent(childContent.GetContent());
-                //}
 
                 if (at == ResourceLocation.Inline)
                 {
@@ -208,12 +200,12 @@ namespace OrchardCore.Resources.Liquid
 
                 if (!String.IsNullOrEmpty(culture))
                 {
-                    definition.SetCultures(culture.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(culture.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
-                    definition.SetDependencies(dependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 // Also include the style.
@@ -252,38 +244,6 @@ namespace OrchardCore.Resources.Liquid
                 {
                     resourceManager.RenderLocalStyle(setting, writer);
                 }
-            }
-            else if (String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))
-            {
-                // TODO: implement styleblock
-
-                // Custom style content
-
-                //var childContent = await output.GetChildContentAsync();
-
-                //var builder = new TagBuilder("style");
-                //builder.InnerHtml.AppendHtml(childContent);
-                //builder.TagRenderMode = TagRenderMode.Normal;
-
-                //foreach (var attribute in customAttributes)
-                //{
-                //    builder.Attributes.Add(attribute.Key, attribute.Value);
-                //}
-
-                //// If no type was specified, define a default one
-                //if (!builder.Attributes.ContainsKey("type"))
-                //{
-                //    builder.Attributes.Add("type", "text/css");
-                //}
-
-                //if (at == ResourceLocation.Inline)
-                //{
-                //    output.Content.SetHtmlContent(builder);
-                //}
-                //else
-                //{
-                //    resourceManager.RegisterStyle(builder);
-                //}
             }
 
             return Completion.Normal;

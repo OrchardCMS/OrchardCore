@@ -14,6 +14,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class StyleBlock
     {
+        private static readonly char[] Separators = new[] {',', ' '};
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
@@ -89,10 +90,8 @@ namespace OrchardCore.Resources.Liquid
                 // This allows additions to the pre registered style dependencies.
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
                 }
-
-                // TODO: implement styleblock
 
                 var content = "";
 
