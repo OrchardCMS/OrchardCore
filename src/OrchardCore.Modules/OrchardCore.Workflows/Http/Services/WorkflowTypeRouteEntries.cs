@@ -13,11 +13,7 @@ namespace OrchardCore.Workflows.Http.Services
 {
     internal class WorkflowTypeRouteEntries : WorkflowRouteEntries<WorkflowTypeRouteDocument>, IWorkflowTypeRouteEntries
     {
-        public WorkflowTypeRouteEntries(IVolatileDocumentManager<WorkflowTypeRouteDocument> documentManager)
-            : base(documentManager)
-        {
-
-        }
+        public WorkflowTypeRouteEntries(IVolatileDocumentManager<WorkflowTypeRouteDocument> documentManager) : base(documentManager) { }
 
         protected override async Task<WorkflowTypeRouteDocument> CreateDocumentAsync()
         {
