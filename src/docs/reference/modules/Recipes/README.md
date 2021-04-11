@@ -353,6 +353,28 @@ The CustomSettings step allows you to populate your custom settings with initial
     }
 ```
 
+### Recipes Step
+
+The Recipes step allows you to execute other recipes from the current recipe. You can use this to modularize your recipes. E.g. instead of having a single large setup recipe you can put content into multiple smaller ones and execute them from the setup recipe.
+
+```json
+    {
+      "name": "recipes",
+      "Values": [
+        {
+          "executionid": "MyApp",
+          "name": "MyApp.Pages"
+        },
+        {
+          "executionid": "MyApp",
+          "name": "MyApp.Blog"
+        }
+      ]
+    }
+```
+
+As `executionid` use a custom identifier to distinguish these recipe executions from others. As `name` use the `name` field from the given recipe's head (this is left blank when you export to recipes).
+
 ### Other settings Step
 
 Here are other available steps:
