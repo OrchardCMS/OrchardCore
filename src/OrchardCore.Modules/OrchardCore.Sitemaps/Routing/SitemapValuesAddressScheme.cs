@@ -6,17 +6,18 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Options;
 using OrchardCore.Routing;
+using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Routing
 {
     internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressScheme
     {
-        private readonly SitemapEntries _entries;
+        private readonly ISitemapManager _sitemapManager;
         private readonly SitemapsOptions _options;
 
-        public SitemapValuesAddressScheme(SitemapEntries entries, IOptions<SitemapsOptions> options)
+        public SitemapValuesAddressScheme(ISitemapManager sitemapManager, IOptions<SitemapsOptions> options)
         {
-            _entries = entries;
+            _sitemapManager = sitemapManager;
             _options = options.Value;
         }
 
@@ -34,7 +35,7 @@ namespace OrchardCore.Sitemaps.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            (var found, var path) = _entries.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
+            (var found, var path) = _sitemapManager.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
 
             if (!found)
             {

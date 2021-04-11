@@ -4,17 +4,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
+using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Routing
 {
     public class SitemapRouteTransformer : DynamicRouteValueTransformer
     {
-        private readonly SitemapEntries _entries;
+        private readonly ISitemapManager _sitemapManager;
         private readonly SitemapsOptions _options;
 
-        public SitemapRouteTransformer(SitemapEntries entries, IOptions<SitemapsOptions> options)
+        public SitemapRouteTransformer(ISitemapManager sitemapManager, IOptions<SitemapsOptions> options)
         {
-            _entries = entries;
+            _sitemapManager = sitemapManager;
             _options = options.Value;
         }
 
@@ -25,7 +26,7 @@ namespace OrchardCore.Sitemaps.Routing
 
             if (!String.IsNullOrEmpty(path))
             {
-                (var found, var sitemapId) = await _entries.TryGetSitemapIdByPathAsync(path);
+                (var found, var sitemapId) = await _sitemapManager.TryGetSitemapIdByPathAsync(path);
 
                 if (found)
                 {
