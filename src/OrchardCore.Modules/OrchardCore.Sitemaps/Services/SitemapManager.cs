@@ -12,8 +12,7 @@ namespace OrchardCore.Sitemaps.Services
         private readonly IDocumentManager<SitemapDocument> _documentManager;
         private readonly SitemapEntries _sitemapEntries;
 
-        public SitemapManager(IDocumentManager<SitemapDocument> documentManager, SitemapEntries sitemapEntries
-            )
+        public SitemapManager(IDocumentManager<SitemapDocument> documentManager, SitemapEntries sitemapEntries)
         {
             _documentManager = documentManager;
             _sitemapEntries = sitemapEntries;
