@@ -56,15 +56,15 @@ The below table lists the different Client side libraries:
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.13 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
-| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.4.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
+| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.4.1 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [GraphiQL explorer](https://github.com/onegraph/graphiql-explorer) | Explorer plugin for GraphiQL. | 0.6.3 | [MIT](https://github.com/OneGraph/graphiql-explorer/blob/master/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp-cli) | Command Line Interface for gulp. | 2.3.0 | [MIT](https://github.com/gulpjs/gulp-cli/blob/master/LICENSE) |
 | [jsPlumb](https://github.com/jsplumb/jsplumb) | Visual connectivity for webapps. | 2.15.5 | [MIT and GPLv2](https://github.com/jsplumb/jsplumb/blob/master/jsPlumb-LICENSE.txt) |
 | [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0.2 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
-| [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.2.3 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
+| [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.2.4 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.11.0 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
-| [WebPack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.30.0 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
+| [WebPack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.31.2 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
 
 The below table lists the different Tests libraries:
 
