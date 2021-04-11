@@ -16,7 +16,7 @@
     <PackageManagement Include="BenchmarkDotNet" Version="0.12.1" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="Fluid.Core" Version="2.0.1" />
+    <PackageManagement Include="Fluid.Core" Version="2.0.3" />
     <PackageManagement Include="GraphQL" Version="4.2.0" />
     <PackageManagement Include="GraphQL.DataLoader" Version="4.2.0" />
     <PackageManagement Include="GraphQL.NewtonsoftJson" Version="4.2.0" />
@@ -28,7 +28,7 @@
     <PackageManagement Include="MailKit" Version="2.11.1" />
     <PackageManagement Include="Markdig" Version="0.24.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
-    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
     <PackageManagement Include="MimeKit" Version="2.11.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
     <PackageManagement Include="Moq" Version="4.16.1" />

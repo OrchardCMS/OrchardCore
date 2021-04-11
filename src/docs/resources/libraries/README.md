@@ -7,7 +7,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET | 12.8.1 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Storage Blobs for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.2.0/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage | 1.2.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Castle.Core](https://github.com/castleproject/Core) | Castle DynamicProxy. | 4.4.1 |[Apache-2.0](https://github.com/castleproject/Core/blob/master/LICENSE) |
-| [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.0.1 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
+| [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.0.3 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 2.4.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 5.0.376 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 1.0.2 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
@@ -70,9 +70,9 @@ The below table lists the different Tests libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 6.8.0 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
+| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 7.0.1 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
-| [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 16.9.1 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
+| [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 16.9.4 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.4.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
 | [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 0.10.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
 | [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.4.3 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |

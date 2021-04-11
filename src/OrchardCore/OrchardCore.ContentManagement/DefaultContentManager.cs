@@ -436,6 +436,8 @@ namespace OrchardCore.ContentManagement
         {
             var skip = 0;
 
+            var importedVersionIds = new HashSet<string>();
+
             var batchedContentItems = contentItems.Take(ImportBatchSize);
 
             while (batchedContentItems.Any())
@@ -468,6 +470,14 @@ namespace OrchardCore.ContentManagement
                     ContentItem originalVersion = null;
                     if (!String.IsNullOrEmpty(importingItem.ContentItemVersionId))
                     {
+                        if (importedVersionIds.Contains(importingItem.ContentItemVersionId))
+                        {
+                            _logger.LogInformation("Duplicate content item version id '{ContentItemVersionId}' skipped", importingItem.ContentItemVersionId);
+                            continue;
+                        }
+
+                        importedVersionIds.Add(importingItem.ContentItemVersionId);
+
                         originalVersion = versionsToUpdate.FirstOrDefault(x => String.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
                     }
 
