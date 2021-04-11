@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -133,7 +134,9 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
                 {
-                    _resourceManager.RenderLocalScript(setting, output.Content);
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalScript(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
@@ -197,12 +200,16 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (At == ResourceLocation.Inline)
                     {
-                        _resourceManager.RenderLocalScript(setting, output.Content);
+                        using var sw = new StringWriter();
+                        _resourceManager.RenderLocalScript(setting, sw);
+                        output.Content.AppendHtml(sw.ToString());
                     }
                 }
                 else
                 {
-                    _resourceManager.RenderLocalScript(setting, output.Content);
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalScript(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
@@ -276,7 +283,9 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (At == ResourceLocation.Inline)
                     {
-                        _resourceManager.RenderLocalScript(setting, output.Content);
+                        using var sw = new StringWriter();
+                        _resourceManager.RenderLocalScript(setting, sw);
+                        output.Content.AppendHtml(sw.ToString());
                     }
                 }
             }
@@ -302,7 +311,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 else if (At == ResourceLocation.Inline)
                 {
                     output.Content.SetHtmlContent(builder);
-                } else 
+                } else
                 {
                     _resourceManager.RegisterFootScript(builder);
                 }

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <!-- Default TFMs (Plural) inside Visual Studio -->
-  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingByReSharper)' == 'true'">
     <AspNetCoreTargetFrameworks>$(AspNetCoreTargetFramework)</AspNetCoreTargetFrameworks>
   </PropertyGroup>
 
