@@ -34,6 +34,12 @@ A recipe file should look like this:
 !!! note
     if `issetuprecipe` is equal to true, the recipe will be available in the Recipes list during the setup.
 
+!!! note
+    Recipes, despite being JSON files, may contain comments:
+    ```json
+    // This is a comment.
+    ```
+
 ## Recipe steps
 
 A recipe can execute multiple steps.
