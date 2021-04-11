@@ -11,12 +11,12 @@ namespace OrchardCore.Sitemaps.Routing
     public class SitemapEntries
     {
         private readonly IVolatileDocumentManager<SitemapRouteDocument> _documentManager;
-        private readonly IServiceProvider _services;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SitemapEntries(IVolatileDocumentManager<SitemapRouteDocument> documentManager, IServiceProvider services)
+        public SitemapEntries(IVolatileDocumentManager<SitemapRouteDocument> documentManager, IServiceProvider serviceProvider)
         {
             _documentManager = documentManager;
-            _services = services;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<(bool, string)> TryGetSitemapIdByPathAsync(string path)
@@ -79,9 +79,10 @@ namespace OrchardCore.Sitemaps.Routing
 
         private async Task<SitemapRouteDocument> CreateDocumentAsync()
         {
-            var sitemapManager = _services.GetRequiredService<ISitemapManager>();
-            var sitemaps = await sitemapManager.GetSitemapsAsync();
+            // Lazily resolved (but only once) to prevent a circular dependency.
+            var sitemapManager = _serviceProvider.GetRequiredService<ISitemapManager>();
 
+            var sitemaps = await sitemapManager.GetSitemapsAsync();
             var document = new SitemapRouteDocument();
             BuildEntries(document, sitemaps);
 
