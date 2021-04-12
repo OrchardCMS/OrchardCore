@@ -17,5 +17,11 @@
       "Assets/js/Validate/validator.js"
     ],
     "output": "wwwroot/Scripts/validator.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/Validate/validationRuleHelper.js"
+    ],
+    "output": "wwwroot/Scripts/validationRuleHelper.js"
   }
 ]
