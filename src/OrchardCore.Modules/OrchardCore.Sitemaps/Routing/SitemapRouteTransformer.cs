@@ -9,12 +9,12 @@ namespace OrchardCore.Sitemaps.Routing
 {
     public class SitemapRouteTransformer : DynamicRouteValueTransformer
     {
-        private readonly SitemapEntries _sitemapEntries;
+        private readonly SitemapEntries _entries;
         private readonly SitemapsOptions _options;
 
-        public SitemapRouteTransformer(SitemapEntries sitemapEntries, IOptions<SitemapsOptions> options)
+        public SitemapRouteTransformer(SitemapEntries entries, IOptions<SitemapsOptions> options)
         {
-            _sitemapEntries = sitemapEntries;
+            _entries = entries;
             _options = options.Value;
         }
 
@@ -25,7 +25,7 @@ namespace OrchardCore.Sitemaps.Routing
 
             if (!String.IsNullOrEmpty(path))
             {
-                (var found, var sitemapId) = await _sitemapEntries.TryGetSitemapIdByPathAsync(path);
+                (var found, var sitemapId) = await _entries.TryGetSitemapIdByPathAsync(path);
 
                 if (found)
                 {

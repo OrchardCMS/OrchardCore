@@ -11,12 +11,12 @@ namespace OrchardCore.Sitemaps.Routing
 {
     internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressScheme
     {
-        private readonly SitemapEntries _sitemapEntries;
+        private readonly SitemapEntries _entries;
         private readonly SitemapsOptions _options;
 
-        public SitemapValuesAddressScheme(SitemapEntries sitemapEntries, IOptions<SitemapsOptions> options)
+        public SitemapValuesAddressScheme(SitemapEntries entries, IOptions<SitemapsOptions> options)
         {
-            _sitemapEntries = sitemapEntries;
+            _entries = entries;
             _options = options.Value;
         }
 
@@ -34,7 +34,7 @@ namespace OrchardCore.Sitemaps.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            (var found, var path) = _sitemapEntries.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
+            (var found, var path) = _entries.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
 
             if (!found)
             {
