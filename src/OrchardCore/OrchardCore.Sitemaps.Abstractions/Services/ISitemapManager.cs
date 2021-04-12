@@ -7,9 +7,9 @@ namespace OrchardCore.Sitemaps.Services
     public interface ISitemapManager
     {
         /// <summary>
-        /// Gets the cached <see cref="SitemapDocument"/> for sharing.
+        /// Gets the cached <see cref="ISitemapDocument"/> for sharing.
         /// </summary>
-        Task<SitemapDocument> GetDocumentAsync();
+        Task<ISitemapDocument> GetSitemapDocumentAsync();
 
         /// <summary>
         /// Loads all stored <see cref="SitemapType"/> for updating.

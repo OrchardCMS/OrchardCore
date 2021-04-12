@@ -15,6 +15,11 @@ namespace OrchardCore.Sitemaps.Services
             _documentManager = documentManager;
         }
 
+        public async Task<ISitemapDocument> GetSitemapDocumentAsync()
+        {
+            return await GetDocumentAsync();
+        }
+
         public async Task<IEnumerable<SitemapType>> LoadSitemapsAsync()
         {
             return (await LoadDocumentAsync()).Sitemaps.Values.ToArray();
@@ -76,6 +81,6 @@ namespace OrchardCore.Sitemaps.Services
         /// <summary>
         /// Gets the sitemap document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<SitemapDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
+        private Task<SitemapDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
     }
 }

@@ -22,7 +22,7 @@ namespace OrchardCore.Sitemaps.Routing
 
         public async Task<(bool, string)> TryGetSitemapIdByPathAsync(string path)
         {
-            var document = await _sitemapManager.GetDocumentAsync();
+            var document = await _sitemapManager.GetSitemapDocumentAsync();
             if (_sitemapIds == null || _identifier != document.Identifier)
             {
                 BuildEntries(document);
@@ -38,7 +38,7 @@ namespace OrchardCore.Sitemaps.Routing
 
         public async Task<(bool, string)> TryGetPathBySitemapIdAsync(string sitemapId)
         {
-            var document = await _sitemapManager.GetDocumentAsync();
+            var document = await _sitemapManager.GetSitemapDocumentAsync();
             if (_sitemapPaths == null || _identifier != document.Identifier)
             {
                 BuildEntries(document);
@@ -52,7 +52,7 @@ namespace OrchardCore.Sitemaps.Routing
             return (false, path);
         }
 
-        private void BuildEntries(SitemapDocument document)
+        private void BuildEntries(ISitemapDocument document)
         {
             var sitemapIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var sitemapPaths = new Dictionary<string, string>();
