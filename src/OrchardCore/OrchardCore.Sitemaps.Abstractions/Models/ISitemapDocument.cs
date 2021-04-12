@@ -5,6 +5,6 @@ namespace OrchardCore.Sitemaps.Models
 {
     public interface ISitemapDocument : IDocument
     {
-        public IDictionary<string, SitemapType> Sitemaps { get; set; };
+        public IDictionary<string, SitemapType> Sitemaps { get; set; }
     }
 }
