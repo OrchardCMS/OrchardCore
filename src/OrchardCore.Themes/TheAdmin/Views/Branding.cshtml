@@ -1,0 +1,3 @@
+@inject IOptions<AdminOptions> AdminOptions
+
+<a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src=@Url.Content("~/TheAdmin/logo.png") alt="@Site.SiteName" /><span>@Site.SiteName</span></a>
