@@ -14,13 +14,13 @@
   },
   {
     "inputs": [
-      "Assets/js/Validate/validator.js"
+      "Assets/js/Validation/validator.js"
     ],
     "output": "wwwroot/Scripts/validator.js"
   },
   {
     "inputs": [
-      "Assets/js/Validate/validationRuleHelper.js"
+      "Assets/js/Validation/validationRuleHelper.js"
     ],
     "output": "wwwroot/Scripts/validationRuleHelper.js"
   }
