@@ -24,7 +24,6 @@ namespace OrchardCore.Sitemaps.Services
         public async Task<(bool, string)> TryGetSitemapIdByPathAsync(string path)
         {
             var document = await GetDocumentAsync();
-
             if (_sitemapIds == null || _identifier != document.Identifier)
             {
                 BuildEntries(document);
@@ -41,7 +40,6 @@ namespace OrchardCore.Sitemaps.Services
         public async Task<(bool, string)> TryGetPathBySitemapIdAsync(string sitemapId)
         {
             var document = await GetDocumentAsync();
-
             if (_sitemapPaths == null || _identifier != document.Identifier)
             {
                 BuildEntries(document);
