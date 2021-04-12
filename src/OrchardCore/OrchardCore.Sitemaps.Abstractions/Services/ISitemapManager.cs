@@ -7,14 +7,9 @@ namespace OrchardCore.Sitemaps.Services
     public interface ISitemapManager
     {
         /// <summary>
-        /// Gets the id of a <see cref="SitemapType"/> by its path.
+        /// Gets the cached <see cref="SitemapDocument"/> for sharing.
         /// </summary>
-        Task<(bool, string)> TryGetSitemapIdByPathAsync(string path);
-
-        /// <summary>
-        /// Gets the Path of a <see cref="SitemapType"/> by its id.
-        /// </summary>
-        Task<(bool, string)> TryGetPathBySitemapIdAsync(string sitemapId);
+        Task<SitemapDocument> GetDocumentAsync();
 
         /// <summary>
         /// Loads all stored <see cref="SitemapType"/> for updating.

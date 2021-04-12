@@ -58,6 +58,7 @@ namespace OrchardCore.Sitemaps
                 }
             });
 
+            services.AddSingleton<SitemapEntries>();
             services.AddSingleton<ISitemapManager, SitemapManager>();
             services.AddSingleton<IShellRouteValuesAddressScheme, SitemapValuesAddressScheme>();
             services.AddSingleton<SitemapRouteTransformer>();
