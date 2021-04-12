@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
@@ -16,6 +17,11 @@ namespace OrchardCore.Layers.Recipes
     /// </summary>
     public class LayerStep : IRecipeStepHandler
     {
+        private readonly static JsonSerializer JsonSerializer = new JsonSerializer()
+        {
+            TypeNameHandling = TypeNameHandling.Auto
+        };
+
         private readonly ILayerService _layerService;
         private readonly IRuleMigrator _ruleMigrator;
         private readonly IConditionIdGenerator _conditionIdGenerator;
@@ -88,7 +94,7 @@ namespace OrchardCore.Layers.Recipes
                         var name = jCondition["Name"].ToString();
                         if (factories.TryGetValue(name, out var factory))
                         {
-                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType());
+                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), JsonSerializer);
 
                             layer.LayerRule.Conditions.Add(factoryCondition);
                         }
