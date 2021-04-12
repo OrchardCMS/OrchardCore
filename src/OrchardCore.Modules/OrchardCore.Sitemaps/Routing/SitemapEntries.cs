@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Routing
@@ -22,10 +21,10 @@ namespace OrchardCore.Sitemaps.Routing
 
         public async Task<(bool, string)> TryGetSitemapIdByPathAsync(string path)
         {
-            var document = await _sitemapManager.GetSitemapDocumentAsync();
-            if (_sitemapIds == null || _identifier != document.Identifier)
+            var identifier = await _sitemapManager.GetIdentifierAsync();
+            if (_sitemapIds == null || _identifier != identifier)
             {
-                BuildEntries(document);
+                await BuildEntriesAsync(identifier);
             }
 
             if (_sitemapIds.TryGetValue(path, out var sitemapId))
@@ -38,10 +37,10 @@ namespace OrchardCore.Sitemaps.Routing
 
         public async Task<(bool, string)> TryGetPathBySitemapIdAsync(string sitemapId)
         {
-            var document = await _sitemapManager.GetSitemapDocumentAsync();
-            if (_sitemapPaths == null || _identifier != document.Identifier)
+            var identifier = await _sitemapManager.GetIdentifierAsync();
+            if (_sitemapPaths == null || _identifier != identifier)
             {
-                BuildEntries(document);
+                await BuildEntriesAsync(identifier);
             }
 
             if (_sitemapPaths.TryGetValue(sitemapId, out var path))
@@ -52,12 +51,13 @@ namespace OrchardCore.Sitemaps.Routing
             return (false, path);
         }
 
-        private void BuildEntries(ISitemapDocument document)
+        private async Task BuildEntriesAsync(string identifier)
         {
             var sitemapIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var sitemapPaths = new Dictionary<string, string>();
 
-            foreach (var sitemap in document.Sitemaps.Values)
+            var sitemaps = await _sitemapManager.GetSitemapsAsync();
+            foreach (var sitemap in sitemaps)
             {
                 if (!sitemap.Enabled)
                 {
@@ -72,7 +72,7 @@ namespace OrchardCore.Sitemaps.Routing
             {
                 _sitemapIds = sitemapIds;
                 _sitemapPaths = sitemapPaths;
-                _identifier = document.Identifier;
+                _identifier = identifier;
             }
         }
     }

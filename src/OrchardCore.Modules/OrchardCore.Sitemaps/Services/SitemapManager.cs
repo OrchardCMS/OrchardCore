@@ -15,10 +15,7 @@ namespace OrchardCore.Sitemaps.Services
             _documentManager = documentManager;
         }
 
-        public async Task<ISitemapDocument> GetSitemapDocumentAsync()
-        {
-            return await GetDocumentAsync();
-        }
+        public async Task<string> GetIdentifierAsync() => (await GetDocumentAsync()).Identifier;
 
         public async Task<IEnumerable<SitemapType>> LoadSitemapsAsync()
         {
