@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -39,9 +41,11 @@ namespace OrchardCore.Users.Controllers
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
         private readonly IScriptingManager _scriptingManager;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly INotifier _notifier;
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+        private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
 
         public AccountController(
@@ -50,9 +54,11 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             ILogger<AccountController> logger,
             ISiteService siteService,
+            IHtmlLocalizer<AccountController> htmlLocalizer,
             IStringLocalizer<AccountController> stringLocalizer,
             IEnumerable<ILoginFormEvent> accountEvents,
             IScriptingManager scriptingManager,
+            INotifier notifier,
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
@@ -65,10 +71,12 @@ namespace OrchardCore.Users.Controllers
             _siteService = siteService;
             _accountEvents = accountEvents;
             _scriptingManager = scriptingManager;
+            _notifier = notifier;
             _clock = clock;
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
             _externalLoginHandlers = externalLoginHandlers;
+            H = htmlLocalizer;
             S = stringLocalizer;
         }
 
@@ -239,21 +247,29 @@ namespace OrchardCore.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult ChangePassword()
+        public IActionResult ChangePassword(string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model, string returnUrl = null)
         {
             if (TryValidateModel(model) && ModelState.IsValid)
             {
                 var user = await _userService.GetAuthenticatedUserAsync(User);
                 if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    return RedirectToLocal(Url.Action("ChangePasswordConfirmation"));
+                    if (Url.IsLocalUrl(returnUrl)) {
+                        _notifier.Success(H["Your password has been changed successfully."]);
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        return Redirect(Url.Action("ChangePasswordConfirmation"));
+                    }
                 }
             }
 
