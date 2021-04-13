@@ -78,18 +78,20 @@ namespace OrchardCore.Layers.Services
 
                 var layerState = await _layerStateManager.GetOrCreateImmutableAsync();
 
-                if (!_memoryCache.TryGetValue<AdminCacheEntry>(WidgetsKey, out var cacheEntry) || cacheEntry.Identifier != layerState.Identifier)
-                {
-                    cacheEntry = new AdminCacheEntry()
-                    {
-                        Identifier = layerState.Identifier,
-                        Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
-                    };
+                // if (!_memoryCache.TryGetValue<AdminCacheEntry>(WidgetsKey, out var cacheEntry) || cacheEntry.Identifier != layerState.Identifier)
+                // {
+                //     cacheEntry = new AdminCacheEntry()
+                //     {
+                //         Identifier = layerState.Identifier,
+                //         Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
+                //     };
 
-                    _memoryCache.Set(WidgetsKey, cacheEntry);
-                }
+                //     _memoryCache.Set(WidgetsKey, cacheEntry);
+                // }
 
-                var widgets = cacheEntry.Widgets;
+                var widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published);
+
+                // var widgets = cacheEntry.Widgets;
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
@@ -122,8 +124,8 @@ namespace OrchardCore.Layers.Services
 
                     var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 
-                    // widgetContent.Classes.Add("widget");
-                    // widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+                    widgetContent.Classes.Add("widget");
+                    widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
                     // var wrapper = new WidgetWrapper
                     // {
