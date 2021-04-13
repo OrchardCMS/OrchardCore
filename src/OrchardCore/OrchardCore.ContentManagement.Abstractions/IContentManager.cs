@@ -20,11 +20,6 @@ namespace OrchardCore.ContentManagement
         public IQuery<ContentItem> Query();
 
         /// <summary>
-        /// Creates an <see cref="IQuery"/> over the <see cref="ContentItem"/> type and a given <see cref="IIndex"/> type.
-        /// </summary>
-        public IQuery<ContentItem, TIndex> Query<TIndex>() where TIndex : class, IIndex;
-
-        /// <summary>
         /// Creates a new content item with the specified type
         /// </summary>
         /// <remarks>
@@ -145,6 +140,12 @@ namespace OrchardCore.ContentManagement
 
     public static class ContentManagerExtensions
     {
+        /// <summary>
+        /// Creates an <see cref="IQuery"/> over the <see cref="ContentItem"/> type and a given <see cref="IIndex"/> type.
+        /// </summary>
+        public static IQuery<ContentItem, TIndex> Query<TIndex>(this IContentManager contentManager) where TIndex : class, IIndex
+            => contentManager.Query().With<TIndex>();
+
         /// <summary>
         /// Creates (persists) a new Published content item
         /// </summary>

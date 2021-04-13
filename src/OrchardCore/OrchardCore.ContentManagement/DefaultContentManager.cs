@@ -55,9 +55,6 @@ namespace OrchardCore.ContentManagement
 
         public IQuery<ContentItem> Query() => new ContentQuery(_session.Query<ContentItem>(), this);
 
-        public IQuery<ContentItem, TIndex> Query<TIndex>() where TIndex : class, IIndex
-            => new ContentQuery<TIndex>(_session.Query<ContentItem>().With<TIndex>(), this);
-
         public async Task<ContentItem> NewAsync(string contentType)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
