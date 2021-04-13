@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -95,9 +96,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (At == ResourceLocation.Inline)
                 {
-                    _resourceManager.RenderLocalStyle(setting, output.Content);
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalStyle(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
-
             }
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
@@ -165,7 +167,9 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (At == ResourceLocation.Inline)
                 {
-                    _resourceManager.RenderLocalStyle(setting, output.Content);
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalStyle(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
@@ -234,8 +238,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (At == ResourceLocation.Inline)
                 {
-                    _resourceManager.RenderLocalStyle(setting, output.Content);
-                }                
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalStyle(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
+                }
             }
             else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
