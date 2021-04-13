@@ -54,11 +54,7 @@ function initializeTagsEditor(element) {
                     if (Array.isArray(this.selectedTagTerms)) {
                         return this.selectedTagTerms.map(function (tagTerm) { return tagTerm.contentItemId });
                     } else {
-                        var arr = [];
-                        if (this.selectableTagTerms) {
-                          arr.push(this.selectableTagTerms);
-                        }
-                        return arr;
+                        return this.selectedTagTerms.contentItemId;
                     }
                 }
             },

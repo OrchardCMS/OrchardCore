@@ -63,13 +63,7 @@ function initializeTagsEditor(element) {
               return tagTerm.contentItemId;
             });
           } else {
-            var arr = [];
-
-            if (this.selectableTagTerms) {
-              arr.push(this.selectableTagTerms);
-            }
-
-            return arr;
+            return this.selectedTagTerms.contentItemId;
           }
         }
       },
