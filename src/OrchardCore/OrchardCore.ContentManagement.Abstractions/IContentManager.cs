@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
+using YesSql;
 
 namespace OrchardCore.ContentManagement
 {
@@ -11,6 +12,11 @@ namespace OrchardCore.ContentManagement
     /// </summary>
     public interface IContentManager
     {
+        /// <summary>
+        /// Creates a query on the <see cref="ContentItem"/> type.
+        /// </summary>
+        public IQuery<ContentItem> Query();
+
         /// <summary>
         /// Creates a new content item with the specified type
         /// </summary>

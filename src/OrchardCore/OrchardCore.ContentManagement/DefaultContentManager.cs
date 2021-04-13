@@ -52,6 +52,8 @@ namespace OrchardCore.ContentManagement
         public IEnumerable<IContentHandler> Handlers { get; private set; }
         public IEnumerable<IContentHandler> ReversedHandlers { get; private set; }
 
+        public IQuery<ContentItem> Query() => new ContentQuery(_session.Query<ContentItem>(), this);
+
         public async Task<ContentItem> NewAsync(string contentType)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
