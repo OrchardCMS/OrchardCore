@@ -40,7 +40,6 @@ function initializeTagsEditor(element) {
           createTagUrl: element.dataset.createTagUrl,
           createTagErrorMessage: element.dataset.createTagErrorMessage,
           selectedTagTerms: selectedTagTerms,
-          single: '',
           selectableTagTerms: selectableTagTerms,
           allTagTerms: allTagTerms
         };
