@@ -15,6 +15,8 @@ namespace OrchardCore.Autoroute.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {
+        private readonly IVolatileDocumentManager<AutorouteStateDocument> _autorouteStateManager;
+
         private ImmutableDictionary<string, AutorouteEntry> _paths = ImmutableDictionary<string, AutorouteEntry>.Empty;
         private ImmutableDictionary<string, AutorouteEntry> _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
@@ -23,8 +25,9 @@ namespace OrchardCore.Autoroute.Services
         private string _stateIdentifier;
         private bool _initialized;
 
-        public AutorouteEntries()
+        public AutorouteEntries(IVolatileDocumentManager<AutorouteStateDocument> autorouteStateManager)
         {
+            _autorouteStateManager = autorouteStateManager;
             _contentItemIds = _contentItemIds.WithComparers(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -57,7 +60,7 @@ namespace OrchardCore.Autoroute.Services
             await EnsureInitializedAsync();
 
             // Update the cache with a new state and then refresh entries as it would be done on a next request.
-            await AutorouteStateManager.UpdateAsync(new AutorouteStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
+            await _autorouteStateManager.UpdateAsync(new AutorouteStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
         private async Task EnsureInitializedAsync()
@@ -68,7 +71,7 @@ namespace OrchardCore.Autoroute.Services
             }
             else
             {
-                var state = await AutorouteStateManager.GetOrCreateImmutableAsync();
+                var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
                 if (_stateIdentifier != state.Identifier)
                 {
                     await RefreshEntriesAsync(state);
@@ -194,7 +197,7 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (!_initialized)
                 {
-                    var state = await AutorouteStateManager.GetOrCreateImmutableAsync();
+                    var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
 
                     var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null).ListAsync();
                     var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
@@ -217,8 +220,5 @@ namespace OrchardCore.Autoroute.Services
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
-
-        private static IVolatileDocumentManager<AutorouteStateDocument> AutorouteStateManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteStateDocument>>();
     }
 }
