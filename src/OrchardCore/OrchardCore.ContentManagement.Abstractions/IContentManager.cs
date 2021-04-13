@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
 using YesSql;
+using YesSql.Indexes;
 
 namespace OrchardCore.ContentManagement
 {
@@ -13,9 +15,14 @@ namespace OrchardCore.ContentManagement
     public interface IContentManager
     {
         /// <summary>
-        /// Creates a query on the <see cref="ContentItem"/> type.
+        /// Creates an <see cref="IQuery"/> over the <see cref="ContentItem"/> type.
         /// </summary>
         public IQuery<ContentItem> Query();
+
+        /// <summary>
+        /// Creates an <see cref="IQuery"/> over the <see cref="ContentItem"/> type and a given <see cref="IIndex"/> type.
+        /// </summary>
+        public IQuery<ContentItem, TIndex> Query<TIndex>() where TIndex : class, IIndex;
 
         /// <summary>
         /// Creates a new content item with the specified type
@@ -217,7 +224,7 @@ namespace OrchardCore.ContentManagement
             var contentItem = await contentManager.GetAsync(id, options);
 
             // It represents a contained content item
-            if (!string.IsNullOrEmpty(jsonPath))
+            if (!String.IsNullOrEmpty(jsonPath))
             {
                 var root = contentItem.Content as JObject;
                 contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();

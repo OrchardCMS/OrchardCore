@@ -7,7 +7,7 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentManagement
 {
-    public class ContentQuery<TIndex> : IQuery<ContentItem, TIndex> where TIndex : IIndex
+    public class ContentQuery<TIndex> : IQuery<ContentItem, TIndex> where TIndex : class, IIndex
     {
         private IQuery<ContentItem, TIndex> _query;
         private readonly IContentManager _contentManager;

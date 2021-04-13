@@ -90,7 +90,7 @@ namespace OrchardCore.Lists.Services
             // Reduce duplicates to only set order for the published container item and the draft item if it has not been published.
             var containerContentItemIds = containerContentItems.Select(x => x.ContentItemId).Distinct();
 
-            var containedItemsQuery = _session.Query<ContentItem>()
+            var containedItemsQuery = _contentManager.Query()
                 .With<ContainedPartIndex>(x => x.ListContentItemId.IsIn(containerContentItemIds))
                 .With<ContentItemIndex>(ci => ci.Latest || ci.Published)
                 .OrderByDescending(x => x.CreatedUtc);
@@ -166,15 +166,15 @@ namespace OrchardCore.Lists.Services
             {
                 if (enableOrdering)
                 {
-                    var beforeValue = int.Parse(pager.Before);
-                    query = _session.Query<ContentItem>()
+                    var beforeValue = Int32.Parse(pager.Before);
+                    query = _contentManager.Query()
                         .With(CreateOrderedContainedPartIndexFilter(beforeValue, null, contentItemId))
                         .OrderByDescending(x => x.Order);
                 }
                 else
                 {
-                    var beforeValue = new DateTime(long.Parse(pager.Before));
-                    query = _session.Query<ContentItem>()
+                    var beforeValue = new DateTime(Int64.Parse(pager.Before));
+                    query = _contentManager.Query()
                         .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId);
 
                     ApplyPagingContentIndexFilter(beforeValue, null, true, query);
@@ -225,14 +225,14 @@ namespace OrchardCore.Lists.Services
                 if (enableOrdering)
                 {
                     var afterValue = int.Parse(pager.After);
-                    query = _session.Query<ContentItem>()
+                    query = _contentManager.Query()
                         .With(CreateOrderedContainedPartIndexFilter(null, afterValue, contentItemId))
                         .OrderBy(x => x.Order);
                 }
                 else
                 {
                     var afterValue = new DateTime(long.Parse(pager.After));
-                    query = _session.Query<ContentItem>()
+                    query = _contentManager.Query()
                         .With(CreateOrderedContainedPartIndexFilter(null, null, contentItemId));
 
                     ApplyPagingContentIndexFilter(null, afterValue, false, query);
@@ -279,13 +279,13 @@ namespace OrchardCore.Lists.Services
             {
                 if (enableOrdering)
                 {
-                    query = _session.Query<ContentItem>()
+                    query = _contentManager.Query()
                         .With(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
                         .OrderBy(x => x.Order);
                 }
                 else
                 {
-                    query = _session.Query<ContentItem>()
+                    query = _contentManager.Query()
                         .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId);
 
                     ApplyPagingContentIndexFilter(null, null, false, query);
@@ -348,7 +348,7 @@ namespace OrchardCore.Lists.Services
 
         private void ApplyContainedItemOptionsFilter(ContainedItemOptions containedItemOptions, IQuery<ContentItem> query)
         {
-            if (!string.IsNullOrEmpty(containedItemOptions.DisplayText))
+            if (!String.IsNullOrEmpty(containedItemOptions.DisplayText))
             {
                 query.With<ContentItemIndex>(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
             }

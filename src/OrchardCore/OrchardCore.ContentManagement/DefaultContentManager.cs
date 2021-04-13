@@ -14,6 +14,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 using YesSql;
+using YesSql.Indexes;
 using YesSql.Services;
 
 namespace OrchardCore.ContentManagement
@@ -53,6 +54,9 @@ namespace OrchardCore.ContentManagement
         public IEnumerable<IContentHandler> ReversedHandlers { get; private set; }
 
         public IQuery<ContentItem> Query() => new ContentQuery(_session.Query<ContentItem>(), this);
+
+        public IQuery<ContentItem, TIndex> Query<TIndex>() where TIndex : class, IIndex
+            => new ContentQuery<TIndex>(_session.Query<ContentItem>().With<TIndex>(), this);
 
         public async Task<ContentItem> NewAsync(string contentType)
         {
