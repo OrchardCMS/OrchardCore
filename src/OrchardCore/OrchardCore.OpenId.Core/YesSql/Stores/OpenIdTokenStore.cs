@@ -53,7 +53,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Save(token, collection: OpenIdCollection);
-            await _session.CommitAsync();
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -67,7 +67,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Delete(token, collection: OpenIdCollection);
-            await _session.CommitAsync();
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -450,7 +450,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
                 try
                 {
-                    await _session.CommitAsync();
+                    await _session.SaveChangesAsync();
                 }
                 catch (Exception exception)
                 {
@@ -666,7 +666,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             try
             {
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
             }
             catch (ConcurrencyException exception)
             {

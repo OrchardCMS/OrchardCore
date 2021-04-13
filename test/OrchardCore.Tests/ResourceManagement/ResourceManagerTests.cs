@@ -516,8 +516,10 @@ namespace OrchardCore.Tests.ResourceManagement
             resourceManager.RegisterMeta(new MetaEntry { Name = "description", Content = "Some content" });
             resourceManager.RegisterMeta(new MetaEntry { HttpEquiv = "refresh", Content = "3;url=https://www.orchardcore.net/" });
 
+            using var sw = new StringWriter();
+            resourceManager.RenderMeta(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderMeta(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var metas = document
@@ -541,8 +543,10 @@ namespace OrchardCore.Tests.ResourceManagement
             resourceManager.RegisterLink(new LinkEntry { Rel = "icon", Href = "/favicon.ico" });
             resourceManager.RegisterLink(new LinkEntry { Rel = "alternate", Type = "application/pdf", Href = "/pdf" });
 
+            using var sw = new StringWriter();
+            resourceManager.RenderHeadLink(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderHeadLink(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var links = document
@@ -580,8 +584,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customStyle = ".my-class { prop: value; }";
             resourceManager.RegisterStyle(new HtmlString($"<style>{customStyle}</style>"));
 
+            using var sw = new StringWriter();
+            resourceManager.RenderStylesheet(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderStylesheet(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var links = document
@@ -633,8 +639,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customScript = "doSomeAction();";
             resourceManager.RegisterHeadScript(new HtmlString($"<script>{customScript}</script>"));
 
+            using var sw = new StringWriter();
+            resourceManager.RenderHeadScript(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderHeadScript(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -683,8 +691,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customScript = "doSomeAction();";
             resourceManager.RegisterFootScript(new HtmlString($"<script>{customScript}</script>"));
 
+            using var sw = new StringWriter();
+            resourceManager.RenderFootScript(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderFootScript(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -728,8 +738,11 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var requireSetting = resourceManager.RegisterResource("script", "required");
 
+            using var sw = new StringWriter();
+            resourceManager.RenderLocalScript(requireSetting, sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderLocalScript(requireSetting, htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
+
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -765,8 +778,10 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var requireSetting = resourceManager.RegisterResource("stylesheet", "required").AtLocation(ResourceLocation.Inline);
 
+            using var sw = new StringWriter();
+            resourceManager.RenderLocalStyle(requireSetting, sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderLocalStyle(requireSetting, htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
