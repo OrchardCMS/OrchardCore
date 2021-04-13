@@ -2,6 +2,9 @@
 @{
     var adminSettings = Site.As<AdminSettings>();
     var darkMode = await DarkModeService.IsDarkModeAsync();
+
+    // Branding is pre-rendred to allow resource injection
+    var brandingHtml = await DisplayAsync(await New.AdminBranding());
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-tenant="@DarkModeService.CurrentTenant" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
@@ -10,7 +13,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
     <style media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css"></style>
@@ -31,7 +33,7 @@
     <div class="ta-wrapper">
         <div class="ta-navbar-top navbar-expand-lg bg-primary">
             <div class="d-flex w-100">
-                <shape type="Branding" />
+                @brandingHtml
                 <div class="flex-grow-1">
                     @if (adminSettings.DisplayTitlesInTopbar)
                     {
