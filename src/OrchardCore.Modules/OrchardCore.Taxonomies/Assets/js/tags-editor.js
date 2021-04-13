@@ -34,6 +34,8 @@ function initializeTagsEditor(element) {
                     createTagUrl: element.dataset.createTagUrl,
                     createTagErrorMessage: element.dataset.createTagErrorMessage,
                     selectedTagTerms: selectedTagTerms,
+
+                    single: '',
                     selectableTagTerms: selectableTagTerms,
                     allTagTerms: allTagTerms
                 }
@@ -46,7 +48,18 @@ function initializeTagsEditor(element) {
                     return false;
                 },
                 selectedTagTermsIds: function() {
-                    return this.selectedTagTerms.map(function (tagTerm) { return tagTerm.contentItemId });
+                    if (!this.selectedTagTerms) {
+                        return [];
+                    }
+                    if (Array.isArray(this.selectedTagTerms)) {
+                        return this.selectedTagTerms.map(function (tagTerm) { return tagTerm.contentItemId });
+                    } else {
+                        var arr = [];
+                        if (this.selectableTagTerms) {
+                          arr.push(this.selectableTagTerms);
+                        }
+                        return arr;
+                    }
                 }
             },
             methods: {
