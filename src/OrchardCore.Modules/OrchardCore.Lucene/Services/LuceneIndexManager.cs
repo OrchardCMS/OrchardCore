@@ -64,7 +64,7 @@ namespace OrchardCore.Lucene
         {
             var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
             
-            foreach(var settings in luceneIndexSettings)
+            foreach (var settings in luceneIndexSettings)
             {
                 if (!Directory.Exists(PathExtensions.Combine(_rootPath, settings.IndexName)))
                 {
