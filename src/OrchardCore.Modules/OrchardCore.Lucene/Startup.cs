@@ -86,7 +86,7 @@ namespace OrchardCore.Lucene
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.GetRequiredService<LuceneIndexManager>().InitializeAsync().GetAwaiter().GetResult();
+            serviceProvider.GetRequiredService<LuceneIndexingService>().InitializeAsync().GetAwaiter().GetResult();
 
             routes.MapAreaControllerRoute(
                 name: "Lucene.Search",

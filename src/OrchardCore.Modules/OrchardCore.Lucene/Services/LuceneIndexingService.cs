@@ -52,6 +52,17 @@ namespace OrchardCore.Lucene
             _logger = logger;
         }
 
+        public async Task InitializeAsync()
+        {
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
+            
+            foreach (var settings in luceneIndexSettings)
+            {
+                await _indexManager.CreateIndexAsync(settings.IndexName);
+                await ProcessContentItemsAsync(settings.IndexName);
+            }
+        }
+
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.

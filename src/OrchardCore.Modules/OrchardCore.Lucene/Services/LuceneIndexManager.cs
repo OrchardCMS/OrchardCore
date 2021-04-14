@@ -60,19 +60,6 @@ namespace OrchardCore.Lucene
             _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
-        public async Task InitializeAsync()
-        {
-            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
-            
-            foreach (var settings in luceneIndexSettings)
-            {
-                if (!Directory.Exists(PathExtensions.Combine(_rootPath, settings.IndexName)))
-                {
-                    Directory.CreateDirectory(PathExtensions.Combine(_rootPath, settings.IndexName));
-                }
-            }
-        }
-
         public async Task CreateIndexAsync(string indexName)
         {
             await WriteAsync(indexName, _ => { }, true);
