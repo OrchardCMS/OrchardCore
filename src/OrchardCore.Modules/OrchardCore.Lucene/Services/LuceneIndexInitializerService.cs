@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Lucene
@@ -25,11 +26,11 @@ namespace OrchardCore.Lucene
             _logger = logger;
         }
 
-        public async Task ActivatedAsync()
+        public Task ActivatedAsync()
         {
             if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
             {
-                try
+                ShellScope.AddDeferredTask(async scope =>
                 {
                     var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
                     
@@ -38,12 +39,10 @@ namespace OrchardCore.Lucene
                         await _luceneIndexingService.CreateIndexAsync(settings);
                         await _luceneIndexingService.ProcessContentItemsAsync(settings.IndexName);
                     }
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "An error occurred while initializing a Lucene index.");
-                }
+                });
             }
+
+            return Task.CompletedTask;
         }
 
         public Task ActivatingAsync()
