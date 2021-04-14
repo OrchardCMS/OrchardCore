@@ -56,7 +56,7 @@
                                         @foreach (var contentItemSummary in Model.Widgets[zone])
                                         {
                                             var layerMetadata = Model.AdminLayers ? (ILayerMetadata)((ContentItem)contentItemSummary.ContentItem).As<AdminLayerMetadata>() : (ILayerMetadata)((ContentItem)contentItemSummary.ContentItem).As<LayerMetadata>();   
-                                            @await contentItemSummary.Tags.AddAsync(Html.Raw("<span class=\"badge ta-badge align-text-top font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + layerMetadata.Layer + "</span>"));
+                                            await contentItemSummary.Tags.AddAsync(Html.Raw("<span class=\"badge ta-badge align-text-top font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + layerMetadata.Layer + "</span>"));
                                             maxPosition = Math.Max(maxPosition, (double)layerMetadata.Position);
 
                                             <text>
