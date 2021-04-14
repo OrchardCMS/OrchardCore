@@ -13,8 +13,8 @@ namespace OrchardCore.Lucene
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly LuceneIndexingService _luceneIndexingService;
 
-        public LuceneIndexInitializerService(LuceneIndexSettingsService luceneIndexSettingsService,
-            LuceneIndexManager luceneIndexManager,
+        public LuceneIndexInitializerService(
+            LuceneIndexSettingsService luceneIndexSettingsService,
             LuceneIndexingService luceneIndexingService,
             ShellSettings shellSettings,
             ILogger<LuceneIndexInitializerService> logger)
