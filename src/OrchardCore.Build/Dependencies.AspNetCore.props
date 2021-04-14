@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <AspNetCoreVersion>3.1.13</AspNetCoreVersion>
-    <MicrosoftExtensionsVersion>3.1.13</MicrosoftExtensionsVersion>
+    <AspNetCoreVersion>3.1.14</AspNetCoreVersion>
+    <MicrosoftExtensionsVersion>3.1.14</MicrosoftExtensionsVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
