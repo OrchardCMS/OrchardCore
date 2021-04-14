@@ -58,6 +58,7 @@ namespace OrchardCore.Lucene
             services.AddSingleton<LuceneIndexManager>();
             services.AddSingleton<LuceneAnalyzerManager>();
             services.AddScoped<LuceneIndexingService>();
+            services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
@@ -86,8 +87,6 @@ namespace OrchardCore.Lucene
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.GetRequiredService<LuceneIndexingService>().InitializeAsync().GetAwaiter().GetResult();
-
             routes.MapAreaControllerRoute(
                 name: "Lucene.Search",
                 areaName: "OrchardCore.Lucene",

@@ -52,17 +52,6 @@ namespace OrchardCore.Lucene
             _logger = logger;
         }
 
-        public async Task InitializeAsync()
-        {
-            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
-            
-            foreach (var settings in luceneIndexSettings)
-            {
-                await _indexManager.CreateIndexAsync(settings.IndexName);
-                await ProcessContentItemsAsync(settings.IndexName);
-            }
-        }
-
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
@@ -115,7 +104,7 @@ namespace OrchardCore.Lucene
                 // Create a scope for the content manager
                 var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
 
-                await shellScope.UsingAsync(async scope =>
+                await shellScope.UsingServiceScopeAsync(async scope =>
                 {
                     // Load the next batch of tasks
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
