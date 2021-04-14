@@ -96,12 +96,12 @@ namespace OrchardCore.Lists.Services
                 .OrderByDescending(x => x.CreatedUtc);
 
             // Load items so that loading handlers are invoked.
-            var contentItems = await _contentManager.LoadAsync
+            var contentItemGroups = (await _contentManager.LoadAsync
             (
                 await containedItemsQuery.ListAsync()
-            );
+            ))
+                .ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
 
-            var contentItemGroups = contentItems.ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
             foreach (var contentItemGroup in contentItemGroups)
             {
                 var i = 0;
