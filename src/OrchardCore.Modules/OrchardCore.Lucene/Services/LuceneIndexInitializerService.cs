@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
@@ -28,14 +29,14 @@ namespace OrchardCore.Lucene
 
         public Task ActivatedAsync()
         {
-            if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
+            if (_shellSettings.State != TenantState.Uninitialized)
             {
                 ShellScope.AddDeferredTask(async scope =>
                 {
                     try
                     {
                         var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
-                        
+
                         foreach (var settings in luceneIndexSettings)
                         {
                             await _luceneIndexingService.CreateIndexAsync(settings);
