@@ -32,12 +32,19 @@ namespace OrchardCore.Lucene
             {
                 ShellScope.AddDeferredTask(async scope =>
                 {
-                    var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
-                    
-                    foreach (var settings in luceneIndexSettings)
+                    try
                     {
-                        await _luceneIndexingService.CreateIndexAsync(settings);
-                        await _luceneIndexingService.ProcessContentItemsAsync(settings.IndexName);
+                        var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
+                        
+                        foreach (var settings in luceneIndexSettings)
+                        {
+                            await _luceneIndexingService.CreateIndexAsync(settings);
+                            await _luceneIndexingService.ProcessContentItemsAsync(settings.IndexName);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "An error occurred while initializing a Lucene index.");
                     }
                 });
             }
