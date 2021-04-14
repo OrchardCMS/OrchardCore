@@ -263,15 +263,23 @@ namespace OrchardCore.Lucene.Controllers
                 return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(id))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
+
+            if (luceneIndexSettings != null)
             {
-                return NotFound();
+                if (!_luceneIndexManager.Exists(id))
+                {
+                    await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings);
+                    await _luceneIndexingService.ProcessContentItemsAsync(id);
+                }
+                else
+                {
+                    _luceneIndexingService.ResetIndex(id);
+                    await _luceneIndexingService.ProcessContentItemsAsync(id);
+                }
+
+                _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
             }
-
-            _luceneIndexingService.ResetIndex(id);
-            await _luceneIndexingService.ProcessContentItemsAsync(id);
-
-            _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -284,15 +292,19 @@ namespace OrchardCore.Lucene.Controllers
                 return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(id))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
+
+            if (luceneIndexSettings != null)
+            {
+                await _luceneIndexingService.RebuildIndexAsync(id);
+                await _luceneIndexingService.ProcessContentItemsAsync(id);
+
+                _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
+            }
+            else
             {
                 return NotFound();
             }
-
-            await _luceneIndexingService.RebuildIndexAsync(id);
-            await _luceneIndexingService.ProcessContentItemsAsync(id);
-
-            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -305,21 +317,25 @@ namespace OrchardCore.Lucene.Controllers
                 return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(model.IndexName))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(model.IndexName);
+
+            if (luceneIndexSettings != null)
+            {
+                try
+                {
+                    await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
+
+                    _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+                }
+                catch (Exception e)
+                {
+                    _notifier.Error(H["An error occurred while deleting the index."]);
+                    _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                }
+            }
+            else
             {
                 return NotFound();
-            }
-
-            try
-            {
-                await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
-
-                _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
-            }
-            catch (Exception e)
-            {
-                _notifier.Error(H["An error occurred while deleting the index."]);
-                _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
             }
 
             return RedirectToAction("Index");

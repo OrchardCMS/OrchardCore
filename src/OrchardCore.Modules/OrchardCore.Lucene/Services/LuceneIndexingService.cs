@@ -104,7 +104,7 @@ namespace OrchardCore.Lucene
                 // Create a scope for the content manager
                 var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
 
-                await shellScope.UsingAsync(async scope =>
+                await shellScope.UsingServiceScopeAsync(async scope =>
                 {
                     // Load the next batch of tasks
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
@@ -257,7 +257,11 @@ namespace OrchardCore.Lucene
         /// <returns></returns>
         public Task DeleteIndexAsync(string indexName)
         {
-            _indexManager.DeleteIndex(indexName);
+            if (_indexManager.Exists(indexName))
+            {
+                _indexManager.DeleteIndex(indexName);
+            }
+
             return _luceneIndexSettingsService.DeleteIndexAsync(indexName);
         }
 
@@ -276,7 +280,11 @@ namespace OrchardCore.Lucene
         /// </summary>
         public async Task RebuildIndexAsync(string indexName)
         {
-            _indexManager.DeleteIndex(indexName);
+            if (_indexManager.Exists(indexName))
+            {
+                _indexManager.DeleteIndex(indexName);
+            }
+            
             await _indexManager.CreateIndexAsync(indexName);
 
             ResetIndex(indexName);
