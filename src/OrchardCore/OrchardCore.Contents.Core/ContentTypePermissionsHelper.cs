@@ -44,6 +44,8 @@ namespace OrchardCore.Contents.Security
             { CommonPermissions.ListContent.Name, ListContent }
         };
 
+        public static Dictionary<ValueTuple<string, string>, Permission> PermissionsByType = new Dictionary<ValueTuple<string, string>, Permission>();
+
         /// <summary>
         /// Returns a dynamic permission for a content type, based on a global content permission template
         /// </summary>
@@ -65,7 +67,7 @@ namespace OrchardCore.Contents.Security
             return new Permission(
                 String.Format(template.Name, typeDefinition.Name),
                 String.Format(template.Description, typeDefinition.DisplayName),
-                (template.ImpliedBy ?? new Permission[0]).Select(t => CreateDynamicPermission(t, typeDefinition))
+                (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, typeDefinition))
             )
             {
                 Category = typeDefinition.DisplayName
@@ -77,11 +79,24 @@ namespace OrchardCore.Contents.Security
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, string contentType)
         {
-            return new Permission(
+            var key = new ValueTuple<string, string>(template.Name, contentType);
+
+            if (PermissionsByType.TryGetValue(key, out var permission))
+            {
+                return permission;
+            }
+
+            permission = new Permission(
                 String.Format(template.Name, contentType),
                 String.Format(template.Description, contentType),
                 (template.ImpliedBy ?? new Permission[0]).Select(t => CreateDynamicPermission(t, contentType))
             );
+
+            var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(PermissionsByType);
+            localPermissions[key] = permission;
+            PermissionsByType = localPermissions;
+
+            return permission;
         }
     }
 }

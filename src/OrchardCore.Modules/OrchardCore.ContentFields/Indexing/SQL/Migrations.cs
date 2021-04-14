@@ -1,10 +1,12 @@
 using System;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Modules;
 using YesSql.Sql;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
 {
+    [Feature("OrchardCore.ContentFields.Indexing.SQL")]
     public class Migrations : DataMigration
     {
         public int Create()
@@ -243,7 +245,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
-                .Column<DateTime>("Time", column => column.Nullable())
+                .Column<TimeSpan>("Time", column => column.Nullable())
             );
 
             SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
@@ -396,7 +398,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 4;
+            return 5;
         }
 
         // This code can be removed in a later version.
@@ -699,6 +701,30 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             return 4;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom4()
+        {
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .DropIndex("IDX_TimeFieldIndex_DocumentId_Time")
+            );
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .DropColumn("Time"));
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .AddColumn<TimeSpan>("Time", column => column.Nullable()));
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId_Time",
+                    "DocumentId",
+                    "Time",
+                    "Published",
+                    "Latest")
+            );
+
+            return 5;
         }
     }
 }

@@ -9123,7 +9123,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       var out = [];
 
       for (var i = 0; i < ranges.length; i++) {
-        out[i] = new Range(_clipPos(this, ranges[i].anchor), _clipPos(this, ranges[i].head));
+        out[i] = new Range(_clipPos(this, ranges[i].anchor), _clipPos(this, ranges[i].head || ranges[i].anchor));
       }
 
       if (primary == null) {
@@ -13187,6 +13187,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var input = this,
         cm = input.cm;
     var div = input.div = display.lineDiv;
+    div.contentEditable = true;
     disableBrowserMagic(div, cm.options.spellcheck, cm.options.autocorrect, cm.options.autocapitalize);
 
     function belongsToInput(e) {
@@ -14650,6 +14651,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.59.3";
+  CodeMirror.version = "5.60.0";
   return CodeMirror;
 });

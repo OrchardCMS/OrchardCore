@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <!-- NuGet properties-->
     <Title>OrchardCore Data</Title>
     <Description>$(OCCMSDescription)
@@ -20,10 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YesSql.Provider.SqlServer" />
-    <PackageReference Include="YesSql.Provider.MySql" />
-    <PackageReference Include="YesSql.Provider.SqLite" />
-    <PackageReference Include="YesSql.Provider.PostgreSql" />
+    <PackageReference Include="YesSql" />
   </ItemGroup>
 
 </Project>

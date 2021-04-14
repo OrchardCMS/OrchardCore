@@ -198,8 +198,8 @@ namespace OrchardCore.Layers.Controllers
                 layers.Layers.Add(layer);
 
                 await (model.AdminLayers
-                    ? _adminLayerService.UpdateAsync(layers.Layers)
-                    : _layerService.UpdateAsync(layers.Layers));
+                    ? _adminLayerService.UpdateAsync(layers)
+                    : _layerService.UpdateAsync(layers));
 
                 return model.AdminLayers 
                     ? RedirectToAction("Admin")
@@ -288,8 +288,8 @@ namespace OrchardCore.Layers.Controllers
                 layer.Description = model.Description;
 
                 await (model.AdminLayers
-                    ? _adminLayerService.UpdateAsync(layers.Layers)
-                    : _layerService.UpdateAsync(layers.Layers));
+                    ? _adminLayerService.UpdateAsync(layers)
+                    : _layerService.UpdateAsync(layers));
 
                 return model.AdminLayers 
                     ? RedirectToAction("Admin")
@@ -331,8 +331,8 @@ namespace OrchardCore.Layers.Controllers
             {
                 layers.Layers.Remove(layer);
                 await (adminLayers 
-                    ? _adminLayerService.UpdateAsync(layers.Layers)
-                    : _layerService.UpdateAsync(layers.Layers));
+                    ? _adminLayerService.UpdateAsync(layers)
+                    : _layerService.UpdateAsync(layers));
 
                 _notifier.Success(H["Layer deleted successfully."]);
             }
@@ -405,6 +405,8 @@ namespace OrchardCore.Layers.Controllers
             }
 
             // The state will be updated once the ambient session is committed.
+
+            // TODO admin vs..
             await _layerStateManager.UpdateAsync(new LayerState());
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")

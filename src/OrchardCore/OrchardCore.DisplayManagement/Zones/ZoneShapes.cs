@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Zones
             var htmlContentBuilder = new HtmlContentBuilder();
             foreach (var item in Shape)
             {
-                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(item));
+                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
             }
 
             return htmlContentBuilder;
@@ -48,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Zones
             {
                 foreach (var item in shapes)
                 {
-                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(item));
+                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
                 }
 
                 return htmlContentBuilder;
@@ -111,6 +111,8 @@ namespace OrchardCore.DisplayManagement.Zones
                     m.Groupings = orderedGroupings;
                 });
 
+                container.Classes.Add("accordion");
+
                 foreach (var orderedGrouping in orderedGroupings)
                 {
                     var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Tab", m =>
@@ -121,9 +123,10 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     foreach (var item in orderedGrouping)
                     {
-                        groupingShape.Add(item);
+                        await groupingShape.AddAsync(item);
                     }
-                    container.Add(groupingShape);
+
+                    await container.AddAsync(groupingShape);
                 }
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
@@ -136,6 +139,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     m.Identifier = identifier;
                     m.Grouping = groupings.ElementAt(0);
                 });
+
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(cardGrouping));
             }
 
@@ -200,6 +204,8 @@ namespace OrchardCore.DisplayManagement.Zones
                     m.Identifier = Shape.Identifier;
                 });
 
+                container.Classes.Add("accordion");
+
                 foreach (var orderedGrouping in orderedGroupings)
                 {
                     var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Card", m =>
@@ -210,9 +216,10 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     foreach (var item in orderedGrouping)
                     {
-                        groupingShape.Add(item);
+                        await groupingShape.AddAsync(item);
                     }
-                    container.Add(groupingShape);
+
+                    await container.AddAsync(groupingShape);
                 }
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
@@ -321,9 +328,9 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     foreach (var item in orderedGrouping)
                     {
-                        groupingShape.Add(item);
+                        await groupingShape.AddAsync(item);
                     }
-                    container.Add(groupingShape);
+                    await container.AddAsync(groupingShape);
                 }
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
@@ -333,7 +340,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 // When nothing is grouped in a column, the grouping is rendered directly.
                 foreach (var item in Shape.Grouping)
                 {
-                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(item));
+                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
                 }
             }
 

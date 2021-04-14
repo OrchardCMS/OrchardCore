@@ -93,14 +93,14 @@ namespace OrchardCore.Layers.Services
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
-                dynamic layout = await _layoutAccessor.GetLayoutAsync();
+                var layout = await _layoutAccessor.GetLayoutAsync();
                 var updater = _modelUpdaterAccessor.ModelUpdater;
 
                 var layersCache = new Dictionary<string, bool>();
 
                 foreach (var widget in widgets)
                 {
-                    var layer = widget.Layer != null ? layers[widget.Layer] : null;
+                    var layer = widget.Layer != null && layers.TryGetValue(widget.Layer, out var widgetLayer) ? widgetLayer : null;
 
                     if (layer == null)
                     {
@@ -136,14 +136,7 @@ namespace OrchardCore.Layers.Services
 
                     var contentZone = layout.Zones[widget.Zone];
 
-                    if (contentZone is ZoneOnDemand zoneOnDemand)
-                    {
-                        await zoneOnDemand.AddAsync(wrapper);
-                    }
-                    else if (contentZone is Shape shape)
-                    {
-                        shape.Add(wrapper);
-                    }
+                    await contentZone.AddAsync(wrapper, "");                    
                 }
             }
 

@@ -17,7 +17,7 @@ Our team members also monitor other discussion forums:
 
 We accept fixes and features! Here are some resources to help you get started on how to contribute code or new content.
 
-* Look at the [documentation](/docs/).
+* Look at the [documentation](/src/docs/).
 * ["Help wanted" issues](https://github.com/orchardcms/orchardcore/labels/help%20wanted) - these issues are up for grabs. Comment on an issue if you want to create a fix.
 * ["Good first issue" issues](https://github.com/orchardcms/orchardcore/labels/good%20first%20issue) - we think these are a good for newcomers.
 

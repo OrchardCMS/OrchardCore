@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Settings;
@@ -141,8 +142,8 @@ namespace OrchardCore.Layers.Controllers
                 _conditionIdGenerator.GenerateUniqueId(condition);
                 conditionGroup.Conditions.Add(condition);
                 await (model.Admin
-                    ? _adminLayerService.UpdateAsync(layers.Layers)
-                    : _layerService.UpdateAsync(layers.Layers));
+                    ? _adminLayerService.UpdateAsync(layers)
+                    : _layerService.UpdateAsync(layers));
 
                 _notifier.Success(H["Condition added successfully."]);
                 return RedirectToAction("Edit", "Admin", new { name = model.Name });
@@ -220,8 +221,8 @@ namespace OrchardCore.Layers.Controllers
             if (ModelState.IsValid)
             {
                 await (model.Admin 
-                    ? _adminLayerService.UpdateAsync(layers.Layers)
-                    : _layerService.UpdateAsync(layers.Layers));
+                    ? _adminLayerService.UpdateAsync(layers)
+                    : _layerService.UpdateAsync(layers));
 
                 _notifier.Success(H["Condition updated successfully."]);
                 return RedirectToAction("Edit", "Admin", new { name = model.Name });
@@ -242,7 +243,7 @@ namespace OrchardCore.Layers.Controllers
                 return Forbid();
             }
 
-            var layers = admin 
+            LayersDocument layers = admin 
                 ? await _adminLayerService.LoadLayersAsync()
                 : await _layerService.LoadLayersAsync();
 
@@ -263,8 +264,8 @@ namespace OrchardCore.Layers.Controllers
 
             conditionParent.Conditions.Remove(condition);
             await (admin 
-                ? _adminLayerService.UpdateAsync(layers.Layers)
-                : _layerService.UpdateAsync(layers.Layers));
+                ? _adminLayerService.UpdateAsync(layers)
+                : _layerService.UpdateAsync(layers));
 
             _notifier.Success(H["Condition deleted successfully."]);
 
@@ -278,7 +279,7 @@ namespace OrchardCore.Layers.Controllers
                 return Forbid();
             }
 
-            var layers = admin 
+            LayersDocument layers = admin 
                 ? await _adminLayerService.LoadLayersAsync()
                 : await _layerService.LoadLayersAsync();
 
@@ -302,8 +303,8 @@ namespace OrchardCore.Layers.Controllers
             toGroupCondition.Conditions.Insert(toPosition, condition);
 
             await (admin 
-                ? _adminLayerService.UpdateAsync(layers.Layers)
-                : _layerService.UpdateAsync(layers.Layers));
+                ? _adminLayerService.UpdateAsync(layers)
+                : _layerService.UpdateAsync(layers));
 
             return Ok();  
         }

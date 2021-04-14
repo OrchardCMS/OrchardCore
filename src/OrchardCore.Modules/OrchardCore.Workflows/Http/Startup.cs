@@ -20,15 +20,16 @@ using OrchardCore.Workflows.Services;
 namespace OrchardCore.Workflows.Http
 {
     [Feature("OrchardCore.Workflows.Http")]
-    [RequireFeatures("OrchardCore.Workflows")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MvcOptions>((options) =>
+            services.Configure<MvcOptions>(o =>
             {
-                options.Filters.Add(typeof(WorkflowActionFilter));
+                o.Filters.Add(typeof(WorkflowActionFilter));
             });
+
+            services.AddLiquidFilter<SignalUrlFilter>("signal_url");
 
             services.AddScoped<IWorkflowTypeEventHandler, WorkflowTypeRoutesHandler>();
             services.AddScoped<IWorkflowHandler, WorkflowRoutesHandler>();
@@ -46,9 +47,6 @@ namespace OrchardCore.Workflows.Http
             services.AddActivity<SignalEvent, SignalEventDisplayDriver>();
 
             services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
-
-            services.AddScoped<ILiquidTemplateEventHandler, SignalLiquidTemplateHandler>();
-            services.AddLiquidFilter<SignalUrlFilter>("signal_url");
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

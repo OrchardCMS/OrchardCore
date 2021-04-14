@@ -57,11 +57,11 @@ namespace OrchardCore.Layers.Services
         /// <summary>
         /// Updates the store with the provided layers document and then updates the cache.
         /// </summary>
-        public async Task UpdateAsync(List<Layer> layers)
+        public async Task UpdateAsync(LayersDocument layers)
         {
             var existing = await LoadLayersAsync();
-            existing.Layers = layers;
-            await _documentManager.UpdateAsync(existing);
+            existing.Layers = layers.Layers;
+            await _documentManager.UpdateAsync(layers);
         }
     }
 }

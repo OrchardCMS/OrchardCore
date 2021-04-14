@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Fluid;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using OrchardCore.DisplayManagement.Liquid.Internal;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.FileProviders;
@@ -20,8 +21,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         private static List<string> _sharedPaths;
         private static object _synLock = new object();
 
-        public LiquidViewsFeatureProvider(
-            ILiquidViewFileProviderAccessor fileProviderAccessor)
+        public LiquidViewsFeatureProvider(IOptions<TemplateOptions> templateOptions)
         {
             if (_sharedPaths != null)
             {
@@ -34,7 +34,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     _sharedPaths = new List<string>();
 
-                    var filePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
+                    var filePaths = templateOptions.Value.FileProvider.GetViewFilePaths(
                         Application.ModulesPath, new[] { LiquidViewTemplate.ViewExtension },
                         LiquidViewTemplate.ViewsFolder);
 

@@ -17,7 +17,7 @@ You will build Docker images and containers from command shell using `docker` an
 
 ## Dockerfile
 
-The Dockerfile that is provided in the Orchard Core source code is using an intermediate image to build Orchard Core in a specific environment which contains the .NET core SDK. Then we create the "real" image by using only the ASP.NET core runtime.
+The Dockerfile that is provided in the Orchard Core source code is using an intermediate image to build Orchard Core in a specific environment which contains the .NET SDK. Then we create the "real" image by using only the ASP.NET core runtime.
 
 ```dockerfile
 # Create an intermediate image using .NET Core SDK

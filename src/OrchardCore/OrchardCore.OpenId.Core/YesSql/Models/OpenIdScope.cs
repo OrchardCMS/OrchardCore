@@ -7,6 +7,11 @@ namespace OrchardCore.OpenId.YesSql.Models
     public class OpenIdScope
     {
         /// <summary>
+        /// The name of the collection that is used for this type.
+        /// </summary>
+        public const string OpenIdCollection = "OpenId";
+        
+        /// <summary>
         /// Gets or sets the unique identifier associated with the current scope.
         /// </summary>
         public string ScopeId { get; set; }
