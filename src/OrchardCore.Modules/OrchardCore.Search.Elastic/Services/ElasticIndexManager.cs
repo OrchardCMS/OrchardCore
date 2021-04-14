@@ -62,17 +62,22 @@ namespace OrchardCore.Search.Elastic
 
         public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
         {
+            bool success = true;
             List<ElasticDocument> documents = new List<ElasticDocument>();
             foreach (var contentItemId in contentItemIds)
             {
                 documents.Add(CreateElasticDocument(contentItemId));
             }
-            var result = await _elasticClient.DeleteManyAsync(documents, indexName);
-            if (result.Errors)
+            if(documents.Any())
             {
-                _logger.LogWarning($"There were issues deleting documents from Elastic search. {result.OriginalException}");
+                var result = await _elasticClient.DeleteManyAsync(documents, indexName);
+                if (result.Errors)
+                {
+                    _logger.LogWarning($"There were issues deleting documents from Elastic search. {result.OriginalException}");
+                }
+                success = result.IsValid;
             }
-            return result.IsValid;
+            return success;
         }
 
         public async Task<bool> DeleteIndex(string indexName)
@@ -106,10 +111,13 @@ namespace OrchardCore.Search.Elastic
             {
                 documents.Add(CreateElasticDocument(indexDocument));
             }
-            var result = await _elasticClient.IndexManyAsync(documents, indexName);
-            if (result.Errors)
+            if(documents.Any())
             {
-                _logger.LogWarning($"There were issues reported indexing the documents. {result.ServerError}");
+                var result = await _elasticClient.IndexManyAsync(documents, indexName);
+                if (result.Errors)
+                {
+                    _logger.LogWarning($"There were issues reported indexing the documents. {result.ServerError}");
+                }
             }
         }
 
