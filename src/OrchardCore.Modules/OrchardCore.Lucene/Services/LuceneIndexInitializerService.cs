@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Lucene
@@ -25,25 +27,30 @@ namespace OrchardCore.Lucene
             _logger = logger;
         }
 
-        public async Task ActivatedAsync()
+        public Task ActivatedAsync()
         {
-            if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
+            if (_shellSettings.State != TenantState.Uninitialized)
             {
-                try
+                ShellScope.AddDeferredTask(async scope =>
                 {
-                    var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
-                    
-                    foreach (var settings in luceneIndexSettings)
+                    try
                     {
-                        await _luceneIndexingService.CreateIndexAsync(settings);
-                        await _luceneIndexingService.ProcessContentItemsAsync(settings.IndexName);
+                        var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
+
+                        foreach (var settings in luceneIndexSettings)
+                        {
+                            await _luceneIndexingService.CreateIndexAsync(settings);
+                            await _luceneIndexingService.ProcessContentItemsAsync(settings.IndexName);
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "An error occurred while initializing a Lucene index.");
-                }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "An error occurred while initializing a Lucene index.");
+                    }
+                });
             }
+
+            return Task.CompletedTask;
         }
 
         public Task ActivatingAsync()
