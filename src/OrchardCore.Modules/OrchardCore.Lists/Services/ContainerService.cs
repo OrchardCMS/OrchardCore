@@ -95,8 +95,13 @@ namespace OrchardCore.Lists.Services
                 .With<ContentItemIndex>(ci => ci.Latest || ci.Published)
                 .OrderByDescending(x => x.CreatedUtc);
 
-            var contentItemGroups = (await containedItemsQuery.ListAsync()).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
+            // Load items so that loading handlers are invoked.
+            var contentItems = await _contentManager.LoadAsync
+            (
+                await containedItemsQuery.ListAsync()
+            );
 
+            var contentItemGroups = contentItems.ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
             foreach (var contentItemGroup in contentItemGroups)
             {
                 var i = 0;
@@ -186,7 +191,11 @@ namespace OrchardCore.Lists.Services
                 // syntactically incorrect.
                 query.Take(pager.PageSize + 1);
 
-                var containedItems = await query.ListAsync();
+                // Load items so that loading handlers are invoked.
+                var containedItems = await _contentManager.LoadAsync
+                (
+                    await query.ListAsync()
+                );
 
                 if (!containedItems.Any())
                 {
@@ -242,7 +251,11 @@ namespace OrchardCore.Lists.Services
 
                 query.Take(pager.PageSize + 1);
 
-                var containedItems = await query.ListAsync();
+                // Load items so that loading handlers are invoked.
+                var containedItems = await _contentManager.LoadAsync
+                (
+                    await query.ListAsync()
+                );
 
                 if (!containedItems.Any())
                 {
@@ -295,7 +308,11 @@ namespace OrchardCore.Lists.Services
 
                 query.Take(pager.PageSize + 1);
 
-                var containedItems = await query.ListAsync();
+                // Load items so that loading handlers are invoked.
+                var containedItems = await _contentManager.LoadAsync
+                (
+                    await query.ListAsync()
+                );
 
                 if (!containedItems.Any())
                 {

@@ -175,6 +175,14 @@ namespace OrchardCore.ContentManagement
             return results;
         }
 
+        public static async IAsyncEnumerable<ContentItem> LoadAsync(this IContentManager contentManager, IAsyncEnumerable<ContentItem> contentItems)
+        {
+            await foreach (var contentItem in contentItems)
+            {
+                yield return await contentManager.LoadAsync(contentItem);
+            }
+        }
+
         public static async Task<ContentValidateResult> UpdateValidateAndCreateAsync(this IContentManager contentManager, ContentItem contentItem, VersionOptions options)
         {
             await contentManager.UpdateAsync(contentItem);
