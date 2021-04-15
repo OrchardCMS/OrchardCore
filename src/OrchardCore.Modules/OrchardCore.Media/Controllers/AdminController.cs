@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
+        private readonly IFileVersionProvider _fileVersionProvider;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
         private readonly MediaOptions _mediaOptions;
@@ -35,6 +37,7 @@ namespace OrchardCore.Media.Controllers
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
             IOptions<MediaOptions> options,
+            IFileVersionProvider fileVersionProvider,
             ILogger<AdminController> logger,
             IStringLocalizer<AdminController> stringLocalizer
             )
@@ -45,6 +48,7 @@ namespace OrchardCore.Media.Controllers
             _contentTypeProvider = contentTypeProvider;
             _mediaOptions = options.Value;
             _allowedFileExtensions = _mediaOptions.AllowedFileExtensions;
+            _fileVersionProvider = fileVersionProvider;
             _logger = logger;
             S = stringLocalizer;
         }
@@ -414,7 +418,8 @@ namespace OrchardCore.Media.Controllers
                 size = mediaFile.Length,
                 lastModify = mediaFile.LastModifiedUtc.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
                 folder = mediaFile.DirectoryPath,
-                url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
+                // TODO setting.
+                url = _fileVersionProvider.AddFileVersionToPath(HttpContext.Request.PathBase, _mediaFileStore.MapPathToPublicUrl(mediaFile.Path)),
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream",
                 mediaText = String.Empty,
