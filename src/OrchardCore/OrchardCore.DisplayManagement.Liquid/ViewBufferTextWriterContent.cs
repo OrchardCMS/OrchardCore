@@ -231,5 +231,27 @@ namespace OrchardCore.DisplayManagement.Liquid
             // Override since the base implementation does unnecessary work
             return Task.CompletedTask;
         }
+
+        #region Async Methods
+
+        public override Task WriteAsync(string value)
+        {
+            Write(value);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteAsync(char value)
+        {
+            Write(value);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteAsync(char[] buffer, int index, int count)
+        {
+            Write(buffer, index, count);
+            return Task.CompletedTask;
+        }
+
+        #endregion
     }
 }
