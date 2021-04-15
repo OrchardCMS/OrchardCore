@@ -63,7 +63,7 @@ To customize this template
 
 This template will only render the `LiquidPart`, and will override the default widget template.
 
-You could also choice to render the widget sizing classes.
+You could also choose to render the widget sizing classes.
 
 ``` liquid
 <article class="{{ Model.Classes | join: " " }}">
