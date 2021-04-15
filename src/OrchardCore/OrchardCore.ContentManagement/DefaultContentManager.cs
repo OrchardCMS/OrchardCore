@@ -147,7 +147,6 @@ namespace OrchardCore.ContentManagement
 
                 if (storedItems != null)
                 {
-
                     contentItems.AddRange(storedItems);
                 }
             }
