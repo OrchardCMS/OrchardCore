@@ -137,7 +137,6 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="contentItem">The content instance filled with all necessary data</param>
-
         public static Task CreateAsync(this IContentManager contentManager, ContentItem contentItem)
         {
             return contentManager.CreateAsync(contentItem, VersionOptions.Published);

@@ -232,10 +232,7 @@ namespace OrchardCore.Contents.Controllers
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
 
             // Load items so that loading handlers are invoked.
-            var pageOfContentItems = _contentManager.LoadAsync
-            (
-                query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToAsyncEnumerable()
-            );
+            var pageOfContentItems = query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToAsyncEnumerable(_contentManager);
 
             // We prepare the content items SummaryAdmin shape
             var contentItemSummaries = new List<dynamic>();
@@ -281,11 +278,7 @@ namespace OrchardCore.Contents.Controllers
             if (itemIds?.Count() > 0)
             {
                 // Load items so that loading handlers are invoked.
-                var checkedContentItems = _contentManager.LoadAsync
-                (
-                    _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Latest).ToAsyncEnumerable()
-                );
-
+                var checkedContentItems = _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Latest).ToAsyncEnumerable(_contentManager);
                 switch (options.BulkAction)
                 {
                     case ContentsBulkAction.None:

@@ -96,11 +96,7 @@ namespace OrchardCore.Lists.Services
                 .OrderByDescending(x => x.CreatedUtc);
 
             // Load items so that loading handlers are invoked.
-            var contentItemGroups = (await _contentManager.LoadAsync
-            (
-                await containedItemsQuery.ListAsync()
-            ))
-                .ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
+            var contentItemGroups = (await containedItemsQuery.ListAsync(_contentManager)).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
 
             foreach (var contentItemGroup in contentItemGroups)
             {
@@ -192,10 +188,7 @@ namespace OrchardCore.Lists.Services
                 query.Take(pager.PageSize + 1);
 
                 // Load items so that loading handlers are invoked.
-                var containedItems = await _contentManager.LoadAsync
-                (
-                    await query.ListAsync()
-                );
+                var containedItems = await query.ListAsync(_contentManager);
 
                 if (!containedItems.Any())
                 {
@@ -252,10 +245,7 @@ namespace OrchardCore.Lists.Services
                 query.Take(pager.PageSize + 1);
 
                 // Load items so that loading handlers are invoked.
-                var containedItems = await _contentManager.LoadAsync
-                (
-                    await query.ListAsync()
-                );
+                var containedItems = await query.ListAsync(_contentManager);
 
                 if (!containedItems.Any())
                 {
@@ -309,10 +299,7 @@ namespace OrchardCore.Lists.Services
                 query.Take(pager.PageSize + 1);
 
                 // Load items so that loading handlers are invoked.
-                var containedItems = await _contentManager.LoadAsync
-                (
-                    await query.ListAsync()
-                );
+                var containedItems = await query.ListAsync(_contentManager);
 
                 if (!containedItems.Any())
                 {
