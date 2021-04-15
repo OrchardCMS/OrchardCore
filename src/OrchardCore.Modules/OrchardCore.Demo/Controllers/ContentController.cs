@@ -68,7 +68,7 @@ namespace OrchardCore.Demo.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                await _session.CancelAsync();
                 return View("Edit", shape);
             }
 

@@ -459,6 +459,8 @@ namespace OrchardCore.ContentManagement
         {
             var skip = 0;
 
+            var importedVersionIds = new HashSet<string>();
+
             var batchedContentItems = contentItems.Take(ImportBatchSize);
 
             while (batchedContentItems.Any())
@@ -491,6 +493,14 @@ namespace OrchardCore.ContentManagement
                     ContentItem originalVersion = null;
                     if (!String.IsNullOrEmpty(importingItem.ContentItemVersionId))
                     {
+                        if (importedVersionIds.Contains(importingItem.ContentItemVersionId))
+                        {
+                            _logger.LogInformation("Duplicate content item version id '{ContentItemVersionId}' skipped", importingItem.ContentItemVersionId);
+                            continue;
+                        }
+
+                        importedVersionIds.Add(importingItem.ContentItemVersionId);
+
                         originalVersion = versionsToUpdate.FirstOrDefault(x => String.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
                     }
 
@@ -596,7 +606,7 @@ namespace OrchardCore.ContentManagement
 
             if (!validateContext.ContentValidateResult.Succeeded)
             {
-                _session.Cancel();
+                await _session.CancelAsync();
             }
 
             return validateContext.ContentValidateResult;
@@ -880,7 +890,7 @@ namespace OrchardCore.ContentManagement
 
             if (latestVersion != null)
             {
-                var publishedVersion = evictionVersions.FirstOrDefault(x => x.Published);
+                var publishedVersion = evictionVersions?.FirstOrDefault(x => x.Published);
 
                 var removeContext = new RemoveContentContext(contentItem, publishedVersion == null);
 

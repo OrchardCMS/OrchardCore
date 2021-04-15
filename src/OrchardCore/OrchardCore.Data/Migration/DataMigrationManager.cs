@@ -166,7 +166,7 @@ namespace OrchardCore.Data.Migration
             // apply update methods to each migration class for the module
             foreach (var migration in migrations)
             {
-                var schemaBuilder = new SchemaBuilder(_store.Configuration, await _session.DemandAsync());
+                var schemaBuilder = new SchemaBuilder(_store.Configuration, await _session.BeginTransactionAsync());
                 migration.SchemaBuilder = schemaBuilder;
 
                 // copy the object for the Linq query
@@ -241,7 +241,7 @@ namespace OrchardCore.Data.Migration
                 {
                     _logger.LogError(ex, "Error while running migration version {Version} for '{FeatureName}'.", current, featureId);
 
-                    _session.Cancel();
+                    await _session.CancelAsync();
                 }
                 finally
                 {

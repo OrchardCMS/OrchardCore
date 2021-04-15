@@ -55,6 +55,7 @@
         "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
@@ -85,85 +86,6 @@
     {
       "name": "ContentDefinition",
       "ContentTypes": [
-        {
-          "Name": "LiquidPage",
-          "DisplayName": "Liquid Page",
-          "Hidden": false,
-          "Settings": {
-            "ContentTypeSettings": {
-              "Creatable": true,
-              "Draftable": true,
-              "Versionable": true,
-              "Listable": true
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPage",
-              "Name": "LiquidPage",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "AutoroutePartSettings": {
-                  "AllowCustomPath": true,
-                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
-                  "ShowHomepageOption": true
-                },
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
-            },
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "3"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "HtmlWidget",
-          "DisplayName": "Html",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "HtmlWidget",
-              "Name": "HtmlWidget",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
         {
           "Name": "Page",
           "DisplayName": "Page",
@@ -495,13 +417,50 @@
           ]
         },
         {
+          "Name": "HtmlWidget",
+          "DisplayName": "Html",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "HtmlWidget",
+              "Name": "HtmlWidget",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blockquote",
+          "DisplayName": "Blockquote",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Blockquote",
+              "Name": "Blockquote",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
           "Name": "Container",
           "DisplayName": "Container",
           "Settings": {
             "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -527,81 +486,10 @@
           ]
         },
         {
-          "Name": "Blockquote",
-          "DisplayName": "Blockquote",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Blockquote",
-              "Name": "Blockquote",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "ImageWidget",
-          "DisplayName": "Image",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Image",
-              "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidWidget",
-          "DisplayName": "Liquid",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
           "Name": "Image",
           "DisplayName": "Image",
           "Settings": {
             "ContentTypeSettings": {
-              "Versionable": true,
-              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -631,9 +519,6 @@
           "DisplayName": "Paragraph",
           "Settings": {
             "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -651,39 +536,6 @@
         }
       ],
       "ContentParts": [
-        {
-          "Name": "HtmlWidget",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "HtmlField",
-              "Name": "Content",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Content",
-                  "Editor": "Multiline",
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "MenuItem",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Link",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Link",
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
         {
           "Name": "Service",
           "Settings": {},
@@ -866,6 +718,23 @@
           ]
         },
         {
+          "Name": "HtmlWidget",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Content",
+                  "Editor": "Multiline",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
           "Name": "Blockquote",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [
@@ -968,12 +837,30 @@
       "Layers": [
         {
           "Name": "Always",
-          "Rule": "true",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
           "Name": "Homepage",
-          "Rule": "isHomepage()",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -1072,6 +959,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Services",
                 "LinkMenuItemPart": {
                   "Name": "Services",
                   "Url": "~/#services"
@@ -1080,6 +968,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Portfolio",
                 "LinkMenuItemPart": {
                   "Name": "Portfolio",
                   "Url": "~/#portfolio"
@@ -1088,6 +977,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "About",
                 "LinkMenuItemPart": {
                   "Name": "About",
                   "Url": "~/#about"
@@ -1096,6 +986,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Team",
                 "LinkMenuItemPart": {
                   "Name": "Team",
                   "Url": "~/#team"
@@ -1104,6 +995,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Contact",
                 "LinkMenuItemPart": {
                   "Name": "Contact",
                   "Url": "~/#contact"

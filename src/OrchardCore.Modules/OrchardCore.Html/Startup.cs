@@ -17,13 +17,10 @@ namespace OrchardCore.Html
 {
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<HtmlBodyPartViewModel>();
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o => o.MemberAccessStrategy.Register<HtmlBodyPartViewModel>());
+
             // Body Part
             services.AddContentPart<HtmlBodyPart>()
                 .UseDisplayDriver<HtmlBodyPartDisplayDriver>()
@@ -31,6 +28,7 @@ namespace OrchardCore.Html
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartTrumbowygEditorSettingsDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartMonacoEditorSettingsDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();
         }

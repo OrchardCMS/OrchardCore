@@ -91,7 +91,7 @@ else
                 var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
                 if (enableOrdering)
                 {
-                    contentItemSummary.Selectors.Add(await New.ListPart_Sortable());
+                    await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
                 }
                 <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)

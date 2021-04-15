@@ -170,10 +170,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           if (token && token.apply) token = token(matches);
 
           if (matches.length > 2 && rule.token && typeof rule.token != "string") {
-            state.pending = [];
-
             for (var j = 2; j < matches.length; j++) {
-              if (matches[j]) state.pending.push({
+              if (matches[j]) (state.pending || (state.pending = [])).push({
                 text: matches[j],
                 token: rule.token[j - 1]
               });

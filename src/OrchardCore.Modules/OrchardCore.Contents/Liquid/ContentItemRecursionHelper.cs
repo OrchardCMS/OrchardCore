@@ -1,14 +1,9 @@
-using System;
 using System.Collections.Generic;
 using OrchardCore.ContentManagement;
-using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    /// <summary>
-    /// Prevents a content item being called by an implementation of a <see cref="ILiquidFilter"/> recursivly.
-    /// </summary>
-    public interface IContentItemRecursionHelper<T> where T : ILiquidFilter
+    public interface IContentItemRecursionHelper<T>
     {
         /// <summary>
         /// Returns <see langword="True"/> when the <see cref="ContentItem"/> has already been evaluated during this request by the particular filter./>
@@ -17,7 +12,7 @@ namespace OrchardCore.Contents.Liquid
     }
 
     /// <inheritdocs />
-    public class ContentItemRecursionHelper<T> : IContentItemRecursionHelper<T> where T : ILiquidFilter
+    public class ContentItemRecursionHelper<T> : IContentItemRecursionHelper<T>
     {
         private Dictionary<ContentItem, int> _recursions = new Dictionary<ContentItem, int>();
 

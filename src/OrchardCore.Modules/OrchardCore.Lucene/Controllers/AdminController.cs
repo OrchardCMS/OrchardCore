@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
@@ -48,6 +50,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
+        private readonly IOptions<TemplateOptions> _templateOptions;
 
         public AdminController(
             ISession session,
@@ -65,7 +68,8 @@ namespace OrchardCore.Lucene.Controllers
             JavaScriptEncoder javaScriptEncoder,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger,
+            IOptions<TemplateOptions> templateOptions)
         {
             _session = session;
             _luceneIndexManager = luceneIndexManager;
@@ -84,6 +88,7 @@ namespace OrchardCore.Lucene.Controllers
             S = stringLocalizer;
             H = htmlLocalizer;
             _logger = logger;
+            _templateOptions = templateOptions;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -258,15 +263,23 @@ namespace OrchardCore.Lucene.Controllers
                 return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(id))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
+
+            if (luceneIndexSettings != null)
             {
-                return NotFound();
+                if (!_luceneIndexManager.Exists(id))
+                {
+                    await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings);
+                    await _luceneIndexingService.ProcessContentItemsAsync(id);
+                }
+                else
+                {
+                    _luceneIndexingService.ResetIndex(id);
+                    await _luceneIndexingService.ProcessContentItemsAsync(id);
+                }
+
+                _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
             }
-
-            _luceneIndexingService.ResetIndex(id);
-            await _luceneIndexingService.ProcessContentItemsAsync(id);
-
-            _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -279,15 +292,19 @@ namespace OrchardCore.Lucene.Controllers
                 return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(id))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
+
+            if (luceneIndexSettings != null)
+            {
+                await _luceneIndexingService.RebuildIndexAsync(id);
+                await _luceneIndexingService.ProcessContentItemsAsync(id);
+
+                _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
+            }
+            else
             {
                 return NotFound();
             }
-
-            await _luceneIndexingService.RebuildIndexAsync(id);
-            await _luceneIndexingService.ProcessContentItemsAsync(id);
-
-            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -300,21 +317,25 @@ namespace OrchardCore.Lucene.Controllers
                 return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(model.IndexName))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(model.IndexName);
+
+            if (luceneIndexSettings != null)
+            {
+                try
+                {
+                    await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
+
+                    _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+                }
+                catch (Exception e)
+                {
+                    _notifier.Error(H["An error occurred while deleting the index."]);
+                    _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                }
+            }
+            else
             {
                 return NotFound();
-            }
-
-            try
-            {
-                await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
-
-                _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
-            }
-            catch (Exception e)
-            {
-                _notifier.Error(H["An error occurred while deleting the index."]);
-                _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
             }
 
             return RedirectToAction("Index");
@@ -370,15 +391,9 @@ namespace OrchardCore.Lucene.Controllers
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(model.IndexName));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
-                var templateContext = _liquidTemplateManager.Context;
                 var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
-                foreach (var parameter in parameters)
-                {
-                    templateContext.SetValue(parameter.Key, parameter.Value);
-                }
-
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, _javaScriptEncoder);
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
 
                 try
                 {

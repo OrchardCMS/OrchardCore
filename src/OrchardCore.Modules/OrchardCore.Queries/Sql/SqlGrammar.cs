@@ -27,6 +27,8 @@ namespace OrchardCore.Queries.Sql
             var BY = ToTerm("BY");
             var TRUE = ToTerm("TRUE");
             var FALSE = ToTerm("FALSE");
+            var AND = ToTerm("AND");
+            var OVER = ToTerm("OVER");
 
             //Non-terminals
             var Id = new NonTerminal("Id");
@@ -58,6 +60,9 @@ namespace OrchardCore.Queries.Sql
             var joinChainOpt = new NonTerminal("joinChainOpt");
             var joinStatement = new NonTerminal("joinStatement");
             var joinKindOpt = new NonTerminal("joinKindOpt");
+            var joinConditions = new NonTerminal("joinConditions");
+            var joinCondition = new NonTerminal("joinCondition");
+            var joinConditionArgument = new NonTerminal("joinConditionArgument");
             var term = new NonTerminal("term");
             var unExpr = new NonTerminal("unExpr");
             var unOp = new NonTerminal("unOp");
@@ -74,6 +79,10 @@ namespace OrchardCore.Queries.Sql
             var statementList = new NonTerminal("stmtList");
             var functionArguments = new NonTerminal("funArgs");
             var boolean = new NonTerminal("boolean");
+            var overClauseOpt = new NonTerminal("overClauseOpt");
+            var overArgumentsOpt = new NonTerminal("overArgumentsOpt");
+            var overPartitionByClauseOpt = new NonTerminal("overPartitionByClauseOpt");
+            var overOrderByClauseOpt = new NonTerminal("overOrderByClauseOpt");
 
             //BNF Rules
             this.Root = statementList;
@@ -106,17 +115,27 @@ namespace OrchardCore.Queries.Sql
             columnItemList.Rule = MakePlusRule(columnItemList, comma, columnItem);
             columnItem.Rule = columnSource + aliasOpt;
 
-            columnSource.Rule = funCall | Id;
+            columnSource.Rule = funCall + overClauseOpt | Id;
             fromClauseOpt.Rule = Empty | FROM + aliaslist + joinChainOpt;
+
             joinChainOpt.Rule = MakeStarRule(joinChainOpt, joinStatement);
-            joinStatement.Rule = joinKindOpt + JOIN + aliaslist + ON + Id + "=" + Id;
+            joinStatement.Rule = joinKindOpt + JOIN + aliaslist + ON + joinConditions;
+            joinConditions.Rule = MakePlusRule(joinConditions, AND, joinCondition);
+            joinCondition.Rule = joinConditionArgument + "=" + joinConditionArgument;
+            joinConditionArgument.Rule = Id | boolean | string_literal | number | parameter;
             joinKindOpt.Rule = Empty | "INNER" | "LEFT" | "RIGHT";
+
             whereClauseOptional.Rule = Empty | "WHERE" + expression;
             groupClauseOpt.Rule = Empty | "GROUP" + BY + idlist;
             havingClauseOpt.Rule = Empty | "HAVING" + expression;
             orderClauseOpt.Rule = Empty | "ORDER" + BY + orderList;
             limitClauseOpt.Rule = Empty | "LIMIT" + expression;
             offsetClauseOpt.Rule = Empty | "OFFSET" + expression;
+
+            overPartitionByClauseOpt.Rule = Empty | "PARTITION" + BY + columnItemList;
+            overOrderByClauseOpt.Rule = Empty | "ORDER" + BY + orderList;
+            overArgumentsOpt.Rule = Empty | overPartitionByClauseOpt + overOrderByClauseOpt;
+            overClauseOpt.Rule = Empty | OVER + "(" + overArgumentsOpt + ")";
 
             //Expression
             expressionList.Rule = MakePlusRule(expressionList, comma, expression);
@@ -137,7 +156,7 @@ namespace OrchardCore.Queries.Sql
             notOpt.Rule = Empty | NOT;
             //funCall covers some pseudo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
             funCall.Rule = Id + "(" + functionArguments + ")";
-            functionArguments.Rule = selectStatement | expressionList | "*";
+            functionArguments.Rule = Empty | selectStatement | expressionList | "*";
             parameter.Rule = "@" + Id | "@" + Id + ":" + term;
 
             //Operators

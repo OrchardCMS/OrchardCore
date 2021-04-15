@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -39,9 +41,11 @@ namespace OrchardCore.Users.Controllers
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
         private readonly IScriptingManager _scriptingManager;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly INotifier _notifier;
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+        private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
 
         public AccountController(
@@ -50,9 +54,11 @@ namespace OrchardCore.Users.Controllers
             UserManager<IUser> userManager,
             ILogger<AccountController> logger,
             ISiteService siteService,
+            IHtmlLocalizer<AccountController> htmlLocalizer,
             IStringLocalizer<AccountController> stringLocalizer,
             IEnumerable<ILoginFormEvent> accountEvents,
             IScriptingManager scriptingManager,
+            INotifier notifier,
             IClock clock,
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
@@ -65,10 +71,12 @@ namespace OrchardCore.Users.Controllers
             _siteService = siteService;
             _accountEvents = accountEvents;
             _scriptingManager = scriptingManager;
+            _notifier = notifier;
             _clock = clock;
             _distributedCache = distributedCache;
             _dataProtectionProvider = dataProtectionProvider;
             _externalLoginHandlers = externalLoginHandlers;
+            H = htmlLocalizer;
             S = stringLocalizer;
         }
 
@@ -194,31 +202,33 @@ namespace OrchardCore.Users.Controllers
                 else
                 {
                     await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
-                    var user = await _userManager.FindByNameAsync(model.UserName) ?? await _userManager.FindByEmailAsync(model.UserName);
-                    // This doesn't count login failures towards account lockout
-                    // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                    if (user != null)
+                    if (ModelState.IsValid)
                     {
-                        var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
-                        if (result.Succeeded)
+                        var user = await _userManager.FindByNameAsync(model.UserName) ?? await _userManager.FindByEmailAsync(model.UserName);
+                        // This doesn't count login failures towards account lockout
+                        // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                        if (user != null)
                         {
-                            if (!await AddConfirmEmailError(user) && !AddUserEnabledError(user))
+                            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
+                            if (result.Succeeded)
                             {
-                                result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-                                if (result.Succeeded)
+                                if (!await AddConfirmEmailError(user) && !AddUserEnabledError(user))
                                 {
-                                    _logger.LogInformation(1, "User logged in.");
-                                    await _accountEvents.InvokeAsync((e, model) => e.LoggedInAsync(model.UserName), model, _logger);
-                                    return await LoggedInActionResult(user, returnUrl);
+                                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+                                    if (result.Succeeded)
+                                    {
+                                        _logger.LogInformation(1, "User logged in.");
+                                        await _accountEvents.InvokeAsync((e, model) => e.LoggedInAsync(model.UserName), model, _logger);
+                                        return await LoggedInActionResult(user, returnUrl);
+                                    }
                                 }
                             }
                         }
-                    }
-                    else
-                    {
+
                         ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                     }
+
                     await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
                 }
             }
@@ -237,21 +247,29 @@ namespace OrchardCore.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult ChangePassword()
+        public IActionResult ChangePassword(string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model, string returnUrl = null)
         {
             if (TryValidateModel(model) && ModelState.IsValid)
             {
                 var user = await _userService.GetAuthenticatedUserAsync(User);
                 if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    return RedirectToLocal(Url.Action("ChangePasswordConfirmation"));
+                    if (Url.IsLocalUrl(returnUrl)) {
+                        _notifier.Success(H["Your password has been changed successfully."]);
+                        return Redirect(returnUrl);
+                    }
+                    else
+                    {
+                        return Redirect(Url.Action("ChangePasswordConfirmation"));
+                    }
                 }
             }
 
@@ -506,8 +524,7 @@ namespace OrchardCore.Users.Controllers
             {
                 foreach (var item in state.Value.Errors)
                 {
-                    iix++;
-                    TempData[$"error_{iix}"] = item.ErrorMessage;
+                    TempData[$"error_{iix++}"] = item.ErrorMessage;
                 }
             }
             return RedirectToAction(nameof(Login), new { returnUrl });
