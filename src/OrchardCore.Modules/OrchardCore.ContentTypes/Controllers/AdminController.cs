@@ -198,7 +198,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("Edit")]
@@ -221,7 +221,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["\"{0}\" has been removed.", typeViewModel.DisplayName]);
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
 
         public async Task<ActionResult> AddPartsTo(string id)
@@ -317,7 +317,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return await AddPartsTo(id);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("AddReusablePartTo")]
@@ -386,7 +386,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["The \"{0}\" part has been added.", partToAdd]);
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("RemovePart")]
@@ -408,7 +408,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["The \"{0}\" part has been removed.", name]);
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         #endregion Types
@@ -484,7 +484,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["The \"{0}\" content part has been created.", partViewModel.Name]);
 
-            return RedirectToAction("EditPart", new { id = partViewModel.Name });
+            return RedirectToAction(nameof(EditPart), new { id = partViewModel.Name });
         }
 
         public async Task<ActionResult> EditPart(string id)
@@ -537,7 +537,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
             }
 
-            return RedirectToAction("EditPart", new { id });
+            return RedirectToAction(nameof(EditPart), new { id });
         }
 
         [HttpPost, ActionName("EditPart")]
@@ -560,7 +560,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Information(H["\"{0}\" has been removed.", partViewModel.DisplayName]);
 
-            return RedirectToAction("ListParts");
+            return RedirectToAction(nameof(ListParts));
         }
 
         public async Task<ActionResult> AddFieldTo(string id, string returnUrl = null)
@@ -658,7 +658,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
             else
             {
-                return RedirectToAction("EditField", new { id, viewModel.Name });
+                return RedirectToAction(nameof(EditField), new { id, viewModel.Name });
             }
         }
 
@@ -784,10 +784,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 var typeViewModel = _contentDefinitionService.LoadType(id);
                 if (typeViewModel != null)
                 {
-                    return RedirectToAction("Edit", new { id });
+                    return RedirectToAction(nameof(Edit), new { id });
                 }
 
-                return RedirectToAction("EditPart", new { id });
+                return RedirectToAction(nameof(EditPart), new { id });
             }
         }
 
@@ -819,10 +819,10 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (_contentDefinitionService.LoadType(id) != null)
             {
-                return RedirectToAction("Edit", new { id });
+                return RedirectToAction(nameof(Edit), new { id });
             }
 
-            return RedirectToAction("EditPart", new { id });
+            return RedirectToAction(nameof(EditPart), new { id });
         }
 
         #endregion Parts
@@ -937,7 +937,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["The \"{0}\" part settings have been saved.", part.DisplayName()]);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         #endregion Type Parts

@@ -138,7 +138,7 @@ namespace OrchardCore.Lucene.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(AdminIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -252,7 +252,7 @@ namespace OrchardCore.Lucene.Controllers
                 _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -281,7 +281,7 @@ namespace OrchardCore.Lucene.Controllers
                 _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -306,7 +306,7 @@ namespace OrchardCore.Lucene.Controllers
                 return NotFound();
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -338,7 +338,7 @@ namespace OrchardCore.Lucene.Controllers
                 return NotFound();
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         public Task<IActionResult> Query(string indexName, string query)
@@ -360,7 +360,7 @@ namespace OrchardCore.Lucene.Controllers
             // Can't query if there are no indices
             if (model.Indices.Length == 0)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             if (String.IsNullOrEmpty(model.IndexName))
@@ -476,7 +476,7 @@ namespace OrchardCore.Lucene.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index);
         }
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)
