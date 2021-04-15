@@ -476,7 +476,7 @@ namespace OrchardCore.Lucene.Controllers
                 }
             }
 
-            return RedirectToAction(nameof(Index);
+            return RedirectToAction(nameof(Index));
         }
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)
