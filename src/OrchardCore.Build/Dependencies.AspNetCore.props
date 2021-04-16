@@ -6,6 +6,12 @@
     <AspNetCoreTargetFrameworks>net6.0;net5.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
   </PropertyGroup>
 
+  <!-- Experimental TFM to allow for testing on net6.0 without impacting standard development -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <AspNetCoreTargetFramework>net6.0</AspNetCoreTargetFrameworks>
+    <AspNetCoreTargetFrameworks>net6.0</AspNetCoreTargetFrameworks>
+  </PropertyGroup>
+  
   <!-- Default TFMs (Plural) inside Visual Studio -->
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingByReSharper)' == 'true'">
     <AspNetCoreTargetFrameworks>$(AspNetCoreTargetFramework)</AspNetCoreTargetFrameworks>
