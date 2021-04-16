@@ -15,8 +15,6 @@ namespace OrchardCore.Environment.Extensions
         /// </summary>
         string SubPath { get; }
 
-        bool Exists { get; }
-
         /// <summary>
         /// The manifest info of the extension
         /// </summary>
@@ -26,5 +24,10 @@ namespace OrchardCore.Environment.Extensions
         /// List of features in extension
         /// </summary>
         IEnumerable<IFeatureInfo> Features { get; }
+
+        /// <summary>
+        /// Wether this extension info exists
+        /// </summary>
+        bool Exists { get; }
     }
 }

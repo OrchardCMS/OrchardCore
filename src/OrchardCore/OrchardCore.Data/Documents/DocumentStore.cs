@@ -56,11 +56,11 @@ namespace OrchardCore.Data.Documents
 
             T document = null;
 
-            // For consistency checking a document may be queried after 'CommitAsync()'.
+            // For consistency checking a document may be queried after 'SaveChangesAsync()'.
             if (_committed)
             {
                 // So we create a new session to not get a cached version from 'YesSql'.
-                using var session = _session.Store.CreateSession();
+                await using var session = _session.Store.CreateSession();
                 document = await session.Query<T>().FirstOrDefaultAsync();
             }
             else
@@ -102,10 +102,10 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public void Cancel()
+        public async Task CancelAsync()
         {
             _canceled = true;
-            _session.Cancel();
+            await _session.CancelAsync();
         }
 
         /// <inheritdoc />
@@ -138,7 +138,7 @@ namespace OrchardCore.Data.Documents
 
             try
             {
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
 
                 _committed = true;
                 _loaded.Clear();

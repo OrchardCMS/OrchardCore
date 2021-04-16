@@ -28,9 +28,6 @@
 
 <label>@Model.PartFieldDefinition.DisplayName()</label>
 
-@* Antiforgery token required for the ajax post to create a new tag *@
-@Html.AntiForgeryToken()
-
 @if (!String.IsNullOrEmpty(taxonomySettings.Hint))
 {
     <span class="hint dashed">@taxonomySettings.Hint</span>

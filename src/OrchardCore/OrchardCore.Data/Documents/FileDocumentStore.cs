@@ -79,7 +79,7 @@ namespace OrchardCore.Data.Documents
             return Task.CompletedTask;
         }
 
-        public void Cancel() => throw new NotImplementedException();
+        public Task CancelAsync() => throw new NotImplementedException();
         public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess) => throw new NotImplementedException();
         public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommitFailure) => throw new NotImplementedException();
         public Task CommitAsync() => throw new NotImplementedException();
@@ -106,11 +106,9 @@ namespace OrchardCore.Data.Documents
             {
                 T document;
 
-                using (var file = File.OpenText(filename))
-                {
-                    var serializer = new JsonSerializer();
-                    document = (T)serializer.Deserialize(file, typeof(T));
-                }
+                using var file = File.OpenText(filename);
+                var serializer = new JsonSerializer();
+                document = (T)serializer.Deserialize(file, typeof(T));
 
                 return document;
             }
@@ -124,10 +122,10 @@ namespace OrchardCore.Data.Documents
         {
             var typeName = typeof(T).Name;
 
-            // Backward compatibility.
-            if (typeName == "ContentDefinitionRecord")
+            var attribute = typeof(T).GetCustomAttribute<FileDocumentStoreAttribute>();
+            if (attribute != null)
             {
-                typeName = "ContentDefinition";
+                typeName = attribute.FileName ?? typeName;
             }
 
             var filename = _tenantPath + typeName + ".json";
@@ -135,12 +133,13 @@ namespace OrchardCore.Data.Documents
             await _semaphore.WaitAsync();
             try
             {
-                using (var file = File.CreateText(filename))
+                using var file = File.CreateText(filename);
+                var serializer = new JsonSerializer
                 {
-                    var serializer = new JsonSerializer();
-                    serializer.Formatting = Formatting.Indented;
-                    serializer.Serialize(file, document);
-                }
+                    Formatting = Formatting.Indented
+                };
+
+                serializer.Serialize(file, document);
             }
             finally
             {

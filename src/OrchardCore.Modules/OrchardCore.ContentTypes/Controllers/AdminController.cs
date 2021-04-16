@@ -128,7 +128,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return View(viewModel);
             }
 
@@ -183,7 +183,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
                 return View(viewModel);
             }
@@ -198,7 +198,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("Edit")]
@@ -221,7 +221,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["\"{0}\" has been removed.", typeViewModel.DisplayName]);
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
 
         public async Task<ActionResult> AddPartsTo(string id)
@@ -313,11 +313,11 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return await AddPartsTo(id);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("AddReusablePartTo")]
@@ -376,7 +376,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return await AddReusablePartTo(id);
             }
 
@@ -386,7 +386,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["The \"{0}\" part has been added.", partToAdd]);
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("RemovePart")]
@@ -408,7 +408,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["The \"{0}\" part has been removed.", name]);
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         #endregion Types
@@ -484,7 +484,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["The \"{0}\" content part has been created.", partViewModel.Name]);
 
-            return RedirectToAction("EditPart", new { id = partViewModel.Name });
+            return RedirectToAction(nameof(EditPart), new { id = partViewModel.Name });
         }
 
         public async Task<ActionResult> EditPart(string id)
@@ -528,7 +528,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return View(viewModel);
             }
             else
@@ -537,7 +537,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
             }
 
-            return RedirectToAction("EditPart", new { id });
+            return RedirectToAction(nameof(EditPart), new { id });
         }
 
         [HttpPost, ActionName("EditPart")]
@@ -560,7 +560,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Information(H["\"{0}\" has been removed.", partViewModel.DisplayName]);
 
-            return RedirectToAction("ListParts");
+            return RedirectToAction(nameof(ListParts));
         }
 
         public async Task<ActionResult> AddFieldTo(string id, string returnUrl = null)
@@ -642,7 +642,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 viewModel.Part = partDefinition;
                 viewModel.Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList();
 
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
@@ -658,7 +658,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
             else
             {
-                return RedirectToAction("EditField", new { id, viewModel.Name });
+                return RedirectToAction(nameof(EditField), new { id, viewModel.Name });
             }
         }
 
@@ -746,7 +746,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 {
                     // Calls update to build editor shape with the display name validation failures, and other validation errors.
                     viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
-                    _documentStore.Cancel();
+                    await _documentStore.CancelAsync();
 
                     ViewData["ReturnUrl"] = returnUrl;
                     return View(viewModel);
@@ -764,7 +764,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
@@ -784,10 +784,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 var typeViewModel = _contentDefinitionService.LoadType(id);
                 if (typeViewModel != null)
                 {
-                    return RedirectToAction("Edit", new { id });
+                    return RedirectToAction(nameof(Edit), new { id });
                 }
 
-                return RedirectToAction("EditPart", new { id });
+                return RedirectToAction(nameof(EditPart), new { id });
             }
         }
 
@@ -819,10 +819,10 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (_contentDefinitionService.LoadType(id) != null)
             {
-                return RedirectToAction("Edit", new { id });
+                return RedirectToAction(nameof(Edit), new { id });
             }
 
-            return RedirectToAction("EditPart", new { id });
+            return RedirectToAction(nameof(EditPart), new { id });
         }
 
         #endregion Parts
@@ -914,7 +914,7 @@ namespace OrchardCore.ContentTypes.Controllers
                     if (!ModelState.IsValid)
                     {
                         viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
-                        _documentStore.Cancel();
+                        await _documentStore.CancelAsync();
                         return View(viewModel);
                     }
                 }
@@ -929,7 +929,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return View(viewModel);
             }
             else
@@ -937,7 +937,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["The \"{0}\" part settings have been saved.", part.DisplayName()]);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         #endregion Type Parts

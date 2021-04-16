@@ -28,6 +28,7 @@ namespace OrchardCore.Queries.Sql
             var TRUE = ToTerm("TRUE");
             var FALSE = ToTerm("FALSE");
             var AND = ToTerm("AND");
+            var OVER = ToTerm("OVER");
 
             //Non-terminals
             var Id = new NonTerminal("Id");
@@ -78,6 +79,10 @@ namespace OrchardCore.Queries.Sql
             var statementList = new NonTerminal("stmtList");
             var functionArguments = new NonTerminal("funArgs");
             var boolean = new NonTerminal("boolean");
+            var overClauseOpt = new NonTerminal("overClauseOpt");
+            var overArgumentsOpt = new NonTerminal("overArgumentsOpt");
+            var overPartitionByClauseOpt = new NonTerminal("overPartitionByClauseOpt");
+            var overOrderByClauseOpt = new NonTerminal("overOrderByClauseOpt");
 
             //BNF Rules
             this.Root = statementList;
@@ -110,7 +115,7 @@ namespace OrchardCore.Queries.Sql
             columnItemList.Rule = MakePlusRule(columnItemList, comma, columnItem);
             columnItem.Rule = columnSource + aliasOpt;
 
-            columnSource.Rule = funCall | Id;
+            columnSource.Rule = funCall + overClauseOpt | Id;
             fromClauseOpt.Rule = Empty | FROM + aliaslist + joinChainOpt;
 
             joinChainOpt.Rule = MakeStarRule(joinChainOpt, joinStatement);
@@ -126,6 +131,11 @@ namespace OrchardCore.Queries.Sql
             orderClauseOpt.Rule = Empty | "ORDER" + BY + orderList;
             limitClauseOpt.Rule = Empty | "LIMIT" + expression;
             offsetClauseOpt.Rule = Empty | "OFFSET" + expression;
+
+            overPartitionByClauseOpt.Rule = Empty | "PARTITION" + BY + columnItemList;
+            overOrderByClauseOpt.Rule = Empty | "ORDER" + BY + orderList;
+            overArgumentsOpt.Rule = Empty | overPartitionByClauseOpt + overOrderByClauseOpt;
+            overClauseOpt.Rule = Empty | OVER + "(" + overArgumentsOpt + ")";
 
             //Expression
             expressionList.Rule = MakePlusRule(expressionList, comma, expression);

@@ -1,19 +1,24 @@
 <Project>
 
+  <!-- Default TFM (Singular) and TFMs (Plural) -->
   <PropertyGroup>
-    <!-- Default singular and multi-targeting TFMs -->
     <AspNetCoreTargetFramework>net5.0</AspNetCoreTargetFramework>
     <AspNetCoreTargetFrameworks>net5.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
   </PropertyGroup>
 
+  <!-- Default TFMs (Plural) inside Visual Studio -->
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingByReSharper)' == 'true'">
+    <AspNetCoreTargetFrameworks>$(AspNetCoreTargetFramework)</AspNetCoreTargetFrameworks>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <AspNetCoreVersion>5.0.4</AspNetCoreVersion>
+    <AspNetCoreVersion>5.0.5</AspNetCoreVersion>
     <MicrosoftExtensionsVersion>5.0.1</MicrosoftExtensionsVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <AspNetCoreVersion>3.1.13</AspNetCoreVersion>
-    <MicrosoftExtensionsVersion>3.1.13</MicrosoftExtensionsVersion>
+    <AspNetCoreVersion>3.1.14</AspNetCoreVersion>
+    <MicrosoftExtensionsVersion>3.1.14</MicrosoftExtensionsVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->

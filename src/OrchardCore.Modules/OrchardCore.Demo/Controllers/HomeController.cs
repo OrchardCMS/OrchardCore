@@ -80,7 +80,7 @@ namespace OrchardCore.Demo.Controllers
         public async Task<ActionResult> Tag(string tag)
         {
             await _tagCache.RemoveTagAsync(tag);
-            return RedirectToAction("Tag", "Home", new { area = "OrchardCore.Demo" });
+            return RedirectToAction(nameof(Tag), "Home", new { area = "OrchardCore.Demo" });
         }
 
         public async Task<ActionResult> Display(string contentItemId)

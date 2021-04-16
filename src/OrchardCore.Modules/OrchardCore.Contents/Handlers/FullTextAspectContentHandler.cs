@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -71,8 +73,8 @@ namespace OrchardCore.Contents.Handlers
 
                 if (settings.IncludeFullTextTemplate && !String.IsNullOrEmpty(settings.FullTextTemplate))
                 {
-                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
-                        scope => scope.SetValue("ContentItem", context.ContentItem));
+                    var result = await _liquidTemplateManager.RenderStringAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) });
 
                     fullTextAspect.Segments.Add(result);
                 }

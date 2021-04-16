@@ -112,7 +112,7 @@ namespace OrchardCore.Queries.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(QueriesIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -162,7 +162,7 @@ namespace OrchardCore.Queries.Controllers
                 await _queryManager.SaveQueryAsync(query.Name, query);
 
                 _notifier.Success(H["Query created successfully."]);
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             // If we got this far, something failed, redisplay form
@@ -218,7 +218,7 @@ namespace OrchardCore.Queries.Controllers
                 await _queryManager.SaveQueryAsync(model.Name, query);
 
                 _notifier.Success(H["Query updated successfully."]);
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             model.Editor = editor;
@@ -246,7 +246,7 @@ namespace OrchardCore.Queries.Controllers
 
             _notifier.Success(H["Query deleted successfully."]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost, ActionName("Index")]
@@ -278,7 +278,7 @@ namespace OrchardCore.Queries.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
     }
 }

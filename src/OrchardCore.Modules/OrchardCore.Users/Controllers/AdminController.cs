@@ -30,6 +30,7 @@ namespace OrchardCore.Users.Controllers
     public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;
+        private readonly IDisplayManager<UserIndexOptions> _userOptionsDisplayManager;
         private readonly SignInManager<IUser> _signInManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
@@ -38,7 +39,9 @@ namespace OrchardCore.Users.Controllers
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
         private readonly IRoleService _roleService;
+        private readonly IUsersAdminListQueryService _usersAdminListQueryService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IShapeFactory _shapeFactory;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer H;
@@ -46,12 +49,14 @@ namespace OrchardCore.Users.Controllers
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
+            IDisplayManager<UserIndexOptions> userOptionsDisplayManager,
             SignInManager<IUser> signInManager,
             IAuthorizationService authorizationService,
             ISession session,
             UserManager<IUser> userManager,
             IUserService userService,
             IRoleService roleService,
+            IUsersAdminListQueryService usersAdminListQueryService,
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -60,6 +65,7 @@ namespace OrchardCore.Users.Controllers
             IUpdateModelAccessor updateModelAccessor)
         {
             _userDisplayManager = userDisplayManager;
+            _userOptionsDisplayManager = userOptionsDisplayManager;
             _signInManager = signInManager;
             _authorizationService = authorizationService;
             _session = session;
@@ -68,7 +74,9 @@ namespace OrchardCore.Users.Controllers
             _siteService = siteService;
             _userService = userService;
             _roleService = roleService;
+            _usersAdminListQueryService = usersAdminListQueryService;
             _updateModelAccessor = updateModelAccessor;
+            _shapeFactory = shapeFactory;
 
             New = shapeFactory;
             H = htmlLocalizer;
@@ -88,44 +96,7 @@ namespace OrchardCore.Users.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var users = _session.Query<User, UserIndex>();
-
-            switch (options.Filter)
-            {
-                case UsersFilter.Approved:
-                    //users = users.Where(u => u.RegistrationStatus == UserStatus.Approved);
-                    break;
-                case UsersFilter.Pending:
-                    //users = users.Where(u => u.RegistrationStatus == UserStatus.Pending);
-                    break;
-                case UsersFilter.EmailPending:
-                    //users = users.Where(u => u.EmailStatus == UserStatus.Pending);
-                    break;
-            }
-
-            if (!string.IsNullOrWhiteSpace(options.Search))
-            {
-                var normalizedSearchUserName = _userManager.NormalizeName(options.Search);
-                var normalizedSearchEMail = _userManager.NormalizeEmail(options.Search);
-
-                users = users.Where(u => u.NormalizedUserName.Contains(normalizedSearchUserName) || u.NormalizedEmail.Contains(normalizedSearchEMail));
-            }
-
-            switch (options.Order)
-            {
-                case UsersOrder.Name:
-                    users = users.OrderBy(u => u.NormalizedUserName);
-                    break;
-                case UsersOrder.Email:
-                    users = users.OrderBy(u => u.NormalizedEmail);
-                    break;
-                case UsersOrder.CreatedUtc:
-                    //users = users.OrderBy(u => u.CreatedUtc);
-                    break;
-                case UsersOrder.LastLoginUtc:
-                    //users = users.OrderBy(u => u.LastLoginUtc);
-                    break;
-            }
+            var users = await _usersAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
 
             var count = await users.CountAsync();
 
@@ -134,11 +105,10 @@ namespace OrchardCore.Users.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            // Maintain previous route data when generating page links
-            var routeData = new RouteData();
-            routeData.Values.Add("Options.Filter", options.Filter);
-            routeData.Values.Add("Options.Search", options.Search);
-            routeData.Values.Add("Options.Order", options.Order);
+            // Populate route values to maintain previous route data when generating page links
+            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+
+            var routeData = new RouteData(options.RouteValues);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
@@ -154,46 +124,71 @@ namespace OrchardCore.Users.Controllers
                 );
             }
 
-            var model = new UsersIndexViewModel
+            options.UserFilters = new List<SelectListItem>()
             {
-                Users = userEntries,
-                Options = options,
-                Pager = pagerShape
-            };
-
-            model.Options.UserFilters = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["All"], Value = nameof(UsersFilter.All) },
+                new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All) },
+                new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled) },
+                new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled) }
                 //new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
                 //new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
                 //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
             };
 
-            model.Options.UserSorts = new List<SelectListItem>() {
+            options.UserSorts = new List<SelectListItem>()
+            {
                 new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name) },
                 new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email) },
                 //new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
                 //new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
             };
 
-            model.Options.UsersBulkAction = new List<SelectListItem>() {
+            options.UsersBulkAction = new List<SelectListItem>()
+            {
                 new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
                 new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
                 new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
                 new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
             };
 
-            return View(model);
+            var allRoles = (await _roleService.GetRoleNamesAsync())
+                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+
+            options.UserRoleFilters = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["All roles"], Value = String.Empty },
+                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated" }
+            };
+
+            // TODO Candidate for dynamic localization.
+            options.UserRoleFilters.AddRange(allRoles.Select(x => new SelectListItem { Text = x, Value = x }));
+
+            // Populate options pager summary values.
+            var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
+            options.StartIndex = startIndex;
+            options.EndIndex = startIndex + userEntries.Count - 1;
+            options.UsersCount = userEntries.Count;
+            options.TotalItemCount = pagerShape.TotalItemCount;
+
+            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+
+            var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
+            {
+                viewModel.Users = userEntries;
+                viewModel.Pager = pagerShape;
+                viewModel.Options = options;
+                viewModel.Header = header;
+            });
+
+            return View(shapeViewModel);
         }
 
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(UsersIndexViewModel model)
+        public async Task<ActionResult> IndexFilterPOST(UsersIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
-                { "Options.Filter", model.Options.Filter },
-                { "Options.Order", model.Options.Order },
-                { "Options.Search", model.Options.Search }
-            });
+            await _userOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
+
+            return RedirectToAction(nameof(Index), model.Options.RouteValues);
         }
 
         [HttpPost, ActionName("Index")]
@@ -277,7 +272,7 @@ namespace OrchardCore.Users.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> Create()
         {
@@ -451,7 +446,7 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
-                _session.Cancel();
+                await _session.CancelAsync();
 
                 _notifier.Error(H["Could not delete the user."]);
 

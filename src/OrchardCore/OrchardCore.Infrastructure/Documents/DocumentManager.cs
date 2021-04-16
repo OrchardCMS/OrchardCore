@@ -2,9 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Documents
 {
@@ -13,23 +15,18 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
-        protected readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
         protected readonly DocumentOptions _options;
 
-        private TDocument _scopedCache;
-        private TDocument _volatileCache;
         private readonly bool _isDistributed;
         protected bool _isVolatile;
 
         public DocumentManager(
-            IDocumentStore documentStore,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
-            IOptionsSnapshot<DocumentOptions> options)
+            IOptionsMonitor<DocumentOptions> options)
         {
-            _documentStore = documentStore;
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
             _options = options.Get(typeof(TDocument).FullName);
@@ -40,13 +37,19 @@ namespace OrchardCore.Documents
             }
         }
 
+        public Type DocumentStoreServiceType { get; set; }
+
+        public IDocumentStore DocumentStore => DocumentStoreServiceType != null
+            ? (IDocumentStore)ShellScope.Services.GetRequiredService(DocumentStoreServiceType)
+            : ShellScope.Services.GetRequiredService<IDocumentStore>();
+
         public async Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null)
         {
             TDocument document = null;
 
             if (!_isVolatile)
             {
-                document = await _documentStore.GetOrCreateMutableAsync(factoryAsync);
+                document = await DocumentStore.GetOrCreateMutableAsync(factoryAsync);
 
                 if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
                 {
@@ -55,15 +58,18 @@ namespace OrchardCore.Documents
             }
             else
             {
-                if (_volatileCache != null)
+                var volatileCache = ShellScope.Get<TDocument>(typeof(TDocument));
+                if (volatileCache != null)
                 {
-                    document = _volatileCache;
+                    document = volatileCache;
                 }
                 else
                 {
-                    document = _volatileCache = await GetFromDistributedCacheAsync()
+                    document = await GetFromDistributedCacheAsync()
                         ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
                         ?? new TDocument();
+
+                    ShellScope.Set(typeof(TDocument), document);
                 }
             }
 
@@ -82,7 +88,7 @@ namespace OrchardCore.Documents
 
                 if (!_isVolatile)
                 {
-                    (cacheable, document) = await _documentStore.GetOrCreateImmutableAsync(factoryAsync);
+                    (cacheable, document) = await DocumentStore.GetOrCreateImmutableAsync(factoryAsync);
                 }
                 else
                 {
@@ -111,7 +117,7 @@ namespace OrchardCore.Documents
 
             if (!_isVolatile)
             {
-                return _documentStore.UpdateAsync(document, async document =>
+                return DocumentStore.UpdateAsync(document, async document =>
                 {
                     await SetInternalAsync(document);
 
@@ -124,10 +130,10 @@ namespace OrchardCore.Documents
             }
 
             // Set the scoped cache in case of multiple updates.
-            _volatileCache = document;
+            ShellScope.Set(typeof(TDocument), document);
 
             // But still update the shared cache after committing.
-            _documentStore.AfterCommitSuccess<TDocument>(async () =>
+            DocumentStore.AfterCommitSuccess<TDocument>(async () =>
             {
                 await SetInternalAsync(document);
 
@@ -142,11 +148,6 @@ namespace OrchardCore.Documents
 
         private async Task<TDocument> GetInternalAsync()
         {
-            if (_scopedCache != null)
-            {
-                return _scopedCache;
-            }
-
             string id;
             if (_isDistributed)
             {
@@ -159,8 +160,8 @@ namespace OrchardCore.Documents
             }
             else
             {
-                // Otherwise, always get the id from the in memory distributed cache.
-                id = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+                // Otherwise, always get the id from the memory cache.
+                id = _memoryCache.Get<string>(_options.CacheIdKey);
             }
 
             if (id == null)
@@ -182,7 +183,7 @@ namespace OrchardCore.Documents
                         await _distributedCache.RefreshAsync(_options.CacheKey);
                     }
 
-                    return _scopedCache = document;
+                    return document;
                 }
             }
 
@@ -210,13 +211,10 @@ namespace OrchardCore.Documents
                 SlidingExpiration = _options.SlidingExpiration
             });
 
-            if (_isDistributed)
-            {
-                // Remove the id from the one second cache.
-                _memoryCache.Remove(_options.CacheIdKey);
-            }
+            // Remove the id from the one second cache.
+            _memoryCache.Remove(_options.CacheIdKey);
 
-            return _scopedCache = document;
+            return document;
         }
 
         protected async Task SetInternalAsync(TDocument document)
@@ -239,11 +237,18 @@ namespace OrchardCore.Documents
             // Consistency: We may have been the last to update the cache but not with the last stored document.
             if (!_isVolatile && _options.CheckConsistency.Value)
             {
-                (_, var stored) = await _documentStore.GetOrCreateImmutableAsync<TDocument>();
+                (_, var stored) = await DocumentStore.GetOrCreateImmutableAsync<TDocument>();
 
                 if (stored.Identifier != document.Identifier)
                 {
-                    await _distributedCache.RemoveAsync(_options.CacheIdKey);
+                    if (_isDistributed)
+                    {
+                        await _distributedCache.RemoveAsync(_options.CacheIdKey);
+                    }
+                    else
+                    {
+                        _memoryCache.Remove(_options.CacheIdKey);
+                    }
                 }
             }
         }
@@ -275,9 +280,12 @@ namespace OrchardCore.Documents
             {
                 var data = await _options.Serializer.SerializeAsync(document, _options.CompressThreshold);
                 await _distributedCache.SetAsync(_options.CacheKey, data, _options);
+                await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options);
             }
-
-            await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options);
+            else
+            {
+                _memoryCache.Set(_options.CacheIdKey, document.Identifier ?? "NULL");
+            }
         }
     }
 }

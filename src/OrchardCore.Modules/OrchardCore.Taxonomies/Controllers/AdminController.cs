@@ -139,7 +139,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             _session.Save(taxonomy);
 
-            return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
 
         public async Task<IActionResult> Edit(string taxonomyContentItemId, string taxonomyItemId)
@@ -243,7 +243,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             _session.Save(taxonomy);
 
-            return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
 
         [HttpPost]
@@ -286,7 +286,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             _notifier.Success(H["Taxonomy item deleted successfully."]);
 
-            return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
 
         private JObject FindTaxonomyItem(JObject contentItem, string taxonomyItemId)

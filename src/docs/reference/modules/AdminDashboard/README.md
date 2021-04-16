@@ -1,4 +1,4 @@
-# Admin (OrchardCore.AdminDashboard)
+# Admin Dashboard (`OrchardCore.AdminDashboard`)
 
 The Admin Dashboard module provides a customizable admin dashboard for your site.
 
