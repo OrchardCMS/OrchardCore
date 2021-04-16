@@ -31,7 +31,7 @@ namespace OrchardCore.Data.QueryParser
             Parser = _customSeparated(
                 Seperator,
                 Terms)
-                    .Then(static x => new TermList<T>(x));
+                    .Then(x => new TermList<T>(x));
         }
 
         protected Parser<TermList<T>> Parser { get; }

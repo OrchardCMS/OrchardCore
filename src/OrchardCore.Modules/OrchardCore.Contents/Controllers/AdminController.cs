@@ -317,7 +317,7 @@ namespace OrchardCore.Contents.Controllers
 
             // TODO this needs to move into the driver, so that other modules can also contribute.
 
-            return RedirectToAction("List", model.Options.RouteValues);
+            return RedirectToAction("List", options.RouteValues);
         }
 
         [HttpPost, ActionName("List")]

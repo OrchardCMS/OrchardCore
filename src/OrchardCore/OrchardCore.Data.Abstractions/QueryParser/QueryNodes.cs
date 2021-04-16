@@ -9,7 +9,7 @@ namespace OrchardCore.Data.QueryParser
     {
         public TermList()
         {
-            Terms = new();
+            Terms = new List<TermNode<T>>();
         }
 
         public TermList(List<TermNode<T>> terms)

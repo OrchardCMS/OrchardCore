@@ -35,7 +35,7 @@ namespace OrchardCore.Data.QueryParser
             var parser = Terms.Text(name, caseInsensitive: true)
                 .AndSkip(Literals.Char(':'))
                 .And(operatorParser)
-                    .Then<TermNode<T>>(static x => new NamedTermNode<T>(x.Item1, x.Item2));
+                    .Then<TermNode<T>>(x => new NamedTermNode<T>(x.Item1, x.Item2));
 
             Parser = parser;
         }
@@ -54,7 +54,7 @@ namespace OrchardCore.Data.QueryParser
             var termParser = Terms.Text(name, caseInsensitive: true)
                 .AndSkip(Literals.Char(':'))
                 .And(operatorParser)
-                    .Then<TermNode<T>>(static x => new NamedTermNode<T>(x.Item1, x.Item2));
+                    .Then<TermNode<T>>(x => new NamedTermNode<T>(x.Item1, x.Item2));
 
             var defaultParser = operatorParser.Then<TermNode<T>>(x => new DefaultTermNode<T>(name, x));
 
