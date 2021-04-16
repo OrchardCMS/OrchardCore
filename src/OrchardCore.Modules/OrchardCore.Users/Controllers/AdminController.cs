@@ -188,7 +188,7 @@ namespace OrchardCore.Users.Controllers
         {
             await _userOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
 
-            return RedirectToAction("Index", model.Options.RouteValues);
+            return RedirectToAction(nameof(Index), model.Options.RouteValues);
         }
 
         [HttpPost, ActionName("Index")]
@@ -272,7 +272,7 @@ namespace OrchardCore.Users.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> Create()
         {
