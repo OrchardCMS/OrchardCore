@@ -39,6 +39,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Sitemaps.Abstractions\OrchardCore.Sitemaps.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Filters.Query\OrchardCore.Filters.Query.csproj" />
   </ItemGroup>
 
 </Project>

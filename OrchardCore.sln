@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28822.285
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -397,6 +397,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Roles.Core", "src\OrchardCore\OrchardCore.Roles.Core\OrchardCore.Roles.Core.csproj", "{15E0499A-815D-4E98-B1E4-1C9D7B3D1461}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AutoSetup", "src\OrchardCore.Modules\OrchardCore.AutoSetup\OrchardCore.AutoSetup.csproj", "{1E76C17C-099A-4E6D-BC26-E93CBA4D0BD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Filters.Query", "src\OrchardCore\OrchardCore.Filters.Query\OrchardCore.Filters.Query.csproj", "{C37B9FA0-005D-4F0B-AD2C-5A3CA492C71A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Filters.Abstractions", "src\OrchardCore\OrchardCore.Filters.Abstractions\OrchardCore.Filters.Abstractions.csproj", "{7CE13DA2-2DA4-4FF5-8F82-1B291C4B3F1A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1084,6 +1088,14 @@ Global
 		{1E76C17C-099A-4E6D-BC26-E93CBA4D0BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E76C17C-099A-4E6D-BC26-E93CBA4D0BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E76C17C-099A-4E6D-BC26-E93CBA4D0BD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C37B9FA0-005D-4F0B-AD2C-5A3CA492C71A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C37B9FA0-005D-4F0B-AD2C-5A3CA492C71A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C37B9FA0-005D-4F0B-AD2C-5A3CA492C71A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C37B9FA0-005D-4F0B-AD2C-5A3CA492C71A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CE13DA2-2DA4-4FF5-8F82-1B291C4B3F1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CE13DA2-2DA4-4FF5-8F82-1B291C4B3F1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CE13DA2-2DA4-4FF5-8F82-1B291C4B3F1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CE13DA2-2DA4-4FF5-8F82-1B291C4B3F1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1273,6 +1285,8 @@ Global
 		{1D0144D0-9E6D-441B-A393-B62F6DC8E97E} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{15E0499A-815D-4E98-B1E4-1C9D7B3D1461} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{1E76C17C-099A-4E6D-BC26-E93CBA4D0BD6} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{C37B9FA0-005D-4F0B-AD2C-5A3CA492C71A} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{7CE13DA2-2DA4-4FF5-8F82-1B291C4B3F1A} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
