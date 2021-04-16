@@ -123,5 +123,5 @@ To enable the Auto Setup feature, it is necessary to add it in the Web project's
 ```
 
 This feature is enabled by default in the default project included in the source code, but
-is not with the application templates to prevent any unexpected behavior when a custom projects
+is not with the application templates to prevent any unexpected behavior when a custom project
 is created.
