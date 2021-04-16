@@ -18,6 +18,7 @@
     <ProjectReference Include="..\OrchardCore.DisplayManagement.Abstractions\OrchardCore.DisplayManagement.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
+    <ProjectReference Include="..\OrchardCore.Filters.Query\OrchardCore.Filters.Query.csproj" />
   </ItemGroup>
 
 </Project>

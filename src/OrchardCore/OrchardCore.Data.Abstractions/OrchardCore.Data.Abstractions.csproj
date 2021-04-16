@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="YesSql.Core" />
-    <PackageReference Include="Parlot" />
   </ItemGroup>
 
 </Project>

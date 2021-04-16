@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Filters.Abstractions.Nodes;
 using OrchardCore.Filters.Abstractions.Services;
+using OrchardCore.Filters.Query.Services;
 using YesSql;
 
-namespace OrchardCore.Filters.Query.Services
+namespace OrchardCore.Filters.Query
 {
     public class QueryFilterResult<T> : FilterResult<T, QueryTermOption<T>> where T : class
     {

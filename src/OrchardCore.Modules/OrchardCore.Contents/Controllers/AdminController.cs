@@ -19,10 +19,10 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
-using OrchardCore.Data.QueryParser;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Filters.Query;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
@@ -87,7 +87,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List([ModelBinder(BinderType = typeof(TermModelBinder<ContentItem>), Name = "q")] TermList<ContentItem> termList, PagerParameters pagerParameters, string contentTypeId = "")
+        public async Task<IActionResult> List([ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult, PagerParameters pagerParameters, string contentTypeId = "")
         {
             var context = _httpContextAccessor.HttpContext;
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions()
@@ -150,14 +150,14 @@ namespace OrchardCore.Contents.Controllers
                 options.CreatableTypes = creatableList;
             }
 
-            var statusTerm = termList.Terms.FirstOrDefault(x => x.TermName == "status");
-            if (statusTerm != null)
-            {
-                if (Enum.TryParse<ContentsStatus>(statusTerm.Operation.ToString(), true, out var e))
-                {
-                    options.ContentsStatus = e;
-                }
-            }
+            // var statusTerm = queryFilterResult.Terms.FirstOrDefault(x => x.TermName == "status");
+            // if (statusTerm != null)
+            // {
+            //     if (Enum.TryParse<ContentsStatus>(statusTerm.Operation.ToString(), true, out var e))
+            //     {
+            //         options.ContentsStatus = e;
+            //     }
+            // }
 
             // We populate the remaining SelectLists.
             options.ContentStatuses = new List<SelectListItem>()
@@ -173,14 +173,14 @@ namespace OrchardCore.Contents.Controllers
                 options.ContentStatuses.Insert(1, new SelectListItem() { Text = S["Owned by me"], Value = nameof(ContentsStatus.Owner) });
             }
 
-            var sortTerm = termList.Terms.FirstOrDefault(x => x.TermName == "status");
-            if (sortTerm != null)
-            {
-                if (Enum.TryParse<ContentsOrder>(sortTerm.Operation.ToString(), true, out var e))
-                {
-                    options.OrderBy = e;
-                }
-            }
+            // var sortTerm = termList.Terms.FirstOrDefault(x => x.TermName == "status");
+            // if (sortTerm != null)
+            // {
+            //     if (Enum.TryParse<ContentsOrder>(sortTerm.Operation.ToString(), true, out var e))
+            //     {
+            //         options.OrderBy = e;
+            //     }
+            // }
 
             options.ContentSorts = new List<SelectListItem>()
             {
@@ -236,9 +236,7 @@ namespace OrchardCore.Contents.Controllers
                 options.ContentTypeOptions = new List<SelectListItem>();
             }
 
-
-
-            options.TermList = termList;
+            options.FilterResult = queryFilterResult;
             
 
             // With the options populated we filter the query, allowing the filters to alter the options.
@@ -259,7 +257,7 @@ namespace OrchardCore.Contents.Controllers
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
-            options.SearchText = termList.ToString();
+            options.SearchText = queryFilterResult.ToString();
             options.OriginalSearchText = options.SearchText;
 
             // We prepare the content items SummaryAdmin shape
@@ -307,7 +305,7 @@ namespace OrchardCore.Contents.Controllers
             // But we might normalize it for them.
             if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
             {
-                return RedirectToAction("List",
+                return RedirectToAction(nameof(List),
                       new RouteValueDictionary
                       {
                         { "q", options.SearchText }
@@ -315,9 +313,15 @@ namespace OrchardCore.Contents.Controllers
                   );
             }
 
+            options.FilterResult.MapFrom(options);
             // TODO this needs to move into the driver, so that other modules can also contribute.
 
-            return RedirectToAction("List", options.RouteValues);
+            return RedirectToAction(nameof(List),
+                       new RouteValueDictionary
+                       {
+                            { "q", options.FilterResult.ToString() }
+                       }
+                   );
         }
 
         [HttpPost, ActionName("List")]

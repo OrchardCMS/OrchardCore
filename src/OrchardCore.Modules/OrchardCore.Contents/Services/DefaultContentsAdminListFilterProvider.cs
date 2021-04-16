@@ -1,32 +1,19 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.Security;
 using OrchardCore.Contents.ViewModels;
-using OrchardCore.Data.QueryParser;
-using OrchardCore.DisplayManagement.ModelBinding;
-using YesSql;
+using OrchardCore.Filters.Query;
 using YesSql.Services;
-using static OrchardCore.Data.QueryParser.Fluent.QueryParsers;
 
 namespace OrchardCore.Contents.Services
 {
-    public class ContentsQueryTermProvider : ITermParserProvider<ContentItem>
+    public class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterProvider
     {
-        public IEnumerable<TermParser<ContentItem>> GetTermParsers()
-            => new TermParser<ContentItem>[] 
-            {
-                NamedTermParser("status",
-                    OneConditionParser<ContentItem>((query, val) =>
+        public void Build(QueryEngineBuilder<ContentItem> builder)
+        {
+            builder
+                .WithNamedTerm("status", b => b
+                    .OneCondition<ContentItem>((val, query) =>
                     {
                         if (Enum.TryParse<ContentsStatus>(val, true, out var e))
                         {
@@ -49,9 +36,25 @@ namespace OrchardCore.Contents.Services
 
                         return query;
                     })
-                ),
-                NamedTermParser("sort",
-                    OneConditionParser<ContentItem>((query, val) =>
+                    .MapTo<ContentOptionsViewModel>((val, m) =>
+                    {
+                        if (Enum.TryParse<ContentsStatus>(val, true, out var contentsStatus))
+                        {
+                            m.ContentsStatus = contentsStatus;
+                        }
+                    })
+                    .MapFrom<ContentOptionsViewModel>((m) =>
+                    {
+                        if (m.ContentsStatus != ContentsStatus.AllVersions)
+                        {
+                            return (true, m.ContentsStatus.ToString());
+                        }
+
+                        return (false, String.Empty);
+                    })
+                )
+                .WithNamedTerm("sort", b => b
+                    .OneCondition<ContentItem>((val, query) =>
                     {
                         // TODO we can also support -asc and -desc here.
 
@@ -64,34 +67,34 @@ namespace OrchardCore.Contents.Services
                             ascending = true;
                         }
 
-                        if (Enum.TryParse<ContentsOrder>(val, true, out var e))
+                        if (Enum.TryParse<ContentsOrder>(val, true, out var contentsOrder))
                         {
-                            switch (e)
+                            switch (contentsOrder)
                             {
                                 case ContentsOrder.Modified:
-                                    if (ascending) 
+                                    if (ascending)
                                     {
                                         query.With<ContentItemIndex>().OrderBy(x => x.ModifiedUtc);
-                                    } 
-                                    else 
+                                    }
+                                    else
                                     {
                                         query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
                                     }
                                     break;
                                 case ContentsOrder.Published:
-                                    if (ascending) 
+                                    if (ascending)
                                     {
                                         query.With<ContentItemIndex>().OrderBy(cr => cr.PublishedUtc);
                                     }
                                     else
-                                    { 
+                                    {
                                         query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc);
                                     }
                                     break;
                                 case ContentsOrder.Created:
-                                    if (ascending) 
+                                    if (ascending)
                                     {
-                                       query.With<ContentItemIndex>().OrderBy(cr => cr.CreatedUtc);
+                                        query.With<ContentItemIndex>().OrderBy(cr => cr.CreatedUtc);
                                     }
                                     else
                                     {
@@ -99,7 +102,7 @@ namespace OrchardCore.Contents.Services
                                     }
                                     break;
                                 case ContentsOrder.Title:
-                                // todo support ascending.
+                                    // todo support ascending.
                                     query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText);
                                     break;
 
@@ -112,13 +115,29 @@ namespace OrchardCore.Contents.Services
 
                         return query;
                     })
-                ),
-                DefaultTermParser("text",
-                        ManyConditionParser<ContentItem>(
-                            ((query, val) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val))),
-                            ((query, val) => query.With<ContentItemIndex>(x => x.DisplayText.IsNotIn<ContentItemIndex>(s => s.DisplayText, w => w.DisplayText.Contains(val))))
+                    .MapTo<ContentOptionsViewModel>((val, m) =>
+                    {
+                        if (Enum.TryParse<ContentsOrder>(val, true, out var e))
+                        {
+                            m.OrderBy = e;
+                        }
+                    })
+                    .MapFrom<ContentOptionsViewModel>((m) =>
+                    {
+                        if (m.OrderBy != ContentsOrder.Modified)
+                        {
+                            return (true, m.OrderBy.ToString());
+                        }
+
+                        return (false, String.Empty);
+                    })
+                )
+                .WithDefaultTerm("text", b => b
+                        .ManyCondition<ContentItem>(
+                            ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val))),
+                            ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.IsNotIn<ContentItemIndex>(s => s.DisplayText, w => w.DisplayText.Contains(val))))
                         )
-                    )                
-            };
+                    );
+        }
     }
 }

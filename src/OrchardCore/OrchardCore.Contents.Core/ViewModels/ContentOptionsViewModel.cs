@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
-using OrchardCore.Data.QueryParser;
+using OrchardCore.Contents.Services;
+using OrchardCore.Filters.Query;
 
 namespace OrchardCore.Contents.ViewModels
 {
@@ -32,8 +33,8 @@ namespace OrchardCore.Contents.ViewModels
 
         public ContentsBulkAction BulkAction { get; set; }
 
-        [ModelBinder(BinderType = typeof(TermModelBinder<ContentItem>), Name = "SearchText")]
-        public TermList<ContentItem> TermList { get; set; }        
+        [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "SearchText")]
+        public QueryFilterResult<ContentItem> FilterResult { get; set; }        
 
         #region Values to populate
 

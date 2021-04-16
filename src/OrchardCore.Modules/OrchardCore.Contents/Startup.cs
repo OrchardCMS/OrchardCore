@@ -56,8 +56,6 @@ using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
-using OrchardCore.Data.QueryParser;
-using static OrchardCore.Data.QueryParser.Fluent.QueryParsers;
 
 namespace OrchardCore.Contents
 {
@@ -208,20 +206,8 @@ namespace OrchardCore.Contents
 
             services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
 
-            services.AddTransient<ITermParserProvider<ContentItem>, ContentsQueryTermProvider>();
-
-            services.AddSingleton<IQueryParser<ContentItem>>(sp =>
-            {    
-                var providers = sp.GetServices<ITermParserProvider<ContentItem>>();
-                var list = new List<TermParser<ContentItem>>();
-                foreach(var provider in providers)
-                {
-                    list.AddRange(provider.GetTermParsers());
-                }
-                // var t= providers.Select(x => x.GetTermParsers());
-                
-                return QueryParser<ContentItem>(list.ToArray());
-            });
+            services.AddSingleton<IContentsAdminListFilterParser, DefaultContentsAdminListFilterParser>();
+            services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
