@@ -116,7 +116,7 @@ namespace OrchardCore.DynamicCache.Services
             return key;
         }
 
-        private string GetCacheContextCacheKey(string cacheKey)
+        private static string GetCacheContextCacheKey(string cacheKey)
         {
             return "cachecontext-" + cacheKey;
         }
