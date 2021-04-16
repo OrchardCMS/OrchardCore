@@ -104,7 +104,7 @@ namespace OrchardCore.Lucene
                 // Create a scope for the content manager
                 var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
 
-                await shellScope.UsingServiceScopeAsync(async scope =>
+                await shellScope.UsingAsync(async scope =>
                 {
                     // Load the next batch of tasks
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
@@ -228,7 +228,7 @@ namespace OrchardCore.Lucene
                     }
 
                     _indexingState.Update();
-                });
+                }, activateShell: false);
             } while (batch.Length == BatchSize);
         }
 
