@@ -16,17 +16,15 @@ namespace OrchardCore.Environment.Cache
         private const string CacheKey = nameof(DefaultTagCache);
 
         private readonly ConcurrentDictionary<string, HashSet<string>> _dictionary;
-        //private readonly IEnumerable<ITagRemovedEventHandler> _tagRemovedEventHandlers;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
 
         public DefaultTagCache(
-            //IEnumerable<ITagRemovedEventHandler> tagRemovedEventHandlers,
             IMemoryCache memoryCache,
             IServiceProvider serviceProvider,
             ILogger<DefaultTagCache> logger)
         {
-            // We use the memory cache as the state holder and keep this class transient as it has
+            // We use the memory cache as the state holder and keep this class scoped as it has
             // dependencies on non-singletons
 
             if (!memoryCache.TryGetValue(CacheKey, out _dictionary))
@@ -35,7 +33,6 @@ namespace OrchardCore.Environment.Cache
                 memoryCache.Set(CacheKey, _dictionary);
             }
 
-            //_tagRemovedEventHandlers = tagRemovedEventHandlers;
             _serviceProvider = serviceProvider;
             _logger = logger;
         }
