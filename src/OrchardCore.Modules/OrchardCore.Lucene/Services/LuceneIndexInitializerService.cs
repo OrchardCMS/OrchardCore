@@ -30,11 +30,11 @@ namespace OrchardCore.Lucene
 
                     foreach (var settings in luceneIndexSettings)
                     {
-                        //if (!indexManager.Exists(settings.IndexName))
-                        //{
-                        //await luceneIndexingService.CreateIndexAsync(settings);
-                        await luceneIndexingService.ProcessContentItemsAsync(settings.IndexName);
-                        //}
+                        if (!indexManager.Exists(settings.IndexName))
+                        {
+                            await luceneIndexingService.CreateIndexAsync(settings);
+                            await luceneIndexingService.ProcessContentItemsAsync(settings.IndexName);
+                        }
                     }
                 });
             }
