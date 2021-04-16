@@ -111,7 +111,7 @@ dotnet run -f netcoreapp3.1 --launch-profile web
 
 ## Enabling Auto Setup Feature
 
-Do not forget to enable the Autosetup feature in Web project's Startup file:
+To enable the Auto Setup feature, it is necessary to add it in the Web project's Startup file:
 
 ```csharp
     public void ConfigureServices(IServiceCollection services)
@@ -121,3 +121,7 @@ Do not forget to enable the Autosetup feature in Web project's Startup file:
             .AddSetupFeatures("OrchardCore.AutoSetup");
     }
 ```
+
+This feature is enabled by default in the default project included in the source code, but
+is not with the application templates to prevent any unexpected behavior when a custom projects
+is created.
