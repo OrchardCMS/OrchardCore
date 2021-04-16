@@ -75,6 +75,7 @@ namespace OrchardCore.Environment.Cache
 
             if (_dictionary.TryRemove(tag, out set))
             {
+                // Lazy loading to prevent cyclic dependency.
                 var tagRemovedEventHandlers = _serviceProvider.GetServices<ITagRemovedEventHandler>();
                 return tagRemovedEventHandlers.InvokeAsync((handler, tag, set) => handler.TagRemovedAsync(tag, set), tag, set, _logger);
             }
