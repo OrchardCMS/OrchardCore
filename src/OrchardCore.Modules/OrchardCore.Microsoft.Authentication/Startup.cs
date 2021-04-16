@@ -26,7 +26,7 @@ namespace OrchardCore.Microsoft.Authentication
             services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
 
             services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
-            services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
             services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
             // Register the options initializers required by the Microsoft Account Handler.
@@ -50,7 +50,7 @@ namespace OrchardCore.Microsoft.Authentication
 
             services.AddSingleton<IAzureADService, AzureADService>();
             services.AddRecipeExecutionStep<AzureADSettingsStep>();
-            services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuAAD>();
             // Register the options initializers required by the Policy Scheme, Cookie and OpenId Connect Handler.
             services.TryAddEnumerable(new[]

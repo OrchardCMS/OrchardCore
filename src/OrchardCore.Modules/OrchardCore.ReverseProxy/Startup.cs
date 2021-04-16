@@ -30,7 +30,7 @@ namespace OrchardCore.ReverseProxy
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, ReverseProxySettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, ReverseProxySettingsDisplayDriver>();
             services.AddSingleton<ReverseProxyService>();
 
             services.TryAddEnumerable(ServiceDescriptor
@@ -44,7 +44,7 @@ namespace OrchardCore.ReverseProxy
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ReverseProxySettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<ReverseProxySettings>(S["Reverse Proxy settings"], S["Exports the Reverse Proxy settings."]);

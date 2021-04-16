@@ -46,7 +46,7 @@ namespace OrchardCore.Flows
                 .UseDisplayDriver<FlowPartDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, FlowPartSettingsDisplayDriver>();
 
-            services.AddScoped<IContentDisplayDriver, FlowMetadataDisplayDriver>();
+            services.AddTransient<IContentDisplayDriver, FlowMetadataDisplayDriver>();
 
             // Bag Part
             services.AddContentPart<BagPart>()
@@ -57,7 +57,7 @@ namespace OrchardCore.Flows
 
             services.AddContentPart<FlowMetadata>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

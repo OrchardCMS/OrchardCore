@@ -44,11 +44,11 @@ namespace OrchardCore.Deployment
             // Custom File deployment step
             services.AddTransient<IDeploymentSource, CustomFileDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomFileDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, CustomFileDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, CustomFileDeploymentStepDriver>();
 
             // Recipe File deployment step
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<RecipeFileDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, RecipeFileDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, RecipeFileDeploymentStepDriver>();
 
             services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();
             services.AddTransient<IDataMigration, Migrations>();
@@ -59,7 +59,7 @@ namespace OrchardCore.Deployment
 
             services.AddTransient<IDeploymentSource, DeploymentPlanDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<DeploymentPlanDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, DeploymentPlanDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, DeploymentPlanDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

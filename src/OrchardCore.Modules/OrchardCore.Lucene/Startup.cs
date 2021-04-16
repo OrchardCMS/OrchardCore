@@ -58,11 +58,11 @@ namespace OrchardCore.Lucene
             services.AddSingleton<LuceneIndexManager>();
             services.AddSingleton<LuceneAnalyzerManager>();
             services.AddScoped<LuceneIndexingService>();
-            services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
+            services.AddTransient<IModularTenantEvents, LuceneIndexInitializerService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
@@ -70,8 +70,8 @@ namespace OrchardCore.Lucene
                 o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
                     new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
-            services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
-            services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 
             services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
             services.AddLuceneQueries();
@@ -140,11 +140,11 @@ namespace OrchardCore.Lucene
         {
             services.AddTransient<IDeploymentSource, LuceneIndexDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, LuceneIndexDeploymentStepDriver>();
 
             services.AddTransient<IDeploymentSource, LuceneSettingsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneSettingsDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, LuceneSettingsDeploymentStepDriver>();
         }
     }
 
@@ -163,7 +163,7 @@ namespace OrchardCore.Lucene
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
             services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
         }
     }

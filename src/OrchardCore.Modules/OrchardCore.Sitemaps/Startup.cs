@@ -38,7 +38,7 @@ namespace OrchardCore.Sitemaps
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddIdGeneration();
@@ -86,7 +86,7 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();
             services.AddScoped<ISitemapSourceUpdateHandler, CustomPathSitemapSourceUpdateHandler>();
             services.AddScoped<ISitemapSourceModifiedDateProvider, CustomPathSitemapSourceModifiedDateProvider>();
-            services.AddScoped<IDisplayDriver<SitemapSource>, CustomPathSitemapSourceDriver>();
+            services.AddTransient<IDisplayDriver<SitemapSource>, CustomPathSitemapSourceDriver>();
             services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
         }
 

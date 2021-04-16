@@ -34,7 +34,7 @@ namespace OrchardCore.Forms
                 options.Filters.Add<ImportModelStatePageFilter>();
             });
 
-            services.AddScoped<IContentDisplayDriver, FormContentDisplayDriver>();
+            services.AddTransient<IContentDisplayDriver, FormContentDisplayDriver>();
 
             services.AddContentPart<FormPart>()
                     .UseDisplayDriver<FormPartDisplayDriver>();
@@ -66,7 +66,7 @@ namespace OrchardCore.Forms
             services.AddContentPart<ValidationPart>()
                     .UseDisplayDriver<ValidationPartDisplayDriver>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
         }
     }
 }

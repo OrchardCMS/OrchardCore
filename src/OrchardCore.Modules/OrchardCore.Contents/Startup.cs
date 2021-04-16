@@ -153,7 +153,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IAuthorizationHandler, ContentTypeAuthorizationHandler>();
             services.AddScoped<IShapeTableProvider, Shapes>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IContentDisplayDriver, ContentsDriver>();
+            services.AddTransient<IContentDisplayDriver, ContentsDriver>();
             services.AddScoped<IContentHandler, ContentsHandler>();
             services.AddRecipeExecutionStep<ContentStep>();
 
@@ -164,7 +164,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
             services.AddIdGeneration();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
 
             // Common Part
             services.AddContentPart<CommonPart>()
@@ -200,7 +200,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
 
             services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
 
             services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
         }
@@ -305,11 +305,11 @@ namespace OrchardCore.Contents
         {
             services.AddTransient<IDeploymentSource, AllContentDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllContentDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllContentDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, AllContentDeploymentStepDriver>();
 
             services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
         }
     }
 
@@ -320,7 +320,7 @@ namespace OrchardCore.Contents
         {
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ContentTypesAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
+            services.AddTransient<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
         }
     }
 
@@ -341,7 +341,7 @@ namespace OrchardCore.Contents
             services.AddScoped<ISitemapSourceBuilder, ContentTypesSitemapSourceBuilder>();
             services.AddScoped<ISitemapSourceUpdateHandler, ContentTypesSitemapSourceUpdateHandler>();
             services.AddScoped<ISitemapSourceModifiedDateProvider, ContentTypesSitemapSourceModifiedDateProvider>();
-            services.AddScoped<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
+            services.AddTransient<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
             services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
             services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
             services.AddScoped<IContentHandler, ContentTypesSitemapUpdateHandler>();

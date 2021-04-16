@@ -19,18 +19,18 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
         {
             services.AddScoped<INavigationProvider, ExportContentToDeploymentTargetAdminMenu>();
             // TODO deployment steps for these
-            services.AddScoped<IDisplayDriver<ISite>, ExportContentToDeploymentTargetSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, ExportContentToDeploymentTargetSettingsDisplayDriver>();
 
             services.AddTransient<IDeploymentSource, ExportContentToDeploymentTargetDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ExportContentToDeploymentTargetDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ExportContentToDeploymentTargetDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, ExportContentToDeploymentTargetDeploymentStepDriver>();
 
-            services.AddScoped<IDataMigration, ExportContentToDeploymentTargetMigrations>();
-            services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
+            services.AddTransient<IDataMigration, ExportContentToDeploymentTargetMigrations>();
+            services.AddTransient<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
+            services.AddTransient<IDisplayDriver<ContentOptionsViewModel>, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
 
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ExportContentToDeploymentTargetSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<ExportContentToDeploymentTargetStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<ExportContentToDeploymentTargetSettings>(S["Export Content To Deployment Target settings"], S["Exports the Export Content To Deployment Target settings."]);

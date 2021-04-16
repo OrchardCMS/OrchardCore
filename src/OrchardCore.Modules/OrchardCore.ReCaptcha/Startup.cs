@@ -22,7 +22,7 @@ namespace OrchardCore.ReCaptcha
         {
             services.AddReCaptcha();
 
-            services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
         }
     }
@@ -34,7 +34,7 @@ namespace OrchardCore.ReCaptcha
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ReCaptchaSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<ReCaptchaSettings>(S["ReCaptcha settings"], S["Exports the ReCaptcha settings."]);

@@ -62,7 +62,7 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
             services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -83,7 +83,7 @@ namespace OrchardCore.ContentLocalization
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
-            services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider());

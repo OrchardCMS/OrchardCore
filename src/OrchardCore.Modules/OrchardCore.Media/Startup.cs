@@ -145,11 +145,11 @@ namespace OrchardCore.Media
             // Media Field
             services.AddContentField<MediaField>()
                 .UseDisplayDriver<MediaFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
 
             services.AddRecipeExecutionStep<MediaStep>();
 
@@ -363,11 +363,11 @@ namespace OrchardCore.Media
         {
             services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
 
             services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
         }
     }
 

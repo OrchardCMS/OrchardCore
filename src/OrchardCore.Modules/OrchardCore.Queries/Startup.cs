@@ -43,13 +43,13 @@ namespace OrchardCore.Queries
             services.AddScoped<IQueryManager, QueryManager>();
             services.AddScoped<IDisplayManager<Query>, DisplayManager<Query>>();
 
-            services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
+            services.AddTransient<IDisplayDriver<Query>, QueryDisplayDriver>();
             services.AddRecipeExecutionStep<QueryStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
             services.AddTransient<IDeploymentSource, AllQueriesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
             services.Configure<TemplateOptions>(o =>

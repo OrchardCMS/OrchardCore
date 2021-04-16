@@ -56,11 +56,11 @@ namespace OrchardCore.Lists
             .AddLiquidFilter<ContainerFilter>("container");
 
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
-            services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
+            services.AddTransient<IContentDisplayDriver, ContainedPartDisplayDriver>();
             services.AddScoped<IContentHandler, ContainedPartHandler>();
             services.AddContentPart<ContainedPart>();
             services.AddScoped<IContentsAdminListFilter, ListPartContentsAdminListFilter>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ListPartContentsAdminListDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ContentOptionsViewModel>, ListPartContentsAdminListDisplayDriver>();
 
             // List Part
             services.AddContentPart<ListPart>()
@@ -68,7 +68,7 @@ namespace OrchardCore.Lists
                 .AddHandler<ListPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
         }
@@ -91,7 +91,7 @@ namespace OrchardCore.Lists
         {
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ListsAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, ListsAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ListsAdminNodeDriver>();
+            services.AddTransient<IDisplayDriver<MenuItem>, ListsAdminNodeDriver>();
         }
     }
 

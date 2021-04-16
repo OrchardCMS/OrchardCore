@@ -38,7 +38,7 @@ namespace OrchardCore.Https
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, HttpsSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, HttpsSettingsDisplayDriver>();
             services.AddSingleton<IHttpsService, HttpsService>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -73,7 +73,7 @@ namespace OrchardCore.Https
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<HttpsSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<HttpsSettings>(S["Https settings"], S["Exports the Https settings."]);

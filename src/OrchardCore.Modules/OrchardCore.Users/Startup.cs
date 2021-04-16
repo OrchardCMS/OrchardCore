@@ -179,7 +179,7 @@ namespace OrchardCore.Users
             services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
@@ -197,13 +197,13 @@ namespace OrchardCore.Users
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
 
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
-            services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
-            services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
-            services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
-            services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<User>, UserDisplayDriver>();
+            services.AddTransient<IDisplayDriver<User>, UserRoleDisplayDriver>();
+            services.AddTransient<IDisplayDriver<User>, UserInformationDisplayDriver>();
+            services.AddTransient<IDisplayDriver<User>, UserButtonsDisplayDriver>();
 
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
 
@@ -213,7 +213,7 @@ namespace OrchardCore.Users
             services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
 
             services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
-            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
         }
     }
 
@@ -276,7 +276,7 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<LoginSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<LoginDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<LoginSettings>(S["Login settings"], S["Exports the Login settings."]);
@@ -316,7 +316,7 @@ namespace OrchardCore.Users
             });
 
             services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
         }
     }
 
@@ -327,7 +327,7 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ChangeEmailSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<ChangeEmailDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<ChangeEmailSettings>(S["Change Email settings"], S["Exports the Change Email settings."]);
@@ -359,7 +359,7 @@ namespace OrchardCore.Users
             });
 
             services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         }
     }
 
@@ -370,7 +370,7 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<RegistrationSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<RegistrationDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<RegistrationSettings>(S["Registration settings"], S["Exports the Registration settings."]);
@@ -423,7 +423,7 @@ namespace OrchardCore.Users
             });
 
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
         }
     }
 
@@ -434,7 +434,7 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ResetPasswordSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<ResetPasswordDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<ResetPasswordSettings>(S["Reset Password settings"], S["Exports the Reset Password settings."]);
@@ -448,7 +448,7 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
         }
     }

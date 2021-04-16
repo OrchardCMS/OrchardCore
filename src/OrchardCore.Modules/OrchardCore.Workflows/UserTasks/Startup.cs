@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.UserTasks
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentDisplayDriver, UserTaskEventContentDriver>();
+            services.AddTransient<IContentDisplayDriver, UserTaskEventContentDriver>();
             services.AddActivity<UserTaskEvent, UserTaskEventDisplayDriver>();
         }
     }

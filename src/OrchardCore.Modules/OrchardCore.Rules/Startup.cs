@@ -19,7 +19,7 @@ namespace OrchardCore.Rules
             // Rule services.
             services.AddScoped<IDisplayManager<Condition>, DisplayManager<Condition>>()
                 .AddScoped<IDisplayManager<Rule>, DisplayManager<Rule>>()
-                .AddScoped<IDisplayDriver<Rule>, RuleDisplayDriver>()
+                .AddTransient<IDisplayDriver<Rule>, RuleDisplayDriver>()
                 .AddSingleton<IConditionIdGenerator, ConditionIdGenerator>()
                 .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()
                 .AddScoped<IConditionResolver, ConditionResolver>()
@@ -29,59 +29,59 @@ namespace OrchardCore.Rules
 
             // All condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, AllConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, AllConditionDisplayDriver>()
                 .AddCondition<AllConditionGroup, AllConditionEvaluator, ConditionFactory<AllConditionGroup>>();
 
             // Any condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, AnyConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, AnyConditionDisplayDriver>()
                 .AddCondition<AnyConditionGroup, AnyConditionEvaluator, ConditionFactory<AnyConditionGroup>>();
 
             // Boolean condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, BooleanConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, BooleanConditionDisplayDriver>()
                 .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
 
             // Homepage condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, HomepageConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, HomepageConditionDisplayDriver>()
                 .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>();
 
             // Url condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, UrlConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, UrlConditionDisplayDriver>()
                 .AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
 
             // Culture condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, CultureConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, CultureConditionDisplayDriver>()
                 .AddCondition<CultureCondition, CultureConditionEvaluator, ConditionFactory<CultureCondition>>();
 
             // Role condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, RoleConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, RoleConditionDisplayDriver>()
                 .AddCondition<RoleCondition, RoleConditionEvaluator, ConditionFactory<RoleCondition>>();
 
             // Javascript condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, JavascriptConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, JavascriptConditionDisplayDriver>()
                 .AddCondition<JavascriptCondition, JavascriptConditionEvaluator, ConditionFactory<JavascriptCondition>>();
 
             // Is authenticated condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, IsAuthenticatedConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, IsAuthenticatedConditionDisplayDriver>()
                 .AddCondition<IsAuthenticatedCondition, IsAuthenticatedConditionEvaluator, ConditionFactory<IsAuthenticatedCondition>>();
 
             // Is anonymous condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, IsAnonymousConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, IsAnonymousConditionDisplayDriver>()
                 .AddCondition<IsAnonymousCondition, IsAnonymousConditionEvaluator, ConditionFactory<IsAnonymousCondition>>();
 
             // Content type condition.
             services
-                .AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
+                .AddTransient<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
                 .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver, ConditionFactory<ContentTypeCondition>>()
-                .AddScoped<IContentDisplayDriver>(sp => (IContentDisplayDriver)sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
+                .AddTransient<IContentDisplayDriver>(sp => (IContentDisplayDriver)sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
         }
     }
 }

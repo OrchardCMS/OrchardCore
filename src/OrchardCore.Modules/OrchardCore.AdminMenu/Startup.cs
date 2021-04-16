@@ -44,17 +44,17 @@ namespace OrchardCore.AdminMenu
 
             services.AddTransient<IDeploymentSource, AdminMenuDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AdminMenuDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AdminMenuDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, AdminMenuDeploymentStepDriver>();
 
             // placeholder treeNode
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<PlaceholderAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, PlaceholderAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, PlaceholderAdminNodeDriver>();
+            services.AddTransient<IDisplayDriver<MenuItem>, PlaceholderAdminNodeDriver>();
 
             // link treeNode
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<LinkAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, LinkAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, LinkAdminNodeDriver>();
+            services.AddTransient<IDisplayDriver<MenuItem>, LinkAdminNodeDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

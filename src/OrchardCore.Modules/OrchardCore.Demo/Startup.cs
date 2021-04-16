@@ -91,13 +91,13 @@ namespace OrchardCore.Demo
             services.AddScoped<IShapeTableProvider, DemoShapeProvider>();
             services.AddShapeAttributes<DemoShapeProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IContentDisplayDriver, TestContentElementDisplayDriver>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddContentPart<TestContentPartA>();
             services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
 
-            services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
+            services.AddTransient<IDisplayDriver<User>, UserProfileDisplayDriver>();
 
             services.Configure<RazorPagesOptions>(options =>
             {

@@ -81,15 +81,15 @@ namespace OrchardCore.Settings
 
             // Site Settings editor
             services.AddScoped<IDisplayManager<ISite>, DisplayManager<ISite>>();
-            services.AddScoped<IDisplayDriver<ISite>, DefaultSiteSettingsDisplayDriver>();
-            services.AddScoped<IDisplayDriver<ISite>, ButtonsSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, DefaultSiteSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, ButtonsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 
             services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, SiteSettingsDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, SiteSettingsDeploymentStepDriver>();
 
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
         }

@@ -28,7 +28,7 @@ namespace OrchardCore.Google
             services.AddScoped<IPermissionProvider, Permissions.GoogleAuthentication>();
             services.AddRecipeExecutionStep<GoogleAuthenticationSettingsStep>();
             services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
-            services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAuthenticationAdminMenu>();
             // Register the options initializers required by the Google Handler.
             services.TryAddEnumerable(new[]
@@ -49,7 +49,7 @@ namespace OrchardCore.Google
         {
             services.AddScoped<IPermissionProvider, Permissions.GoogleAnalytics>();
             services.AddRecipeExecutionStep<GoogleAnalyticsSettingsStep>();
-            services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
             services.Configure<MvcOptions>((options) =>
             {

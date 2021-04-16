@@ -61,7 +61,7 @@ namespace OrchardCore.Taxonomies
             .AddLiquidFilter<InheritedTermsFilter>("inherited_terms")
             .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<IShapeTableProvider, TermShapes>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
@@ -74,21 +74,21 @@ namespace OrchardCore.Taxonomies
             services.AddContentField<TaxonomyField>()
                 .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => !String.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
 
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
 
             // Taxonomy Tags Display Mode and Editor.
             services.AddContentField<TaxonomyField>()
                 .UseDisplayDriver<TaxonomyFieldTagsDisplayDriver>(d => String.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
 
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
 
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
 
             // Terms.
             services.AddContentPart<TermPart>();
             services.AddScoped<IContentHandler, TermPartContentHandler>();
-            services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
+            services.AddTransient<IContentDisplayDriver, TermPartContentDriver>();
 
         }
 
@@ -125,10 +125,10 @@ namespace OrchardCore.Taxonomies
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, TaxonomyContentsAdminListDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ContentOptionsViewModel>, TaxonomyContentsAdminListDisplayDriver>();
 
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, TaxonomyContentsAdminListSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, TaxonomyContentsAdminListSettingsDisplayDriver>();
         }
     }
 
@@ -139,7 +139,7 @@ namespace OrchardCore.Taxonomies
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<TaxonomyContentsAdminListSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<ContentsAdminListDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<TaxonomyContentsAdminListSettings>(S["Taxonomy Filters settings"], S["Exports the Taxonomy filters settings."]);

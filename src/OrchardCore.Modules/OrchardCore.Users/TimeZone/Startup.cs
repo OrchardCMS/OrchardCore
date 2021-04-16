@@ -22,7 +22,7 @@ namespace OrchardCore.Users.TimeZone
             services.AddScoped<ITimeZoneSelector, UserTimeZoneSelector>();
             services.AddScoped<UserTimeZoneService>();
 
-            services.AddScoped<IDisplayDriver<User>, UserTimeZoneDisplayDriver>();
+            services.AddTransient<IDisplayDriver<User>, UserTimeZoneDisplayDriver>();
         }
     }
 }

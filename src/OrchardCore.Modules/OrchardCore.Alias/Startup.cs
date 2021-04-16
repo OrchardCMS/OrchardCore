@@ -54,7 +54,7 @@ namespace OrchardCore.Alias
                 });
             });
             services.AddScoped<IScopedIndexProvider, AliasPartIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();
 
             // Identity Part

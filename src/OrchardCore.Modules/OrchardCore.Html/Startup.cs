@@ -29,7 +29,7 @@ namespace OrchardCore.Html
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartTrumbowygEditorSettingsDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartMonacoEditorSettingsDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, HtmlBodyPartIndexHandler>();
         }
     }

@@ -26,7 +26,7 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<LocalizedContentItemIndexProvider>());
             services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<LocalizedContentItemIndexProvider>());
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<IContentLocalizationHandler, ContentLocalizationPartHandlerCoordinator>();
 
             return services;

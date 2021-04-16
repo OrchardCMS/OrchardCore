@@ -48,15 +48,15 @@ namespace OrchardCore.Markdown
                 .AddHandler<MarkdownBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
 
             // Markdown Field
             services.AddContentField<MarkdownField>()
                 .UseDisplayDriver<MarkdownFieldDisplayDriver>();
 
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>

@@ -82,7 +82,7 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
             services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
             services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
 

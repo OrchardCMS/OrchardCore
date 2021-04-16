@@ -139,15 +139,15 @@ namespace OrchardCore.ContentTypes
         {
             services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
 
             services.AddTransient<IDeploymentSource, ReplaceContentDefinitionDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ReplaceContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ReplaceContentDefinitionDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, ReplaceContentDefinitionDeploymentStepDriver>();
 
             services.AddTransient<IDeploymentSource, DeleteContentDefinitionDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<DeleteContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, DeleteContentDefinitionDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, DeleteContentDefinitionDeploymentStepDriver>();
         }
     }
 }

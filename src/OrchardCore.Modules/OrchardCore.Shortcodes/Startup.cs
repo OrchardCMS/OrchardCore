@@ -53,7 +53,7 @@ namespace OrchardCore.Shortcodes
             services.AddOptions<ShortcodeOptions>();
             services.AddScoped<IShortcodeProvider, OptionsShortcodeProvider>();
             services.AddScoped<IDisplayManager<ShortcodeDescriptor>, DisplayManager<ShortcodeDescriptor>>();
-            services.AddScoped<IDisplayDriver<ShortcodeDescriptor>, ShortcodeDescriptorDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ShortcodeDescriptor>, ShortcodeDescriptorDisplayDriver>();
         }
     }
 
@@ -138,7 +138,7 @@ namespace OrchardCore.Shortcodes
         {
             services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
         }
     }
 }

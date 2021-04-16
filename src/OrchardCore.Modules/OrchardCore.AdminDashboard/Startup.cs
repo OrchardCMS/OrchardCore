@@ -40,9 +40,9 @@ namespace OrchardCore.AdminDashboard
             services.AddContentPart<DashboardPart>()
                 .UseDisplayDriver<DashboardPartDisplayDriver>();
 
-            services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
+            services.AddTransient<IContentDisplayDriver, DashboardContentDisplayDriver>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

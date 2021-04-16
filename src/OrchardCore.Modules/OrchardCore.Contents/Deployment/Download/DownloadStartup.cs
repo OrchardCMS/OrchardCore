@@ -22,7 +22,7 @@ namespace OrchardCore.Contents.Deployment.Download
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentDisplayDriver, DownloadContentDriver>();
+            services.AddTransient<IContentDisplayDriver, DownloadContentDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

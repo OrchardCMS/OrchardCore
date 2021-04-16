@@ -39,7 +39,7 @@ namespace OrchardCore.Features
 
             services.AddTransient<IDeploymentSource, AllFeaturesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllFeaturesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllFeaturesDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, AllFeaturesDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -20,7 +20,7 @@ namespace OrchardCore.ReCaptcha.Forms
             services.AddContentPart<ReCaptchaPart>()
                 .UseDisplayDriver<ReCaptchaPartDisplayDriver>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
         }
     }
 }

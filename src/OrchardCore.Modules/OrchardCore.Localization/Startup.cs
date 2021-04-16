@@ -28,7 +28,7 @@ namespace OrchardCore.Localization
         /// <inheritdocs />
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ILocalizationService, LocalizationService>();
@@ -62,7 +62,7 @@ namespace OrchardCore.Localization
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<LocalizationSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<LocalizationDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<LocalizationSettings>(S["Culture settings"], S["Exports the culture settings."]);

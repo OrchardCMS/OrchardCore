@@ -15,7 +15,7 @@ namespace OrchardCore.Indexing
         {
             services.AddScoped<IIndexingTaskManager, IndexingTaskManager>();
             services.AddScoped<IContentHandler, CreateIndexingTaskContentHandler>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
         }
     }
 }

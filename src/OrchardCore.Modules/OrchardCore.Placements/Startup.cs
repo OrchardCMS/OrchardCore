@@ -43,7 +43,7 @@ namespace OrchardCore.Placements
             // Shortcuts in settings
             services.AddScoped<IContentPartDefinitionDisplayDriver, PlacementContentPartDefinitionDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PlacementContentTypePartDefinitionDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, PlacementContentPartFieldDefinitionDisplayDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, PlacementContentPartFieldDefinitionDisplayDriver>();
 
             // Recipes
             services.AddRecipeExecutionStep<PlacementStep>();
@@ -100,7 +100,7 @@ namespace OrchardCore.Placements
         {
             services.AddTransient<IDeploymentSource, PlacementsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<PlacementsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, PlacementsDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, PlacementsDeploymentStepDriver>();
         }
     }
 }

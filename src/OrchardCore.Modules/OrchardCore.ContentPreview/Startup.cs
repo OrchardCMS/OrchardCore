@@ -20,13 +20,13 @@ namespace OrchardCore.ContentPreview
         {
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
-            services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
+            services.AddTransient<IContentDisplayDriver, ContentPreviewDriver>();
 
             // Preview Part
             services.AddContentPart<PreviewPart>()
                 .AddHandler<PreviewPartHandler>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
         }

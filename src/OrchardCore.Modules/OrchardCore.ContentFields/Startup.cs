@@ -64,77 +64,77 @@ namespace OrchardCore.ContentFields
             // Boolean Field
             services.AddContentField<BooleanField>()
                 .UseDisplayDriver<BooleanFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, BooleanFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, BooleanFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, BooleanFieldIndexHandler>();
 
             // Text Field
             services.AddContentField<TextField>()
                 .UseDisplayDriver<TextFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, TextFieldIndexHandler>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldPredefinedListEditorSettingsDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldMonacoEditorSettingsDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldHeaderDisplaySettingsDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, TextFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, TextFieldPredefinedListEditorSettingsDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, TextFieldMonacoEditorSettingsDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, TextFieldHeaderDisplaySettingsDriver>();
 
             // Html Field
             services.AddContentField<HtmlField>()
                 .UseDisplayDriver<HtmlFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldMonacoEditorSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, HtmlFieldMonacoEditorSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
 
             // Link Field
             services.AddContentField<LinkField>()
                 .UseDisplayDriver<LinkFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, LinkFieldIndexHandler>();
 
             // MultiText Field
             services.AddContentField<MultiTextField>()
                 .UseDisplayDriver<MultiTextFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, MultiTextFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, MultiTextFieldIndexHandler>();
 
             // Numeric Field
             services.AddContentField<NumericField>()
                 .UseDisplayDriver<NumericFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, NumericFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, NumericFieldIndexHandler>();
 
             // DateTime Field
             services.AddContentField<DateTimeField>()
                 .UseDisplayDriver<DateTimeFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateTimeFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, DateTimeFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, DateTimeFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, DateTimeFieldIndexHandler>();
 
             // Date Field
             services.AddContentField<DateField>()
                 .UseDisplayDriver<DateFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, DateFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, DateFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, DateFieldIndexHandler>();
 
             // Time Field
             services.AddContentField<TimeField>()
                 .UseDisplayDriver<TimeFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TimeFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, TimeFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, TimeFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, TimeFieldIndexHandler>();
 
             // Video field
             services.AddContentField<YoutubeField>()
                 .UseDisplayDriver<YoutubeFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, YoutubeFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, YoutubeFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, YoutubeFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, YoutubeFieldIndexHandler>();
 
             // Content picker field
             services.AddContentField<ContentPickerField>()
                 .UseDisplayDriver<ContentPickerFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
 
             // Migration, can be removed in a future release.
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -162,8 +162,8 @@ namespace OrchardCore.ContentFields
         {
             services.AddContentField<LocalizationSetContentPickerField>()
                 .UseDisplayDriver<LocalizationSetContentPickerFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LocalizationSetContentPickerFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, LocalizationSetContentPickerFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -182,7 +182,7 @@ namespace OrchardCore.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Indexing.SQL.Migrations>();
+            services.AddTransient<IDataMigration, Indexing.SQL.Migrations>();
             services.AddScoped<IScopedIndexProvider, TextFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, BooleanFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, NumericFieldIndexProvider>();
@@ -219,8 +219,8 @@ namespace OrchardCore.ContentFields
                 .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
                 .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase));
 
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, UserPickerFieldSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, UserPickerFieldIndexHandler>();
+            services.AddTransient<IContentPartFieldDefinitionDisplayDriver, UserPickerFieldSettingsDriver>();
+            services.AddTransient<IContentFieldIndexHandler, UserPickerFieldIndexHandler>();
             services.AddScoped<IUserPickerResultProvider, DefaultUserPickerResultProvider>();
         }
 
@@ -240,7 +240,7 @@ namespace OrchardCore.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Indexing.SQL.UserPickerMigrations>();
+            services.AddTransient<IDataMigration, Indexing.SQL.UserPickerMigrations>();
             services.AddScoped<IScopedIndexProvider, UserPickerFieldIndexProvider>();
         }
     }

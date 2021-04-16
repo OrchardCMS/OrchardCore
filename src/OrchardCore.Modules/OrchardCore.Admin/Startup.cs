@@ -53,7 +53,7 @@ namespace OrchardCore.Admin
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();
-            services.AddScoped<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
@@ -92,7 +92,7 @@ namespace OrchardCore.Admin
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AdminSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddTransient<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<AdminSettings>(S["Admin settings"], S["Exports the admin settings."]);

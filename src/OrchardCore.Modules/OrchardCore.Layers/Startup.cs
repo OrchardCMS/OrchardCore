@@ -54,20 +54,20 @@ namespace OrchardCore.Layers
                 options.Filters.Add(typeof(LayerFilter));
             });
 
-            services.AddScoped<IDisplayDriver<ISite>, LayerSiteSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, LayerSiteSettingsDisplayDriver>();
             services.AddContentPart<LayerMetadata>();
-            services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
+            services.AddTransient<IContentDisplayDriver, LayerMetadataWelder>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<ILayerService, LayerService>();
             services.AddScoped<IContentHandler, LayerMetadataHandler>();
             services.AddSingleton<IIndexProvider, LayerMetadataIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddRecipeExecutionStep<LayerStep>();
 
             services.AddTransient<IDeploymentSource, AllLayersDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllLayersDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
         }
 

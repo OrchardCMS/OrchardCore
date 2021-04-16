@@ -27,9 +27,9 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         {
             services.AddTransient<IDeploymentSource, ContentItemDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentItemDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentItemDeploymentStepDriver>();
-            services.AddScoped<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, AddToDeploymentPlanContentsAdminListDisplayDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, ContentItemDeploymentStepDriver>();
+            services.AddTransient<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
+            services.AddTransient<IDisplayDriver<ContentOptionsViewModel>, AddToDeploymentPlanContentsAdminListDisplayDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

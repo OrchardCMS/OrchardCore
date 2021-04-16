@@ -63,10 +63,10 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowStore, WorkflowStore>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();
             services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplayDriver>();
+            services.AddTransient<IDisplayDriver<IActivity>, MissingActivityDisplayDriver>();
             services.AddSingleton<IIndexProvider, WorkflowTypeIndexProvider>();
             services.AddSingleton<IIndexProvider, WorkflowIndexProvider>();
             services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
@@ -133,7 +133,7 @@ namespace OrchardCore.Workflows
         {
             services.AddTransient<IDeploymentSource, AllWorkflowTypeDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllWorkflowTypeDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllWorkflowTypeDeploymentStepDriver>();
+            services.AddTransient<IDisplayDriver<DeploymentStep>, AllWorkflowTypeDeploymentStepDriver>();
         }
     }
 

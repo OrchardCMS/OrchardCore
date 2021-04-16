@@ -35,7 +35,7 @@ namespace OrchardCore.Twitter
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
 
@@ -60,7 +60,7 @@ namespace OrchardCore.Twitter
         {
             services.AddScoped<INavigationProvider, AdminMenuSignin>();
             services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
-            services.AddScoped<IDisplayDriver<ISite>, TwitterSigninSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, TwitterSigninSettingsDisplayDriver>();
             // Register the options initializers required by the Twitter Handler.
             services.TryAddEnumerable(new[]
             {

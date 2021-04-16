@@ -31,7 +31,7 @@ namespace OrchardCore.PublishLater
                 .UseDisplayDriver<PublishLaterPartDisplayDriver>()
                 .AddHandler<PublishLaterPartHandler>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
 
             services.AddScoped<PublishLaterPartIndexProvider>();
             services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<PublishLaterPartIndexProvider>());

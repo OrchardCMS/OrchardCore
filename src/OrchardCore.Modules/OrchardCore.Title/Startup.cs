@@ -33,7 +33,7 @@ namespace OrchardCore.Title
             services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, TitlePartSettingsDisplayDriver>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddTransient<IDataMigration, Migrations>();
         }
     }
 }

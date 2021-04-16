@@ -23,7 +23,7 @@ namespace OrchardCore.Facebook
             services.AddScoped<INavigationProvider, AdminMenuLogin>();
 
             services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
-            services.AddScoped<IDisplayDriver<ISite>, FacebookLoginSettingsDisplayDriver>();
+            services.AddTransient<IDisplayDriver<ISite>, FacebookLoginSettingsDisplayDriver>();
             services.AddRecipeExecutionStep<FacebookLoginSettingsStep>();
 
             // Register the options initializers required by the Facebook handler.

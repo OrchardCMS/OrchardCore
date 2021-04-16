@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
-                services.AddScoped<IDataMigrationManager, DataMigrationManager>();
+                services.AddTransient<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 services.AddOptions<StoreCollectionOptions>();
