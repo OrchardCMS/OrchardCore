@@ -29,46 +29,42 @@ namespace OrchardCore.Resources.Liquid
                 }
             }
 
-            var buffer = new HtmlContentBuilder();
-
             switch (type)
             {
                 case ResourceType.Meta:
-                    resourceManager.RenderMeta(buffer);
+                    resourceManager.RenderMeta(writer);
                     break;
 
                 case ResourceType.HeadLink:
-                    resourceManager.RenderHeadLink(buffer);
+                    resourceManager.RenderHeadLink(writer);
                     break;
 
                 case ResourceType.Stylesheet:
-                    resourceManager.RenderStylesheet(buffer);
+                    resourceManager.RenderStylesheet(writer);
                     break;
 
                 case ResourceType.HeadScript:
-                    resourceManager.RenderHeadScript(buffer);
+                    resourceManager.RenderHeadScript(writer);
                     break;
 
                 case ResourceType.FootScript:
-                    resourceManager.RenderFootScript(buffer);
+                    resourceManager.RenderFootScript(writer);
                     break;
 
                 case ResourceType.Header:
-                    resourceManager.RenderMeta(buffer);
-                    resourceManager.RenderHeadLink(buffer);
-                    resourceManager.RenderStylesheet(buffer);
-                    resourceManager.RenderHeadScript(buffer);
+                    resourceManager.RenderMeta(writer);
+                    resourceManager.RenderHeadLink(writer);
+                    resourceManager.RenderStylesheet(writer);
+                    resourceManager.RenderHeadScript(writer);
                     break;
 
                 case ResourceType.Footer:
-                    resourceManager.RenderFootScript(buffer);
+                    resourceManager.RenderFootScript(writer);
                     break;
 
                 default:
                     break;
             }
-
-            buffer.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }

@@ -36,11 +36,12 @@ namespace OrchardCore.Users.Services
                     if (superUser != null)
                     {
                         environment["AdminUserId"] = siteSettings.SuperUser;
+                        environment["AdminUsername"] = superUser.UserName;
                     }
                 } 
                 catch 
                 {
-                    _logger.LogWarning("Could not lookup AdminUserId; User migrations may not have run yet");
+                    _logger.LogWarning("Could not lookup the admin user, user migrations may not have run yet.");
                 }
             }
         }

@@ -317,63 +317,7 @@ namespace OrchardCore.Contents.Controllers
 
             // TODO this needs to move into the driver, so that other modules can also contribute.
 
-            // Custom struct, and should also be provided on the options.model or
-            // as an accessor / helper method in the TermList. At a pinch it might become a func to map to.
-            // that's trickier as it _fixes_ the desired behaviour more.
-            // Possibly a func, with some standard helpers.
-            // the two possibilities are
-            // - single, i.e. always replaces
-            // - multiple, removes duplicates, but binds to an enumerable
-            //     i.e. for tags we could potentially multi select them.
-            //     but we'd need operators for between terms.
-
-            var searchValues = options.TermList.Terms.Select(x => new { name = x.TermName, value = x.ToString() }).ToList();
-            
-            var existingStatusIndex = searchValues.FindIndex(x => x.name == "status");
-            if (existingStatusIndex != -1)
-            {
-                searchValues.RemoveAt(existingStatusIndex);
-            }
-
-            if (options.ContentsStatus != ContentsStatus.Latest)
-            {                
-                // Here what happens is it needs to replace the existing status value in the string.
-                if (existingStatusIndex == -1)
-                {
-                    existingStatusIndex = searchValues.Count();
-                }
-                
-                searchValues.Insert(existingStatusIndex, new { name = "status", value = "status:" + options.ContentsStatus.ToString().ToLowerInvariant()});                
-            }
-
-            var existingSortIndex = searchValues.FindIndex(x => x.name == "sort");
-            if (existingSortIndex != -1)
-            {
-                searchValues.RemoveAt(existingSortIndex);
-            }
-
-            if (options.OrderBy != ContentsOrder.Modified)
-            {                
-                // Here what happens is it needs to replace the existing status value in the string.
-                if (existingSortIndex == -1)
-                {
-                    existingSortIndex = searchValues.Count();
-                }
-                
-                searchValues.Insert(existingSortIndex, new { name = "sort", value = "sort:" + options.OrderBy.ToString().ToLowerInvariant()});                
-            }            
-
-
-            return RedirectToAction("List", 
-                new RouteValueDictionary
-                {
-                    { "q", string.Join(' ', searchValues.Select(x => x.value)) }
-                });
-            
-            // await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
-
-            // return RedirectToAction("List", options.RouteValues);
-            
+            return RedirectToAction("List", model.Options.RouteValues);
         }
 
         [HttpPost, ActionName("List")]
@@ -393,7 +337,7 @@ namespace OrchardCore.Contents.Controllers
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
                                 _notifier.Warning(H["Couldn't publish selected content."]);
-                                _session.Cancel();
+                                await _session.CancelAsync();
                                 return Forbid();
                             }
 
@@ -407,7 +351,7 @@ namespace OrchardCore.Contents.Controllers
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
                                 _notifier.Warning(H["Couldn't unpublish selected content."]);
-                                _session.Cancel();
+                                await _session.CancelAsync();
                                 return Forbid();
                             }
 
@@ -421,7 +365,7 @@ namespace OrchardCore.Contents.Controllers
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, item))
                             {
                                 _notifier.Warning(H["Couldn't remove selected content."]);
-                                _session.Cancel();
+                                await _session.CancelAsync();
                                 return Forbid();
                             }
 
@@ -434,7 +378,7 @@ namespace OrchardCore.Contents.Controllers
                 }
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
 
         public async Task<IActionResult> Create(string id)
@@ -525,7 +469,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                await _session.CancelAsync();
                 return View(model);
             }
 
@@ -648,19 +592,19 @@ namespace OrchardCore.Contents.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
-                return View("Edit", model);
+                await _session.CancelAsync();
+                return View(nameof(Edit), model);
             }
 
             await conditionallyPublish(contentItem);
 
             if (returnUrl == null)
             {
-                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
+                return RedirectToAction(nameof(Edit), new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
             }
             else if (stayOnSamePage)
             {
-                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
+                return RedirectToAction(nameof(Edit), new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
             }
             else
             {
@@ -690,12 +634,12 @@ namespace OrchardCore.Contents.Controllers
             catch (InvalidOperationException)
             {
                 _notifier.Warning(H["Could not clone the content item."]);
-                return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+                return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
             }
 
             _notifier.Information(H["Successfully cloned. The clone was saved as a draft."]);
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -724,7 +668,7 @@ namespace OrchardCore.Contents.Controllers
                     : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -748,7 +692,7 @@ namespace OrchardCore.Contents.Controllers
                     : H["That {0} has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -778,7 +722,7 @@ namespace OrchardCore.Contents.Controllers
                 _notifier.Success(H["That {0} has been published.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -808,7 +752,7 @@ namespace OrchardCore.Contents.Controllers
                 _notifier.Success(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
     }
 }

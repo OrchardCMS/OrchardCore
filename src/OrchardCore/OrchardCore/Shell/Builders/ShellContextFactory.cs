@@ -96,8 +96,7 @@ namespace OrchardCore.Environment.Shell.Builders
             return new ShellDescriptor
             {
                 SerialNumber = -1,
-                Features = new List<ShellFeature>(_shellFeatures),
-                Parameters = new List<ShellParameter>()
+                Features = new List<ShellFeature>(_shellFeatures)
             };
         }
     }

@@ -228,7 +228,7 @@ namespace OrchardCore.Lucene
                     }
 
                     _indexingState.Update();
-                });
+                }, activateShell: false);
             } while (batch.Length == BatchSize);
         }
 
@@ -257,7 +257,11 @@ namespace OrchardCore.Lucene
         /// <returns></returns>
         public Task DeleteIndexAsync(string indexName)
         {
-            _indexManager.DeleteIndex(indexName);
+            if (_indexManager.Exists(indexName))
+            {
+                _indexManager.DeleteIndex(indexName);
+            }
+
             return _luceneIndexSettingsService.DeleteIndexAsync(indexName);
         }
 
@@ -276,7 +280,11 @@ namespace OrchardCore.Lucene
         /// </summary>
         public async Task RebuildIndexAsync(string indexName)
         {
-            _indexManager.DeleteIndex(indexName);
+            if (_indexManager.Exists(indexName))
+            {
+                _indexManager.DeleteIndex(indexName);
+            }
+            
             await _indexManager.CreateIndexAsync(indexName);
 
             ResetIndex(indexName);

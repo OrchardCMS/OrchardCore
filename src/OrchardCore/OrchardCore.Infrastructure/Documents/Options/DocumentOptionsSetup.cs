@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -11,8 +10,6 @@ namespace OrchardCore.Documents.Options
     {
         private readonly IShellConfiguration _shellConfiguration;
 
-        private readonly ConcurrentDictionary<string, DocumentOptions> _cache = new ConcurrentDictionary<string, DocumentOptions>();
-
         public DocumentOptionsSetup(IShellConfiguration shellConfiguration)
         {
             _shellConfiguration = shellConfiguration;
@@ -22,36 +19,31 @@ namespace OrchardCore.Documents.Options
 
         public void Configure(string name, DocumentOptions options)
         {
-            var config = _cache.GetOrAdd(name, name =>
+            var config = _shellConfiguration.GetSection(name).Get<DocumentOptions>() ?? new DocumentOptions();
+
+            config.CacheKey ??= name;
+            config.CacheIdKey ??= "ID_" + name;
+            config.CheckConcurrency ??= true;
+            config.CheckConsistency ??= true;
+            config.SynchronizationLatency ??= TimeSpan.FromSeconds(1);
+
+            config.Serializer = DefaultDocumentSerializer.Instance;
+
+            if (config.CompressThreshold == 0)
             {
-                var options = _shellConfiguration.GetSection(name).Get<DocumentOptions>() ?? new DocumentOptions();
+                config.CompressThreshold = 10_000;
+            }
 
-                options.CacheKey ??= name;
-                options.CacheIdKey ??= "ID_" + name;
-                options.CheckConcurrency ??= true;
-                options.CheckConsistency ??= true;
-                options.SynchronizationLatency ??= TimeSpan.FromSeconds(1);
+            // Only used by an explicit atomic update.
+            if (config.LockTimeout <= 0)
+            {
+                config.LockTimeout = 10_000;
+            }
 
-                options.Serializer = DefaultDocumentSerializer.Instance;
-
-                if (options.CompressThreshold == 0)
-                {
-                    options.CompressThreshold = 10_000;
-                }
-
-                // Only used by an explicit atomic update.
-                if (options.LockTimeout <= 0)
-                {
-                    options.LockTimeout = 10_000;
-                }
-
-                if (options.LockExpiration <= 0)
-                {
-                    options.LockExpiration = 10_000;
-                }
-
-                return options;
-            });
+            if (config.LockExpiration <= 0)
+            {
+                config.LockExpiration = 10_000;
+            }
 
             options.CacheKey = config.CacheKey;
             options.CacheIdKey = config.CacheIdKey;

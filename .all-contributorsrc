@@ -2307,6 +2307,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "kdubious",
+      "name": "Kevin Welsh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9756166?v=4",
+      "profile": "https://welshtechnologies.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

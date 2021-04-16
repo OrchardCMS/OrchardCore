@@ -14,6 +14,8 @@ namespace OrchardCore.ContentLocalization.Services
 {
     public class LocalizationEntries : ILocalizationEntries
     {
+        private readonly IVolatileDocumentManager<LocalizationStateDocument> _localizationStateManager;
+
         private ImmutableDictionary<string, LocalizationEntry> _localizations = ImmutableDictionary<string, LocalizationEntry>.Empty;
 
         private ImmutableDictionary<string, ImmutableList<LocalizationEntry>> _localizationSets =
@@ -25,8 +27,9 @@ namespace OrchardCore.ContentLocalization.Services
         private string _stateIdentifier;
         private bool _initialized;
 
-        public LocalizationEntries()
+        public LocalizationEntries(IVolatileDocumentManager<LocalizationStateDocument> localizationStateManager)
         {
+            _localizationStateManager = localizationStateManager;
         }
 
         public async Task<(bool, LocalizationEntry)> TryGetLocalizationAsync(string contentItemId)
@@ -58,7 +61,7 @@ namespace OrchardCore.ContentLocalization.Services
             await EnsureInitializedAsync();
 
             // Update the cache with a new state and then refresh entries as it would be done on a next request.
-            await LocalizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
+            await _localizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
         private async Task EnsureInitializedAsync()
@@ -69,7 +72,7 @@ namespace OrchardCore.ContentLocalization.Services
             }
             else
             {
-                var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
+                var state = await _localizationStateManager.GetOrCreateImmutableAsync();
                 if (_stateIdentifier != state.Identifier)
                 {
                     await RefreshEntriesAsync(state);
@@ -184,7 +187,7 @@ namespace OrchardCore.ContentLocalization.Services
             {
                 if (!_initialized)
                 {
-                    var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
+                    var state = await _localizationStateManager.GetOrCreateImmutableAsync();
 
                     var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null).ListAsync();
                     var entries = indexes.Select(i => new LocalizationEntry
@@ -210,8 +213,5 @@ namespace OrchardCore.ContentLocalization.Services
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
-
-        private static IVolatileDocumentManager<LocalizationStateDocument> LocalizationStateManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<LocalizationStateDocument>>();
     }
 }

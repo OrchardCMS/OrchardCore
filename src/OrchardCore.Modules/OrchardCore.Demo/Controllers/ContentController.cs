@@ -68,12 +68,12 @@ namespace OrchardCore.Demo.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
-                return View("Edit", shape);
+                await _session.CancelAsync();
+                return View(nameof(Edit), shape);
             }
 
             _session.Save(contentItem);
-            return RedirectToAction("Edit", contentItemId);
+            return RedirectToAction(nameof(Edit), contentItemId);
         }
     }
 }

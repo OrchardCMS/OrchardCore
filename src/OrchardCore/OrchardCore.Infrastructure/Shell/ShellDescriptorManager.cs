@@ -81,7 +81,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             return _shellDescriptor;
         }
 
-        public async Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellParameter> parameters)
+        public async Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures)
         {
             var shellDescriptorRecord = await GetShellDescriptorAsync();
             var serialNumber = shellDescriptorRecord == null
@@ -107,8 +107,8 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
                 shellDescriptorRecord.SerialNumber++;
             }
 
-            shellDescriptorRecord.Features = _alwaysEnabledFeatures.Concat(enabledFeatures).Distinct().ToList();
-            shellDescriptorRecord.Parameters = parameters.ToList();
+            shellDescriptorRecord.Features = _alwaysEnabledFeatures.Union(enabledFeatures).ToList();
+            shellDescriptorRecord.Installed = shellDescriptorRecord.Installed.Union(shellDescriptorRecord.Features).ToList();
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -120,7 +120,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             // In the 'ChangedAsync()' event the shell will be released so that, on request, a new one will be built.
             // So, we commit the session earlier to prevent a new shell from being built from an outdated descriptor.
 
-            await _session.CommitAsync();
+            await _session.SaveChangesAsync();
 
             await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) =>
                 handler.ChangedAsync(shellDescriptorRecord, _shellSettings), shellDescriptorRecord, _shellSettings, _logger);
