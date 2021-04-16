@@ -58,12 +58,6 @@ namespace OrchardCore.Placements.Settings
                 model.PlacementSettingEntries.Add(
                     new PlacementSettingEntry
                     {
-                        Description = S["-"]
-                    });
-
-                model.PlacementSettingEntries.Add(
-                    new PlacementSettingEntry
-                    {
                         ShapeType = shapeType,
                         Differentiator = differentiator,
                         DisplayType = "DetailAdmin",
@@ -79,12 +73,6 @@ namespace OrchardCore.Placements.Settings
                         DisplayType = "SummaryAdmin",
                         ContentPart = partTypeName,
                         Description = S["{0} field in a {1} part in admin summary views", displayName, partDisplayName]
-                    });
-
-                model.PlacementSettingEntries.Add(
-                    new PlacementSettingEntry
-                    {
-                        Description = S["-"]
                     });
 
                 model.PlacementSettingEntries.Add(

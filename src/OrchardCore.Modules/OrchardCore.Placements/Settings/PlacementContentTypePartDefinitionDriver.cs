@@ -62,12 +62,6 @@ namespace OrchardCore.Placements.Settings
                 model.PlacementSettingEntries.Add(
                     new PlacementSettingEntry
                     {
-                        Description = S["-"]
-                    });
-
-                model.PlacementSettingEntries.Add(
-                    new PlacementSettingEntry
-                    {
                         ShapeType = shapeType,
                         Differentiator = differentiator,
                         ContentType = contentType,
@@ -88,20 +82,12 @@ namespace OrchardCore.Placements.Settings
                 model.PlacementSettingEntries.Add(
                     new PlacementSettingEntry
                     {
-                        Description = S["-"]
-                    });
-
-                model.PlacementSettingEntries.Add(
-                    new PlacementSettingEntry
-                    {
                         ShapeType = $"{partName}_Edit",
                         Differentiator = differentiator,
                         ContentType = contentType,
                         DisplayType = "Edit",
                         Description = S["{0} part in a {1} type in admin editor", partDisplayName, displayName]
                     });
-
-
 
             }).Location("Shortcuts");
         }
