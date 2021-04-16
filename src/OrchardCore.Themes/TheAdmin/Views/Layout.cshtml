@@ -3,7 +3,7 @@
     var adminSettings = Site.As<AdminSettings>();
     var darkMode = await DarkModeService.IsDarkModeAsync();
 
-    // Branding is pre-rendred to allow resource injection
+    // Branding is pre-rendered to allow resource injection
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
 }
 <!DOCTYPE html>
