@@ -3,7 +3,7 @@
   <!-- Default TFM (Singular) and TFMs (Plural) -->
   <PropertyGroup>
     <AspNetCoreTargetFramework>net5.0</AspNetCoreTargetFramework>
-    <AspNetCoreTargetFrameworks>net5.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
+    <AspNetCoreTargetFrameworks>net6.0;net5.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
   </PropertyGroup>
 
   <!-- Default TFMs (Plural) inside Visual Studio -->
