@@ -343,11 +343,6 @@ namespace OrchardCore.Lucene
             return pool.Acquire();
         }
 
-        private string GetFilename(string indexName, int documentId)
-        {
-            return PathExtensions.Combine(_rootPath, indexName, documentId + ".json");
-        }
-
         /// <summary>
         /// Releases all readers and writers. This can be used after some time of innactivity to free resources.
         /// </summary>

@@ -1,4 +1,4 @@
-# Admin (OrchardCore.Admin)
+# Admin (`OrchardCore.Admin`)
 
 The Admin module provides an admin dashboard for your site.
 
@@ -10,6 +10,6 @@ If you want to specify another prefix in the urls to access the admin section, y
   "OrchardCore": {
     "OrchardCore_Admin": {
       "AdminUrlPrefix": "YourCustomAdminUrl"
-	  }
-	}
+      }
+    }
 ```

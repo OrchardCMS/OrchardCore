@@ -2235,6 +2235,87 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "lampersky",
+      "name": "lampersky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6403130?v=4",
+      "profile": "https://github.com/lampersky",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "arnaudroystatcan",
+      "name": "arnaudroystatcan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66786602?v=4",
+      "profile": "https://github.com/arnaudroystatcan",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "petri-holopainen-tietotalo",
+      "name": "petri-holopainen-tietotalo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/51475833?v=4",
+      "profile": "https://github.com/petri-holopainen-tietotalo",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "lazcool",
+      "name": "Phil Davies",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12608907?v=4",
+      "profile": "https://www.linkedin.com/in/philgdavies/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dafergu2",
+      "name": "David Ferguson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1692895?v=4",
+      "profile": "https://github.com/dafergu2",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "hamdiRuwiss",
+      "name": "hamdiRuwiss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10530511?v=4",
+      "profile": "https://github.com/hamdiRuwiss",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "BrentCarter",
+      "name": "Brent",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19171845?v=4",
+      "profile": "https://fuzl.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "ropstah",
+      "name": "ropstah",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5072557?v=4",
+      "profile": "https://github.com/ropstah",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kdubious",
+      "name": "Kevin Welsh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9756166?v=4",
+      "profile": "https://welshtechnologies.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

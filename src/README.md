@@ -77,7 +77,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ### Command line
 
-- Install the latest version of the .NET Core SDK from this page <https://www.microsoft.com/net/download/core>
+- Install the latest version of the .NET SDK from this page <https://dotnet.microsoft.com/download>
 - Next, navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your folder is on the commandline in Administrator mode.
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.

@@ -1,6 +1,6 @@
 # Lucene (`OrchardCore.Lucene`)
 
-The Lucene module allows to manage Lucene indices.
+The Lucene module allows you to manage Lucene indices.
 
 ## Recipe step
 

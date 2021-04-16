@@ -60,7 +60,7 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
                 ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
-            });
+            });         
         }
     }
 

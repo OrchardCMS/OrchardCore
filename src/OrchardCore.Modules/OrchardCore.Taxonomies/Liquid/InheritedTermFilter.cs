@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
@@ -12,17 +11,17 @@ namespace OrchardCore.Taxonomies.Liquid
 {
     public class InheritedTermsFilter : ILiquidFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'inherited_terms'");
-            }
+        private readonly IContentManager _contentManager;
 
+        public InheritedTermsFilter(IContentManager contentManager)
+        {
+            _contentManager = contentManager;
+        }
+
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        {
             ContentItem taxonomy = null;
             string termContentItemId = null;
-
-            var contentManager = ((IServiceProvider)services).GetRequiredService<IContentManager>();
 
             if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem term)
             {
@@ -41,7 +40,7 @@ namespace OrchardCore.Taxonomies.Liquid
             }
             else
             {
-                taxonomy = await contentManager.GetAsync(firstArg.ToStringValue());
+                taxonomy = await _contentManager.GetAsync(firstArg.ToStringValue());
             }
 
             if (taxonomy == null)
@@ -53,7 +52,7 @@ namespace OrchardCore.Taxonomies.Liquid
 
             TaxonomyOrchardHelperExtensions.FindTermHierarchy(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId, terms);
 
-            return FluidValue.Create(terms);
+            return FluidValue.Create(terms, ctx.Options);
         }
     }
 }

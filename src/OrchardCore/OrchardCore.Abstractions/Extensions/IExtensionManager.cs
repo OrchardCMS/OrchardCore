@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions.Loaders;
 
 namespace OrchardCore.Environment.Extensions
 {

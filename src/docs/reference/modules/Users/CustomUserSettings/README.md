@@ -47,3 +47,7 @@ To adjust the placement, for example, to move the setting out of the tab, use th
 
 You may also extend the `User` properties by implementing a `SectionDisplayDriver<User, UserProfile>` where `User` is the type of entity to be edited,
 and `UserProfile` is the property to extend the `User` entity with.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/_ff79hm5PAc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

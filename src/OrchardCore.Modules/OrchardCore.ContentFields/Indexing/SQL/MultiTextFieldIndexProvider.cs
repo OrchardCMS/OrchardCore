@@ -37,6 +37,12 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             context.For<MultiTextFieldIndex>()
                 .Map(contentItem =>
                 {
+                    // Remove index records of soft deleted items.
+                    if (!contentItem.Published && !contentItem.Latest)
+                    {
+                        return null;
+                    }
+
                     // Can we safely ignore this content item?
                     if (_ignoredTypes.Contains(contentItem.ContentType))
                     {
@@ -44,7 +50,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     }
 
                     // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+                    _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for TextField
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);

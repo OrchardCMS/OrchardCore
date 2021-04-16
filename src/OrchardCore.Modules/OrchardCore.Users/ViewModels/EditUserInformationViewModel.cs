@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
@@ -13,6 +14,9 @@ namespace OrchardCore.Users.ViewModels
 
         [Required]
         public string Email { get; set; }
+
+        [BindNever]
+        public bool IsEditingDisabled { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
