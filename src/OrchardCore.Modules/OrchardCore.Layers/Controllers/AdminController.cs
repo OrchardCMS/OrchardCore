@@ -115,7 +115,7 @@ namespace OrchardCore.Layers.Controllers
                 return Forbid();
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Create()
@@ -155,7 +155,7 @@ namespace OrchardCore.Layers.Controllers
 
                 await _layerService.UpdateAsync(layers);
 
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             return View(model);
@@ -226,7 +226,7 @@ namespace OrchardCore.Layers.Controllers
 
                 await _layerService.UpdateAsync(layers);
 
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             return View(model);
@@ -262,7 +262,7 @@ namespace OrchardCore.Layers.Controllers
                 _notifier.Error(H["The layer couldn't be deleted: you must remove any associated widgets first."]);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -327,7 +327,7 @@ namespace OrchardCore.Layers.Controllers
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
         }
 

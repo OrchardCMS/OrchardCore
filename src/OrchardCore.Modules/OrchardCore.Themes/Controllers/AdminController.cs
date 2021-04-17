@@ -164,7 +164,7 @@ namespace OrchardCore.Themes.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -179,7 +179,7 @@ namespace OrchardCore.Themes.Controllers
 
             _notifier.Success(H["The Site theme was reset."]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -194,7 +194,7 @@ namespace OrchardCore.Themes.Controllers
 
             _notifier.Success(H["The Admin theme was reset."]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -216,7 +216,7 @@ namespace OrchardCore.Themes.Controllers
 
             _notifier.Success(H["{0} was disabled.", feature.Name ?? feature.Id]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -238,7 +238,7 @@ namespace OrchardCore.Themes.Controllers
 
             _notifier.Success(H["{0} was enabled.", feature.Name ?? feature.Id]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private bool IsAdminTheme(IManifestInfo manifest)
