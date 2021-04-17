@@ -24,6 +24,8 @@ namespace OrchardCore.Abstractions.Pooling
             _jsonSettings = serializerSettings;
         }
 
+        public T Deserialize<T>(string content) => (T) Deserialize(content, typeof(T));
+
         public object Deserialize(string content, Type type)
         {
             var jsonSerializer = JsonSerializer.CreateDefault(_jsonSettings);
