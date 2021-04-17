@@ -4,6 +4,9 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Abstractions.Pooling
 {
+    /// <summary>
+    /// An adapter for JSON.NET to allow usage of ArrayPool.
+    /// </summary>
     internal sealed class JsonArrayPool<T> : IArrayPool<T>
     {
         private readonly ArrayPool<T> _inner;

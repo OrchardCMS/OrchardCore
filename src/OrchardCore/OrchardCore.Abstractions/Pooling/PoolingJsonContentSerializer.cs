@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace OrchardCore.Abstractions.Pooling
 {
     /// <summary>
-    /// Handles JSON.NET serialization utilizing pooled buffers.
+    /// Handles JSON.NET serialization utilizing pooled array buffers and string builders.
     /// </summary>
     internal sealed class PoolingJsonSerializer
     {

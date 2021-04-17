@@ -7,7 +7,7 @@ using YesSql;
 namespace OrchardCore.Data
 {
     /// <summary>
-    /// Forwards to generic pooling JSON serializer with custom settings.
+    /// Custom YesSql content serializer which forwards to generic pooling JSON serializer with custom settings.
     /// </summary>
     internal sealed class PoolingJsonContentSerializer : IContentSerializer
     {
@@ -28,10 +28,7 @@ namespace OrchardCore.Data
 
         public object Deserialize(string content, Type type) => _inner.Deserialize(content, type);
 
-        public dynamic DeserializeDynamic(string content) => Deserialize<dynamic>(content);
-
-        // helps to resolve dynamic type
-        private object Deserialize<T>(string content) => _inner.Deserialize(content, typeof(T));
+        public dynamic DeserializeDynamic(string content) => _inner.Deserialize<dynamic>(content);
 
         public string Serialize(object item) => _inner.Serialize(item);
     }
