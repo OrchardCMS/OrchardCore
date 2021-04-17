@@ -53,15 +53,14 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
-                var content = new ViewBufferTextWriterContent();
+                using var content = new ViewBufferTextWriterContent();
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
                 await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
-                
-                // Use ViewBufferTextWriter.Write(object) from ASP.NET directly since it will use a special code path
-                // for IHtmlContent. This prevent the TextWriter methods from copying the content from our buffer 
-                // if we did content.WriteTo(page.Output)
-                
-                page.Output.Write(content);
+
+                // Use ViewBufferTextWriter.WriteAsync(string value) from ASP.NET directly since so it will write content from
+                // pooled string builder and allow us to return it to pool by having the using directive above
+
+                await page.Output.WriteAsync(content.ToString());
             }
             finally
             {
@@ -265,7 +264,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     context.TimeZone = timeZoneInfo;
                 }
 
-                // Configure Fluid with the local date and time 
+                // Configure Fluid with the local date and time
                 var now = await localClock.LocalNowAsync;
 
                 context.Now = () => now;

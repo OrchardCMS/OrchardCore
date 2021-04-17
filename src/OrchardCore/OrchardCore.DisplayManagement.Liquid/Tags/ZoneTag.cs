@@ -35,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             if (statements != null && statements.Count > 0)
             {
-                var content = new ViewBufferTextWriterContent();
+                using var content = new ViewBufferTextWriterContent();
 
                 var completion = await statements.RenderStatementsAsync(content, encoder, context);
 
@@ -50,7 +50,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                 if (zone is Shape shape)
                 {
-                    await shape.AddAsync(content, position);
+                    await shape.AddAsync(content.ToString(), position);
                 }
             }
 

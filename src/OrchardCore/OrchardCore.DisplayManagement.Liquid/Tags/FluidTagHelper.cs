@@ -88,12 +88,14 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             if (content != null)
             {
+                var output = content.ToString();
                 tagHelperOutput = new TagHelperOutput(
                     identifier,
-                    outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content))
+                    outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(output))
                 );
 
-                tagHelperOutput.Content.AppendHtml(content);
+                tagHelperOutput.Content.AppendHtml(output);
+                content.Dispose();
             }
             else
             {

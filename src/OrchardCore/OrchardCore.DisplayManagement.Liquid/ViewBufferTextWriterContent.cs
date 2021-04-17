@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
@@ -13,11 +15,12 @@ namespace OrchardCore.DisplayManagement.Liquid
     /// An <see cref="IHtmlContent"/> implementation that inherits from <see cref="TextWriter"/> to write to the ASP.NET ViewBufferTextWriter
     /// in an optimal way.
     /// </summary>
-    public class ViewBufferTextWriterContent : TextWriter, IHtmlContent
+    public class ViewBufferTextWriterContent : TextWriter
     {
         private StringBuilder _builder;
         private StringBuilderPool _pooledBuilder;
         private List<StringBuilderPool> _previousPooledBuilders;
+        private bool _disposed;
 
         public override Encoding Encoding => Encoding.UTF8;
 
@@ -29,8 +32,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
             ReleasePooledBuffer();
+            _disposed = true;
         }
 
         private void ReleasePooledBuffer()
@@ -67,7 +70,9 @@ namespace OrchardCore.DisplayManagement.Liquid
         // Invoked when used as TextWriter to intercept what is supposed to be written
         public override void Write(string value)
         {
-            if (value == null || value.Length == 0)
+            CheckDisposed();
+
+            if (String.IsNullOrEmpty(value))
             {
                 return;
             }
@@ -97,6 +102,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(char value)
         {
+            CheckDisposed();
+
             if (_builder.Length >= _builder.Capacity)
             {
                 AllocateBuilder();
@@ -107,6 +114,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(char[] buffer)
         {
+            CheckDisposed();
+
             if (buffer == null || buffer.Length == 0)
             {
                 return;
@@ -137,6 +146,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(char[] buffer, int offset, int count)
         {
+            CheckDisposed();
+
             if (buffer == null || buffer.Length == 0 || count == 0)
             {
                 return;
@@ -167,6 +178,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(ReadOnlySpan<char> buffer)
         {
+            CheckDisposed();
+
             if (buffer.Length == 0)
             {
                 return;
@@ -197,10 +210,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
-            if (_builder == null)
-            {
-                throw new InvalidOperationException("Buffer has already been rendered");
-            }
+            CheckDisposed();
 
             if (_previousPooledBuilders != null)
             {
@@ -224,37 +234,42 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             }
 
-            ReleasePooledBuffer();
+            Dispose();
+            _disposed = true;
         }
 
         public override Task FlushAsync()
         {
+            CheckDisposed();
             // Override since the base implementation does unnecessary work
             return Task.CompletedTask;
         }
 
-        #region Async Methods
-
         public override Task WriteAsync(string value)
         {
+            CheckDisposed();
             Write(value);
             return Task.CompletedTask;
         }
 
         public override Task WriteAsync(char value)
         {
+            CheckDisposed();
             Write(value);
             return Task.CompletedTask;
         }
 
         public override Task WriteAsync(char[] buffer, int index, int count)
         {
+            CheckDisposed();
             Write(buffer, index, count);
             return Task.CompletedTask;
         }
 
         public override Task WriteAsync(ReadOnlyMemory<char> buffer, CancellationToken cancellationToken = default)
         {
+            CheckDisposed();
+
             if (cancellationToken.IsCancellationRequested)
             {
                 return Task.FromCanceled(cancellationToken);
@@ -266,6 +281,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override Task WriteAsync(StringBuilder value, CancellationToken cancellationToken = default)
         {
+            CheckDisposed();
+
             if (cancellationToken.IsCancellationRequested)
             {
                 return Task.FromCanceled(cancellationToken);
@@ -277,24 +294,33 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override Task WriteLineAsync(char value)
         {
+            if (_disposed)
+            {
+                ThrowDisposed();
+            }
+
             WriteLine(value);
             return Task.CompletedTask;
         }
 
         public override Task WriteLineAsync(string value)
         {
+            CheckDisposed();
             WriteLine(value);
             return Task.CompletedTask;
         }
 
         public override Task WriteLineAsync(char[] buffer, int index, int count)
         {
+            CheckDisposed();
             WriteLine(buffer, index, count);
             return Task.CompletedTask;
         }
 
         public override Task WriteLineAsync(ReadOnlyMemory<char> buffer, CancellationToken cancellationToken = default)
         {
+            CheckDisposed();
+
             if (cancellationToken.IsCancellationRequested)
             {
                 return Task.FromCanceled(cancellationToken);
@@ -306,6 +332,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override Task WriteLineAsync(StringBuilder value, CancellationToken cancellationToken = default)
         {
+            CheckDisposed();
+
             if (cancellationToken.IsCancellationRequested)
             {
                 return Task.FromCanceled(cancellationToken);
@@ -315,6 +343,27 @@ namespace OrchardCore.DisplayManagement.Liquid
             return Task.CompletedTask;
         }
 
-        #endregion
+        public override string ToString()
+        {
+            using var pool = StringBuilderPool.GetInstance();
+            using var sw = new StringWriter(pool.Builder);
+            WriteTo(sw, NullHtmlEncoder.Default);
+            return sw.ToString();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckDisposed()
+        {
+            if (_disposed)
+            {
+                ThrowDisposed();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowDisposed()
+        {
+            throw new ObjectDisposedException("This instance has been disposed an cannot be used");
+        }
     }
 }
