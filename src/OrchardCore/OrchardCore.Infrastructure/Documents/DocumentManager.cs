@@ -35,6 +35,8 @@ namespace OrchardCore.Documents
             {
                 _isDistributed = true;
             }
+
+            DocumentStoreServiceType = typeof(IDocumentStore);
         }
 
         public Type DocumentStoreServiceType { get; set; }
@@ -43,17 +45,7 @@ namespace OrchardCore.Documents
         {
             get
             {
-                IDocumentStore documentStore;
-                if (DocumentStoreServiceType == null)
-                {
-                    DocumentStoreServiceType = typeof(IDocumentStore);
-                    documentStore = ShellScope.Services.GetRequiredService<IDocumentStore>();
-                    ShellScope.Set(DocumentStoreServiceType, documentStore);
-
-                    return documentStore;
-                }
-
-                documentStore = (IDocumentStore)ShellScope.Get(DocumentStoreServiceType);
+                var documentStore = (IDocumentStore)ShellScope.Get(DocumentStoreServiceType);
                 if (documentStore == null)
                 {
                     documentStore = (IDocumentStore)ShellScope.Services.GetRequiredService(DocumentStoreServiceType);
