@@ -14,7 +14,7 @@ namespace OrchardCore.Abstractions.Pooling
     /// </summary>
     internal sealed class StringBuilderPool : IDisposable
     {
-        private const int DefaultCapacity = 1 * 1024;
+        private const int DefaultCapacity = 32 * 1024;
 
         // global pool
         private static readonly ObjectPool<StringBuilderPool> s_poolInstance = CreatePool();
@@ -30,7 +30,7 @@ namespace OrchardCore.Abstractions.Pooling
 
         public int Length => Builder.Length;
 
-        internal static ObjectPool<StringBuilderPool> CreatePool(int size = 1000)
+        internal static ObjectPool<StringBuilderPool> CreatePool(int size = 32)
         {
             ObjectPool<StringBuilderPool> pool = null;
             pool = new ObjectPool<StringBuilderPool>(() => new StringBuilderPool(pool), size);
