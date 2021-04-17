@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
+using OrchardCore.Data.Pooling;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -56,7 +57,10 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    IConfiguration storeConfiguration = new YesSql.Configuration();
+                    IConfiguration storeConfiguration = new YesSql.Configuration
+                    {
+                        ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
+                    };
 
                     switch (shellSettings["DatabaseProvider"])
                     {
