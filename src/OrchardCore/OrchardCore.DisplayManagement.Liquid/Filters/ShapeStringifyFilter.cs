@@ -22,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {
                 using var stringBuilderPool = StringBuilderPool.GetInstance();
-                await using var writer = new StringWriter(stringBuilderPool.Builder);
+                using var writer = new StringWriter(stringBuilderPool.Builder);
                 (await task).WriteTo(writer, NullHtmlEncoder.Default);
                 return new StringValue(writer.ToString(), false);
             }

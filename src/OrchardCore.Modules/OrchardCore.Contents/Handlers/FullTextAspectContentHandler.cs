@@ -64,7 +64,7 @@ namespace OrchardCore.Contents.Handlers
                     if (bodyAspect != null && bodyAspect.Body != null)
                     {
                         using var stringBuilderPool = StringBuilderPool.GetInstance();
-                        await using var sw = new StringWriter(stringBuilderPool.Builder);
+                        using var sw = new StringWriter(stringBuilderPool.Builder);
                         // Don't encode the body
                         bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
                         fullTextAspect.Segments.Add(sw.ToString());

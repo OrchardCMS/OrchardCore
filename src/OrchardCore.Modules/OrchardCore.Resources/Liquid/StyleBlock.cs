@@ -99,7 +99,7 @@ namespace OrchardCore.Resources.Liquid
                 if (statements != null && statements.Count > 0)
                 {
                     using var stringBuilderPool = StringBuilderPool.GetInstance();
-                    await using var sw = new StringWriter(stringBuilderPool.Builder);
+                    using var sw = new StringWriter(stringBuilderPool.Builder);
                     var completion = await statements.RenderStatementsAsync(sw, encoder, context);
 
                     if (completion != Completion.Normal)

@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Html
         private string DebuggerToString()
         {
             using var stringBuilderPool = StringBuilderPool.GetInstance();
-            using var writer = new StringWriter(stringBuilderPool.Builder);
+            var writer = new StringWriter(stringBuilderPool.Builder);
             WriteTo(writer, HtmlEncoder.Default);
             return writer.ToString();
         }

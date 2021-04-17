@@ -43,7 +43,7 @@ namespace OrchardCore.Recipes.RecipeSteps
             foreach (var command in step.Commands)
             {
                 using var stringBuilderPool = StringBuilderPool.GetInstance();
-                await using (var output = new StringWriter(stringBuilderPool.Builder))
+                using (var output = new StringWriter(stringBuilderPool.Builder))
                 {
                     _logger.LogInformation("Executing command: {Command}", command);
                     var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
