@@ -7,6 +7,7 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 
@@ -96,7 +97,8 @@ namespace OrchardCore.Resources.Liquid
 
                     if (statements != null && statements.Count > 0)
                     {
-                        using var sw = new StringWriter();
+                        using var stringBuilderPool = StringBuilderPool.GetInstance();
+                        await using var sw = new StringWriter(stringBuilderPool.Builder);
                         var completion = await statements.RenderStatementsAsync(sw, encoder, context);
 
                         if (completion != Completion.Normal)
@@ -132,7 +134,8 @@ namespace OrchardCore.Resources.Liquid
 
                 if (statements != null && statements.Count > 0)
                 {
-                    using var sw = new StringWriter();
+                    using var stringBuilderPool = StringBuilderPool.GetInstance();
+                    await using var sw = new StringWriter(stringBuilderPool.Builder);
                     var completion = await statements.RenderStatementsAsync(sw, encoder, context);
 
                     if (completion != Completion.Normal)
