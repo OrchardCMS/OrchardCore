@@ -44,7 +44,7 @@ namespace OrchardCore.Abstractions.Pooling
             using var jsonWriter = new JsonTextWriter(sw)
             {
                 ArrayPool = _arrayPool,
-                Formatting = _jsonSettings.Formatting
+                Formatting = jsonSerializer.Formatting
             };
             jsonSerializer.Serialize(jsonWriter, item, null);
             return sw.ToString();
