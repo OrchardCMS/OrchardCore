@@ -51,9 +51,18 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Configure<TemplateOptions>(o =>
                 {
-                    o.ValueConverters.Add(o => o is Shape s ? new ObjectValue(s) : null);
-                    o.ValueConverters.Add(o => o is ZoneHolding z ? new ObjectValue(z) : null);
-                    o.ValueConverters.Add(o => !(o is IShape) && o is IHtmlContent c ? new HtmlContentValue(c) : null);
+                    o.ValueConverters.Add(static x =>
+                    {
+                        if (x is Shape s)
+                        {
+                            return new ObjectValue(s);
+                        }
+                        if (x is not IShape && x is IHtmlContent c)
+                        {
+                            return new HtmlContentValue(c);
+                        }
+                        return null;
+                    });
 
                     o.MemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
                     o.MemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());

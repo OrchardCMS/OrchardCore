@@ -39,9 +39,16 @@ namespace OrchardCore.Liquid
                 options.MemberAccessStrategy.Register<JObject, object>((source, name) => source[name]);
 
                 // Convert JToken to FluidValue
-                options.ValueConverters.Add(x => x is JObject o ? new ObjectValue(o) : null);
-                options.ValueConverters.Add(x => x is JValue v ? v.Value : null);
-                options.ValueConverters.Add(x => x is DateTime d ? new ObjectValue(d) : null);
+                options.ValueConverters.Add(static x =>
+                {
+                    return x switch
+                    {
+                        JObject o => new ObjectValue(o),
+                        JValue v => v.Value,
+                        DateTime d => new ObjectValue(d),
+                        _ => null
+                    };
+                });
 
                 options.Filters.AddFilter("json", JsonFilter.Json);
                 options.Filters.AddFilter("jsonparse", JsonParseFilter.JsonParse);

@@ -8,6 +8,7 @@
 
     Liquid syntax support for DisplayManagement.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework DisplayManagement Liquid</PackageTags>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
