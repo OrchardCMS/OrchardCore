@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Threading;
 
-namespace OrchardCore.Data.Pooling
+namespace OrchardCore.Abstractions.Pooling
 {
     /// <summary>
     /// Generic implementation of object pooling pattern with predefined pool size limit. The main

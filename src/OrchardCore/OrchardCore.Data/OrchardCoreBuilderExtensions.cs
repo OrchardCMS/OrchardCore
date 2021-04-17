@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
-using OrchardCore.Data.Pooling;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;

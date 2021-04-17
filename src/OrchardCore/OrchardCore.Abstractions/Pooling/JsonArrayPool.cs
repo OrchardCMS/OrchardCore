@@ -2,7 +2,7 @@ using System;
 using System.Buffers;
 using Newtonsoft.Json;
 
-namespace OrchardCore.Data.Pooling
+namespace OrchardCore.Abstractions.Pooling
 {
     internal sealed class JsonArrayPool<T> : IArrayPool<T>
     {

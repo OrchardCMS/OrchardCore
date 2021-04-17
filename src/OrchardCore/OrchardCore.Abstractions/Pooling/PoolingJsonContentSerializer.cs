@@ -1,0 +1,51 @@
+using System;
+using System.Buffers;
+using System.Globalization;
+using System.IO;
+using Newtonsoft.Json;
+
+namespace OrchardCore.Abstractions.Pooling
+{
+    /// <summary>
+    /// Handles JSON.NET serialization utilizing pooled buffers.
+    /// </summary>
+    internal sealed class PoolingJsonSerializer
+    {
+        private readonly JsonArrayPool<char> _arrayPool;
+        private readonly JsonSerializerSettings _jsonSettings;
+
+        public PoolingJsonSerializer(ArrayPool<char> arrayPool) : this(arrayPool, null)
+        {
+        }
+
+        public PoolingJsonSerializer(ArrayPool<char> arrayPool, JsonSerializerSettings serializerSettings)
+        {
+            _arrayPool = new JsonArrayPool<char>(arrayPool ?? throw new ArgumentException("Array pool is required", nameof(arrayPool)));
+            _jsonSettings = serializerSettings;
+        }
+
+        public object Deserialize(string content, Type type)
+        {
+            var jsonSerializer = JsonSerializer.CreateDefault(_jsonSettings);
+            using var reader = new JsonTextReader(new StringReader(content))
+            {
+                ArrayPool = _arrayPool
+            };
+            return jsonSerializer.Deserialize(reader, type);
+        }
+
+        public string Serialize(object item)
+        {
+            var jsonSerializer = JsonSerializer.CreateDefault(_jsonSettings);
+            using var pool = StringBuilderPool.GetInstance();
+            var sw = new StringWriter(pool.Builder, CultureInfo.InvariantCulture);
+            using var jsonWriter = new JsonTextWriter(sw)
+            {
+                ArrayPool = _arrayPool,
+                Formatting = _jsonSettings.Formatting
+            };
+            jsonSerializer.Serialize(jsonWriter, item, null);
+            return sw.ToString();
+        }
+    }
+}
