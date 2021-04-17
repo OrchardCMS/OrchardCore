@@ -20,6 +20,7 @@ namespace OrchardCore.DynamicCache.Services
         private readonly CacheOptions _cacheOptions;
 
         private readonly Dictionary<string, string> _localCache = new Dictionary<string, string>();
+        private ITagCache _tagcache;
 
         public DefaultDynamicCacheService(
             ICacheContextManager cacheContextManager,
@@ -97,8 +98,8 @@ namespace OrchardCore.DynamicCache.Services
             await _dynamicCache.SetAsync(cacheKey, bytes, options);
 
             // Lazy load to prevent cyclic dependency
-            var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
-            await tagCache.TagAsync(cacheKey, context.Tags.ToArray());
+            _tagcache ??= _serviceProvider.GetRequiredService<ITagCache>();
+            await _tagcache.TagAsync(cacheKey, context.Tags.ToArray());
         }
 
         private async Task<string> GetCacheKey(CacheContext context)
