@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
@@ -13,6 +14,7 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Events;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -479,11 +481,11 @@ namespace OrchardCore.Environment.Shell
                 context.Release();
             }
 
-            //using (var serviceScope = (await CreateShellContextAsync(settings)).ServiceProvider.CreateScope())
-            //{
-            //    var shellEventHandlers = serviceScope.ServiceProvider.GetServices<IShellEventHandler>();
-            //    await shellEventHandlers.InvokeAsync(x => x.Removing(settings), _logger);
-            //}
+            using (var serviceScope = (await CreateShellContextAsync(settings)).CreateScope())
+            {
+                var shellEventHandlers = serviceScope.ServiceProvider.GetServices<IShellEventHandler>();
+                await shellEventHandlers.InvokeAsync(x => x.Removing(settings), _logger);
+            }
 
             await _shellSettingsManager.DeleteSettingsAsync(settings);
 
