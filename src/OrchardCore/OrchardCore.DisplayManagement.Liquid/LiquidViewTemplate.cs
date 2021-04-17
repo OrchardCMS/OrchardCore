@@ -53,7 +53,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
-                var content = new ViewBufferTextWriterContent();
+                using var content = new ViewBufferTextWriterContent();
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
                 await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
                 
