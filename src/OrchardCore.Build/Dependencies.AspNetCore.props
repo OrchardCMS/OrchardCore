@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <DefaultTargetFramework>net5.0</DefaultTargetFramework>
-    <AspNetCoreTargetFrameworks>net5.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
+    <AspNetCoreTargetFrameworks Condition="'$(AspNetCoreTargetFrameworks)' == ''">net5.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingByReSharper)' == 'true'">
