@@ -195,6 +195,20 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
         }
 
+        public override void Write(StringBuilder value)
+        {
+            if (value != null)
+            {
+                foreach (var chunk in value.GetChunks())
+                {
+                    if (!chunk.IsEmpty)
+                    {
+                        Write(chunk.Span);
+                    }
+                }
+            }
+        }
+
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
             if (_builder == null)
