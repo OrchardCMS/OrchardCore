@@ -46,8 +46,8 @@ namespace OrchardCore.Documents
                 IDocumentStore documentStore;
                 if (DocumentStoreServiceType == null)
                 {
-                    documentStore = ShellScope.Services.GetRequiredService<IDocumentStore>();
                     DocumentStoreServiceType = typeof(IDocumentStore);
+                    documentStore = ShellScope.Services.GetRequiredService<IDocumentStore>();
                     ShellScope.Set(DocumentStoreServiceType, documentStore);
 
                     return documentStore;
