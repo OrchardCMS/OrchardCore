@@ -56,6 +56,11 @@ namespace OrchardCore.DisplayManagement.Liquid
                 var content = new ViewBufferTextWriterContent();
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
                 await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
+                
+                // Use ViewBufferTextWriter.Write(object) from ASP.NET directly since it will use a special code path
+                // for IHtmlContent. This prevent the TextWriter methods from copying the content from our buffer 
+                // if we did content.WriteTo(page.Output)
+                
                 page.Output.Write(content);
             }
             finally
