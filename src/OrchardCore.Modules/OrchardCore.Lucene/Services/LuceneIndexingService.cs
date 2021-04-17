@@ -284,7 +284,7 @@ namespace OrchardCore.Lucene
             {
                 _indexManager.DeleteIndex(indexName);
             }
-            
+
             await _indexManager.CreateIndexAsync(indexName);
 
             ResetIndex(indexName);
