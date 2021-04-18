@@ -245,7 +245,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (string.IsNullOrEmpty(returnUrl))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             return LocalRedirect(returnUrl);
@@ -544,7 +544,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (string.IsNullOrEmpty(returnUrl))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             return LocalRedirect(returnUrl);

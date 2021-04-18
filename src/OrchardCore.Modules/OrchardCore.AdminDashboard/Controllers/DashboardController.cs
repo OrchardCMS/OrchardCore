@@ -208,7 +208,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             }
             else
             {
-                return RedirectToAction("Manage");
+                return RedirectToAction(nameof(Manage));
             }
 
         }
