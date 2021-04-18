@@ -83,7 +83,7 @@ namespace OrchardCore.Deployment.Controllers
                     {
                         _notifier.Error(H["Only zip or json files are supported."]);
 
-                        return RedirectToAction("Index");
+                        return RedirectToAction(nameof(Index));
                     }
 
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));

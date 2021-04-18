@@ -266,7 +266,7 @@ namespace OrchardCore.Contents.Controllers
 
             await _contentOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
 
-            return RedirectToAction("List", model.Options.RouteValues);
+            return RedirectToAction(nameof(List), model.Options.RouteValues);
         }
 
         [HttpPost, ActionName("List")]
@@ -327,7 +327,7 @@ namespace OrchardCore.Contents.Controllers
                 }
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
 
         public async Task<IActionResult> Create(string id)
@@ -542,18 +542,18 @@ namespace OrchardCore.Contents.Controllers
             if (!ModelState.IsValid)
             {
                 await _session.CancelAsync();
-                return View("Edit", model);
+                return View(nameof(Edit), model);
             }
 
             await conditionallyPublish(contentItem);
 
             if (returnUrl == null)
             {
-                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
+                return RedirectToAction(nameof(Edit), new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
             }
             else if (stayOnSamePage)
             {
-                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
+                return RedirectToAction(nameof(Edit), new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
             }
             else
             {
@@ -583,12 +583,12 @@ namespace OrchardCore.Contents.Controllers
             catch (InvalidOperationException)
             {
                 _notifier.Warning(H["Could not clone the content item."]);
-                return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+                return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
             }
 
             _notifier.Information(H["Successfully cloned. The clone was saved as a draft."]);
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -617,7 +617,7 @@ namespace OrchardCore.Contents.Controllers
                     : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -641,7 +641,7 @@ namespace OrchardCore.Contents.Controllers
                     : H["That {0} has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -671,7 +671,7 @@ namespace OrchardCore.Contents.Controllers
                 _notifier.Success(H["That {0} has been published.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -701,7 +701,7 @@ namespace OrchardCore.Contents.Controllers
                 _notifier.Success(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
     }
 }
