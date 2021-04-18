@@ -16,6 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Lucene.Net" />
+    <PackageReference Include="Nest" />
   </ItemGroup>
 </Project>

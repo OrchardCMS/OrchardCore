@@ -32,6 +32,7 @@
     <PackageManagement Include="Moq" Version="4.16.1" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageManagement Include="NEST" Version="7.12.0" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="4.12.0" />
     <PackageManagement Include="NodaTime" Version="3.0.5" />
     <PackageManagement Include="OpenIddict.AspNetCore" Version="3.0.3" />

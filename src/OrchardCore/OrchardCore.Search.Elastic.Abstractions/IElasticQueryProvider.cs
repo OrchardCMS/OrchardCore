@@ -1,10 +1,10 @@
-using Lucene.Net.Search;
+using Nest;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Search.Elastic
 {
     public interface IElasticQueryProvider
     {
-        Query CreateQuery(IElasticQueryService builder, ElasticQueryContext context, string type, JObject query);
+        IQuery CreateQuery(IElasticQueryService builder, ElasticQueryContext context, string type, JObject query);
     }
 }

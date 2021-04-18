@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Lucene.Net.Search;
 
 namespace OrchardCore.Search.Elastic
 {

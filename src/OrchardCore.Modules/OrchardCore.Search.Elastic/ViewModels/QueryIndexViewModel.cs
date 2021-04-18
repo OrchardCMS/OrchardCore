@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lucene.Net.Documents;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Search.Elastic.ViewModels

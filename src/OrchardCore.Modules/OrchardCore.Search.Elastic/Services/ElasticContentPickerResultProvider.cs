@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Lucene.Net.Index;
-using Lucene.Net.Search;
 using OrchardCore.ContentManagement;
 using OrchardCore.Search.Elastic.Settings;
 

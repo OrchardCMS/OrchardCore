@@ -1,5 +1,5 @@
 using System;
-using Lucene.Net.Analysis;
+using Nest;
 
 namespace OrchardCore.Search.Elastic.Services
 {
@@ -8,20 +8,20 @@ namespace OrchardCore.Search.Elastic.Services
     /// </summary>
     public class ElasticAnalyzer : IElasticAnalyzer
     {
-        private readonly Func<Analyzer> _factory;
+        private readonly Func<IAnalyzer> _factory;
 
-        public ElasticAnalyzer(string name, Func<Analyzer> factory)
+        public ElasticAnalyzer(string name, Func<IAnalyzer> factory)
         {
             _factory = factory;
             Name = name;
         }
 
-        public ElasticAnalyzer(string name, Analyzer instance) : this(name, () => instance)
+        public ElasticAnalyzer(string name, IAnalyzer instance) : this(name, () => instance)
         {
         }
 
         public string Name { get; }
-        public Analyzer CreateAnalyzer()
+        public IAnalyzer CreateAnalyzer()
         {
             return _factory();
         }

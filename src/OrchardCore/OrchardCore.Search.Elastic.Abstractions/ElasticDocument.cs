@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace OrchardCore.Search.Elastic
-{ 
+{
     public class ElasticDocument
     {
         public ElasticDocument(string contentItemId)
