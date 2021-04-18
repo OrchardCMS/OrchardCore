@@ -15,6 +15,7 @@ using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
+using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid
@@ -31,6 +32,8 @@ namespace OrchardCore.Liquid
                 options.Filters.AddFilter("t", LiquidViewFilters.Localize);
                 options.Filters.AddFilter("html_class", LiquidViewFilters.HtmlClass);
                 options.Filters.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
+
+                options.MemberAccessStrategy.Register<LiquidPartViewModel>();
 
                 // Used to provide a factory to return a value based on a property name that is unknown at registration time.
                 options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
