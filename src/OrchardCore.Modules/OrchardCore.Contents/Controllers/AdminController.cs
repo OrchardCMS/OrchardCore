@@ -232,11 +232,11 @@ namespace OrchardCore.Contents.Controllers
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
 
             // Load items so that loading handlers are invoked.
-            var pageOfContentItems = query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToAsyncEnumerable(_contentManager);
+            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync(_contentManager);
 
             // We prepare the content items SummaryAdmin shape
             var contentItemSummaries = new List<dynamic>();
-            await foreach (var contentItem in pageOfContentItems)
+            foreach (var contentItem in pageOfContentItems)
             {
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
             }
@@ -278,13 +278,13 @@ namespace OrchardCore.Contents.Controllers
             if (itemIds?.Count() > 0)
             {
                 // Load items so that loading handlers are invoked.
-                var checkedContentItems = _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Latest).ToAsyncEnumerable(_contentManager);
+                var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Latest).ListAsync(_contentManager);
                 switch (options.BulkAction)
                 {
                     case ContentsBulkAction.None:
                         break;
                     case ContentsBulkAction.PublishNow:
-                        await foreach (var item in checkedContentItems)
+                        foreach (var item in checkedContentItems)
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
@@ -298,7 +298,7 @@ namespace OrchardCore.Contents.Controllers
                         _notifier.Success(H["Content published successfully."]);
                         break;
                     case ContentsBulkAction.Unpublish:
-                        await foreach (var item in checkedContentItems)
+                        foreach (var item in checkedContentItems)
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
@@ -312,7 +312,7 @@ namespace OrchardCore.Contents.Controllers
                         _notifier.Success(H["Content unpublished successfully."]);
                         break;
                     case ContentsBulkAction.Remove:
-                        await foreach (var item in checkedContentItems)
+                        foreach (var item in checkedContentItems)
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, item))
                             {
