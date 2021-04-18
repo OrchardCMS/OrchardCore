@@ -51,13 +51,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Configure<TemplateOptions>(o =>
                 {
-                    o.ValueConverters.Add(static x =>
+                    o.ValueConverters.Add(x =>
                     {
                         if (x is Shape s)
                         {
                             return new ObjectValue(s);
                         }
-                        if (x is not IShape && x is IHtmlContent c)
+                        if (!(o is IShape) && o is IHtmlContent c)
                         {
                             return new HtmlContentValue(c);
                         }

@@ -8,7 +8,6 @@
 
     The liquid module enables content items to have liquid syntax.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

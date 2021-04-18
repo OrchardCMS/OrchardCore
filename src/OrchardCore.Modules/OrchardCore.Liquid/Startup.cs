@@ -39,7 +39,7 @@ namespace OrchardCore.Liquid
                 options.MemberAccessStrategy.Register<JObject, object>((source, name) => source[name]);
 
                 // Convert JToken to FluidValue
-                options.ValueConverters.Add(static x =>
+                options.ValueConverters.Add(x =>
                 {
                     return x switch
                     {
