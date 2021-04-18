@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
@@ -85,13 +86,13 @@ namespace OrchardCore.Taxonomies.Drivers
 
                         foreach (var term in termEntries)
                         {
-                            using var sb = StringBuilderPool.GetInstance();
+                            using var sb = ZString.CreateStringBuilder();
                             for (var l = 0; l < term.Level; l++)
                             {
-                                sb.Builder.Insert(0, LevelPadding);
+                                sb.Insert(0, LevelPadding);
                             }
-                            sb.Builder.Append(term.DisplayText);
-                            var item = new SelectListItem() { Text = sb.Builder.ToString(), Value = "Term:" + term.ContentItemId };
+                            sb.Append(term.DisplayText);
+                            var item = new SelectListItem() { Text = sb.ToString(), Value = "Term:" + term.ContentItemId };
                             terms.Add(item);
                         }
 

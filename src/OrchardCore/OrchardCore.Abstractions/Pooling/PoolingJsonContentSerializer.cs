@@ -39,8 +39,7 @@ namespace OrchardCore.Abstractions.Pooling
         public string Serialize(object item)
         {
             var jsonSerializer = JsonSerializer.CreateDefault(_jsonSettings);
-            using var pool = StringBuilderPool.GetInstance();
-            var sw = new StringWriter(pool.Builder, CultureInfo.InvariantCulture);
+            using var sw = new ZStringWriter(CultureInfo.InvariantCulture);
             using var jsonWriter = new JsonTextWriter(sw)
             {
                 ArrayPool = _arrayPool,
