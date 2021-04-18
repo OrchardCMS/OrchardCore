@@ -15,11 +15,12 @@ namespace OrchardCore.Search.Elastic
             _elasticIndexProvider = elasticIndexProvider;
         }
 
-        public string Name => "Elastic";
+        public string Name => "ElasticSearch";
 
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
             //Todo: this needs to be implemented in a different way for Elastic Search
+            //Must implement tenantscoped
             var indexName = "Search";
 
             var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<ContentPickerFieldElasticEditorSettings>();

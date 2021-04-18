@@ -56,7 +56,7 @@
 </div>
 @if (Model.Documents.Any())
 {
-    var fieldNames = Model.Documents.SelectMany(d => d.Fields.Keys.Distinct());
+    var fieldNames = Model.Documents.SelectMany(d => d.Keys.Distinct()).Distinct().ToList();
 
     <div class="form-group">
         <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "ElasticSearch", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
@@ -80,7 +80,7 @@
                     <th scope="row">@(row++)</th>
                     @foreach (var name in fieldNames)
                     {
-                        <td>@(document.Fields.GetValueOrDefault(name)?.ToString()?? String.Empty)</td>
+                        <td>@(document.GetValueOrDefault(name)?.ToString()?? String.Empty)</td>
                     }
                 </tr>
             }

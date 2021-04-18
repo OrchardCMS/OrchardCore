@@ -63,7 +63,7 @@ namespace OrchardCore.Search.Elastic
         public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
         {
             bool success = true;
-            List<ElasticDocument> documents = new List<ElasticDocument>();
+            List<Dictionary<string,object>> documents = new List<Dictionary<string,object>>();
             foreach (var contentItemId in contentItemIds)
             {
                 documents.Add(CreateElasticDocument(contentItemId));
@@ -106,7 +106,7 @@ namespace OrchardCore.Search.Elastic
         public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
             //Convert Document to a structure suitable for Elastic
-            List<ElasticDocument> documents = new List<ElasticDocument>();
+            List<Dictionary<string,object>> documents = new List<Dictionary<string,object>>();
             foreach (var indexDocument in indexDocuments)
             {
                 documents.Add(CreateElasticDocument(indexDocument));
@@ -126,7 +126,7 @@ namespace OrchardCore.Search.Elastic
             ElasticTopDocs elasticTopDocs = new ElasticTopDocs();
             if (await Exists(indexName))
             {
-                var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
+                var searchResponse = await _elasticClient.SearchAsync<Dictionary<string,object>>(s => s
                     .Index(indexName)
                     .Query(q => new RawQuery(query))
                     );
@@ -142,12 +142,15 @@ namespace OrchardCore.Search.Elastic
             return elasticTopDocs;
         }
 
-        private ElasticDocument CreateElasticDocument(DocumentIndex documentIndex)
+        private Dictionary<string,object> CreateElasticDocument(DocumentIndex documentIndex)
         {
-            ElasticDocument elasticDocument = new ElasticDocument(documentIndex.ContentItemId.ToLowerInvariant());
+            Dictionary<string, object> entries = new Dictionary<string, object>();
+            entries.Add("ContentItemId", documentIndex.ContentItemId);
+            entries.Add("Id", documentIndex.ContentItemId);
+
             foreach (var entry in documentIndex.Entries)
             {
-                if (entry.Name.Contains("Analyzed") || entry.Name.Contains("Sanitize") || entry.Name.Contains("Normalized"))
+                if (entry.Name.Contains("Content.ContentItem.FullText") || entry.Name.Contains("Analyzed") || entry.Name.Contains("Sanitize") || entry.Name.Contains("Normalized"))
                 {
                     continue;
                 }
@@ -156,7 +159,7 @@ namespace OrchardCore.Search.Elastic
                 {
                     case DocumentIndex.Types.Boolean:
                         // store "true"/"false" for booleans
-                        elasticDocument.Set(entry.Name, (bool)(entry.Value));
+                        entries.Add(entry.Name, (bool)(entry.Value));
                         break;
 
                     case DocumentIndex.Types.DateTime:
@@ -164,11 +167,11 @@ namespace OrchardCore.Search.Elastic
                         {
                             if (entry.Value is DateTimeOffset)
                             {
-                                elasticDocument.Set(entry.Name, ((DateTimeOffset)(entry.Value)).UtcDateTime);
+                                entries.Add(entry.Name, ((DateTimeOffset)(entry.Value)).UtcDateTime);
                             }
                             else
                             {
-                                elasticDocument.Set(entry.Name, ((DateTime)(entry.Value)).ToUniversalTime());
+                                entries.Add(entry.Name, ((DateTime)(entry.Value)).ToUniversalTime());
                             }
                         }
                         //else
@@ -180,7 +183,7 @@ namespace OrchardCore.Search.Elastic
                     case DocumentIndex.Types.Integer:
                         if (entry.Value != null && Int32.TryParse(entry.Value.ToString(), out var value))
                         {
-                            elasticDocument.Set(entry.Name, Convert.ToInt32(entry.Value));
+                            entries.Add(entry.Name, Convert.ToInt32(entry.Value));
                         }
                         //else
                         //{
@@ -192,7 +195,7 @@ namespace OrchardCore.Search.Elastic
                     case DocumentIndex.Types.Number:
                         if (entry.Value != null)
                         {
-                            elasticDocument.Set(entry.Name, Convert.ToDouble(entry.Value));
+                            entries.Add(entry.Name, Convert.ToDouble(entry.Value));
                         }
                         //else
                         //{
@@ -203,7 +206,7 @@ namespace OrchardCore.Search.Elastic
                     case DocumentIndex.Types.Text:
                         if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
                         {
-                            elasticDocument.Set(entry.Name, Convert.ToString(entry.Value));
+                            entries.Add(entry.Name, Convert.ToString(entry.Value));
                         }
                         //else
                         //{
@@ -213,11 +216,13 @@ namespace OrchardCore.Search.Elastic
                 }
 
             }
-            return elasticDocument;
+            return entries;
         }
-        private ElasticDocument CreateElasticDocument(string contentItemId)
+        private Dictionary<string,object> CreateElasticDocument(string contentItemId)
         {
-            return new ElasticDocument(contentItemId);
+            Dictionary<string, object> entries = new Dictionary<string, object>();
+            entries.Add("Id", contentItemId);
+            return entries;
         }
         public void Dispose()
         {

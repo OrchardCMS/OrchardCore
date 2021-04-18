@@ -48,7 +48,7 @@ namespace OrchardCore.Search.Elastic
             _templateOptions = templateOptions.Value;
         }
 
-        public string Name => "Elastic";
+        public string Name => "ElasticSearch";
 
         public Query Create()
         {
@@ -75,7 +75,7 @@ namespace OrchardCore.Search.Elastic
                 elasticQueryResults.Items = new List<ContentItem>();
 
                 // Load corresponding content item versions
-                var indexedContentItemVersionIds = elasticSearchResult.TopDocs.Select(x => x.Fields.GetValueOrDefault("Content.ContentItem.ContentItemVersionId").ToString()).ToArray();
+                var indexedContentItemVersionIds = elasticSearchResult.TopDocs.Select(x => x.GetValueOrDefault("Content.ContentItem.ContentItemVersionId").ToString()).ToArray();
                 var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
                 // Reorder the result to preserve the one from the Elastic query
@@ -91,7 +91,7 @@ namespace OrchardCore.Search.Elastic
                 var results = new List<JObject>();
                 foreach (var document in elasticSearchResult.TopDocs)
                 {
-                    results.Add(new JObject(document.Fields.Select(x => new JProperty(x.Key, x.Value.ToString()))));
+                    results.Add(new JObject(document.Select(x => new JProperty(x.Key, x.Value.ToString()))));
                 }
                 elasticQueryResults.Items = results;
             }

@@ -42,7 +42,7 @@ namespace OrchardCore.Search.Elastic
 
             try
             {
-                var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s
+                var searchResponse = await _elasticClient.SearchAsync<Dictionary<string,object>>(s
                     => s.Index(context.IndexName).Query(q => new RawQuery(queryProp.ToString())));
                 if (searchResponse.IsValid)
                 {
@@ -84,38 +84,6 @@ namespace OrchardCore.Search.Elastic
             }
 
             return query;
-        }
-
-        /// <summary>
-        /// May not be neeeded
-        /// </summary>
-        /// <param name="fieldName"></param>
-        /// <param name="text"></param>
-        /// <param name="analyzer"></param>
-        /// <returns></returns>
-        public static List<string> Tokenize(string fieldName, string text, IAnalyzer analyzer)
-        {
-            if (String.IsNullOrEmpty(text))
-            {
-                return new List<string>();
-            }
-
-            var result = new List<string>();
-            //using (var tokenStream = analyzer.GetTokenStream(fieldName, text))
-            //{
-            //    tokenStream.Reset();
-            //    while (tokenStream.IncrementToken())
-            //    {
-            //        var termAttribute = tokenStream.GetAttribute<ICharTermAttribute>();
-
-            //        if (termAttribute != null)
-            //        {
-            //            result.Add(termAttribute.ToString());
-            //        }
-            //    }
-            //}
-
-            return result;
         }
     }
 }
