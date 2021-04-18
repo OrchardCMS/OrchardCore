@@ -5,7 +5,7 @@ using YesSql;
 namespace OrchardCore.ContentManagement
 {
     /// <summary>
-    /// Allows to execute an <see cref="IQuery{ContentItem}"/> to return matching <see cref="ContentItem"/>
+    /// Allows to execute an <see cref="IQuery{ContentItem}"/> to return matching <see cref="ContentItem"/>s
     /// but after having invoked the load events on them by using the <see cref="IContentManager"/>.
     /// </summary>
     public static class ContentQueryExtensions
@@ -18,14 +18,14 @@ namespace OrchardCore.ContentManagement
             => await contentManager.LoadAsync(await query.FirstOrDefaultAsync());
 
         /// <summary>
-        /// Executes this <see cref="IQuery{ContentItem}"/> to return all matching <see cref="ContentItem"/>
+        /// Executes this <see cref="IQuery{ContentItem}"/> to return all matching <see cref="ContentItem"/>s
         /// but after having invoked the load events on them by using the <see cref="IContentManager"/>.
         /// </summary>
         public static async Task<IEnumerable<ContentItem>> ListAsync(this IQuery<ContentItem> query, IContentManager contentManager)
             => await contentManager.LoadAsync(await query.ListAsync());
 
         /// <summary>
-        /// Executes this <see cref="IQuery{ContentItem}"/> to return all matching <see cref="ContentItem"/>
+        /// Executes this <see cref="IQuery{ContentItem}"/> to return all matching <see cref="ContentItem"/>s
         /// but after having invoked the load events on them by using the <see cref="IContentManager"/>.
         /// </summary>
         public static IAsyncEnumerable<ContentItem> ToAsyncEnumerable(this IQuery<ContentItem> query, IContentManager contentManager)

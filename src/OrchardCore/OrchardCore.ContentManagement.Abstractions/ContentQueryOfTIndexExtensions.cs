@@ -6,7 +6,7 @@ using YesSql.Indexes;
 namespace OrchardCore.ContentManagement
 {
     /// <summary>
-    /// Allows to execute an <see cref="IQuery{ContentItem, TIndex}"/> to return matching <see cref="ContentItem"/>
+    /// Allows to execute an <see cref="IQuery{ContentItem, TIndex}"/> to return matching <see cref="ContentItem"/>s
     /// but after having invoked the load events on them by using the <see cref="IContentManager"/>.
     /// </summary>
     public static class ContentQueryOfTIndexExtensions
@@ -20,7 +20,7 @@ namespace OrchardCore.ContentManagement
             => await contentManager.LoadAsync(await query.FirstOrDefaultAsync());
 
         /// <summary>
-        /// Executes this <see cref="IQuery{ContentItem, TIndex}"/> to return all matching <see cref="ContentItem"/>
+        /// Executes this <see cref="IQuery{ContentItem, TIndex}"/> to return all matching <see cref="ContentItem"/>s
         /// but after having invoked the load events on them by using the <see cref="IContentManager"/>.
         /// </summary>
         public static async Task<IEnumerable<ContentItem>> ListAsync<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement
             => await contentManager.LoadAsync(await query.ListAsync());
 
         /// <summary>
-        /// Executes this <see cref="IQuery{ContentItem, TIndex}"/> to return all matching <see cref="ContentItem"/>
+        /// Executes this <see cref="IQuery{ContentItem, TIndex}"/> to return all matching <see cref="ContentItem"/>s
         /// but after having invoked the load events on them by using the <see cref="IContentManager"/>.
         /// </summary>
         public static IAsyncEnumerable<ContentItem> ToAsyncEnumerable<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
