@@ -49,7 +49,5 @@
     <PackageManagement Include="YesSql.Core" Version="3.0.2" />
     <PackageManagement Include="YesSql.Abstractions" Version="3.0.2" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
-    <PackageManagement Include="NEST" Version="7.12.0" />
   </ItemGroup>
-
 </Project>
