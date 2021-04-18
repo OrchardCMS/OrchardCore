@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 // check common case
                 if (String.IsNullOrEmpty(argument.Name) && argument.Expression is LiteralExpression literalExpression)
                 {
-                    name = literalExpression.Value.ToString();
+                    name = literalExpression.Value.ToStringValue();
                     continue;
                 }
 
