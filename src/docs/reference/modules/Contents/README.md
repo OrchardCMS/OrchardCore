@@ -51,7 +51,7 @@ When a list of content item ids is available, the `content_item_id` filter shoul
 ### Rendering a content item from an alias
 
 ```liquid
-{% contentitem alias:"alias:test" display_type="Detail" %}
+{% contentitem alias:"alias:test", display_type="Detail" %}
 ```
 
 ### Logging to the browser console
