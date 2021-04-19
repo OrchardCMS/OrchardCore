@@ -137,7 +137,6 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="contentItem">The content instance filled with all necessary data</param>
-
         public static Task CreateAsync(this IContentManager contentManager, ContentItem contentItem)
         {
             return contentManager.CreateAsync(contentItem, VersionOptions.Published);
@@ -173,6 +172,14 @@ namespace OrchardCore.ContentManagement
             }
 
             return results;
+        }
+
+        public static async IAsyncEnumerable<ContentItem> LoadAsync(this IContentManager contentManager, IAsyncEnumerable<ContentItem> contentItems)
+        {
+            await foreach (var contentItem in contentItems)
+            {
+                yield return await contentManager.LoadAsync(contentItem);
+            }
         }
 
         public static async Task<ContentValidateResult> UpdateValidateAndCreateAsync(this IContentManager contentManager, ContentItem contentItem, VersionOptions options)
