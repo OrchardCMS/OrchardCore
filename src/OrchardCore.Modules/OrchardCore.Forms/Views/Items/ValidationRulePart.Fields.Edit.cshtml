@@ -1,40 +1,60 @@
 @using OrchardCore.Forms.ViewModels;
 @model ValidationRulePartEditViewModel
+@{
+    dynamic dyModel = Model;
+    var typeName = string.Empty;
 
-<div class="form-group" >
+    if (Model.Type != null)
+    {
+        typeName = $"{dyModel.Metadata.Prefix}.Type";
+    }
+}
+
+<div class="form-group">
     <label asp-for="Type">@T["Validation Type"]</label>
-    <select asp-for="Type" class="form-control content-preview-select">
-        <option value="none">@T["None"]</option>
-        <option value="contains">@T["Contains"]</option>
-        <option value="equals">@T["Equals"]</option>
-        <option value="isAfter">@T["IsAfter"]</option>
-        <option value="isBefore">@T["IsBefore"]</option>
-        <option value="isBoolean">@T["IsBoolean"]</option>
-        <option value="isByteLength">@T["IsByteLength"]</option>
-        <option value="isDate">@T["IsDate"]</option>
-        <option value="isDecimal">@T["IsDecimal"]</option>
-        <option value="isDivisibleBy">@T["IsDivisibleBy"]</option>
-        <option value="isEmpty">@T["IsEmpty"]</option>
-        <option value="isFloat">@T["IsFloat"]</option>
-        <option value="isInt">@T["IsInt"]</option>
-        <option value="isJSON">@T["IsJSON"]</option>
-        <option value="isLength">@T["IsLength"]</option>
-        <option value="isNumeric">@T["IsNumeric"]</option>
-        <option value="matches">@T["Matches"]</option>
-
+    <select asp-for="Type" class="form-control content-preview-select" onchange="validationTypeChange(this)">
+        <option value="none" is-show-option="0" is-show-validationMessage="0">@T["None"]</option>
+        <option value="contains" is-show-option="1" is-show-validationMessage="1" data-validation-option="@T["compared string"]">@T["Contains"]</option>
+        <option value="equals" is-show-option="1" is-show-validationMessage="1" data-validation-option="@T["compared string"]">@T["Equals"]</option>
+        <option value="isAfter" is-show-option="1" is-show-validationMessage="1" data-validation-option="2020-03-03">@T["Is After"]</option>
+        <option value="isBefore" is-show-option="1" is-show-validationMessage="1" data-validation-option="2020-03-03">@T["Is Before"]</option>
+        <option value="isBoolean" is-show-option="0" is-show-validationMessage="1">@T["Is Boolean"]</option>
+        <option value="isByteLength" is-show-option="1" is-show-validationMessage="1" data-validation-option="{&quot;min&quot; : 0, &quot;max&quot; : 20}">@T["Is ByteLength"]</option>
+        <option value="isDate" is-show-option="0" is-show-validationMessage="1">@T["Is Date"]</option>
+        <option value="isDecimal" is-show-option="0" is-show-validationMessage="1">@T["Is Decimal"]</option>
+        <option value="isDivisibleBy" is-show-option="1" is-show-validationMessage="1" data-validation-option="3">@T["Is Divisible By"]</option>
+        <option value="isEmpty" is-show-option="0" is-show-validationMessage="1">@T["Is Empty"]</option>
+        <option value="isFloat" is-show-option="1" is-show-validationMessage="1" data-validation-option="{&quot;min&quot; : 7.22, &quot;max&quot; : 9.55}">@T["Is Float"]</option>
+        <option value="isInt" is-show-option="0" is-show-validationMessage="1">@T["Is Int"]</option>
+        <option value="isJSON" is-show-option="0" is-show-validationMessage="1">@T["Is JSON"]</option>
+        <option value="isLength" is-show-option="1" is-show-validationMessage="1" data-validation-option="{&quot;min&quot; : 7.22, &quot;max&quot; : 20.0}">@T["Is Length"]</option>
+        <option value="isNumeric" is-show-option="0" is-show-validationMessage="1">@T["Is Numeric"]</option>
+        <option value="matches" is-show-option="1" is-show-validationMessage="1" data-validation-option="^\\\\d{n}$">@T["Matches"]</option>
     </select>
     <span class="hint">@T["The Validation type."]</span>
 </div>
 
-<div class="form-group" >
+<div class="form-group validation-option">
     <label asp-for="Option">@T["Validation Options"]</label>
     <input asp-for="Option" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["For details, please visit <a href=\"{0}\">{0}</a>", "https://github.com/validatorjs/validator.js"]</span>
 </div>
 
-<div class="form-group">
+<div class="form-group validation-message">
     <label asp-for="ValidationMessage">@T["Validation Message"]</label>
     <input asp-for="ValidationMessage" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["Error message after the field validation fails."]</span>
 </div>
 
+<script asp-src="~/OrchardCore.Forms/Scripts/validationRuleHelper.min.js" debug-src="~/OrchardCore.Forms/Scripts/validationRuleHelper.js" asp-name="validationRuleHelper" depends-on="jQuery" at="Foot"></script>
+
+<script at="Foot">
+    (function ($) {
+        $(function () {
+            if ('@typeName' != '') {
+                var selector = 'select[name="@typeName"]'
+                validationTypeChange($(selector)[0], '@Model.Option', '@Model.ValidationMessage')
+            }
+        })
+    })(jQuery);
+</script>

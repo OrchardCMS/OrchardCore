@@ -75,4 +75,38 @@ function validationElementFunction(type, originElementId, option, validationMess
     }
 }
 
+function validationTypeChange(e, option = '', message = '') {
+    var selectedValidationOptionItem = e.options[e.options.selectedIndex];
+    var isShowOption = selectedValidationOptionItem.getAttribute('is-show-option');
+    var isShowValidationMessage = selectedValidationOptionItem.getAttribute('is-show-validationMessage');
+    var validationMessage = $(e.closest('.edit-item-parts')).find('.validation-message');
+    var validationOption = $(e.closest('.edit-item-parts')).find('.validation-option');
+
+    if (isShowOption === "0") {
+        validationOption.css('display', 'none');
+    } else {
+        validationOption.css('display', 'block');
+        var validationOptionInput = validationOption.find('input');
+        var dataValidationOption = selectedValidationOptionItem.getAttribute('data-validation-option');
+        validationOptionInput.attr('placeholder', dataValidationOption);
+        if (option === '') {
+            validationOptionInput.val('');
+        } else {
+            validationOptionInput.html(option);
+        }
+    }
+
+    if (isShowValidationMessage === '0') {
+        validationMessage.css('display', 'none');
+    } else {
+        validationMessage.css('display', 'block');
+        var validationMessageInput = validationMessage.find('input');
+        if (message === '') {
+            validationMessageInput.val('');
+        } else {
+            validationMessageInput.html(message);
+        }
+   
+    }
+}
 

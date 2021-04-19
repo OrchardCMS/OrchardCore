@@ -5,7 +5,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Forms.Drivers;
-using OrchardCore.Forms.Entities;
 using OrchardCore.Forms.Filters;
 using OrchardCore.Forms.Models;
 using OrchardCore.Modules;
@@ -69,8 +68,6 @@ namespace OrchardCore.Forms
 
             services.AddContentPart<ValidationRulePart>()
                  .UseDisplayDriver<ValidationRulePartDisplayDriver>();
-
-            services.AddValidateRuleMethod();
 
             services.AddScoped<IDataMigration, Migrations>();
         }

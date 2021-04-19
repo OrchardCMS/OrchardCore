@@ -1,13 +1,10 @@
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Scripting;
+using OrchardCore.Forms.Extensions;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -19,16 +16,13 @@ namespace OrchardCore.Forms.Workflows.Activities
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IStringLocalizer S;
-        private readonly IScriptingManager _scriptingManager;
 
         public ValidateRuleFormTask(
-            IScriptingManager scriptingManager,
             IHttpContextAccessor httpContextAccessor,
             IUpdateModelAccessor updateModelAccessor,
             IStringLocalizer<ValidateRuleFormTask> localizer
         )
         {
-            _scriptingManager = scriptingManager;
             _updateModelAccessor = updateModelAccessor;
             _httpContextAccessor = httpContextAccessor;
             S = localizer;
@@ -78,20 +72,20 @@ namespace OrchardCore.Forms.Workflows.Activities
             {
                 foreach (var item in rules)
                 {
-                    var type = item.type.ToString();
-                    var option = item.option.ToString();
-                    if (option.Contains("\\", StringComparison.Ordinal))
+                    string type = item.type.ToString();
+                    if (type != "none")
                     {
-                        option = option.Replace("\\", "|-BackslashPlaceholder-|");
-                    }
-                    var formItemValue = httpContext.Request.Form[item.elementId.ToString()];
-                    var engine = _scriptingManager.GetScriptingEngine("js");
-                    var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, null, null);
-                    var jsScriptStr = $"js: {type}('{formItemValue}','{option}')";
-                    if (!Convert.ToBoolean(engine.Evaluate(scope, jsScriptStr)))
-                    {
-                        validateRule = false;
-                        break;
+                        string option = item.option.ToString();
+                        if (option.Contains("\\", StringComparison.Ordinal))
+                        {
+                            option = option.Replace("\\", "|-BackslashPlaceholder-|");
+                        }
+                        string formItemValue = httpContext.Request.Form[item.elementId.ToString()];
+                        if (!type.ValidateInputByRule(formItemValue, option))
+                        {
+                            validateRule = false;
+                            break;
+                        }
                     }
                 }
             }
