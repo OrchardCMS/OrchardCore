@@ -64,7 +64,7 @@ The below table lists the different Client side libraries:
 | [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0.2 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
 | [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.2.4 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.11.0 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
-| [WebPack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.31.2 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
+| [WebPack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.33.2 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
 
 The below table lists the different Tests libraries:
 
