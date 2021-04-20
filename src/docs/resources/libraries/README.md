@@ -36,7 +36,7 @@ The below table lists the different libraries used as Resources:
 | [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | 4.6.0 | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
 | [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | 1.3.18 | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
 | [bootstrap-slider](https://github.com/seiyria/bootstrap-slider) | Slider control for Bootstrap. | 11.0.2 | [MIT](https://github.com/seiyria/bootstrap-slider/blob/master/LICENSE.md) |
-| [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.60.0 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
+| [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.61.0 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
 | [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | 5.15.3 | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
 | [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | 3.6.0 | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |
 | [jQuery UI](https://github.com/jquery/jquery-ui) | jQuery user interface library. | 1.12.1 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
