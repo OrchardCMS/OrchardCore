@@ -101,7 +101,7 @@ namespace OrchardCore.Shortcodes.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -192,7 +192,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name });
+                return RedirectToAction(nameof(Create), new { name });
             }
 
             var template = shortcodeTemplatesDocument.ShortcodeTemplates[name];
@@ -331,7 +331,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private static bool IsValidShortcodeName(string name)

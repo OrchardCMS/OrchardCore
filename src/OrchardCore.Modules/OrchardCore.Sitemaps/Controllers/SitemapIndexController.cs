@@ -108,7 +108,7 @@ namespace OrchardCore.Sitemaps.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult ListFilterPOST(ListSitemapIndexViewModel model)
         {
-            return RedirectToAction("List", new RouteValueDictionary {
+            return RedirectToAction(nameof(List), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -354,7 +354,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 }
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
     }
 }
