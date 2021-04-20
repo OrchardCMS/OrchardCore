@@ -21,7 +21,7 @@ namespace OrchardCore.Contents.ViewModels
         public string DisplayText { get; set; }
 
         public string SearchText { get; set; }
-        public string OriginalSearchText { get; set; }        
+        public string OriginalSearchText { get; set; }
 
         public string SelectedContentType { get; set; }
 
@@ -34,7 +34,7 @@ namespace OrchardCore.Contents.ViewModels
         public ContentsBulkAction BulkAction { get; set; }
 
         [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "SearchText")]
-        public QueryFilterResult<ContentItem> FilterResult { get; set; }        
+        public QueryFilterResult<ContentItem> FilterResult { get; set; }
 
         #region Values to populate
 

@@ -50,7 +50,7 @@ namespace OrchardCore.Filters.Abstractions.Services
 
         public bool TryAddOrReplace(TermNode term)
         {
-            // Check the term options 
+            // Check the term options
             if (!_termOptions.TryGetValue(term.TermName, out var termOption))
             {
                 return false;
@@ -72,7 +72,7 @@ namespace OrchardCore.Filters.Abstractions.Services
                 }
                 else
                 {
-                    // TODO this isn't going to work when removing from list, 
+                    // TODO this isn't going to work when removing from list,
                     // i.e. search says tax:a tax:b but model says just tax:b
                     // for that we need a Merge extension.
                     var newCompound = new AndTermNode(existingTerm as TermOperationNode, term as TermOperationNode);
@@ -85,6 +85,9 @@ namespace OrchardCore.Filters.Abstractions.Services
 
             return true;
         }
+
+        public bool TryRemove(string name)
+            => _terms.Remove(name);
 
         public IEnumerator<TermNode> GetEnumerator()
             => _terms.Values.GetEnumerator();

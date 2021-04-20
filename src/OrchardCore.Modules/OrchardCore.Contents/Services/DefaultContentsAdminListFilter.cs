@@ -43,27 +43,27 @@ namespace OrchardCore.Contents.Services
             var userNameIdentifier = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // done
-            if (!String.IsNullOrEmpty(model.DisplayText))
-            {
-                query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
-            }
+            // if (!String.IsNullOrEmpty(model.DisplayText))
+            // {
+            //     query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.DisplayText));
+            // }
 
-            // done
-            switch (model.ContentsStatus)
-            {
-                case ContentsStatus.Published:
-                    query.With<ContentItemIndex>(x => x.Published);
-                    break;
-                case ContentsStatus.Draft:
-                    query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-                    break;
-                case ContentsStatus.AllVersions:
-                    query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-                default:
-                    query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-            }
+            // // done
+            // switch (model.ContentsStatus)
+            // {
+            //     case ContentsStatus.Published:
+            //         query.With<ContentItemIndex>(x => x.Published);
+            //         break;
+            //     case ContentsStatus.Draft:
+            //         query.With<ContentItemIndex>(x => x.Latest && !x.Published);
+            //         break;
+            //     case ContentsStatus.AllVersions:
+            //         query.With<ContentItemIndex>(x => x.Latest);
+            //         break;
+            //     default:
+            //         query.With<ContentItemIndex>(x => x.Latest);
+            //         break;
+            // }
 
             var canListAllContent = await _authorizationService.AuthorizeAsync(user, Permissions.ListContent);
 

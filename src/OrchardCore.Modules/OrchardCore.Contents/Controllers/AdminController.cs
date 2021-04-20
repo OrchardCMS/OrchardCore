@@ -150,15 +150,6 @@ namespace OrchardCore.Contents.Controllers
                 options.CreatableTypes = creatableList;
             }
 
-            // var statusTerm = queryFilterResult.Terms.FirstOrDefault(x => x.TermName == "status");
-            // if (statusTerm != null)
-            // {
-            //     if (Enum.TryParse<ContentsStatus>(statusTerm.Operation.ToString(), true, out var e))
-            //     {
-            //         options.ContentsStatus = e;
-            //     }
-            // }
-
             // We populate the remaining SelectLists.
             options.ContentStatuses = new List<SelectListItem>()
             {
@@ -172,15 +163,6 @@ namespace OrchardCore.Contents.Controllers
             {
                 options.ContentStatuses.Insert(1, new SelectListItem() { Text = S["Owned by me"], Value = nameof(ContentsStatus.Owner) });
             }
-
-            // var sortTerm = termList.Terms.FirstOrDefault(x => x.TermName == "status");
-            // if (sortTerm != null)
-            // {
-            //     if (Enum.TryParse<ContentsOrder>(sortTerm.Operation.ToString(), true, out var e))
-            //     {
-            //         options.OrderBy = e;
-            //     }
-            // }
 
             options.ContentSorts = new List<SelectListItem>()
             {
@@ -237,7 +219,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             options.FilterResult = queryFilterResult;
-            
+
 
             // With the options populated we filter the query, allowing the filters to alter the options.
             var query = await _contentsAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
@@ -257,6 +239,7 @@ namespace OrchardCore.Contents.Controllers
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
+            queryFilterResult.MapTo(options);
             options.SearchText = queryFilterResult.ToString();
             options.OriginalSearchText = options.SearchText;
 

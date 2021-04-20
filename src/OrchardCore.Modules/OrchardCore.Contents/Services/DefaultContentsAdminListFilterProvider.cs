@@ -1,8 +1,13 @@
 using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.Filters.Query;
+using YesSql;
 using YesSql.Services;
 
 namespace OrchardCore.Contents.Services
@@ -12,18 +17,23 @@ namespace OrchardCore.Contents.Services
         public void Build(QueryEngineBuilder<ContentItem> builder)
         {
             builder
-                .WithNamedTerm("status", b => b
-                    .OneCondition<ContentItem>((val, query) =>
+                .WithNamedTerm("status", builder => builder
+                    .OneCondition<ContentItem>((val, query, ctx) =>
                     {
-                        if (Enum.TryParse<ContentsStatus>(val, true, out var e))
+                        if (Enum.TryParse<ContentsStatus>(val, true, out var contentsStatus))
                         {
-                            switch (e)
+                            switch (contentsStatus)
                             {
                                 case ContentsStatus.Published:
                                     query.With<ContentItemIndex>(x => x.Published);
                                     break;
                                 case ContentsStatus.Draft:
                                     query.With<ContentItemIndex>(x => x.Latest && !x.Published);
+                                    break;
+                                case ContentsStatus.Owner:
+                                    var httpContextAccessor = ctx.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                                    var userNameIdentifier = httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                                    query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
                                     break;
                                 case ContentsStatus.AllVersions:
                                     query.With<ContentItemIndex>(x => x.Latest);
@@ -34,105 +44,71 @@ namespace OrchardCore.Contents.Services
                             }
                         }
 
-                        return query;
+                        return new ValueTask<IQuery<ContentItem>>(query);
                     })
-                    .MapTo<ContentOptionsViewModel>((val, m) =>
+                    .MapTo<ContentOptionsViewModel>((val, model) =>
                     {
                         if (Enum.TryParse<ContentsStatus>(val, true, out var contentsStatus))
                         {
-                            m.ContentsStatus = contentsStatus;
+                            model.ContentsStatus = contentsStatus;
                         }
                     })
-                    .MapFrom<ContentOptionsViewModel>((m) =>
+                    .MapFrom<ContentOptionsViewModel>((model) =>
                     {
-                        if (m.ContentsStatus != ContentsStatus.AllVersions)
+                        if (model.ContentsStatus != ContentsStatus.Latest)
                         {
-                            return (true, m.ContentsStatus.ToString());
+                            return (true, model.ContentsStatus.ToString());
                         }
 
                         return (false, String.Empty);
                     })
                 )
-                .WithNamedTerm("sort", b => b
+                .WithNamedTerm("sort", builder => builder
                     .OneCondition<ContentItem>((val, query) =>
                     {
-                        // TODO we can also support -asc and -desc here.
-
-                        var values = val.Split('-', 2);
-
-                        var enumVal = values[0];
-                        bool ascending = false;
-                        if (values.Length == 2 && values[1] == "asc")
-                        {
-                            ascending = true;
-                        }
-
                         if (Enum.TryParse<ContentsOrder>(val, true, out var contentsOrder))
                         {
                             switch (contentsOrder)
                             {
                                 case ContentsOrder.Modified:
-                                    if (ascending)
-                                    {
-                                        query.With<ContentItemIndex>().OrderBy(x => x.ModifiedUtc);
-                                    }
-                                    else
-                                    {
-                                        query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
-                                    }
+                                    query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
                                     break;
                                 case ContentsOrder.Published:
-                                    if (ascending)
-                                    {
-                                        query.With<ContentItemIndex>().OrderBy(cr => cr.PublishedUtc);
-                                    }
-                                    else
-                                    {
-                                        query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc);
-                                    }
+                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc);
                                     break;
                                 case ContentsOrder.Created:
-                                    if (ascending)
-                                    {
-                                        query.With<ContentItemIndex>().OrderBy(cr => cr.CreatedUtc);
-                                    }
-                                    else
-                                    {
-                                        query.With<ContentItemIndex>().OrderByDescending(cr => cr.CreatedUtc);
-                                    }
+                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.CreatedUtc);
                                     break;
                                 case ContentsOrder.Title:
-                                    // todo support ascending.
                                     query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText);
                                     break;
-
-                                // todo add Default to the enum, or make it always modified. investigate.
-                                default:
-                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc);
-                                    break;
                             };
+                        }
+                        else
+                        {
+                            query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc);
                         }
 
                         return query;
                     })
-                    .MapTo<ContentOptionsViewModel>((val, m) =>
+                    .MapTo<ContentOptionsViewModel>((val, model) =>
                     {
-                        if (Enum.TryParse<ContentsOrder>(val, true, out var e))
+                        if (Enum.TryParse<ContentsOrder>(val, true, out var contentsOrder))
                         {
-                            m.OrderBy = e;
+                            model.OrderBy = contentsOrder;
                         }
                     })
-                    .MapFrom<ContentOptionsViewModel>((m) =>
+                    .MapFrom<ContentOptionsViewModel>((model) =>
                     {
-                        if (m.OrderBy != ContentsOrder.Modified)
+                        if (model.OrderBy != ContentsOrder.Modified)
                         {
-                            return (true, m.OrderBy.ToString());
+                            return (true, model.OrderBy.ToString());
                         }
 
                         return (false, String.Empty);
                     })
                 )
-                .WithDefaultTerm("text", b => b
+                .WithDefaultTerm("text", builder => builder
                         .ManyCondition<ContentItem>(
                             ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val))),
                             ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.IsNotIn<ContentItemIndex>(s => s.DisplayText, w => w.DisplayText.Contains(val))))
