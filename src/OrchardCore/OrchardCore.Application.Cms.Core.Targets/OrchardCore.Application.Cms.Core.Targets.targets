@@ -4,7 +4,7 @@
     <SolutionDir>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</SolutionDir>
   </PropertyGroup>
 
-  <UsingTask AssemblyFile="$(SolutionDir)\OrchardCore.Build\bin\Debug\netcoreapp3.1\OrchardCore.Build.dll" TaskName="CreateWebRootFolderTask" />
+  <UsingTask AssemblyFile="$(SolutionDir)\OrchardCore.Build\bin\Debug\$(TargetFramework)\OrchardCore.Build.dll" TaskName="CreateWebRootFolderTask" />
  
   <ItemGroup>
     <Compile Remove="App_Data\**;Localization\**" />
