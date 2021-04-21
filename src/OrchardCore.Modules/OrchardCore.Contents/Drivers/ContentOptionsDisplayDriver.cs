@@ -30,22 +30,18 @@ namespace OrchardCore.Contents.Drivers
             );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        public override Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
-            var viewModel = new ContentOptionsViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                model.RouteValues.TryAdd("Options.OrderBy", viewModel.OrderBy);
-                model.RouteValues.TryAdd("Options.ContentsStatus", viewModel.ContentsStatus);
-                model.RouteValues.TryAdd("Options.SelectedContentType", viewModel.SelectedContentType);
-                model.RouteValues.TryAdd("Options.DisplayText", viewModel.DisplayText);
-            }
+            // Map the incoming values from a form post to the filter result.
+            model.FilterResult.MapFrom(model);            
 
-            return Edit(model);
+            return Task.FromResult<IDisplayResult>(Edit(model));
         }
 
         private static void BuildContentOptionsViewModel(ContentOptionsViewModel m, ContentOptionsViewModel model)
         {
+            // Map the filter result to a model so the ui can reflect current selections.
+            model.FilterResult.MapTo(model);
             m.ContentTypeOptions = model.ContentTypeOptions;
             m.ContentStatuses = model.ContentStatuses;
             m.ContentSorts = model.ContentSorts;

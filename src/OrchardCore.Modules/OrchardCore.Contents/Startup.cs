@@ -44,6 +44,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
+using OrchardCore.Filters.Query;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
@@ -198,7 +199,6 @@ namespace OrchardCore.Contents
                 }
             });
 
-            services.AddScoped<IContentsAdminListFilter, DefaultContentsAdminListFilter>();
             services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
 
             services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
@@ -206,7 +206,20 @@ namespace OrchardCore.Contents
 
             services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
 
-            services.AddSingleton<IContentsAdminListFilterParser, DefaultContentsAdminListFilterParser>();
+            services.AddSingleton<IContentsAdminListFilterParser>(sp =>
+            {
+                var filterProviders = sp.GetServices<IContentsAdminListFilterProvider>();
+                var builder = new QueryEngineBuilder<ContentItem>();
+                foreach (var provider in filterProviders)
+                {
+                    provider.Build(builder);
+                }
+
+                var parser = builder.Build();
+
+                return new DefaultContentsAdminListFilterParser(parser);
+            });
+
             services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
         }
 

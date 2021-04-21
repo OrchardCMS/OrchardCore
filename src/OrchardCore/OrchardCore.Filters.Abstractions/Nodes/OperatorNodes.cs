@@ -25,7 +25,7 @@ namespace OrchardCore.Filters.Abstractions.Nodes
             => ToString();
 
         public override string ToString()
-            => $"{Value.ToString()}";
+            => HasValue ? Value : String.Empty;
 
         public override TResult Accept<TArgument, TResult>(IFilterVisitor<TArgument, TResult> visitor, TArgument argument)
             => visitor.Visit(this, argument);

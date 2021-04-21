@@ -182,12 +182,14 @@ namespace OrchardCore.Contents.Controllers
             if ((String.IsNullOrEmpty(options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)) && options.ContentTypeOptions == null)
             {
                 var listableTypes = new List<ContentTypeDefinition>();
+                var userNameIdentifier = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
                 foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
                         var contentItem = await _contentManager.NewAsync(ctd.Name);
-                        contentItem.Owner = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                        contentItem.Owner = userNameIdentifier;
                         var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
 
                         if (authorized)
@@ -220,28 +222,27 @@ namespace OrchardCore.Contents.Controllers
 
             options.FilterResult = queryFilterResult;
 
-
             // With the options populated we filter the query, allowing the filters to alter the options.
             var query = await _contentsAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
 
+            // Populate route values to maintain previous route data when generating page links.
+            // TODO Calling this kills the map from list of options
+            // for the old features, i.e. Lists, and Localization, move that route value configuration into the filter provider and update when calling QueryAsync 
+            // await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
 
+            options.SearchText = options.FilterResult.ToString();
+            options.OriginalSearchText = options.SearchText;
+            options.RouteValues.TryAdd("q", options.FilterResult.ToString());
+
+            var routeData = new RouteData(options.RouteValues);
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
             {
                 pager.PageSize = maxPagedCount;
             }
 
-            // Populate route values to maintain previous route data when generating page links.
-            await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
-
-            var routeData = new RouteData(options.RouteValues);
-
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
-
-            queryFilterResult.MapTo(options);
-            options.SearchText = queryFilterResult.ToString();
-            options.OriginalSearchText = options.SearchText;
 
             // We prepare the content items SummaryAdmin shape
             var contentItemSummaries = new List<dynamic>();
@@ -270,41 +271,24 @@ namespace OrchardCore.Contents.Controllers
             return View(shapeViewModel);
         }
 
-        // [HttpPost, ActionName("List")]
-        // [FormValueRequired("submit.Filter")]
-        // public async Task<ActionResult> ListFilterPOST(ListContentsViewModel model)
-        // {
-        //     await _contentOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
-
-        //     return RedirectToAction("List", model.Options.RouteValues);
-        // }
-
-
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
-        public ActionResult ListFilterPOST(ContentOptionsViewModel options)
+        public async Task<ActionResult> ListFilterPOST(ContentOptionsViewModel options)
         {
             // When the user has typed something into the search input no evaluation is required.
             // But we might normalize it for them.
             if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
             {
-                return RedirectToAction(nameof(List),
-                      new RouteValueDictionary
-                      {
-                        { "q", options.SearchText }
-                      }
-                  );
+                return RedirectToAction(nameof(List), new RouteValueDictionary { { "q", options.SearchText } });
             }
 
-            options.FilterResult.MapFrom(options);
-            // TODO this needs to move into the driver, so that other modules can also contribute.
+            await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
 
-            return RedirectToAction(nameof(List),
-                       new RouteValueDictionary
-                       {
-                            { "q", options.FilterResult.ToString() }
-                       }
-                   );
+            // The route value must always be added after the editors have updated the models.
+
+            options.RouteValues.TryAdd("q", options.FilterResult.ToString());
+
+            return RedirectToAction(nameof(List), options.RouteValues);
         }
 
         [HttpPost, ActionName("List")]
