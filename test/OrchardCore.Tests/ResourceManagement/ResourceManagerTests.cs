@@ -798,13 +798,13 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         #region Helpers
-        private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
+        private Task<IDocument> ParseHtmlAsync(IHtmlContent content)
         {
             using (var writer = new StringWriter())
             {
                 content.WriteTo(writer, HtmlEncoder.Default);
 
-                return await browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
+                return browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
             }
         }
 
