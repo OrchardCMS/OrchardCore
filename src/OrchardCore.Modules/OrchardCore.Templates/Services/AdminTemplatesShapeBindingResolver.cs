@@ -13,7 +13,7 @@ using OrchardCore.Templates.Models;
 
 namespace OrchardCore.Templates.Services
 {
-    public class AdminTemplatesShapeBindingResolver : IShapeBindingResolver
+    public class AdminTemplatesShapeBindingResolver : IShapeBindingResolver, IAdminTemplatesShapeBindingNameResolver
     {
         private AdminTemplatesDocument _templatesDocument;
         private readonly AdminTemplatesManager _templatesManager;
@@ -68,12 +68,8 @@ namespace OrchardCore.Templates.Services
             }
         }
 
-        public async Task<IEnumerable<string>> GetShapeBindingNamesAsync(Func<string, bool> predicate, bool adminTemplate)
+        public async Task<IEnumerable<string>> GetShapeBindingNamesAsync(Func<string, bool> predicate)
         {
-            if (!adminTemplate)
-            {
-                return null;
-            }
 
             if (_templatesDocument == null)
             {

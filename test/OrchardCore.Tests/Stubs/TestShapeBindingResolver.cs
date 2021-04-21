@@ -13,7 +13,7 @@ namespace OrchardCore.Tests.Stubs
             : base(StringComparer.OrdinalIgnoreCase) { }
     }
 
-    public class TestShapeBindingResolver : IShapeBindingResolver
+    public class TestShapeBindingResolver : IShapeBindingResolver, IAdminTemplatesShapeBindingNameResolver, ISiteTemplatesShapeBindingNameResolver
     {
         private readonly TestShapeBindingsDictionary _shapeBindings;
 
@@ -34,7 +34,17 @@ namespace OrchardCore.Tests.Stubs
             }
         }
 
-        public async Task<IEnumerable<string>> GetShapeBindingNamesAsync(Func<string, bool> predicate, bool adminTemplate)
+        Task<IEnumerable<string>> ISiteTemplatesShapeBindingNameResolver.GetShapeBindingNamesAsync(Func<string, bool> predicate)
+        {
+            return GetShapeBindingNamesAsync(predicate,false);
+        }
+
+        Task<IEnumerable<string>> IAdminTemplatesShapeBindingNameResolver.GetShapeBindingNamesAsync(Func<string, bool> predicate)
+        {
+            return GetShapeBindingNamesAsync(predicate,true);
+        }
+
+        private async Task<IEnumerable<string>> GetShapeBindingNamesAsync(Func<string, bool> predicate, bool adminTemplate)
         {
             if (adminTemplate != _shapeBindings.IsAdminShape)
             {
