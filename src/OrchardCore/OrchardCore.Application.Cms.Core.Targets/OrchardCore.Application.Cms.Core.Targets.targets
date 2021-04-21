@@ -1,5 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <UsingTask AssemblyFile="..\..\OrchardCore.Build\bin\Debug\netcoreapp3.1\OrchardCore.Build.dll" TaskName="CreateWebRootFolderTask" />
+ 
   <ItemGroup>
     <Compile Remove="App_Data\**;Localization\**" />
     <Content Remove="App_Data\**;Localization\**" />
@@ -13,8 +15,8 @@
     </ResolvedFileToPublish>
   </ItemGroup>
 
-  <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder" Condition="!Exists('wwwroot/.placeholder')">
-    <WriteLinesToFile Lines="" Encoding="Unicode" File="wwwroot/.placeholder" />
+  <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder">
+    <CreateWebRootFolderTask />
   </Target>
 
   <Target Name="MakeLocalizationFolder" BeforeTargets="Build" Condition="!Exists('Localization/.placeholder')">
