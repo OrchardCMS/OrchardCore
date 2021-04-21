@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Forms.Extensions;
+using OrchardCore.Forms.Models;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -52,14 +53,14 @@ namespace OrchardCore.Forms.Workflows.Activities
 
             var httpContext = _httpContextAccessor.HttpContext;
             var validateRule = true;
-            var rules = new List<dynamic>();
+            var rules = new List<ValidationRuleModel>();
             foreach (var item in httpContext.Request.Form)
             {
                 if (item.Key.Equals("validationRules", StringComparison.InvariantCultureIgnoreCase))
                 {
                     if (!String.IsNullOrEmpty(item.Value[0]))
                     {
-                        rules = JsonConvert.DeserializeObject<List<dynamic>>(item.Value[0]);
+                        rules = JsonConvert.DeserializeObject<List<ValidationRuleModel>>(item.Value[0]);
                     }
                 }
                 else
@@ -72,16 +73,14 @@ namespace OrchardCore.Forms.Workflows.Activities
             {
                 foreach (var item in rules)
                 {
-                    string type = item.type.ToString();
-                    if (type != "none")
+                    if (item.Type != "none")
                     {
-                        string option = item.option.ToString();
-                        if (option.Contains("\\", StringComparison.Ordinal))
+                        if (item.Option.Contains("\\", StringComparison.Ordinal))
                         {
-                            option = option.Replace("\\", "|-BackslashPlaceholder-|");
+                            item.Option = item.Option.Replace("\\", "|-BackslashPlaceholder-|");
                         }
-                        string formItemValue = httpContext.Request.Form[item.elementId.ToString()];
-                        if (!type.ValidateInputByRule(formItemValue, option))
+                        var formItemValue = httpContext.Request.Form[item.ElementId];
+                        if (!item.Type.ValidateInputByRule(formItemValue, item.Option))
                         {
                             validateRule = false;
                             break;

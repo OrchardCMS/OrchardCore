@@ -23,11 +23,11 @@ namespace OrchardCore.Forms.Extensions
                 case "isBefore":
                     return CompareDatetime(input, option, "<");
                 case "isBoolean":
-                    return Boolean.TryParse(input, out var flag);
+                    return Boolean.TryParse(input, out _);
                 case "isByteLength":
                     return ValidateLength(Encoding.UTF8.GetByteCount(input), option);
                 case "isDate":
-                    return DateTime.TryParse(input, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out var result);
+                    return DateTime.TryParse(input, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out _);
                 case "isDecimal":
                     return ValidateIs<decimal>(input);
                 case "isDivisibleBy":
@@ -41,10 +41,9 @@ namespace OrchardCore.Forms.Extensions
                     return String.IsNullOrEmpty(input);
                 case "isFloat":
                     if (!Single.TryParse(input, out var original)) return false;
-                    float min = 0;
-                    var max = Single.MaxValue;
+                    float min;
                     var obj = JToken.Parse(option);
-                    Single.TryParse(obj["max"]?.ToString(), out max);
+                    Single.TryParse(obj["max"]?.ToString(), out var max);
                     Single.TryParse(obj["min"]?.ToString(), out min);
                     if (original >= min && (max == 0 || original <= max)) return true;
                     return false;
@@ -53,8 +52,8 @@ namespace OrchardCore.Forms.Extensions
                 case "isJSON":
                     if (String.IsNullOrWhiteSpace(input)) return false;
                     var value = input.Trim();
-                    if ((value.StartsWith("{") && value.EndsWith("}")) || //For object
-                        (value.StartsWith("[") && value.EndsWith("]"))) //For array
+                    if ((value.StartsWith("{") && value.EndsWith("}")) || // For object.
+                        (value.StartsWith("[") && value.EndsWith("]"))) // For array.
                     {
                         try
                         {
@@ -117,7 +116,7 @@ namespace OrchardCore.Forms.Extensions
         {
             var originResult = DateTime.TryParse(input, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out var originDate);
             var compareResult = DateTime.TryParse(option, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out var compareDate);
-            if(symbol == ">") return originResult && compareResult && originDate > compareDate;
+            if (symbol == ">") return originResult && compareResult && originDate > compareDate;
             return originResult && compareResult && originDate < compareDate;
         }
     }

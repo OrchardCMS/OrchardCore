@@ -225,8 +225,8 @@ Currently, the following functions are implemented:
 |None|don't validate value|none|
 |Contains|Check if the string contains the seed (always case-sensitive). | compared string |
 |Equals|Check if the string matches the comparison (alway case-insensitive)|compared string |
-|IsAfter|Check if the string is a date that's after the specified date(needed).| datetime, like `2020-3-3` |
-|IsBefore|Check if the string is a date that's before the specified date(needed).| datetime, like `2020-3-3` |
+|IsAfter|Check if the string is a date that's after the specified date (needed).| datetime, like `2020-3-3` |
+|IsBefore|Check if the string is a date that's before the specified date (needed).| datetime, like `2020-3-3` |
 |IsBoolean|Check if a string is a boolean.|none|
 |IsByteLength|Check if the string's length (in UTF-8 bytes) falls within a range.| `{"min":0, "max": 20}` |
 |IsDate|Check if the input is a valid date|Same as validator.js.|
