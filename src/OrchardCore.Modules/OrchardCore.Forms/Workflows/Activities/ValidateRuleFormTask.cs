@@ -53,14 +53,14 @@ namespace OrchardCore.Forms.Workflows.Activities
 
             var httpContext = _httpContextAccessor.HttpContext;
             var validateRule = true;
-            var rules = new List<ValidationRuleModel>();
+            var rules = new List<ValidationRule>();
             foreach (var item in httpContext.Request.Form)
             {
                 if (item.Key.Equals("validationRules", StringComparison.InvariantCultureIgnoreCase))
                 {
                     if (!String.IsNullOrEmpty(item.Value[0]))
                     {
-                        rules = JsonConvert.DeserializeObject<List<ValidationRuleModel>>(item.Value[0]);
+                        rules = JsonConvert.DeserializeObject<List<ValidationRule>>(item.Value[0]);
                     }
                 }
                 else

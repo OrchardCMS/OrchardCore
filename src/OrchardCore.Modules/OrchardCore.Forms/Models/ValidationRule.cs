@@ -1,6 +1,6 @@
 namespace OrchardCore.Forms.Models
 {
-    public class ValidationRuleModel
+    public class ValidationRule
     {
         public string Type { get; set; }
         public string Option { get; set; }

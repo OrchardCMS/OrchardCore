@@ -43,7 +43,7 @@ function validationEvent(type, validationElementId, option, elementId, validatio
     }
     return validationResult;
 }
-   
+
 function validationElementFunction(type, originElementId, option, validationMessage, defaultValidationMessage) {
     var isIE = checkIE();
     var elementId = '#' + originElementId;
@@ -106,7 +106,6 @@ function validationTypeChange(e, option = '', message = '') {
         } else {
             validationMessageInput.html(message);
         }
-   
     }
 }
 
