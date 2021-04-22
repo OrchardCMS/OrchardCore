@@ -49,6 +49,7 @@ function validationElementFunction(type, originElementId, option, validationMess
     var elementId = '#' + originElementId;
     var timestamp = new Date().getTime();
     var validationElementId = originElementId + timestamp;
+
     if (window.validatorObject) {
         var obj = { type: type, elementId: originElementId, option: option };
         window.validatorObject.push(obj);
@@ -58,16 +59,19 @@ function validationElementFunction(type, originElementId, option, validationMess
         var obj = { type: type, elementId: originElementId, option: option };
         window.validatorObject.push(obj);
     }
+
     $(elementId).bind('change keyup', function (e) {
         validationEvent(type, validationElementId, option, elementId, validationMessage, defaultValidationMessage);
     })
     var submitBtn = $(elementId).closest('form').find(':submit')[0];
+
     if (submitBtn) {
         if (isIE) {
             submitBtn.attachEvent('click', function () {
                 validationEvent(type, validationElementId, option, elementId, validationMessage, defaultValidationMessage);
             })
-        } else {
+        }
+        else {
             submitBtn.addEventListener('click', function (e) {
                 validationEvent(type, validationElementId, option, elementId, validationMessage, defaultValidationMessage);
             })
@@ -84,26 +88,32 @@ function validationTypeChange(e, option = '', message = '') {
 
     if (isShowOption === "0") {
         validationOption.css('display', 'none');
-    } else {
+    }
+    else {
         validationOption.css('display', 'block');
         var validationOptionInput = validationOption.find('input');
         var dataValidationOption = selectedValidationOptionItem.getAttribute('data-validation-option');
         validationOptionInput.attr('placeholder', dataValidationOption);
+
         if (option === '') {
             validationOptionInput.val('');
-        } else {
+        }
+        else {
             validationOptionInput.html(option);
         }
     }
 
     if (isShowValidationMessage === '0') {
         validationMessage.css('display', 'none');
-    } else {
+    }
+    else {
         validationMessage.css('display', 'block');
         var validationMessageInput = validationMessage.find('input');
+
         if (message === '') {
             validationMessageInput.val('');
-        } else {
+        }
+        else {
             validationMessageInput.html(message);
         }
    
