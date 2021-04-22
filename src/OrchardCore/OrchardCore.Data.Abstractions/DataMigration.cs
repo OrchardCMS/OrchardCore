@@ -12,9 +12,9 @@ namespace OrchardCore.Data.Migration
     /// public class Migrations : DataMigration
     /// {
     ///     public int Create() { return 1; } // or
-    ///     public Task{int} CreateAsync() { return 1; }
+    ///     public Task&lt;int&gt; CreateAsync() { return 1; }
     ///     public int UpdateFrom1() { return 2; } // or
-    ///     public Task{int} UpdateFrom1Async() { return 2; }
+    ///     public Task&lt;int&gt; UpdateFrom1Async() { return 2; }
     ///     public void Uninstall() { } // or
     ///     public Task UninstallAsync() { }
     /// }
