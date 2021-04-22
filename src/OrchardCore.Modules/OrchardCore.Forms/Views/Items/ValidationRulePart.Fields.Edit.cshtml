@@ -34,13 +34,13 @@
     <span class="hint">@T["The Validation type."]</span>
 </div>
 
-<div class="form-group validation-option">
+<div class="form-group validation-option" style="display:none">
     <label asp-for="Option">@T["Validation Options"]</label>
     <input asp-for="Option" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["For details, please visit <a href=\"{0}\">{0}</a>", "https://github.com/validatorjs/validator.js"]</span>
 </div>
 
-<div class="form-group validation-message">
+<div class="form-group validation-message" style="display:none">
     <label asp-for="ValidationMessage">@T["Validation Message"]</label>
     <input asp-for="ValidationMessage" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["Error message after the field validation fails."]</span>
