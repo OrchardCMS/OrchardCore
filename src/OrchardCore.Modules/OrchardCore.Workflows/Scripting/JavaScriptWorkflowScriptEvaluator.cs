@@ -31,7 +31,7 @@ namespace OrchardCore.Workflows.Evaluators
         {
             if (String.IsNullOrWhiteSpace(expression.Expression))
             {
-                return await Task.FromResult<T>(default(T));
+                return default;
             }
 
             var workflowType = workflowContext.WorkflowType;
