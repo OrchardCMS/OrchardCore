@@ -48,6 +48,7 @@
     <PackageManagement Include="YesSql.Core" Version="3.0.2" />
     <PackageManagement Include="YesSql.Abstractions" Version="3.0.2" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
+    <PackageManagement Include="ZString" Version="2.4.1" />
   </ItemGroup>
 
 </Project>

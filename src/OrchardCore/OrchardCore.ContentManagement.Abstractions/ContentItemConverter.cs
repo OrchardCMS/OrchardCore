@@ -6,6 +6,11 @@ namespace OrchardCore.ContentManagement
 {
     public class ContentItemConverter : JsonConverter
     {
+        private readonly JsonLoadSettings _jsonLoadSettings = new JsonLoadSettings
+        {
+            LineInfoHandling = LineInfoHandling.Ignore // defaults to loading which allocates quite a lot
+        };
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var contentItem = (ContentItem)value;
@@ -87,10 +92,10 @@ namespace OrchardCore.ContentManagement
                         contentItem.Owner = reader.ReadAsString();
                         break;
                     default:
-                        var customProperty = JProperty.Load(reader);
+                        var customProperty = JProperty.Load(reader, _jsonLoadSettings);
                         contentItem.Data.Add(customProperty);
 
-                        // Skip reading a token as JPproperty.Load already did the next one
+                        // Skip reading a token as JProperty.Load already did the next one
                         skip = true;
                         break;
                 }

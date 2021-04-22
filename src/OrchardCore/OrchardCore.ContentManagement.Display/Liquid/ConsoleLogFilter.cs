@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Hosting;
@@ -27,37 +28,37 @@ namespace OrchardCore.ContentManagement.Display.Liquid
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }
 
-            using (var sb = StringBuilderPool.GetInstance())
+            using var sb = ZString.CreateStringBuilder();
+            sb.Append("<script>console.log(");
+
+            if (content is string stringContent)
             {
-                sb.Builder.Append("<script>console.log(");
-
-                if (content is string stringContent)
-                {
-                    sb.Builder.Append("\"").Append(stringContent).Append("\"");
-                }
-                else if (content is JToken jTokenContent)
-                {
-                    sb.Builder.Append(jTokenContent.ToString());
-                }
-                else if (content is ContentItem contentItem)
-                {
-                    sb.Builder.Append(OrchardRazorHelperExtensions.ConvertContentItem(contentItem).ToString());
-                }
-                else if (content is IShape shape)
-                {
-                    sb.Builder.Append(shape.ShapeToJson().ToString());
-                }
-                else
-                {
-                    sb.Builder.Append(JsonConvert.SerializeObject(content));
-                }
-
-                sb.Builder.Append(")</script>");
-
-                var result = new StringValue(sb.Builder.ToString(), false);
-
-                return new ValueTask<FluidValue>(result);
+                sb.Append("\"");
+                sb.Append(stringContent);
+                sb.Append("\"");
             }
+            else if (content is JToken jTokenContent)
+            {
+                sb.Append(jTokenContent.ToString());
+            }
+            else if (content is ContentItem contentItem)
+            {
+                sb.Append(OrchardRazorHelperExtensions.ConvertContentItem(contentItem).ToString());
+            }
+            else if (content is IShape shape)
+            {
+                sb.Append(shape.ShapeToJson().ToString());
+            }
+            else
+            {
+                sb.Append(JsonConvert.SerializeObject(content));
+            }
+
+            sb.Append(")</script>");
+
+            var result = new StringValue(sb.ToString(), false);
+
+            return new ValueTask<FluidValue>(result);
         }
     }
 }
