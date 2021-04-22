@@ -43,26 +43,22 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     stereotype = settings.Stereotype;
                 }
 
-                if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
-                {
-                    stereotype += "__";
-                }
-
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
                 var editorPartType = GetEditorShapeType(_typePartDefinition);
                 var displayMode = _typePartDefinition.DisplayMode();
                 var hasDisplayMode = !String.IsNullOrEmpty(displayMode);
+                var isDisplayModeShapeType = shapeType == partType + DisplaySeparator + displayMode;
 
                 // If the shape type and the field type only differ by the display mode
-                if (hasDisplayMode && shapeType == partType + DisplaySeparator + displayMode)
+                if (hasDisplayMode && isDisplayModeShapeType)
                 {
                     // Preserve the shape name regardless its differentiator
                     result.Name(partName);
                 }
 
-                if (partType == shapeType || editorPartType == shapeType)
+                if (partType == shapeType || editorPartType == shapeType || isDisplayModeShapeType)
                 {
                     // HtmlBodyPart, Services
                     result.Differentiator(partName);
@@ -85,8 +81,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     {
                         displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
 
-                        // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
+                        if (!isDisplayModeShapeType)
+                        {
+                            // Do not add  Display type suffix to display mode shapes
+                            // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
+                        }
                     }
 
                     if (shapeType == partType || shapeType == editorPartType)
@@ -112,7 +112,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                                 if (!String.IsNullOrEmpty(stereotype))
                                 {
-                                    // [Stereotype]_[DisplayType]__[PartName], e.g. LandingPage-Services
+                                    // [Stereotype]_[DisplayType]__[PartName], e.g. Widget-Services
                                     ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partName}");
                                 }
                             }
@@ -134,7 +134,15 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                             if (hasDisplayMode)
                             {
-                                shapeType = $"{partType}__{displayMode}";
+                                if (isDisplayModeShapeType)
+                                {
+                                    // In case of display mode, update shape type to only include DisplayMode and DisplayToken
+                                    shapeType = $"{displayMode}";
+                                }
+                                else
+                                {
+                                    shapeType = $"{partType}__{displayMode}";
+                                }
 
                                 if (displayType == "")
                                 {
