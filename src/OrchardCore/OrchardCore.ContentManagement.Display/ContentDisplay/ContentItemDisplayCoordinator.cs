@@ -194,7 +194,7 @@ namespace OrchardCore.ContentManagement.Display
                                     {
                                         // [Stereotype]_[DisplayType]__[PartName]
                                         // e.g. Widget-Services
-                                        ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partName}");
+                                        ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partTypeName}__{partName}");
                                     }
                                 }
                             }
