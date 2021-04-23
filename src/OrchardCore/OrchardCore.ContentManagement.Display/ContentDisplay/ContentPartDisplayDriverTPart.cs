@@ -128,50 +128,51 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                         var lastAlternatesOfNamedPart = new List<string>();
 
-                        for (var i = 0; i < displayTypes.Length; i++)
+                        foreach (var displayType in displayTypes)
                         {
-                            var displayType = displayTypes[i];
+                            var shapeTypeSuffix = shapeType;                            
+                            var displayTypeDisplayToken = displayType;                            
 
                             if (hasDisplayMode)
                             {
                                 if (isDisplayModeShapeType)
                                 {
                                     // In case of display mode, update shape type to only include DisplayMode and DisplayToken
-                                    shapeType = $"{displayMode}";
+                                    shapeTypeSuffix = $"{displayMode}";
                                 }
                                 else
                                 {
-                                    shapeType = $"{partType}__{displayMode}";
+                                    shapeTypeSuffix = $"{shapeTypeSuffix}__{displayMode}";
                                 }
 
                                 if (displayType == "")
                                 {
-                                    displayType = DisplayToken;
+                                    displayTypeDisplayToken = DisplayToken;
                                 }
                                 else
                                 {
-                                    shapeType += DisplayToken;
+                                    shapeTypeSuffix = $"{shapeTypeSuffix}{DisplayToken}";
                                 }
                             }
 
                             // [ContentType]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{shapeType}");
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayTypeDisplayToken}__{partType}__{shapeTypeSuffix}");
 
                             if (!String.IsNullOrEmpty(stereotype))
                             {
                                 // [Stereotype]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
-                                ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partType}__{shapeType}");
+                                ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayTypeDisplayToken}__{partType}__{shapeTypeSuffix}");
                             }
 
                             if (partType != partName)
                             {
                                 // [ContentType]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
-                                lastAlternatesOfNamedPart.Add($"{contentType}{displayType}__{partName}__{shapeType}");
+                                lastAlternatesOfNamedPart.Add($"{contentType}{displayTypeDisplayToken}__{partName}__{shapeTypeSuffix}");
 
                                 if (!String.IsNullOrEmpty(stereotype))
                                 {
                                     // [Stereotype]_[DisplayType]__[PartName]__[ShapeType], e.g. Widget-ServicePart-Services-BagPartSummary
-                                    lastAlternatesOfNamedPart.Add($"{stereotype}{displayType}__{partType}__{partName}__{shapeType}");
+                                    lastAlternatesOfNamedPart.Add($"{stereotype}{displayTypeDisplayToken}__{partType}__{partName}__{shapeTypeSuffix}");
                                 }
                             }
                         }
