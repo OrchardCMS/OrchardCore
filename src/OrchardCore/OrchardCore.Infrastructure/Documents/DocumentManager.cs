@@ -99,9 +99,11 @@ namespace OrchardCore.Documents
 
             if (!_isVolatile && _isDistributed)
             {
+                // Resolve the 'IDocumentStore' and hold it in a scoped cache.
                 _ = DocumentStore;
             }
 
+            // May call an async IO if using a distributed cache.
             var document = await GetInternalAsync();
 
             if (document == null)
