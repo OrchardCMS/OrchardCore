@@ -112,7 +112,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                                 if (!String.IsNullOrEmpty(stereotype))
                                 {
-                                    // [Stereotype]_[DisplayType]__[PartName], e.g. Widget-ServicePart-Services
+                                    // [Stereotype]_[DisplayType]__[PartType]__[PartName], e.g. Widget-ServicePart-Services
                                     ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partType}__{partName}");
                                 }
                             }
@@ -171,7 +171,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                                 if (!String.IsNullOrEmpty(stereotype))
                                 {
-                                    // [Stereotype]_[DisplayType]__[PartName]__[ShapeType], e.g. Widget-ServicePart-Services-BagPartSummary
+                                    // [Stereotype]_[DisplayType]__[PartType]__[PartName]__[ShapeType], e.g. Widget-ServicePart-Services-BagPartSummary
                                     lastAlternatesOfNamedPart.Add($"{stereotype}{displayTypeDisplayToken}__{partType}__{partName}__{shapeTypeSuffix}");
                                 }
                             }

@@ -192,7 +192,7 @@ namespace OrchardCore.ContentManagement.Display
 
                                     if (!String.IsNullOrEmpty(stereotype))
                                     {
-                                        // [Stereotype]_[DisplayType]__[PartName]
+                                        // [Stereotype]_[DisplayType]__[PartType]__[PartName]
                                         // e.g. Widget-Services
                                         ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partTypeName}__{partName}");
                                     }
