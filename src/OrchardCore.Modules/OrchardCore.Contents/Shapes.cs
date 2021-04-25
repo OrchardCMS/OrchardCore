@@ -52,7 +52,7 @@ namespace OrchardCore.Contents
 
                     if (String.IsNullOrEmpty(handle))
                     {
-                        // This code is provided for backwards compatability and can be removed in a future version.
+                        // This code is provided for backwards compatibility and can be removed in a future version.
                         handle = content.GetProperty<string>("Alias");
                         if (String.IsNullOrEmpty(handle))
                         {

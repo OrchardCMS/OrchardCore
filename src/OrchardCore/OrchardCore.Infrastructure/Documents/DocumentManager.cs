@@ -35,13 +35,26 @@ namespace OrchardCore.Documents
             {
                 _isDistributed = true;
             }
+
+            DocumentStoreServiceType = typeof(IDocumentStore);
         }
 
         public Type DocumentStoreServiceType { get; set; }
 
-        public IDocumentStore DocumentStore => DocumentStoreServiceType != null
-            ? (IDocumentStore)ShellScope.Services.GetRequiredService(DocumentStoreServiceType)
-            : ShellScope.Services.GetRequiredService<IDocumentStore>();
+        public IDocumentStore DocumentStore
+        {
+            get
+            {
+                var documentStore = (IDocumentStore)ShellScope.Get(DocumentStoreServiceType);
+                if (documentStore == null)
+                {
+                    documentStore = (IDocumentStore)ShellScope.Services.GetRequiredService(DocumentStoreServiceType);
+                    ShellScope.Set(DocumentStoreServiceType, documentStore);
+                }
+
+                return documentStore;
+            }
+        }
 
         public async Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null)
         {
