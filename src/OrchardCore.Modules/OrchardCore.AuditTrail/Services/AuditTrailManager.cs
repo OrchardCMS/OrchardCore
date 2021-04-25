@@ -62,7 +62,10 @@ namespace OrchardCore.AuditTrail.Services
 
             foreach (var eventDescriptor in eventDescriptors)
             {
-                if (!await IsEventEnabledAsync(eventDescriptor)) continue;
+                if (!await IsEventEnabledAsync(eventDescriptor))
+                {
+                    continue;
+                }
 
                 var auditTrailCreateContext = new AuditTrailCreateContext(
                     auditTrailContext.EventName,
@@ -71,9 +74,7 @@ namespace OrchardCore.AuditTrail.Services
                     auditTrailContext.EventFilterKey,
                     auditTrailContext.EventFilterData);
 
-                await _auditTrailEventHandlers.InvokeAsync(
-                    (handler, context) =>
-                    handler.CreateAsync(context), auditTrailCreateContext, Logger);
+                await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), auditTrailCreateContext, Logger);
 
                 var auditTrailEvent = new AuditTrailEvent
                 {

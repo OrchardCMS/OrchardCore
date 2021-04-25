@@ -60,6 +60,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 .Where(auditTrailEventIndex => auditTrailEventIndex.AuditTrailEventId == auditTrailEventId)
                 .FirstOrDefaultAsync();
 
+            // Create a new item to take into account the current type definition.
             var existing = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
             var contentItem = await _contentManager.NewAsync(existing.ContentType);
             contentItem.Merge(existing);
@@ -101,6 +102,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 .OrderByDescending(eventIndex => eventIndex.VersionNumber)
                 .FirstOrDefaultAsync();
 
+            // Create a new item to take into account the current type definition.
             var existing = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
             var contentItem = await _contentManager.NewAsync(existing.ContentType);
             contentItem.Merge(existing);
