@@ -42,7 +42,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                 _httpContextAccessor.HttpContext.Request.Form["Email"]);
 
         public Task PasswordResetAsync() =>
-            string.IsNullOrEmpty(_httpContextAccessor.HttpContext?.User?.Identity?.Name) ?
+            String.IsNullOrEmpty(_httpContextAccessor.HttpContext?.User?.Identity?.Name) ?
                 RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _httpContextAccessor.HttpContext.Request.Form["Email"]) :
                 RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _httpContextAccessor.HttpContext.User.Identity.Name);
 
@@ -79,7 +79,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
 
         private async Task RecordAuditTrailEventAsync(string eventName, string username)
         {
-            if (string.IsNullOrEmpty(username)) return;
+            if (String.IsNullOrEmpty(username)) return;
 
             var userManager = GetUserManagerFromHttpContext();
             var user = await userManager.FindByNameAsync(username);

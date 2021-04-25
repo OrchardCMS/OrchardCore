@@ -15,11 +15,7 @@ using static OrchardCore.AuditTrail.Constants.FeatureIds;
     Description = "Provides a log for recording and viewing back-end changes.",
     Dependencies = new[]
     {
-        "OrchardCore.ContentManagement.Display",
-        "OrchardCore.ContentManagement",
         "OrchardCore.ContentTypes",
-        "OrchardCore.DisplayManagement",
-        "OrchardCore.ResourceManagement",
         "OrchardCore.Users"
     }
 )]
