@@ -200,9 +200,10 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Start holding this shell scope along the async flow.
         /// </summary>
-        // Use an object indirection to hold the 'ShellScope' in the 'AsyncLocal',
-        // so that it can be cleared in all 'ExecutionContext's when its cleared.
-        public void StartAsyncFlow() => _current.Value = new ShellScopeHolder { Scope = this };
+        public void StartAsyncFlow()
+        // Use an object indirection to hold the current scope in the 'AsyncLocal',
+        // so that it can be cleared in all execution contexts when it is cleared.
+            => _current.Value = new ShellScopeHolder { Scope = this };
 
         /// <summary>
         /// Executes a delegate using this shell scope in an isolated async flow,
@@ -475,7 +476,7 @@ namespace OrchardCore.Environment.Shell.Scope
             var holder = _current.Value;
             if (holder != null)
             {
-                // Clear the current 'ShellScope' trapped in the 'AsyncLocal's, as its done.
+                // Clear the current scope that may be trapped in some execution contexts.
                 holder.Scope = null;
             }
         }
