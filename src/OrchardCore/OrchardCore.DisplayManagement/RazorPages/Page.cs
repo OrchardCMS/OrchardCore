@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Title;
 using OrchardCore.DisplayManagement.Zones;
@@ -90,7 +91,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
 
             if (shape is string str)
             {
-                return Task.FromResult<IHtmlContent>(new StringHtmlContent(str));
+                return Task.FromResult<IHtmlContent>(new HtmlContentString(str));
             }
 
             throw new ArgumentException("DisplayAsync requires an instance of IShape");
@@ -232,7 +233,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
         public IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null)
         {
-            Title.AddSegment(new StringHtmlContent(segment), position);
+            Title.AddSegment(new HtmlContentString(segment), position);
             return Title.GenerateTitle(separator);
         }
 
@@ -271,9 +272,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout.Zones[name];
-
-            return zone != null;
+            return ThemeLayout.Zones.IsNotEmpty(name);
         }
 
         /// <summary>
@@ -304,7 +303,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
 
             var zone = ThemeLayout.Zones[name];
 
-            if (required && zone != null)
+            if (required && zone.IsNullOrEmpty())
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }

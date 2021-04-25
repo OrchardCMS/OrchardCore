@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -64,6 +65,11 @@ namespace OrchardCore.AutoSetup
         {
             var configuration = _shellConfiguration.GetSection(ConfigSectionName);
             services.Configure<AutoSetupOptions>(configuration);
+
+            if (configuration.Exists())
+            {
+                services.Configure<AutoSetupOptions>(o => o.ConfigurationExists = true);
+            }
         }
 
         /// <summary>
@@ -83,6 +89,11 @@ namespace OrchardCore.AutoSetup
             if (_shellSettings.State == TenantState.Uninitialized)
             {
                 var options = serviceProvider.GetRequiredService<IOptions<AutoSetupOptions>>().Value;
+                if (!options.ConfigurationExists)
+                {
+                    return;
+                }
+
                 var validationContext = new ValidationContext(options, serviceProvider, null);
 
                 var validationErrors = options.Validate(validationContext);

@@ -202,7 +202,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Start holding this shell scope along the async flow.
         /// </summary>
-        internal void StartAsyncFlow() => _current.Value = this;
+        public void StartAsyncFlow() => _current.Value = this;
 
         /// <summary>
         /// Executes a delegate using this shell scope in an isolated async flow,
@@ -371,7 +371,9 @@ namespace OrchardCore.Environment.Shell.Scope
                         scope = new ShellScope(ShellContext);
                     }
 
-                    await scope.UsingServiceScopeAsync(async scope =>
+                    // Use 'UsingAsync' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
+                    // trigger another one, but still prevent the shell to be activated in a deferred task.
+                    await scope.UsingAsync(async scope =>
                     {
                         var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
 
@@ -385,7 +387,8 @@ namespace OrchardCore.Environment.Shell.Scope
                                 "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
                                 task.GetType().FullName, ShellContext.Settings.Name);
                         }
-                    });
+                    },
+                    activateShell: false);
                 }
             }
         }

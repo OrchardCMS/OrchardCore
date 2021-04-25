@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -61,28 +59,28 @@ namespace OrchardCore.Users.Drivers
             return Edit(user);
         }
 
-        private async Task<bool> AuthorizeUpdateAsync(User user)
+        private Task<bool> AuthorizeUpdateAsync(User user)
         {
             // When the current user matches this user we can ask for ManageOwnUserInformation
             if (String.Equals(user.UserId, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
             {
-                return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation);
+                return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation);
             }
 
             // Otherwise we require permission to manage this users information.
-            return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user);
+            return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user);
         }
 
-        private async Task<bool> AuthorizeEditAsync(User user)
+        private Task<bool> AuthorizeEditAsync(User user)
         {
             // When the current user matches this user we can ask for ManageOwnUserInformation
             if (String.Equals(user.UserId, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
             {
-                return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation);
+                return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation);
             }
 
             // Otherwise we require permission to manage this users information.
-            return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers, user);
-        }        
+            return _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers, user);
+        }
     }
 }

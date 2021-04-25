@@ -26,10 +26,10 @@
     "watch": "rollup -c -w"
   },
   "dependencies": {
-    "fs-extra": "^9.0.1"
+    "fs-extra": "^9.1.0"
   },
   "devDependencies": {
-    "rollup": "^2.32.0",
-    "rollup-plugin-commonjs": "^10.1.0"
+    "rollup": "^2.44.0",
+    "@rollup/plugin-commonjs": "^18.0.0"
   }
 }

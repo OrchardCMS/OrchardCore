@@ -55,9 +55,6 @@ namespace OrchardCore.Queries
             services.Configure<TemplateOptions>(o =>
             {
                 o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
-
-                o.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
-
                 o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
                 {
                     var liquidTemplateContext = (LiquidTemplateContext)context;

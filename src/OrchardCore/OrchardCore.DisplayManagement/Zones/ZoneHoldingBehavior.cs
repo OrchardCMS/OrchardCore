@@ -63,6 +63,8 @@ namespace OrchardCore.DisplayManagement.Zones
         private readonly Func<ValueTask<IShape>> _zoneFactory;
         private readonly ZoneHolding _parent;
 
+        public bool IsNotEmpty(string name) => !(this[name] is ZoneOnDemand);
+
         public Zones(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent)
         {
             _zoneFactory = zoneFactory;
@@ -189,7 +191,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (obj is null)
             {
                 return true;
             }
@@ -204,12 +206,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hashCode = (_parent != null ? _parent.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (_potentialZoneName != null ? _potentialZoneName.GetHashCode() : 0);
-                return hashCode;
-            }
+            return HashCode.Combine(_parent, _potentialZoneName);
         }
 
         public override async ValueTask<IShape> AddAsync(object item, string position)

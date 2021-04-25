@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
+using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -40,22 +41,28 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
 
         internal static async Task RenderAsync(RazorPage<dynamic> page)
-        {            
+        {
             var services = page.Context.RequestServices;
             var liquidViewParser = services.GetRequiredService<LiquidViewParser>();
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
             var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
-            var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
 
+            var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
             var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment);
             var context = new LiquidTemplateContext(services, templateOptions);
-            
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
             try
             {
+                var content = new ViewBufferTextWriterContent();
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
-                await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
+                await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
+
+                // Use ViewBufferTextWriter.Write(object) from ASP.NET directly since it will use a special code path
+                // for IHtmlContent. This prevent the TextWriter methods from copying the content from our buffer
+                // if we did content.WriteTo(page.Output)
+
+                page.Output.Write(content);
             }
             finally
             {
@@ -75,19 +82,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                     entry.ExpirationTokens.Add(fileProvider.Watch(path));
                 }
 
-                using (var stream = fileInfo.CreateReadStream())
+                using var stream = fileInfo.CreateReadStream();
+                using var sr = new StreamReader(stream);
+
+                if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
                 {
-                    using (var sr = new StreamReader(stream))
-                    {
-                        if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
-                        {
-                            return new LiquidViewTemplate(template);
-                        }
-                        else
-                        {
-                            throw new Exception($"Failed to parse liquid file {path}: {String.Join(System.Environment.NewLine, errors)}");
-                        }
-                    }
+                    return new LiquidViewTemplate(template);
+                }
+                else
+                {
+                    throw new Exception($"Failed to parse liquid file {path}: {String.Join(System.Environment.NewLine, errors)}");
                 }
             });
         }
@@ -103,26 +107,36 @@ namespace OrchardCore.DisplayManagement.Liquid
         {
             if (o is Shape shape)
             {
-                if (shape.Properties.TryGetValue(n, out var result))
+                object obj = n switch
                 {
-                    return result;
+                    nameof(Shape.Id) => shape.Id,
+                    nameof(Shape.TagName) => shape.TagName,
+                    nameof(Shape.HasItems) => shape.HasItems,
+                    nameof(Shape.Classes) => shape.Classes,
+                    nameof(Shape.Attributes) => shape.Attributes,
+                    nameof(Shape.Metadata) => shape.Metadata,
+                    nameof(Shape.Items) => shape.Items,
+                    _ => null
+                };
+
+                if (obj != null)
+                {
+                    return obj;
                 }
 
-                if (n == "Items")
+                if (shape.Properties.TryGetValue(n, out obj))
                 {
-                    return shape.Items;
+                    return obj;
                 }
 
-                // Resolves Model.Content.MyType-MyField-FieldType_Display__DisplayMode
+                // 'MyType-MyField-FieldType_Display__DisplayMode'.
                 var namedShaped = shape.Named(n);
                 if (namedShaped != null)
                 {
                     return namedShaped;
                 }
 
-                // Resolves Model.Content.MyNamedPart
-                // Resolves Model.Content.MyType__MyField
-                // Resolves Model.Content.MyType-MyField
+                // 'MyNamedPart', 'MyType__MyField' 'MyType-MyField'.
                 return shape.NormalizedNamed(n.Replace("__", "-"));
             }
 
@@ -252,7 +266,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     context.TimeZone = timeZoneInfo;
                 }
 
-                // Configure Fluid with the local date and time 
+                // Configure Fluid with the local date and time
                 var now = await localClock.LocalNowAsync;
 
                 context.Now = () => now;
@@ -273,7 +287,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 contextable.Contextualize(viewContext);
             }
 
-            context.SetValue("ViewLocalizer", viewLocalizer);
+            context.SetValue("ViewLocalizer", new ObjectValue(viewLocalizer));
 
             if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
             {

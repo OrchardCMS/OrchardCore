@@ -6,6 +6,7 @@
     <VersionPrefix>1.0.0</VersionPrefix>
     <VersionSuffix>rc2</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
+    <!-- Razor does not support LangVersion 9 on ASP.NET Core 3 -->
     <LangVersion>8.0</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>

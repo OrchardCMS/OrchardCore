@@ -158,62 +158,6 @@
           ]
         },
         {
-          "Name": "LiquidPage",
-          "DisplayName": "Liquid Page",
-          "Hidden": false,
-          "Settings": {
-            "ContentTypeSettings": {
-              "Creatable": true,
-              "Draftable": true,
-              "Versionable": true,
-              "Listable": true
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPage",
-              "Name": "LiquidPage",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "AutoroutePartSettings": {
-                  "AllowCustomPath": true,
-                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
-                  "ShowHomepageOption": true
-                },
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
-            },
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "3"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
           "Name": "BlogPost",
           "DisplayName": "Blog Post",
           "Hidden": false,
@@ -384,7 +328,7 @@
           "Name": "Blockquote",
           "DisplayName": "Blockquote",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -404,73 +348,20 @@
           ]
         },
         {
-          "Name": "ImageWidget",
-          "DisplayName": "Image",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Image",
-              "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidWidget",
-          "DisplayName": "Liquid",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Listable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
           "Name": "Image",
           "DisplayName": "Image",
           "Settings": {
             "ContentTypeSettings": {
-              "Versionable": true
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
             }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Image",
               "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
@@ -506,7 +397,7 @@
           "Name": "RawHtml",
           "DisplayName": "Raw Html",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -926,8 +817,6 @@
               "Input",
               "Label",
               "LinkMenuItem",
-              "LiquidWidget",
-              "LiquidPage",
               "Menu",
               "Page",
               "Paragraph",
@@ -1287,6 +1176,7 @@
             "ConditionId":"[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
                 "Name": "BooleanCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"
@@ -1301,6 +1191,7 @@
             "ConditionId": "[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
                 "Name": "HomepageCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"

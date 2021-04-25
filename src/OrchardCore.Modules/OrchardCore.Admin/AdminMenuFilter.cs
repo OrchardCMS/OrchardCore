@@ -60,7 +60,7 @@ namespace OrchardCore.Admin
                 Arguments.From(new
                 {
                     MenuName = "admin",
-                    RouteData = filterContext.RouteData,
+                    filterContext.RouteData,
                 }));
 
             var layout = await _layoutAccessor.GetLayoutAsync();

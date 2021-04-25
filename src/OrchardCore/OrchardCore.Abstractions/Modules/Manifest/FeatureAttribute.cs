@@ -14,6 +14,9 @@ namespace OrchardCore.Modules.Manifest
         {
         }
 
+        /// <Summary>
+        /// whether the feature exists.
+        /// </Summary>
         public bool Exists => Id != null;
 
         /// <Summary>The identifier of the feature.</Summary>

@@ -7,7 +7,7 @@
  
     foreach (var option in settings.Options)
     {
-        if (Model.Values.Contains(option.Value))
+        if (Model.Values?.Contains(option.Value) == true)
         {
             selectedValues.Add(new { value = option.Value, name = option.Name });
         }

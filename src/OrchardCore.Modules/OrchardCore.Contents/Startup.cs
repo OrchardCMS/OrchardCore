@@ -72,7 +72,7 @@ namespace OrchardCore.Contents
 
             services.Configure<LiquidViewOptions>(o =>
             {
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, new ContentItemTag().WriteToAsync));
+                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, ContentItemTag.WriteToAsync));
             });
 
             services.Configure<TemplateOptions>(o =>
@@ -88,9 +88,6 @@ namespace OrchardCore.Contents
                 o.Filters.AddFilter("display_text", DisplayTextFilter.DisplayText);
 
                 o.Scope.SetValue("Content", new ObjectValue(new LiquidContentAccessor()));
-
-                o.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
-
                 o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", (obj, context) =>
                 {
                     var liquidTemplateContext = (LiquidTemplateContext)context;
