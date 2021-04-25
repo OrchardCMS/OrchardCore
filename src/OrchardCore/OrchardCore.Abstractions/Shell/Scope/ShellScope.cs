@@ -8,8 +8,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Locking;
-using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Scope
@@ -19,7 +17,7 @@ namespace OrchardCore.Environment.Shell.Scope
     /// </summary>
     public class ShellScope : IServiceScope
     {
-        private static readonly AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
+        private static readonly AsyncLocal<ShellScopeHolder> _current = new AsyncLocal<ShellScopeHolder>();
 
         private readonly IServiceScope _serviceScope;
         private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
@@ -69,7 +67,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Retrieve the current shell scope from the async flow.
         /// </summary>
-        public static ShellScope Current => _current.Value;
+        public static ShellScope Current => _current.Value?.Scope;
 
         /// <summary>
         /// Sets a shared item to the current shell scope.
@@ -202,7 +200,9 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Start holding this shell scope along the async flow.
         /// </summary>
-        public void StartAsyncFlow() => _current.Value = this;
+        // Use an object indirection to hold the 'ShellScope' in the 'AsyncLocal',
+        // so that it can be cleared in all 'ExecutionContext's when its cleared.
+        public void StartAsyncFlow() => _current.Value = new ShellScopeHolder { Scope = this };
 
         /// <summary>
         /// Executes a delegate using this shell scope in an isolated async flow,
@@ -471,6 +471,18 @@ namespace OrchardCore.Environment.Shell.Scope
                 // Keep the counter clean if not yet decremented.
                 Interlocked.Decrement(ref ShellContext._refCount);
             }
+
+            var holder = _current.Value;
+            if (holder != null)
+            {
+                // Clear the current 'ShellScope' trapped in the 'AsyncLocal's, as its done.
+                holder.Scope = null;
+            }
+        }
+
+        private class ShellScopeHolder
+        {
+            public ShellScope Scope;
         }
     }
 }
