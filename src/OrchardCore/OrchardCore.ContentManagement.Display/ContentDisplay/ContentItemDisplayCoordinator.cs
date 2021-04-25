@@ -85,14 +85,6 @@ namespace OrchardCore.ContentManagement.Display
                 }
             }
 
-            var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
-            var stereotype = "";
-
-            if (settings != null)
-            {
-                stereotype = settings.Stereotype;
-            }
-
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = contentTypePartDefinition.Name;
@@ -143,102 +135,11 @@ namespace OrchardCore.ContentManagement.Display
 
                     if (part.GetType() == typeof(ContentPart) && partTypeName != contentTypePartDefinition.ContentTypeDefinition.Name)
                     {
-                        var displayMode = contentTypePartDefinition.DisplayMode();
-                        var hasDisplayMode = !String.IsNullOrEmpty(displayMode);
-                        // e.g. if displaymode -  MyPart_Display__MyDisplayMode
-                        // else  MyPart
-                        var shapeType = hasDisplayMode ? $"{partTypeName}_Display__{displayMode}" : partTypeName;
+                        var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
 
                         var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
                         shapeResult.Differentiator(partName);
-                        shapeResult.Name(partName);
                         shapeResult.Location("Content");
-
-                        shapeResult.Displaying(ctx =>
-                       {
-                           string displayToken = "_Display";
-                           string[] displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
-
-                           foreach (var displayType in displayTypes)
-                           {
-                               // Fall back to default template of ContentPart, if there is not template for shape type(partTypeName)
-                               // eg. ContentPart or ContentPart.Summary
-                               ctx.Shape.Metadata.Alternates.Add($"ContentPart{displayType}");
-
-                               // If there is template defined for shape type (partTypeName) that should be used.
-                               // eg. MyPart or MyPart.Summary
-                               ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayType}");
-
-                               // [ContentType]_[DisplayType]__[PartType] e.g. LandingPage-ServicePart, LandingPage.ServicePart.Summary
-                               // eg. MyType-MyPart.Summary
-                               ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
-
-                               if (hasDisplayMode)
-                               {
-                                   var shapeTypeSuffix = $"{displayMode}";
-                                   var displayTypeMode = displayType;
-
-                                   if (displayType == "")
-                                   {
-                                       displayTypeMode = displayToken;
-                                   }
-                                   else
-                                   {
-                                       shapeTypeSuffix += displayToken;
-                                   }
-                                   // [PartType]_[DisplayType]__[DisplayMode]
-                                   // e.g. MyPart-MyDisplayMode.Display, MyPart-MyDisplayMode.Display.Summary
-                                   ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayTypeMode}__{shapeTypeSuffix}");
-
-                                   // [ContentType]_[DisplayType]__[PartType]__[DisplayMode]
-                                   // e.g. MyType-MyPart-MyDisplayMode.Display, MyType-MyPart-MyDisplayMode.Display.Summary
-                                   ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayTypeMode}__{partTypeName}__{shapeTypeSuffix}");
-                               }
-                           }
-
-                           if (partName != partTypeName)
-                           {
-                               foreach (var displayType in displayTypes)
-                               {
-                                   // [ContentType]_[DisplayType]__[PartName]
-                                   // e.g.LandingPage-Services, LandingPage-Services.Summary
-                                   ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
-
-                                   if (!String.IsNullOrEmpty(stereotype))
-                                   {
-                                       // [Stereotype]_[DisplayType]__[PartName]
-                                       // e.g. Widget-Services, Widget-Services.Summary
-                                       ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partName}");
-                                   }
-
-                                   if (hasDisplayMode)
-                                   {
-                                       var shapeTypeSuffix = $"{displayMode}";
-                                       var displayTypeMode = displayType;
-
-                                       if (displayType == "")
-                                       {
-                                           displayTypeMode = displayToken;
-                                       }
-                                       else
-                                       {
-                                           shapeTypeSuffix += displayToken;
-                                       }
-
-                                       // [ContentType]_[DisplayType]__[PartName]
-                                       // e.g.LandingPage-Services-MyDisplayMode.Display, LandingPage-Services.MyDisplayMode.Display.Summary
-                                       ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayTypeMode}__{partName}__{shapeTypeSuffix}");
-
-                                       if (!String.IsNullOrEmpty(stereotype))
-                                       {
-                                           // [Stereotype]_[DisplayType]__[PartName]
-                                           // e.g. Widget-Services-MyDisplayMode.Display Widget-Services-MyDisplayMode.Display.Summary
-                                           ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayTypeMode}__{partName}__{shapeTypeSuffix}");
-                                       }
-                                   }
-                               }
-                           }
-                       });
 
                         await shapeResult.ApplyAsync(context);
 
@@ -248,6 +149,25 @@ namespace OrchardCore.ContentManagement.Display
                         var dynamicContentPartShape = contentPartShape;
                         dynamicContentPartShape.Properties[partTypeName] = part.Content;
                         dynamicContentPartShape.Properties["ContentItem"] = part.ContentItem;
+
+                        contentPartShape.Metadata.Alternates.Add(partTypeName);
+                        contentPartShape.Metadata.Alternates.Add($"{contentType}__{partTypeName}");
+
+                        if (context.DisplayType != "Detail")
+                        {
+                            contentPartShape.Metadata.Alternates.Add($"{partTypeName}_{context.DisplayType}");
+                            contentPartShape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partTypeName}");
+                        }
+
+                        if (partName != partTypeName)
+                        {
+                            contentPartShape.Metadata.Alternates.Add($"{contentType}__{partName}");
+
+                            if (context.DisplayType != "Detail")
+                            {
+                                contentPartShape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partName}");
+                            }
+                        }
 
                         context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater);
                         // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.
