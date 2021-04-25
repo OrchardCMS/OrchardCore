@@ -17,6 +17,6 @@
     "inputs": [
       "Assets/js/audittrail-disabledcontent.js"
     ],
-    "output": "wwwroot/Scrips/audittrail-disabledcontent.js"
+    "output": "wwwroot/Scripts/audittrail-disabledcontent.js"
   }
 ]
