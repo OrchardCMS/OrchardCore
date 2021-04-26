@@ -55,7 +55,7 @@ The below table lists the different Client side libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.13 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
+| [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.15.0 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
 | [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.4.1 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [GraphiQL explorer](https://github.com/onegraph/graphiql-explorer) | Explorer plugin for GraphiQL. | 0.6.3 | [MIT](https://github.com/OneGraph/graphiql-explorer/blob/master/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
