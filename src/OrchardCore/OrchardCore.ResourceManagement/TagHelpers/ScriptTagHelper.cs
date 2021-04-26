@@ -52,6 +52,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
+                // <script asp-src="~/TheBlogTheme/js/clean-blog.min.js"></script>
                 RequireSettings setting;
 
                 if (String.IsNullOrEmpty(DependsOn))
@@ -142,6 +143,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
                 // Resource required
+                // <script asp-name="bootstrap"></script>
 
                 var setting = _resourceManager.RegisterResource("script", Name);
 
