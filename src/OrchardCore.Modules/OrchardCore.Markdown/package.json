@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "dependencies": {
     "bootstrap": "4.6.0",
-    "easymde": "2.14.0"
+    "easymde": "2.15.0"
   }
 }
