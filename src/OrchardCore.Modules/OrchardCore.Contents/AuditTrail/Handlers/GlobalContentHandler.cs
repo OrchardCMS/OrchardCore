@@ -25,8 +25,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IAuditTrailContentEventHandler> _auditTrailEvents;
-
-        public ILogger Logger { get; set; }
+        private readonly ILogger _logger;
 
         public GlobalContentHandler(
             IYesSqlSession session,
@@ -39,8 +38,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
             _auditTrailEvents = auditTrailEvents;
             _auditTrailManager = auditTrailManager;
             _httpContextAccessor = httpContextAccessor;
-
-            Logger = logger;
+            _logger = logger;
         }
 
         public override Task DraftSavedAsync(SaveDraftContentContext context) =>
@@ -79,7 +77,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
             var buildingAuditTrailEventContext = new BuildingAuditTrailEventContext(content.ContentItem, eventName);
 
             await _auditTrailEvents.InvokeAsync((provider, context) =>
-                provider.BuildingAuditTrailEventAsync(context), buildingAuditTrailEventContext, Logger);
+                provider.BuildingAuditTrailEventAsync(context), buildingAuditTrailEventContext, _logger);
 
             if (buildingAuditTrailEventContext.IsCanceled) return;
 

@@ -98,7 +98,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 
             var auditTrailEvent = await _session.Query<AuditTrailEvent, ContentAuditTrailEventIndex>()
                 .Where(eventIndex => eventIndex.ContentItemId == contentItemToRestore.ContentItemId &&
-                    eventIndex.EventName != "Saved")
+                    eventIndex.Published)
                 .OrderByDescending(eventIndex => eventIndex.VersionNumber)
                 .FirstOrDefaultAsync();
 
@@ -114,13 +114,11 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 
             var activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(contentItemIndex =>
-                    contentItemIndex.ContentItemId == existing.ContentItemId &&
-                    (contentItemIndex.Published || contentItemIndex.Latest))
+                    contentItemIndex.ContentItemId == existing.ContentItemId && contentItemIndex.Latest)
                 .ListAsync();
 
             foreach (var version in activeVersions)
             {
-                version.Published = false;
                 version.Latest = false;
                 _session.Save(version);
             }

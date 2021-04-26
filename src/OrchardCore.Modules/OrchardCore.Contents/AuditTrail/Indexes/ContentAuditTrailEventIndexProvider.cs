@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Entities;
@@ -15,8 +16,10 @@ namespace OrchardCore.Contents.AuditTrail.Indexes
                 {
                     var contentAuditTrailEvent = auditTrailEvent.As<ContentEvent>();
 
-                    if (contentAuditTrailEvent == null || string.IsNullOrEmpty(contentAuditTrailEvent.ContentItemId))
+                    if (contentAuditTrailEvent == null || String.IsNullOrEmpty(contentAuditTrailEvent.ContentItemId))
+                    {
                         return null;
+                    }
 
                     return new ContentAuditTrailEventIndex
                     {
