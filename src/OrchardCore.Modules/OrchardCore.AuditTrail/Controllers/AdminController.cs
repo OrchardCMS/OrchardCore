@@ -75,19 +75,23 @@ namespace OrchardCore.AuditTrail.Controllers
                     AuditTrailEvent = auditTrailEvent,
                     EventDescriptor = eventDescriptor,
                     CategoryDescriptor = eventDescriptor.CategoryDescriptor,
-                    AdditionalColumnsShapes = _auditTrailEventDisplayManager.BuildAdditionalColumnsShapesAsync(auditTrailEvent),
-                    SummaryShape = _auditTrailEventDisplayManager.BuildDisplayAsync(auditTrailEvent, "SummaryAdmin"),
-                    ActionsShape = _auditTrailEventDisplayManager.BuildActionsAsync(auditTrailEvent, "SummaryAdmin")
                 };
-            });
+            }).ToArray();
+
+            foreach (var model in auditTrailEventsSummaryViewModel)
+            {
+                model.AdditionalColumnsShapes = await _auditTrailEventDisplayManager.BuildAdditionalColumnsShapesAsync(model.AuditTrailEvent);
+                model.SummaryShape = await _auditTrailEventDisplayManager.BuildDisplayAsync(model.AuditTrailEvent, "SummaryAdmin");
+                model.ActionsShape = await _auditTrailEventDisplayManager.BuildActionsAsync(model.AuditTrailEvent, "SummaryAdmin");
+            }
 
             return View(new AuditTrailViewModel
             {
                 AuditTrailEvents = auditTrailEventsSummaryViewModel,
                 AdditionalColumnNames = await _auditTrailEventDisplayManager.BuildAdditionalColumnNamesShapesAsync(),
-                Pager = pagerShape,
+                FilterDisplay = await _auditTrailEventDisplayManager.BuildFilterDisplayAsync(filters),
                 OrderBy = orderBy ?? AuditTrailOrderBy.DateDescending,
-                FilterDisplay = await _auditTrailEventDisplayManager.BuildFilterDisplayAsync(filters)
+                Pager = pagerShape
             });
         }
 

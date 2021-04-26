@@ -68,14 +68,14 @@ else
             <tbody>
                 @foreach (var auditTrailEvent in auditTrailEvents) {
                     <tr>
-                        <td>@await DisplayAsync(await auditTrailEvent.ActionsShape)</td>
+                        <td>@await DisplayAsync(auditTrailEvent.ActionsShape)</td>
                         <td>@auditTrailEvent.CategoryDescriptor.LocalizedName</td>
                         <td>@auditTrailEvent.EventDescriptor.LocalizedName</td>
                         <td>@auditTrailEvent.AuditTrailEvent.UserName</td>
-                        @await DisplayAsync(await auditTrailEvent.AdditionalColumnsShapes)
+                        @await DisplayAsync(auditTrailEvent.AdditionalColumnsShapes)
                         <td>@auditTrailEvent.AuditTrailEvent.ClientIpAddress</td>
                         <td>@await DisplayAsync(await New.DateTime(Utc: auditTrailEvent.AuditTrailEvent.CreatedUtc))</td>
-                        <td>@await DisplayAsync(await auditTrailEvent.SummaryShape)</td>
+                        <td>@await DisplayAsync(auditTrailEvent.SummaryShape)</td>
                         <td>@Html.Raw(auditTrailEvent.AuditTrailEvent.Comment)</td>
                     </tr>
                 }

@@ -115,7 +115,8 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             var activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(contentItemIndex =>
                     contentItemIndex.ContentItemId == existing.ContentItemId &&
-                    (contentItemIndex.Published || contentItemIndex.Latest)).ListAsync();
+                    (contentItemIndex.Published || contentItemIndex.Latest))
+                .ListAsync();
 
             foreach (var version in activeVersions)
             {
@@ -128,6 +129,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             // event has been restored, not a new one has been created.
             _httpContextAccessor.HttpContext.Features.Set(new AuditTrailContentItemRestoreFeature { ContentItem = contentItemToRestore });
             contentItemToRestore.Latest = true;
+
             await _contentManager.CreateAsync(contentItemToRestore, VersionOptions.Draft);
 
             _notifier.Success(H["{0} has been restored.", contentItemToRestore.DisplayText]);
