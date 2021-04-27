@@ -2,10 +2,6 @@
 @using OrchardCore.Entities
 @using OrchardCore.Users.Models
 
-@{
-    var usersMustValidateEmail = Site.As<RegistrationSettings>().UsersMustValidateEmail;
-}
-
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
     <div class="form-group">
