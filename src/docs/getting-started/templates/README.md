@@ -12,10 +12,22 @@ Once the .NET Core SDK has been installed, type the following command to install
 dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-*
 ```
 
+With the zsh shell on MacOS
+
+```CMD
+dotnet new -i "OrchardCore.ProjectTemplates::1.0.0-rc2-*"
+```
+
 This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
 
 ```CMD
 dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
+```
+
+With the zsh shell on MacOS
+
+```CMD
+dotnet new -i "OrchardCore.ProjectTemplates::1.0.0-rc2-*" --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
