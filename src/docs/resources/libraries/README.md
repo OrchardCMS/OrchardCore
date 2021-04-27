@@ -70,7 +70,7 @@ The below table lists the different Tests libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 7.1.0 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
+| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 7.2.0 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 16.9.4 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.4.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
