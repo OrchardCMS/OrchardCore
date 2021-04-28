@@ -1,7 +1,19 @@
 [
   {
+    "inputs": [
+      "wwwroot/dist/css/styles.css"
+    ],
+    "output": "wwwroot/css/styles.css"
+  },
+  {
     "generateSourceMaps": false,
-    "inputs": [ "wwwroot/scss/bootstrap-oc.scss" ],
+    "inputs": [ "wwwroot/src/scss/bootstrap-oc.scss" ],
     "output": "wwwroot/css/bootstrap-oc.css"
+  },
+  {
+    "inputs": [
+      "wwwroot/dist/js/scripts.js"
+    ],
+    "output": "wwwroot/scripts/scripts.js"
   }
 ]
