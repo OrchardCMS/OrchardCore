@@ -11,7 +11,7 @@ namespace OrchardCore.Deployment.Services
     {
         private readonly IStringLocalizer S;
 
-        public PreviewDeploymentTargetProvider(IStringLocalizer<FileDownloadDeploymentTargetProvider> stringLocalizer)
+        public PreviewDeploymentTargetProvider(IStringLocalizer<PreviewDeploymentTargetProvider> stringLocalizer)
         {
             S = stringLocalizer;
         }
