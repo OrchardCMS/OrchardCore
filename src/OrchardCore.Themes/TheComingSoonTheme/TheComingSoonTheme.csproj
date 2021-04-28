@@ -17,8 +17,11 @@
 
   <ItemGroup>
     <Compile Remove="wwwroot\node_modules\**" />
+    <Compile Remove="wwwroot\src\scss\modules\**" />
     <EmbeddedResource Remove="wwwroot\node_modules\**" />
+    <EmbeddedResource Remove="wwwroot\src\scss\modules\**" />
     <None Remove="wwwroot\node_modules\**" />
+    <None Remove="wwwroot\src\scss\modules\**" />
   </ItemGroup>
 
   <ItemGroup>
