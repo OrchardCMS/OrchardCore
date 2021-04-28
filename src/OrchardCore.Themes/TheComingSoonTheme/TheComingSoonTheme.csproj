@@ -38,4 +38,8 @@
     <EmbeddedResource Remove="wwwroot\package.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
+
 </Project>

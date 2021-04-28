@@ -27,7 +27,12 @@ namespace OrchardCore.Themes.TheComingSoonTheme
             _manifest
                 .DefineScript("coming-soon")
                 .SetDependencies("TheComingSoonTheme-jQuery")
-                .SetUrl("~/TheComingSoonTheme/scripts/scripts.min.js", "TheComingSoonTheme/scripts/scripts.js")
+                .SetUrl("~/TheComingSoonTheme/js/scripts.min.js", "TheComingSoonTheme/js/scripts.js")
+                .SetVersion("5.1.0");
+
+            _manifest
+                .DefineStyle("coming-soon")
+                .SetUrl("~/TheComingSoonTheme/css/styles.min.css", "TheComingSoonTheme/css/styles.css")
                 .SetVersion("5.1.0");
 
             _manifest

@@ -1,19 +1,19 @@
 [
   {
     "inputs": [
-      "wwwroot/dist/css/styles.css"
+      "Assets/dist/css/styles.css"
     ],
     "output": "wwwroot/css/styles.css"
   },
   {
     "generateSourceMaps": false,
-    "inputs": [ "wwwroot/src/scss/bootstrap-oc.scss" ],
+    "inputs": [ "Assets/src/scss/bootstrap-oc.scss" ],
     "output": "wwwroot/css/bootstrap-oc.css"
   },
   {
     "inputs": [
-      "wwwroot/dist/js/scripts.js"
+      "Assets/dist/js/scripts.js"
     ],
-    "output": "wwwroot/scripts/scripts.js"
+    "output": "wwwroot/js/scripts.js"
   }
 ]
