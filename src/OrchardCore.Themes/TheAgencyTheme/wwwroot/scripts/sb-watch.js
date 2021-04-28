@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const chokidar = require('chokidar');
-const path = require('path');
+const upath = require('upath');
 const renderAssets = require('./render-assets');
 const renderPug = require('./render-pug');
 const renderScripts = require('./render-scripts');
@@ -18,8 +18,8 @@ process.title = 'pug-watch';
 process.stdout.write('Loading');
 let allPugFiles = {};
 
-watcher.on('add', filePath => _processFile(filePath, 'add'));
-watcher.on('change', filePath => _processFile(filePath, 'change'));
+watcher.on('add', filePath => _processFile(upath.normalize(filePath), 'add'));
+watcher.on('change', filePath => _processFile(upath.normalize(filePath), 'change'));
 watcher.on('ready', () => {
     READY = true;
     console.log(' READY TO ROLL!');

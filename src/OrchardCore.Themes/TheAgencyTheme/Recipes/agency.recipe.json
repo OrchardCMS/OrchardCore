@@ -902,20 +902,20 @@
           "SourcePath": "../wwwroot/src/assets/img/about/4.jpg"
         },
         {
-          "TargetPath": "logos/creative-market.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/logos/creative-market.jpg"
+          "TargetPath": "logos/ibm.svg",
+          "SourcePath": "../wwwroot/src/assets/img/logos/ibm.svg"
         },
         {
-          "TargetPath": "logos/designmodo.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/logos/designmodo.jpg"
+          "TargetPath": "logos/google.svg",
+          "SourcePath": "../wwwroot/src/assets/img/logos/google.svg"
         },
         {
-          "TargetPath": "logos/envato.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/logos/envato.jpg"
+          "TargetPath": "logos/microsoft.svg",
+          "SourcePath": "../wwwroot/src/assets/img/logos/microsoft.svg"
         },
         {
-          "TargetPath": "logos/themeforest.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/logos/themeforest.jpg"
+          "TargetPath": "logos/facebook.svg",
+          "SourcePath": "../wwwroot/src/assets/img/logos/facebook.svg"
         },
         {
           "TargetPath": "portfolio/01-full.jpg",
@@ -1482,7 +1482,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
-                "DisplayText": "Envato",
+                "DisplayText": "Microsoft",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1490,7 +1490,7 @@
                 "Client": {
                   "Logo": {
                     "Paths": [
-                      "/logos/envato.jpg"
+                      "/logos/microsoft.svg"
                     ]
                   },
                   "Url": {
@@ -1498,14 +1498,14 @@
                   }
                 },
                 "TitlePart": {
-                  "Title": "Envato"
+                  "Title": "Microsoft"
                 }
               },
               {
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
-                "DisplayText": "Design Moto",
+                "DisplayText": "Google",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1513,7 +1513,7 @@
                 "Client": {
                   "Logo": {
                     "Paths": [
-                      "/logos/designmodo.jpg"
+                      "/logos/google.svg"
                     ]
                   },
                   "Url": {
@@ -1521,14 +1521,14 @@
                   }
                 },
                 "TitlePart": {
-                  "Title": "Design Moto"
+                  "Title": "Google"
                 }
               },
               {
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
-                "DisplayText": "ThemeForest",
+                "DisplayText": "Facebook",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1536,7 +1536,7 @@
                 "Client": {
                   "Logo": {
                     "Paths": [
-                      "/logos/themeforest.jpg"
+                      "/logos/facebook.svg"
                     ]
                   },
                   "Url": {
@@ -1544,14 +1544,14 @@
                   }
                 },
                 "TitlePart": {
-                  "Title": "ThemeForest"
+                  "Title": "Facebook"
                 }
               },
               {
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
-                "DisplayText": "Creative",
+                "DisplayText": "IBM",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1559,7 +1559,7 @@
                 "Client": {
                   "Logo": {
                     "Paths": [
-                      "/logos/creative-market.jpg"
+                      "/logos/ibm.svg"
                     ]
                   },
                   "Url": {
@@ -1567,7 +1567,7 @@
                   }
                 },
                 "TitlePart": {
-                  "Title": "Creative"
+                  "Title": "IBM"
                 }
               }
             ]

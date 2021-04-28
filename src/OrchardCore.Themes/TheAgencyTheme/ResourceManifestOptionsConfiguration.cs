@@ -15,12 +15,12 @@ namespace OrchardCore.Themes.TheAgencyTheme
                 .DefineScript("TheAgencyTheme")
                 .SetDependencies("jQuery")
                 .SetUrl("~/TheAgencyTheme/scripts/scripts.min.js", "~/TheAgencyTheme/scripts/scripts.js")
-                .SetVersion("6.0.3");
+                .SetVersion("6.0.5");
 
             _manifest
                 .DefineStyle("TheAgencyTheme")
                 .SetUrl("~/TheAgencyTheme/Styles/styles.min.css", "~/TheAgencyTheme/Styles/styles.css")
-                .SetVersion("6.0.3");
+                .SetVersion("6.0.5");
 
             _manifest
                 .DefineStyle("TheAgencyTheme-bootstrap-oc")

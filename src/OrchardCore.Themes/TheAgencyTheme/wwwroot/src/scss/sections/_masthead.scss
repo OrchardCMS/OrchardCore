@@ -9,6 +9,7 @@ header.masthead {
     background-attachment: scroll;
     background-position: center center;
     background-size: cover;
+
     .masthead-subheading {
         font-size: 1.5rem;
         font-style: italic;
@@ -16,6 +17,7 @@ header.masthead {
         margin-bottom: 25px;
         font-family: $subheadings-font-family;
     }
+
     .masthead-heading {
         font-size: 3.25rem;
         font-weight: 700;
@@ -29,12 +31,14 @@ header.masthead {
     header.masthead {
         padding-top: 12.5rem + 4.5rem;
         padding-bottom: 12.5rem;
+
         .masthead-subheading {
             font-size: 2.25rem;
             font-style: italic;
             line-height: 2.25rem;
             margin-bottom: 2rem;
         }
+
         .masthead-heading {
             font-size: 4.5rem;
             font-weight: 700;
