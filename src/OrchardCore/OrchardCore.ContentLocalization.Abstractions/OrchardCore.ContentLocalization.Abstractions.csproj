@@ -18,7 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

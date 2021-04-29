@@ -21,7 +21,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {
-                using var writer = new StringWriter();
+                using var stringBuilderPool = StringBuilderPool.GetInstance();
+                using var writer = new StringWriter(stringBuilderPool.Builder);
                 (await task).WriteTo(writer, NullHtmlEncoder.Default);
                 return new StringValue(writer.ToString(), false);
             }
@@ -34,7 +35,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                     return Awaited(task);
                 }
 
-                using var writer = new StringWriter();
+                using var stringBuilderPool = StringBuilderPool.GetInstance();
+                using var writer = new StringWriter(stringBuilderPool.Builder);
                 task.Result.WriteTo(writer, NullHtmlEncoder.Default);
                 return new ValueTask<FluidValue>(new StringValue(writer.ToString(), false));
             }

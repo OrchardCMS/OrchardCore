@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Contents.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Handlers
@@ -62,12 +63,11 @@ namespace OrchardCore.Contents.Handlers
 
                     if (bodyAspect != null && bodyAspect.Body != null)
                     {
-                        using (var sw = new StringWriter())
-                        {
-                            // Don't encode the body
-                            bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
-                            fullTextAspect.Segments.Add(sw.ToString());
-                        }
+                        using var stringBuilderPool = StringBuilderPool.GetInstance();
+                        using var sw = new StringWriter(stringBuilderPool.Builder);
+                        // Don't encode the body
+                        bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
+                        fullTextAspect.Segments.Add(sw.ToString());
                     }
                 }
 
