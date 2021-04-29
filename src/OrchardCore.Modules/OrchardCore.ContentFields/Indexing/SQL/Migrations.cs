@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
@@ -9,6 +10,12 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     [Feature("OrchardCore.ContentFields.Indexing.SQL")]
     public class Migrations : DataMigration
     {
+        private readonly ILogger _logger;
+        public Migrations(ILogger<Migrations> logger)
+        {
+            _logger = logger;
+        }
+
         public int Create()
         {
             // NOTE: The Text Length has been decreased from 4000 characters to 768.
@@ -706,15 +713,35 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         // This code can be removed in a later version.
         public int UpdateFrom4()
         {
+            // Attempts to drop an index that existed only in RC2.
+            try
+            {
+                SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                    .DropIndex("IDX_TimeFieldIndex_Time")
+                );
+            }
+            catch
+            {
+                _logger.LogWarning("Failed to drop an index that does not exist 'IDX_TimeFieldIndex_Time'");
+            }
+
             SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .DropIndex("IDX_TimeFieldIndex_DocumentId_Time")
             );
 
-            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .DropColumn("Time"));
+            // SqLite does not support dropping columns.
+            try
+            {
+                SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                    .DropColumn("Time"));
 
-            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .AddColumn<TimeSpan>("Time", column => column.Nullable()));
+                SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                    .AddColumn<TimeSpan>("Time", column => column.Nullable()));
+            }
+            catch
+            {
+                _logger.LogWarning("Failed to alter 'Time' column. This is not an error when using SqLite");     
+            }
 
             SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_DocumentId_Time",

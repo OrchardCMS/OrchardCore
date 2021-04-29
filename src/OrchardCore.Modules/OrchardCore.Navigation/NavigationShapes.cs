@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Navigation
@@ -30,7 +31,7 @@ namespace OrchardCore.Navigation
                     // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
                     // events and thus this code can be cached.
 
-                    if (menu.GetProperty<bool>("HasItems"))
+                    if (menu is Shape shape && shape.HasItems)
                     {
                         return;
                     }

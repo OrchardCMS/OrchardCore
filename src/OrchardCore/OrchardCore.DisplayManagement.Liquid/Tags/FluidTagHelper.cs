@@ -92,8 +92,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     identifier,
                     outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content))
                 );
-
-                tagHelperOutput.Content.AppendHtml(content);
             }
             else
             {
@@ -104,8 +102,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             }
 
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
-
-            tagHelperOutput.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }

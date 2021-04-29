@@ -2316,6 +2316,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "andycyberian",
+      "name": "Andy Rose",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4202906?v=4",
+      "profile": "http://cyberian.co.uk",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

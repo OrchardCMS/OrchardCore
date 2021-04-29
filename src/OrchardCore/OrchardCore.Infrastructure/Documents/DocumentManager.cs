@@ -35,13 +35,26 @@ namespace OrchardCore.Documents
             {
                 _isDistributed = true;
             }
+
+            DocumentStoreServiceType = typeof(IDocumentStore);
         }
 
         public Type DocumentStoreServiceType { get; set; }
 
-        public IDocumentStore DocumentStore => DocumentStoreServiceType != null
-            ? (IDocumentStore)ShellScope.Services.GetRequiredService(DocumentStoreServiceType)
-            : ShellScope.Services.GetRequiredService<IDocumentStore>();
+        public IDocumentStore DocumentStore
+        {
+            get
+            {
+                var documentStore = (IDocumentStore)ShellScope.Get(DocumentStoreServiceType);
+                if (documentStore == null)
+                {
+                    documentStore = (IDocumentStore)ShellScope.Services.GetRequiredService(DocumentStoreServiceType);
+                    ShellScope.Set(DocumentStoreServiceType, documentStore);
+                }
+
+                return documentStore;
+            }
+        }
 
         public async Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null)
         {
@@ -80,6 +93,17 @@ namespace OrchardCore.Documents
 
         public async Task<TDocument> GetOrCreateImmutableAsync(Func<Task<TDocument>> factoryAsync = null)
         {
+            // If called from a constructor, e.g. through an 'IConfigureOptions', the 'IDocumentStore' should
+            // be resolved before any async IO operation to prevent a DI dead lock. So, only if the store may
+            // be used (if non volatile) and an async IO may be done before (if a distributed cache is used).
+
+            if (!_isVolatile && _isDistributed)
+            {
+                // Resolve the 'IDocumentStore' and hold it in a scoped cache.
+                _ = DocumentStore;
+            }
+
+            // May call an async IO if using a distributed cache.
             var document = await GetInternalAsync();
 
             if (document == null)
