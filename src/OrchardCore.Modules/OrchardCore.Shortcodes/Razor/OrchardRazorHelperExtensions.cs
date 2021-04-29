@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
@@ -21,7 +22,7 @@ public static class OrchardRazorHelperExtensions
         var context = new Context();
 
         // Retrieve the 'ContentItem' from the ambient shape view model.
-        if (model is Shape shape && shape.Properties.TryGetValue("ContentItem", out var contentItem))
+        if (model is Shape shape && shape.TryGetProperty("ContentItem", out object contentItem))
         {
             context["ContentItem"] = contentItem;
         }

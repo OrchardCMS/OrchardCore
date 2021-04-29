@@ -35,8 +35,7 @@ namespace OrchardCore.Title.Drivers
                 model.ContentItem = titlePart.ContentItem;
             })
             .Location("Detail", "Header:5")
-            .Location("Summary", "Header:5")
-            .Location("DetailAdmin", "Header:5");
+            .Location("Summary", "Header:5");
 
         }
 

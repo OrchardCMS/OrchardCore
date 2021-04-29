@@ -98,7 +98,8 @@ namespace OrchardCore.ContentManagement
                 throw new ArgumentNullException(nameof(contentItemIds));
             }
 
-            List<ContentItem> contentItems;
+            List<ContentItem> contentItems = null;
+            List<ContentItem> storedItems = null;
 
             if (latest)
             {
@@ -109,15 +110,53 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                contentItems = (await _session
-                    .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Published == true)
-                    .ListAsync()).ToList();
+                foreach (var contentItemId in contentItemIds)
+                {
+                    // If the published version is already stored, we can return it.
+                    if (_contentManagerSession.RecallPublishedItemId(contentItemId, out var contentItem))
+                    {
+                        if (storedItems == null)
+                        {
+                            storedItems = new List<ContentItem>();
+                        }
+
+                        storedItems.Add(contentItem);
+                    }
+                }
+
+                // Only query the ids not already stored.
+                var itemIdsToQuery = storedItems != null
+                    ? contentItemIds.Except(storedItems.Select(x => x.ContentItemId))
+                    : contentItemIds;
+
+                if (itemIdsToQuery.Any())
+                {
+                    contentItems = (await _session
+                       .Query<ContentItem, ContentItemIndex>()
+                       .Where(x => x.ContentItemId.IsIn(itemIdsToQuery) && x.Published == true)
+                       .ListAsync()).ToList();
+                }
             }
 
-            for (var i = 0; i < contentItems.Count; i++)
+            if (contentItems != null)
             {
-                contentItems[i] = await LoadAsync(contentItems[i]);
+                for (var i = 0; i < contentItems.Count; i++)
+                {
+                    contentItems[i] = await LoadAsync(contentItems[i]);
+                }
+
+                if (storedItems != null)
+                {
+                    contentItems.AddRange(storedItems);
+                }
+            }
+            else if (storedItems != null)
+            {
+                contentItems = storedItems;
+            }
+            else
+            {
+                return Enumerable.Empty<ContentItem>();
             }
 
             var contentItemIdsArray = contentItemIds.ToImmutableArray();
@@ -436,6 +475,8 @@ namespace OrchardCore.ContentManagement
         {
             var skip = 0;
 
+            var importedVersionIds = new HashSet<string>();
+
             var batchedContentItems = contentItems.Take(ImportBatchSize);
 
             while (batchedContentItems.Any())
@@ -468,6 +509,14 @@ namespace OrchardCore.ContentManagement
                     ContentItem originalVersion = null;
                     if (!String.IsNullOrEmpty(importingItem.ContentItemVersionId))
                     {
+                        if (importedVersionIds.Contains(importingItem.ContentItemVersionId))
+                        {
+                            _logger.LogInformation("Duplicate content item version id '{ContentItemVersionId}' skipped", importingItem.ContentItemVersionId);
+                            continue;
+                        }
+
+                        importedVersionIds.Add(importingItem.ContentItemVersionId);
+
                         originalVersion = versionsToUpdate.FirstOrDefault(x => String.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
                     }
 
@@ -573,7 +622,7 @@ namespace OrchardCore.ContentManagement
 
             if (!validateContext.ContentValidateResult.Succeeded)
             {
-                _session.Cancel();
+                await _session.CancelAsync();
             }
 
             return validateContext.ContentValidateResult;

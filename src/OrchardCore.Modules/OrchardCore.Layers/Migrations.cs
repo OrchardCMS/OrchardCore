@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
-using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Services;
 using OrchardCore.Rules;
@@ -15,21 +13,15 @@ namespace OrchardCore.Layers
         private readonly ILayerService _layerService;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IRuleMigrator _ruleMigrator;
-        private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         public Migrations(
             ILayerService layerService,
             IConditionIdGenerator conditionIdGenerator,
-            IRuleMigrator ruleMigrator,
-            IShellFeaturesManager shellFeaturesManager,
-            ITypeFeatureProvider typeFeatureProvider)
+            IRuleMigrator ruleMigrator)
         {
             _layerService = layerService;
             _conditionIdGenerator = conditionIdGenerator;
             _ruleMigrator = ruleMigrator;
-            _shellFeaturesManager = shellFeaturesManager;
-            _typeFeatureProvider = typeFeatureProvider;
         }
 
         public int Create()
@@ -64,18 +56,14 @@ namespace OrchardCore.Layers
                 layer.LayerRule = new Rule();
                 _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
 
-                #pragma warning disable 0618
+#pragma warning disable 0618
                 _ruleMigrator.Migrate(layer.Rule, layer.LayerRule);
 
                 layer.Rule = String.Empty;
-                #pragma warning restore 0618
+#pragma warning restore 0618
             }
 
             await _layerService.UpdateAsync(layers);
-            
-            var layerFeature = _typeFeatureProvider.GetFeatureForDependency(GetType());
-            
-            await _shellFeaturesManager.EnableFeaturesAsync(new[] { layerFeature }, force: true);
 
             return 3;
         }

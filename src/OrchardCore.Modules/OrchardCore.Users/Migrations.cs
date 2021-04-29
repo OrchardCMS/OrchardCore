@@ -40,6 +40,11 @@ namespace OrchardCore.Users
                .Column<int>("Count")
             );
 
+            SchemaBuilder.AlterIndexTable<UserByRoleNameIndex>(table => table
+                .CreateIndex("IDX_UserByRoleNameIndex_RoleName",
+                    "RoleName")
+            );
+
             SchemaBuilder.CreateMapIndexTable<UserByLoginInfoIndex>(table => table
                 .Column<string>("LoginProvider")
                 .Column<string>("ProviderKey"));
@@ -64,7 +69,7 @@ namespace OrchardCore.Users
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 9;
+            return 10;
         }
 
         // This code can be removed in a later version.
@@ -172,6 +177,17 @@ namespace OrchardCore.Users
             );
 
             return 9;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom9()
+        {
+            SchemaBuilder.AlterIndexTable<UserByRoleNameIndex>(table => table
+                .CreateIndex("IDX_UserByRoleNameIndex_RoleName",
+                    "RoleName")
+            );
+
+            return 10;
         }
     }
 }

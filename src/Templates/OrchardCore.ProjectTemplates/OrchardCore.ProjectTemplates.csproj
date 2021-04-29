@@ -53,7 +53,7 @@
     </Task>
   </UsingTask>
 
-  <Target Name="TransformTemplateConfigs" BeforeTargets="CoreBuild">
+  <Target Name="TransformTemplateConfigs" BeforeTargets="Build" Condition="'$(TargetFramework)' == '$(DefaultTargetFramework)'">
     <!--
       For each template, copy its '.template.config.src' directory to '.template.config',
       removing any earlier output at that location

@@ -150,7 +150,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 await _adminMenuService.SaveAsync(adminMenu);
 
                 _notifier.Success(H["Admin node added successfully."]);
-                return RedirectToAction("List", new { id = model.AdminMenuId });
+                return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
             }
 
             model.Editor = editor;

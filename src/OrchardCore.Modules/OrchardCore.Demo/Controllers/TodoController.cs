@@ -38,7 +38,7 @@ namespace OrchardCore.Demo.Controllers
             var viewModel = new TodoViewModel();
             viewModel.TodoId = _idGenerator.GenerateUniqueId();
             viewModel.DisplayMode = "Edit";
-            return View("Edit", viewModel);
+            return View(nameof(Edit), viewModel);
         }
 
         public async Task<IActionResult> Edit(string todoId)
@@ -89,7 +89,7 @@ namespace OrchardCore.Demo.Controllers
                     return Redirect(returnUrl);
                 }
 
-                return RedirectToAction("Index", "Todo");
+                return RedirectToAction(nameof(Index), "Todo");
             }
 
             return View(viewModel);
@@ -108,7 +108,7 @@ namespace OrchardCore.Demo.Controllers
 
             _session.Delete(model);
 
-            return RedirectToAction("Index", "Todo");
+            return RedirectToAction(nameof(Index), "Todo");
         }
     }
 }

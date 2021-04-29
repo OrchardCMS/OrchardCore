@@ -17,8 +17,7 @@ namespace OrchardCore.Environment.Shell.Scope
     /// </summary>
     public class ShellScope : IServiceScope
     {
-        private static readonly AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
-        private static readonly Dictionary<string, SemaphoreSlim> _semaphores = new Dictionary<string, SemaphoreSlim>();
+        private static readonly AsyncLocal<ShellScopeHolder> _current = new AsyncLocal<ShellScopeHolder>();
 
         private readonly IServiceScope _serviceScope;
         private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
@@ -68,7 +67,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Retrieve the current shell scope from the async flow.
         /// </summary>
-        public static ShellScope Current => _current.Value;
+        public static ShellScope Current => _current.Value?.Scope;
 
         /// <summary>
         /// Sets a shared item to the current shell scope.
@@ -201,7 +200,10 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Start holding this shell scope along the async flow.
         /// </summary>
-        internal void StartAsyncFlow() => _current.Value = this;
+        public void StartAsyncFlow()
+        // Use an object indirection to hold the current scope in the 'AsyncLocal',
+        // so that it can be cleared in all execution contexts when it is cleared.
+            => _current.Value = new ShellScopeHolder { Scope = this };
 
         /// <summary>
         /// Executes a delegate using this shell scope in an isolated async flow,
@@ -270,41 +272,33 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            SemaphoreSlim semaphore;
-            lock (_semaphores)
+            // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
+            (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
+            if (!locked)
             {
-                if (!_semaphores.TryGetValue(ShellContext.Settings.Name, out semaphore))
-                {
-                    _semaphores[ShellContext.Settings.Name] = semaphore = new SemaphoreSlim(1);
-                }
+                throw new TimeoutException($"Fails to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
             }
 
-            await semaphore.WaitAsync();
-            try
+            await using var acquiredLock = locker;
+
+            // The tenant gets activated here.
+            if (!ShellContext.IsActivated)
             {
-                // The tenant gets activated here.
-                if (!ShellContext.IsActivated)
+                await new ShellScope(ShellContext).UsingAsync(async scope =>
                 {
-                    await new ShellScope(ShellContext).UsingAsync(async scope =>
+                    var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                    foreach (var tenantEvent in tenantEvents)
                     {
-                        var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-                        foreach (var tenantEvent in tenantEvents)
-                        {
-                            await tenantEvent.ActivatingAsync();
-                        }
+                        await tenantEvent.ActivatingAsync();
+                    }
 
-                        foreach (var tenantEvent in tenantEvents.Reverse())
-                        {
-                            await tenantEvent.ActivatedAsync();
-                        }
-                    }, activateShell: false);
+                    foreach (var tenantEvent in tenantEvents.Reverse())
+                    {
+                        await tenantEvent.ActivatedAsync();
+                    }
+                }, activateShell: false);
 
-                    ShellContext.IsActivated = true;
-                }
-            }
-            finally
-            {
-                semaphore.Release();
+                ShellContext.IsActivated = true;
             }
         }
 
@@ -378,7 +372,9 @@ namespace OrchardCore.Environment.Shell.Scope
                         scope = new ShellScope(ShellContext);
                     }
 
-                    await scope.UsingServiceScopeAsync(async scope =>
+                    // Use 'UsingAsync' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
+                    // trigger another one, but still prevent the shell to be activated in a deferred task.
+                    await scope.UsingAsync(async scope =>
                     {
                         var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
 
@@ -392,7 +388,8 @@ namespace OrchardCore.Environment.Shell.Scope
                                 "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
                                 task.GetType().FullName, ShellContext.Settings.Name);
                         }
-                    });
+                    },
+                    activateShell: false);
                 }
             }
         }
@@ -475,6 +472,18 @@ namespace OrchardCore.Environment.Shell.Scope
                 // Keep the counter clean if not yet decremented.
                 Interlocked.Decrement(ref ShellContext._refCount);
             }
+
+            var holder = _current.Value;
+            if (holder != null)
+            {
+                // Clear the current scope that may be trapped in some execution contexts.
+                holder.Scope = null;
+            }
+        }
+
+        private class ShellScopeHolder
+        {
+            public ShellScope Scope;
         }
     }
 }

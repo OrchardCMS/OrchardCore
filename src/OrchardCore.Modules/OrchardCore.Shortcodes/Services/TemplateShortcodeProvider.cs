@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
@@ -15,6 +16,7 @@ namespace OrchardCore.Shortcodes.Services
         private readonly HtmlEncoder _htmlEncoder;
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
+        private readonly HashSet<string> _identifiers = new HashSet<string>();
 
         public TemplateShortcodeProvider(
             ShortcodeTemplatesManager shortcodeTemplatesManager,
@@ -35,9 +37,13 @@ namespace OrchardCore.Shortcodes.Services
             }
 
             // Check if a shortcode template is recursively called.
-            if (!(_liquidTemplateManager.Context.LocalScope.GetValue(identifier) is NilValue))
+            if (_identifiers.Contains(identifier))
             {
                 return null;
+            }
+            else
+            {
+                _identifiers.Add(identifier);
             }
 
             var model = new ShortcodeViewModel
@@ -47,27 +53,27 @@ namespace OrchardCore.Shortcodes.Services
                 Context = context
             };
 
-            return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
-                scope =>
-                {
-                    // Used for recursion checking.
-                    scope.SetValue(identifier, "");
+            var parameters = new Dictionary<string, FluidValue>
+            {
+                [identifier] = new StringValue(""),
+                ["Args"] = new ObjectValue(model.Args),
+                ["Content"] = new ObjectValue(new Content(model.Content)),
+                ["Context"] = new ObjectValue(model.Context)
+            };
 
-                    // Don't conflict with the liquid scope 'Content' property.
-                    var content = scope.GetValue("Content").ToObjectValue();
-                    if (content is LiquidContentAccessor contentAccessor)
-                    {
-                        contentAccessor.Content = model.Content ?? "";
-                        scope.SetValue("Content", contentAccessor);
-                    }
-                    else
-                    {
-                        scope.SetValue("Content", model.Content ?? "");
-                    }
+            var result = await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
 
-                    scope.SetValue("Args", model.Args);
-                    scope.SetValue("Context", model.Context);
-                });
+            // Allow multiple serial calls of this shortcode template.
+            _identifiers.Remove(identifier);
+
+            return result;
+        }
+
+        internal class Content : LiquidContentAccessor
+        {
+            public readonly string _content;
+            public Content(string content) => _content = content;
+            public override string ToString() => _content;
         }
     }
 }

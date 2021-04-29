@@ -2,7 +2,10 @@
     <header class="masthead">
         <div class="container">
             <div class="masthead-subheading"></div>
-            <div class="masthead-heading text-uppercase">{{ "Search" | t}}</div>
+            <div class="masthead-heading text-uppercase">
+                {% assign search = "Search" | t %}
+                {% page_title search %}
+	          </div>
         </div>
     </header>
 {% endzone %}

@@ -132,7 +132,7 @@ namespace OrchardCore.Layers.Controllers
                 conditionGroup.Conditions.Add(condition);
                 await _layerService.UpdateAsync(layers);
                 _notifier.Success(H["Condition added successfully."]);
-                return RedirectToAction("Edit", "Admin", new { name = model.Name });
+                return RedirectToAction(nameof(Edit), "Admin", new { name = model.Name });
             }
 
             model.Editor = editor;
@@ -201,7 +201,7 @@ namespace OrchardCore.Layers.Controllers
             {
                 await _layerService.UpdateAsync(layers);
                 _notifier.Success(H["Condition updated successfully."]);
-                return RedirectToAction("Edit", "Admin", new { name = model.Name });
+                return RedirectToAction(nameof(Edit), "Admin", new { name = model.Name });
             }
 
             _notifier.Error(H["The condition has validation errors."]);
@@ -240,7 +240,7 @@ namespace OrchardCore.Layers.Controllers
 
             _notifier.Success(H["Condition deleted successfully."]);
 
-            return RedirectToAction("Edit", "Admin", new { name = name });
+            return RedirectToAction(nameof(Edit), "Admin", new { name = name });
         }
 
         public async Task<IActionResult> UpdateOrder(string name, string conditionId, string toConditionId, int toPosition)

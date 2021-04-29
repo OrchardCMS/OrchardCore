@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -9,6 +11,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Contents.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Handlers
@@ -60,19 +63,18 @@ namespace OrchardCore.Contents.Handlers
 
                     if (bodyAspect != null && bodyAspect.Body != null)
                     {
-                        using (var sw = new StringWriter())
-                        {
-                            // Don't encode the body
-                            bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
-                            fullTextAspect.Segments.Add(sw.ToString());
-                        }
+                        using var stringBuilderPool = StringBuilderPool.GetInstance();
+                        using var sw = new StringWriter(stringBuilderPool.Builder);
+                        // Don't encode the body
+                        bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
+                        fullTextAspect.Segments.Add(sw.ToString());
                     }
                 }
 
                 if (settings.IncludeFullTextTemplate && !String.IsNullOrEmpty(settings.FullTextTemplate))
                 {
-                    var result = await _liquidTemplateManager.RenderAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
-                        scope => scope.SetValue("ContentItem", context.ContentItem));
+                    var result = await _liquidTemplateManager.RenderStringAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) });
 
                     fullTextAspect.Segments.Add(result);
                 }

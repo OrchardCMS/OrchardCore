@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services
@@ -26,7 +27,7 @@ namespace OrchardCore.Media.Services
 
         public async Task ActivatedAsync()
         {
-            if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
+            if (_shellSettings.State == TenantState.Running)
             {
                 try
                 {
@@ -37,7 +38,7 @@ namespace OrchardCore.Media.Services
                         return;
                     }
 
-                    await foreach(var c in _fileStore.GetDirectoryContentAsync(tempDir))
+                    await foreach (var c in _fileStore.GetDirectoryContentAsync(tempDir))
                     {
                         var result = c.IsDirectory ?
                             await _fileStore.TryDeleteDirectoryAsync(c.Path)
