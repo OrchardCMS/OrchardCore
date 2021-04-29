@@ -157,7 +157,7 @@ namespace OrchardCore.ContentManagement.Display
 
                             // Fall back to default template of ContentPart, if there is not template for shape type(partTypeName)
                             // eg. ContentPart
-                            ctx.Shape.Metadata.Alternates.Add($"ContentPart");
+                            ctx.Shape.Metadata.Alternates.Add("ContentPart");
 
                             // eg. ServicePart
                             ctx.Shape.Metadata.Alternates.Add(partTypeName);
