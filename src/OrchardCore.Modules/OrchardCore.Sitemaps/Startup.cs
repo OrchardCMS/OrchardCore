@@ -41,7 +41,6 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddIdGeneration();
 
             services.Configure<SitemapsOptions>(options =>
             {
