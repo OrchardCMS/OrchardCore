@@ -1,8 +1,10 @@
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Admin;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Indexes;
@@ -10,13 +12,11 @@ using OrchardCore.AuditTrail.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.AuditTrail.Indexes;
-using OrchardCore.Contents.AuditTrail.Models;
+using OrchardCore.Contents.AuditTrail.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using YesSql;
-using IYesSqlSession = YesSql.ISession;
 
 namespace OrchardCore.Contents.AuditTrail.Controllers
 {
@@ -24,33 +24,34 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
     [Admin]
     public class ContentController : Controller
     {
-        private readonly IHtmlLocalizer H;
-        private readonly INotifier _notifier;
-        private readonly IYesSqlSession _session;
+        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
+
+        private readonly ISession _session;
         private readonly IContentManager _contentManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly IAuditTrailContentHandler _auditTrailContentHandler;
+        private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
 
         public ContentController(
-            IYesSqlSession session,
-            INotifier notifier,
+            ISession session,
             IContentManager contentManager,
-            IHttpContextAccessor httpContextAccessor,
             IUpdateModelAccessor updateModelAccessor,
             IAuthorizationService authorizationService,
-            IHtmlLocalizer<ContentController> htmlLocalizer,
-            IContentItemDisplayManager contentItemDisplayManager)
+            IContentItemDisplayManager contentItemDisplayManager,
+            IAuditTrailContentHandler auditTrailContentHandler,
+            INotifier notifier,
+            IHtmlLocalizer<ContentController> htmlLocalizer)
         {
-            _httpContextAccessor = httpContextAccessor;
             _session = session;
-            _notifier = notifier;
             _contentManager = contentManager;
             _updateModelAccessor = updateModelAccessor;
             _authorizationService = authorizationService;
             _contentItemDisplayManager = contentItemDisplayManager;
-
+            _auditTrailContentHandler = auditTrailContentHandler;
+            _notifier = notifier;
             H = htmlLocalizer;
         }
 
@@ -60,78 +61,84 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 .Where(auditTrailEventIndex => auditTrailEventIndex.AuditTrailEventId == auditTrailEventId)
                 .FirstOrDefaultAsync();
 
-            // Create a new item to take into account the current type definition.
-            var existing = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
-            var contentItem = await _contentManager.NewAsync(existing.ContentType);
-            contentItem.Merge(existing);
+            var contentItemToEdit = auditTrailEvent?.Get(auditTrailEvent.EventName)?.ToObject<ContentItem>();
+            if (String.IsNullOrEmpty(contentItemToEdit?.ContentItemId) || String.IsNullOrEmpty(contentItemToEdit.ContentType))
+            {
+                return NotFound();
+            }
+
+            var contentItem = await _contentManager.NewAsync(contentItemToEdit.ContentType);
+            contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }
 
+            contentItem.Merge(contentItemToEdit);
+            contentItem.ContentItemId = contentItemToEdit.ContentItemId;
+            contentItem.ContentItemVersionId = String.Empty;
+
             contentItem = await _contentManager.LoadAsync(contentItem);
 
             var auditTrailPart = contentItem.As<AuditTrailPart>();
-
             if (auditTrailPart != null)
             {
                 auditTrailPart.ShowComment = true;
             }
 
-            dynamic contentItemEditor =
-                await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
-            contentItemEditor.VersionNumber = versionNumber;
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
-            return View(contentItemEditor);
+            model.Properties["VersionNumber"] = versionNumber;
+
+            return View(model);
         }
 
         [HttpPost]
         public async Task<ActionResult> Restore(string auditTrailEventId)
         {
-            var auditTrailEventToRestore = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
+            var auditTrailEvent = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
                 .Where(auditTrailEventIndex => auditTrailEventIndex.AuditTrailEventId == auditTrailEventId)
                 .FirstOrDefaultAsync();
 
-            var contentItemToRestore = auditTrailEventToRestore.Get(auditTrailEventToRestore.EventName)
-                .ToObject<ContentItem>();
+            var contentItemToRestore = auditTrailEvent?.Get(auditTrailEvent.EventName)?.ToObject<ContentItem>();
+            if (String.IsNullOrEmpty(contentItemToRestore?.ContentItemVersionId))
+            {
+                return NotFound();
+            }
 
-            var auditTrailEvent = await _session.Query<AuditTrailEvent, ContentAuditTrailEventIndex>()
-                .Where(eventIndex => eventIndex.ContentItemId == contentItemToRestore.ContentItemId &&
-                    eventIndex.Published)
-                .OrderByDescending(eventIndex => eventIndex.VersionNumber)
-                .FirstOrDefaultAsync();
-
-            // Create a new item to take into account the current type definition.
-            var existing = auditTrailEvent.Get(auditTrailEvent.EventName).ToObject<ContentItem>();
-            var contentItem = await _contentManager.NewAsync(existing.ContentType);
-            contentItem.Merge(existing);
+            var contentItem = await _contentManager.GetVersionAsync(contentItemToRestore.ContentItemVersionId);
+            if (contentItem == null)
+            {
+                return NotFound();
+            }
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, contentItem))
             {
                 return Forbid();
             }
 
-            var activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
-                .Where(contentItemIndex =>
-                    contentItemIndex.ContentItemId == existing.ContentItemId && contentItemIndex.Latest)
-                .ListAsync();
-
-            foreach (var version in activeVersions)
+            if (contentItem.Latest || contentItem.Published)
             {
-                version.Latest = false;
-                _session.Save(version);
+                _notifier.Warning(H["The version to restore is already active."]);
+                return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
             }
 
-            // Adding this item to HttpContext.Features is necessary to be able to know that an earlier version of this
-            // event has been restored, not a new one has been created.
-            _httpContextAccessor.HttpContext.Features.Set(new AuditTrailContentItemRestoreFeature { ContentItem = contentItemToRestore });
-            contentItemToRestore.Latest = true;
+            await _auditTrailContentHandler.RestoringAsync(new RestoreContentContext(contentItem));
 
-            await _contentManager.CreateAsync(contentItemToRestore, VersionOptions.Draft);
+            var latest = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Latest);
+            if (latest != null)
+            {
+                latest.Latest = false;
+                _session.Save(latest);
+            }
 
-            _notifier.Success(H["{0} has been restored.", contentItemToRestore.DisplayText]);
+            contentItem.Latest = true;
+            _session.Save(contentItem);
 
+            await _auditTrailContentHandler.RestoredAsync(new RestoreContentContext(contentItem));
+
+            _notifier.Success(H["'{0}' has been restored.", contentItemToRestore.DisplayText]);
             return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
         }
     }

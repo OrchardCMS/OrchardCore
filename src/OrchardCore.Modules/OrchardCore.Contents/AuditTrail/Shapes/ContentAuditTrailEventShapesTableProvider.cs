@@ -37,32 +37,24 @@ namespace OrchardCore.Contents.AuditTrail.Shapes
                 {
                     var session = context.ServiceProvider.GetRequiredService<ISession>();
 
-                    AuditTrailEvent previousAuditTrailEvent = null;
-
-                    previousAuditTrailEvent = await session.Query<AuditTrailEvent, AuditTrailEventIndex>()
+                    var previousAuditTrailEvent = await session.Query<AuditTrailEvent, AuditTrailEventIndex>()
                         .Where(eventIndex =>
-                            eventIndex.CreatedUtc < auditTrailEvent.CreatedUtc &&
                             eventIndex.Category == "Content" &&
+                            eventIndex.CreatedUtc < auditTrailEvent.CreatedUtc &&
                             eventIndex.EventFilterData == contentItem.ContentItemId)
                         .OrderByDescending(eventIndex => eventIndex.CreatedUtc)
                         .FirstOrDefaultAsync();
 
-                    if (previousAuditTrailEvent != null)
+                    var previousContentItem = previousAuditTrailEvent?.Get(previousAuditTrailEvent.EventName)?.ToObject<ContentItem>();
+                    if (previousContentItem?.ContentType == contentItem.ContentType)
                     {
                         var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
-
-                        var previousContentItemJToken = previousAuditTrailEvent.Get(previousAuditTrailEvent.EventName);
-                        var previousContentItem = previousContentItemJToken.ToObject<ContentItem>();
-                        var currentTypeDefinition = contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
-                        var previousTypeDefinition = contentDefinitionManager.LoadTypeDefinition(previousContentItem.ContentType);
-
-                        var contentParts = currentTypeDefinition.Parts
-                            .Select(typePartDefinition => typePartDefinition.Name)
-                            .Intersect(previousTypeDefinition.Parts.Select(b => b.Name));
+                        var contentTypeDefinition = contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
 
                         JObject diff = JsonExtensions.FindDiff(contentItem.Content, previousContentItem.Content);
                         var diffNodes = new List<DiffNode>();
 
+                        var contentParts = contentTypeDefinition.Parts.Select(typePartDefinition => typePartDefinition.Name);
                         foreach (var contentPart in contentParts)
                         {
                             if (diff.ContainsKey(contentPart))

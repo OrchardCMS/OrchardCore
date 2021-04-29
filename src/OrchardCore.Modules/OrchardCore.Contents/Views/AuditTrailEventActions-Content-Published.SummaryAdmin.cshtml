@@ -9,23 +9,19 @@
 }
 
 <a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">@T["Details"]</a>
-@if (contentItem != null) 
+@if (contentItem != null && availableVersionsCount != versionNumber) 
 {
-    if (availableVersionsCount != versionNumber) 
-    {
-        @T["|"]
-        <form>
-            <a asp-route-area="OrchardCore.Contents"
-               asp-controller="Content"
-               asp-action="Restore"
-               asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId"
-               data-title="@T["Restore to Version"]"
-               data-message="@T["Are you sure you want to restore to version {0}?", versionNumber]"
-               data-ok-text="@T["Yes"]"
-               data-cancel-text="@T["No"]"
-               itemprop="UnsafeUrl RemoveUrl">
-                @T["Restore"]
-            </a>
-        </form>
-    }
+    <form>
+        <a asp-route-area="OrchardCore.Contents"
+           asp-controller="Content"
+           asp-action="Restore"
+           asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId"
+           data-title="@T["Restore to Version"]"
+           data-message="@T["Are you sure you want to restore to version {0}?", versionNumber]"
+           data-ok-text="@T["Yes"]"
+           data-cancel-text="@T["No"]"
+           itemprop="UnsafeUrl RemoveUrl">
+            @T["Restore"]
+        </a>
+    </form>
 }

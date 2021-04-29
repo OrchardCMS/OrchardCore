@@ -1,5 +1,5 @@
 @using OrchardCore.ContentManagement
-@using OrchardCore.AuditTrail.Models 
+@using OrchardCore.AuditTrail.Models
 
 @{
     var auditTrailEvent = (AuditTrailEvent)Model.AuditTrailEvent;
@@ -9,12 +9,12 @@
 }
 
 <a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">@T["Details"]</a>
-@if (contentItem != null) 
+@if (contentItem != null)
 {
-    @T["|"]
     <form>
-        <a asp-action="Restore"
+        <a asp-route-area="OrchardCore.Contents"
            asp-controller="Content"
+           asp-action="Restore"
            asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId"
            data-title="@T["Restore content item"]"
            data-message="@T["Are you sure you want to restore this content item?"]"

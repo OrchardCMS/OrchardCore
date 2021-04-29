@@ -8,7 +8,6 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Providers;
 using OrchardCore.Contents.AuditTrail.Services;
 using OrchardCore.Contents.AuditTrail.Services.Models;
@@ -19,20 +18,20 @@ using IYesSqlSession = YesSql.ISession;
 namespace OrchardCore.Contents.AuditTrail.Handlers
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
-    public class GlobalContentHandler : ContentHandlerBase
+    public class GlobalContentHandler : ContentHandlerBase, IAuditTrailContentHandler
     {
         private readonly IYesSqlSession _session;
         private readonly IAuditTrailManager _auditTrailManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IAuditTrailContentEventHandler> _auditTrailEvents;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
         public GlobalContentHandler(
             IYesSqlSession session,
-            ILogger<GlobalContentHandler> logger,
             IAuditTrailManager auditTrailManager,
+            IEnumerable<IAuditTrailContentEventHandler> auditTrailEvents,
             IHttpContextAccessor httpContextAccessor,
-            IEnumerable<IAuditTrailContentEventHandler> auditTrailEvents)
+            ILogger<GlobalContentHandler> logger)
         {
             _session = session;
             _auditTrailEvents = auditTrailEvents;
@@ -44,21 +43,8 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         public override Task DraftSavedAsync(SaveDraftContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Saved, context.ContentItem);
 
-        public override Task CreatedAsync(CreateContentContext context)
-        {
-            var auditTrailRestoreFeature = _httpContextAccessor.HttpContext.Features.Get<AuditTrailContentItemRestoreFeature>();
-
-            if (auditTrailRestoreFeature != null)
-            {
-                return RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, auditTrailRestoreFeature.ContentItem);
-            }
-            else if (!context.ContentItem.Published)
-            {
-                return RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Created, context.ContentItem);
-            }
-
-            return Task.CompletedTask;
-        }
+        public override Task CreatedAsync(CreateContentContext context) =>
+            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Created, context.ContentItem);
 
         public override Task PublishedAsync(PublishContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Published, context.ContentItem);
@@ -71,6 +57,11 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
 
         public override Task ClonedAsync(CloneContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Cloned, context.ContentItem);
+
+        public Task RestoringAsync(RestoreContentContext context) => Task.CompletedTask;
+
+        public Task RestoredAsync(RestoreContentContext context) =>
+            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, context.ContentItem);
 
         private async Task RecordAuditTrailEventAsync(string eventName, IContent content)
         {
@@ -91,8 +82,14 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 { "VersionNumber", versionNumber }
             };
 
-            await _auditTrailManager.AddAuditTrailEventAsync<ContentAuditTrailEventProvider>(
-                new AuditTrailContext(eventName, _httpContextAccessor.GetCurrentUserName(), eventData, "content", content.ContentItem.ContentItemId));
+            await _auditTrailManager.AddAuditTrailEventAsync<ContentAuditTrailEventProvider>(new AuditTrailContext
+            (
+                eventName,
+                _httpContextAccessor.GetCurrentUserName(),
+                eventData,
+                "content",
+                content.ContentItem.ContentItemId)
+            );
         }
     }
 }
