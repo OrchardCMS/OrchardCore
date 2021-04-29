@@ -138,7 +138,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                                 if (isDisplayModeShapeType)
                                 {
                                     // In case of display mode, update shape type to only include DisplayMode and DisplayToken
-                                    shapeTypeSuffix = $"{displayMode}";
+                                    shapeTypeSuffix = displayMode;
                                 }
                                 else
                                 {
