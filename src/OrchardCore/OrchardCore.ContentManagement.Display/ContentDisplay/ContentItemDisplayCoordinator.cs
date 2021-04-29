@@ -171,7 +171,7 @@ namespace OrchardCore.ContentManagement.Display
                             foreach (var displayType in displayTypes)
                             {
                                 // [ContentType]_[DisplayType]__[PartType] 
-                                // e.g. LandingPage-ServicePart, LandingPage.ServicePart.Summary                                
+                                // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary                                
                                 ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
 
                                 if (!String.IsNullOrEmpty(stereotype))
