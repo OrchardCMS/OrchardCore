@@ -83,7 +83,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                         if (!isDisplayModeShapeType)
                         {
-                            // Do not add  Display type suffix to display mode shapes
+                            // Do not add  Display type suffix to display mode shapes since display modes are already existing custom shapes.
                             // [ShapeType]_[DisplayType], e.g. HtmlBodyPart.Summary, BagPart.Summary, ListPartFeed.Summary
                             ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
                         }
