@@ -31,6 +31,17 @@ namespace OrchardCore.Rules.Services
             // IsInRole() & HasClaim() are case sensitive.
             var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
 
+            // Claim all if the operator is negative
+            if(condition.Operation == new StringNotEqualsOperator() ||
+                condition.Operation == new StringNotStartsWithOperator() ||
+                condition.Operation == new StringNotEndsWithOperator() || 
+                condition.Operation == new StringNotContainsOperator()){
+                    return (_httpContextAccessor.HttpContext.User?.Claims.All(claim => 
+                        claim.Type == roleClaimType && 
+                        operatorComparer.Compare(condition.Operation, claim.Value, condition.Value))
+                    ).GetValueOrDefault() ? True : False;
+                }
+
             return (_httpContextAccessor.HttpContext.User?.Claims.Any(claim => 
                 claim.Type == roleClaimType && 
                 operatorComparer.Compare(condition.Operation, claim.Value, condition.Value))
