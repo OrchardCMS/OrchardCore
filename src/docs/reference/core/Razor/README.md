@@ -14,7 +14,7 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `GetContentItemIdByAliasAsync(string alias)` | OrchardCore.Contents | Returns a content item id from its alias. Ex: `carousel` |
 | `GetContentItemIdBySlugAsync(string slug)` | OrchardCore.Contents | Returns a content item id from its slug. Ex: `myblog/my-blog-post` |
 | `GetContentItemIdByHandleAsync(string handle)` | OrchardCore.Contents | Returns a content item id from its handle. Ex: `alias:carousel`, `slug:myblog/my-blog-post` |
-| `GetContentItemByAliasAsync(string alias, bool latest = false)` | OrchardCore.Contents | Loads a content item by its alias, seeking the latest version or not. Ex: `carousel` |
+| `GetContentItemByAliasAsync(string alias, bool latest = false)` | OrchardCore.Alias | Loads a content item by its alias, seeking the latest version or not. Ex: `carousel` |
 | `GetContentItemBySlugAsync(string slug, bool latest = false)` | OrchardCore.Contents | Loads a content item by its slug, seeking the latest version or not. Ex: `slug:myblog/my-blog-post`|
 | `GetContentItemByHandleAsync(string handle, bool latest = false)` | OrchardCore.Contents | Loads a content item by its handle, seeking the latest version or not. Ex: `alias:carousel`, `slug:myblog/my-blog-post`|
 | `GetContentItemByIdAsync(string contentItemId, bool latest = false)` | OrchardCore.Contents | Loads a content item by its id. |
