@@ -130,8 +130,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                         foreach (var displayType in displayTypes)
                         {
-                            var shapeTypeSuffix = shapeType;                            
-                            var displayTypeDisplayToken = displayType;                            
+                            var shapeTypeSuffix = shapeType;
+                            var displayTypeDisplayToken = displayType;
 
                             if (hasDisplayMode)
                             {

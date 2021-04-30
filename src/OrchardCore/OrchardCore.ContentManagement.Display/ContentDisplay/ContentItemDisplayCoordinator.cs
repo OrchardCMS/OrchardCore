@@ -164,13 +164,13 @@ namespace OrchardCore.ContentManagement.Display
                                 // eg. ServicePart,  ServicePart.Summary
                                 ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayType}");
 
-                                // [ContentType]_[DisplayType]__[PartType] 
-                                // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary                                
+                                // [ContentType]_[DisplayType]__[PartType]
+                                // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary
                                 ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
 
                                 if (!String.IsNullOrEmpty(stereotype))
                                 {
-                                    // [Stereotype]_[DisplayType]__[PartType], 
+                                    // [Stereotype]_[DisplayType]__[PartType],
                                     // e.g. Widget-ServicePart
                                     ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partTypeName}");
                                 }
