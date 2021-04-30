@@ -20,7 +20,6 @@ using OrchardCore.Workflows.Services;
 namespace OrchardCore.Workflows.Http
 {
     [Feature("OrchardCore.Workflows.Http")]
-    [RequireFeatures("OrchardCore.Workflows")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

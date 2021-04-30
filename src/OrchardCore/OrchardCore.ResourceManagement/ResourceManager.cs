@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ResourceManagement
@@ -540,7 +542,7 @@ namespace OrchardCore.ResourceManagement
             _metas[index] = meta;
         }
 
-        public void RenderMeta(IHtmlContentBuilder builder)
+        public void RenderMeta(TextWriter writer)
         {
             var first = true;
 
@@ -548,16 +550,16 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(meta.GetTag());
+                meta.GetTag().WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderHeadLink(IHtmlContentBuilder builder)
+        public void RenderHeadLink(TextWriter writer)
         {
             var first = true;
 
@@ -567,16 +569,16 @@ namespace OrchardCore.ResourceManagement
                 var link = registeredLinks[i];
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(link.GetTag());
+                link.GetTag().WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderStylesheet(IHtmlContentBuilder builder)
+        public void RenderStylesheet(TextWriter writer)
         {
             var first = true;
 
@@ -591,12 +593,12 @@ namespace OrchardCore.ResourceManagement
 
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                context.WriteTo(writer, _options.ContentBasePath);
             }
 
             var registeredStyles = DoGetRegisteredStyles();
@@ -605,16 +607,16 @@ namespace OrchardCore.ResourceManagement
                 var context = registeredStyles[i];
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context);
+                context.WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderHeadScript(IHtmlContentBuilder builder)
+        public void RenderHeadScript(TextWriter writer)
         {
             var headScripts = DoGetRequiredResources("script");
 
@@ -629,12 +631,12 @@ namespace OrchardCore.ResourceManagement
 
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                context.WriteTo(writer, _options.ContentBasePath);
             }
 
             var registeredHeadScripts = DoGetRegisteredHeadScripts();
@@ -643,16 +645,16 @@ namespace OrchardCore.ResourceManagement
                 var context = registeredHeadScripts[i];
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context);
+                context.WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderFootScript(IHtmlContentBuilder builder)
+        public void RenderFootScript(TextWriter writer)
         {
             var footScripts = DoGetRequiredResources("script");
 
@@ -666,12 +668,12 @@ namespace OrchardCore.ResourceManagement
 
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                context.WriteTo(writer, _options.ContentBasePath);
             }
 
             var registeredFootScripts = DoGetRegisteredFootScripts();
@@ -680,19 +682,19 @@ namespace OrchardCore.ResourceManagement
                 var context = registeredFootScripts[i];
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context);
+                context.WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderLocalScript(RequireSettings settings, IHtmlContentBuilder builder)
+        public void RenderLocalScript(RequireSettings settings, TextWriter writer)
         {
             var localScripts = DoGetRequiredResources("script");
-            _localScripts ??= new HashSet<string>();
+            _localScripts ??= new HashSet<string>(localScripts.Length);
 
             var first = true;
 
@@ -703,20 +705,20 @@ namespace OrchardCore.ResourceManagement
                 {
                     if (!first)
                     {
-                        builder.AppendHtml(System.Environment.NewLine);
+                        writer.Write(System.Environment.NewLine);
                     }
 
                     first = false;
 
-                    builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                    context.WriteTo(writer, _options.ContentBasePath);
                 }
             }
         }
 
-        public void RenderLocalStyle(RequireSettings settings, IHtmlContentBuilder builder)
+        public void RenderLocalStyle(RequireSettings settings, TextWriter writer)
         {
             var localStyles = DoGetRequiredResources("stylesheet");
-            _localStyles ??= new HashSet<string>();
+            _localStyles ??= new HashSet<string>(localStyles.Length);
 
             var first = true;
 
@@ -727,12 +729,12 @@ namespace OrchardCore.ResourceManagement
                 {
                     if (!first)
                     {
-                        builder.AppendHtml(System.Environment.NewLine);
+                        writer.Write(System.Environment.NewLine);
                     }
 
                     first = false;
 
-                    builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                    context.WriteTo(writer, _options.ContentBasePath);
                 }
             }
         }

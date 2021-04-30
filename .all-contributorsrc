@@ -2152,6 +2152,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/12182810?v=4",
       "profile": "https://github.com/Diman96",
       "contributions": [
+        "doc",
         "code"
       ]
     },
@@ -2297,6 +2298,33 @@
       "profile": "https://fuzl.com",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "ropstah",
+      "name": "ropstah",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5072557?v=4",
+      "profile": "https://github.com/ropstah",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kdubious",
+      "name": "Kevin Welsh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9756166?v=4",
+      "profile": "https://welshtechnologies.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "andycyberian",
+      "name": "Andy Rose",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4202906?v=4",
+      "profile": "http://cyberian.co.uk",
+      "contributions": [
+        "code"
       ]
     }
   ],

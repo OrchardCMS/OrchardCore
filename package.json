@@ -16,13 +16,15 @@
     "install:orchardcore.workflows": "cd src/OrchardCore.Modules/OrchardCore.Workflows && npm install",
     "install:orchardcore.theadmin": "cd src/OrchardCore.Themes/TheAdmin && npm install",
     "install:orchardcore.theagencytheme": "cd src/OrchardCore.Themes/TheAgencyTheme && npm install",
+    "install:orchardcore.theblogtheme": "cd src/OrchardCore.Themes/TheBlogTheme && npm install",
+    "install:orchardcore.thecomingsoontheme": "cd src/OrchardCore.Themes/TheComingSoonTheme && npm install",
     "install:orchardcore.thetheme": "cd src/OrchardCore.Themes/TheTheme && npm install",
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.13.10",
-    "@babel/preset-env": "^7.13.10",
-    "@babel/preset-flow": "7.12.13",
+    "@babel/core": "^7.13.16",
+    "@babel/preset-env": "^7.13.15",
+    "@babel/preset-flow": "7.13.13",
     "all-contributors-cli": "^6.20.0",
     "es6-promise": "4.2.8",
     "glob": "^7.1.6",
@@ -50,9 +52,9 @@
     "merge-stream": "2.0.0",
     "npm-run-all": "^4.1.5",
     "path-posix": "1.0.0",
-    "postcss": "8.2.8",
+    "postcss": "8.2.12",
     "postcss-rtl": "^1.7.3",
     "rtlcss": "3.1.2",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.4"
   }
 }

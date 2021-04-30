@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -7,7 +8,6 @@ using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
@@ -16,29 +16,39 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var services = ((LiquidTemplateContext)context).Services;
+            var services = ((LiquidTemplateContext) context).Services;
             var layoutAccessor = services.GetRequiredService<ILayoutAccessor>();
 
             string position = null;
             string name = null;
 
-            foreach (var argument in argumentsList)
+            for (var i = 0; i < argumentsList.Count; i++)
             {
+                var argument = argumentsList[i];
+                // check common case
+                if (String.IsNullOrEmpty(argument.Name) && argument.Expression is LiteralExpression literalExpression)
+                {
+                    name = literalExpression.Value.ToStringValue();
+                    continue;
+                }
+
                 switch (argument.Name)
                 {
-                    case "position": position = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "position":
+                        position = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
 
                     case null:
                     case "name":
-                    case "": name ??= (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "":
+                        name ??= (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
                 }
             }
 
-            ViewBufferTextWriterContent content = null;
-
             if (statements != null && statements.Count > 0)
             {
-                content = new ViewBufferTextWriterContent();
+                var content = new ViewBufferTextWriterContent();
 
                 var completion = await statements.RenderStatementsAsync(content, encoder, context);
 
@@ -46,15 +56,15 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 {
                     return completion;
                 }
-            }
 
-            var layout = await layoutAccessor.GetLayoutAsync();
+                var layout = await layoutAccessor.GetLayoutAsync();
 
-            var zone = layout.Zones[name];
+                var zone = layout.Zones[name];
 
-            if (zone is Shape shape)
-            {
-                await shape.AddAsync(content, position);
+                if (zone is Shape shape)
+                {
+                    await shape.AddAsync(content, position);
+                }
             }
 
             return Completion.Normal;

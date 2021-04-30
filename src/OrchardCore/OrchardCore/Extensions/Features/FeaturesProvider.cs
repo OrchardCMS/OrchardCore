@@ -15,9 +15,7 @@ namespace OrchardCore.Environment.Extensions.Features
             _featureBuilderEvents = featureBuilderEvents;
         }
 
-        public IEnumerable<IFeatureInfo> GetFeatures(
-            IExtensionInfo extensionInfo,
-            IManifestInfo manifestInfo)
+        public IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
         {
             var featuresInfos = new List<IFeatureInfo>();
 
@@ -39,7 +37,7 @@ namespace OrchardCore.Environment.Extensions.Features
                     var featureDependencyIds = feature.Dependencies
                         .Select(e => e.Trim()).ToArray();
 
-                    if (!int.TryParse(feature.Priority ?? manifestInfo.ModuleInfo.Priority, out int featurePriority))
+                    if (!Int32.TryParse(feature.Priority ?? manifestInfo.ModuleInfo.Priority, out var featurePriority))
                     {
                         featurePriority = 0;
                     }
@@ -96,7 +94,7 @@ namespace OrchardCore.Environment.Extensions.Features
                 var featureDependencyIds = manifestInfo.ModuleInfo.Dependencies
                     .Select(e => e.Trim()).ToArray();
 
-                if (!int.TryParse(manifestInfo.ModuleInfo.Priority, out int featurePriority))
+                if (!Int32.TryParse(manifestInfo.ModuleInfo.Priority, out var featurePriority))
                 {
                     featurePriority = 0;
                 }
