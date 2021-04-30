@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text.Encodings.Web;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
@@ -26,8 +27,7 @@ namespace OrchardCore.DisplayManagement.Html
 
         private string DebuggerToString()
         {
-            using var stringBuilderPool = StringBuilderPool.GetInstance();
-            var writer = new StringWriter(stringBuilderPool.Builder);
+            var writer = new ZStringWriter();
             WriteTo(writer, HtmlEncoder.Default);
             return writer.ToString();
         }
