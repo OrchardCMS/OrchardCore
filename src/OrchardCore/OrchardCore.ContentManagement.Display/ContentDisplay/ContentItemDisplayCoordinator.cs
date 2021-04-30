@@ -155,21 +155,15 @@ namespace OrchardCore.ContentManagement.Display
                         {
                             string[] displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
 
-                            // Fall back to default template of ContentPart, if there is not template for shape type(partTypeName)
-                            // eg. ContentPart
-                            ctx.Shape.Metadata.Alternates.Add("ContentPart");
-
-                            // eg. ServicePart
-                            ctx.Shape.Metadata.Alternates.Add(partTypeName);
-
-                            // eg. ContentPart.Summary
-                            ctx.Shape.Metadata.Alternates.Add($"ContentPart_{ctx.Shape.Metadata.DisplayType}");
-
-                            // eg. ServicePart.Summary
-                            ctx.Shape.Metadata.Alternates.Add($"{partTypeName}_{ctx.Shape.Metadata.DisplayType}");
-
                             foreach (var displayType in displayTypes)
                             {
+                                // Fall back to default template of ContentPart, if there is not template for shape type(partTypeName)
+                                // eg. ContentPart, ContentPart.Summary
+                                ctx.Shape.Metadata.Alternates.Add($"ContentPart{displayType}");
+
+                                // eg. ServicePart,  ServicePart.Summary
+                                ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayType}");
+
                                 // [ContentType]_[DisplayType]__[PartType] 
                                 // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary                                
                                 ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
@@ -205,9 +199,8 @@ namespace OrchardCore.ContentManagement.Display
                         var contentPartShape = shapeResult.Shape;
 
                         // Make the ContentPart name property available on the shape
-                        var dynamicContentPartShape = contentPartShape;
-                        dynamicContentPartShape.Properties[partTypeName] = part.Content;
-                        dynamicContentPartShape.Properties["ContentItem"] = part.ContentItem;
+                        contentPartShape.Properties[partTypeName] = part.Content;
+                        contentPartShape.Properties["ContentItem"] = part.ContentItem;
 
                         context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater);
                         // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.
