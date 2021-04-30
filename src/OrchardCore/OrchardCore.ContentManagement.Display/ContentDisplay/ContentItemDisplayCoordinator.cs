@@ -143,7 +143,6 @@ namespace OrchardCore.ContentManagement.Display
 
                     if (part.GetType() == typeof(ContentPart) && partTypeName != contentTypePartDefinition.ContentTypeDefinition.Name)
                     {
-                        // Todo: var shapeType = partTypeName; for Placement fix PR #8935
                         var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
 
                         var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
@@ -157,10 +156,6 @@ namespace OrchardCore.ContentManagement.Display
 
                             foreach (var displayType in displayTypes)
                             {
-                                // Fall back to default template of ContentPart, if there is not template for shape type(partTypeName)
-                                // eg. ContentPart, ContentPart.Summary
-                                ctx.Shape.Metadata.Alternates.Add($"ContentPart{displayType}");
-
                                 // eg. ServicePart,  ServicePart.Summary
                                 ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayType}");
 
