@@ -1,4 +1,4 @@
-using System.Text;
+using Cysharp.Text;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 {
@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
             // Generates:
             //  columnName in (@p1, @p2, @p3)
 
-            var array = new StringBuilder();
+            using var array = ZString.CreateStringBuilder();
             for (var i = 0; i < Values.Length; i++)
             {
                 var parameter = predicateQuery.NewQueryParameter(Values[i]);

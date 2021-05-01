@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
+using Cysharp.Text;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -20,7 +20,7 @@ namespace OrchardCore.Tests.Apis.Context
             await Task.Delay(1);
             var ticks = DateTime.Now.Ticks;
 
-			var result = new StringBuilder();
+			using var result = ZString.CreateStringBuilder();
 			while (ticks != 0)
 			{
 				result.Append(CharList[ticks % CharList.Length]);

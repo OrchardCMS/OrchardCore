@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Cysharp.Text;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache
@@ -9,7 +9,7 @@ namespace OrchardCore.DynamicCache
     {
         public static string GetContextHash(this IEnumerable<CacheContextEntry> entries)
         {
-            var sb = new StringBuilder();
+            using var sb = ZString.CreateStringBuilder();
             foreach (var entry in entries.OrderBy(x => x.Key).ThenBy(x => x.Value))
             {
                 var part = entry.Key + entry.Value;

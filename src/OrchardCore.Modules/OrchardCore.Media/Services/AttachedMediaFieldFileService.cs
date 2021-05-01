@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -138,7 +139,7 @@ namespace OrchardCore.Media.Services
 
         public string ByteArrayToHexString(byte[] bytes)
         {
-            var sb = new StringBuilder();
+            using var sb = ZString.CreateStringBuilder();
             foreach (var b in bytes)
             {
                 sb.Append(b.ToString("x2").ToLower());
@@ -162,7 +163,7 @@ namespace OrchardCore.Media.Services
 
             if (!(await _fileStore.GetDirectoryContentAsync(previousDirPath).AnyAsync()))
             {
-                await _fileStore.TryDeleteDirectoryAsync(previousDirPath);                
+                await _fileStore.TryDeleteDirectoryAsync(previousDirPath);
             }
         }
     }

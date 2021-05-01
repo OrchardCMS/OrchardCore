@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using Cysharp.Text;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
 using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Media.Processing
@@ -98,8 +98,7 @@ namespace OrchardCore.Media.Processing
 
         private static string CreateQueryStringTokenKey(IEnumerable<string> values)
         {
-            using var stringBuilderPool = StringBuilderPool.GetInstance();
-            var result = stringBuilderPool.Builder;
+            using var result = ZString.CreateStringBuilder();
             result.Append(TokenCacheKeyPrefix);
             foreach (var item in values)
             {

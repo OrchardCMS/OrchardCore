@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DynamicCache.Models;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Infrastructure.Pooling;
 
 namespace OrchardCore.DynamicCache.Services
 {

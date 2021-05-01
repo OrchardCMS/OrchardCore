@@ -2,17 +2,27 @@ using System;
 using System.Buffers;
 using System.Globalization;
 using System.IO;
+using Cysharp.Text;
 using Newtonsoft.Json;
 
-namespace OrchardCore.Abstractions.Pooling
+namespace OrchardCore.Infrastructure.Pooling
 {
     /// <summary>
     /// Handles JSON.NET serialization utilizing pooled array buffers and string builders.
     /// </summary>
-    internal sealed class PoolingJsonSerializer
+#if JSON_POOLING_INTERNAL
+    internal
+#else
+    public
+#endif
+    sealed class PoolingJsonSerializer
     {
         private readonly JsonArrayPool<char> _arrayPool;
         private readonly JsonSerializerSettings _jsonSettings;
+
+        public PoolingJsonSerializer() : this(ArrayPool<char>.Shared, null)
+        {
+        }
 
         public PoolingJsonSerializer(ArrayPool<char> arrayPool) : this(arrayPool, null)
         {

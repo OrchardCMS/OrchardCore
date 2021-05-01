@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 
@@ -88,18 +88,12 @@ namespace OrchardCore.DynamicCache.Liquid
             {
                 if (statements != null || statements.Count > 0)
                 {
-                    using var sb = StringBuilderPool.GetInstance();
-                    using (var render = new StringWriter(sb.Builder))
+                    using var render = new ZStringWriter();
+                    foreach (var statement in statements)
                     {
-                        foreach (var statement in statements)
-                        {
-                            await statement.WriteToAsync(render, encoder, context);
-                        }
-
-                        await render.FlushAsync();
+                        await statement.WriteToAsync(render, encoder, context);
                     }
-
-                    content = sb.Builder.ToString();
+                    content = render.ToString();
                 }
             }
             finally

@@ -1,7 +1,7 @@
 using System.Buffers;
 using Newtonsoft.Json;
 
-namespace OrchardCore.Abstractions.Pooling
+namespace OrchardCore.Infrastructure.Pooling
 {
     /// <summary>
     /// An adapter for JSON.NET to allow usage of ArrayPool.

@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="Castle.Core" />
+    <PackageReference Include="ZString" />
   </ItemGroup>
 
 </Project>

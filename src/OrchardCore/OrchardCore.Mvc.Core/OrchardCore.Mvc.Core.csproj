@@ -17,6 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" ExcludeAssets="build;buildTransitive" />
+    <PackageReference Include="ZString" />
   </ItemGroup>
 
   <ItemGroup>

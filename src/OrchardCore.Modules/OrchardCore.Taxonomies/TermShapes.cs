@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using Cysharp.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
@@ -297,7 +297,7 @@ namespace OrchardCore.Taxonomies
 
             name = name.Trim();
             var nextIsUpper = true;
-            var result = new StringBuilder(name.Length);
+            using var result = ZString.CreateStringBuilder();
             for (var i = 0; i < name.Length; i++)
             {
                 var c = name[i];

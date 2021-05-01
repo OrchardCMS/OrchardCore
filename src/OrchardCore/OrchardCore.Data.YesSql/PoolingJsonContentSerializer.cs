@@ -1,7 +1,7 @@
 using System;
 using System.Buffers;
 using Newtonsoft.Json;
-using OrchardCore.Abstractions.Pooling;
+using OrchardCore.Infrastructure.Pooling;
 using YesSql;
 
 namespace OrchardCore.Data

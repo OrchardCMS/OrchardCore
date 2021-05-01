@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using Cysharp.Text;
 
 namespace OrchardCore.Liquid.Services
 {
@@ -12,7 +13,7 @@ namespace OrchardCore.Liquid.Services
                 return text;
             }
 
-            var sb = new StringBuilder();
+            using var sb = ZString.CreateStringBuilder();
 
             var stFormKD = text.Trim().ToLower().Normalize(NormalizationForm.FormKD);
             foreach (var t in stFormKD)
