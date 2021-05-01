@@ -9,15 +9,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         [Fact]
         public void MailMessageDispose_DisposesItsAttachments()
         {
-            // Arrange & Act
-            using(var message = new MailMessage())
+            // Arrange
+            MailMessage message = null;
+            
+            //Act
+            using(message = new MailMessage())
             {
                 message.Attachments.Add(new MailMessageAttachment { Stream = new MemoryStream() });
                 message.Attachments.Add(new MailMessageAttachment { Stream = new MemoryStream() });
-
-                // Assert
-                Assert.All(message.Attachments, a => Assert.False(a.Stream.CanRead));
             }
+
+            // Assert
+            Assert.All(message.Attachments, a => Assert.False(a.Stream.CanRead));
         }
     }
 }
