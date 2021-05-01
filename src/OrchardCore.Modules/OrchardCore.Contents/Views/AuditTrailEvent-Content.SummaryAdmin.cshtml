@@ -1,14 +1,18 @@
+@model AuditTrailEventViewModel
+@using OrchardCore.AuditTrail.ViewModels
 @using OrchardCore.ContentManagement
 @using OrchardCore.Contents.AuditTrail.Extensions
-@using OrchardCore.AuditTrail.Models
-@using OrchardCore.AuditTrail.Services.Models
+@using OrchardCore.Contents.AuditTrail.Models
 @using OrchardCore.Contents.AuditTrail.Providers
 
 @{
-    var contentItem = (ContentItem)Model.ContentItem;
-    var auditTrailEvent = (AuditTrailEvent)Model.AuditTrailEvent;
-    var eventDescriptor = (AuditTrailEventDescriptor)Model.Descriptor;
-    var versionNumber = (int)Model.VersionNumber;
+    var auditTrailEvent = Model.AuditTrailEvent;
+    var auditTrailContentEvent = auditTrailEvent.As<AuditTrailContentEvent>();
+
+    var contentItem = auditTrailContentEvent.ContentItem;
+    var versionNumber = auditTrailContentEvent.VersionNumber;
+
+    var eventDescriptor = Model.EventDescriptor;
     var versionText = T[$"Version {versionNumber}"];
     var eventName = eventDescriptor.LocalizedName.Value.ToLowerInvariant();
 }

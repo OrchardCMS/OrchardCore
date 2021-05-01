@@ -1,8 +1,9 @@
+@model IShape
 @using OrchardCore.ContentManagement
 
 @{
-    var contentItem = (ContentItem)Model.ContentItem;
-    var versionNumber = (int)Model.VersionNumber;
+    var contentItem = Model.GetProperty<ContentItem>("ContentItem");
+    var versionNumber = Model.GetProperty<int>("VersionNumber");
 }
 
 <style asp-src="~/OrchardCore.Contents/Styles/audittrail-disabledcontent.min.css" debug-src="~/OrchardCore.Contents/Styles/audittrail-disabledcontent.css"></style>

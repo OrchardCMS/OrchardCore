@@ -26,6 +26,8 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
+        private HashSet<string> _restoring = new HashSet<string>();
+
         public GlobalContentHandler(
             IYesSqlSession session,
             IAuditTrailManager auditTrailManager,
@@ -43,8 +45,15 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         public override Task DraftSavedAsync(SaveDraftContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Saved, context.ContentItem);
 
-        public override Task CreatedAsync(CreateContentContext context) =>
-            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Created, context.ContentItem);
+        public override Task CreatedAsync(CreateContentContext context)
+        {
+            if (_restoring.Contains(context.ContentItem.ContentItemId))
+            {
+                return Task.CompletedTask;
+            }
+
+            return RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Created, context.ContentItem);
+        }
 
         public override Task PublishedAsync(PublishContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Published, context.ContentItem);
@@ -52,13 +61,24 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         public override Task UnpublishedAsync(PublishContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Unpublished, context.ContentItem);
 
-        public override Task RemovedAsync(RemoveContentContext context) =>
-            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Removed, context.ContentItem);
+        public override Task RemovedAsync(RemoveContentContext context)
+        {
+            if (_restoring.Contains(context.ContentItem.ContentItemId))
+            {
+                return Task.CompletedTask;
+            }
+
+            return RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Removed, context.ContentItem);
+        }
 
         public override Task ClonedAsync(CloneContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Cloned, context.ContentItem);
 
-        public Task RestoringAsync(RestoreContentContext context) => Task.CompletedTask;
+        public Task RestoringAsync(RestoreContentContext context)
+        {
+            _restoring.Add(context.ContentItem.ContentItemId);
+            return Task.CompletedTask;
+        }
 
         public Task RestoredAsync(RestoreContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, context.ContentItem);

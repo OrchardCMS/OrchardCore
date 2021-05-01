@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.AuditTrail.Services
@@ -14,6 +15,7 @@ namespace OrchardCore.AuditTrail.Services
         public virtual Task DisplayFilterAsync(DisplayFilterContext context) => Task.CompletedTask;
         public virtual Task DisplayAdditionalColumnsAsync(DisplayAdditionalColumnsContext context) => Task.CompletedTask;
         public virtual Task DisplayAdditionalColumnNamesAsync(Shape display) => Task.CompletedTask;
+        public virtual Task BuildViewModelAsync(AuditTrailEventViewModel model) => Task.CompletedTask;
 
         public IStringLocalizer T { get; set; }
     }

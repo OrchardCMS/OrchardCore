@@ -82,14 +82,14 @@ namespace OrchardCore.AuditTrail.Services
                     Category = eventDescriptor.CategoryDescriptor.Category,
                     EventName = auditTrailCreateContext.EventName,
                     FullEventName = eventDescriptor.FullEventName,
-                    UserName = !string.IsNullOrEmpty(auditTrailCreateContext.UserName)
+                    UserName = !String.IsNullOrEmpty(auditTrailCreateContext.UserName)
                         ? auditTrailCreateContext.UserName
                         : T["[empty]"],
                     CreatedUtc = auditTrailCreateContext.CreatedUtc ?? _clock.UtcNow,
                     Comment = auditTrailCreateContext.Comment.NewlinesToHtml(),
                     EventFilterData = auditTrailCreateContext.EventFilterData,
                     EventFilterKey = auditTrailCreateContext.EventFilterKey,
-                    ClientIpAddress = string.IsNullOrEmpty(auditTrailCreateContext.ClientIpAddress)
+                    ClientIpAddress = String.IsNullOrEmpty(auditTrailCreateContext.ClientIpAddress)
                         ? await GetClientAddressAsync()
                         : auditTrailCreateContext.ClientIpAddress
                 };

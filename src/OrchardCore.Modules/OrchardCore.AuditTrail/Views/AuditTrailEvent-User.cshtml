@@ -1,8 +1,0 @@
-@using Newtonsoft.Json.Linq
-
-@{
-    var eventData = (JObject)Model.EventData;
-    var userName = eventData.Value<string>("UserName");
-}
-
-@T["User name of the affected user account: <strong>{0}</strong>", userName]

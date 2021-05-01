@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.AuditTrail.Services
@@ -39,5 +40,10 @@ namespace OrchardCore.AuditTrail.Services
         /// Add custom column names to the Audit Trail events table.
         /// </summary>
         Task DisplayAdditionalColumnNamesAsync(Shape display);
+
+        /// <summary>
+        /// Adds custom data for rendering an Audit Trail event.
+        /// </summary>
+        Task BuildViewModelAsync(AuditTrailEventViewModel model);
     }
 }

@@ -1,11 +1,16 @@
+@model AuditTrailEventViewModel
+@using OrchardCore.AuditTrail.ViewModels
 @using OrchardCore.ContentManagement
-@using OrchardCore.AuditTrail.Models
+@using OrchardCore.Contents.AuditTrail.Models
 
 @{
-    var auditTrailEvent = (AuditTrailEvent)Model.AuditTrailEvent;
-    var versionNumber = (int)Model.VersionNumber;
-    var contentItem = (ContentItem)Model.ContentItem;
-    var availableVersionsCount = (int)Model.AvailableVersionsCount;
+    var auditTrailEvent = Model.AuditTrailEvent;
+    var auditTrailContentEvent = auditTrailEvent.As<AuditTrailContentEvent>();
+    var contentItem = auditTrailContentEvent.ContentItem;
+    var versionNumber = auditTrailContentEvent.VersionNumber;
+
+    var shape = (IShape)Model;
+    var availableVersionsCount = shape.GetProperty<int>("AvailableVersionsCount");
 }
 
 <a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">@T["Details"]</a>

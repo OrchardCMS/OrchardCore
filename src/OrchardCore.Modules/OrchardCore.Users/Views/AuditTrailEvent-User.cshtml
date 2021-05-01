@@ -1,0 +1,11 @@
+@model AuditTrailEventViewModel
+@using OrchardCore.AuditTrail.ViewModels
+@using OrchardCore.ContentManagement
+@using OrchardCore.Entities
+@using OrchardCore.Users.AuditTrail.Models
+
+@{
+    var userEvent = Model.AuditTrailEvent.As<AuditTrailUserEvent>();
+}
+
+@T["User name of the affected user account: <strong>{0}</strong>", userEvent.UserName]

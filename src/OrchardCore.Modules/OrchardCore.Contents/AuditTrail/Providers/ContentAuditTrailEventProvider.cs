@@ -5,6 +5,8 @@ using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Providers;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -22,8 +24,13 @@ namespace OrchardCore.Contents.AuditTrail.Providers
         public const string Cloned = nameof(Cloned);
         public const string Restored = nameof(Restored);
 
-        public ContentAuditTrailEventProvider(IStringLocalizer<ContentAuditTrailEventProvider> stringLocalizer)
+        private IContentDefinitionManager _contentDefinitionManager;
+
+        public ContentAuditTrailEventProvider(
+            IContentDefinitionManager contentDefinitionManager,
+            IStringLocalizer<ContentAuditTrailEventProvider> stringLocalizer)
         {
+            _contentDefinitionManager = contentDefinitionManager;
             T = stringLocalizer;
         }
 
@@ -40,14 +47,24 @@ namespace OrchardCore.Contents.AuditTrail.Providers
         private void BuildAuditTrailEvent(AuditTrailEvent auditTrailEvent, Dictionary<string, object> eventData)
         {
             var contentItem = eventData.Get<ContentItem>("ContentItem");
-            auditTrailEvent.Put(auditTrailEvent.EventName, contentItem);
-            auditTrailEvent.Put(new ContentEvent
+
+            // The whole content item is embedded only if not versionable to still keep track of changes.
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            if (contentTypeDefinition?.GetSettings<ContentTypeSettings>().Versionable ?? true)
             {
-                ContentItemId = contentItem.ContentItemId,
-                ContentType = contentItem.ContentType,
-                VersionNumber = eventData.Get<int>("VersionNumber"),
+                contentItem = new ContentItem()
+                {
+                    ContentItemId = contentItem.ContentItemId,
+                    ContentItemVersionId = contentItem.ContentItemVersionId,
+                    ContentType = contentItem.ContentType,
+                };
+            }
+
+            auditTrailEvent.Put(new AuditTrailContentEvent
+            {
                 EventName = auditTrailEvent.EventName,
-                Published = contentItem.IsPublished()
+                ContentItem = contentItem,
+                VersionNumber = eventData.Get<int>("VersionNumber"),
             });
         }
     }

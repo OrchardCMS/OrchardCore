@@ -1,20 +1,18 @@
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Admin;
-using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.AuditTrail.Handlers;
+using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using YesSql;
 
@@ -24,8 +22,6 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
     [Admin]
     public class ContentController : Controller
     {
-        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
-
         private readonly ISession _session;
         private readonly IContentManager _contentManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -57,37 +53,38 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 
         public async Task<ActionResult> Detail(int versionNumber, string auditTrailEventId)
         {
-            var auditTrailEvent = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
+            var contentItemToEdit = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
                 .Where(auditTrailEventIndex => auditTrailEventIndex.AuditTrailEventId == auditTrailEventId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync())
+                ?.As<AuditTrailContentEvent>()
+                ?.ContentItem;
 
-            var contentItemToEdit = auditTrailEvent?.Get(auditTrailEvent.EventName)?.ToObject<ContentItem>();
-            if (String.IsNullOrEmpty(contentItemToEdit?.ContentItemId) || String.IsNullOrEmpty(contentItemToEdit.ContentType))
+            if (String.IsNullOrEmpty(contentItemToEdit?.ContentItemVersionId))
             {
                 return NotFound();
             }
 
-            var contentItem = await _contentManager.NewAsync(contentItemToEdit.ContentType);
-            contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!contentItemToEdit.CreatedUtc.HasValue)
+            {
+                contentItemToEdit = await _contentManager.GetVersionAsync(contentItemToEdit.ContentItemVersionId);
+            }
+            else
+            {
+                contentItemToEdit = await _contentManager.LoadAsync(contentItemToEdit);
+            }
 
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItemToEdit))
             {
                 return Forbid();
             }
 
-            contentItem.Merge(contentItemToEdit);
-            contentItem.ContentItemId = contentItemToEdit.ContentItemId;
-            contentItem.ContentItemVersionId = String.Empty;
-
-            contentItem = await _contentManager.LoadAsync(contentItem);
-
-            var auditTrailPart = contentItem.As<AuditTrailPart>();
+            var auditTrailPart = contentItemToEdit.As<AuditTrailPart>();
             if (auditTrailPart != null)
             {
                 auditTrailPart.ShowComment = true;
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItemToEdit, _updateModelAccessor.ModelUpdater, false);
 
             model.Properties["VersionNumber"] = versionNumber;
 
@@ -97,11 +94,12 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         [HttpPost]
         public async Task<ActionResult> Restore(string auditTrailEventId)
         {
-            var auditTrailEvent = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
+            var contentItemToRestore = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
                 .Where(auditTrailEventIndex => auditTrailEventIndex.AuditTrailEventId == auditTrailEventId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync())
+                ?.As<AuditTrailContentEvent>()
+                ?.ContentItem;
 
-            var contentItemToRestore = auditTrailEvent?.Get(auditTrailEvent.EventName)?.ToObject<ContentItem>();
             if (String.IsNullOrEmpty(contentItemToRestore?.ContentItemVersionId))
             {
                 return NotFound();
@@ -120,25 +118,25 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 
             if (contentItem.Latest || contentItem.Published)
             {
-                _notifier.Warning(H["The version to restore is already active."]);
+                _notifier.Warning(H["The version of '{0}' to restore is already active.", contentItem.DisplayText]);
                 return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
             }
 
+            // So that a new record will be created.
+            contentItem.Id = 0;
+
+            // So that a new version will be generated.
+            contentItem.ContentItemVersionId = String.Empty;
+
             await _auditTrailContentHandler.RestoringAsync(new RestoreContentContext(contentItem));
 
-            var latest = await _contentManager.GetAsync(contentItem.ContentItemId, VersionOptions.Latest);
-            if (latest != null)
-            {
-                latest.Latest = false;
-                _session.Save(latest);
-            }
+            await _contentManager.RemoveAsync(contentItem);
 
-            contentItem.Latest = true;
-            _session.Save(contentItem);
+            await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
             await _auditTrailContentHandler.RestoredAsync(new RestoreContentContext(contentItem));
 
-            _notifier.Success(H["'{0}' has been restored.", contentItemToRestore.DisplayText]);
+            _notifier.Success(H["'{0}' has been restored.", contentItem.DisplayText]);
             return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
         }
     }
