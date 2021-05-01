@@ -8,6 +8,7 @@ using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.AuditTrail.Handlers;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -53,38 +54,38 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 
         public async Task<ActionResult> Detail(int versionNumber, string auditTrailEventId)
         {
-            var contentItemToEdit = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
+            var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
                 .Where(auditTrailEventIndex => auditTrailEventIndex.AuditTrailEventId == auditTrailEventId)
                 .FirstOrDefaultAsync())
                 ?.As<AuditTrailContentEvent>()
                 ?.ContentItem;
 
-            if (String.IsNullOrEmpty(contentItemToEdit?.ContentItemVersionId))
+            if (String.IsNullOrEmpty(contentItem?.ContentItemVersionId))
             {
                 return NotFound();
             }
 
-            if (!contentItemToEdit.CreatedUtc.HasValue)
+            if (!contentItem.CreatedUtc.HasValue)
             {
-                contentItemToEdit = await _contentManager.GetVersionAsync(contentItemToEdit.ContentItemVersionId);
+                contentItem = await _contentManager.GetVersionAsync(contentItem.ContentItemVersionId);
             }
             else
             {
-                contentItemToEdit = await _contentManager.LoadAsync(contentItemToEdit);
+                contentItem = await _contentManager.LoadAsync(contentItem);
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItemToEdit))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }
 
-            var auditTrailPart = contentItemToEdit.As<AuditTrailPart>();
+            var auditTrailPart = contentItem.As<AuditTrailPart>();
             if (auditTrailPart != null)
             {
                 auditTrailPart.ShowComment = true;
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItemToEdit, _updateModelAccessor.ModelUpdater, false);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             model.Properties["VersionNumber"] = versionNumber;
 
@@ -122,16 +123,38 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
             }
 
+            var result = await _contentManager.ValidateAsync(contentItem);
+            if (!result.Succeeded)
+            {
+                _notifier.Warning(H["The version of '{0}' to restore is not valid.", contentItem.DisplayText]);
+                foreach (var error in result.Errors)
+                {
+                    _notifier.Warning(H[error.ErrorMessage]);
+                }
+
+                return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
+            }
+
             // So that a new record will be created.
             contentItem.Id = 0;
+
+            await _auditTrailContentHandler.RestoringAsync(new RestoreContentContext(contentItem));
+
+            // Remove an existing draft but keep an existing published version.
+            var latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
+                .Where(i => i.ContentItemId == contentItem.ContentItemId && i.Latest)
+                .FirstOrDefaultAsync();
+
+            if (latestVersion != null)
+            {
+                latestVersion.Latest = false;
+                _session.Save(latestVersion);
+            }
 
             // So that a new version will be generated.
             contentItem.ContentItemVersionId = String.Empty;
 
-            await _auditTrailContentHandler.RestoringAsync(new RestoreContentContext(contentItem));
-
-            await _contentManager.RemoveAsync(contentItem);
-
+            // Create a new draft from the version to restore.
             await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
             await _auditTrailContentHandler.RestoredAsync(new RestoreContentContext(contentItem));

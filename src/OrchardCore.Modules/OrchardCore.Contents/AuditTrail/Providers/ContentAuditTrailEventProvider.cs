@@ -57,6 +57,7 @@ namespace OrchardCore.Contents.AuditTrail.Providers
                     ContentItemId = contentItem.ContentItemId,
                     ContentItemVersionId = contentItem.ContentItemVersionId,
                     ContentType = contentItem.ContentType,
+                    DisplayText = contentItem.DisplayText
                 };
             }
 
