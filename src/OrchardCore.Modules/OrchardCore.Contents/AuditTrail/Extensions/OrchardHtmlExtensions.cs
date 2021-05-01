@@ -14,9 +14,9 @@ namespace OrchardCore.Contents.AuditTrail.Extensions
             string linkText,
             ContentItem contentItem)
         {
-            var urlHelperFactory = orchardHelper.HttpContext.RequestServices.GetService<IUrlHelperFactory>();
-            var viewContextAccessor = orchardHelper.HttpContext.RequestServices.GetService<ViewContextAccessor>();
-            var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
+            var urlHelperFactory = orchardHelper.HttpContext.RequestServices.GetRequiredService<IUrlHelperFactory>();
+            var viewContextAccessor = orchardHelper.HttpContext.RequestServices.GetRequiredService<ViewContextAccessor>();
+            var contentManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<IContentManager>();
 
             var urlHelper = urlHelperFactory.GetUrlHelper(viewContextAccessor.ViewContext);
             var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);

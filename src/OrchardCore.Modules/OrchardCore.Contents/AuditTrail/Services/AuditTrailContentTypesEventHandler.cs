@@ -10,11 +10,11 @@ using OrchardCore.Settings;
 namespace OrchardCore.AuditTrail.Services
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
-    public class AuditTrailContentTypesEvents : IAuditTrailContentEventHandler
+    public class AuditTrailContentTypesEventHandler : IAuditTrailContentEventHandler
     {
         private readonly ISiteService _siteService;
 
-        public AuditTrailContentTypesEvents(ISiteService siteService)
+        public AuditTrailContentTypesEventHandler(ISiteService siteService)
         {
             _siteService = siteService;
         }

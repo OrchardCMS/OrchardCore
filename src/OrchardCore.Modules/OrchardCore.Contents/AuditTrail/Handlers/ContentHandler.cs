@@ -18,7 +18,7 @@ using IYesSqlSession = YesSql.ISession;
 namespace OrchardCore.Contents.AuditTrail.Handlers
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
-    public class GlobalContentHandler : ContentHandlerBase, IAuditTrailContentHandler
+    public class ContentHandler : ContentHandlerBase, IAuditTrailContentHandler
     {
         private readonly IYesSqlSession _session;
         private readonly IAuditTrailManager _auditTrailManager;
@@ -28,12 +28,12 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
 
         private HashSet<string> _restoring = new HashSet<string>();
 
-        public GlobalContentHandler(
+        public ContentHandler(
             IYesSqlSession session,
             IAuditTrailManager auditTrailManager,
             IEnumerable<IAuditTrailContentEventHandler> auditTrailEvents,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<GlobalContentHandler> logger)
+            ILogger<ContentHandler> logger)
         {
             _session = session;
             _auditTrailEvents = auditTrailEvents;
@@ -81,7 +81,10 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
             await _auditTrailEvents.InvokeAsync((provider, context) =>
                 provider.BuildingAuditTrailEventAsync(context), buildingAuditTrailEventContext, _logger);
 
-            if (buildingAuditTrailEventContext.IsCanceled) return;
+            if (buildingAuditTrailEventContext.IsCanceled)
+            {
+                return;
+            }
 
             var versionNumber = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(contentItemIndex => contentItemIndex.ContentItemId == content.ContentItem.ContentItemId)

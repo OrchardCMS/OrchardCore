@@ -31,11 +31,11 @@ namespace OrchardCore.Contents.AuditTrail
         {
             services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
             services.AddScoped<IAuditTrailEventProvider, ContentAuditTrailEventProvider>();
-            services.AddScoped<IAuditTrailContentEventHandler, AuditTrailContentTypesEvents>();
+            services.AddScoped<IAuditTrailContentEventHandler, AuditTrailContentTypesEventHandler>();
 
-            services.AddScoped<GlobalContentHandler>();
-            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<GlobalContentHandler>());
-            services.AddScoped<IAuditTrailContentHandler>(sp => sp.GetRequiredService<GlobalContentHandler>());
+            services.AddScoped<ContentHandler>();
+            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<ContentHandler>());
+            services.AddScoped<IAuditTrailContentHandler>(sp => sp.GetRequiredService<ContentHandler>());
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
