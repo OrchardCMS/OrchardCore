@@ -6,7 +6,7 @@
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**
- * easymde v2.14.0
+ * easymde v2.15.0
  * Copyright Jeroen Akkerman
  * @link https://github.com/ionaru/easy-markdown-editor
  * @license MIT
@@ -2267,7 +2267,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           if (e.options.lineNumbers || o) {
             var a = dn(t),
                 l = t.gutter = T("div", null, "CodeMirror-gutter-wrapper", "left: " + (e.options.fixedGutter ? r.fixedPos : -r.gutterTotalWidth) + "px");
-            if (e.display.input.setUneditable(l), a.insertBefore(l, t.text), t.line.gutterClass && (l.className += " " + t.line.gutterClass), !e.options.lineNumbers || o && o["CodeMirror-linenumbers"] || (t.lineNumber = l.appendChild(T("div", Je(e.options, n), "CodeMirror-linenumber CodeMirror-gutter-elt", "left: " + r.gutterLeft["CodeMirror-linenumbers"] + "px; width: " + e.display.lineNumInnerWidth + "px"))), o) for (var s = 0; s < e.display.gutterSpecs.length; ++s) {
+            if (l.setAttribute("aria-hidden", "true"), e.display.input.setUneditable(l), a.insertBefore(l, t.text), t.line.gutterClass && (l.className += " " + t.line.gutterClass), !e.options.lineNumbers || o && o["CodeMirror-linenumbers"] || (t.lineNumber = l.appendChild(T("div", Je(e.options, n), "CodeMirror-linenumber CodeMirror-gutter-elt", "left: " + r.gutterLeft["CodeMirror-linenumbers"] + "px; width: " + e.display.lineNumInnerWidth + "px"))), o) for (var s = 0; s < e.display.gutterSpecs.length; ++s) {
               var u = e.display.gutterSpecs[s].className,
                   c = o.hasOwnProperty(u) && o[u];
               c && l.appendChild(T("div", [c], "CodeMirror-gutter-elt", "left: " + r.gutterLeft[u] + "px; width: " + r.gutterWidth[u] + "px"));
@@ -3704,7 +3704,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         function ui(e) {
           var t = e.gutters.offsetWidth;
-          e.sizer.style.marginLeft = t + "px";
+          e.sizer.style.marginLeft = t + "px", sn(e, "gutterChanged", e);
         }
 
         function ci(e, t) {
@@ -4040,7 +4040,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         function Hi(e) {
-          this.done = [], this.undone = [], this.undoDepth = 1 / 0, this.lastModTime = this.lastSelTime = 0, this.lastOp = this.lastSelOp = null, this.lastOrigin = this.lastSelOrigin = null, this.generation = this.maxGeneration = e || 1;
+          this.done = [], this.undone = [], this.undoDepth = e ? e.undoDepth : 1 / 0, this.lastModTime = this.lastSelTime = 0, this.lastOp = this.lastSelOp = null, this.lastOrigin = this.lastSelOrigin = null, this.generation = this.maxGeneration = e ? e.maxGeneration : 1;
         }
 
         function Ri(e, t) {
@@ -5030,7 +5030,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           setSelections: ni(function (e, t, n) {
             if (e.length) {
               for (var r = [], i = 0; i < e.length; i++) {
-                r[i] = new wi(lt(this, e[i].anchor), lt(this, e[i].head));
+                r[i] = new wi(lt(this, e[i].anchor), lt(this, e[i].head || e[i].anchor));
               }
 
               null == t && (t = Math.min(e.length - 1, this.sel.primIndex)), Ji(this, ki(this.cm, r, t), n);
@@ -5128,7 +5128,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           },
           clearHistory: function clearHistory() {
             var e = this;
-            this.history = new Hi(this.history.maxGeneration), Oi(this, function (t) {
+            this.history = new Hi(this.history), Oi(this, function (t) {
               return t.history = e.history;
             }, !0);
           },
@@ -5148,7 +5148,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             };
           },
           setHistory: function setHistory(e) {
-            var t = this.history = new Hi(this.history.maxGeneration);
+            var t = this.history = new Hi(this.history);
             t.done = Gi(e.done.slice(0), null, !0), t.undone = Gi(e.undone.slice(0), null, !0);
           },
           setGutterMarker: ni(function (e, t, n) {
@@ -5721,15 +5721,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           "Ctrl-B": "goCharLeft",
           "Ctrl-P": "goLineUp",
           "Ctrl-N": "goLineDown",
-          "Alt-F": "goWordRight",
-          "Alt-B": "goWordLeft",
           "Ctrl-A": "goLineStart",
           "Ctrl-E": "goLineEnd",
           "Ctrl-V": "goPageDown",
           "Shift-Ctrl-V": "goPageUp",
           "Ctrl-D": "delCharAfter",
           "Ctrl-H": "delCharBefore",
-          "Alt-D": "delWordAfter",
           "Alt-Backspace": "delWordBefore",
           "Ctrl-K": "killLine",
           "Ctrl-T": "transposeChars",
@@ -6925,14 +6922,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               var l = Ha(),
                   s = l.firstChild;
               r.display.lineSpace.insertBefore(l, r.display.lineSpace.firstChild), s.value = La.text.join("\n");
-              var u = document.activeElement;
+              var u = B();
               I(s), setTimeout(function () {
                 r.display.lineSpace.removeChild(l), u.focus(), u == i && n.showPrimarySelection();
               }, 50);
             }
           }
 
-          za(i, r.options.spellcheck, r.options.autocorrect, r.options.autocapitalize), de(i, "paste", function (e) {
+          i.contentEditable = !0, za(i, r.options.spellcheck, r.options.autocorrect, r.options.autocapitalize), de(i, "paste", function (e) {
             !o(e) || me(r, e) || Na(e, r) || l <= 11 && setTimeout(ei(r, function () {
               return t.updateFromDOM();
             }), 20);
@@ -6957,7 +6954,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           e ? this.div.setAttribute("aria-label", e) : this.div.removeAttribute("aria-label");
         }, _a.prototype.prepareSelection = function () {
           var e = vr(this.cm, !1);
-          return e.focus = document.activeElement == this.div, e;
+          return e.focus = B() == this.div, e;
         }, _a.prototype.showSelection = function (e, t) {
           e && this.cm.display.view.length && ((e.focus || t) && this.showPrimarySelection(), this.showMultipleSelections(e));
         }, _a.prototype.getSelection = function () {
@@ -7019,7 +7016,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           var t = e.getRangeAt(0).commonAncestorContainer;
           return M(this.div, t);
         }, _a.prototype.focus = function () {
-          "nocursor" != this.cm.options.readOnly && (this.selectionInEditor() && document.activeElement == this.div || this.showSelection(this.prepareSelection(), !0), this.div.focus());
+          "nocursor" != this.cm.options.readOnly && (this.selectionInEditor() && B() == this.div || this.showSelection(this.prepareSelection(), !0), this.div.focus());
         }, _a.prototype.blur = function () {
           this.div.blur();
         }, _a.prototype.getField = function () {
@@ -7396,7 +7393,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                 mo(e.doc, t, n[i], et(n[i].line, n[i].ch + t.length));
               }
             }
-          }), n("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200c\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (e, t, n) {
+          }), n("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (e, t, n) {
             e.state.specialChars = new RegExp(t.source + (t.test("\t") ? "" : "|\t"), "g"), n != Ca && e.refresh();
           }), n("specialCharPlaceholder", Qt, function (e) {
             return e.refresh();
@@ -7886,7 +7883,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return l;
         }, function (e) {
           e.off = fe, e.on = de, e.wheelEventPixels = bi, e.Doc = Mo, e.splitLines = Me, e.countColumn = R, e.findColumn = $, e.isWordChar = J, e.Pass = W, e.signal = pe, e.Line = Gt, e.changeEnd = Fi, e.scrollbarModel = qr, e.Pos = et, e.cmpPos = tt, e.modes = Ie, e.mimeModes = ze, e.resolveMode = Re, e.getMode = Pe, e.modeExtensions = _e, e.extendMode = We, e.copyState = je, e.startState = Ue, e.innerMode = qe, e.commands = ta, e.keyMap = qo, e.keyName = Xo, e.isModifierKey = Vo, e.lookupKey = Go, e.normalizeKeyMap = $o, e.StringStream = $e, e.SharedTextMarker = Ao, e.TextMarker = So, e.LineWidget = Co, e.e_preventDefault = ye, e.e_stopPropagation = be, e.e_stop = Ce, e.addClass = N, e.contains = M, e.rmClass = F, e.keyNames = Po;
-        }(Aa), Aa.version = "5.59.2", Aa;
+        }(Aa), Aa.version = "5.61.0", Aa;
       });
     }, {}],
     11: [function (e, t, n) {
@@ -8266,7 +8263,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
 
           function L(e, t) {
-            return e.eatSpace() ? null : (e.match(/^[^\s]+/, !0), void 0 === e.peek() ? t.linkTitle = !0 : e.match(/^(?:\s+(?:"(?:[^"\\]|\\\\|\\.)+"|'(?:[^'\\]|\\\\|\\.)+'|\((?:[^)\\]|\\\\|\\.)+\)))?/, !0), t.f = t.inline = k, o.linkHref + " url");
+            return e.eatSpace() ? null : (e.match(/^[^\s]+/, !0), void 0 === e.peek() ? t.linkTitle = !0 : e.match(/^(?:\s+(?:"(?:[^"\\]|\\.)+"|'(?:[^'\\]|\\.)+'|\((?:[^)\\]|\\.)+\)))?/, !0), t.f = t.inline = k, o.linkHref + " url");
           }
 
           var M = {
@@ -8716,7 +8713,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           name: "Julia",
           mime: "text/x-julia",
           mode: "julia",
-          ext: ["jl"]
+          ext: ["jl"],
+          alias: ["jl"]
         }, {
           name: "Kotlin",
           mime: "text/x-kotlin",
@@ -10001,35 +9999,36 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                   l,
                   s,
                   u,
-                  c = t[0],
-                  d = t[2],
-                  h = d.length > 1,
-                  f = {
+                  c,
+                  d = t[0],
+                  h = t[2],
+                  f = h.length > 1,
+                  p = {
                 type: "list",
-                raw: c,
-                ordered: h,
-                start: h ? +d.slice(0, -1) : "",
+                raw: d,
+                ordered: f,
+                start: f ? +h.slice(0, -1) : "",
                 loose: !1,
                 items: []
               },
-                  p = t[0].match(this.rules.block.item),
-                  m = !1,
-                  g = p.length;
-              i = this.rules.block.listItemStart.exec(p[0]);
+                  m = t[0].match(this.rules.block.item),
+                  g = !1,
+                  v = m.length;
+              i = this.rules.block.listItemStart.exec(m[0]);
 
-              for (var v = 0; v < g; v++) {
-                if (c = n = p[v], v !== g - 1) {
-                  if (o = this.rules.block.listItemStart.exec(p[v + 1]), this.options.pedantic ? o[1].length > i[1].length : o[1].length > i[0].length || o[1].length > 3) {
-                    p.splice(v, 2, p[v] + "\n" + p[v + 1]), v--, g--;
+              for (var x = 0; x < v; x++) {
+                if (d = n = m[x], this.options.pedantic || (c = n.match(new RegExp("\\n\\s*\\n {0," + (i[0].length - 1) + "}\\S"))) && (a = n.length - c.index + m.slice(x + 1).join("\n").length, p.raw = p.raw.substring(0, p.raw.length - a), d = n = n.substring(0, c.index), v = x + 1), x !== v - 1) {
+                  if (o = this.rules.block.listItemStart.exec(m[x + 1]), this.options.pedantic ? o[1].length > i[1].length : o[1].length >= i[0].length || o[1].length > 3) {
+                    m.splice(x, 2, m[x] + (!this.options.pedantic && o[1].length < i[0].length && !m[x].match(/\n$/) ? "" : "\n") + m[x + 1]), x--, v--;
                     continue;
                   }
 
-                  (!this.options.pedantic || this.options.smartLists ? o[2][o[2].length - 1] !== d[d.length - 1] : h === (1 === o[2].length)) && (a = p.slice(v + 1).join("\n"), f.raw = f.raw.substring(0, f.raw.length - a.length), v = g - 1), i = o;
+                  (!this.options.pedantic || this.options.smartLists ? o[2][o[2].length - 1] !== h[h.length - 1] : f === (1 === o[2].length)) && (a = m.slice(x + 1).join("\n").length, p.raw = p.raw.substring(0, p.raw.length - a), x = v - 1), i = o;
                 }
 
-                r = n.length, ~(n = n.replace(/^ *([*+-]|\d+[.)]) ?/, "")).indexOf("\n ") && (r -= n.length, n = this.options.pedantic ? n.replace(/^ {1,4}/gm, "") : n.replace(new RegExp("^ {1," + r + "}", "gm"), "")), l = m || /\n\n(?!\s*$)/.test(n), v !== g - 1 && (m = "\n" === n.charAt(n.length - 1), l || (l = m)), l && (f.loose = !0), this.options.gfm && (u = void 0, (s = /^\[[ xX]\] /.test(n)) && (u = " " !== n[1], n = n.replace(/^\[[ xX]\] +/, ""))), f.items.push({
+                r = n.length, ~(n = n.replace(/^ *([*+-]|\d+[.)]) ?/, "")).indexOf("\n ") && (r -= n.length, n = this.options.pedantic ? n.replace(/^ {1,4}/gm, "") : n.replace(new RegExp("^ {1," + r + "}", "gm"), "")), n = N(n, "\n"), x !== v - 1 && (d += "\n"), l = g || /\n\n(?!\s*$)/.test(d), x !== v - 1 && (g = "\n\n" === d.slice(-2), l || (l = g)), l && (p.loose = !0), this.options.gfm && (u = void 0, (s = /^\[[ xX]\] /.test(n)) && (u = " " !== n[1], n = n.replace(/^\[[ xX]\] +/, ""))), p.items.push({
                   type: "list_item",
-                  raw: c,
+                  raw: d,
                   task: s,
                   checked: u,
                   loose: l,
@@ -10037,7 +10036,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                 });
               }
 
-              return f;
+              return p;
             }
           }, t.html = function (e) {
             var t = this.rules.block.html.exec(e);
@@ -10050,6 +10049,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }, t.def = function (e) {
             var t = this.rules.block.def.exec(e);
             if (t) return t[3] && (t[3] = t[3].substring(1, t[3].length - 1)), {
+              type: "def",
               tag: t[1].toLowerCase().replace(/\s+/g, " "),
               raw: t[0],
               href: t[2],
@@ -10301,7 +10301,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           _title: /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/
         };
 
-        j.def = _(j.def).replace("label", j._label).replace("title", j._title).getRegex(), j.bullet = /(?:[*+-]|\d{1,9}[.)])/, j.item = /^( *)(bull) ?[^\n]*(?:\n(?! *bull ?)[^\n]*)*/, j.item = _(j.item, "gm").replace(/bull/g, j.bullet).getRegex(), j.listItemStart = _(/^( *)(bull)/).replace("bull", j.bullet).getRegex(), j.list = _(j.list).replace(/bull/g, j.bullet).replace("hr", "\\n+(?=\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$))").replace("def", "\\n+(?=" + j.def.source + ")").getRegex(), j._tag = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", j._comment = /<!--(?!-?>)[\s\S]*?(?:-->|$)/, j.html = _(j.html, "i").replace("comment", j._comment).replace("tag", j._tag).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), j.paragraph = _(j._paragraph).replace("hr", j.hr).replace("heading", " {0,3}#{1,6} ").replace("|lheading", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|!--)").replace("tag", j._tag).getRegex(), j.blockquote = _(j.blockquote).replace("paragraph", j.paragraph).getRegex(), j.normal = W({}, j), j.gfm = W({}, j.normal, {
+        j.def = _(j.def).replace("label", j._label).replace("title", j._title).getRegex(), j.bullet = /(?:[*+-]|\d{1,9}[.)])/, j.item = /^( *)(bull) ?[^\n]*(?:\n(?! *bull ?)[^\n]*)*/, j.item = _(j.item, "gm").replace(/bull/g, j.bullet).getRegex(), j.listItemStart = _(/^( *)(bull) */).replace("bull", j.bullet).getRegex(), j.list = _(j.list).replace(/bull/g, j.bullet).replace("hr", "\\n+(?=\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$))").replace("def", "\\n+(?=" + j.def.source + ")").getRegex(), j._tag = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul", j._comment = /<!--(?!-?>)[\s\S]*?(?:-->|$)/, j.html = _(j.html, "i").replace("comment", j._comment).replace("tag", j._tag).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex(), j.paragraph = _(j._paragraph).replace("hr", j.hr).replace("heading", " {0,3}#{1,6} ").replace("|lheading", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|!--)").replace("tag", j._tag).getRegex(), j.blockquote = _(j.blockquote).replace("paragraph", j.paragraph).getRegex(), j.normal = W({}, j), j.gfm = W({}, j.normal, {
           nptable: "^ *([^|\\n ].*\\|.*)\\n {0,3}([-:]+ *\\|[-| :]*)(?:\\n((?:(?!\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)",
           table: "^ *\\|(.+)\\n {0,3}\\|?( *[-:]+[-| :]*)(?:\\n *((?:(?!\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)"
         }), j.gfm.nptable = _(j.gfm.nptable).replace("hr", j.hr).replace("heading", " {0,3}#{1,6} ").replace("blockquote", " {0,3}>").replace("code", " {4}[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|!--)").replace("tag", j._tag).getRegex(), j.gfm.table = _(j.gfm.table).replace("hr", j.hr).replace("heading", " {0,3}#{1,6} ").replace("blockquote", " {0,3}>").replace("code", " {4}[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|!--)").replace("tag", j._tag).getRegex(), j.pedantic = W({}, j.normal, {
@@ -11360,28 +11360,28 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           a = /Mac/.test(navigator.platform),
           l = new RegExp(/(<a.*?https?:\/\/.*?[^a]>)+?/g),
           s = {
-        toggleBold: x,
-        toggleItalic: y,
-        drawLink: M,
-        toggleHeadingSmaller: w,
-        toggleHeadingBigger: k,
-        drawImage: B,
-        toggleBlockquote: C,
-        toggleOrderedList: T,
-        toggleUnorderedList: E,
-        toggleCodeBlock: D,
-        togglePreview: _,
-        toggleStrikethrough: b,
-        toggleHeading1: S,
-        toggleHeading2: F,
-        toggleHeading3: A,
-        cleanBlock: L,
-        drawTable: I,
-        drawHorizontalRule: z,
-        undo: H,
-        redo: R,
-        toggleSideBySide: P,
-        toggleFullScreen: v
+        toggleBold: C,
+        toggleItalic: w,
+        drawLink: I,
+        toggleHeadingSmaller: A,
+        toggleHeadingBigger: E,
+        drawImage: z,
+        toggleBlockquote: F,
+        toggleOrderedList: N,
+        toggleUnorderedList: B,
+        toggleCodeBlock: S,
+        togglePreview: U,
+        toggleStrikethrough: k,
+        toggleHeading1: T,
+        toggleHeading2: L,
+        toggleHeading3: M,
+        cleanBlock: O,
+        drawTable: P,
+        drawHorizontalRule: _,
+        undo: W,
+        redo: j,
+        toggleSideBySide: q,
+        toggleFullScreen: D
       },
           u = {
         toggleBold: "Cmd-B",
@@ -11409,8 +11409,28 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return e = a ? e.replace("Ctrl", "Cmd") : e.replace("Cmd", "Ctrl");
       }
 
-      function h(e, t, n, r) {
-        var i = f(e, !1, t, n, "button", r);
+      var h = {};
+
+      function f(e) {
+        return h[e] || (h[e] = new RegExp("\\s*" + e + "(\\s*)", "g"));
+      }
+
+      function p(e, t) {
+        if (e && t) {
+          var n = f(t);
+          e.className.match(n) || (e.className += " " + t);
+        }
+      }
+
+      function m(e, t) {
+        if (e && t) {
+          var n = f(t);
+          e.className.match(n) && (e.className = e.className.replace(n, "$1"));
+        }
+      }
+
+      function g(e, t, n, r) {
+        var i = v(e, !1, t, n, "button", r);
         i.className += " easymde-dropdown";
         var o = document.createElement("div");
         o.className = "easymde-dropdown-content";
@@ -11418,13 +11438,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         for (var a = 0; a < e.children.length; a++) {
           var l,
               s = e.children[a];
-          l = f("string" == typeof s && s in X ? X[s] : s, !0, t, n, "button", r), o.appendChild(l);
+          l = v("string" == typeof s && s in J ? J[s] : s, !0, t, n, "button", r), o.appendChild(l);
         }
 
         return i.appendChild(o), i;
       }
 
-      function f(e, t, n, r, i, o) {
+      function v(e, t, n, r, i, o) {
         e = e || {};
         var l = document.createElement(i);
         l.className = e.name, l.setAttribute("type", i), n = null == n || n, e.name && e.name in r && (s[e.name] = e.action), e.title && n && (l.title = function (e, t, n) {
@@ -11461,12 +11481,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         })), l;
       }
 
-      function p() {
+      function x() {
         var e = document.createElement("i");
         return e.className = "separator", e.innerHTML = "|", e;
       }
 
-      function m(e, t) {
+      function y(e, t) {
         t = t || e.getCursor("start");
         var n = e.getTokenAt(t);
         if (!n.type) return {};
@@ -11478,35 +11498,37 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return a;
       }
 
-      var g = "";
-
-      function v(e) {
-        var t = e.codemirror;
-
-        if (t.setOption("fullScreen", !t.getOption("fullScreen")), t.getOption("fullScreen") ? (g = document.body.style.overflow, document.body.style.overflow = "hidden") : document.body.style.overflow = g, !1 !== e.options.sideBySideFullscreen) {
-          var n = t.getWrapperElement().nextSibling;
-          /editor-preview-active-side/.test(n.className) && P(e);
-        }
-
-        if (e.options.onToggleFullScreen && e.options.onToggleFullScreen(t.getOption("fullScreen") || !1), void 0 !== e.options.maxHeight && (t.getOption("fullScreen") ? (t.getScrollerElement().style.removeProperty("height"), n.style.removeProperty("height")) : (t.getScrollerElement().style.height = e.options.maxHeight, e.setPreviewMaxHeight())), /fullscreen/.test(e.toolbar_div.className) ? e.toolbar_div.className = e.toolbar_div.className.replace(/\s*fullscreen\b/, "") : e.toolbar_div.className += " fullscreen", e.toolbarElements && e.toolbarElements.fullscreen) {
-          var r = e.toolbarElements.fullscreen;
-          /active/.test(r.className) ? r.className = r.className.replace(/\s*active\s*/g, "") : r.className += " active";
-        }
-      }
-
-      function x(e) {
-        U(e, "bold", e.options.blockStyles.bold);
-      }
-
-      function y(e) {
-        U(e, "italic", e.options.blockStyles.italic);
-      }
-
-      function b(e) {
-        U(e, "strikethrough", "~~");
-      }
+      var b = "";
 
       function D(e) {
+        var t = e.codemirror;
+        t.setOption("fullScreen", !t.getOption("fullScreen")), t.getOption("fullScreen") ? (b = document.body.style.overflow, document.body.style.overflow = "hidden") : document.body.style.overflow = b;
+        var n = t.getWrapperElement(),
+            r = n.nextSibling;
+        if (/editor-preview-active-side/.test(r.className)) if (!1 === e.options.sideBySideFullscreen) {
+          var i = n.parentNode;
+          t.getOption("fullScreen") ? m(i, "sided--no-fullscreen") : p(i, "sided--no-fullscreen");
+        } else q(e);
+
+        if (e.options.onToggleFullScreen && e.options.onToggleFullScreen(t.getOption("fullScreen") || !1), void 0 !== e.options.maxHeight && (t.getOption("fullScreen") ? (t.getScrollerElement().style.removeProperty("height"), r.style.removeProperty("height")) : (t.getScrollerElement().style.height = e.options.maxHeight, e.setPreviewMaxHeight())), /fullscreen/.test(e.toolbar_div.className) ? e.toolbar_div.className = e.toolbar_div.className.replace(/\s*fullscreen\b/, "") : e.toolbar_div.className += " fullscreen", e.toolbarElements && e.toolbarElements.fullscreen) {
+          var o = e.toolbarElements.fullscreen;
+          /active/.test(o.className) ? o.className = o.className.replace(/\s*active\s*/g, "") : o.className += " active";
+        }
+      }
+
+      function C(e) {
+        K(e, "bold", e.options.blockStyles.bold);
+      }
+
+      function w(e) {
+        K(e, "italic", e.options.blockStyles.italic);
+      }
+
+      function k(e) {
+        K(e, "strikethrough", "~~");
+      }
+
+      function S(e) {
         var t = e.options.blockStyles.code;
 
         function n(e) {
@@ -11652,50 +11674,50 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                 a = t.line !== n.line,
                 l = r + "\n",
                 s = "\n" + r;
-            a && o++, a && 0 === n.ch && (s = r + "\n", o--), W(e, !1, [l, s]), e.setSelection({
+            a && o++, a && 0 === n.ch && (s = r + "\n", o--), $(e, !1, [l, s]), e.setSelection({
               line: i,
               ch: 0
             }, {
               line: o,
               ch: 0
             });
-          }(s, u, c, t) : W(s, !1, ["`", "`"]);
+          }(s, u, c, t) : $(s, !1, ["`", "`"]);
         }
       }
 
-      function C(e) {
-        q(e.codemirror, "quote");
-      }
-
-      function w(e) {
-        j(e.codemirror, "smaller");
-      }
-
-      function k(e) {
-        j(e.codemirror, "bigger");
-      }
-
-      function S(e) {
-        j(e.codemirror, void 0, 1);
-      }
-
       function F(e) {
-        j(e.codemirror, void 0, 2);
+        V(e.codemirror, "quote");
       }
 
       function A(e) {
-        j(e.codemirror, void 0, 3);
+        G(e.codemirror, "smaller");
       }
 
       function E(e) {
-        q(e.codemirror, "unordered-list");
+        G(e.codemirror, "bigger");
       }
 
       function T(e) {
-        q(e.codemirror, "ordered-list");
+        G(e.codemirror, void 0, 1);
       }
 
       function L(e) {
+        G(e.codemirror, void 0, 2);
+      }
+
+      function M(e) {
+        G(e.codemirror, void 0, 3);
+      }
+
+      function B(e) {
+        V(e.codemirror, "unordered-list");
+      }
+
+      function N(e) {
+        V(e.codemirror, "ordered-list");
+      }
+
+      function O(e) {
         !function (e) {
           if (/editor-preview-active/.test(e.getWrapperElement().lastChild.className)) return;
 
@@ -11711,84 +11733,76 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }(e.codemirror);
       }
 
-      function M(e) {
+      function I(e) {
         var t = e.codemirror,
-            n = m(t),
+            n = y(t),
             r = e.options,
             i = "https://";
         if (r.promptURLs && !(i = prompt(r.promptTexts.link, "https://"))) return !1;
-        W(t, n.link, r.insertTexts.link, i);
+        $(t, n.link, r.insertTexts.link, i);
       }
 
-      function B(e) {
+      function z(e) {
         var t = e.codemirror,
-            n = m(t),
+            n = y(t),
             r = e.options,
             i = "https://";
         if (r.promptURLs && !(i = prompt(r.promptTexts.image, "https://"))) return !1;
-        W(t, n.image, r.insertTexts.image, i);
+        $(t, n.image, r.insertTexts.image, i);
       }
 
-      function N(e) {
+      function H(e) {
         e.openBrowseFileWindow();
       }
 
-      function O(e, t) {
+      function R(e, t) {
         var n = e.codemirror,
-            r = m(n),
+            r = y(n),
             i = e.options,
             o = t.substr(t.lastIndexOf("/") + 1),
-            a = o.substring(o.lastIndexOf(".") + 1);
-        if (["png", "jpg", "jpeg", "gif", "svg"].includes(a)) W(n, r.image, i.insertTexts.uploadedImage, t);else {
+            a = o.substring(o.lastIndexOf(".") + 1).replace(/\?.*$/, "");
+        if (["png", "jpg", "jpeg", "gif", "svg"].includes(a)) $(n, r.image, i.insertTexts.uploadedImage, t);else {
           var l = i.insertTexts.link;
-          l[0] = "[" + o, W(n, r.link, l, t);
+          l[0] = "[" + o, $(n, r.link, l, t);
         }
         e.updateStatusBar("upload-image", e.options.imageTexts.sbOnUploaded.replace("#image_name#", o)), setTimeout(function () {
           e.updateStatusBar("upload-image", e.options.imageTexts.sbInit);
         }, 1e3);
       }
 
-      function I(e) {
+      function P(e) {
         var t = e.codemirror,
-            n = m(t),
+            n = y(t),
             r = e.options;
-        W(t, n.table, r.insertTexts.table);
+        $(t, n.table, r.insertTexts.table);
       }
 
-      function z(e) {
+      function _(e) {
         var t = e.codemirror,
-            n = m(t),
+            n = y(t),
             r = e.options;
-        W(t, n.image, r.insertTexts.horizontalRule);
+        $(t, n.image, r.insertTexts.horizontalRule);
       }
 
-      function H(e) {
+      function W(e) {
         var t = e.codemirror;
         t.undo(), t.focus();
       }
 
-      function R(e) {
+      function j(e) {
         var t = e.codemirror;
         t.redo(), t.focus();
       }
 
-      function P(e) {
+      function q(e) {
         var t = e.codemirror,
             n = t.getWrapperElement(),
             r = n.nextSibling,
             i = e.toolbarElements && e.toolbarElements["side-by-side"],
             o = !1,
-            a = [n.parentNode, e.gui.toolbar, n, r, e.gui.statusbar];
-        /editor-preview-active-side/.test(r.className) ? (t.getOption("sideBySideNoFullscreen") && (t.setOption("sideBySideNoFullscreen", !1), a.forEach(function (e) {
-          !function (e) {
-            null != e && (e.className = e.className.replace(/\s*sided--no-fullscreen\s*/g, ""));
-          }(e);
-        })), r.className = r.className.replace(/\s*editor-preview-active-side\s*/g, ""), i && (i.className = i.className.replace(/\s*active\s*/g, "")), n.className = n.className.replace(/\s*CodeMirror-sided\s*/g, " ")) : (setTimeout(function () {
-          t.getOption("fullScreen") || (!1 === e.options.sideBySideFullscreen ? (t.setOption("sideBySideNoFullscreen", !0), a.forEach(function (e) {
-            null != e && function (e) {
-              e.className += " sided--no-fullscreen";
-            }(e);
-          })) : v(e)), r.className += " editor-preview-active-side";
+            a = n.parentNode;
+        /editor-preview-active-side/.test(r.className) ? (!1 === e.options.sideBySideFullscreen && m(a, "sided--no-fullscreen"), r.className = r.className.replace(/\s*editor-preview-active-side\s*/g, ""), i && (i.className = i.className.replace(/\s*active\s*/g, "")), n.className = n.className.replace(/\s*CodeMirror-sided\s*/g, " ")) : (setTimeout(function () {
+          t.getOption("fullScreen") || (!1 === e.options.sideBySideFullscreen ? p(a, "sided--no-fullscreen") : D(e)), r.className += " editor-preview-active-side";
         }, 1), i && (i.className += " active"), n.className += " CodeMirror-sided", o = !0);
         var l = n.lastChild;
 
@@ -11810,7 +11824,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         t.refresh();
       }
 
-      function _(e) {
+      function U(e) {
         var t = e.codemirror,
             n = t.getWrapperElement(),
             r = e.toolbar_div,
@@ -11818,7 +11832,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             o = n.lastChild,
             a = t.getWrapperElement().nextSibling;
 
-        if (/editor-preview-active-side/.test(a.className) && P(e), !o || !/editor-preview-full/.test(o.className)) {
+        if (/editor-preview-active-side/.test(a.className) && q(e), !o || !/editor-preview-full/.test(o.className)) {
           if ((o = document.createElement("div")).className = "editor-preview-full", e.options.previewClass) if (Array.isArray(e.options.previewClass)) for (var l = 0; l < e.options.previewClass.length; l++) {
             o.className += " " + e.options.previewClass[l];
           } else "string" == typeof e.options.previewClass && (o.className += " " + e.options.previewClass);
@@ -11830,7 +11844,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }, 1), i && (i.className += " active", r.className += " disabled-for-preview")), o.innerHTML = e.options.previewRender(e.value(), o);
       }
 
-      function W(e, t, n, r) {
+      function $(e, t, n, r) {
         if (!/editor-preview-active/.test(e.getWrapperElement().lastChild.className)) {
           var i,
               o = n[0],
@@ -11844,7 +11858,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       }
 
-      function j(e, t, n) {
+      function G(e, t, n) {
         if (!/editor-preview-active/.test(e.getWrapperElement().lastChild.className)) {
           for (var r = e.getCursor("start"), i = e.getCursor("end"), o = r.line; o <= i.line; o++) {
             !function (r) {
@@ -11864,9 +11878,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       }
 
-      function q(e, t) {
+      function V(e, t) {
         if (!/editor-preview-active/.test(e.getWrapperElement().lastChild.className)) {
-          for (var n = /^(\s*)(\*|-|\+|\d*\.)(\s+)/, r = /^\s*/, i = m(e), o = e.getCursor("start"), a = e.getCursor("end"), l = {
+          for (var n = /^(\s*)(\*|-|\+|\d*\.)(\s+)/, r = /^\s*/, i = y(e), o = e.getCursor("start"), a = e.getCursor("end"), l = {
             quote: /^(\s*)>\s+/,
             "unordered-list": n,
             "ordered-list": n
@@ -11905,12 +11919,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       }
 
-      function U(e, t, n, r) {
+      function K(e, t, n, r) {
         if (!/editor-preview-active/.test(e.codemirror.getWrapperElement().lastChild.className)) {
           r = void 0 === r ? n : r;
           var i,
               o = e.codemirror,
-              a = m(o),
+              a = y(o),
               l = n,
               s = r,
               u = o.getCursor("start"),
@@ -11925,7 +11939,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       }
 
-      function $(e, t) {
+      function X(e, t) {
         if (Math.abs(e) < 1024) return "" + e + t[0];
         var n = 0;
 
@@ -11936,23 +11950,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return "" + e.toFixed(1) + t[n];
       }
 
-      function G(e, t) {
+      function Z(e, t) {
         for (var n in t) {
-          Object.prototype.hasOwnProperty.call(t, n) && (t[n] instanceof Array ? e[n] = t[n].concat(e[n] instanceof Array ? e[n] : []) : null !== t[n] && "object" == _typeof(t[n]) && t[n].constructor === Object ? e[n] = G(e[n] || {}, t[n]) : e[n] = t[n]);
+          Object.prototype.hasOwnProperty.call(t, n) && (t[n] instanceof Array ? e[n] = t[n].concat(e[n] instanceof Array ? e[n] : []) : null !== t[n] && "object" == _typeof(t[n]) && t[n].constructor === Object ? e[n] = Z(e[n] || {}, t[n]) : e[n] = t[n]);
         }
 
         return e;
       }
 
-      function V(e) {
+      function Y(e) {
         for (var t = 1; t < arguments.length; t++) {
-          e = G(e, arguments[t]);
+          e = Z(e, arguments[t]);
         }
 
         return e;
       }
 
-      function K(e) {
+      function Q(e) {
         var t = e.match(/[a-zA-Z0-9_\u00A0-\u02AF\u0392-\u03c9\u0410-\u04F9]+|[\u4E00-\u9FFF\u3400-\u4dbf\uf900-\ufaff\u3040-\u309f\uac00-\ud7af]+/g),
             n = 0;
         if (null === t) return n;
@@ -11964,61 +11978,61 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return n;
       }
 
-      var X = {
+      var J = {
         bold: {
           name: "bold",
-          action: x,
+          action: C,
           className: "fa fa-bold",
           title: "Bold",
           "default": !0
         },
         italic: {
           name: "italic",
-          action: y,
+          action: w,
           className: "fa fa-italic",
           title: "Italic",
           "default": !0
         },
         strikethrough: {
           name: "strikethrough",
-          action: b,
+          action: k,
           className: "fa fa-strikethrough",
           title: "Strikethrough"
         },
         heading: {
           name: "heading",
-          action: w,
+          action: A,
           className: "fa fa-header fa-heading",
           title: "Heading",
           "default": !0
         },
         "heading-smaller": {
           name: "heading-smaller",
-          action: w,
+          action: A,
           className: "fa fa-header fa-heading header-smaller",
           title: "Smaller Heading"
         },
         "heading-bigger": {
           name: "heading-bigger",
-          action: k,
+          action: E,
           className: "fa fa-header fa-heading header-bigger",
           title: "Bigger Heading"
         },
         "heading-1": {
           name: "heading-1",
-          action: S,
+          action: T,
           className: "fa fa-header fa-heading header-1",
           title: "Big Heading"
         },
         "heading-2": {
           name: "heading-2",
-          action: F,
+          action: L,
           className: "fa fa-header fa-heading header-2",
           title: "Medium Heading"
         },
         "heading-3": {
           name: "heading-3",
-          action: A,
+          action: M,
           className: "fa fa-header fa-heading header-3",
           title: "Small Heading"
         },
@@ -12027,34 +12041,34 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         },
         code: {
           name: "code",
-          action: D,
+          action: S,
           className: "fa fa-code",
           title: "Code"
         },
         quote: {
           name: "quote",
-          action: C,
+          action: F,
           className: "fa fa-quote-left",
           title: "Quote",
           "default": !0
         },
         "unordered-list": {
           name: "unordered-list",
-          action: E,
+          action: B,
           className: "fa fa-list-ul",
           title: "Generic List",
           "default": !0
         },
         "ordered-list": {
           name: "ordered-list",
-          action: T,
+          action: N,
           className: "fa fa-list-ol",
           title: "Numbered List",
           "default": !0
         },
         "clean-block": {
           name: "clean-block",
-          action: L,
+          action: O,
           className: "fa fa-eraser",
           title: "Clean block"
         },
@@ -12063,33 +12077,33 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         },
         link: {
           name: "link",
-          action: M,
+          action: I,
           className: "fa fa-link",
           title: "Create Link",
           "default": !0
         },
         image: {
           name: "image",
-          action: B,
+          action: z,
           className: "fa fa-image",
           title: "Insert Image",
           "default": !0
         },
         "upload-image": {
           name: "upload-image",
-          action: N,
+          action: H,
           className: "fa fa-image",
           title: "Import an image"
         },
         table: {
           name: "table",
-          action: I,
+          action: P,
           className: "fa fa-table",
           title: "Insert Table"
         },
         "horizontal-rule": {
           name: "horizontal-rule",
-          action: z,
+          action: _,
           className: "fa fa-minus",
           title: "Insert Horizontal Line"
         },
@@ -12098,7 +12112,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         },
         preview: {
           name: "preview",
-          action: _,
+          action: U,
           className: "fa fa-eye",
           noDisable: !0,
           title: "Toggle Preview",
@@ -12106,7 +12120,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         },
         "side-by-side": {
           name: "side-by-side",
-          action: P,
+          action: q,
           className: "fa fa-columns",
           noDisable: !0,
           noMobile: !0,
@@ -12115,7 +12129,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         },
         fullscreen: {
           name: "fullscreen",
-          action: v,
+          action: D,
           className: "fa fa-arrows-alt",
           noDisable: !0,
           noMobile: !0,
@@ -12138,43 +12152,43 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         },
         undo: {
           name: "undo",
-          action: H,
+          action: W,
           className: "fa fa-undo",
           noDisable: !0,
           title: "Undo"
         },
         redo: {
           name: "redo",
-          action: R,
+          action: j,
           className: "fa fa-repeat fa-redo",
           noDisable: !0,
           title: "Redo"
         }
       },
-          Z = {
+          ee = {
         link: ["[", "](#url#)"],
         image: ["![](", "#url#)"],
         uploadedImage: ["![](#url#)", ""],
         table: ["", "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text     | Text     |\n\n"],
         horizontalRule: ["", "\n\n-----\n\n"]
       },
-          Y = {
+          te = {
         link: "URL for the link:",
         image: "URL of the image:"
       },
-          Q = {
+          ne = {
         locale: "en-US",
         format: {
           hour: "2-digit",
           minute: "2-digit"
         }
       },
-          J = {
+          re = {
         bold: "**",
         code: "```",
         italic: "*"
       },
-          ee = {
+          ie = {
         sbInit: "Attach files by drag and dropping or pasting from clipboard.",
         sbOnDragEnter: "Drop image to upload it.",
         sbOnDrop: "Uploading image #images_names#...",
@@ -12182,14 +12196,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         sbOnUploaded: "Uploaded #image_name#",
         sizeUnits: " B, KB, MB"
       },
-          te = {
+          oe = {
         noFileGiven: "You must select a file.",
         typeNotAllowed: "This image type is not allowed.",
         fileTooLarge: "Image #image_name# is too big (#image_size#).\nMaximum file size is #image_max_size#.",
         importError: "Something went wrong when uploading the image #image_name#."
       };
 
-      function ne(e) {
+      function ae(e) {
         (e = e || {}).parent = this;
         var t = !0;
         if (!1 === e.autoDownloadFontAwesome && (t = !1), !0 !== e.autoDownloadFontAwesome) for (var n = document.styleSheets, r = 0; r < n.length; r++) {
@@ -12202,17 +12216,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         if (e.element) this.element = e.element;else if (null === e.element) return void console.log("EasyMDE: Error. No element was found.");
-        if (void 0 === e.toolbar) for (var o in e.toolbar = [], X) {
-          Object.prototype.hasOwnProperty.call(X, o) && (-1 != o.indexOf("separator-") && e.toolbar.push("|"), (!0 === X[o]["default"] || e.showIcons && e.showIcons.constructor === Array && -1 != e.showIcons.indexOf(o)) && e.toolbar.push(o));
+        if (void 0 === e.toolbar) for (var o in e.toolbar = [], J) {
+          Object.prototype.hasOwnProperty.call(J, o) && (-1 != o.indexOf("separator-") && e.toolbar.push("|"), (!0 === J[o]["default"] || e.showIcons && e.showIcons.constructor === Array && -1 != e.showIcons.indexOf(o)) && e.toolbar.push(o));
         }
 
         if (Object.prototype.hasOwnProperty.call(e, "previewClass") || (e.previewClass = "editor-preview"), Object.prototype.hasOwnProperty.call(e, "status") || (e.status = ["autosave", "lines", "words", "cursor"], e.uploadImage && e.status.unshift("upload-image")), e.previewRender || (e.previewRender = function (e) {
           return this.parent.markdown(e);
-        }), e.parsingConfig = V({
+        }), e.parsingConfig = Y({
           highlightFormatting: !0
-        }, e.parsingConfig || {}), e.insertTexts = V({}, Z, e.insertTexts || {}), e.promptTexts = V({}, Y, e.promptTexts || {}), e.blockStyles = V({}, J, e.blockStyles || {}), null != e.autosave && (e.autosave.timeFormat = V({}, Q, e.autosave.timeFormat || {})), e.shortcuts = V({}, u, e.shortcuts || {}), e.maxHeight = e.maxHeight || void 0, void 0 !== e.maxHeight ? e.minHeight = e.maxHeight : e.minHeight = e.minHeight || "300px", e.errorCallback = e.errorCallback || function (e) {
+        }, e.parsingConfig || {}), e.insertTexts = Y({}, ee, e.insertTexts || {}), e.promptTexts = Y({}, te, e.promptTexts || {}), e.blockStyles = Y({}, re, e.blockStyles || {}), null != e.autosave && (e.autosave.timeFormat = Y({}, ne, e.autosave.timeFormat || {})), e.shortcuts = Y({}, u, e.shortcuts || {}), e.maxHeight = e.maxHeight || void 0, void 0 !== e.maxHeight ? e.minHeight = e.maxHeight : e.minHeight = e.minHeight || "300px", e.errorCallback = e.errorCallback || function (e) {
           alert(e);
-        }, e.uploadImage = e.uploadImage || !1, e.imageMaxSize = e.imageMaxSize || 2097152, e.imageAccept = e.imageAccept || "image/png, image/jpeg", e.imageTexts = V({}, ee, e.imageTexts || {}), e.errorMessages = V({}, te, e.errorMessages || {}), null != e.autosave && null != e.autosave.unique_id && "" != e.autosave.unique_id && (e.autosave.uniqueId = e.autosave.unique_id), e.overlayMode && void 0 === e.overlayMode.combine && (e.overlayMode.combine = !0), this.options = e, this.render(), !e.initialValue || this.options.autosave && !0 === this.options.autosave.foundSavedValue || this.value(e.initialValue), e.uploadImage) {
+        }, e.uploadImage = e.uploadImage || !1, e.imageMaxSize = e.imageMaxSize || 2097152, e.imageAccept = e.imageAccept || "image/png, image/jpeg", e.imageTexts = Y({}, ie, e.imageTexts || {}), e.errorMessages = Y({}, oe, e.errorMessages || {}), null != e.autosave && null != e.autosave.unique_id && "" != e.autosave.unique_id && (e.autosave.uniqueId = e.autosave.unique_id), e.overlayMode && void 0 === e.overlayMode.combine && (e.overlayMode.combine = !0), this.options = e, this.render(), !e.initialValue || this.options.autosave && !0 === this.options.autosave.foundSavedValue || this.value(e.initialValue), e.uploadImage) {
           var a = this;
           this.codemirror.on("dragenter", function (e, t) {
             a.updateStatusBar("upload-image", a.options.imageTexts.sbOnDragEnter), t.stopPropagation(), t.preventDefault();
@@ -12230,7 +12244,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       }
 
-      function re() {
+      function le() {
         if ("object" != (typeof localStorage === "undefined" ? "undefined" : _typeof(localStorage))) return !1;
 
         try {
@@ -12242,7 +12256,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return !0;
       }
 
-      ne.prototype.uploadImages = function (e, t, n) {
+      ae.prototype.uploadImages = function (e, t, n) {
         if (0 !== e.length) {
           for (var r = [], i = 0; i < e.length; i++) {
             r.push(e[i].name), this.uploadImage(e[i], t, n);
@@ -12250,7 +12264,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
           this.updateStatusBar("upload-image", this.options.imageTexts.sbOnDrop.replace("#images_names#", r.join(", ")));
         }
-      }, ne.prototype.uploadImagesUsingCustomFunction = function (e, t) {
+      }, ae.prototype.uploadImagesUsingCustomFunction = function (e, t) {
         if (0 !== t.length) {
           for (var n = [], r = 0; r < t.length; r++) {
             n.push(t[r].name), this.uploadImageUsingCustomFunction(e, t[r]);
@@ -12258,12 +12272,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
           this.updateStatusBar("upload-image", this.options.imageTexts.sbOnDrop.replace("#images_names#", n.join(", ")));
         }
-      }, ne.prototype.updateStatusBar = function (e, t) {
+      }, ae.prototype.updateStatusBar = function (e, t) {
         if (this.gui.statusbar) {
           var n = this.gui.statusbar.getElementsByClassName(e);
           1 === n.length ? this.gui.statusbar.getElementsByClassName(e)[0].textContent = t : 0 === n.length ? console.log("EasyMDE: status bar item " + e + " was not found.") : console.log("EasyMDE: Several status bar items named " + e + " was found.");
         }
-      }, ne.prototype.markdown = function (e) {
+      }, ae.prototype.markdown = function (e) {
         if (o) {
           var t;
 
@@ -12298,7 +12312,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             return e;
           }(r));
         }
-      }, ne.prototype.render = function (e) {
+      }, ae.prototype.render = function (e) {
         if (e || (e = this.element || document.getElementsByTagName("textarea")[0]), !this._rendered || this._rendered !== e) {
           this.element = e;
           var t,
@@ -12317,9 +12331,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
 
           if (l.Enter = "newlineAndIndentContinueMarkdownList", l.Tab = "tabAndIndentMarkdownList", l["Shift-Tab"] = "shiftTabAndUnindentMarkdownList", l.Esc = function (e) {
-            e.getOption("fullScreen") && v(a);
+            e.getOption("fullScreen") && D(a);
           }, this.documentOnKeyDown = function (e) {
-            27 == (e = e || window.event).keyCode && a.codemirror.getOption("fullScreen") && v(a);
+            27 == (e = e || window.event).keyCode && a.codemirror.getOption("fullScreen") && D(a);
           }, document.addEventListener("keydown", this.documentOnKeyDown, !1), o.overlayMode ? (r.defineMode("overlay-mode", function (e) {
             return r.overlayMode(r.getMode(e, !1 !== o.spellChecker ? "spell-checker" : "gfm"), o.overlayMode.mode, o.overlayMode.combine);
           }), t = "overlay-mode", (n = o.parsingConfig).gitHubSpice = !1) : ((t = o.parsingConfig).name = "gfm", t.gitHubSpice = !1), !1 !== o.spellChecker && (t = "spell-checker", (n = o.parsingConfig).name = "gfm", n.gitHubSpice = !1, i({
@@ -12373,14 +12387,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
                 if (window.EMDEimagesCache || (window.EMDEimagesCache = {}), n && n.length >= 2) {
                   var r = n[1];
-                  if (window.EMDEimagesCache[r]) x(t, window.EMDEimagesCache[r]);else {
+                  if (window.EMDEimagesCache[r]) v(t, window.EMDEimagesCache[r]);else {
                     var i = document.createElement("img");
                     i.onload = function () {
                       window.EMDEimagesCache[r] = {
                         naturalWidth: i.naturalWidth,
                         naturalHeight: i.naturalHeight,
                         url: r
-                      }, x(t, window.EMDEimagesCache[r]);
+                      }, v(t, window.EMDEimagesCache[r]);
                     }, i.src = r;
                   }
                 }
@@ -12393,14 +12407,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }.bind(g), 0);
         }
 
-        function x(e, t) {
+        function v(e, t) {
           var n, r;
           e.setAttribute("data-img-src", t.url), e.setAttribute("style", "--bg-image:url(" + t.url + ");--width:" + t.naturalWidth + "px;--height:" + (n = t.naturalWidth, r = t.naturalHeight, n < window.getComputedStyle(document.querySelector(".CodeMirror-sizer")).width.replace("px", "") ? r + "px" : r / n * 100 + "%")), m.codemirror.setSize();
         }
-      }, ne.prototype.cleanup = function () {
+      }, ae.prototype.cleanup = function () {
         document.removeEventListener("keydown", this.documentOnKeyDown);
-      }, ne.prototype.autosave = function () {
-        if (re()) {
+      }, ae.prototype.autosave = function () {
+        if (le()) {
           var e = this;
           if (null == this.options.autosave.uniqueId || "" == this.options.autosave.uniqueId) return void console.log("EasyMDE: You must set a uniqueId to use the autosave feature");
           !0 !== this.options.autosave.binded && (null != e.element.form && null != e.element.form && e.element.form.addEventListener("submit", function () {
@@ -12417,18 +12431,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             n.innerHTML = o + i;
           }
         } else console.log("EasyMDE: localStorage not available, cannot autosave");
-      }, ne.prototype.clearAutosavedValue = function () {
-        if (re()) {
+      }, ae.prototype.clearAutosavedValue = function () {
+        if (le()) {
           if (null == this.options.autosave || null == this.options.autosave.uniqueId || "" == this.options.autosave.uniqueId) return void console.log("EasyMDE: You must set a uniqueId to clear the autosave value");
           localStorage.removeItem("smde_" + this.options.autosave.uniqueId);
         } else console.log("EasyMDE: localStorage not available, cannot autosave");
-      }, ne.prototype.openBrowseFileWindow = function (e, t) {
+      }, ae.prototype.openBrowseFileWindow = function (e, t) {
         var n = this,
             r = this.gui.toolbar.getElementsByClassName("imageInput")[0];
         r.click(), r.addEventListener("change", function i(o) {
           n.options.imageUploadFunction ? n.uploadImagesUsingCustomFunction(n.options.imageUploadFunction, o.target.files) : n.uploadImages(o.target.files, e, t), r.removeEventListener("change", i);
         });
-      }, ne.prototype.uploadImage = function (e, t, n) {
+      }, ae.prototype.uploadImage = function (e, t, n) {
         var r = this;
 
         function i(e) {
@@ -12439,11 +12453,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         function o(t) {
           var n = r.options.imageTexts.sizeUnits.split(",");
-          return t.replace("#image_name#", e.name).replace("#image_size#", $(e.size, n)).replace("#image_max_size#", $(r.options.imageMaxSize, n));
+          return t.replace("#image_name#", e.name).replace("#image_size#", X(e.size, n)).replace("#image_max_size#", X(r.options.imageMaxSize, n));
         }
 
         if (t = t || function (e) {
-          O(r, e);
+          R(r, e);
         }, e.size > this.options.imageMaxSize) i(o(this.options.errorMessages.fileTooLarge));else {
           var a = new FormData();
           a.append("image", e), r.options.imageCSRFToken && a.append("csrfmiddlewaretoken", r.options.imageCSRFToken);
@@ -12460,33 +12474,33 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               return console.error("EasyMDE: The server did not return a valid json."), void i(o(r.options.errorMessages.importError));
             }
 
-            200 === this.status && e && !e.error && e.data && e.data.filePath ? t(window.location.origin + "/" + e.data.filePath) : e.error && e.error in r.options.errorMessages ? i(o(r.options.errorMessages[e.error])) : e.error ? i(o(e.error)) : (console.error("EasyMDE: Received an unexpected response after uploading the image." + this.status + " (" + this.statusText + ")"), i(o(r.options.errorMessages.importError)));
+            200 === this.status && e && !e.error && e.data && e.data.filePath ? t((r.options.imagePathAbsolute ? "" : window.location.origin + "/") + e.data.filePath) : e.error && e.error in r.options.errorMessages ? i(o(r.options.errorMessages[e.error])) : e.error ? i(o(e.error)) : (console.error("EasyMDE: Received an unexpected response after uploading the image." + this.status + " (" + this.statusText + ")"), i(o(r.options.errorMessages.importError)));
           }, l.onerror = function (e) {
             console.error("EasyMDE: An unexpected error occurred when trying to upload the image." + e.target.status + " (" + e.target.statusText + ")"), i(r.options.errorMessages.importError);
           }, l.send(a);
         }
-      }, ne.prototype.uploadImageUsingCustomFunction = function (e, t) {
+      }, ae.prototype.uploadImageUsingCustomFunction = function (e, t) {
         var n = this;
         e.apply(this, [t, function (e) {
-          O(n, e);
+          R(n, e);
         }, function (e) {
           var r = function (e) {
             var r = n.options.imageTexts.sizeUnits.split(",");
-            return e.replace("#image_name#", t.name).replace("#image_size#", $(t.size, r)).replace("#image_max_size#", $(n.options.imageMaxSize, r));
+            return e.replace("#image_name#", t.name).replace("#image_size#", X(t.size, r)).replace("#image_max_size#", X(n.options.imageMaxSize, r));
           }(e);
 
           n.updateStatusBar("upload-image", r), setTimeout(function () {
             n.updateStatusBar("upload-image", n.options.imageTexts.sbInit);
           }, 1e4), n.options.errorCallback(r);
         }]);
-      }, ne.prototype.setPreviewMaxHeight = function () {
+      }, ae.prototype.setPreviewMaxHeight = function () {
         var e = this.codemirror.getWrapperElement(),
             t = e.nextSibling,
             n = parseInt(window.getComputedStyle(e).paddingTop),
             r = parseInt(window.getComputedStyle(e).borderTopWidth),
             i = (parseInt(this.options.maxHeight) + 2 * n + 2 * r).toString() + "px";
         t.style.height = i;
-      }, ne.prototype.createSideBySide = function () {
+      }, ae.prototype.createSideBySide = function () {
         var e = this.codemirror,
             t = e.getWrapperElement(),
             n = t.nextSibling;
@@ -12518,12 +12532,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             e.scrollTo(0, a);
           }
         }, n;
-      }, ne.prototype.createToolbar = function (e) {
+      }, ae.prototype.createToolbar = function (e) {
         if ((e = e || this.options.toolbar) && 0 !== e.length) {
           var t;
 
           for (t = 0; t < e.length; t++) {
-            null != X[e[t]] && (e[t] = X[e[t]]);
+            null != J[e[t]] && (e[t] = J[e[t]]);
           }
 
           var n = document.createElement("div");
@@ -12544,7 +12558,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               !function (e) {
                 var t;
 
-                if (t = "|" === e ? p() : e.children ? h(e, r.options.toolbarTips, r.options.shortcuts, r) : f(e, !0, r.options.toolbarTips, r.options.shortcuts, "button", r), i[e.name || e] = t, n.appendChild(t), "upload-image" === e.name) {
+                if (t = "|" === e ? x() : e.children ? g(e, r.options.toolbarTips, r.options.shortcuts, r) : v(e, !0, r.options.toolbarTips, r.options.shortcuts, "button", r), i[e.name || e] = t, n.appendChild(t), "upload-image" === e.name) {
                   var o = document.createElement("input");
                   o.className = "imageInput", o.type = "file", o.multiple = !0, o.name = "image", o.accept = r.options.imageAccept, o.style.display = "none", o.style.opacity = 0, n.appendChild(o);
                 }
@@ -12555,7 +12569,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           r.toolbar_div = n, r.toolbarElements = i;
           var l = this.codemirror;
           l.on("cursorActivity", function () {
-            var e = m(l);
+            var e = y(l);
 
             for (var t in i) {
               !function (t) {
@@ -12567,7 +12581,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           var s = l.getWrapperElement();
           return s.parentNode.insertBefore(n, s), n;
         }
-      }, ne.prototype.createStatusbar = function (e) {
+      }, ae.prototype.createStatusbar = function (e) {
         e = e || this.options.status;
         var t = this.options,
             n = this.codemirror;
@@ -12588,9 +12602,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             });else {
               var s = e[r];
               "words" === s ? (a = function a(e) {
-                e.innerHTML = K(n.getValue());
+                e.innerHTML = Q(n.getValue());
               }, i = function i(e) {
-                e.innerHTML = K(n.getValue());
+                e.innerHTML = Q(n.getValue());
               }) : "lines" === s ? (a = function a(e) {
                 e.innerHTML = n.lineCount();
               }, i = function i(e) {
@@ -12632,7 +12646,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           var h = this.codemirror.getWrapperElement();
           return h.parentNode.insertBefore(u, h.nextSibling), u;
         }
-      }, ne.prototype.value = function (e) {
+      }, ae.prototype.value = function (e) {
         var t = this.codemirror;
         if (void 0 === e) return t.getValue();
 
@@ -12642,68 +12656,68 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         return this;
-      }, ne.toggleBold = x, ne.toggleItalic = y, ne.toggleStrikethrough = b, ne.toggleBlockquote = C, ne.toggleHeadingSmaller = w, ne.toggleHeadingBigger = k, ne.toggleHeading1 = S, ne.toggleHeading2 = F, ne.toggleHeading3 = A, ne.toggleCodeBlock = D, ne.toggleUnorderedList = E, ne.toggleOrderedList = T, ne.cleanBlock = L, ne.drawLink = M, ne.drawImage = B, ne.drawUploadedImage = N, ne.drawTable = I, ne.drawHorizontalRule = z, ne.undo = H, ne.redo = R, ne.togglePreview = _, ne.toggleSideBySide = P, ne.toggleFullScreen = v, ne.prototype.toggleBold = function () {
-        x(this);
-      }, ne.prototype.toggleItalic = function () {
-        y(this);
-      }, ne.prototype.toggleStrikethrough = function () {
-        b(this);
-      }, ne.prototype.toggleBlockquote = function () {
+      }, ae.toggleBold = C, ae.toggleItalic = w, ae.toggleStrikethrough = k, ae.toggleBlockquote = F, ae.toggleHeadingSmaller = A, ae.toggleHeadingBigger = E, ae.toggleHeading1 = T, ae.toggleHeading2 = L, ae.toggleHeading3 = M, ae.toggleCodeBlock = S, ae.toggleUnorderedList = B, ae.toggleOrderedList = N, ae.cleanBlock = O, ae.drawLink = I, ae.drawImage = z, ae.drawUploadedImage = H, ae.drawTable = P, ae.drawHorizontalRule = _, ae.undo = W, ae.redo = j, ae.togglePreview = U, ae.toggleSideBySide = q, ae.toggleFullScreen = D, ae.prototype.toggleBold = function () {
         C(this);
-      }, ne.prototype.toggleHeadingSmaller = function () {
+      }, ae.prototype.toggleItalic = function () {
         w(this);
-      }, ne.prototype.toggleHeadingBigger = function () {
+      }, ae.prototype.toggleStrikethrough = function () {
         k(this);
-      }, ne.prototype.toggleHeading1 = function () {
-        S(this);
-      }, ne.prototype.toggleHeading2 = function () {
+      }, ae.prototype.toggleBlockquote = function () {
         F(this);
-      }, ne.prototype.toggleHeading3 = function () {
+      }, ae.prototype.toggleHeadingSmaller = function () {
         A(this);
-      }, ne.prototype.toggleCodeBlock = function () {
-        D(this);
-      }, ne.prototype.toggleUnorderedList = function () {
+      }, ae.prototype.toggleHeadingBigger = function () {
         E(this);
-      }, ne.prototype.toggleOrderedList = function () {
+      }, ae.prototype.toggleHeading1 = function () {
         T(this);
-      }, ne.prototype.cleanBlock = function () {
+      }, ae.prototype.toggleHeading2 = function () {
         L(this);
-      }, ne.prototype.drawLink = function () {
+      }, ae.prototype.toggleHeading3 = function () {
         M(this);
-      }, ne.prototype.drawImage = function () {
+      }, ae.prototype.toggleCodeBlock = function () {
+        S(this);
+      }, ae.prototype.toggleUnorderedList = function () {
         B(this);
-      }, ne.prototype.drawUploadedImage = function () {
+      }, ae.prototype.toggleOrderedList = function () {
         N(this);
-      }, ne.prototype.drawTable = function () {
+      }, ae.prototype.cleanBlock = function () {
+        O(this);
+      }, ae.prototype.drawLink = function () {
         I(this);
-      }, ne.prototype.drawHorizontalRule = function () {
+      }, ae.prototype.drawImage = function () {
         z(this);
-      }, ne.prototype.undo = function () {
+      }, ae.prototype.drawUploadedImage = function () {
         H(this);
-      }, ne.prototype.redo = function () {
-        R(this);
-      }, ne.prototype.togglePreview = function () {
-        _(this);
-      }, ne.prototype.toggleSideBySide = function () {
+      }, ae.prototype.drawTable = function () {
         P(this);
-      }, ne.prototype.toggleFullScreen = function () {
-        v(this);
-      }, ne.prototype.isPreviewActive = function () {
+      }, ae.prototype.drawHorizontalRule = function () {
+        _(this);
+      }, ae.prototype.undo = function () {
+        W(this);
+      }, ae.prototype.redo = function () {
+        j(this);
+      }, ae.prototype.togglePreview = function () {
+        U(this);
+      }, ae.prototype.toggleSideBySide = function () {
+        q(this);
+      }, ae.prototype.toggleFullScreen = function () {
+        D(this);
+      }, ae.prototype.isPreviewActive = function () {
         var e = this.codemirror.getWrapperElement().lastChild;
         return /editor-preview-active/.test(e.className);
-      }, ne.prototype.isSideBySideActive = function () {
+      }, ae.prototype.isSideBySideActive = function () {
         var e = this.codemirror.getWrapperElement().nextSibling;
         return /editor-preview-active-side/.test(e.className);
-      }, ne.prototype.isFullscreenActive = function () {
+      }, ae.prototype.isFullscreenActive = function () {
         return this.codemirror.getOption("fullScreen");
-      }, ne.prototype.getState = function () {
-        return m(this.codemirror);
-      }, ne.prototype.toTextArea = function () {
+      }, ae.prototype.getState = function () {
+        return y(this.codemirror);
+      }, ae.prototype.toTextArea = function () {
         var e = this.codemirror,
             t = e.getWrapperElement(),
             n = t.parentNode;
         n && (this.gui.toolbar && n.removeChild(this.gui.toolbar), this.gui.statusbar && n.removeChild(this.gui.statusbar), this.gui.sideBySide && n.removeChild(this.gui.sideBySide)), n.parentNode.insertBefore(t, n), n.remove(), e.toTextArea(), this.autosaveTimeoutId && (clearTimeout(this.autosaveTimeoutId), this.autosaveTimeoutId = void 0, this.clearAutosavedValue());
-      }, t.exports = ne;
+      }, t.exports = ae;
     }, {
       "./codemirror/tablist": 17,
       codemirror: 10,
