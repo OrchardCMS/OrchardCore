@@ -37,8 +37,8 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
             serviceCollection.AddScoped<TestShapeBindingResolver>();
-            services.AddScoped<IShapeBindingResolver>( x=> x.GetRequiredService<TestShapeBindingResolver>());
-            services.AddScoped<IAdminTemplatesShapeBindingNameResolver>( x=> x.GetRequiredService<TestShapeBindingResolver>());
+            serviceCollection.AddScoped<IShapeBindingResolver>( x=> x.GetRequiredService<TestShapeBindingResolver>());
+            serviceCollection.AddScoped<IAdminTemplatesShapeBindingNameResolver>( x=> x.GetRequiredService<TestShapeBindingResolver>());
 
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
