@@ -36,7 +36,10 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
-            serviceCollection.AddScoped<IShapeBindingResolver, TestShapeBindingResolver>();
+            serviceCollection.AddScoped<TestShapeBindingResolver>();
+            services.AddScoped<IShapeBindingResolver>( x=> x.GetRequiredService<TestShapeBindingResolver>());
+            services.AddScoped<IAdminTemplatesShapeBindingNameResolver>( x=> x.GetRequiredService<TestShapeBindingResolver>());
+
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
@@ -441,7 +444,7 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
-            var resolvers = _serviceProvider.GetService<IEnumerable<IShapeBindingResolver>>();
+            var resolvers = _serviceProvider.GetService<IEnumerable<IAdminTemplatesShapeBindingNameResolver>>();
 
             // Set as Admin template
             _additionalBindings.IsAdminShape = true;
