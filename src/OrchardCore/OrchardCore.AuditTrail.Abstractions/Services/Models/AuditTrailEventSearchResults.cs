@@ -1,5 +1,5 @@
-﻿using OrchardCore.AuditTrail.Models;
 using System.Collections.Generic;
+using OrchardCore.AuditTrail.Models;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {

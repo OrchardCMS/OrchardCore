@@ -1,4 +1,4 @@
-﻿using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.AuditTrail.Services.Models;
 
 namespace OrchardCore.AuditTrail.Providers
 {
@@ -8,7 +8,7 @@ namespace OrchardCore.AuditTrail.Providers
     public interface IAuditTrailEventProvider
     {
         /// <summary>
-        /// Describe the category and the context used to build a custom Audit Trail event.
+        /// Describes the category and the context used to build a custom Audit Trail event.
         /// </summary>
         void Describe(DescribeContext context);
     }

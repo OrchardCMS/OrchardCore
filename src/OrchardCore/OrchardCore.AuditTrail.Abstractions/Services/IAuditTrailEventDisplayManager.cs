@@ -1,7 +1,7 @@
+using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.DisplayManagement;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -13,7 +13,7 @@ namespace OrchardCore.AuditTrail.Services
         /// </summary>
         /// <param name="filters">Input for each filter builder.</param>
         /// <returns>A tree of shapes.</returns>
-        Task<IShape> BuildFilterDisplayAsync(Filters filters);
+        Task<IShape> BuildDisplayFiltersAsync(Filters filters);
 
         /// <summary>
         /// Builds a shape tree of event displays based on the display type.
@@ -31,19 +31,19 @@ namespace OrchardCore.AuditTrail.Services
         /// <param name="auditTrailEvent">The AuditTrailEvent.</param>
         /// <param name="displayType">The display type.</param>
         /// <returns>A tree of shapes.</returns>
-        Task<IShape> BuildActionsAsync(AuditTrailEvent auditTrailEvent, string displayType);
+        Task<IShape> BuildDisplayActionsAsync(AuditTrailEvent auditTrailEvent, string displayType);
 
         /// <summary>
-        /// Builds a shape tree to display the content of the additional columns.
+        /// Builds a shape tree to display the content of custom columns.
         /// </summary>
         /// <param name="auditTrailEvent">The AuditTrailEvent.</param>
         /// <returns>A tree of shapes.</returns>
-        Task<IShape> BuildAdditionalColumnsShapesAsync(AuditTrailEvent auditTrailEvent);
+        Task<IShape> BuildDisplayColumnsAsync(AuditTrailEvent auditTrailEvent);
 
         /// <summary>
-        /// Builds a shape tree to display the additional column names.
+        /// Builds a shape tree to display custom column names.
         /// </summary>
         /// <returns>A tree of shapes.</returns>
-        Task<IShape> BuildAdditionalColumnNamesShapesAsync();
+        Task<IShape> BuildDisplayColumnNamesAsync();
     }
 }

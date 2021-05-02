@@ -50,15 +50,19 @@ namespace OrchardCore.AuditTrail.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
             var filters = Filters.From(QueryHelpers.ParseQuery(Request.QueryString.Value), _updateModelAccessor.ModelUpdater);
-            var searchResult =
-                await _auditTrailManager.GetAuditTrailEventsAsync(pager.Page, pager.PageSize, filters, orderBy ?? AuditTrailOrderBy.DateDescending);
 
+            var searchResult = await _auditTrailManager.GetAuditTrailEventsAsync(pager.Page, pager.PageSize, filters, orderBy ?? AuditTrailOrderBy.DateDescending);
             if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
             {
                 searchResult.AuditTrailEvents = Enumerable.Empty<AuditTrailEvent>();
             }
 
-            var pagerShape = (await _shapeFactory.New.Pager(pager)).TotalItemCount(searchResult.TotalCount);
+            var pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
+            {
+                pager.Page,
+                pager.PageSize,
+                TotalItemCount = searchResult.TotalCount
+            }));
 
             var eventDescriptors = _auditTrailManager.DescribeCategories()
                 .SelectMany(categoryDescriptor => categoryDescriptor.Events)
@@ -80,18 +84,18 @@ namespace OrchardCore.AuditTrail.Controllers
 
             foreach (var model in auditTrailEventsSummaryViewModel)
             {
-                model.AdditionalColumnsShapes = await _auditTrailEventDisplayManager.BuildAdditionalColumnsShapesAsync(model.AuditTrailEvent);
+                model.ColumnsShape = await _auditTrailEventDisplayManager.BuildDisplayColumnsAsync(model.AuditTrailEvent);
                 model.SummaryShape = await _auditTrailEventDisplayManager.BuildDisplayAsync(model.AuditTrailEvent, "SummaryAdmin");
-                model.ActionsShape = await _auditTrailEventDisplayManager.BuildActionsAsync(model.AuditTrailEvent, "SummaryAdmin");
+                model.ActionsShape = await _auditTrailEventDisplayManager.BuildDisplayActionsAsync(model.AuditTrailEvent, "SummaryAdmin");
             }
 
             return View(new AuditTrailViewModel
             {
                 AuditTrailEvents = auditTrailEventsSummaryViewModel,
-                AdditionalColumnNames = await _auditTrailEventDisplayManager.BuildAdditionalColumnNamesShapesAsync(),
-                FilterDisplay = await _auditTrailEventDisplayManager.BuildFilterDisplayAsync(filters),
+                ColumnNamesShape = await _auditTrailEventDisplayManager.BuildDisplayColumnNamesAsync(),
+                FiltersShape = await _auditTrailEventDisplayManager.BuildDisplayFiltersAsync(filters),
                 OrderBy = orderBy ?? AuditTrailOrderBy.DateDescending,
-                Pager = pagerShape
+                PagerShape = pagerShape
             });
         }
 

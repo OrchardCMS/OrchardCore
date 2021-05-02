@@ -41,8 +41,9 @@ namespace OrchardCore.AuditTrail
 
             services.AddScoped<IAuditTrailManager, AuditTrailManager>();
 
-            services.AddScoped<IAuditTrailEventHandler, CommonAuditTrailEventHandler>();
-            
+            services.AddScoped<IAuditTrailEventHandler, AuditTrailEventHandler>();
+            services.AddScoped<IAuditTrailEventDriver, AuditTrailEventDriver>();
+
             services.AddScoped<INavigationProvider, AuditTrailSettingsAdminMenu>();
             services.AddScoped<INavigationProvider, AuditTrailAdminMenu>();
 
@@ -51,7 +52,7 @@ namespace OrchardCore.AuditTrail
 
             services.AddScoped<IAuditTrailEventDisplayManager, AuditTrailEventDisplayManager>();
 
-            services.AddSingleton<IBackgroundTask, AuditTrailTrimmingBackgroundTask>();
+            services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
             services.AddSingleton<IAuditTrailEventIdGenerator, AuditTrailEventIdGenerator>();
 

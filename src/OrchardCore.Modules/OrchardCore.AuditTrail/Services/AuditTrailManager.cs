@@ -117,13 +117,6 @@ namespace OrchardCore.AuditTrail.Services
 
                 _auditTrailEventHandlers.Invoke((handler, context) => handler.Filter(context), filterContext, Logger);
 
-                // Give each provider a chance to modify the query.
-                var providersContext = DescribeProviders();
-                foreach (var queryFilter in providersContext.QueryFilters)
-                {
-                    queryFilter(filterContext);
-                }
-
                 query = filterContext.Query;
             }
 
@@ -181,10 +174,10 @@ namespace OrchardCore.AuditTrail.Services
 
         public Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId) =>
             _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
-                .Where(x => x.AuditTrailEventId == auditTrailEventId).FirstOrDefaultAsync();
+                .Where(x => x.AuditTrailEventId == auditTrailEventId)
+                .FirstOrDefaultAsync();
 
-        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() =>
-            DescribeProviders().Describe();
+        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() => DescribeProviders().Describe();
 
         public DescribeContext DescribeProviders()
         {
@@ -194,19 +187,22 @@ namespace OrchardCore.AuditTrail.Services
         }
 
         public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent auditTrailEvent) =>
-            DescribeCategories().SelectMany(
-                categoryDescriptor => categoryDescriptor.Events.Where(
-                    eventDescriptor => eventDescriptor.FullEventName == auditTrailEvent.FullEventName)).FirstOrDefault();
+            DescribeCategories()
+                .SelectMany(categoryDescriptor => categoryDescriptor.Events
+                    .Where(eventDescriptor => eventDescriptor.FullEventName == auditTrailEvent.FullEventName))
+                .FirstOrDefault();
 
         private IEnumerable<AuditTrailEventDescriptor> DescribeEvents(string eventName, string providerName) =>
-            DescribeCategories().Where(
-                categoryDescriptor => categoryDescriptor.Category == DescribeProviderCategory(providerName))
-                    .SelectMany(categoryDescriptor => categoryDescriptor.Events
-                        .Where(eventDescriptor => eventDescriptor.EventName == eventName));
+            DescribeCategories()
+                .Where(categoryDescriptor => categoryDescriptor.Category == DescribeProviderCategory(providerName))
+                .SelectMany(categoryDescriptor => categoryDescriptor.Events
+                    .Where(eventDescriptor => eventDescriptor.EventName == eventName));
 
         private string DescribeProviderCategory(string providerName) =>
-            DescribeProviders().Describe().Where(category => category.ProviderName == providerName)
-                .Select(categoryDescriptor => categoryDescriptor.Category).FirstOrDefault();
+            DescribeProviders().Describe()
+                .Where(category => category.ProviderName == providerName)
+                .Select(categoryDescriptor => categoryDescriptor.Category)
+                .FirstOrDefault();
 
         private async Task<string> GetClientAddressAsync()
         {

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AuditTrail.Models;
@@ -6,99 +8,87 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Modules;
-using YesSql;
 
 namespace OrchardCore.AuditTrail.Services
 {
     public class AuditTrailEventDisplayManager : IAuditTrailEventDisplayManager
     {
-        private readonly ISession _session;
         private readonly IShapeFactory _shapeFactory;
         private readonly IAuditTrailManager _auditTrailManager;
-        private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
+        private readonly IEnumerable<IAuditTrailEventDriver> _auditTrailEventDrivers;
         private readonly ILogger _logger;
 
         public AuditTrailEventDisplayManager(
-            ISession session,
             IShapeFactory shapeFactory,
             IAuditTrailManager auditTrailManager,
-            ILogger<AuditTrailEventDisplayManager> logger,
-            IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers)
+            IEnumerable<IAuditTrailEventDriver> auditTrailEventDrivers,
+            ILogger<AuditTrailEventDisplayManager> logger)
         {
-            _session = session;
             _shapeFactory = shapeFactory;
             _auditTrailManager = auditTrailManager;
-            _auditTrailEventHandlers = auditTrailEventHandlers;
+            _auditTrailEventDrivers = auditTrailEventDrivers;
             _logger = logger;
         }
 
-        public async Task<IShape> BuildFilterDisplayAsync(Filters filters)
+        public async Task<IShape> BuildDisplayFiltersAsync(Filters filters)
         {
-            var filterDisplay = await _shapeFactory.CreateAsync("AuditTrailFilter");
-            var filterDisplayContext = new DisplayFilterContext(_shapeFactory, filters, filterDisplay as Shape);
+            var shape = await _shapeFactory.CreateAsync("AuditTrailFilters");
+            var categories = _auditTrailManager.DescribeCategories().ToArray();
 
-            await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.DisplayFilterAsync(context), filterDisplayContext, _logger);
+            var context = new DisplayFiltersContext(filters, categories, _shapeFactory, shape);
+            await _auditTrailEventDrivers.InvokeAsync((handler, context) => handler.DisplayFiltersAsync(context), context, _logger);
 
-            // Give each provider a chance to provide a filter display.
-            var providersContext = _auditTrailManager.DescribeProviders();
-            foreach (var action in providersContext.FilterDisplays)
-            {
-                await action(filterDisplayContext);
-            }
-
-            return filterDisplay;
+            return shape;
         }
 
-        public async Task<IShape> BuildAdditionalColumnNamesShapesAsync()
+        public async Task<IShape> BuildDisplayColumnNamesAsync()
         {
-            var additionalColumnNamesDisplay = await _shapeFactory.CreateAsync("AuditTrailEventAdditionalColumnName");
+            var shape = await _shapeFactory.CreateAsync("AuditTrailEventColumnNames");
 
-            await _auditTrailEventHandlers.InvokeAsync((handler, display) => handler.DisplayAdditionalColumnNamesAsync(display), additionalColumnNamesDisplay as Shape, _logger);
+            var context = new DisplayColumnNamesContext(shape);
+            await _auditTrailEventDrivers.InvokeAsync((handler, context) => handler.DisplayColumnNamesAsync(context), context, _logger);
 
-            return additionalColumnNamesDisplay;
+            return shape;
         }
 
-        public async Task<IShape> BuildAdditionalColumnsShapesAsync(AuditTrailEvent auditTrailEvent)
+        public async Task<IShape> BuildDisplayColumnsAsync(AuditTrailEvent auditTrailEvent)
         {
-            var additionalColumnDisplay = await _shapeFactory.CreateAsync("AuditTrailEventAdditionalColumn");
+            var shape = await _shapeFactory.CreateAsync("AuditTrailEventColumns");
 
-            await _auditTrailEventHandlers.InvokeAsync(
-                (handler, display) =>
-                handler.DisplayAdditionalColumnsAsync(display),
-                new DisplayAdditionalColumnsContext(auditTrailEvent, additionalColumnDisplay as Shape),
-                _logger);
+            var context = new DisplayColumnsContext(auditTrailEvent, shape);
+            await _auditTrailEventDrivers.InvokeAsync((handler, context) => handler.DisplayColumnsAsync(context), context, _logger);
 
-            return additionalColumnDisplay;
+            return shape;
         }
 
         public Task<IShape> BuildDisplayAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
-            BuildEventShapeAsync("AuditTrailEvent", auditTrailEvent, displayType);
+            BuildDisplayAsync("AuditTrailEvent", auditTrailEvent, displayType);
 
-        public Task<IShape> BuildActionsAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
-            BuildEventShapeAsync("AuditTrailEventActions", auditTrailEvent, displayType);
+        public Task<IShape> BuildDisplayActionsAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
+            BuildDisplayAsync("AuditTrailEventActions", auditTrailEvent, displayType);
 
-        private async Task<IShape> BuildEventShapeAsync(string shapeType, AuditTrailEvent auditTrailEvent, string displayType)
+        private async Task<IShape> BuildDisplayAsync(string shapeType, AuditTrailEvent auditTrailEvent, string displayType)
         {
-            var auditTrailEventActionsShape = await _shapeFactory.CreateAsync<AuditTrailEventViewModel>(shapeType, async model =>
+            displayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+            shapeType = displayType != "Detail" ? shapeType + "_" + displayType : shapeType;
+
+            var shape = await _shapeFactory.CreateAsync<AuditTrailEventViewModel>(shapeType, async viewModel =>
             {
-                model.AuditTrailEvent = auditTrailEvent;
-                model.EventDescriptor = _auditTrailManager.DescribeEvent(auditTrailEvent);
+                ((IShape)viewModel).Metadata.DisplayType = displayType;
 
-                var metaData = ((IShape)model).Metadata;
-                metaData.DisplayType = displayType;
+                viewModel.AuditTrailEvent = auditTrailEvent;
+                viewModel.EventDescriptor = _auditTrailManager.DescribeEvent(auditTrailEvent);
 
-                metaData.Alternates.Add($"{shapeType}_{displayType}");
-                metaData.Alternates.Add($"{shapeType}__{auditTrailEvent.Category}");
-                metaData.Alternates.Add($"{shapeType}_{displayType}__{auditTrailEvent.Category}");
-                metaData.Alternates.Add($"{shapeType}__{auditTrailEvent.Category}__{auditTrailEvent.EventName}");
-                metaData.Alternates.Add($"{shapeType}_{displayType}__{auditTrailEvent.Category}__{auditTrailEvent.EventName}");
-
-                await _auditTrailEventHandlers.InvokeAsync((handler, model) => handler.BuildViewModelAsync(model), model, _logger);
+                await _auditTrailEventDrivers.InvokeAsync((handler, model) => handler.BuildViewModelAsync(viewModel), viewModel, _logger);
             });
 
-            return auditTrailEventActionsShape;
+            shape.Metadata.Alternates.Add($"{shapeType}__{auditTrailEvent.Category}");
+            shape.Metadata.Alternates.Add($"{shapeType}__{auditTrailEvent.Category}");
+            shape.Metadata.Alternates.Add($"{shapeType}__{auditTrailEvent.Category}__{auditTrailEvent.EventName}");
+            shape.Metadata.Alternates.Add($"{shapeType}__{auditTrailEvent.Category}__{auditTrailEvent.EventName}");
+
+            return shape;
         }
     }
 }

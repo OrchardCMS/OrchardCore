@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -25,7 +26,7 @@ namespace OrchardCore.AuditTrail.Services.Models
 
             foreach (var nameValue in nameValues)
             {
-                if (!string.IsNullOrEmpty(nameValue.Value) && !string.IsNullOrEmpty(nameValue.Value))
+                if (!String.IsNullOrEmpty(nameValue.Value) && !String.IsNullOrEmpty(nameValue.Value))
                 {
                     filters.Add(nameValue.Key, nameValue.Value);
                 }

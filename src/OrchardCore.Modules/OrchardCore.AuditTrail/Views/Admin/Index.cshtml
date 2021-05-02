@@ -1,5 +1,5 @@
-@using Microsoft.Extensions.Localization
 @model AuditTrailViewModel
+@using Microsoft.Extensions.Localization
 
 @inject IStringLocalizer<ViewContext> S;
 
@@ -32,7 +32,7 @@
 
 <form asp-action="Index" method="get" class="mb-4">
     <div class="form-row">
-        @await DisplayAsync(Model.FilterDisplay)
+        @await DisplayAsync(Model.FiltersShape)
         <div class="col">
             <div class="form-group">
                 <label asp-for="OrderBy">@T["Sort by:"]</label>
@@ -58,7 +58,7 @@ else
                     <th scope="col">@T["Category"]</th>
                     <th scope="col">@T["Event"]</th>
                     <th scope="col">@T["User"]</th>
-                    @await DisplayAsync(Model.AdditionalColumnNames)
+                    @await DisplayAsync(Model.ColumnNamesShape)
                     <th scope="col">@T["Client IP"]</th>
                     <th scope="col">@T["Timestamp"]</th>
                     <th scope="col">@T["Summary"]</th>
@@ -72,7 +72,7 @@ else
                         <td>@auditTrailEvent.CategoryDescriptor.LocalizedName</td>
                         <td>@auditTrailEvent.EventDescriptor.LocalizedName</td>
                         <td>@auditTrailEvent.AuditTrailEvent.UserName</td>
-                        @await DisplayAsync(auditTrailEvent.AdditionalColumnsShapes)
+                        @await DisplayAsync(auditTrailEvent.ColumnsShape)
                         <td>@auditTrailEvent.AuditTrailEvent.ClientIpAddress</td>
                         <td>@await DisplayAsync(await New.DateTime(Utc: auditTrailEvent.AuditTrailEvent.CreatedUtc))</td>
                         <td>@await DisplayAsync(auditTrailEvent.SummaryShape)</td>
@@ -84,4 +84,4 @@ else
     </div>
 }
 
-@await DisplayAsync(Model.Pager)
+@await DisplayAsync(Model.PagerShape)

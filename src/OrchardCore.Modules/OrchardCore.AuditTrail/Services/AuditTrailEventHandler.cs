@@ -1,7 +1,4 @@
 using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Indexes;
@@ -9,16 +6,15 @@ using OrchardCore.AuditTrail.Services.Models;
 
 namespace OrchardCore.AuditTrail.Services
 {
-    public class CommonAuditTrailEventHandler : AuditTrailEventHandlerBase
+    public class AuditTrailEventHandler : AuditTrailEventHandlerBase
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public CommonAuditTrailEventHandler(
+        public AuditTrailEventHandler(
             IServiceProvider serviceProvider,
-            IStringLocalizer<CommonAuditTrailEventHandler> stringLocalizer)
+            IStringLocalizer<AuditTrailEventHandler> stringLocalizer)
         {
             _serviceProvider = serviceProvider;
-
             T = stringLocalizer;
         }
 
@@ -29,12 +25,12 @@ namespace OrchardCore.AuditTrail.Services
             var from = GetDateFromFilter(context.Filters, "From", "from");
             var to = GetDateFromFilter(context.Filters, "To", "to");
 
-            if (!string.IsNullOrWhiteSpace(userName))
+            if (!String.IsNullOrWhiteSpace(userName))
             {
                 context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.UserName == userName);
             }
 
-            if (!string.IsNullOrWhiteSpace(category))
+            if (!String.IsNullOrWhiteSpace(category))
             {
                 context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.Category == category);
             }
@@ -50,33 +46,11 @@ namespace OrchardCore.AuditTrail.Services
             }
         }
 
-        public override async Task DisplayFilterAsync(DisplayFilterContext context)
-        {
-            var auditTrailManager = _serviceProvider.GetService<IAuditTrailManager>();
-
-            var userName = context.Filters.Get("username");
-            var fromDate = context.Filters.Get("fromDate");
-            var toDate = context.Filters.Get("toDate");
-            var category = context.Filters.Get("category");
-
-            var userNameFilterDisplay = await context.ShapeFactory.New.AuditTrailFilter__Common__User(UserName: userName);
-            var dateFromFilterDisplay = await context.ShapeFactory.New.AuditTrailFilter__Common__Date__From(Date: fromDate);
-            var dateToFilterDisplay = await context.ShapeFactory.New.AuditTrailFilter__Common__Date__To(Date: toDate);
-            var categoryFilterDisplay = await context.ShapeFactory.New.AuditTrailFilter__Common__Category(
-                Categories: auditTrailManager.DescribeCategories().ToArray(),
-                Category: category);
-
-            context.FilterDisplay.AddAsync(dateFromFilterDisplay, string.Empty);
-            context.FilterDisplay.AddAsync(dateToFilterDisplay, string.Empty);
-            context.FilterDisplay.AddAsync(categoryFilterDisplay, string.Empty);
-            context.FilterDisplay.AddAsync(userNameFilterDisplay, string.Empty);
-        }
-
         private DateTime? GetDateFromFilter(Filters filters, string fieldName, string prefix)
         {
             var dateString = filters.Get(prefix + "Date");
 
-            if (string.IsNullOrEmpty(dateString)) return null;
+            if (String.IsNullOrEmpty(dateString)) return null;
 
             try
             {

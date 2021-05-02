@@ -11,7 +11,6 @@ using OrchardCore.Contents.AuditTrail.Controllers;
 using OrchardCore.Contents.AuditTrail.Handlers;
 using OrchardCore.Contents.AuditTrail.Providers;
 using OrchardCore.Contents.AuditTrail.Services;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 
@@ -29,9 +28,9 @@ namespace OrchardCore.Contents.AuditTrail
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
             services.AddScoped<IAuditTrailEventProvider, ContentAuditTrailEventProvider>();
-            services.AddScoped<IAuditTrailContentEventHandler, AuditTrailContentTypesEventHandler>();
+            services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
+            services.AddScoped<IAuditTrailEventDriver, ContentAuditTrailEventDriver>();
 
             services.AddScoped<ContentHandler>();
             services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<ContentHandler>());

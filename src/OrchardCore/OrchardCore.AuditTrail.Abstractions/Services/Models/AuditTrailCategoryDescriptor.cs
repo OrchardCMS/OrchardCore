@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {

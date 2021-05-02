@@ -141,7 +141,7 @@ namespace OrchardCore.AuditTrail.Drivers
         /// We're creating settings on the fly so that when the user updates the settings the first time,
         /// we won't log a massive amount of event settings that have changed.
         /// </summary>
-        private AuditTrailEventSetting GetOrCreate(IList<AuditTrailEventSetting> settings, AuditTrailEventDescriptor descriptor)
+        private static AuditTrailEventSetting GetOrCreate(IList<AuditTrailEventSetting> settings, AuditTrailEventDescriptor descriptor)
         {
             var setting = settings.FirstOrDefault(x => x.EventName == descriptor.FullEventName);
 

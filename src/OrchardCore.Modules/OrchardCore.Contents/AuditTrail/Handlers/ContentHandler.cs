@@ -1,17 +1,18 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.AuditTrail.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.AuditTrail.Providers;
-using OrchardCore.Contents.AuditTrail.Services;
-using OrchardCore.Contents.AuditTrail.Services.Models;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 using YesSql;
 using IYesSqlSession = YesSql.ISession;
 
@@ -21,25 +22,22 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
     public class ContentHandler : ContentHandlerBase, IAuditTrailContentHandler
     {
         private readonly IYesSqlSession _session;
+        private readonly ISiteService _siteService;
         private readonly IAuditTrailManager _auditTrailManager;
-        private readonly IEnumerable<IAuditTrailContentEventHandler> _auditTrailEvents;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger _logger;
 
         private HashSet<string> _restoring = new HashSet<string>();
 
         public ContentHandler(
             IYesSqlSession session,
+            ISiteService siteService,
             IAuditTrailManager auditTrailManager,
-            IEnumerable<IAuditTrailContentEventHandler> auditTrailEvents,
-            IHttpContextAccessor httpContextAccessor,
-            ILogger<ContentHandler> logger)
+            IHttpContextAccessor httpContextAccessor)
         {
             _session = session;
-            _auditTrailEvents = auditTrailEvents;
+            _siteService = siteService;
             _auditTrailManager = auditTrailManager;
             _httpContextAccessor = httpContextAccessor;
-            _logger = logger;
         }
 
         public override Task DraftSavedAsync(SaveDraftContentContext context) =>
@@ -76,12 +74,10 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 return;
             }
 
-            var buildingAuditTrailEventContext = new BuildingAuditTrailEventContext(content.ContentItem, eventName);
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            await _auditTrailEvents.InvokeAsync((provider, context) =>
-                provider.BuildingAuditTrailEventAsync(context), buildingAuditTrailEventContext, _logger);
-
-            if (buildingAuditTrailEventContext.IsCanceled)
+            var auditTrailSettings = siteSettings.As<AuditTrailSettings>();
+            if (auditTrailSettings.IgnoredContentTypeNames.Contains(content.ContentItem.ContentType))
             {
                 return;
             }
