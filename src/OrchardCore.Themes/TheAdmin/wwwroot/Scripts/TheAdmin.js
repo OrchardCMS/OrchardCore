@@ -7287,6 +7287,24 @@ function isNumber(str) {
 }
 
 $('[data-toggle="tooltip"]').tooltip();
+$(function () {
+  //Prevent multi submissions on forms
+  $("body").on("submit", "form.no-multisubmit", function (e) {
+    var submittingClass = "submitting";
+    form = $(this);
+
+    if (form.hasClass(submittingClass)) {
+      e.preventDefault();
+      return;
+    }
+
+    form.addClass(submittingClass); // safety-nest in case the form didn't refresh the page
+
+    setTimeout(function () {
+      form.removeClass(submittingClass);
+    }, 5000);
+  });
+});
 $('#btn-darkmode').click(function () {
   if ($('html').attr('data-theme') === 'darkmode') {
     $('html').attr('data-theme', 'default');
