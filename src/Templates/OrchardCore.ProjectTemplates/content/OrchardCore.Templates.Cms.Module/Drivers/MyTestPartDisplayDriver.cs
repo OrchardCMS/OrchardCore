@@ -29,7 +29,7 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
 
         public override IDisplayResult Edit(MyTestPart part, BuildPartEditorContext context)
         {
-            return Initialize<TestPartViewModel>(GetEditorShapeType(context), model =>
+            return Initialize<MyTestPartViewModel>(GetEditorShapeType(context), model =>
             {
                 model.Show = part.Show;
                 model.ContentItem = part.ContentItem;
