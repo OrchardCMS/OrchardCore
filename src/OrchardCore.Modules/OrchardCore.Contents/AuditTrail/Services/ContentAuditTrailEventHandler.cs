@@ -13,10 +13,6 @@ namespace OrchardCore.Contents.AuditTrail.Services
     [RequireFeatures("OrchardCore.AuditTrail")]
     public class ContentAuditTrailEventHandler : AuditTrailEventHandlerBase
     {
-        public ContentAuditTrailEventHandler()
-        {
-        }
-
         public override Task CreateAsync(AuditTrailCreateContext context)
         {
             if (context.EventFilterKey != "Content")

@@ -8,13 +8,8 @@ namespace OrchardCore.AuditTrail.Services
 {
     public class AuditTrailEventHandler : AuditTrailEventHandlerBase
     {
-        private readonly IServiceProvider _serviceProvider;
-
-        public AuditTrailEventHandler(
-            IServiceProvider serviceProvider,
-            IStringLocalizer<AuditTrailEventHandler> stringLocalizer)
+        public AuditTrailEventHandler(IStringLocalizer<AuditTrailEventHandler> stringLocalizer)
         {
-            _serviceProvider = serviceProvider;
             T = stringLocalizer;
         }
 

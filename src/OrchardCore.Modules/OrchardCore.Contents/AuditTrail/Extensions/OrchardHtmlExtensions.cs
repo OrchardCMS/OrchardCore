@@ -9,10 +9,7 @@ namespace OrchardCore.Contents.AuditTrail.Extensions
 {
     public static class OrchardHtmlExtensions
     {
-        public static async Task<string> GetItemEditLinkAsync(
-            this IOrchardHelper orchardHelper,
-            string linkText,
-            ContentItem contentItem)
+        public static async Task<string> GetItemEditLinkAsync(this IOrchardHelper orchardHelper, string linkText, ContentItem contentItem)
         {
             var urlHelperFactory = orchardHelper.HttpContext.RequestServices.GetRequiredService<IUrlHelperFactory>();
             var viewContextAccessor = orchardHelper.HttpContext.RequestServices.GetRequiredService<ViewContextAccessor>();
@@ -20,8 +17,8 @@ namespace OrchardCore.Contents.AuditTrail.Extensions
 
             var urlHelper = urlHelperFactory.GetUrlHelper(viewContextAccessor.ViewContext);
             var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-            return
-                $"<a href='{urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues)}'>{linkText}</a>";
+
+            return $"<a href='{urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues)}'>{linkText}</a>";
         }
     }
 }

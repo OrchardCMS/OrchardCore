@@ -10,11 +10,11 @@
     var versionNumber = auditTrailContentEvent.VersionNumber;
 
     var shape = (IShape)Model;
-    var availableVersionsCount = shape.GetProperty<int>("AvailableVersionsCount");
+    var versionsCount = shape.GetProperty<int>("VersionsCount");
 }
 
 <a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">@T["Details"]</a>
-@if (contentItem != null && availableVersionsCount != versionNumber) 
+@if (contentItem != null && versionsCount != versionNumber) 
 {
     <form>
         <a asp-route-area="OrchardCore.Contents"

@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Services.Models;
-using OrchardCore.AuditTrail.ViewModels;
 
 namespace OrchardCore.AuditTrail.Services
 {
     /// <summary>
-    /// Describes an event driver that can change the behavior of Audit Trail rendering.
+    /// Describes an event handler participating in Audit Trail rendering.
     /// </summary>
-    public interface IAuditTrailEventDriver
+    public interface IAuditTrailDisplayHandler
     {
         /// <summary>
         /// Adds custom UI elements which can be used to filter Audit Trail events.
@@ -25,8 +24,8 @@ namespace OrchardCore.AuditTrail.Services
         Task DisplayColumnNamesAsync(DisplayColumnNamesContext context);
 
         /// <summary>
-        /// Adds custom data for rendering an Audit Trail event.
+        /// Adds custom data while rendering a given Audit Trail event.
         /// </summary>
-        Task BuildViewModelAsync(AuditTrailEventViewModel model);
+        Task DisplayEventAsync(DisplayEventContext context);
     }
 }

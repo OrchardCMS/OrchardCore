@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.AuditTrail
         {
             services.AddScoped<IAuditTrailEventProvider, ContentAuditTrailEventProvider>();
             services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
-            services.AddScoped<IAuditTrailEventDriver, ContentAuditTrailEventDriver>();
+            services.AddScoped<IAuditTrailDisplayHandler, ContentAuditTrailDisplayHandler>();
 
             services.AddScoped<ContentHandler>();
             services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<ContentHandler>());

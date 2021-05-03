@@ -5,7 +5,7 @@ using OrchardCore.AuditTrail.Services.Models;
 namespace OrchardCore.AuditTrail.Services
 {
     /// <summary>
-    /// Describes an event handler that can change the behavior of Audit Trail interactions.
+    /// Describes an event handler participating in Audit Trail management.
     /// </summary>
     public interface IAuditTrailEventHandler
     {
@@ -15,12 +15,12 @@ namespace OrchardCore.AuditTrail.Services
         Task CreateAsync(AuditTrailCreateContext context);
 
         /// <summary>
-        /// Alters Audit Trail event document after it has been built and before saving it.
+        /// Alters an Audit Trail event after it has been built and before saving it.
         /// </summary>
         Task AlterAsync(AuditTrailCreateContext context, AuditTrailEvent auditTrailEvent);
 
         /// <summary>
-        /// Filters Audit Trail events based on the values from the query string.
+        /// Filters Audit Trail events based on the values of a query string.
         /// </summary>
         void Filter(QueryFilterContext context);
     }

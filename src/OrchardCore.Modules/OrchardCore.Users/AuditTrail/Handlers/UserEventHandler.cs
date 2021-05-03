@@ -63,14 +63,11 @@ namespace OrchardCore.Users.AuditTrail.Handlers
 
         #region Unused events
 
-        public Task RecoveringPasswordAsync(Action<string, string> reportError) =>
-            Task.CompletedTask;
+        public Task RecoveringPasswordAsync(Action<string, string> reportError) => Task.CompletedTask;
 
-        public Task ResettingPasswordAsync(Action<string, string> reportError) =>
-            Task.CompletedTask;
+        public Task ResettingPasswordAsync(Action<string, string> reportError) => Task.CompletedTask;
 
-        public Task LoggingInAsync(string userName, Action<string, string> reportError) =>
-            Task.CompletedTask;
+        public Task LoggingInAsync(string userName, Action<string, string> reportError) => Task.CompletedTask;
 
         public Task RegistrationValidationAsync(Action<string, string> reportError) =>
             Task.CompletedTask;
@@ -79,11 +76,14 @@ namespace OrchardCore.Users.AuditTrail.Handlers
 
         private async Task RecordAuditTrailEventAsync(string eventName, string username)
         {
-            if (String.IsNullOrEmpty(username)) return;
+            if (String.IsNullOrEmpty(username))
+            {
+                return;
+            }
 
             var userManager = GetUserManagerFromHttpContext();
-            var user = await userManager.FindByNameAsync(username);
 
+            var user = await userManager.FindByNameAsync(username);
             if (user == null)
             {
                 var eventData = new Dictionary<string, object>

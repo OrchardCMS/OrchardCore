@@ -1,6 +1,6 @@
 namespace OrchardCore.AuditTrail.Services
 {
-    public interface IAuditTrailEventIdGenerator
+    public interface IAuditTrailIdGenerator
     {
         string GenerateUniqueId();
     }

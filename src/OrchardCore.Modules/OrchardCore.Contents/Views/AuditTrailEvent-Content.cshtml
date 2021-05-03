@@ -13,7 +13,7 @@
     var versionNumber = auditTrailContentEvent.VersionNumber;
 
     var shape = (IShape)Model;
-    var availableVersionsCount = shape.GetProperty<int>("AvailableVersionsCount");
+    var versionsCount = shape.GetProperty<int>("VersionsCount");
     var diffNodes = shape.GetProperty<List<DiffNode>>("DiffNodes");
 }
 
@@ -37,7 +37,7 @@
         <a edit-for="@contentItem">@contentItem.DisplayText</a>
     }
 
-    if (availableVersionsCount != versionNumber)
+    if (versionsCount != versionNumber)
     {
         <div>
             <a asp-route-area="OrchardCore.Contents"

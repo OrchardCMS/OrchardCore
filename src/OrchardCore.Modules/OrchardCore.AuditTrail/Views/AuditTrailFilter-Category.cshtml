@@ -1,21 +1,24 @@
+@model AuditTrailFilterViewModel
 @using Microsoft.Extensions.Localization
+@using OrchardCore.AuditTrail.ViewModels
 
 @inject IStringLocalizer<ViewContext> S;
 
 @{
-    var categories = (IList<AuditTrailCategoryDescriptor>)Model.Categories;
-    var category = (string)Model.Category;
-    
-    IList<SelectListItem> listItems = categories.GroupBy(descriptor => descriptor.Category)
+    var category = Model.Category;
+    var categories = Model.Categories;
+
+    var listItems = categories.GroupBy(descriptor => descriptor.Category)
         .Select(descriptor => descriptor.First()).Select(descriptor =>
             new SelectListItem
             {
                 Text = descriptor.LocalizedName.Value,
                 Value = descriptor.Category,
                 Selected = descriptor.Category == category
-            }).ToList();
+            })
+        .ToList();
 
-    listItems.Insert(0, new SelectListItem { Text = S["All categories"], Value = "" }); 
+    listItems.Insert(0, new SelectListItem { Text = S["All categories"], Value = "" });
 }
 
 <div class="form-group">

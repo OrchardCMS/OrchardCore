@@ -22,7 +22,7 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IAuditTrailEventDisplayManager _auditTrailEventDisplayManager;
+        private readonly IAuditTrailDisplayManager _auditTrailEventDisplayManager;
 
         public AdminController(
             ISiteService siteService,
@@ -30,7 +30,7 @@ namespace OrchardCore.AuditTrail.Controllers
             IAuditTrailManager auditTrailManager,
             IUpdateModelAccessor updateModelAccessor,
             IAuthorizationService authorizationService,
-            IAuditTrailEventDisplayManager auditTrailEventDisplayManager)
+            IAuditTrailDisplayManager auditTrailEventDisplayManager)
         {
             _siteService = siteService;
             _shapeFactory = shapeFactory;

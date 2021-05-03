@@ -156,8 +156,6 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             // So that a new record will be created.
             contentItem.Id = 0;
 
-            //await _auditTrailContentHandlers.RestoringAsync(new RestoreContentContext(contentItem));
-
             var context = new RestoreContentContext(contentItem);
 
             await _auditTrailContentHandlers.InvokeAsync((handler, context) => handler.RestoringAsync(context), context, _logger);

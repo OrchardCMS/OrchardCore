@@ -2,11 +2,11 @@ using OrchardCore.Entities;
 
 namespace OrchardCore.AuditTrail.Services
 {
-    public class AuditTrailEventIdGenerator : IAuditTrailEventIdGenerator
+    public class AuditTrailIdGenerator : IAuditTrailIdGenerator
     {
         private readonly IIdGenerator _generator;
 
-        public AuditTrailEventIdGenerator(IIdGenerator generator)
+        public AuditTrailIdGenerator(IIdGenerator generator)
         {
             _generator = generator;
         }

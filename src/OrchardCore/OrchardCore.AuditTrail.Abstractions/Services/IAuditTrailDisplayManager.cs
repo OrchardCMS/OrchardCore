@@ -5,7 +5,7 @@ using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.AuditTrail.Services
 {
-    public interface IAuditTrailEventDisplayManager
+    public interface IAuditTrailDisplayManager
     {
         /// <summary>
         /// Builds a shape tree of filter displays for the providers.

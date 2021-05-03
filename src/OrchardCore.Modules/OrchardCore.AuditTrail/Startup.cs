@@ -28,33 +28,26 @@ namespace OrchardCore.AuditTrail
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IAuditTrailManager, AuditTrailManager>();
+            services.AddScoped<IAuditTrailEventHandler, AuditTrailEventHandler>();
+            services.AddScoped<IAuditTrailDisplayManager, AuditTrailtDisplayManager>();
+            services.AddScoped<IAuditTrailDisplayHandler, AuditTrailDisplayHandler>();
+            services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
+
+            services.AddScoped<IDataMigration, AuditTrailMigrations>();
+            services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
+            services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
+
+            services.AddScoped<IPermissionProvider, AuditTrailPermissions>();
+            services.AddScoped<INavigationProvider, AuditTrailAdminMenu>();
+            services.AddScoped<INavigationProvider, AuditTrailSettingsAdminMenu>();
+
             services.AddContentPart<AuditTrailPart>()
                 .UseDisplayDriver<AuditTrailPartDisplayDriver>();
 
-            services.AddScoped<IDataMigration, AuditTrailMigrations>();
-
-            services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
-
-            services.AddScoped<IPermissionProvider, AuditTrailPermissions>();
-
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
-
-            services.AddScoped<IAuditTrailManager, AuditTrailManager>();
-
-            services.AddScoped<IAuditTrailEventHandler, AuditTrailEventHandler>();
-            services.AddScoped<IAuditTrailEventDriver, AuditTrailEventDriver>();
-
-            services.AddScoped<INavigationProvider, AuditTrailSettingsAdminMenu>();
-            services.AddScoped<INavigationProvider, AuditTrailAdminMenu>();
-
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();
-
-            services.AddScoped<IAuditTrailEventDisplayManager, AuditTrailEventDisplayManager>();
-
-            services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
-
-            services.AddSingleton<IAuditTrailEventIdGenerator, AuditTrailEventIdGenerator>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
 
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AuditTrailSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
@@ -62,6 +55,7 @@ namespace OrchardCore.AuditTrail
                 var T = sp.GetService<IStringLocalizer<Startup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<AuditTrailSettings>(T["Audit Trail settings"], T["Exports the audit trail settings."]);
             });
+
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AuditTrailSettings>());
 
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AuditTrailTrimmingSettings>>();
@@ -70,6 +64,7 @@ namespace OrchardCore.AuditTrail
                 var T = sp.GetService<IStringLocalizer<Startup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<AuditTrailTrimmingSettings>(T["Audit Trail Trimming settings"], T["Exports the audit trail trimming settings."]);
             });
+
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AuditTrailTrimmingSettings>());
         }
     }
