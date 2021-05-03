@@ -19,6 +19,7 @@ namespace OrchardCore.Features.Controllers
 {
     public class AdminController : Controller
     {
+        private readonly IFeatureValidationService _featureValidationService;
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
@@ -28,6 +29,7 @@ namespace OrchardCore.Features.Controllers
         private readonly IHtmlLocalizer H;
 
         public AdminController(
+            IFeatureValidationService featureValidationService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
             IShellFeaturesManager shellFeaturesManager,
@@ -36,6 +38,7 @@ namespace OrchardCore.Features.Controllers
             IOptions<FeatureOptions> featureOptions,
             INotifier notifier)
         {
+            _featureValidationService = featureValidationService;
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
@@ -156,19 +159,9 @@ namespace OrchardCore.Features.Controllers
         /// </summary>
         private bool FeatureIsAllowed(IFeatureInfo feature)
         {
-            if (!_featureOptions.IncludeAll && _featureOptions.Exclude.Contains(feature.Id) && !_featureOptions.Include.Contains(feature.Id))
+            if (!_featureValidationService.IsFeatureValid(feature.Id))
             {
                 return false;
-            }
-
-            // Check if any of the features dependencies are not allowed.
-            var featureDependencies = _extensionManager.GetFeatureDependencies(feature.Id);
-            foreach (var dependency in featureDependencies)
-            {
-                if (!_featureOptions.IncludeAll && _featureOptions.Exclude.Contains(dependency.Id) && !_featureOptions.Include.Contains(dependency.Id))
-                {
-                    return false;
-                }
             }
 
             // Checks if the feature is only allowed on the Default tenant

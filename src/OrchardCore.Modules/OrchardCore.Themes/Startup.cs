@@ -38,7 +38,8 @@ namespace OrchardCore.Themes
         public override void ConfigureServices(IServiceCollection services)
         {
             // This is configured twice, also by the Features module, in the event that one module is disabled.
-            services.Configure<FeatureOptions>(_shellConfiguration.GetSection("OrchardCore.Features"));
+            var section = _shellConfiguration.GetSection("OrchardCore_Features");
+            services.Configure<FeatureOptions>(section);
 
             services.AddRecipeExecutionStep<ThemesStep>();
             services.AddScoped<IPermissionProvider, Permissions>();

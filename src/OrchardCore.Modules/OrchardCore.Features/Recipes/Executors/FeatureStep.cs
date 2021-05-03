@@ -16,17 +16,20 @@ namespace OrchardCore.Features.Recipes.Executors
     public class FeatureStep : IRecipeStepHandler
     {
         private readonly IExtensionManager _extensionManager;
+        private IFeatureValidationService _featureValidationService;
         private readonly IShellFeaturesManager _shellFeatureManager;
         private readonly FeatureOptions _featureOptions;
         private readonly ShellSettings _shellSettings;
 
         public FeatureStep(
             IExtensionManager extensionManager,
+            IFeatureValidationService featureValidationService,
             IShellFeaturesManager shellFeatureManager,
             IOptions<FeatureOptions> featureOptions,
             ShellSettings shellSettings)
         {
             _extensionManager = extensionManager;
+            _featureValidationService = featureValidationService;
             _shellFeatureManager = shellFeatureManager;
             _featureOptions = featureOptions.Value;
             _shellSettings = shellSettings;
@@ -58,19 +61,9 @@ namespace OrchardCore.Features.Recipes.Executors
         /// </summary>
         private bool FeatureIsAllowed(IFeatureInfo feature)
         {
-            if (!_featureOptions.IncludeAll && _featureOptions.Exclude.Contains(feature.Id) && !_featureOptions.Include.Contains(feature.Id))
+            if (!_featureValidationService.IsFeatureValid(feature.Id))
             {
                 return false;
-            }
-
-            // Check if any of the features dependencies are not allowed.
-            var featureDependencies = _extensionManager.GetFeatureDependencies(feature.Id);
-            foreach (var dependency in featureDependencies)
-            {
-                if (!_featureOptions.IncludeAll && _featureOptions.Exclude.Contains(dependency.Id) && !_featureOptions.Include.Contains(dependency.Id))
-                {
-                    return false;
-                }
             }
 
             // Checks if the feature is only allowed on the Default tenant

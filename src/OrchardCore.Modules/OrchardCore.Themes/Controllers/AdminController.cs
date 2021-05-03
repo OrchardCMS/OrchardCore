@@ -24,6 +24,7 @@ namespace OrchardCore.Themes.Controllers
         private readonly ISiteThemeService _siteThemeService;
         private readonly IAdminThemeService _adminThemeService;
         private readonly IExtensionManager _extensionManager;
+        private readonly IFeatureValidationService _featureValidationService;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly FeatureOptions _featureOptions;
@@ -36,6 +37,7 @@ namespace OrchardCore.Themes.Controllers
             IThemeService themeService,
             ShellSettings shellSettings,
             IExtensionManager extensionManager,
+            IFeatureValidationService featureValidationService,
             IHtmlLocalizer<AdminController> localizer,
             IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
@@ -46,6 +48,7 @@ namespace OrchardCore.Themes.Controllers
             _siteThemeService = siteThemeService;
             _adminThemeService = adminThemeService;
             _extensionManager = extensionManager;
+            _featureValidationService = featureValidationService;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
             _featureOptions = featureOptions.Value;
@@ -79,7 +82,7 @@ namespace OrchardCore.Themes.Controllers
                 }
 
                 // Is the theme allowed for this tenant?
-                return (ThemeIsAllowed(extensionDescriptor.Id));
+                return ThemeIsAllowed(extensionDescriptor.Id);
             })
             .Select(extensionDescriptor =>
             {
@@ -113,24 +116,7 @@ namespace OrchardCore.Themes.Controllers
         /// Checks whether the theme is allowed for the current tenant
         /// </summary>
         private bool ThemeIsAllowed(string themeId)
-        {
-            if (!_featureOptions.IncludeAll && _featureOptions.Exclude.Contains(themeId) && !_featureOptions.Include.Contains(themeId))
-            {
-                return false;
-            }
-
-            // Check if any of the themes dependencies are not allowed.
-            var themeDependencies = _extensionManager.GetFeatureDependencies(themeId);
-            foreach (var dependency in themeDependencies)
-            {
-                if (!_featureOptions.IncludeAll && _featureOptions.Exclude.Contains(dependency.Id) && !_featureOptions.Include.Contains(dependency.Id))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+            => _featureValidationService.IsFeatureValid(themeId);
 
         [HttpPost]
         public async Task<ActionResult> SetCurrentTheme(string id)
