@@ -76,32 +76,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
                 return null;
             }
 
-            if (!contentItem.CreatedUtc.HasValue)
-            {
-                contentItem = await _session.Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemVersionId == contentItem.ContentItemVersionId)
-                    .FirstOrDefaultAsync();
-
-                if (contentItem == null)
-                {
-                    return null;
-                }
-            }
-
             var previousContentItem = previousAuditTrailEvent.As<AuditTrailContentEvent>().ContentItem;
-
-            if (!previousContentItem.CreatedUtc.HasValue)
-            {
-                previousContentItem = await _session.Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemVersionId == previousContentItem.ContentItemVersionId)
-                    .FirstOrDefaultAsync();
-
-                if (previousContentItem == null)
-                {
-                    return null;
-                }
-            }
-
             if (previousContentItem.ContentType == contentItem.ContentType)
             {
                 var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);

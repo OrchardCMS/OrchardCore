@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -66,23 +65,17 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 ?.As<AuditTrailContentEvent>()
                 ?.ContentItem;
 
-            if (String.IsNullOrEmpty(contentItem?.ContentItemVersionId))
+            if (contentItem == null)
             {
                 return NotFound();
             }
 
-            if (!contentItem.CreatedUtc.HasValue)
-            {
-                contentItem = await _contentManager.GetVersionAsync(contentItem.ContentItemVersionId);
-                if (contentItem == null)
-                {
-                    return NotFound();
-                }
-            }
-            else
-            {
-                contentItem = await _contentManager.LoadAsync(contentItem);
-            }
+            contentItem.Id = 0;
+            contentItem.ContentItemVersionId = "";
+            contentItem.Published = false;
+            contentItem.Latest = false;
+
+            contentItem = await _contentManager.LoadAsync(contentItem);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
@@ -111,34 +104,24 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 ?.As<AuditTrailContentEvent>()
                 ?.ContentItem;
 
-            if (String.IsNullOrEmpty(contentItem?.ContentItemVersionId))
+            if (contentItem == null)
             {
                 return NotFound();
             }
 
-            if (!contentItem.CreatedUtc.HasValue)
-            {
-                contentItem = await _contentManager.GetVersionAsync(contentItem.ContentItemVersionId);
-                if (contentItem == null)
-                {
-                    return NotFound();
-                }
-            }
-            else
-            {
-                contentItem = await _contentManager.LoadAsync(contentItem);
-                contentItem.Latest = contentItem.Published = false;
-            }
+            // So that a new record will be created.
+            contentItem.Id = 0;
+
+            // So that a new version id will be generated.
+            contentItem.ContentItemVersionId = "";
+
+            contentItem.Latest = contentItem.Published = false;
+
+            contentItem = await _contentManager.LoadAsync(contentItem);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, contentItem))
             {
                 return Forbid();
-            }
-
-            if (contentItem.Latest || contentItem.Published)
-            {
-                _notifier.Warning(H["'{0}' was not restored, the version is already active.", contentItem.DisplayText]);
-                return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
             }
 
             var result = await _contentManager.ValidateAsync(contentItem);
@@ -152,9 +135,6 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 
                 return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
             }
-
-            // So that a new record will be created.
-            contentItem.Id = 0;
 
             var context = new RestoreContentContext(contentItem);
 
@@ -171,10 +151,6 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 _session.Save(latestVersion);
             }
 
-            // So that a new version will be generated.
-            contentItem.ContentItemVersionId = String.Empty;
-
-            // Create a new draft from the version to restore.
             await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
             await _auditTrailContentHandlers.InvokeAsync((handler, context) => handler.RestoredAsync(context), context, _logger);
