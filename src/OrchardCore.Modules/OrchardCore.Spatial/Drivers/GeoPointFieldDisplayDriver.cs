@@ -40,8 +40,8 @@ namespace OrchardCore.Spatial.Drivers
         {
             return Initialize<EditGeoPointFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                model.Latitude = Convert.ToString(field.Latitude, CultureInfo.CurrentUICulture);
-                model.Longitude = Convert.ToString(field.Longitude, CultureInfo.CurrentUICulture);
+                model.Latitude = Convert.ToString(field.Latitude, CultureInfo.InvariantCulture);
+                model.Longitude = Convert.ToString(field.Longitude, CultureInfo.InvariantCulture);
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
@@ -72,7 +72,7 @@ namespace OrchardCore.Spatial.Drivers
                         field.Latitude = null;
                     }
                 }
-                else if (!Decimal.TryParse(viewModel.Latitude, NumberStyles.Any, CultureInfo.CurrentUICulture, out latitude))
+                else if (!Decimal.TryParse(viewModel.Latitude, NumberStyles.Any, CultureInfo.InvariantCulture, out latitude))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(viewModel.Latitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }
@@ -92,7 +92,7 @@ namespace OrchardCore.Spatial.Drivers
                         field.Longitude = null;
                     }
                 }
-                else if (!Decimal.TryParse(viewModel.Longitude, NumberStyles.Any, CultureInfo.CurrentUICulture, out longitude))
+                else if (!Decimal.TryParse(viewModel.Longitude, NumberStyles.Any, CultureInfo.InvariantCulture, out longitude))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(viewModel.Longitude), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }

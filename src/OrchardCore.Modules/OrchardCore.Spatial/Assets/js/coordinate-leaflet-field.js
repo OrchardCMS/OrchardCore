@@ -26,9 +26,9 @@ function addMapPicker() {
     };
 
     map.on('click', function (e) {
-        $('[data-latitude]').val(e.latlng.lat);
-        $('[data-longitude]').val(e.latlng.lng);
-        updateMarker(e.latlng.lat, e.latlng.lng);
+        $('[data-latitude]').val(e.latlng.lat.toFixed(6));
+        $('[data-longitude]').val(e.latlng.lng.toFixed(6));
+        updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
     });
 
 
