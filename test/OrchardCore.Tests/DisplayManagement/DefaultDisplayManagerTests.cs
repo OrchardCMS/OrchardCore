@@ -465,7 +465,7 @@ namespace OrchardCore.Tests.DisplayManagement
             resolverEnumerator.MoveNext();
             var resolver = resolverEnumerator.Current; 
 
-            var shapeNames = await resolver.GetShapeBindingNamesAsync(t => t.EndsWith("_DisplayOption", StringComparison.OrdinalIgnoreCase), true);
+            var shapeNames = await resolver.GetShapeBindingNamesAsync(t => t.EndsWith("_DisplayOption", StringComparison.OrdinalIgnoreCase));
             var shapeEnumerator = shapeNames.GetEnumerator();
             shapeEnumerator.MoveNext();
             var shapeName = shapeEnumerator.Current;
