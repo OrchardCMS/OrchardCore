@@ -11,6 +11,7 @@
     "install:orchardcore.media": "cd src/OrchardCore.Modules/OrchardCore.Media && npm install",
     "install:orchardcore.resources": "cd src/OrchardCore.Modules/OrchardCore.Resources && npm install",
     "install:orchardcore.setup": "cd src/OrchardCore.Modules/OrchardCore.Setup && npm install",
+    "install:orchardcore.spatial": "cd src/OrchardCore.Modules/OrchardCore.Spatial && npm install",
     "install:orchardcore.themes": "cd src/OrchardCore.Modules/OrchardCore.Themes && npm install",
     "install:orchardcore.shortcodes": "cd src/OrchardCore.Modules/OrchardCore.Shortcodes && npm install",
     "install:orchardcore.workflows": "cd src/OrchardCore.Modules/OrchardCore.Workflows && npm install",
