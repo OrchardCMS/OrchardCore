@@ -148,11 +148,17 @@ namespace OrchardCore.Search.Elastic
             entries.Add("ContentItemId", documentIndex.ContentItemId);
             entries.Add("Id", documentIndex.ContentItemId);
 
+          
+
             foreach (var entry in documentIndex.Entries)
             {
-                if (entry.Name.Contains("Content.ContentItem.FullText") || entry.Name.Contains("Analyzed") || entry.Name.Contains("Sanitize") || entry.Name.Contains("Normalized"))
+                if (entries.ContainsKey(entry.Name)
+                    || entry.Name.Contains("Content.ContentItem.FullText")
+                    || entry.Name.Contains("Analyzed")
+                    || entry.Name.Contains("Sanitize")
+                    || entry.Name.Contains("Normalized"))
                 {
-                    continue;
+                        continue;
                 }
 
                 switch (entry.Type)
