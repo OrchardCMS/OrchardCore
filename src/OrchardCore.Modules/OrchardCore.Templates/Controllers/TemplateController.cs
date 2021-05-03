@@ -112,7 +112,7 @@ namespace OrchardCore.Templates.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(TemplateIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -216,7 +216,7 @@ namespace OrchardCore.Templates.Controllers
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name, returnUrl });
+                return RedirectToAction(nameof(Create), new { name, returnUrl });
             }
 
             var template = templatesDocument.Templates[name];
@@ -364,11 +364,11 @@ namespace OrchardCore.Templates.Controllers
 
             if (options.AdminTemplates)
             {
-                return RedirectToAction("Admin");
+                return RedirectToAction(nameof(Admin));
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
         }
 

@@ -13,7 +13,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class ScriptTag
     {
-        private static readonly char[] Separators = new[] {',', ' '};
+        private static readonly char[] Separators = new[] { ',', ' ' };
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
@@ -58,6 +58,7 @@ namespace OrchardCore.Resources.Liquid
 
             if (String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(src))
             {
+                // {% script src:"~/TheBlogTheme/js/clean-blog.min.js" %}
                 RequireSettings setting;
 
                 if (String.IsNullOrEmpty(dependsOn))
@@ -141,7 +142,7 @@ namespace OrchardCore.Resources.Liquid
                     }
                 }
 
-                if (at == ResourceLocation.Inline)
+                if (at == ResourceLocation.Unspecified || at == ResourceLocation.Inline)
                 {
                     resourceManager.RenderLocalScript(setting, writer);
                 }
@@ -149,6 +150,7 @@ namespace OrchardCore.Resources.Liquid
             else if (!String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))
             {
                 // Resource required
+                // {% script name:"bootstrap" %}
 
                 var setting = resourceManager.RegisterResource("script", name);
 
@@ -191,6 +193,11 @@ namespace OrchardCore.Resources.Liquid
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
                     setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                if (at == ResourceLocation.Unspecified || at == ResourceLocation.Inline)
+                {
+                    resourceManager.RenderLocalScript(setting, writer);
                 }
             }
             else if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(src))

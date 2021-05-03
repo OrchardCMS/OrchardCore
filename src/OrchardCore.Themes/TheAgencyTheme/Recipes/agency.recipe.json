@@ -417,17 +417,20 @@
           ]
         },
         {
-          "Name": "HtmlWidget",
+          "Name": "RawHtml",
           "DisplayName": "Html",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "HtmlWidget",
-              "Name": "HtmlWidget",
+              "PartName": "RawHtml",
+              "Name": "RawHtml",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
@@ -441,6 +444,9 @@
           "DisplayName": "Blockquote",
           "Settings": {
             "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -461,6 +467,9 @@
           "DisplayName": "Container",
           "Settings": {
             "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -490,6 +499,9 @@
           "DisplayName": "Image",
           "Settings": {
             "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -519,6 +531,9 @@
           "DisplayName": "Paragraph",
           "Settings": {
             "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -718,7 +733,7 @@
           ]
         },
         {
-          "Name": "HtmlWidget",
+          "Name": "RawHtml",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [
             {
@@ -812,7 +827,7 @@
       "Data": [
         {
           "ContentItemId": "[js: uuid()]",
-          "ContentType": "HtmlWidget",
+          "ContentType": "RawHtml",
           "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
@@ -824,7 +839,7 @@
             "RenderTitle": false,
             "Position": 10
           },
-          "HtmlWidget": {
+          "RawHtml": {
             "Content": {
               "Html": "[file:text('Snippets/footer.html')]"
             }
@@ -841,6 +856,7 @@
             "ConditionId": "[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
                 "Name": "BooleanCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"
@@ -855,6 +871,7 @@
             "ConditionId": "[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
                 "Name": "HomepageCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"

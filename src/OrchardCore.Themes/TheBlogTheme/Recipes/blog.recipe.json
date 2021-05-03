@@ -296,6 +296,9 @@
           "DisplayName": "Container",
           "Settings": {
             "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -324,7 +327,10 @@
           "Name": "Blockquote",
           "DisplayName": "Blockquote",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -345,6 +351,9 @@
           "DisplayName": "Image",
           "Settings": {
             "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -365,6 +374,9 @@
           "DisplayName": "Paragraph",
           "Settings": {
             "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -384,7 +396,10 @@
           "Name": "RawHtml",
           "DisplayName": "Raw Html",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
               "Stereotype": "Widget"
             }
           },
@@ -1160,6 +1175,7 @@
             "ConditionId":"[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
                 "Name": "BooleanCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"
@@ -1174,6 +1190,7 @@
             "ConditionId": "[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
                 "Name": "HomepageCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"

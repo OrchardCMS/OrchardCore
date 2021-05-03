@@ -159,7 +159,7 @@ namespace OrchardCore.Workflows.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Filter", model.Options.Filter },
                 { "Options.OrderBy", model.Options.OrderBy }
             });
@@ -241,7 +241,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             await _workflowStore.DeleteAsync(workflow);
             _notifier.Success(H["Workflow {0} has been deleted.", id]);
-            return RedirectToAction("Index", new { workflowTypeId = workflowType.Id });
+            return RedirectToAction(nameof(Index), new { workflowTypeId = workflowType.Id });
         }
 
         [HttpPost]
@@ -278,7 +278,7 @@ namespace OrchardCore.Workflows.Controllers
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            return RedirectToAction("Index", new { workflowTypeId, page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
+            return RedirectToAction(nameof(Index), new { workflowTypeId, page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
         }
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)

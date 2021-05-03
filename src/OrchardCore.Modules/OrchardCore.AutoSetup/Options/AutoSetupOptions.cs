@@ -22,6 +22,11 @@ namespace OrchardCore.AutoSetup.Options
         public List<TenantSetupOptions> Tenants { get; set; } = new List<TenantSetupOptions>();
 
         /// <summary>
+        /// Whether the configuration section exists.
+        /// </summary>
+        public bool ConfigurationExists { get; set; }
+
+        /// <summary>
         /// AutoSetupOptions Validation logic.
         /// </summary>
         /// <param name="validationContext">The validation context.</param>

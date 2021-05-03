@@ -58,6 +58,7 @@ namespace OrchardCore.Lucene
             services.AddSingleton<LuceneIndexManager>();
             services.AddSingleton<LuceneAnalyzerManager>();
             services.AddScoped<LuceneIndexingService>();
+            services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();

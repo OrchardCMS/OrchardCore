@@ -129,8 +129,6 @@ namespace OrchardCore.Users
                 configuration.GetSection("OrchardCore_Users").Bind(userOptions);
             });
 
-            services.AddSecurity();
-
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
@@ -184,7 +182,6 @@ namespace OrchardCore.Users
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
-            services.AddIdGeneration();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
             services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();

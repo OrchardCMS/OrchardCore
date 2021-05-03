@@ -30,7 +30,7 @@ namespace OrchardCore.ContentFields.Fields
             {
                 var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
 
-                model.Values = settings.Options.Where(o => field.Values.Contains(o.Value)).Select(o => o.Value).ToArray();
+                model.Values = settings.Options.Where(o => field.Values?.Contains(o.Value) == true).Select(o => o.Value).ToArray();
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
