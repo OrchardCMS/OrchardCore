@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Lucene.Net.QueryParser" />
+    <PackageReference Include="Lucene.Net.Spatial" />
     <ProjectReference Include="..\OrchardCore.Lucene.Abstractions\OrchardCore.Lucene.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Queries.Abstractions\OrchardCore.Queries.Abstractions.csproj" />
   </ItemGroup>

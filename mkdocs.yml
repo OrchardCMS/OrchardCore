@@ -144,6 +144,7 @@ nav:
             - Rules: docs/reference/modules/Rules/README.md
             - Shortcodes: docs/reference/modules/Shortcodes/README.md
             - Sitemaps: docs/reference/modules/Sitemaps/README.md
+            - Spatial: docs/reference/modules/Spatial/README.md
             - XML-RPC: docs/reference/modules/XmlRpc/README.md
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
