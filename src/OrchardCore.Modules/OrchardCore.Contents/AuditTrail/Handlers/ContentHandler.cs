@@ -82,8 +82,8 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 return;
             }
 
-            var versionNumber = await _session.Query<ContentItem, ContentItemIndex>()
-                .Where(contentItemIndex => contentItemIndex.ContentItemId == content.ContentItem.ContentItemId)
+            var versionNumber = await _session.QueryIndex<ContentItemIndex>()
+                .Where(index => index.ContentItemId == content.ContentItem.ContentItemId)
                 .CountAsync();
 
             var eventData = new Dictionary<string, object>

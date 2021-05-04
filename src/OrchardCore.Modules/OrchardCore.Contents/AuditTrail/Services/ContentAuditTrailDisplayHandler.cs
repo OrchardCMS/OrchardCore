@@ -26,7 +26,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
         private readonly ISession _session;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        private readonly Dictionary<string, int> _versionsCounts = new Dictionary<string, int>();
+        private readonly Dictionary<string, string> _latestVersionId = new Dictionary<string, string>();
 
         public ContentAuditTrailDisplayHandler(ISession session, IContentDefinitionManager contentDefinitionManager)
         {
@@ -46,16 +46,17 @@ namespace OrchardCore.Contents.AuditTrail.Services
                 }
 
                 var contentItem = model.AuditTrailEvent.As<AuditTrailContentEvent>().ContentItem;
-                if (!_versionsCounts.TryGetValue(contentItem.ContentItemId, out var versionsCount))
+                if (!_latestVersionId.TryGetValue(contentItem.ContentItemId, out var latestVersionId))
                 {
-                    versionsCount = await _session.Query<ContentItem, ContentItemIndex>()
-                        .Where(index => index.ContentItemId == contentItem.ContentItemId)
-                        .CountAsync();
+                    latestVersionId = (await _session.QueryIndex<ContentItemIndex>()
+                        .Where(index => index.ContentItemId == contentItem.ContentItemId && index.Latest)
+                        .FirstOrDefaultAsync())
+                        ?.ContentItemVersionId;
 
-                    _versionsCounts[contentItem.ContentItemId] = versionsCount;
+                    _latestVersionId[contentItem.ContentItemId] = latestVersionId;
                 }
 
-                context.EventShape.Properties["VersionsCount"] = versionsCount;
+                context.EventShape.Properties["LatestVersionId"] = latestVersionId;
             }
         }
 
@@ -64,11 +65,12 @@ namespace OrchardCore.Contents.AuditTrail.Services
             var contentItem = auditTrailEvent.As<AuditTrailContentEvent>().ContentItem;
 
             var previousAuditTrailEvent = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
-                .Where(eventIndex =>
-                    eventIndex.Category == "Content" &&
-                    eventIndex.CreatedUtc < auditTrailEvent.CreatedUtc &&
-                    eventIndex.EventFilterData == contentItem.ContentItemId)
-                .OrderByDescending(eventIndex => eventIndex.Id)
+                .Where(index =>
+                    index.Category == "Content" &&
+                    index.CreatedUtc <= auditTrailEvent.CreatedUtc &&
+                    index.AuditTrailEventId != auditTrailEvent.AuditTrailEventId &&
+                    index.EventFilterData == contentItem.ContentItemId)
+                .OrderByDescending(index => index.Id)
                 .FirstOrDefaultAsync();
 
             if (previousAuditTrailEvent == null)

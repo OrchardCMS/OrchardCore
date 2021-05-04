@@ -60,7 +60,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         public async Task<ActionResult> Detail(int versionNumber, string auditTrailEventId)
         {
             var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
-                .Where(auditTrailEventIndex => auditTrailEventIndex.AuditTrailEventId == auditTrailEventId)
+                .Where(index => index.AuditTrailEventId == auditTrailEventId)
                 .FirstOrDefaultAsync())
                 ?.As<AuditTrailContentEvent>()
                 ?.ContentItem;
@@ -99,7 +99,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         public async Task<ActionResult> Restore(string auditTrailEventId)
         {
             var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
-                .Where(auditTrailEventIndex => auditTrailEventIndex.AuditTrailEventId == auditTrailEventId)
+                .Where(index => index.AuditTrailEventId == auditTrailEventId)
                 .FirstOrDefaultAsync())
                 ?.As<AuditTrailContentEvent>()
                 ?.ContentItem;
@@ -136,15 +136,21 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
             }
 
+            var latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
+                .Where(index => index.ContentItemId == contentItem.ContentItemId && index.Latest)
+                .FirstOrDefaultAsync();
+
+            if (contentItem.ContentItemVersionId == latestVersion.ContentItemVersionId)
+            {
+                _notifier.Warning(H["'{0}' was not restored, the version is already active.", contentItem.DisplayText]);
+                return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
+            }
+
             var context = new RestoreContentContext(contentItem);
 
             await _auditTrailContentHandlers.InvokeAsync((handler, context) => handler.RestoringAsync(context), context, _logger);
 
             // Remove an existing draft but keep an existing published version.
-            var latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
-                .Where(i => i.ContentItemId == contentItem.ContentItemId && i.Latest)
-                .FirstOrDefaultAsync();
-
             if (latestVersion != null)
             {
                 latestVersion.Latest = false;

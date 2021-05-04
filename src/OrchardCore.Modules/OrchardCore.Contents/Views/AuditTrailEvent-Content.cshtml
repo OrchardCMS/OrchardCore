@@ -11,10 +11,8 @@
     var auditTrailContentEvent = auditTrailEvent.As<AuditTrailContentEvent>();
     var contentItem = auditTrailContentEvent.ContentItem;
     var versionNumber = auditTrailContentEvent.VersionNumber;
-
-    var shape = (IShape)Model;
-    var versionsCount = shape.GetProperty<int>("VersionsCount");
-    var diffNodes = shape.GetProperty<List<DiffNode>>("DiffNodes");
+    var latestVersionId = ((IShape)Model).GetProperty<string>("LatestVersionId");
+    var diffNodes = ((IShape)Model).GetProperty<List<DiffNode>>("DiffNodes");
 }
 
 <script asp-name="jsdiff" depends-on="jQuery" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.min.js" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.js" type="text/javascript" version="4.0.2" at="Foot"></script>
@@ -37,7 +35,7 @@
         <a edit-for="@contentItem">@contentItem.DisplayText</a>
     }
 
-    if (versionsCount != versionNumber)
+    if (contentItem != null && contentItem.ContentItemVersionId != latestVersionId)
     {
         <div>
             <a asp-route-area="OrchardCore.Contents"

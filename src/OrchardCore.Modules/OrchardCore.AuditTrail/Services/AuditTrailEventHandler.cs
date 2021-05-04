@@ -22,22 +22,22 @@ namespace OrchardCore.AuditTrail.Services
 
             if (!String.IsNullOrWhiteSpace(userName))
             {
-                context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.UserName == userName);
+                context.Query.With<AuditTrailEventIndex>(index => index.UserName == userName);
             }
 
             if (!String.IsNullOrWhiteSpace(category))
             {
-                context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.Category == category);
+                context.Query.With<AuditTrailEventIndex>(index => index.Category == category);
             }
 
             if (from != null)
             {
-                context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.CreatedUtc >= from);
+                context.Query.With<AuditTrailEventIndex>(index => index.CreatedUtc >= from);
             }
 
             if (to != null)
             {
-                context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.CreatedUtc <= to.Value.AddDays(1));
+                context.Query.With<AuditTrailEventIndex>(index => index.CreatedUtc <= to.Value.AddDays(1));
             }
         }
 

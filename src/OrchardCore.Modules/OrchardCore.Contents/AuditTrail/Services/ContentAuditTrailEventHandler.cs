@@ -15,7 +15,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
     {
         public override Task CreateAsync(AuditTrailCreateContext context)
         {
-            if (context.EventFilterKey != "Content")
+            if (context.EventFilterKey != "content")
             {
                 return Task.CompletedTask;
             }

@@ -123,13 +123,13 @@ namespace OrchardCore.AuditTrail.Services
             switch (orderBy)
             {
                 case AuditTrailOrderBy.CategoryAscending:
-                    query.With<AuditTrailEventIndex>().OrderBy(eventIndex => eventIndex.Category).ThenByDescending(eventIndex => eventIndex.CreatedUtc);
+                    query.With<AuditTrailEventIndex>().OrderBy(index => index.Category).ThenByDescending(index => index.CreatedUtc);
                     break;
                 case AuditTrailOrderBy.EventAscending:
-                    query.With<AuditTrailEventIndex>().OrderBy(eventIndex => eventIndex.EventName).ThenByDescending(eventIndex => eventIndex.CreatedUtc);
+                    query.With<AuditTrailEventIndex>().OrderBy(index => index.EventName).ThenByDescending(index => index.CreatedUtc);
                     break;
                 case AuditTrailOrderBy.DateDescending:
-                    query.With<AuditTrailEventIndex>().OrderByDescending(eventIndex => eventIndex.Id);
+                    query.With<AuditTrailEventIndex>().OrderByDescending(index => index.Id);
                     break;
                 default:
                     break;
@@ -175,7 +175,7 @@ namespace OrchardCore.AuditTrail.Services
 
         public Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId) =>
             _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
-                .Where(x => x.AuditTrailEventId == auditTrailEventId)
+                .Where(index => index.AuditTrailEventId == auditTrailEventId)
                 .FirstOrDefaultAsync();
 
         public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() => DescribeProviders().Describe();
