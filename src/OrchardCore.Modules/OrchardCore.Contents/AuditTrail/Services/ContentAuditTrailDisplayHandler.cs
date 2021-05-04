@@ -64,7 +64,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
         {
             var contentItem = auditTrailEvent.As<AuditTrailContentEvent>().ContentItem;
 
-            var previousAuditTrailEvent = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
+            var previousAuditTrailEvent = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
                 .Where(index =>
                     index.Category == "Content" &&
                     index.CreatedUtc <= auditTrailEvent.CreatedUtc &&

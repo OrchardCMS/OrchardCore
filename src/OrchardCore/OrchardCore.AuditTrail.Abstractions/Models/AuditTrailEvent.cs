@@ -6,6 +6,11 @@ namespace OrchardCore.AuditTrail.Models
     public class AuditTrailEvent : Entity
     {
         /// <summary>
+        /// The name of the collection that is used for this type.
+        /// </summary>
+        public const string Collection = "Audit";
+
+        /// <summary>
         /// The ID of the event.
         /// </summary>
         public string AuditTrailEventId { get; set; }

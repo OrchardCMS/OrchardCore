@@ -99,7 +99,7 @@ namespace OrchardCore.AuditTrail.Services
                 await _auditTrailEventHandlers.InvokeAsync((handler, context, @event)
                     => handler.AlterAsync(context, @event), context, @event, Logger);
 
-                _session.Save(@event);
+                _session.Save(@event, AuditTrailEvent.Collection);
             }
         }
 
@@ -109,7 +109,7 @@ namespace OrchardCore.AuditTrail.Services
             Filters filters = null,
             AuditTrailOrderBy orderBy = AuditTrailOrderBy.DateDescending)
         {
-            var query = _session.Query<AuditTrailEvent>();
+            var query = _session.Query<AuditTrailEvent>(collection: AuditTrailEvent.Collection);
 
             if (filters != null)
             {
@@ -157,7 +157,7 @@ namespace OrchardCore.AuditTrail.Services
         public async Task<int> TrimAsync(TimeSpan retentionPeriod)
         {
             var dateThreshold = _clock.UtcNow.AddDays(1) - retentionPeriod;
-            var auditTrailEvents = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
+            var auditTrailEvents = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
                 .Where(index => index.CreatedUtc <= dateThreshold).ListAsync();
 
             var deletedEvents = 0;
@@ -166,7 +166,7 @@ namespace OrchardCore.AuditTrail.Services
             // https://github.com/OrchardCMS/OrchardCore/issues/5821
             foreach (var auditTrailEvent in auditTrailEvents)
             {
-                _session.Delete(auditTrailEvent);
+                _session.Delete(auditTrailEvent, collection: AuditTrailEvent.Collection);
                 deletedEvents++;
             }
 
@@ -174,7 +174,7 @@ namespace OrchardCore.AuditTrail.Services
         }
 
         public Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId) =>
-            _session.Query<AuditTrailEvent, AuditTrailEventIndex>()
+            _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
                 .Where(index => index.AuditTrailEventId == auditTrailEventId)
                 .FirstOrDefaultAsync();
 

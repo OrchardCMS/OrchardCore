@@ -5,6 +5,8 @@ namespace OrchardCore.AuditTrail.Indexes
 {
     public class AuditTrailEventIndexProvider : IndexProvider<AuditTrailEvent>
     {
+        public AuditTrailEventIndexProvider() => CollectionName = AuditTrailEvent.Collection;
+
         public override void Describe(DescribeContext<AuditTrailEvent> context) =>
             context.For<AuditTrailEventIndex>()
                 .Map(auditTrailEvent =>

@@ -30,7 +30,8 @@ namespace OrchardCore.AuditTrail.Migrations
                 .Column<string>(nameof(AuditTrailEventIndex.EventFilterData))
                 .Column<string>(nameof(AuditTrailEventIndex.EventFilterKey))
                 .Column<string>(nameof(AuditTrailEventIndex.EventName))
-                .Column<string>(nameof(AuditTrailEventIndex.UserName), column => column.Nullable().WithLength(255)));
+                .Column<string>(nameof(AuditTrailEventIndex.UserName), column => column.Nullable().WithLength(255)),
+                collection: AuditTrailEvent.Collection);
 
             SchemaBuilder.AlterIndexTable<AuditTrailEventIndex>(table => table
                 .CreateIndex("IDX_AuditTrailEventIndex_DocumentId",
@@ -41,7 +42,8 @@ namespace OrchardCore.AuditTrail.Migrations
                     "EventFilterData",
                     "EventFilterKey",
                     "EventName",
-                    "UserName")
+                    "UserName"),
+                collection: AuditTrailEvent.Collection
             );
 
             return 1;
