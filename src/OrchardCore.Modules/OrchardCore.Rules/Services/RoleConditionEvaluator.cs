@@ -32,7 +32,7 @@ namespace OrchardCore.Rules.Services
             var operatorComparer = _operatorResolver.GetOperatorComparer(condition.Operation);
 
             // Claim all if the operator is negative
-            if(condition.Operation is INegateOperator)
+            if (condition.Operation is INegateOperator)
             {
                 return (_httpContextAccessor.HttpContext.User?.Claims.All(claim => 
                     claim.Type == roleClaimType && 
