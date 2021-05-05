@@ -8,6 +8,11 @@ namespace OrchardCore.Media
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media");
+        public static readonly Permission ManageRootFolderMedia = new Permission("ManageRootFolderMediaContent", "Manage Media For Root Folder");
+        public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMediaContent", "Manage Own Media");
+        public static readonly Permission ManageOthersMedia = new Permission("ManageOthersMediaContent", "Manage Media For Others");
+        public static readonly Permission ManageOwnRoleMedia = new Permission("ManageOwnRoleMediaContent", "Manage Media For User Own Roles");
+        public static readonly Permission ManageOthersRoleMedia = new Permission("ManageOthersRoleMediaContent", "Manage Media For Others Roles");
         public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder");
         public static readonly Permission ManageMediaProfiles = new Permission("ManageMediaProfiles", "Manage Media Profiles");
         public static readonly Permission ViewMediaOptions = new Permission("ViewMediaOptions", "View Media Options");
@@ -17,6 +22,11 @@ namespace OrchardCore.Media
             return Task.FromResult(new[]
             {
                 ManageMedia,
+                ManageRootFolderMedia,
+                ManageOwnMedia,
+                ManageOthersMedia,
+                ManageOwnRoleMedia,
+                ManageOthersRoleMedia,
                 ManageAttachedMediaFieldsFolder,
                 ManageMediaProfiles,
                 ViewMediaOptions
@@ -31,12 +41,21 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder, ManageMediaProfiles, ViewMediaOptions }
+                    Permissions = new[] {
+                        ManageMedia,
+                        ManageRootFolderMedia,
+                        ManageOwnMedia,
+                        ManageOthersMedia,
+                        ManageOwnRoleMedia,
+                        ManageOthersRoleMedia,
+                        ManageAttachedMediaFieldsFolder,
+                        ManageMediaProfiles,
+                        ViewMediaOptions }
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { ManageMedia }
+                    Permissions = new[] { ManageMedia, ManageOwnMedia }
                 },
                 new PermissionStereotype
                 {
@@ -45,12 +64,12 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Author",
-                    Permissions = new[] { ManageMedia } // Replace this by ManageOwnMedia when it's implemented
+                    Permissions = new[] { ManageMedia, ManageOwnMedia } // Replace this by ManageOwnMedia when it's implemented
                 },
                 new PermissionStereotype
                 {
                     Name = "Contributor",
-                    Permissions = new[] { ManageMedia } // Replace this by ManageOwnMedia when it's implemented
+                    Permissions = new[] { ManageMedia, ManageOwnMedia } // Replace this by ManageOwnMedia when it's implemented
                 },
             };
         }

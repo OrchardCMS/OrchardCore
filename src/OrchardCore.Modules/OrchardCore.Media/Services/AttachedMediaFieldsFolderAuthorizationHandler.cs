@@ -1,7 +1,10 @@
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Security;
 
@@ -11,21 +14,24 @@ namespace OrchardCore.Media.Services
     /// Check if the path passed as resource is inside the AttachedMediaFieldsFolder
     /// and in case it is, It checks if the user has ManageAttachedMediaFieldsFolder permission
     /// </summary>
-    public class AttachedMediaFieldsFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+    public class AttachedMediaFieldsFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement> 
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
         private readonly IMediaFileStore _fileStore;
+        private readonly MediaOptions _mediaOptions;
         private char _pathSeparator;
         private string _mediaFieldsFolder;
 
         public AttachedMediaFieldsFolderAuthorizationHandler(IServiceProvider serviceProvider,
             AttachedMediaFieldFileService attachedMediaFieldFileService,
-            IMediaFileStore fileStore)
+            IMediaFileStore fileStore,
+            IOptions<MediaOptions> options)
         {
             _serviceProvider = serviceProvider;
             _attachedMediaFieldFileService = attachedMediaFieldFileService;
             _fileStore = fileStore;
+            _mediaOptions = options.Value;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
@@ -52,7 +58,7 @@ namespace OrchardCore.Media.Services
             _mediaFieldsFolder = _fileStore.NormalizePath(_attachedMediaFieldFileService.MediaFieldsFolder)
                                 .TrimEnd(_pathSeparator) + _pathSeparator;
 
-            var path = context.Resource as string;
+            var path = context.Resource as string;            
 
             if (IsMediaFieldsFolder(path) || IsDescendantOfMediaFieldsFolder(path))
             {
@@ -61,6 +67,70 @@ namespace OrchardCore.Media.Services
 
             // Lazy load to prevent circular dependencies
             var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
+            
+            var folderArray = path.Split('/');
+            var levelOneFolder = folderArray[0];
+            var levelTwoFolder = string.Empty;
+            if (folderArray.Count() > 1)
+            {
+                levelTwoFolder = folderArray[1];
+            }
+
+            if (levelOneFolder == _mediaOptions.AssetsUsersFolder)
+            {
+                if (!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOthersMedia) && !await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnMedia))
+                {
+                    return;
+                }
+
+                if(levelTwoFolder == context.User.Identity.Name)
+                {
+                    if (!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnMedia))
+                    {
+                        return;
+                    }
+                }
+                else if(!string.IsNullOrEmpty(levelTwoFolder))
+                {
+                    if (!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOthersMedia))
+                    {
+                        return;
+                    }
+                }
+            }
+
+
+            if (levelOneFolder == _mediaOptions.AssetsRolesFolder)
+            {
+                if (!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnRoleMedia) && !await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOthersRoleMedia))
+                {
+                    return;
+                }
+
+                if(context.User.FindAll(ClaimTypes.Role).Any(x => x.Value == levelTwoFolder))
+                {
+                    if (!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnRoleMedia))
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(levelTwoFolder) && !await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOthersRoleMedia))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            if (levelOneFolder != _mediaOptions.AssetsRolesFolder && levelOneFolder != _mediaOptions.AssetsUsersFolder && path != "")
+            {
+                if(!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageRootFolderMedia))
+                {
+                    return;
+                }                
+            }
+
             if (await authorizationService.AuthorizeAsync(context.User, Permissions.ManageMedia))
             {
                 context.Succeed(requirement);
