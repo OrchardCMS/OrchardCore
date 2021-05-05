@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -63,8 +64,7 @@ namespace OrchardCore.Contents.Handlers
 
                     if (bodyAspect != null && bodyAspect.Body != null)
                     {
-                        using var stringBuilderPool = StringBuilderPool.GetInstance();
-                        using var sw = new StringWriter(stringBuilderPool.Builder);
+                        using var sw = new ZStringWriter();
                         // Don't encode the body
                         bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
                         fullTextAspect.Segments.Add(sw.ToString());

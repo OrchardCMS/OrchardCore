@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -97,8 +98,7 @@ namespace OrchardCore.Resources.Liquid
 
                     if (statements != null && statements.Count > 0)
                     {
-                        using var stringBuilderPool = StringBuilderPool.GetInstance();
-                        using var sw = new StringWriter(stringBuilderPool.Builder);
+                        using var sw = new ZStringWriter();
                         var completion = await statements.RenderStatementsAsync(sw, encoder, context);
 
                         if (completion != Completion.Normal)
@@ -134,8 +134,7 @@ namespace OrchardCore.Resources.Liquid
 
                 if (statements != null && statements.Count > 0)
                 {
-                    using var stringBuilderPool = StringBuilderPool.GetInstance();
-                    await using var sw = new StringWriter(stringBuilderPool.Builder);
+                    using var sw = new ZStringWriter();
                     var completion = await statements.RenderStatementsAsync(sw, encoder, context);
 
                     if (completion != Completion.Normal)

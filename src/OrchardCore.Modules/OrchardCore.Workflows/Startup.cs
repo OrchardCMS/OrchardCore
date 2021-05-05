@@ -51,7 +51,6 @@ namespace OrchardCore.Workflows
                 o.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Properties, name, context)));
             });
 
-            services.AddIdGeneration();
             services.AddSingleton<IWorkflowTypeIdGenerator, WorkflowTypeIdGenerator>();
             services.AddSingleton<IWorkflowIdGenerator, WorkflowIdGenerator>();
             services.AddSingleton<IActivityIdGenerator, ActivityIdGenerator>();
