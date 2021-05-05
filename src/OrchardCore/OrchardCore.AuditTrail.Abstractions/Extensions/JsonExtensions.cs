@@ -52,7 +52,10 @@ namespace OrchardCore.AuditTrail.Extensions
         public static JObject FindDiff(this JToken current, JToken previous)
         {
             var diff = new JObject();
-            if (JToken.DeepEquals(current, previous)) return diff;
+            if (JToken.DeepEquals(current, previous))
+            {
+                return diff;
+            }
 
             switch (current.Type)
             {
@@ -61,7 +64,10 @@ namespace OrchardCore.AuditTrail.Extensions
                         var currentObject = current as JObject;
                         var previousObject = previous as JObject;
 
-                        if (previousObject == null) break;
+                        if (previousObject == null)
+                        {
+                            break;
+                        }
 
                         var addedKeys = currentObject.Properties()
                             .Select(property => property.Name).Except(previousObject.Properties()
@@ -128,7 +134,40 @@ namespace OrchardCore.AuditTrail.Extensions
                 token.Type == JTokenType.Integer ||
                 token.Type == JTokenType.Boolean;
 
-        public static bool IsNotNullOrEmpty(this JProperty jProperty) =>
-            jProperty.HasValues;
+        public static bool IsNotNullOrEmpty(this JProperty jProperty) => jProperty.HasValues;
+
+        public static JObject CreateNullObject(this JObject jObject) => CreateNull(jObject) as JObject;
+
+        public static JToken CreateNull(this JToken jToken)
+        {
+            if (jToken.Type == JTokenType.Object)
+            {
+                var jObject = new JObject();
+                foreach (var child in jToken.Children())
+                {
+                    jObject.Add(CreateNull(child));
+                }
+
+                return jObject;
+            }
+
+            if (jToken.Type == JTokenType.Array)
+            {
+                var jArray = new JArray();
+                foreach (var child in jToken.Children<JValue>())
+                {
+                    jArray.Add(CreateNull(child));
+                }
+
+                return jArray;
+            }
+
+            if (jToken.Type == JTokenType.Property)
+            {
+                return new JProperty(((JProperty)jToken).Name, CreateNull(((JProperty)jToken).Value));
+            }
+
+            return JValue.CreateNull();
+        }
     }
 }

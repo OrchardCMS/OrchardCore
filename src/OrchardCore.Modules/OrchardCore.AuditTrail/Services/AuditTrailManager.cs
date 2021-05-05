@@ -59,7 +59,6 @@ namespace OrchardCore.AuditTrail.Services
             where TAuditTrailEventProvider : IAuditTrailEventProvider
         {
             var eventDescriptors = DescribeEvents(auditTrailContext.EventName, typeof(TAuditTrailEventProvider).FullName);
-
             foreach (var eventDescriptor in eventDescriptors)
             {
                 if (!await IsEventEnabledAsync(eventDescriptor))
@@ -157,13 +156,12 @@ namespace OrchardCore.AuditTrail.Services
         public async Task<int> TrimAsync(TimeSpan retentionPeriod)
         {
             var dateThreshold = _clock.UtcNow.AddDays(1) - retentionPeriod;
+
             var auditTrailEvents = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
-                .Where(index => index.CreatedUtc <= dateThreshold).ListAsync();
+                .Where(index => index.CreatedUtc <= dateThreshold)
+                .ListAsync();
 
             var deletedEvents = 0;
-
-            // Related Orchard Core issue to be able to delete items without a foreach:
-            // https://github.com/OrchardCMS/OrchardCore/issues/5821
             foreach (var auditTrailEvent in auditTrailEvents)
             {
                 _session.Delete(auditTrailEvent, collection: AuditTrailEvent.Collection);
@@ -208,7 +206,6 @@ namespace OrchardCore.AuditTrail.Services
         private async Task<string> GetClientAddressAsync()
         {
             var settings = await GetAuditTrailSettingsAsync();
-
             if (!settings.EnableClientIpAddressLogging)
             {
                 return null;

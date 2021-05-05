@@ -10,7 +10,6 @@ using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.AuditTrail.Extensions;
 using OrchardCore.Contents.AuditTrail.Models;
@@ -24,14 +23,12 @@ namespace OrchardCore.Contents.AuditTrail.Services
     public class ContentAuditTrailDisplayHandler : AuditTrailDisplayHandlerBase
     {
         private readonly ISession _session;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         private readonly Dictionary<string, string> _latestVersionId = new Dictionary<string, string>();
 
-        public ContentAuditTrailDisplayHandler(ISession session, IContentDefinitionManager contentDefinitionManager)
+        public ContentAuditTrailDisplayHandler(ISession session)
         {
             _session = session;
-            _contentDefinitionManager = contentDefinitionManager;
         }
 
         public override async Task DisplayEventAsync(DisplayEventContext context)
@@ -81,17 +78,23 @@ namespace OrchardCore.Contents.AuditTrail.Services
             var previousContentItem = previousAuditTrailEvent.As<AuditTrailContentEvent>().ContentItem;
             if (previousContentItem.ContentType == contentItem.ContentType)
             {
-                var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
+                var definition = ((JObject)contentItem.Content).CreateNullObject();
+                definition.Merge(((JObject)previousContentItem.Content).CreateNullObject());
 
-                JObject diff = JsonExtensions.FindDiff(contentItem.Content, previousContentItem.Content);
+                var content = new JObject(definition);
+                var previous = new JObject(definition);
+
+                content.Merge(contentItem.Content);
+                previous.Merge(previousContentItem.Content);
+
+                var diff = content.FindDiff(previous);
+
                 var diffNodes = new List<DiffNode>();
-
-                var contentParts = contentTypeDefinition.Parts.Select(typePartDefinition => typePartDefinition.Name);
-                foreach (var contentPart in contentParts)
+                foreach (var part in definition.Properties())
                 {
-                    if (diff.ContainsKey(contentPart))
+                    if (diff.ContainsKey(part.Name))
                     {
-                        foreach (var diffNode in JsonExtensions.GenerateDiffNodes(diff[contentPart]))
+                        foreach (var diffNode in diff[part.Name].GenerateDiffNodes())
                         {
                             diffNode.Context = contentItem.ContentType + "/" + diffNode.Context;
                             diffNodes.Add(diffNode);

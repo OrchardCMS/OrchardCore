@@ -140,7 +140,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 .Where(index => index.ContentItemId == contentItem.ContentItemId && index.Latest)
                 .FirstOrDefaultAsync();
 
-            if (contentItem.ContentItemVersionId == latestVersion.ContentItemVersionId)
+            if (latestVersion != null && contentItem.ContentItemVersionId == latestVersion.ContentItemVersionId)
             {
                 _notifier.Warning(H["'{0}' was not restored, the version is already active.", contentItem.DisplayText]);
                 return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
