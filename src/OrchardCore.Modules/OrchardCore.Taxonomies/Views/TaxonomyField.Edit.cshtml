@@ -36,7 +36,7 @@
         for (var e = entry.Level; e < previousLevel; e++)
         {
             WriteLiteral("</div>");
-            closingDivs = 0;
+            closingDivs--;
         }
 
         @if (!settings.Unique)

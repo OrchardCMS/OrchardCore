@@ -10,7 +10,7 @@ Each menu item will point to its own view.
 
 ## What you will need
 
-- The current version of the .NET Core SDK. You can download it from here <https://www.microsoft.com/net/download/core>.
+- The current version of the .NET SDK. You can download it from here <https://dotnet.microsoft.com/download>.
 - A text editor and a terminal where you can type dotnet commands.
 
 ## Creating an Orchard Core CMS site and module

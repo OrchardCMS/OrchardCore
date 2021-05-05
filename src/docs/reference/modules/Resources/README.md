@@ -45,51 +45,60 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.5.1         | -              |
-| jQuery.slim           | Script | 3.5.1         | -              |
+| jQuery                | Script | 3.6.0         | -              |
+| jQuery.slim           | Script | 3.6.0         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
 | js-cookie             | Script | 2.2.1         | jQuery         |
 | popper                | Script | 1.16.1        | -              |
-| bootstrap             | Script | 3.4.0, 4.5.3  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.5.3  | -              |
+| bootstrap             | Script | 3.4.0, 4.6.0  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.6.0  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.59.1        | -              |
-| codemirror            | Style  | 5.59.1        | -              |
-| font-awesome          | Style  | 4.7.0, 5.15.1 | -              |
-| font-awesome          | Script | 5.15.1        | -              |
-| font-awesome-v4-shims | Script | 5.15.1        | -              |
+| codemirror            | Script | 5.61.0        | -              |
+| codemirror            | Style  | 5.61.0        | -              |
+| font-awesome          | Style  | 4.7.0, 5.15.3 | -              |
+| font-awesome          | Script | 5.15.3        | -              |
+| font-awesome-v4-shims | Script | 5.15.3        | -              |
 | Sortable              | Script | 1.10.2        | -              |
 | trumbowyg             | Script | 2.23.0        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
+| monaco-loader         | Script | 0.23.0        | -              |
+| monaco                | Script | 0.23.0        | monaco-loader  |
 
 ### Registering a Resource Manifest
 
-Named resources are registered by implementing the `IResourceManifestProvider` interface.
+Named resources are registered by configuring the `ResourceManagementOptions` options.
 
 This example is provided from `TheBlogTheme` to demonstrate.
 
 ```csharp
-public class ResourceManifest : IResourceManifestProvider
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    public void BuildManifests(IResourceManifestBuilder builder)
-    {
-        var manifest = builder.Add();
+    private static ResourceManifest _manifest;
 
-        manifest
+    static ResourceManagementOptionsConfiguration()
+    {
+        _manifest = new ResourceManifest();
+
+        _manifest
             .DefineScript("TheBlogTheme-vendor-jQuery")
             .SetUrl("~/TheBlogTheme/vendor/jquery/jquery.min.js", "~/TheBlogTheme/vendor/jquery/jquery.js")
             .SetCdn("https://code.jquery.com/jquery-3.4.1.min.js", "https://code.jquery.com/jquery-3.4.1.js")
             .SetCdnIntegrity("sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh", "sha384-mlceH9HlqLp7GMKHrj5Ara1+LvdTZVMx4S1U43/NxCvAkzIo8WJ0FE7duLel3wVo")
             .SetVersion("3.4.1");
-        }
     }
+
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
 
 ```
 
@@ -103,8 +112,8 @@ We set the Cdn Integrity Hashes and the version to `3.4.1`
 This script will then be available for the tag helper or API to register by name. 
 
 !!! note "Registration"
-    Make sure to register this `IResourceManifestProvider` in the `Startup` or your theme or module.
-    `serviceCollection.AddScoped<IResourceManifestProvider, ResourceManifest>();`
+    Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
+    `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
 
 ## Usage
 
@@ -413,7 +422,7 @@ The style block will only be injected once based on its name and can optionally 
         .my-class {
             /* some style */
         }
-    {% endscriptblock %}
+    {% endstyleblock %}
     ```
 
 === "Razor"
@@ -548,3 +557,11 @@ These should be rendered at the bottom of the `<body>` section.
 ### Logging
 
 If you register a resource by name and it is not found this will be logged as an error in your `App_Data/Logs` folder.
+
+## CDN disabled by default
+
+The `UseCdn` option, configured in the _Configuration -> Settings -> General_ section, is disabled by default.
+This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
+
+!!! note
+    It is recommended to enable the CDN setting after setup.

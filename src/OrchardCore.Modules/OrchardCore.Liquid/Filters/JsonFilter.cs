@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public class JsonFilter : ILiquidFilter
+    public static class JsonFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> Json(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var formatting = Formatting.None;
 

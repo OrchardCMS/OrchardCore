@@ -1,8 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Helpers;
@@ -12,14 +10,16 @@ namespace OrchardCore.Lists.Liquid
 {
     public class ListItemsFilter : ILiquidFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-        {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'list_items'");
-            }
+        private readonly ISession _session;
 
-            string listContentItemId = null;
+        public ListItemsFilter(ISession session)
+        {
+            _session = session;
+        }
+
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        {
+            string listContentItemId;
 
             if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
             {
@@ -30,11 +30,9 @@ namespace OrchardCore.Lists.Liquid
                 listContentItemId = input.ToStringValue();
             }
 
-            var session = ((IServiceProvider)services).GetRequiredService<ISession>();
+            var listItems = await ListQueryHelpers.QueryListItemsAsync(_session, listContentItemId);
 
-            var listItems = await ListQueryHelpers.QueryListItemsAsync(session, listContentItemId);
-
-            return FluidValue.Create(listItems);
+            return FluidValue.Create(listItems, ctx.Options);
         }
     }
 }

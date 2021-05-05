@@ -10,6 +10,7 @@ namespace OrchardCore.Users.Services
     /// <summary>
     /// Custom implementation of <see cref="IUserClaimsPrincipalFactory{TUser}"/> adding email claims.
     /// </summary>
+    [Obsolete("The class 'DefaultUserClaimsPrincipalFactory' in obsolete, please implement 'IUserClaimsProvider' instead.")]
     public class DefaultUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<IUser, IRole>
     {
         public DefaultUserClaimsPrincipalFactory(

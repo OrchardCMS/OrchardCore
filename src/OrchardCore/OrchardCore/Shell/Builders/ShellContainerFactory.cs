@@ -32,13 +32,6 @@ namespace OrchardCore.Environment.Shell.Builders
             _serviceProvider = serviceProvider;
         }
 
-        public void AddCoreServices(IServiceCollection services)
-        {
-            services.TryAddScoped<IShellStateUpdater, ShellStateUpdater>();
-            services.TryAddScoped<IShellStateManager, NullShellStateManager>();
-            services.AddScoped<IShellDescriptorManagerEventHandler, ShellStateCoordinator>();
-        }
-
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
@@ -53,8 +46,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
             tenantServiceCollection.AddSingleton(blueprint);
-
-            AddCoreServices(tenantServiceCollection);
 
             // Execute IStartup registrations
 

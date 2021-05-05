@@ -60,7 +60,7 @@ namespace OrchardCore.Media.Controllers
             return View();
         }
 
-        public async Task<ActionResult<IEnumerable<IFileStoreEntry>>> GetFolders(string path)
+        public async Task<ActionResult<IAsyncEnumerable<IFileStoreEntry>>> GetFolders(string path)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
@@ -102,22 +102,13 @@ namespace OrchardCore.Media.Controllers
                 await _mediaFileStore.TryCreateDirectoryAsync($"{_mediaOptions.AssetsUsersFolder}/{User.Identity.Name}");
             }
 
-            var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
+            var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
+                .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)e.Path));
 
-            var allowed = new List<IFileStoreEntry>();            
-
-            foreach (var entry in content)
-            {
-                if ((await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)entry.Path)))
-                {
-                    allowed.Add(entry);
-                }
-            }
-
-            return allowed.ToArray();
+            return Ok(allowed);
         }
 
-        public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
+        public async Task<ActionResult<IAsyncEnumerable<object>>> GetMediaItems(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -135,18 +126,11 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var files = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => !x.IsDirectory);
+            var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
+                .WhereAwait(async e => !e.IsDirectory && await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)e.Path))
+                .Select(e => CreateFileResult(e));
 
-            var allowed = new List<IFileStoreEntry>();
-            foreach (var entry in files)
-            {
-                if ((await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)entry.Path)))
-                {
-                    allowed.Add(entry);
-                }
-            }
-
-            return allowed.Select(CreateFileResult).ToArray();
+            return Ok(allowed);
         }
 
         public async Task<ActionResult<object>> GetMediaItem(string path)
@@ -321,12 +305,12 @@ namespace OrchardCore.Media.Controllers
 
             if (!_allowedFileExtensions.Contains(Path.GetExtension(newPath), StringComparer.OrdinalIgnoreCase))
             {
-                return StatusCode(StatusCodes.Status403Forbidden, S["This file extension is not allowed: {0}", Path.GetExtension(newPath)]);
+                return StatusCode(StatusCodes.Status400BadRequest, S["This file extension is not allowed: {0}", Path.GetExtension(newPath)]);
             }
 
             if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot move media because a file already exists with the same name"]);
+                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot move media because a file already exists with the same name"]);
             }
 
             await _mediaFileStore.MoveFileAsync(oldPath, newPath);
@@ -438,13 +422,13 @@ namespace OrchardCore.Media.Controllers
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
             if (mediaFolder != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot create folder because a folder already exists with the same name"]);
+                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot create folder because a folder already exists with the same name"]);
             }
 
             var existingFile = await _mediaFileStore.GetFileInfoAsync(newPath);
             if (existingFile != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot create folder because a file already exists with the same name"]);
+                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot create folder because a file already exists with the same name"]);
             }
 
             await _mediaFileStore.TryCreateDirectoryAsync(newPath);
