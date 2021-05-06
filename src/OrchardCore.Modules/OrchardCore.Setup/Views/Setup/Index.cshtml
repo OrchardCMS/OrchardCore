@@ -210,7 +210,7 @@
             <div class="mb-3 col-md-6" asp-validation-class-for="Password">
                 <label asp-for="Password">@T["Password"]</label>
                 <div class="input-group">
-                    <input asp-for="Password" class="form-control" data-bs-toggle="popover" data-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-bs-content="@passwordTooltip" required pattern="@passwordRegex" />
+                    <input asp-for="Password" class="form-control" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-bs-content="@passwordTooltip" required pattern="@passwordRegex" />
                     <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <div id="passwordStrength"></div>
