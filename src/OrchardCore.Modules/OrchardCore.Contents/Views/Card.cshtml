@@ -12,14 +12,17 @@
 
     var cardIdPrefix = $"card-{Model.Identifier}-{Model.Grouping.Key}".HtmlClassify();
 }
-<div class="card">
-    <div class="card-header" id="heading-@cardIdPrefix">
-        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-@cardIdPrefix" aria-expanded="true" aria-controls="collapse-@cardIdPrefix">
-          @Model.Grouping.Key
-        </button>        
-        
+<div class="accordion-item">
+    <div class="accordion-header" id="heading-@cardIdPrefix">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@cardIdPrefix" aria-expanded="true" aria-controls="collapse-@cardIdPrefix">
+                @Model.Grouping.Key
+            </button>
+        </h2>
     </div>
     <div class="collapse show" id="collapse-@cardIdPrefix" aria-labelledby="heading-@cardIdPrefix">
-        @tag
+        <div class="accordion-body">
+            @tag
+        </div>
     </div>
 </div>

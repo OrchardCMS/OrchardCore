@@ -52,16 +52,16 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
 | js-cookie             | Script | 2.2.1         | jQuery         |
-| popper                | Script | 1.16.1        | -              |
-| bootstrap             | Script | 3.4.0, 4.6.0  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.6.0  | -              |
-| bootstrap-select      | Script | 1.13.18       | -              |
-| bootstrap-select      | Style  | 1.13.18       | -              |
+| popperjs              | Script | 2.9.2         | -              |
+| bootstrap             | Script | 5.0.0         | popperjs       |
+| bootstrap             | Style  | 5.0.0         | -              |
+| bootstrap-select      | Script | 1.14.0-beta2  | -              |
+| bootstrap-select      | Style  | 1.14.0-beta2  | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
 | codemirror            | Script | 5.61.0        | -              |
 | codemirror            | Style  | 5.61.0        | -              |
-| font-awesome          | Style  | 4.7.0, 5.15.3 | -              |
+| font-awesome          | Style  | 5.15.3        | -              |
 | font-awesome          | Script | 5.15.3        | -              |
 | font-awesome-v4-shims | Script | 5.15.3        | -              |
 | Sortable              | Script | 1.10.2        | -              |
