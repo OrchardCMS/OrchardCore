@@ -28,17 +28,18 @@ namespace OrchardCore.Templates.Deployment
             var templateObjects = new JObject();
             var templates = await _templatesManager.GetTemplatesDocumentAsync();
 
-            if(allTemplatesStep.ExportAsFiles)
+            if (allTemplatesStep.ExportAsFiles)
             {
                 foreach (var template in templates.Templates)
                 {
-                    var fileName = "AdminTemplates/" + template.Key.Replace("__", "-").Replace("_",".") + ".liquid";
-                    var templateValue = new Template {Description = template.Value.Description, Content = $"[file:text('{fileName}')]"};
+                    var fileName = "AdminTemplates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
+                    var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
                     await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
                     templateObjects[template.Key] = JObject.FromObject(templateValue);
                 }
             }
-            else {
+            else
+            {
                 foreach (var template in templates.Templates)
                 {
                     templateObjects[template.Key] = JObject.FromObject(template.Value);

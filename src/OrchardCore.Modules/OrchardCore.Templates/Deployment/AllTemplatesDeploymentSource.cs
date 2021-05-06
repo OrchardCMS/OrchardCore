@@ -28,12 +28,12 @@ namespace OrchardCore.Templates.Deployment
             var templateObjects = new JObject();
             var templates = await _templatesManager.GetTemplatesDocumentAsync();
 
-            if(allTemplatesStep.ExportAsFiles)
+            if (allTemplatesStep.ExportAsFiles)
             {
                 foreach (var template in templates.Templates)
                 {
-                    var fileName = "Templates/" + template.Key.Replace("__", "-").Replace("_",".") + ".liquid";
-                    var templateValue = new Template {Description = template.Value.Description, Content = $"[file:text('{fileName}')]"};
+                    var fileName = "Templates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
+                    var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
                     await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
                     templateObjects[template.Key] = JObject.FromObject(templateValue);
                 }
