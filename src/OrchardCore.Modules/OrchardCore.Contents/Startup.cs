@@ -163,7 +163,6 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentHandleProvider, ContentItemIdHandleProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
-            services.AddIdGeneration();
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part
