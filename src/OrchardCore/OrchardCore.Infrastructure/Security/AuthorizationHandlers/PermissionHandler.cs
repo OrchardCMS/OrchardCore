@@ -1,6 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security.AuthorizationHandlers
 {
@@ -11,11 +10,11 @@ namespace OrchardCore.Security.AuthorizationHandlers
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            if (!(context?.User?.Identity?.IsAuthenticated ?? false))
+            if (context.HasSucceeded || !(context?.User?.Identity?.IsAuthenticated ?? false))
             {
                 return Task.CompletedTask;
             }
-            else if (context.User.HasClaim(Permission.ClaimType, requirement.Permission.Name))
+            else if (requirement.Permission.IsGranted(context.User.Claims))
             {
                 context.Succeed(requirement);
             }
