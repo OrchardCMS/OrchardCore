@@ -20,19 +20,3 @@
 
     @await DisplayAsync(Model.Metadata.ChildContent)
 </form>
-
-<script at="Foot">
-    (function ($) {
-        $(function () {
-            var formId = '#'+ '@formId'
-            $(formId).on('submit', function () {
-                $('<input />')
-                    .attr('type', 'hidden')
-                    .attr('name', 'validationRules')  
-                    .attr('value', JSON.stringify(window.validatorObject))
-                    .appendTo(formId);
-                return true;
-            });
-        });
-    })(jQuery);
-</script>

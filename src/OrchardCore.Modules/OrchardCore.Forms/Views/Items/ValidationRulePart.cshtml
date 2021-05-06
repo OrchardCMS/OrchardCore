@@ -1,21 +1,19 @@
 @using OrchardCore.Forms.Models
 @model ShapeViewModel<ValidationRulePart>
 @{
+    var contentItemId = ViewContext.ModelState.Values.FirstOrDefault().RawValue;
     var type = Model.Value.Type;
-    var option = Html.Raw(Model.Value.Option);
-    var validationMessage = Model.Value.ValidationMessage;
     var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
     var elementId = formElementPart.Id;
 }
 
-<script asp-src="~/OrchardCore.Forms/Scripts/validator.min.js" debug-src="~/OrchardCore.Forms/Scripts/validator.js" asp-name="validator" depends-on="jQuery" at="Foot"></script>
 <script asp-src="~/OrchardCore.Forms/Scripts/validationRuleHelper.min.js" debug-src="~/OrchardCore.Forms/Scripts/validationRuleHelper.js" asp-name="validationRuleHelper" depends-on="jQuery" at="Foot"></script>
 
 <script at="Foot">
     (function ($) {
         $(function () {
             if ('@type' != 'none') {
-                validationElementFunction('@type', '@elementId', '@option', '@validationMessage', '@T["Validation failed for \"{0}\".", type]');
+                validationElementFunction('@contentItemId','@elementId');
             }
         })
     })(jQuery);

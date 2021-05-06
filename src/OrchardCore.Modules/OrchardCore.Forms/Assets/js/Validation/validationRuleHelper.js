@@ -1,5 +1,7 @@
+
 'use strict';
 var validationSet = new Set();
+var validationRuleApi = "/api/validationApi/ValidateFormByRule";
 
 function checkIE() {
     if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) {
@@ -9,71 +11,76 @@ function checkIE() {
     }
 }
 
-function validationEvent(type, validationElementId, option, elementId, validationMessage, defaultValidationMessage) {
-    var validationResult = false;
-    if (window.validator.isEmpty(option)) {
-        validationResult = window.validator[type]($(elementId).val());
-    }
-    else if (window.validator.isJSON(option)) {
-        validationResult = window.validator[type]($(elementId).val(), JSON.parse(option));
-    }
-    else {
-        validationResult = window.validator[type]($(elementId).val(), option);
-    }
+
+function validationEvent(contentItemId, validationElementId, elementId) {
     var validationElement = document.getElementById(validationElementId);
-    if (validationResult) {
-        if (validationElement) {
-            validationElement.remove();
-            validationSet.delete(validationElementId);
-            if (validationSet.size === 0) {
-                $(elementId).closest('form').find(':submit').removeAttr('disabled');
+    var elementName = $(elementId).attr('name');
+    var elementValue = $(elementId).val();
+    $.ajax({
+        url: validationRuleApi + "?contentItemId=" + contentItemId + "&formName=" + elementName + "&formValue=" + elementValue
+    })
+        .done(function (data) {
+            if (validationElement) {
+                validationElement.remove();
+                validationSet.delete(validationElementId);
+                if (validationSet.size === 0) {
+                    $(elementId).closest('form').find(':submit').removeAttr('disabled');
+                }
             }
-        }
-    }
-    else {
-        if (!validationElement) {
-            if ($.isEmptyObject(validationMessage)) {
-                validationMessage = defaultValidationMessage;
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            if (!validationElement) {
+                var errorMessage = jqXHR.responseJSON.value;
+                var dangerText = '<div id="' + validationElementId + '" class="text-danger">' + errorMessage + '</div>';
+                $(elementId).after(dangerText);
+                validationSet.add(validationElementId);
+                $(elementId).closest('form').find(':submit').attr('disabled', 'true');
             }
-            var dangerText = '<div id="' + validationElementId + '" class="text-danger">' + validationMessage + '</div>';
-            $(elementId).after(dangerText);
-            validationSet.add(validationElementId);
-            $(elementId).closest('form').find(':submit').attr('disabled', 'true');
-        }
-    }
-    return validationResult;
+        });
 }
 
-function validationElementFunction(type, originElementId, option, validationMessage, defaultValidationMessage) {
+function validationElementFunction(contentItemId, originElementId) {
     var isIE = checkIE();
     var elementId = '#' + originElementId;
     var timestamp = new Date().getTime();
     var validationElementId = originElementId + timestamp;
 
-    if (window.validatorObject) {
-        var obj = { type: type, elementId: originElementId, option: option };
-        window.validatorObject.push(obj);
-    }
-    else {
-        window.validatorObject = new Array();
-        var obj = { type: type, elementId: originElementId, option: option };
-        window.validatorObject.push(obj);
-    }
+    //if (window.validatorObject) {
+    //    var obj = { elementId: originElementId};
+    //    window.validatorObject.push(obj);
+    //}
+    //else {
+    //    window.validatorObject = new Array();
+    //    var obj = { elementId: originElementId };
+    //    window.validatorObject.push(obj);
+    //}
+    //ev.preventDefault();
 
-    $(elementId).bind('change keyup', function (e) {
-        validationEvent(type, validationElementId, option, elementId, validationMessage, defaultValidationMessage);
+    ////later you decide you want to submit
+    //$(this).unbind('submit').submit()
+
+    //function preventDefault(e) {
+    //    e.preventDefault();
+    //}
+    //$("form").bind("submit", preventDefault);
+
+    //// later, now switching back
+    //$("form#foo").unbind("submit", preventDefault);
+
+    $(elementId).bind('change', function (e) {
+        validationEvent(contentItemId, validationElementId, elementId);
     })
     var submitBtn = $(elementId).closest('form').find(':submit')[0];
 
     if (submitBtn) {
         if (isIE) {
             submitBtn.attachEvent('click', function () {
-                validationEvent(type, validationElementId, option, elementId, validationMessage, defaultValidationMessage);
+                validationEvent(contentItemId, validationElementId, elementId);
             })
         }
         else {
             submitBtn.addEventListener('click', function (e) {
-                validationEvent(type, validationElementId, option, elementId, validationMessage, defaultValidationMessage);
+                validationEvent(contentItemId, validationElementId, elementId);
             })
         }
     }
@@ -83,10 +90,10 @@ function validationTypeChange(e, option = '', message = '') {
     var selectedValidationOptionItem = e.options[e.options.selectedIndex];
     var isShowOption = selectedValidationOptionItem.getAttribute('is-show-option');
     var isShowValidationMessage = selectedValidationOptionItem.getAttribute('is-show-validationMessage');
-    var validationMessage = $(e.closest('.edit-item-parts')).find('.validation-message');
+    var validationErrorMessage = $(e.closest('.edit-item-parts')).find('.validation-error-message');
     var validationOption = $(e.closest('.edit-item-parts')).find('.validation-option');
 
-    if (isShowOption === "0") {
+    if (isShowOption === "False") {
         validationOption.css('display', 'none');
     }
     else {
@@ -103,12 +110,12 @@ function validationTypeChange(e, option = '', message = '') {
         }
     }
 
-    if (isShowValidationMessage === '0') {
-        validationMessage.css('display', 'none');
+    if (isShowValidationMessage === 'False') {
+        validationErrorMessage.css('display', 'none');
     }
     else {
-        validationMessage.css('display', 'block');
-        var validationMessageInput = validationMessage.find('input');
+        validationErrorMessage.css('display', 'block');
+        var validationMessageInput = validationErrorMessage.find('input');
 
         if (message === '') {
             validationMessageInput.val('');
@@ -118,4 +125,3 @@ function validationTypeChange(e, option = '', message = '') {
         }
     }
 }
-

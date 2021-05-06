@@ -1,35 +1,29 @@
 @using OrchardCore.Forms.ViewModels;
+
 @model ValidationRulePartEditViewModel
 @{
     dynamic dyModel = Model;
     var typeName = string.Empty;
-
     if (Model.Type != null)
     {
         typeName = $"{dyModel.Metadata.Prefix}.Type";
     }
+    var validationOptions = Model.ValidationOptionViewModels;
+
 }
 
 <div class="form-group">
     <label asp-for="Type">@T["Validation Type"]</label>
     <select asp-for="Type" class="form-control content-preview-select" onchange="validationTypeChange(this)">
-        <option value="none" is-show-option="0" is-show-validationMessage="0">@T["None"]</option>
-        <option value="contains" is-show-option="1" is-show-validationMessage="1" data-validation-option="@T["compared string"]">@T["Contains"]</option>
-        <option value="equals" is-show-option="1" is-show-validationMessage="1" data-validation-option="@T["compared string"]">@T["Equals"]</option>
-        <option value="isAfter" is-show-option="1" is-show-validationMessage="1" data-validation-option="2020-03-03">@T["Is After"]</option>
-        <option value="isBefore" is-show-option="1" is-show-validationMessage="1" data-validation-option="2020-03-03">@T["Is Before"]</option>
-        <option value="isBoolean" is-show-option="0" is-show-validationMessage="1">@T["Is Boolean"]</option>
-        <option value="isByteLength" is-show-option="1" is-show-validationMessage="1" data-validation-option="{&quot;min&quot; : 0, &quot;max&quot; : 20}">@T["Is ByteLength"]</option>
-        <option value="isDate" is-show-option="0" is-show-validationMessage="1">@T["Is Date"]</option>
-        <option value="isDecimal" is-show-option="0" is-show-validationMessage="1">@T["Is Decimal"]</option>
-        <option value="isDivisibleBy" is-show-option="1" is-show-validationMessage="1" data-validation-option="3">@T["Is Divisible By"]</option>
-        <option value="isEmpty" is-show-option="0" is-show-validationMessage="1">@T["Is Empty"]</option>
-        <option value="isFloat" is-show-option="1" is-show-validationMessage="1" data-validation-option="{&quot;min&quot; : 7.22, &quot;max&quot; : 9.55}">@T["Is Float"]</option>
-        <option value="isInt" is-show-option="0" is-show-validationMessage="1">@T["Is Int"]</option>
-        <option value="isJSON" is-show-option="0" is-show-validationMessage="1">@T["Is JSON"]</option>
-        <option value="isLength" is-show-option="1" is-show-validationMessage="1" data-validation-option="{&quot;min&quot; : 7.22, &quot;max&quot; : 20.0}">@T["Is Length"]</option>
-        <option value="isNumeric" is-show-option="0" is-show-validationMessage="1">@T["Is Numeric"]</option>
-        <option value="matches" is-show-option="1" is-show-validationMessage="1" data-validation-option="^\\\\d{n}$">@T["Matches"]</option>
+        @foreach (var item in validationOptions)
+        {
+            <option value="@item.Name"
+                    is-show-option="@item.IsShowOption.ToString()"
+                    is-show-validationMessage="@item.IsShowErrorMessage.ToString()"
+                    data-validation-option="@item.OptionPlaceHolder">
+                @T[item.DisplayName]
+                </option>
+            }
     </select>
     <span class="hint">@T["The Validation type."]</span>
 </div>
@@ -40,9 +34,9 @@
     <span class="hint">@T["For details, please visit <a href=\"{0}\">{0}</a>", "https://github.com/validatorjs/validator.js"]</span>
 </div>
 
-<div class="form-group validation-message" style="display:none">
-    <label asp-for="ValidationMessage">@T["Validation Message"]</label>
-    <input asp-for="ValidationMessage" type="text" class="form-control content-preview-text" />
+<div class="form-group validation-error-message" style="display:none">
+    <label asp-for="ErrorMessage">@T["Error Message"]</label>
+    <input asp-for="ErrorMessage" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["Error message after the field validation fails."]</span>
 </div>
 
@@ -53,7 +47,7 @@
         $(function () {
             if ('@typeName' != '') {
                 var selector = 'select[name="@typeName"]'
-                validationTypeChange($(selector)[0], '@Model.Option', '@Model.ValidationMessage')
+                validationTypeChange($(selector)[0], '@Model.Option', '@Model.ErrorMessage')
             }
         })
     })(jQuery);
