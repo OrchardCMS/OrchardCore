@@ -40,11 +40,6 @@ namespace OrchardCore.Tests.Apis.Context
                     {
                         return new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(), PermissionsContexts);
                     });
-
-                    collection.AddAuthentication((options) =>
-                    {
-                        options.AddScheme<AlwaysLoggedInApiAuthenticationHandler>("Api", null);
-                    });
                 })
                 .Configure(appBuilder => appBuilder.UseAuthorization()));
 

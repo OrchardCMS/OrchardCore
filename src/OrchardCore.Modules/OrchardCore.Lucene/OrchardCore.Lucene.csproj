@@ -40,6 +40,7 @@
   <ItemGroup>
     <PackageReference Include="Lucene.Net.Analysis.Common" />
     <PackageReference Include="Lucene.Net.QueryParser" />
+    <PackageReference Include="Lucene.Net.Spatial" />
   </ItemGroup>
 
 </Project>
