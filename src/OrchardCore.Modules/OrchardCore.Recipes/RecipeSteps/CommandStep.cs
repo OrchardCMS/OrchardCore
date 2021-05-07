@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Commands;
@@ -42,8 +43,7 @@ namespace OrchardCore.Recipes.RecipeSteps
 
             foreach (var command in step.Commands)
             {
-                using var stringBuilderPool = StringBuilderPool.GetInstance();
-                using (var output = new StringWriter(stringBuilderPool.Builder))
+                using (var output = new ZStringWriter())
                 {
                     _logger.LogInformation("Executing command: {Command}", command);
                     var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
