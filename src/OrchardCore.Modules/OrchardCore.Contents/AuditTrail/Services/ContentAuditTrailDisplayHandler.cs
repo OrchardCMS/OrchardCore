@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
-using Newtonsoft.Json.Linq;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
@@ -57,7 +55,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
             }
         }
 
-        private async Task<List<DiffNode>> BuildDiffNodesAsync(AuditTrailEvent auditTrailEvent)
+        private async Task<DiffNode[]> BuildDiffNodesAsync(AuditTrailEvent auditTrailEvent)
         {
             var contentItem = auditTrailEvent.As<AuditTrailContentEvent>().ContentItem;
 
@@ -76,52 +74,9 @@ namespace OrchardCore.Contents.AuditTrail.Services
             }
 
             var previousContentItem = previousAuditTrailEvent.As<AuditTrailContentEvent>().ContentItem;
-            if (previousContentItem.ContentType == contentItem.ContentType)
+            if (contentItem.FindDiff(previousContentItem, out var diff))
             {
-                var definition = ((JObject)contentItem.Content).CreateNullObject();
-                definition.Merge(((JObject)previousContentItem.Content).CreateNullObject());
-
-                var content = new JObject(definition);
-                var previous = new JObject(definition);
-
-                content.Merge(contentItem.Content);
-                previous.Merge(previousContentItem.Content);
-
-                var diff = content.FindDiff(previous);
-
-                var diffNodes = new List<DiffNode>();
-                foreach (var part in definition.Properties())
-                {
-                    if (diff.ContainsKey(part.Name))
-                    {
-                        foreach (var diffNode in diff[part.Name].GenerateDiffNodes())
-                        {
-                            diffNode.Context = contentItem.ContentType + "/" + diffNode.Context;
-                            diffNodes.Add(diffNode);
-                        }
-                    }
-                }
-
-                diffNodes.AddToListIfNotNull(
-                    contentItem.LogPropertyChange(previousContentItem, nameof(contentItem.Author)));
-                diffNodes.AddToListIfNotNull(
-                    contentItem.LogPropertyChange(previousContentItem, nameof(contentItem.ContentItemVersionId)));
-                diffNodes.AddToListIfNotNull(
-                    contentItem.LogPropertyChange(previousContentItem, nameof(contentItem.CreatedUtc)));
-                diffNodes.AddToListIfNotNull(
-                    contentItem.LogPropertyChange(previousContentItem, nameof(contentItem.DisplayText)));
-                diffNodes.AddToListIfNotNull(
-                    contentItem.LogPropertyChange(previousContentItem, nameof(contentItem.Latest)));
-                diffNodes.AddToListIfNotNull(
-                    contentItem.LogPropertyChange(previousContentItem, nameof(contentItem.Owner)));
-                diffNodes.AddToListIfNotNull(
-                    contentItem.LogPropertyChange(previousContentItem, nameof(contentItem.ModifiedUtc)));
-                diffNodes.AddToListIfNotNull(
-                    contentItem.LogPropertyChange(previousContentItem, nameof(contentItem.Published)));
-                diffNodes.AddToListIfNotNull(
-                    contentItem.LogPropertyChange(previousContentItem, nameof(contentItem.PublishedUtc)));
-
-                return diffNodes;
+                return diff.GenerateDiffNodes(contentItem.ContentType);
             }
 
             return null;

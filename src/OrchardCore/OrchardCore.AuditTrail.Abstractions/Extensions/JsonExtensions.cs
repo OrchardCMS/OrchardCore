@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.AuditTrail.Services.Models;
@@ -7,136 +7,113 @@ namespace OrchardCore.AuditTrail.Extensions
 {
     public static class JsonExtensions
     {
-        public static List<DiffNode> GenerateDiffNodes(this JToken token, List<DiffNode> diffNodes = null)
+        public static readonly JsonMergeSettings JsonMergeSettings = new JsonMergeSettings() { MergeArrayHandling = MergeArrayHandling.Merge };
+
+        public static DiffNode[] GenerateDiffNodes(this JToken diff, string root = "")
         {
-            diffNodes ??= new List<DiffNode>();
-
-            var currentObject = token as JObject;
-            var keys = currentObject.Properties();
-
-            JToken previous = new JObject();
-            JToken current = new JObject();
-
-            foreach (var key in keys)
+            if (diff.Type == JTokenType.Object || diff.Type == JTokenType.Array)
             {
-                if (key.Name == "+" && key.IsNotNullOrEmpty())
+                return ((JContainer)diff).DescendantsAndSelf()
+                .Where(token => token.Type == JTokenType.Object && ((JObject)token).ContainsKey("+"))
+                .Select(token => new DiffNode
                 {
-                    current = key.Value;
-                }
+                    Type = DiffType.Change,
+                    Context = root + "/" + token.Path.Replace('.', '/'),
+                    Current = token["+"],
+                    Previous = token["-"]
+                })
+                .ToArray();
+            }
 
-                if (key.Name == "-" && key.IsNotNullOrEmpty())
-                {
-                    previous = key.Value;
-                }
+            if (diff is JProperty property)
+            {
+                return GenerateDiffNodes(property.Value, root);
+            }
 
-                if (current.Type != JTokenType.Object && previous.Type != JTokenType.Object)
-                {
-                    diffNodes.Add(new DiffNode
-                    {
-                        Type = DiffType.Change,
-                        Context = key.Parent.Path.Replace('.', '/'),
-                        Current = current,
-                        Previous = previous
-                    });
-                }
+            return null;
+        }
 
-                if (!key.Value.IsAllowedToCheckProperties())
+        public static bool FindDiff(this JToken current, JToken previous, out JToken diff)
+        {
+            if (current == null || previous == null || current.Type != previous.Type)
+            {
+                diff = null;
+                return false;
+            }
+
+            if (current.Type == JTokenType.Object || current.Type == JTokenType.Array)
+            {
+                var definition = current.CreateNull() as JContainer;
+                definition.Merge(previous.CreateNull(), JsonMergeSettings);
+
+                var currentContainer = current.Type == JTokenType.Object
+                    ? new JObject((JObject)definition)
+                    : new JArray((JArray)definition) as JContainer;
+
+                var previousContainer = current.Type == JTokenType.Object
+                    ? new JObject((JObject)definition)
+                    : new JArray((JArray)definition) as JContainer;
+
+                currentContainer.Merge(current, JsonMergeSettings);
+                previousContainer.Merge(previous, JsonMergeSettings);
+
+                if (FindDiffInternal(currentContainer, previousContainer, out diff))
                 {
-                    diffNodes = GenerateDiffNodes(currentObject[key.Name], diffNodes);
+                    return true;
                 }
             }
 
-            return diffNodes;
+            else if (FindDiffInternal(current, previous, out diff))
+            {
+                return true;
+            }
+
+            return false;
         }
 
-        public static JObject FindDiff(this JToken current, JToken previous)
+        public static bool FindDiffInternal(this JToken current, JToken previous, out JToken diff)
         {
-            var diff = new JObject();
             if (JToken.DeepEquals(current, previous))
             {
-                return diff;
+                diff = null;
+                return false;
             }
 
-            switch (current.Type)
+            if (current.Type == JTokenType.Object || current.Type == JTokenType.Array)
             {
-                case JTokenType.Object:
+                var jContainer = current.Type == JTokenType.Object ? new JObject() : new JArray() as JContainer;
+                for (var i = 0; i < current.Children().Count(); i++)
+                {
+                    if (FindDiffInternal(current.ElementAt(i), previous.ElementAt(i), out var jToken))
                     {
-                        var currentObject = current as JObject;
-                        var previousObject = previous as JObject;
-
-                        if (previousObject == null)
-                        {
-                            break;
-                        }
-
-                        var addedKeys = currentObject.Properties()
-                            .Select(property => property.Name).Except(previousObject.Properties()
-                            .Select(property => property.Name));
-
-                        var removedKeys = previousObject.Properties()
-                            .Select(property => property.Name).Except(currentObject.Properties()
-                            .Select(property => property.Name));
-
-                        var unchangedKeys = currentObject.Properties()
-                            .Where(property => JToken.DeepEquals(property.Value, previous[property.Name]))
-                            .Select(property => property.Name);
-
-                        foreach (var addedKey in addedKeys)
-                        {
-                            diff[addedKey] = new JObject
-                            {
-                                ["+"] = current[addedKey]
-                            };
-                        }
-
-                        foreach (var removedKey in removedKeys)
-                        {
-                            diff[removedKey] = new JObject
-                            {
-                                ["-"] = previous[removedKey]
-                            };
-                        }
-
-                        var potentiallyModifiedKeys = currentObject.Properties()
-                            .Select(c => c.Name).Except(addedKeys).Except(unchangedKeys);
-
-                        foreach (var potentiallyModifiedKey in potentiallyModifiedKeys)
-                        {
-                            diff[potentiallyModifiedKey] = FindDiff(currentObject[potentiallyModifiedKey], previousObject[potentiallyModifiedKey]);
-                        }
+                        jContainer.Add(jToken);
                     }
+                }
 
-                    break;
-                case JTokenType.Array:
-                    {
-                        var currentArray = current as JArray;
-                        var previousArray = previous as JArray;
-                        diff["+"] = previousArray != null ? new JArray(currentArray.Except(previousArray)) : new JArray(currentArray);
-                        diff["-"] = previousArray != null ? new JArray(previousArray.Except(currentArray)) : new JArray();
-                    }
-
-                    break;
-                default:
-                    diff["+"] = current;
-                    diff["-"] = previous;
-                    break;
+                diff = jContainer;
             }
 
-            return diff;
+            else if (current is JProperty property)
+            {
+                var jProperty = new JProperty(new JProperty(property.Name));
+                if (FindDiffInternal(property.Value, ((JProperty)previous).Value, out var jToken))
+                {
+                    jProperty.Value = jToken;
+                }
+
+                diff = jProperty;
+            }
+            else
+            {
+                diff = new JObject
+                {
+                    { "+", current },
+                    { "-", previous }
+                };
+            }
+
+            return true;
         }
-
-        public static bool IsAllowedToCheckProperties(this JToken token) =>
-            token == null ||
-                token.Type == JTokenType.Array && token as JObject == null ||
-                token.Type == JTokenType.Object && !token.HasValues ||
-                token.Type == JTokenType.String ||
-                token.Type == JTokenType.Null ||
-                token.Type == JTokenType.Integer ||
-                token.Type == JTokenType.Boolean;
-
-        public static bool IsNotNullOrEmpty(this JProperty jProperty) => jProperty.HasValues;
-
-        public static JObject CreateNullObject(this JObject jObject) => CreateNull(jObject) as JObject;
 
         public static JToken CreateNull(this JToken jToken)
         {
@@ -154,7 +131,7 @@ namespace OrchardCore.AuditTrail.Extensions
             if (jToken.Type == JTokenType.Array)
             {
                 var jArray = new JArray();
-                foreach (var child in jToken.Children<JValue>())
+                foreach (var child in jToken.Children())
                 {
                     jArray.Add(CreateNull(child));
                 }
@@ -162,12 +139,12 @@ namespace OrchardCore.AuditTrail.Extensions
                 return jArray;
             }
 
-            if (jToken.Type == JTokenType.Property)
+            if (jToken is JProperty jProperty)
             {
-                return new JProperty(((JProperty)jToken).Name, CreateNull(((JProperty)jToken).Value));
+                return new JProperty(jProperty.Name, CreateNull(jProperty.Value));
             }
 
-            return JValue.CreateNull();
+            return jToken.Type == JTokenType.String ? new JValue(String.Empty) : JValue.CreateNull();
         }
     }
 }
