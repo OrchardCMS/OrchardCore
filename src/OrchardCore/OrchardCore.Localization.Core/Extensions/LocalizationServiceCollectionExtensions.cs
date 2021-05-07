@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
             services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
-            services.AddDynamicDataLocalization();
+            services.AddDataLocalization();
 
             if (setupAction != null)
             {
