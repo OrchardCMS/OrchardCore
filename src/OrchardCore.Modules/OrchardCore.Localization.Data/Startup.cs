@@ -28,6 +28,8 @@ namespace OrchardCore.Localization.Data
 
             services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
             services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
+
+            services.AddDataLocalization();
         }
     }
 }

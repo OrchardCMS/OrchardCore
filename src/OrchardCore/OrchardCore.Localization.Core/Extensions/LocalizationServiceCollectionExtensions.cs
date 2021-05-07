@@ -37,8 +37,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
             services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
-            services.AddDataLocalization();
-
             if (setupAction != null)
             {
                 services.Configure(setupAction);
@@ -51,7 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Registers the services to enable localization using data storage.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        internal static IServiceCollection AddDataLocalization(this IServiceCollection services)
+        public static IServiceCollection AddDataLocalization(this IServiceCollection services)
         {
             if (services == null)
             {
