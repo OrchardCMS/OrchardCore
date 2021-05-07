@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
+using OrchardCore.Localization.Data;
 using OrchardCore.Localization.PortableObject;
-using OrchardCore.Localization.DynamicData;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -48,10 +48,10 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Registers the services to enable localization using dynamic data storage.
+        /// Registers the services to enable localization using data storage.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        internal static IServiceCollection AddDynamicDataLocalization(this IServiceCollection services)
+        internal static IServiceCollection AddDataLocalization(this IServiceCollection services)
         {
             if (services == null)
             {
@@ -59,9 +59,9 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
-            services.AddSingleton<ITranslationProvider, DynamicDataTranslationsProvider>();
+            services.AddSingleton<ITranslationProvider, DataTranslationsProvider>();
             services.AddSingleton<ILocalizationManager, LocalizationManager>();
-            services.AddSingleton<IDataLocalizerFactory, DynamicDataLocalizerFactory>();
+            services.AddSingleton<IDataLocalizerFactory, DataLocalizerFactory>();
             services.AddTransient<IDataLocalizer, DataLocalizer>();
 
             return services;

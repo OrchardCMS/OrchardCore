@@ -2,18 +2,18 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Localization.DynamicData
+namespace OrchardCore.Localization.Data
 {
-    public class DynamicDataLocalizerFactory : IDataLocalizerFactory
+    public class DataLocalizerFactory : IDataLocalizerFactory
     {
         private readonly ILocalizationManager _localizationManager;
         private readonly bool _fallBackToParentCulture;
         private readonly ILogger _logger;
 
-        public DynamicDataLocalizerFactory(
+        public DataLocalizerFactory(
             ILocalizationManager localizationManager,
             IOptions<RequestLocalizationOptions> requestLocalizationOptions,
-            ILogger<DynamicDataLocalizerFactory> logger)
+            ILogger<DataLocalizerFactory> logger)
         {
             _localizationManager = localizationManager;
             _fallBackToParentCulture = requestLocalizationOptions.Value.FallBackToParentUICultures;
@@ -21,6 +21,6 @@ namespace OrchardCore.Localization.DynamicData
         }
 
         public IDataLocalizer Create()
-            => new DynamicDataLocalizer(_localizationManager, _fallBackToParentCulture, _logger);
+            => new DataLocalizer(_localizationManager, _fallBackToParentCulture, _logger);
     }
 }

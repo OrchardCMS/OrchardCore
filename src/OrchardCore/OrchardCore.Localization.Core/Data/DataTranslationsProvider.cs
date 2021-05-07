@@ -1,8 +1,8 @@
 using System.Linq;
 
-namespace OrchardCore.Localization.DynamicData
+namespace OrchardCore.Localization.Data
 {
-    public class DynamicDataTranslationsProvider : ITranslationProvider
+    public class DataTranslationsProvider : ITranslationProvider
     {
         public void LoadTranslations(string cultureName, CultureDictionary dictionary)
         {

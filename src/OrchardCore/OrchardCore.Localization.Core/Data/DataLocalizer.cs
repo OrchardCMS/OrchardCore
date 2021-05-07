@@ -5,15 +5,15 @@ using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace OrchardCore.Localization.DynamicData
+namespace OrchardCore.Localization.Data
 {
-    public class DynamicDataLocalizer : IDataLocalizer
+    public class DataLocalizer : IDataLocalizer
     {
         private readonly ILocalizationManager _localizationManager;
         private readonly bool _fallBackToParentCulture;
         private readonly ILogger _logger;
 
-        public DynamicDataLocalizer(
+        public DataLocalizer(
             ILocalizationManager localizationManager,
             bool fallBackToParentCulture,
             ILogger logger)
