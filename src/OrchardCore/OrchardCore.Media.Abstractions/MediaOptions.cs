@@ -50,14 +50,11 @@ namespace OrchardCore.Media
         /// The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
         /// </summary>
         public string AssetsPath { get; set; }
+
         /// <summary>
         /// The folder under AssetsPath used to store users own media assets.
         /// </summary>
-        public string AssetsUsersFolder { get; set; }
-        /// <summary>
-        /// The folder under AssetsPath used to roles media assets.
-        /// </summary>
-        public string AssetsRolesFolder { get; set; }
+        public string AssetsUsersFolder { get; set; }        
 
         /// <summary>
         /// Encrypts the image processing query string to prevent disc filling.

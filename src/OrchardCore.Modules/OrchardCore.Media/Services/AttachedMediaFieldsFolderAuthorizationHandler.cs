@@ -99,31 +99,7 @@ namespace OrchardCore.Media.Services
                 }
             }
 
-
-            if (levelOneFolder == _mediaOptions.AssetsRolesFolder)
-            {
-                if (!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnRoleMedia) && !await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOthersRoleMedia))
-                {
-                    return;
-                }
-
-                if(context.User.FindAll(ClaimTypes.Role).Any(x => x.Value == levelTwoFolder))
-                {
-                    if (!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnRoleMedia))
-                    {
-                        return;
-                    }
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(levelTwoFolder) && !await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOthersRoleMedia))
-                    {
-                        return;
-                    }
-                }
-            }
-
-            if (levelOneFolder != _mediaOptions.AssetsRolesFolder && levelOneFolder != _mediaOptions.AssetsUsersFolder && path != "")
+            if (levelOneFolder != _mediaOptions.AssetsUsersFolder && path != "")
             {
                 if(!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageRootFolderMedia))
                 {

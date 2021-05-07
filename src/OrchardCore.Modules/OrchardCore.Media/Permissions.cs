@@ -11,8 +11,6 @@ namespace OrchardCore.Media
         public static readonly Permission ManageRootFolderMedia = new Permission("ManageRootFolderMediaContent", "Manage Media For Root Folder");
         public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMediaContent", "Manage Own Media");
         public static readonly Permission ManageOthersMedia = new Permission("ManageOthersMediaContent", "Manage Media For Others");
-        public static readonly Permission ManageOwnRoleMedia = new Permission("ManageOwnRoleMediaContent", "Manage Media For User Own Roles");
-        public static readonly Permission ManageOthersRoleMedia = new Permission("ManageOthersRoleMediaContent", "Manage Media For Others Roles");
         public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder");
         public static readonly Permission ManageMediaProfiles = new Permission("ManageMediaProfiles", "Manage Media Profiles");
         public static readonly Permission ViewMediaOptions = new Permission("ViewMediaOptions", "View Media Options");
@@ -25,8 +23,6 @@ namespace OrchardCore.Media
                 ManageRootFolderMedia,
                 ManageOwnMedia,
                 ManageOthersMedia,
-                ManageOwnRoleMedia,
-                ManageOthersRoleMedia,
                 ManageAttachedMediaFieldsFolder,
                 ManageMediaProfiles,
                 ViewMediaOptions
@@ -46,8 +42,6 @@ namespace OrchardCore.Media
                         ManageRootFolderMedia,
                         ManageOwnMedia,
                         ManageOthersMedia,
-                        ManageOwnRoleMedia,
-                        ManageOthersRoleMedia,
                         ManageAttachedMediaFieldsFolder,
                         ManageMediaProfiles,
                         ViewMediaOptions }

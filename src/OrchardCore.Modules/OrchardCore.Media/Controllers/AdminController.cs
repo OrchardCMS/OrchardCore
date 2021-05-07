@@ -84,18 +84,6 @@ namespace OrchardCore.Media.Controllers
                 await _mediaFileStore.TryCreateDirectoryAsync(_mediaOptions.AssetsUsersFolder);
             }
 
-            if (await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnRoleMedia))
-            {
-                var roles = User.FindAll(ClaimTypes.Role).Select(x => x.Value).ToArray();
-                foreach (var role in roles)
-                {
-                    if(await _mediaFileStore.GetDirectoryInfoAsync($"{_mediaOptions.AssetsRolesFolder}/{role}") == null)
-                    {
-                        await _mediaFileStore.TryCreateDirectoryAsync($"{_mediaOptions.AssetsRolesFolder}/{role}");
-                    }
-                }
-            }
-
             if (await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
                 && await _mediaFileStore.GetDirectoryInfoAsync($"{_mediaOptions.AssetsUsersFolder}/{User.Identity.Name}") == null)
             {               
@@ -168,9 +156,9 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if(path == _mediaOptions.AssetsUsersFolder || path == _mediaOptions.AssetsRolesFolder)
+            if(path == _mediaOptions.AssetsUsersFolder)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot upload to UsersForlder and RolesFolder"]);                
+                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot upload to UsersForlder and RolesFolder"]);                
             }
 
             if (string.IsNullOrEmpty(path))
