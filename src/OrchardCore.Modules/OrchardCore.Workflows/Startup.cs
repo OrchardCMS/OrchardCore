@@ -1,4 +1,5 @@
 using System;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,10 +9,12 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Controllers;
@@ -21,6 +24,7 @@ using OrchardCore.Workflows.Evaluators;
 using OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Recipes;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
@@ -39,7 +43,14 @@ namespace OrchardCore.Workflows
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddIdGeneration();
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<WorkflowExecutionContext>();
+                o.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Input, name, context)));
+                o.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Output, name, context)));
+                o.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Properties, name, context)));
+            });
+
             services.AddSingleton<IWorkflowTypeIdGenerator, WorkflowTypeIdGenerator>();
             services.AddSingleton<IWorkflowIdGenerator, WorkflowIdGenerator>();
             services.AddSingleton<IActivityIdGenerator, ActivityIdGenerator>();
@@ -75,9 +86,8 @@ namespace OrchardCore.Workflows
             services.AddActivity<ScriptTask, ScriptTaskDisplayDriver>();
             services.AddActivity<LogTask, LogTaskDisplayDriver>();
 
-            services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>();
-
             services.AddRecipeExecutionStep<WorkflowTypeStep>();
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -123,6 +133,15 @@ namespace OrchardCore.Workflows
             services.AddTransient<IDeploymentSource, AllWorkflowTypeDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllWorkflowTypeDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllWorkflowTypeDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Workflows.Session")]
+    public class SessionStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>();
         }
     }
 }

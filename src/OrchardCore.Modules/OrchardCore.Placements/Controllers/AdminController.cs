@@ -102,7 +102,7 @@ namespace OrchardCore.Placements.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(ListShapePlacementsViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -270,7 +270,7 @@ namespace OrchardCore.Placements.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)

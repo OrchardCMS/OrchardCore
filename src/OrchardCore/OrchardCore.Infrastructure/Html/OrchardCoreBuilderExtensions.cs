@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     sanitizer.AllowedAttributes.Add("class");
                 });
 
-                services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
+                services.AddSingleton<IHtmlSanitizerService, HtmlSanitizerService>();
             });
 
             return builder;

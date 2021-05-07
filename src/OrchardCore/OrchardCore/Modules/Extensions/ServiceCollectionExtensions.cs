@@ -57,7 +57,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton(builder);
 
                 AddDefaultServices(builder);
-                AddShellServices(services);
+                AddShellServices(builder);
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
 
@@ -124,8 +124,10 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
-        private static void AddShellServices(IServiceCollection services)
+        private static void AddShellServices(OrchardCoreBuilder builder)
         {
+            var services = builder.ApplicationServices;
+
             // Use a single tenant and all features by default
             services.AddHostingShellServices();
             services.AddAllFeaturesDescriptor();
@@ -141,6 +143,11 @@ namespace Microsoft.Extensions.DependencyInjection
             (
                 Application.DefaultFeatureId, alwaysEnabled: true)
             );
+
+            builder.ConfigureServices(shellServices =>
+            {
+                shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
+            });
         }
 
         private static void AddExtensionServices(OrchardCoreBuilder builder)

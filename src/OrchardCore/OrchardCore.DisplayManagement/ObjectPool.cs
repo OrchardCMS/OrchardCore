@@ -1,23 +1,9 @@
 // Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-// define TRACE_LEAKS to get additional diagnostics that can lead to the leak sources. note: it will
-// make everything about 2-3x slower
-//
-// #define TRACE_LEAKS
-
-// define DETECT_LEAKS to detect possible leaks
-// #if DEBUG
-// #define DETECT_LEAKS  //for now always enable DETECT_LEAKS in debug.
-// #endif
-
 using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
-
-#if DETECT_LEAKS
-using System.Runtime.CompilerServices;
-#endif
 
 namespace OrchardCore.DisplayManagement
 {
@@ -185,9 +171,6 @@ namespace OrchardCore.DisplayManagement
         /// </remarks>
         internal void Free(T obj)
         {
-            Validate(obj);
-            ForgetTrackedObject(obj);
-
             if (_firstItem == null)
             {
                 // Intentionally not using interlocked here.
@@ -216,67 +199,6 @@ namespace OrchardCore.DisplayManagement
                 }
             }
         }
-
-        /// <summary>
-        /// Removes an object from leak tracking.
-        ///
-        /// This is called when an object is returned to the pool.  It may also be explicitly
-        /// called if an object allocated from the pool is intentionally not being returned
-        /// to the pool.  This can be of use with pooled arrays if the consumer wants to
-        /// return a larger array to the pool than was originally allocated.
-        /// </summary>
-        [Conditional("DEBUG")]
-        internal void ForgetTrackedObject(T old, T replacement = null)
-        {
-#if DETECT_LEAKS
-            LeakTracker tracker;
-            if (leakTrackers.TryGetValue(old, out tracker))
-            {
-                tracker.Dispose();
-                leakTrackers.Remove(old);
-            }
-            else
-            {
-                var trace = CaptureStackTrace();
-                Debug.WriteLine($"TRACEOBJECTPOOLLEAKS_BEGIN\nObject of type {typeof(T)} was freed, but was not from pool. \n Callstack: \n {trace} TRACEOBJECTPOOLLEAKS_END");
-            }
-
-            if (replacement != null)
-            {
-                tracker = new LeakTracker();
-                leakTrackers.Add(replacement, tracker);
-            }
-#endif
-        }
-
-#if DETECT_LEAKS
-        private static Lazy<Type> _stackTraceType = new Lazy<Type>(() => Type.GetType("System.Diagnostics.StackTrace"));
-
-        private static object CaptureStackTrace()
-        {
-            return Activator.CreateInstance(_stackTraceType.Value);
-        }
-#endif
-
-        [Conditional("DEBUG")]
-        private void Validate(object obj)
-        {
-            Debug.Assert(obj != null, "freeing null?");
-
-            Debug.Assert(_firstItem != obj, "freeing twice?");
-
-            var items = _items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                var value = items[i].Value;
-                if (value == null)
-                {
-                    return;
-                }
-
-                Debug.Assert(value != obj, "freeing twice?");
-            }
-        }
     }
 
     /// <summary>
@@ -289,7 +211,7 @@ namespace OrchardCore.DisplayManagement
     /// </summary>
     public sealed class StringBuilderPool : IDisposable
     {
-        private const int DefaultCapacity = 32 * 1024;
+        private const int DefaultCapacity = 1 * 1024;
 
         // global pool
         private static readonly ObjectPool<StringBuilderPool> s_poolInstance = CreatePool();
@@ -305,13 +227,7 @@ namespace OrchardCore.DisplayManagement
 
         public int Length => Builder.Length;
 
-        // if someone needs to create a private pool;
-        /// <summary>
-        /// If someone need to create a private pool
-        /// </summary>
-        /// <param name="size">The size of the pool.</param>
-        /// <returns></returns>
-        internal static ObjectPool<StringBuilderPool> CreatePool(int size = 16)
+        internal static ObjectPool<StringBuilderPool> CreatePool(int size = 1000)
         {
             ObjectPool<StringBuilderPool> pool = null;
             pool = new ObjectPool<StringBuilderPool>(() => new StringBuilderPool(pool), size);
@@ -340,10 +256,6 @@ namespace OrchardCore.DisplayManagement
             {
                 builder.Clear();
                 _pool.Free(this);
-            }
-            else
-            {
-                _pool.ForgetTrackedObject(this);
             }
         }
     }

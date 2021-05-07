@@ -18,6 +18,7 @@ Some fields are available in their specific module.
 | `MediaField` | `string[] Paths` |
 | `MultiTextField` | `string[] Values` |
 | `NumericField` | `decimal? Value` |
+| `GeoPointField` | `decimal Latitude, decimal Longitude` |
 | `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
 | `TextField` | `string Text` |
 | `TimeField` | `TimeSpan? Value` |

@@ -21971,6 +21971,23 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 :root[data-theme=default] #ui-datepicker-div {
   z-index: 100 !important;
 }
+:root[data-theme=default] div.editor-widget.find-widget .button.codicon {
+  display: flex;
+  color: #616161;
+}
+[dir]:root[data-theme=default] div.editor-widget.find-widget .button.codicon {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+[dir]:root[data-theme=default] div.editor-widget.find-widget .button.codicon:focus {
+  background-color: transparent;
+  border-color: transparent;
+}
+[dir]:root[data-theme=default] div.editor-widget.find-widget .button.codicon:active {
+  background-color: transparent;
+  border-color: transparent;
+}
 :root[data-theme=default] .ta-navbar-top {
   z-index: 1030;
 }
@@ -22099,12 +22116,34 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   color: #495057;
   text-decoration: none;
 }
+[dir]:root[data-theme=default] .ta-badge {
+  background-color: #e9ecef;
+}
 :root[data-theme=default] .ta-navbar-brand span:last-child {
   font-weight: bold;
   color: #495057;
 }
 [dir]:root[data-theme=default] .list-group li:hover {
   background-color: #f8f9fa;
+}
+[dir]:root[data-theme=default] .list-group-item.first-child-visible {
+  border-top-width: 1px !important;
+}
+[dir=ltr]:root[data-theme=default] .list-group-item.first-child-visible {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+[dir=rtl]:root[data-theme=default] .list-group-item.first-child-visible {
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+}
+[dir=ltr]:root[data-theme=default] .list-group-item.last-child-visible {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+[dir=rtl]:root[data-theme=default] .list-group-item.last-child-visible {
+  border-bottom-right-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 :root[data-theme=default] body:not(.left-sidebar-compact) #ta-left-sidebar {
   z-index: calc(1000 + 1);
@@ -27168,7 +27207,7 @@ a > :root[data-theme=darkmode] code {
 }
 [dir]:root[data-theme=darkmode] .custom-control-label::before {
   background-color: #181a1b;
-  border: #2a2d2f solid 1px;
+  border: #3c4144 solid 1px;
 }
 [dir=ltr]:root[data-theme=darkmode] .custom-control-label::before {
   left: -1.5rem;
@@ -27247,7 +27286,7 @@ a > :root[data-theme=darkmode] code {
   transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 [dir]:root[data-theme=darkmode] .custom-switch .custom-control-label::after {
-  background-color: #2a2d2f;
+  background-color: #3c4144;
   border-radius: 0.5rem;
 }
 [dir=ltr]:root[data-theme=darkmode] .custom-switch .custom-control-label::after {
@@ -45312,6 +45351,23 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 :root[data-theme=darkmode] #ui-datepicker-div {
   z-index: 100 !important;
 }
+:root[data-theme=darkmode] div.editor-widget.find-widget .button.codicon {
+  display: flex;
+  color: #616161;
+}
+[dir]:root[data-theme=darkmode] div.editor-widget.find-widget .button.codicon {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+[dir]:root[data-theme=darkmode] div.editor-widget.find-widget .button.codicon:focus {
+  background-color: transparent;
+  border-color: transparent;
+}
+[dir]:root[data-theme=darkmode] div.editor-widget.find-widget .button.codicon:active {
+  background-color: transparent;
+  border-color: transparent;
+}
 :root[data-theme=darkmode] .ta-navbar-top {
   z-index: 1030;
 }
@@ -45440,12 +45496,34 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   color: #dee2e6;
   text-decoration: none;
 }
+[dir]:root[data-theme=darkmode] .ta-badge {
+  background-color: #0c0d0e;
+}
 :root[data-theme=darkmode] .ta-navbar-brand span:last-child {
   font-weight: bold;
   color: #dee2e6;
 }
 [dir]:root[data-theme=darkmode] .list-group li:hover {
   background-color: #1b1e1f;
+}
+[dir]:root[data-theme=darkmode] .list-group-item.first-child-visible {
+  border-top-width: 1px !important;
+}
+[dir=ltr]:root[data-theme=darkmode] .list-group-item.first-child-visible {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+[dir=rtl]:root[data-theme=darkmode] .list-group-item.first-child-visible {
+  border-top-right-radius: inherit;
+  border-top-left-radius: inherit;
+}
+[dir=ltr]:root[data-theme=darkmode] .list-group-item.last-child-visible {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+[dir=rtl]:root[data-theme=darkmode] .list-group-item.last-child-visible {
+  border-bottom-right-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 :root[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar {
   z-index: calc(1000 + 1);
@@ -46777,4 +46855,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 }
 :root[data-theme=darkmode] .list-group-item-action .list-group-item-heading {
   color: #fff;
+}
+[dir]:root[data-theme=darkmode] .card-header {
+  background-color: #1b1e1f;
 }

@@ -27,7 +27,7 @@ namespace OrchardCore.Facebook.Widgets
                 .WithDescription("Provides a facebook plugin part to create facebook social plugin widgets."));
 
             await _recipeMigrator.ExecuteAsync("Widgets/migration.recipe.json", this);
-            return await Task.FromResult(1);
+            return 1;
         }
     }
 }

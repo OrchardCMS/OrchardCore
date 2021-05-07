@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -398,8 +399,8 @@ namespace OrchardCore.Autoroute.Handlers
                 var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
                 using (CultureScope.Create(cultureAspect.Culture))
                 {
-                    part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                        scope => scope.SetValue(nameof(ContentItem), model.ContentItem));
+                    part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
+                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
                 }
 
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
@@ -464,13 +465,9 @@ namespace OrchardCore.Autoroute.Handlers
             var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
 
             var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
-            if (possibleConflicts.Any())
+            if (possibleConflicts.Any(x => x.ContentItemId != contentItemId && x.ContainedContentItemId != contentItemId))
             {
-                if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) ||
-                    possibleConflicts.Any(x => !String.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
-                {
-                    return false;
-                }
+                return false;
             }
 
             return true;

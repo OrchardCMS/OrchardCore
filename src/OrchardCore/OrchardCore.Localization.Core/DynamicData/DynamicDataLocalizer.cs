@@ -100,7 +100,7 @@ namespace OrchardCore.Localization.DynamicData
         {
             var count = 0;
             var dictionary = _localizationManager.GetDictionary(culture);
-            var translation = dictionary[name, count];
+            var translation = dictionary[new CultureDictionaryRecordKey(name), count];
 
             if (translation == null && _fallBackToParentCulture && culture.Parent != null && culture.Parent != culture)
             {
@@ -108,7 +108,7 @@ namespace OrchardCore.Localization.DynamicData
 
                 if (dictionary != null)
                 {
-                    translation = dictionary[name, count];
+                    translation = dictionary[new CultureDictionaryRecordKey(name), count];
                 }
             }
 

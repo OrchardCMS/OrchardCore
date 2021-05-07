@@ -9,13 +9,13 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-*
+dotnet new -i "OrchardCore.ProjectTemplates::1.0.0-rc2-*"
 ```
 
 This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
+dotnet new -i "OrchardCore.ProjectTemplates::1.0.0-rc2-*" --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
@@ -72,7 +72,13 @@ dotnet new ocmvc
 
 ### From Visual Studio (New Project dialog)
 
-The templates can also be used from the New Project dialog in Visual Studio.
+The templates can also be used from the 'New Project' dialog in Visual Studio.
+
+![image](../assets/images/templates/new-project.png)
+
+In order to display these templates, you need to have a recent version of Visual Studio and check 'Show all .NET Core templates in the New project dialog' in 'Tools > Options'.
+
+![image](../assets/images/templates/new-project-option.png)
 
 ### From Visual Studio (manual way)
 

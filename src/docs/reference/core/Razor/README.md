@@ -11,11 +11,11 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `CultureDir()` | OrchardCore.DisplayManagement | Returns the current culture direction. |
 | `CultureName()` | OrchardCore.DisplayManagement | Returns the current culture name. |
 | `ResourceUrl(string resourcePath, bool? appendVersion = null)` | OrchardCore.ResourceManagement | Prefixes the Cdn Base URL to the specified resource path. |
-| `GetContentItemIdByAliasAsync(string alias)` | OrchardCore.Contents | Returns a content item id from its alias. Ex: `carousel` |
-| `GetContentItemIdBySlugAsync(string slug)` | OrchardCore.Contents | Returns a content item id from its slug. Ex: `myblog/my-blog-post` |
+| `GetContentItemIdByAliasAsync(string alias)` | OrchardCore.Alias | Returns a content item id from its alias. Ex: `carousel` |
+| `GetContentItemIdBySlugAsync(string slug)` | OrchardCore.Autoroute | Returns a content item id from its slug. Ex: `myblog/my-blog-post` |
 | `GetContentItemIdByHandleAsync(string handle)` | OrchardCore.Contents | Returns a content item id from its handle. Ex: `alias:carousel`, `slug:myblog/my-blog-post` |
-| `GetContentItemByAliasAsync(string alias, bool latest = false)` | OrchardCore.Contents | Loads a content item by its alias, seeking the latest version or not. Ex: `carousel` |
-| `GetContentItemBySlugAsync(string slug, bool latest = false)` | OrchardCore.Contents | Loads a content item by its slug, seeking the latest version or not. Ex: `slug:myblog/my-blog-post`|
+| `GetContentItemByAliasAsync(string alias, bool latest = false)` | OrchardCore.Alias | Loads a content item by its alias, seeking the latest version or not. Ex: `carousel` |
+| `GetContentItemBySlugAsync(string slug, bool latest = false)` | OrchardCore.Autoroute | Loads a content item by its slug, seeking the latest version or not. Ex: `slug:myblog/my-blog-post`|
 | `GetContentItemByHandleAsync(string handle, bool latest = false)` | OrchardCore.Contents | Loads a content item by its handle, seeking the latest version or not. Ex: `alias:carousel`, `slug:myblog/my-blog-post`|
 | `GetContentItemByIdAsync(string contentItemId, bool latest = false)` | OrchardCore.Contents | Loads a content item by its id. |
 | `GetContentItemsByIdAsync(IEnumerable<string> contentItemIds, bool latest = false)` | OrchardCore.Contents | Loads a list of content items by their ids. |
@@ -26,7 +26,7 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `LiquidToHtmlAsync(string liquid, object model)` | [OrchardCore.Liquid](../../modules/Liquid/README.md#razor-helpers) | Parses a liquid string to HTML. |
 | `SanitizeHtml(string html)` | [OrchardCore.Infrastructure](../Sanitizer/README.md#razor-helper) | Sanitizes an HTML string. |
 | `QueryListItemsCountAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | OrchardCore.Lists | Returns list count. |
-| `QueryListItemsAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.List](../../modules/List/README.md#orchard-helpers) | Returns list items. |
+| `QueryListItemsAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.List](../../modules/Lists/README.md#orchard-helpers) | Returns list items. |
 | `MarkdownToHtmlAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.Markdown](../../modules/Markdown/README.md#razor-helper) | Converts Markdown string to HTML. |
 | `AssetUrl(string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false)` | [OrchardCore.Media](../../modules/Media/README.md#razor-helpers) | Returns the relative URL of the specifier asset path with optional resizing parameters. |
 | `ImageResizeUrl(string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)` | [OrchardCore.Media](../../modules/Media/README.md#razor-helpers) | Returns a URL with custom resizing parameters for an existing image path. |

@@ -34,16 +34,13 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             }
 
             var childContent = await output.GetChildContentAsync();
-            dynamic layout = await _layoutAccessor.GetLayoutAsync();
+            var layout = await _layoutAccessor.GetLayoutAsync();
+
             var zone = layout.Zones[Name];
 
-            if (zone is ZoneOnDemand zoneOnDemand)
+            if (zone is Shape shape)
             {
-                await zoneOnDemand.AddAsync(childContent, Position);
-            }
-            else if (zone is Shape shape)
-            {
-                shape.Add(childContent, Position);
+                await shape.AddAsync(childContent, Position);
             }
 
             // Don't render the zone tag or the inner content
