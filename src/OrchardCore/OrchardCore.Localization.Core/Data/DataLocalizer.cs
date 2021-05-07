@@ -32,7 +32,7 @@ namespace OrchardCore.Localization.Data
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                var translation = GetTranslation(name, CultureInfo.CurrentUICulture);
+                var translation = GetTranslation(name, CultureInfo.CurrentUICulture, null);
 
                 return new LocalizedString(name, translation ?? name, translation == null);
             }
@@ -42,10 +42,10 @@ namespace OrchardCore.Localization.Data
         {
             get
             {
-                var translation = GetTranslation(name, CultureInfo.CurrentUICulture);
-                var formatted = string.Format(translation, arguments);
+                var (translation, argumentsWithCount) = GetTranslation(name, arguments);
+                var formatted = String.Format(translation.Value, argumentsWithCount);
 
-                return new LocalizedString(name, formatted, translation == null);
+                return new LocalizedString(name, formatted, translation.ResourceNotFound);
             }
         }
 
@@ -59,6 +59,42 @@ namespace OrchardCore.Localization.Data
         }
 
         public IStringLocalizer WithCulture(CultureInfo culture) => this;
+
+        public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            // Check if a plural form is called, which is when the only argument is of type PluralizationArgument
+            if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
+            {
+                var translation = GetTranslation(name, CultureInfo.CurrentUICulture, pluralArgument.Count);
+
+                object[] argumentsWithCount;
+
+                if (pluralArgument.Arguments.Length > 0)
+                {
+                    argumentsWithCount = new object[pluralArgument.Arguments.Length + 1];
+                    argumentsWithCount[0] = pluralArgument.Count;
+                    Array.Copy(pluralArgument.Arguments, 0, argumentsWithCount, 1, pluralArgument.Arguments.Length);
+                }
+                else
+                {
+                    argumentsWithCount = new object[] { pluralArgument.Count };
+                }
+
+                translation ??= GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
+
+                return (new LocalizedString(name, translation, translation == null), argumentsWithCount);
+            }
+            else
+            {
+                var translation = this[name];
+                return (new LocalizedString(name, translation, translation.ResourceNotFound), arguments);
+            }
+        }
 
         private IEnumerable<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
         {
@@ -96,20 +132,63 @@ namespace OrchardCore.Localization.Data
             }
         }
 
-        private string GetTranslation(string name, CultureInfo culture)
+        private string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
         {
-            var count = 0;
             var dictionary = _localizationManager.GetDictionary(culture);
-            var translation = dictionary[new CultureDictionaryRecordKey(name), count];
+            var pluralForm = count.HasValue ? dictionary.PluralRule(count.Value) : 0;
 
-            if (translation == null && _fallBackToParentCulture && culture.Parent != null && culture.Parent != culture)
+            if (pluralForm >= pluralForms.Length)
             {
-                dictionary = _localizationManager.GetDictionary(culture.Parent);
-
-                if (dictionary != null)
+                if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    translation = dictionary[new CultureDictionaryRecordKey(name), count];
+                    _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, String.Join(", ", pluralForms));
                 }
+
+                return pluralForms[^1];
+            }
+
+            return pluralForms[pluralForm];
+        }
+
+        private string GetTranslation(string name, CultureInfo culture, int? count)
+        {
+            string translation = null;
+            try
+            {
+                if (_fallBackToParentCulture)
+                {
+                    do
+                    {
+                        if (ExtractTranslation() != null)
+                        {
+                            break;
+                        }
+
+                        culture = culture.Parent;
+                    }
+                    while (culture != CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    ExtractTranslation();
+                }
+
+                string ExtractTranslation()
+                {
+                    var dictionary = _localizationManager.GetDictionary(culture);
+
+                    if (dictionary != null)
+                    {
+                        var key = new CultureDictionaryRecordKey(name);
+                        translation = dictionary[key, count];
+                    }
+
+                    return translation;
+                }
+            }
+            catch (PluralFormNotFoundException ex)
+            {
+                _logger.LogWarning(ex.Message);
             }
 
             return translation;
