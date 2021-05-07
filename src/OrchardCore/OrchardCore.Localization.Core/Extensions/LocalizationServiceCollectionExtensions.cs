@@ -60,7 +60,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ITranslationProvider, DataTranslationsProvider>();
             services.AddSingleton<ILocalizationManager, LocalizationManager>();
             services.AddSingleton<IDataLocalizerFactory, DataLocalizerFactory>();
-            services.AddTransient<IDataLocalizer, DataLocalizer>();
+            services.AddTransient(sp => {
+                var dataLocalizerFactory = sp.GetService<IDataLocalizerFactory>();
+
+                return dataLocalizerFactory.Create();
+            });
 
             return services;
         }
