@@ -4,19 +4,19 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrchardCore.Localization;
-using OrchardCore.Localization.DynamicData;
+using OrchardCore.Localization.Data;
 using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
-    public class DynamicDataLocalizerTests
+    public class DataLocalizerTests
     {
         private static PluralizationRuleDelegate _noPluralRule = n => 0;
 
         private Mock<ILocalizationManager> _localizationManager;
         private Mock<ILogger> _logger;
 
-        public DynamicDataLocalizerTests()
+        public DataLocalizerTests()
         {
             _localizationManager = new Mock<ILocalizationManager>();
             _logger = new Mock<ILogger>();
@@ -29,7 +29,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("Hello", null, new[] { "Bonjour" })
             });
 
-            var localizer = new DynamicDataLocalizer(_localizationManager.Object, true, _logger.Object);
+            var localizer = new DataLocalizer(_localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("fr");
 
@@ -45,7 +45,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("Hello", null, new[] { "Bonjour" })
             });
 
-            var localizer = new DynamicDataLocalizer(_localizationManager.Object, true, _logger.Object);
+            var localizer = new DataLocalizer(_localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("fr");
 
@@ -59,7 +59,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("fr", new CultureDictionaryRecord[] { });
 
-            var localizer = new DynamicDataLocalizer(_localizationManager.Object, true, _logger.Object);
+            var localizer = new DataLocalizer(_localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("fr");
 
@@ -78,7 +78,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("Bye", null, new[] { "au revoir" })
             });
 
-            var localizer = new DynamicDataLocalizer(_localizationManager.Object, true, _logger.Object);
+            var localizer = new DataLocalizer(_localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("fr-FR");
 
@@ -97,7 +97,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("Bye", null, new[] { "au revoir" })
             });
 
-            var localizer = new DynamicDataLocalizer(_localizationManager.Object, true, _logger.Object);
+            var localizer = new DataLocalizer(_localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("fr-FR");
 
@@ -112,7 +112,7 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary("cs", new[] {
                 new CultureDictionaryRecord("The page (ID:{0}) was deleted.", null, new[] { "Stránka (ID:{0}) byla smazána." })
             });
-            var localizer = new DynamicDataLocalizer(_localizationManager.Object, true, _logger.Object);
+            var localizer = new DataLocalizer(_localizationManager.Object, true, _logger.Object);
 
             CultureInfo.CurrentUICulture = new CultureInfo("cs");
 
@@ -130,7 +130,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("hello", null, new[] { "مرحبا" })
             });
             SetupDictionary("ar-YE", new CultureDictionaryRecord[] { });
-            var localizer = new DynamicDataLocalizer(_localizationManager.Object, fallBackToParentCulture, _logger.Object);
+            var localizer = new DataLocalizer(_localizationManager.Object, fallBackToParentCulture, _logger.Object);
             CultureInfo.CurrentUICulture = new CultureInfo("ar-YE");
             var translation = localizer[resourceKey];
 
@@ -153,7 +153,7 @@ namespace OrchardCore.Tests.Localization
                 new CultureDictionaryRecord("Product", null, new[] { "منتج" })
             });
 
-            var localizer = new DynamicDataLocalizer(_localizationManager.Object, false, _logger.Object);
+            var localizer = new DataLocalizer(_localizationManager.Object, false, _logger.Object);
             CultureInfo.CurrentUICulture = new CultureInfo("ar-YE");
             var translations = localizer.GetAllStrings(includeParentCultures).Select(l => l.Value).ToArray();
 
