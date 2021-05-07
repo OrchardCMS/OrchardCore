@@ -568,6 +568,9 @@ namespace OrchardCore.OpenId.Controllers
 
         private async Task<IActionResult> ExchangeAuthorizationCodeOrRefreshTokenGrantType(OpenIddictRequest request)
         {
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
+                throw new InvalidOperationException("The application details cannot be found.");
+
             // Retrieve the claims principal stored in the authorization code/refresh token.
             var info = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme) ??
                 throw new InvalidOperationException("The user principal cannot be resolved.");
