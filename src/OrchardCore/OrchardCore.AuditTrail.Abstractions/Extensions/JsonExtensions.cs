@@ -71,7 +71,7 @@ namespace OrchardCore.AuditTrail.Extensions
             return false;
         }
 
-        public static bool FindDiffInternal(this JToken current, JToken previous, out JToken diff)
+        internal static bool FindDiffInternal(this JToken current, JToken previous, out JToken diff)
         {
             if (JToken.DeepEquals(current, previous))
             {
