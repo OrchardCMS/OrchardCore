@@ -13,7 +13,7 @@ namespace OrchardCore.Tests.Localization
 {
     public class PortableObjectStringLocalizerFactoryTests
     {
-       [Fact]
+        [Fact]
         public async Task LocalizerReturnsTranslationFromInnerClass()
             => await StartupRunner.Run(typeof(PortableObjectStringLocalizerFactory), "ar", "مرحبا");
 
