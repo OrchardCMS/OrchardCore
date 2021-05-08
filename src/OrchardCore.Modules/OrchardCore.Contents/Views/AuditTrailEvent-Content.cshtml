@@ -1,5 +1,4 @@
 @model AuditTrailEventViewModel
-@using System.Collections.Generic
 @using OrchardCore.AuditTrail.Services.Models
 @using OrchardCore.AuditTrail.ViewModels
 @using OrchardCore.ContentManagement
@@ -18,52 +17,53 @@
 <script asp-name="jsdiff" depends-on="jQuery" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.min.js" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.js" type="text/javascript" version="4.0.2" at="Foot"></script>
 <script depends-on="jsdiff" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js" type="text/javascript" at="Foot"></script>
 
-<div>
-    @T["ContentItemId:"] <strong>@contentItem.ContentItemId</strong>
-</div>
+<div class="form-group">
+    <div>
+        @T["<strong>ContentItemId:</strong> {0}", contentItem.ContentItemId]
+    </div>
 
-@if (contentItem != null)
-{
-    @T["{0}:", contentItem.ContentType]
-
-    if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Removed)
+    @if (contentItem != null)
     {
-        <strong>@contentItem.DisplayText</strong>
+       <div>
+           @T["<strong>ContentType:</strong> {0}", contentItem.ContentType]
+       </div>
+
+        if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Removed)
+        {
+            @contentItem.DisplayText
+        }
+        else
+        {
+            <a edit-for="@contentItem">@contentItem.DisplayText</a>
+        }
+
+        if (contentItem != null && contentItem.ContentItemVersionId != latestVersionId)
+        {
+            <div>
+                <a asp-route-area="OrchardCore.Contents"
+                   asp-action="Detail"
+                   asp-controller="Content"
+                   asp-route-versionNumber="@versionNumber"
+                   asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">
+                    @T["Version {0}", versionNumber]
+                </a>
+            </div>
+        }
     }
     else
     {
-        <a edit-for="@contentItem">@contentItem.DisplayText</a>
-    }
-
-    if (contentItem != null && contentItem.ContentItemVersionId != latestVersionId)
-    {
         <div>
-            <a asp-route-area="OrchardCore.Contents"
-               asp-action="Detail"
-               asp-controller="Content"
-               asp-route-versionNumber="@versionNumber"
-               asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">
-                @T["Version {0}", versionNumber]
-            </a>
+            @T["Version {0}", versionNumber]
         </div>
     }
-}
-else
-{
-    <div>
-        @T["Version {0}", versionNumber]
-    </div>
-}
 
-@if (!string.IsNullOrEmpty(auditTrailEvent.Comment))
-{
-    <div>
-        @T["Comment:"]
-    </div>
-    <div>
-        @Html.Raw(auditTrailEvent.Comment)
-    </div>
-}
+    @if (!string.IsNullOrEmpty(auditTrailEvent.Comment))
+    {
+        <div>
+            @T["<strong>Comment:</strong> {0}", auditTrailEvent.Comment]
+        </div>
+    }
+</div>
 
 @if (diffNodes != null && diffNodes.Any())
 {

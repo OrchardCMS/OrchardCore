@@ -14,14 +14,13 @@ using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using YesSql;
-using IYesSqlSession = YesSql.ISession;
 
 namespace OrchardCore.Contents.AuditTrail.Handlers
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
     public class ContentHandler : ContentHandlerBase, IAuditTrailContentHandler
     {
-        private readonly IYesSqlSession _session;
+        private readonly YesSql.ISession _session;
         private readonly ISiteService _siteService;
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -29,7 +28,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         private HashSet<string> _restoring = new HashSet<string>();
 
         public ContentHandler(
-            IYesSqlSession session,
+            YesSql.ISession session,
             ISiteService siteService,
             IAuditTrailManager auditTrailManager,
             IHttpContextAccessor httpContextAccessor)

@@ -15,7 +15,6 @@ using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using YesSql;
-using IYesSqlSession = YesSql.ISession;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -23,18 +22,17 @@ namespace OrchardCore.AuditTrail.Services
     {
         private readonly IClock _clock;
         private readonly IStringLocalizer T;
-        private readonly IYesSqlSession _session;
+        private readonly YesSql.ISession _session;
         private readonly ISiteService _siteService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuditTrailIdGenerator _auditTrailEventIdGenerator;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
         private readonly IEnumerable<IAuditTrailEventProvider> _auditTrailEventProviders;
-
-        public ILogger Logger { get; set; }
+        private readonly ILogger _logger;
 
         public AuditTrailManager(
             IClock clock,
-            IYesSqlSession session,
+            YesSql.ISession session,
             ISiteService siteService,
             ILogger<AuditTrailManager> logger,
             IHttpContextAccessor httpContextAccessor,
@@ -50,8 +48,8 @@ namespace OrchardCore.AuditTrail.Services
             _auditTrailEventHandlers = auditTrailEventHandlers;
             _auditTrailEventProviders = auditTrailEventProviders;
             _auditTrailEventIdGenerator = auditTrailEventIdGenerator;
+            _logger = logger;
 
-            Logger = logger;
             T = stringLocalizer;
         }
 
@@ -73,7 +71,7 @@ namespace OrchardCore.AuditTrail.Services
                     auditTrailContext.EventFilterKey,
                     auditTrailContext.EventFilterData);
 
-                await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), context, Logger);
+                await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), context, _logger);
 
                 var @event = new AuditTrailEvent
                 {
@@ -96,7 +94,7 @@ namespace OrchardCore.AuditTrail.Services
                 eventDescriptor.BuildAuditTrailEvent(@event, context.EventData);
 
                 await _auditTrailEventHandlers.InvokeAsync((handler, context, @event)
-                    => handler.AlterAsync(context, @event), context, @event, Logger);
+                    => handler.AlterAsync(context, @event), context, @event, _logger);
 
                 _session.Save(@event, AuditTrailEvent.Collection);
             }
@@ -114,7 +112,7 @@ namespace OrchardCore.AuditTrail.Services
             {
                 var filterContext = new QueryFilterContext(query, filters);
 
-                _auditTrailEventHandlers.Invoke((handler, context) => handler.Filter(context), filterContext, Logger);
+                _auditTrailEventHandlers.Invoke((handler, context) => handler.Filter(context), filterContext, _logger);
 
                 query = filterContext.Query;
             }
@@ -181,7 +179,7 @@ namespace OrchardCore.AuditTrail.Services
         public DescribeContext DescribeProviders()
         {
             var describeContext = new DescribeContext();
-            _auditTrailEventProviders.Invoke((provider, context) => provider.Describe(context), describeContext, Logger);
+            _auditTrailEventProviders.Invoke((provider, context) => provider.Describe(context), describeContext, _logger);
             return describeContext;
         }
 
