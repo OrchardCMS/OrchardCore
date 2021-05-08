@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OrchardCore.Localization.Data.Models
+namespace OrchardCore.DataLocalization.Models
 {
     public class Translation
     {

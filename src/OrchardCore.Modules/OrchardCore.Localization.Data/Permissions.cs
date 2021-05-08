@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Localization.Data
+namespace OrchardCore.DataLocalization
 {
     /// <summary>
     /// Represents the localization module permissions.

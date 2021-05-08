@@ -2,7 +2,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Localization.Data.Deployment
+namespace OrchardCore.DataLocalization.Deployment
 {
     public class AllDataTranslationsDeploymentStepDriver : DisplayDriver<DeploymentStep, AllDataTranslationsDeploymentStep>
     {

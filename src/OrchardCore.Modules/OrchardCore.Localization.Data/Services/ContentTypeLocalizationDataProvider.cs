@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.ContentTypes.Services;
+using OrchardCore.Localization;
 
-namespace OrchardCore.Localization.Data.Services
+namespace OrchardCore.DataLocalization.Services
 {
     public class ContentTypeDataLocalizationProvider : ILocalizationDataProvider
     {

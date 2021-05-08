@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using OrchardCore.Documents;
-using OrchardCore.Localization.Data.Models;
+using OrchardCore.DataLocalization.Models;
 
-namespace OrchardCore.Localization.Data.Services
+namespace OrchardCore.DataLocalization.Services
 {
     public class TranslationsManager : ITranslationsManager
     {

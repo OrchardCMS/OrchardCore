@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using OrchardCore.Localization.Data.Models;
+using OrchardCore.DataLocalization.Models;
 
-namespace OrchardCore.Localization.Data.Services
+namespace OrchardCore.DataLocalization.Services
 {
     public interface ITranslationsManager
     {

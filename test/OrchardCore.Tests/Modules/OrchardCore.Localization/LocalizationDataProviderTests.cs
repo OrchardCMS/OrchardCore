@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
-using OrchardCore.Localization.Data.Services;
+using OrchardCore.DataLocalization.Services;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Localization
