@@ -131,7 +131,7 @@ namespace OrchardCore.Media.Controllers
 
         [HttpPost]
         [MediaSizeLimit]
-        public async Task<ActionResult<object>> Upload(
+        public async Task<ActionResult> Upload(
             string path,
             string contentType,
             ICollection<IFormFile> files)
@@ -146,8 +146,6 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
-            var result = new List<object>();
-
             // Loop through each file in the request
             foreach (var file in files)
             {
@@ -155,15 +153,7 @@ namespace OrchardCore.Media.Controllers
 
                 if (!_allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
                 {
-                    result.Add(new
-                    {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = S["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
-                    });
-
-                    _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
+                    _logger.LogWarning("File extension not allowed: '{0}'", file.FileName);
 
                     continue;
                 }
@@ -176,22 +166,13 @@ namespace OrchardCore.Media.Controllers
                     var mediaFilePath = _mediaFileStore.Combine(path, fileName);
                     stream = file.OpenReadStream();
                     mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
-
-                    var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
-
-                    result.Add(CreateFileResult(mediaFile));
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "An error occurred while uploading a media");
+                    var message = "An error occurred while uploading a media";
+                    _logger.LogError(ex, message);
 
-                    result.Add(new
-                    {
-                        name = fileName,
-                        size = file.Length,
-                        folder = path,
-                        error = ex.Message
-                    });
+                    throw new FileStoreException(message, fileName);
                 }
                 finally
                 {
@@ -199,7 +180,7 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            return new { files = result.ToArray() };
+            return Ok();
         }
 
         [HttpPost]

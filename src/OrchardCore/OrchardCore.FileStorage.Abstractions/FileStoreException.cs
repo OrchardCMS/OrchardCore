@@ -8,8 +8,20 @@ namespace OrchardCore.FileStorage
         {
         }
 
+        public FileStoreException(string message, string fileName) : this(message)
+        {
+            if (String.IsNullOrEmpty(fileName))
+            {
+                throw new ArgumentException($"'{nameof(fileName)}' cannot be null or empty", nameof(fileName));
+            }
+
+            FileName = fileName;
+        }
+
         public FileStoreException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        public string FileName { get;  }
     }
 }
