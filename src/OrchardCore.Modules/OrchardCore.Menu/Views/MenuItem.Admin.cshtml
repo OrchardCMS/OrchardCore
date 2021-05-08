@@ -46,6 +46,11 @@
             {
                 @await DisplayAsync(Model.Content)
             }
+            else
+            {
+              @*For dynamically created menus that do not have a driver*@
+              <span>@contentItem.DisplayText <span class="text-muted dashed">@contentItem.ContentType</span></span>
+            }
         </div>
     </div>
 

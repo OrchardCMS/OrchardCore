@@ -82,4 +82,4 @@ jobs:
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-        docker push orchardproject/orchardcore-cms-windows
+        docker push orchardproject/orchardcore-cms-windows:dev

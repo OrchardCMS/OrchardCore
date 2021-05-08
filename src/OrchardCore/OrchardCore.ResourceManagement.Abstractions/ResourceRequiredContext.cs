@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -12,41 +14,38 @@ namespace OrchardCore.ResourceManagement
         public RequireSettings Settings { get; set; }
         public IFileVersionProvider FileVersionProvider { get; set; }
 
-        public IHtmlContent GetHtmlContent(string appPath)
+        public void WriteTo(TextWriter writer, string appPath)
         {
             var tagBuilder = Resource.GetTagBuilder(Settings, appPath, FileVersionProvider);
 
             if (String.IsNullOrEmpty(Settings.Condition))
             {
-                return tagBuilder;
+                tagBuilder.WriteTo(writer, NullHtmlEncoder.Default);
+                return;
             }
-
-            var builder = new HtmlContentBuilder();
 
             if (Settings.Condition == NotIE)
             {
-                builder.AppendHtml("<!--[if " + Settings.Condition + "]>-->");
+                writer.Write("<!--[if " + Settings.Condition + "]>-->");
             }
             else
             {
-                builder.AppendHtml("<!--[if " + Settings.Condition + "]>");
+                writer.Write("<!--[if " + Settings.Condition + "]>");
             }
 
-            builder.AppendHtml(tagBuilder);
+            tagBuilder.WriteTo(writer, NullHtmlEncoder.Default);
 
             if (!string.IsNullOrEmpty(Settings.Condition))
             {
                 if (Settings.Condition == NotIE)
                 {
-                    builder.AppendHtml("<!--<![endif]-->");
+                    writer.Write("<!--<![endif]-->");
                 }
                 else
                 {
-                    builder.AppendHtml("<![endif]-->");
+                    writer.Write("<![endif]-->");
                 }
             }
-
-            return builder;
         }
     }
 }

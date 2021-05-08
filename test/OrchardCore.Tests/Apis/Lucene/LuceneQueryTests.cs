@@ -95,7 +95,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 // Act
                 // Should find articles with "Orchard" in the title
 
-                string index = "ArticleIndex";
+                var index = "ArticleIndex";
 
                 // { "from": 0, "size": 1, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText.Normalized"], "query": "orch*" } } }
                 object dynamicQuery = new
@@ -113,7 +113,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                     }
                 };
 
-                string query = JsonConvert.SerializeObject(dynamicQuery);
+                var query = JsonConvert.SerializeObject(dynamicQuery);
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
                 var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
@@ -135,10 +135,10 @@ namespace OrchardCore.Tests.Apis.Lucene
 
                 // Act
                 // Should find articles with "Orchard" in the title
-                string index = "ArticleIndex";
+                var index = "ArticleIndex";
 
                 // { "from": 0, "size": 10, "query":{ "bool": { "should": [ { "wildcard": {  "Content.ContentItem.DisplayText.Normalized": { "value": "orch*", "boost": 2 } } },{ "wildcard": { "HtmlBodyPart": { "value": "orchar*", "boost": 5 } } } ] } } }
-                string query =
+                var query =
                     "{ \"from\": 0, \"size\": 10, \"query\":" +
                         "{ \"bool\": { \"should\": [ " +
                             "{ \"wildcard\": {  \"Content.ContentItem.DisplayText.Normalized\": { \"value\": \"orch*\", \"boost\": 2 } } }," +

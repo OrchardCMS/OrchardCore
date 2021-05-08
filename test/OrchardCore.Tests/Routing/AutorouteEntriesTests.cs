@@ -255,6 +255,7 @@ namespace OrchardCore.Tests.Routing
 
         private class StubAutorouteEntries : AutorouteEntries, IStubAutorouteEntries
         {
+            public StubAutorouteEntries() : base(null) { }
             public new void AddEntries(IEnumerable<AutorouteEntry> entries) => base.AddEntries(entries);
             public new void RemoveEntries(IEnumerable<AutorouteEntry> entries) => base.RemoveEntries(entries);
             protected override Task InitializeEntriesAsync() => Task.CompletedTask;

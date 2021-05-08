@@ -29,7 +29,9 @@ namespace OrchardCore.Menu
 
                     var contentItemId = menu.TryGetProperty("Alias", out object alias) && alias != null
                         ? await handleManager.GetContentItemIdAsync(alias.ToString())
-                        : menu.Properties["ContentItemId"].ToString();
+                        : menu.TryGetProperty("ContentItemId", out object id)
+                            ? id.ToString()
+                            : null;
 
                     if (contentItemId == null)
                     {

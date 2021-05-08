@@ -110,7 +110,7 @@ namespace OrchardCore.Roles.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
                 foreach (var error in result.Errors)
                 {
@@ -145,7 +145,7 @@ namespace OrchardCore.Roles.Controllers
             }
             else
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
                 _notifier.Error(H["Could not delete this role."]);
 

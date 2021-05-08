@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
+using System.Threading;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
@@ -15,6 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     public class FluidTagHelper
     {
         public static Dictionary<string, string> DefaultArgumentsMapping = new Dictionary<string, string>();
+        private static long _uniqueId;
 
         public static ValueTask<Completion> WriteArgumentsTagHelperAsync(List<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
@@ -77,7 +79,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
+            Interlocked.CompareExchange(ref _uniqueId, long.MaxValue, 0);
+            var id = Interlocked.Increment(ref _uniqueId);
+
+            var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), id.ToString());
 
             TagHelperOutput tagHelperOutput = null;
 
@@ -87,8 +92,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     identifier,
                     outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content))
                 );
-
-                tagHelperOutput.Content.AppendHtml(content);
             }
             else
             {
@@ -99,8 +102,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             }
 
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
-
-            tagHelperOutput.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }

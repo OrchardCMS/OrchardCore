@@ -13,21 +13,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class ShapeTag
     {
-        public string Type { get; set; }
-
         private static readonly char[] Separators = { ',', ' ' };
 
-        public ShapeTag()
-        {
-
-        }
-
-        public ShapeTag(string type)
-        {
-            Type = type;
-        }
-
-        public async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
             var shapeFactory = services.GetRequiredService<IShapeFactory>();
@@ -36,13 +24,14 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             string cacheId = null;
             TimeSpan? cacheFixedDuration = null;
             TimeSpan? cacheSlidingDuration = null;
-            string cacheDependency = null;
+            // string cacheDependency = null;
             string cacheContext = null;
             string cacheTag = null;
 
             string id = null;
             string alternate = null;
             string wrapper = null;
+            string type = null;
 
             Dictionary<string, object> customAttributes = null;
 
@@ -53,7 +42,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     case "cache_id": cacheId = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "cache_fixed_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var fd); cacheFixedDuration = fd; break;
                     case "cache_sliding_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var sd); cacheSlidingDuration = sd; break;
-                    case "cache_dependency": cacheDependency = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    // case "cache_dependency": cacheDependency = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "cache_context": cacheContext = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "cache_tag": cacheTag = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
 
@@ -63,13 +52,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                     case null:
                     case "type":
-                    case "": Type ??= (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
 
-                    default: (customAttributes ??= new Dictionary<string, object>())[argument.Name.ToPascalCaseDash()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(); break;
+                    default: (customAttributes ??= new Dictionary<string, object>())[argument.Name.ToPascalCaseUnderscore()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(); break;
                 }
             }
 
-            var shape = await shapeFactory.CreateAsync<object>(Type, customAttributes == null ? Arguments.Empty : Arguments.From(customAttributes));
+            var shape = await shapeFactory.CreateAsync<object>(type, customAttributes == null ? Arguments.Empty : Arguments.From(customAttributes));
 
             if (!String.IsNullOrEmpty(id))
             {
