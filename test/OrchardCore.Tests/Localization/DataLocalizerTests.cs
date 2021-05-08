@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,10 +12,10 @@ namespace OrchardCore.Tests.Localization
 {
     public class DataLocalizerTests
     {
-        private static PluralizationRuleDelegate _noPluralRule = n => 0;
+        private static readonly PluralizationRuleDelegate _noPluralRule = n => 0;
 
-        private Mock<ILocalizationManager> _localizationManager;
-        private Mock<ILogger> _logger;
+        private readonly Mock<ILocalizationManager> _localizationManager;
+        private readonly Mock<ILogger> _logger;
 
         public DataLocalizerTests()
         {
@@ -57,7 +58,7 @@ namespace OrchardCore.Tests.Localization
         [Fact]
         public void LocalizerReturnsOriginalTextIfDictionaryIsEmpty()
         {
-            SetupDictionary("fr", new CultureDictionaryRecord[] { });
+            SetupDictionary("fr", Array.Empty<CultureDictionaryRecord>());
 
             var localizer = new DataLocalizer(_localizationManager.Object, true, _logger.Object);
 
@@ -129,7 +130,7 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary("ar", new CultureDictionaryRecord[] {
                 new CultureDictionaryRecord("hello", null, new[] { "مرحبا" })
             });
-            SetupDictionary("ar-YE", new CultureDictionaryRecord[] { });
+            SetupDictionary("ar-YE", Array.Empty<CultureDictionaryRecord>());
             var localizer = new DataLocalizer(_localizationManager.Object, fallBackToParentCulture, _logger.Object);
             CultureInfo.CurrentUICulture = new CultureInfo("ar-YE");
             var translation = localizer[resourceKey];
@@ -157,7 +158,7 @@ namespace OrchardCore.Tests.Localization
             CultureInfo.CurrentUICulture = new CultureInfo("ar-YE");
             var translations = localizer.GetAllStrings(includeParentCultures).Select(l => l.Value).ToArray();
 
-            Assert.Equal(expected.Count(), translations.Count());
+            Assert.Equal(expected.Length, translations.Length);
         }
 
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
