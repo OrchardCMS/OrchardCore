@@ -12,30 +12,45 @@ function checkIE() {
 }
 
 
-function validationEvent(contentItemId, validationElementId, elementId) {
+function validationEvent(contentItemId, validationElementId, elementId, e) {
     var validationElement = document.getElementById(validationElementId);
     var elementName = $(elementId).attr('name');
     var elementValue = $(elementId).val();
+
     $.ajax({
         url: validationRuleApi + "?contentItemId=" + contentItemId + "&formName=" + elementName + "&formValue=" + elementValue
     })
         .done(function (data) {
-            if (validationElement) {
-                validationElement.remove();
-                validationSet.delete(validationElementId);
+            if (data) {
+                if (!validationElement) {
+                    var errorMessage = data.errorMessage.value;
+                    var dangerText = '<div id="' + validationElementId + '" class="text-danger">' + errorMessage + '</div>';
+                    validationSet.add(validationElementId);
+                    if ($(elementId).next().attr("class") != 'text-danger') {
+                        $(elementId).after(dangerText);
+                    }
+                    $(elementId).closest('form').find(':submit').attr('disabled', 'true');
+                }
+            } else {
+                if (validationElement) {
+                    validationElement.remove();
+                    validationSet.delete(validationElementId);
+                }
                 if (validationSet.size === 0) {
-                    $(elementId).closest('form').find(':submit').removeAttr('disabled');
+                    var formDom = $(elementId).closest('form');
+                    formDom.find(':submit').removeAttr('disabled');
+                    if (e) {
+                        if (!formDom.find('input[name="contentItemId"]')[0]) {
+                            var input = $("<input>")
+                                .attr("type", "hidden")
+                                .attr("name", "contentItemId").val(contentItemId);
+                            formDom.append(input);
+                        }
+                        $(elementId).closest('form').submit();
+                    }
                 }
             }
-        })
-        .fail(function (jqXHR, textStatus, errorThrown) {
-            if (!validationElement) {
-                var errorMessage = jqXHR.responseJSON.value;
-                var dangerText = '<div id="' + validationElementId + '" class="text-danger">' + errorMessage + '</div>';
-                $(elementId).after(dangerText);
-                validationSet.add(validationElementId);
-                $(elementId).closest('form').find(':submit').attr('disabled', 'true');
-            }
+
         });
 }
 
@@ -44,31 +59,23 @@ function validationElementFunction(contentItemId, originElementId) {
     var elementId = '#' + originElementId;
     var timestamp = new Date().getTime();
     var validationElementId = originElementId + timestamp;
+    var submitBtn = $(elementId).closest('form').find(':submit')[0];
 
-    //if (window.validatorObject) {
-    //    var obj = { elementId: originElementId};
-    //    window.validatorObject.push(obj);
-    //}
-    //else {
-    //    window.validatorObject = new Array();
-    //    var obj = { elementId: originElementId };
-    //    window.validatorObject.push(obj);
-    //}
-
-    $(elementId).bind('change', function (e) {
+    $(elementId).bind('keyup change', function (e) {
         validationEvent(contentItemId, validationElementId, elementId);
     })
-    var submitBtn = $(elementId).closest('form').find(':submit')[0];
 
     if (submitBtn) {
         if (isIE) {
-            submitBtn.attachEvent('click', function () {
-                validationEvent(contentItemId, validationElementId, elementId);
+            submitBtn.attachEvent('click', function (e) {
+                e.preventDefault();
+                validationEvent(contentItemId, validationElementId, elementId, e);
             })
         }
         else {
             submitBtn.addEventListener('click', function (e) {
-                validationEvent(contentItemId, validationElementId, elementId);
+                e.preventDefault();
+                validationEvent(contentItemId, validationElementId, elementId, e);
             })
         }
     }

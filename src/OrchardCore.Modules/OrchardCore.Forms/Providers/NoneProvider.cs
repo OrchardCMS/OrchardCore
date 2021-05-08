@@ -10,11 +10,10 @@ namespace OrchardCore.Forms.Providers
     {
         public int Index => 0;
         public string DisplayName => "None";
-        public string RuleName => "None";
+        public string Name => "None";
         public bool IsShowOption => false;
         public string OptionPlaceHolder => String.Empty;
         public bool IsShowErrorMessage => false;
-
         public Task<bool> ValidateInputByRuleAsync(ValidationRuleInput model)
         {
             return Task.FromResult(true);

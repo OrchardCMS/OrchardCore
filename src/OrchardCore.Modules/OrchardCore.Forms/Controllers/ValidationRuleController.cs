@@ -34,7 +34,7 @@ namespace OrchardCore.Forms.Controllers
         [Route("ValidateFormByRule")]
         public async Task<IActionResult> ValidateFormByRule(string contentItemId, string formName, string formValue)
         {
-            if (String.IsNullOrWhiteSpace(contentItemId) || String.IsNullOrWhiteSpace(formName) || String.IsNullOrWhiteSpace(formValue))
+            if (String.IsNullOrWhiteSpace(contentItemId) || String.IsNullOrWhiteSpace(formName))
             {
                 return BadRequest(S["contentItemId, formName are required parameters"]);
             }
@@ -43,6 +43,11 @@ namespace OrchardCore.Forms.Controllers
             //{
             //    return Forbid();
             //}
+
+            if (string.IsNullOrEmpty(formValue))
+            {
+                formValue = string.Empty;
+            }
 
             var validationRuleService = HttpContext.RequestServices.GetService<IValidationRuleService>();
             var flowParts = await _validationRuleHelpers.GeFlowPartFromContentItemId(contentItemId);
@@ -71,7 +76,7 @@ namespace OrchardCore.Forms.Controllers
 
                     if (!validationResult)
                     {
-                        return BadRequest(S[validationRulePart.ErrorMessage?? $"Validation failed for {validationRulePart.Type}."]) ;
+                        return Ok(new { errorMessage = S[validationRulePart.ErrorMessage ?? $"Validation failed for {validationRulePart.Type}."] }) ;
                     }
                 }
             }

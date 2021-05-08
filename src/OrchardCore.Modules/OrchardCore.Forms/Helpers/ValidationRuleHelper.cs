@@ -78,10 +78,10 @@ namespace OrchardCore.Forms.Helpers
 
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
-                //var partName = contentTypePartDefinition.Name;
+                var partName = contentTypePartDefinition.Name;
                 var partTypeName = contentTypePartDefinition.PartDefinition.Name;
                 //var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
-                var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
+                var partActivator = _contentPartFactory.GetTypeActivator(partName);
                 var flowPart = contentItem.As<FlowPart>();
                 if (flowPart == null) continue;
 

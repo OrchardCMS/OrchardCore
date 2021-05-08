@@ -20,7 +20,6 @@ namespace OrchardCore.Forms.Workflows.Activities
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IValidationRuleService _validationRuleService;
         private readonly ValidationRuleHelpers _validationRuleHelpers;
         private readonly IStringLocalizer S;
 
@@ -34,7 +33,6 @@ namespace OrchardCore.Forms.Workflows.Activities
         {
             _updateModelAccessor = updateModelAccessor;
             _httpContextAccessor = httpContextAccessor;
-            _validationRuleService = validationRuleService;
             _validationRuleHelpers = validationRuleHelpers;
             S = localizer;
         }
@@ -56,7 +54,7 @@ namespace OrchardCore.Forms.Workflows.Activities
         {
             var form = _httpContextAccessor.HttpContext.Request.Form;
             var validationRuleService = _httpContextAccessor.HttpContext.RequestServices.GetService<IValidationRuleService>();
-            var contentItemId = form["ValidationFormContentItemId"];
+            var contentItemId = form["contentItemId"];
             if (String.IsNullOrEmpty(contentItemId)) throw new InvalidOperationException("Cannot find contentItem");
             var updater = _updateModelAccessor.ModelUpdater;
             if (updater == null) throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
