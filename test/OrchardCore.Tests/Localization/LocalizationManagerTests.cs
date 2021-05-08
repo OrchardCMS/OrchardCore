@@ -30,7 +30,7 @@ namespace OrchardCore.Tests.Localization
                 It.Is<string>(culture => culture == "cs"),
                 It.IsAny<CultureDictionary>())
             );
-            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, _translationProvider.Object, _memoryCache);
+            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
@@ -45,7 +45,7 @@ namespace OrchardCore.Tests.Localization
             _translationProvider
                 .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
                 .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
-            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, _translationProvider.Object, _memoryCache);
+            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
             var key = new CultureDictionaryRecordKey("ball");
 
@@ -67,7 +67,7 @@ namespace OrchardCore.Tests.Localization
                 It.Is<string>(culture => culture == "cs"),
                 It.IsAny<CultureDictionary>())
             );
-            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object, highPriorityRuleProvider.Object }, _translationProvider.Object, _memoryCache);
+            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object, highPriorityRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
