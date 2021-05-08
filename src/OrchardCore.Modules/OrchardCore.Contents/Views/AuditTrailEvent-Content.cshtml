@@ -68,14 +68,18 @@ else
 @if (diffNodes != null && diffNodes.Any())
 {
     <div class="form-group">
-        <div class="custom-control custom-switch" data-toggle="collapse" data-target="#beforeAfter" aria-expanded="false">
-            <input type="checkbox" class="custom-control-input" id="showBeforeAfter">
-            <label class="custom-control-label" for="showBeforeAfter">@T["Show before/after"]</label>
+        <div class="custom-control custom-switch">
+            <div class="d-inline-block" data-toggle="collapse" data-target="#beforeAfter" aria-expanded="false">
+                <input type="checkbox" class="custom-control-input" id="showBeforeAfter">
+                <label class="custom-control-label cursor-pointer" for="showBeforeAfter">@T["Show before/after"]</label>
+            </div>
         </div>
 
-        <div class="custom-control custom-switch" data-toggle="collapse" data-target="#diff" aria-expanded="false">
-            <input type="checkbox" class="custom-control-input" id="showDiff" checked>
-            <label class="custom-control-label" for="showDiff">@T["Show diff"]</label>
+        <div class="custom-control custom-switch">
+            <div class="d-inline-block" data-toggle="collapse" data-target="#diff" aria-expanded="false">
+                <input type="checkbox" class="custom-control-input" id="showDiff" checked>
+                <label class="custom-control-label cursor-pointer" for="showDiff">@T["Show diff"]</label>
+            </div>
         </div>
     </div>
 
@@ -127,14 +131,14 @@ else
 
             diff.forEach(function (part) {
                 color = part.added ? 'green' :
-                    part.removed ? 'red' : 'black';
+                    part.removed ? 'red' : null;
                 fontWeight = part.added ? 'bold' :
-                    part.removed ? 'bold' : 'normal';
+                    part.removed ? 'bold' : null;
                 span = document.createElement('span');
 
                 span.style.color = color;
                 span.style.fontWeight = fontWeight;
-                span.appendChild(document.createTextNode(part.value));
+                span.appendChild(document.createTextNode($("<textarea/>").html(part.value).text()));
                 fragment.appendChild(span);
             });
 

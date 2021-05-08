@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GraphQL;
+using Newtonsoft.Json.Linq;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
@@ -9,7 +10,6 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.AuditTrail.Extensions;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -74,7 +74,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
             }
 
             var previousContentItem = previousAuditTrailEvent.As<AuditTrailContentEvent>().ContentItem;
-            if (contentItem.FindDiff(previousContentItem, out var diff))
+            if (JObject.FromObject(contentItem).FindDiff(JObject.FromObject(previousContentItem), out var diff))
             {
                 return diff.GenerateDiffNodes(contentItem.ContentType);
             }

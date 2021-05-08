@@ -43,16 +43,20 @@ namespace OrchardCore.AuditTrail.Extensions
 
             if (current.Type == JTokenType.Object || current.Type == JTokenType.Array)
             {
-                var definition = current.CreateNull() as JContainer;
-                definition.Merge(previous.CreateNull(), JsonMergeSettings);
+                var schema = current.CreateNull() as JContainer;
+                schema.Merge(previous.CreateNull(), JsonMergeSettings);
 
-                var currentContainer = current.Type == JTokenType.Object
-                    ? new JObject((JObject)definition)
-                    : new JArray((JArray)definition) as JContainer;
-
-                var previousContainer = current.Type == JTokenType.Object
-                    ? new JObject((JObject)definition)
-                    : new JArray((JArray)definition) as JContainer;
+                JContainer currentContainer, previousContainer;
+                if (current.Type == JTokenType.Object)
+                {
+                    currentContainer = new JObject((JObject)schema);
+                    previousContainer = new JObject((JObject)schema);
+                }
+                else
+                {
+                    currentContainer = new JArray((JArray)schema);
+                    previousContainer = new JArray((JArray)schema);
+                }
 
                 currentContainer.Merge(current, JsonMergeSettings);
                 previousContainer.Merge(previous, JsonMergeSettings);
