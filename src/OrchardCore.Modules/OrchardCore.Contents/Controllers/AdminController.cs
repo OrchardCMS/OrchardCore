@@ -706,5 +706,19 @@ namespace OrchardCore.Contents.Controllers
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetContentFormat(string contentTypeName)
+        {
+            var contentItem = await _contentManager.NewAsync(contentTypeName);
+            contentItem.Owner =User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+            {
+                return Json(contentItem);
+            }
+            return Unauthorized();
+        }
     }
 }
