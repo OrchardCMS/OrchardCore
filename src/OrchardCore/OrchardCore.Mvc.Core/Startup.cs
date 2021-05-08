@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
@@ -29,10 +30,12 @@ namespace OrchardCore.Mvc
         public override int Order => -1000;
         public override int ConfigureOrder => 1000;
 
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IServiceProvider _serviceProvider;
 
-        public Startup(IServiceProvider serviceProvider)
+        public Startup(IHostEnvironment hostingEnvironment, IServiceProvider serviceProvider)
         {
+            _hostingEnvironment = hostingEnvironment;
             _serviceProvider = serviceProvider;
         }
 
@@ -88,8 +91,9 @@ namespace OrchardCore.Mvc
             // System.Text.Json. Here, we manually add JSON.NET based formatters.
             builder.AddNewtonsoftJson();
 
+#if !NET6_0_OR_GREATER
             builder.SetCompatibilityVersion(CompatibilityVersion.Latest);
-
+#endif
             services.AddModularRazorPages();
 
             AddModularFrameworkParts(_serviceProvider, builder.PartManager);
@@ -101,10 +105,10 @@ namespace OrchardCore.Mvc
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
-            // Support razor runtime compilation only if the 'refs' folder exists.
+            // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
             var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
 
-            if (refsFolderExists)
+            if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
             {
                 builder.AddRazorRuntimeCompilation();
 

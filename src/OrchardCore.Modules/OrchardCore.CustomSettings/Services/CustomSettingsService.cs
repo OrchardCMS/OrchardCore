@@ -72,11 +72,11 @@ namespace OrchardCore.CustomSettings.Services
             return settingsType;
         }
 
-        public async Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType)
+        public Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            return await _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
+            return _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
         }
 
         public Task<ContentItem> GetSettingsAsync(string settingsTypeName, Action isNew = null)

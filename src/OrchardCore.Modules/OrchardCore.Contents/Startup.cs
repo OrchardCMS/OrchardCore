@@ -72,7 +72,7 @@ namespace OrchardCore.Contents
 
             services.Configure<LiquidViewOptions>(o =>
             {
-                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, new ContentItemTag().WriteToAsync));
+                o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, ContentItemTag.WriteToAsync));
             });
 
             services.Configure<TemplateOptions>(o =>
@@ -163,7 +163,6 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentHandleProvider, ContentItemIdHandleProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
-            services.AddIdGeneration();
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part

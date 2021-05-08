@@ -23,12 +23,11 @@ namespace OrchardCore.Documents
         private AfterUpdateDelegate _afterUpdateDelegateAsync;
 
         public VolatileDocumentManager(
-            IDocumentStore documentStore,
             IDistributedCache distributedCache,
             IDistributedLock distributedLock,
             IMemoryCache memoryCache,
-            IOptionsSnapshot<DocumentOptions> options)
-            : base(documentStore, distributedCache, memoryCache, options)
+            IOptionsMonitor<DocumentOptions> options)
+            : base(distributedCache, memoryCache, options)
         {
             _isVolatile = true;
             _distributedLock = distributedLock;
@@ -48,7 +47,7 @@ namespace OrchardCore.Documents
                 _afterUpdateDelegateAsync += document => afterUpdateAsync(document);
             }
 
-            _documentStore.AfterCommitSuccess<TDocument>(async () =>
+            DocumentStore.AfterCommitSuccess<TDocument>(async () =>
             {
                 (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
                     _options.CacheKey + "_LOCK",

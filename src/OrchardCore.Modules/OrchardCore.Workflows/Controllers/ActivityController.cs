@@ -111,7 +111,7 @@ namespace OrchardCore.Workflows.Controllers
             _session.Save(workflowType);
             _notifier.Success(H["Activity added successfully."]);
 
-            return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)Redirect(model.ReturnUrl) : RedirectToAction("Edit", "WorkflowType", new { id = model.WorkflowTypeId });
+            return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)Redirect(model.ReturnUrl) : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
         }
 
         public async Task<IActionResult> Edit(int workflowTypeId, string activityId, string returnUrl)
@@ -169,7 +169,7 @@ namespace OrchardCore.Workflows.Controllers
 
             return Url.IsLocalUrl(model.ReturnUrl)
                 ? (IActionResult)Redirect(model.ReturnUrl)
-                : RedirectToAction("Edit", "WorkflowType", new { id = model.WorkflowTypeId });
+                : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
         }
     }
 }

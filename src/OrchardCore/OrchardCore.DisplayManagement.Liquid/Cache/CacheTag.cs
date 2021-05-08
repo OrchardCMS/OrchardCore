@@ -34,7 +34,15 @@ namespace OrchardCore.DynamicCache.Liquid
                                         The contents of the cache block will not be cached.
                                         To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService and ICacheScopeManager is enabled (for example, 'Dynamic Cache').");
 
-                await writer.WriteAsync(await EvaluateStatementsAsync(statements, encoder, context));
+                if (statements != null && statements.Count > 0)
+                {
+                    var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+
+                    if (completion != Completion.Normal)
+                    {
+                        return completion;
+                    }
+                }
 
                 return Completion.Normal;
             }
@@ -74,11 +82,25 @@ namespace OrchardCore.DynamicCache.Liquid
             }
 
             cacheScopeManager.EnterScope(cacheContext);
-            String content;
 
+            var content = "";
             try
             {
-                content = await EvaluateStatementsAsync(statements, encoder, context);
+                if (statements != null || statements.Count > 0)
+                {
+                    using var sb = StringBuilderPool.GetInstance();
+                    using (var render = new StringWriter(sb.Builder))
+                    {
+                        foreach (var statement in statements)
+                        {
+                            await statement.WriteToAsync(render, encoder, context);
+                        }
+
+                        await render.FlushAsync();
+                    }
+
+                    content = sb.Builder.ToString();
+                }
             }
             finally
             {
@@ -111,24 +133,6 @@ namespace OrchardCore.DynamicCache.Liquid
             await writer.WriteAsync(content);
 
             return Completion.Normal;
-        }
-
-        private static async Task<string> EvaluateStatementsAsync(IReadOnlyList<Statement> statements, TextEncoder encoder, TemplateContext context)
-        {
-            using (var sb = StringBuilderPool.GetInstance())
-            {
-                using (var content = new StringWriter(sb.Builder))
-                {
-                    foreach (var statement in statements)
-                    {
-                        await statement.WriteToAsync(content, encoder, context);
-                    }
-
-                    await content.FlushAsync();
-                }
-
-                return sb.Builder.ToString();
-            }
         }
     }
 }

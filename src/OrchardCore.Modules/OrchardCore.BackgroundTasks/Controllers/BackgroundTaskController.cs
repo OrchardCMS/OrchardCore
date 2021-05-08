@@ -153,7 +153,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (!document.Settings.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name });
+                return RedirectToAction(nameof(Create), new { name });
             }
 
             var task = _backgroundTasks.GetTaskByName(name);

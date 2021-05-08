@@ -15,8 +15,11 @@ namespace OrchardCore.Workflows.Http.Services
 {
     internal class WorkflowRouteEntries<TWorkflowRouteDocument> : IWorkflowRouteEntries where TWorkflowRouteDocument : WorkflowRouteDocument, new()
     {
-        public WorkflowRouteEntries()
+        private readonly IVolatileDocumentManager<TWorkflowRouteDocument> _documentManager;
+
+        public WorkflowRouteEntries(IVolatileDocumentManager<TWorkflowRouteDocument> documentManager)
         {
+            _documentManager = documentManager;
         }
 
         public async Task<IEnumerable<WorkflowRoutesEntry>> GetWorkflowRouteEntriesAsync(string httpMethod, RouteValueDictionary routeValues)
@@ -29,14 +32,14 @@ namespace OrchardCore.Workflows.Http.Services
         {
             var document = await LoadDocumentAsync();
             AddEntries(document, entries);
-            await DocumentManager.UpdateAsync(document);
+            await _documentManager.UpdateAsync(document);
         }
 
         public async Task RemoveEntriesAsync(string workflowId)
         {
             var document = await LoadDocumentAsync();
             RemoveEntries(document, workflowId);
-            await DocumentManager.UpdateAsync(document);
+            await _documentManager.UpdateAsync(document);
         }
 
         protected virtual IEnumerable<WorkflowRoutesEntry> GetWorkflowRoutesEntries(WorkflowRouteDocument document, string httpMethod, RouteValueDictionary routeValues)
@@ -66,20 +69,17 @@ namespace OrchardCore.Workflows.Http.Services
         /// <summary>
         /// Loads the workflow route document for updating and that should not be cached.
         /// </summary>
-        private Task<TWorkflowRouteDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
+        private Task<TWorkflowRouteDocument> LoadDocumentAsync() => _documentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
 
         /// <summary>
         /// Gets the workflow route document for sharing and that should not be updated.
         /// </summary>
-        private Task<TWorkflowRouteDocument> GetDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
+        private Task<TWorkflowRouteDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
 
         protected virtual Task<TWorkflowRouteDocument> CreateDocumentAsync() => Task.FromResult(new TWorkflowRouteDocument());
 
         protected static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
 
         protected static IActivityLibrary ActivityLibrary => ShellScope.Services.GetRequiredService<IActivityLibrary>();
-
-        protected static IVolatileDocumentManager<TWorkflowRouteDocument> DocumentManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<TWorkflowRouteDocument>>();
     }
 }

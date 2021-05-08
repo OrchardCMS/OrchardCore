@@ -98,7 +98,7 @@ namespace OrchardCore.Media.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(MediaProfileIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -187,7 +187,7 @@ namespace OrchardCore.Media.Controllers
 
             if (!mediaProfilesDocument.MediaProfiles.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name });
+                return RedirectToAction(nameof(Create), new { name });
             }
 
             var mediaProfile = mediaProfilesDocument.MediaProfiles[name];
@@ -320,7 +320,7 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private void BuildViewModel(MediaProfileViewModel model)

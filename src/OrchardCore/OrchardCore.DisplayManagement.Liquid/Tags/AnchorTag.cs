@@ -86,20 +86,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            ViewBufferTextWriterContent content = null;
-
-            if (statements != null && statements.Count > 0)
-            {
-                content = new ViewBufferTextWriterContent();
-
-                var completion = await statements.RenderStatementsAsync(content, encoder, context);
-
-                if (completion != Completion.Normal)
-                {
-                    return completion;
-                }
-            }
-
             // If "href" is already set, it means the user is attempting to use a normal anchor.
             if (!String.IsNullOrEmpty(href))
             {
@@ -192,7 +178,17 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             }
 
             tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
-            content.WriteTo(writer, (HtmlEncoder)encoder);
+
+            if (statements != null && statements.Count > 0)
+            {
+                var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+
+                if (completion != Completion.Normal)
+                {
+                    return completion;
+                }
+            }
+
             tagBuilder.RenderEndTag().WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;

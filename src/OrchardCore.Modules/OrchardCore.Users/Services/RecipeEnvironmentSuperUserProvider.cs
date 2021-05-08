@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
@@ -10,16 +11,17 @@ namespace OrchardCore.Users.Services
     public class RecipeEnvironmentSuperUserProvider : IRecipeEnvironmentProvider
     {
         private readonly ISiteService _siteService;
-        private readonly IUserService _userService;
+        private readonly IServiceProvider _serviceProvider;
+        private IUserService _userService;
         private readonly ILogger _logger;
 
         public RecipeEnvironmentSuperUserProvider(
             ISiteService siteService,
-            IUserService userService,
+            IServiceProvider serviceProvider,
             ILogger<RecipeEnvironmentSuperUserProvider> logger)
         {
             _siteService = siteService;
-            _userService = userService;
+            _serviceProvider = serviceProvider;
             _logger = logger;
         }
 
@@ -32,15 +34,21 @@ namespace OrchardCore.Users.Services
             {
                 try
                 {
+                    // 'IUserService' has many dependencies including options configurations code, particularly with 'OpenId',
+                    // so, because this 'IRecipeEnvironmentProvider' may be injected by an `IDataMigration` even if there is no
+                    // migration to do, 'IUserService' is lazily resolved, so that it is not injected on each shell activation.
+                    _userService ??= _serviceProvider.GetRequiredService<IUserService>();
+
                     var superUser = await _userService.GetUserByUniqueIdAsync(siteSettings.SuperUser);
                     if (superUser != null)
                     {
                         environment["AdminUserId"] = siteSettings.SuperUser;
+                        environment["AdminUsername"] = superUser.UserName;
                     }
-                } 
-                catch 
+                }
+                catch
                 {
-                    _logger.LogWarning("Could not lookup AdminUserId; User migrations may not have run yet");
+                    _logger.LogWarning("Could not lookup the admin user, user migrations may not have run yet.");
                 }
             }
         }

@@ -18,11 +18,11 @@ The auto-setup module allows to automatically install the application/tenants on
             "DatabaseProvider": "Sqlite",
             "DatabaseConnectionString": "",
             "DatabaseTablePrefix": "",
-            "RecipeName": "Agency"
+            "RecipeName": "SaaS"
         },
         {
             "ShellName": "AutoSetupTenant",
-            "SiteName": "AutoSetup Sub Tenant",
+            "SiteName": "AutoSetup Tenant",
             "SiteTimeZone": "Europe/Amsterdam",
             "AdminUsername": "tenantadmin",
             "AdminEmail": "tenant@orchardproject.net",
@@ -80,10 +80,10 @@ Since JSON configuration contains admin-sensitive information, it is recommended
 "OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider": "Sqlite"
 "OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseConnectionString": ""
 "OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseTablePrefix": ""
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName": "Agency"
+"OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName": "SaaS"
 
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__ShellName": "AutoSetupTenant"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__SiteName": "AutoSetup Sub Tenant"
+"OrchardCore__OrchardCore_AutoSetup__Tenants__1__SiteName": "AutoSetup Tenant"
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__SiteTimeZone": "Europe/Amsterdam"
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__AdminUsername": "tenantadmin"
 "OrchardCore__OrchardCore_AutoSetup__Tenants__1__AdminEmail": "tenant@orchardproject.net"
@@ -111,7 +111,7 @@ dotnet run -f netcoreapp3.1 --launch-profile web
 
 ## Enabling Auto Setup Feature
 
-Do not forget to enable the Autosetup feature in Web project's Startup file:
+To enable the Auto Setup feature, it is necessary to add it in the Web project's Startup file:
 
 ```csharp
     public void ConfigureServices(IServiceCollection services)
@@ -121,3 +121,7 @@ Do not forget to enable the Autosetup feature in Web project's Startup file:
             .AddSetupFeatures("OrchardCore.AutoSetup");
     }
 ```
+
+This feature is enabled by default in the default project included in the source code, but
+is not with the application templates to prevent any unexpected behavior when a custom project
+is created.

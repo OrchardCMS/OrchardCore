@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -168,10 +170,56 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await shellScope.UsingAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                        x.ContentType == "BlogPost").ListAsync();
+                    var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").CountAsync();
 
-                    Assert.Equal(2, blogPosts.Count());
+                    Assert.Equal(2, blogPostsCount);
+                });
+            }
+        }
+
+        [Fact]
+        public async Task ShouldIgnoreDuplicateContentItems()
+        {
+            using (var context = new BlogPostDeploymentContext())
+            {
+                // Setup
+                await context.InitializeAsync();
+
+                // Create a recipe with two content items and the same version id.
+                var firstRecipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
+                {
+                    jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "dupversion";
+                    jItem[nameof(ContentItem.DisplayText)] = "duplicate version";
+                    jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
+                });
+
+                var secondRecipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
+                {
+                    jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "dupversion";
+                    jItem[nameof(ContentItem.DisplayText)] = "duplicate version";
+                    jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
+                });
+
+                var firstRecipeData = firstRecipe.SelectToken("steps[0].Data") as JArray;
+
+                var secondContentItem = secondRecipe.SelectToken("steps[0].Data[0]");
+
+                firstRecipeData.Add(secondContentItem);
+
+                await context.PostRecipeAsync(firstRecipe);
+
+                // Test
+                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
+                {
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost" && x.ContentItemVersionId == "dupversion").CountAsync();
+
+                    Assert.Equal(1, blogPostsCount);
                 });
             }
         }

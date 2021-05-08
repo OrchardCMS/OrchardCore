@@ -1,6 +1,7 @@
 using System;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +51,7 @@ namespace OrchardCore.Settings
                     FluidValue result = name switch
                     {
                         nameof(ISite.SiteName) => new StringValue(site.SiteName),
+                        nameof(ISite.PageTitleFormat) => new StringValue(site.PageTitleFormat),
                         nameof(ISite.SiteSalt) => new StringValue(site.SiteSalt),
                         nameof(ISite.SuperUser) => new StringValue(site.SuperUser),
                         nameof(ISite.Calendar) => new StringValue(site.Calendar),
@@ -60,10 +62,11 @@ namespace OrchardCore.Settings
                         nameof(ISite.PageSize) => NumberValue.Create(site.PageSize),
                         nameof(ISite.MaxPageSize) => NumberValue.Create(site.MaxPageSize),
                         nameof(ISite.MaxPagedCount) => NumberValue.Create(site.MaxPagedCount),
+                        nameof(ISite.BaseUrl) => new StringValue(site.BaseUrl),
                         nameof(ISite.HomeRoute) => new ObjectValue(site.HomeRoute),
                         nameof(ISite.AppendVersion) => BooleanValue.Create(site.AppendVersion),
                         nameof(ISite.CacheMode) => new StringValue(site.CacheMode.ToString()),
-                        nameof(ISite.PageTitleFormat) => new StringValue(site.PageTitleFormat),
+                        nameof(ISite.Properties) => new ObjectValue(site.Properties),
                         _ => NilValue.Instance
                     };
 
@@ -73,6 +76,7 @@ namespace OrchardCore.Settings
 
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IAuthorizationHandler, SuperUserHandler>();
 
             services.AddRecipeExecutionStep<SettingsStep>();
             services.AddSingleton<ISiteService, SiteService>();

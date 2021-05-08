@@ -248,8 +248,7 @@ From a Razor template:
 }
 ```
 
-From Liquid, you will require to create a SQL Query in Orchard Core to retrieve these records first.  
-Name it "AllCountries" for the current example and **don't select** the option "Return Documents" on the Query:
+From Liquid, you will be required to create a SQL Query in Orchard Core to retrieve these records first. Name it "AllCountries" for the current example and **don't select** the option "Return Documents" on the Query:
 
 ```SQL
 SELECT * FROM TextFieldIndex

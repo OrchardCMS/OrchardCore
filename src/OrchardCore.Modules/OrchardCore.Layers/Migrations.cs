@@ -1,10 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
-using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Services;
 using OrchardCore.Rules;
@@ -17,18 +13,15 @@ namespace OrchardCore.Layers
         private readonly ILayerService _layerService;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IRuleMigrator _ruleMigrator;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         public Migrations(
             ILayerService layerService,
             IConditionIdGenerator conditionIdGenerator,
-            IRuleMigrator ruleMigrator,
-            ITypeFeatureProvider typeFeatureProvider)
+            IRuleMigrator ruleMigrator)
         {
             _layerService = layerService;
             _conditionIdGenerator = conditionIdGenerator;
             _ruleMigrator = ruleMigrator;
-            _typeFeatureProvider = typeFeatureProvider;
         }
 
         public int Create()
@@ -71,16 +64,6 @@ namespace OrchardCore.Layers
             }
 
             await _layerService.UpdateAsync(layers);
-
-            var layerFeature = _typeFeatureProvider.GetFeatureForDependency(GetType());
-
-            // Registered as a deferred task so the migration can complete before the shell reactivates the module causing migrations to run circularly and fail.                 
-            ShellScope.AddDeferredTask((scope) =>
-            {
-                // Reenable the layer feature so the new dependency of OrchardCore.Rules is activated.
-                var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-                return shellFeaturesManager.EnableFeaturesAsync(new[] { layerFeature }, force: true);
-            });
 
             return 3;
         }
