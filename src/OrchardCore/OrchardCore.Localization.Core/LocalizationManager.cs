@@ -52,7 +52,7 @@ namespace OrchardCore.Localization
                 }
 
                 var dictionary = new CultureDictionary(culture.Name, rule ?? DefaultPluralRule);
-                foreach (var translationProvider in this._translationProviders)
+                foreach (var translationProvider in _translationProviders)
                 {
                     translationProvider.LoadTranslations(culture.Name, dictionary);
                 }
