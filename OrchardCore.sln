@@ -404,7 +404,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Data.YesSql", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Data.YesSql.Abstractions", "src\OrchardCore\OrchardCore.Data.YesSql.Abstractions\OrchardCore.Data.YesSql.Abstractions.csproj", "{AB47A65C-7BA9-4CE7-BA73-285EB7A2CEFD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Localization.Data", "src\OrchardCore.Modules\OrchardCore.Localization.Data\OrchardCore.Localization.Data.csproj", "{306448D7-1302-43A9-AFA3-67C1539BADCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.DataLocalization", "src\OrchardCore.Modules\OrchardCore.Localization.Data\OrchardCore.DataLocalization.csproj", "{306448D7-1302-43A9-AFA3-67C1539BADCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
