@@ -49,6 +49,11 @@ namespace OrchardCore.Indexing
             Entries.Add(new DocumentIndexEntry(name, value, Types.Number, options));
         }
 
+        public void Set(string name, GeoPoint value, DocumentIndexOptions options)
+        {
+            Entries.Add(new DocumentIndexEntry(name, value, Types.GeoPoint, options));
+        }
+
         public string ContentItemId { get; }
 
         public enum Types
@@ -57,7 +62,14 @@ namespace OrchardCore.Indexing
             Text,
             DateTime,
             Boolean,
-            Number
+            Number,
+            GeoPoint
+        }
+
+        public class GeoPoint
+        {
+            public decimal Longitude;
+            public decimal Latitude;
         }
 
         public class DocumentIndexEntry

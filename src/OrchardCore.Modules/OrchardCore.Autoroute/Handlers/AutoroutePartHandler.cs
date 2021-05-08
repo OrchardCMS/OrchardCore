@@ -465,13 +465,9 @@ namespace OrchardCore.Autoroute.Handlers
             var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
 
             var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
-            if (possibleConflicts.Any())
+            if (possibleConflicts.Any(x => x.ContentItemId != contentItemId && x.ContainedContentItemId != contentItemId))
             {
-                if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) ||
-                    possibleConflicts.Any(x => !String.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
-                {
-                    return false;
-                }
+                return false;
             }
 
             return true;

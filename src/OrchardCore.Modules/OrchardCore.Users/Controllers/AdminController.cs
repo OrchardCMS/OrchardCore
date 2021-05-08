@@ -23,7 +23,6 @@ using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql;
 using YesSql.Services;
-using YesSql.Sql;
 
 namespace OrchardCore.Users.Controllers
 {

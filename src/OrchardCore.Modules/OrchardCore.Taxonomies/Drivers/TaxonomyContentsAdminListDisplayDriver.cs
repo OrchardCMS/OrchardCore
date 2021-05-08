@@ -68,7 +68,6 @@ namespace OrchardCore.Taxonomies.Drivers
 
             var results = new List<IDisplayResult>();
             var taxonomies = await _contentManager.GetAsync(taxonomyContentItemIds);
-            using var sb = ZString.CreateStringBuilder();
 
             var position = 5;
             foreach (var taxonomy in taxonomies)
@@ -76,6 +75,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 results.Add(
                     Initialize<TaxonomyContentsAdminFilterViewModel>("ContentsAdminListTaxonomyFilter", m =>
                     {
+                        using var sb = ZString.CreateStringBuilder();
                         var termEntries = new List<FilterTermEntry>();
                         PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
                         var terms = new List<SelectListItem>

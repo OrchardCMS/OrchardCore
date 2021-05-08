@@ -1,13 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
@@ -55,26 +51,6 @@ namespace OrchardCore.Tests.Apis.Context
             }
 
             return Task.CompletedTask;
-        }
-    }
-
-    internal class AlwaysLoggedInApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOptions>
-    {
-        public AlwaysLoggedInApiAuthenticationHandler(
-            IOptionsMonitor<ApiAuthorizationOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock)
-        {
-        }
-
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
-            return Task.FromResult(
-                AuthenticateResult.Success(
-                    new AuthenticationTicket(
-                        new System.Security.Claims.ClaimsPrincipal(new StubIdentity()), "Api")));
         }
     }
 

@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
@@ -21,8 +22,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         {
             static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {
-                using var stringBuilderPool = StringBuilderPool.GetInstance();
-                using var writer = new StringWriter(stringBuilderPool.Builder);
+                using var writer = new ZStringWriter();
                 (await task).WriteTo(writer, NullHtmlEncoder.Default);
                 return new StringValue(writer.ToString(), false);
             }
@@ -35,8 +35,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                     return Awaited(task);
                 }
 
-                using var stringBuilderPool = StringBuilderPool.GetInstance();
-                using var writer = new StringWriter(stringBuilderPool.Builder);
+                using var writer = new ZStringWriter();
                 task.Result.WriteTo(writer, NullHtmlEncoder.Default);
                 return new ValueTask<FluidValue>(new StringValue(writer.ToString(), false));
             }
