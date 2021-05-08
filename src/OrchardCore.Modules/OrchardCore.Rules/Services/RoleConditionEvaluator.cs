@@ -34,8 +34,7 @@ namespace OrchardCore.Rules.Services
             // Claim all if the operator is negative
             if (condition.Operation is INegateOperator)
             {
-                return (_httpContextAccessor.HttpContext.User?.Claims.All(claim => 
-                    claim.Type == roleClaimType && 
+                return (_httpContextAccessor.HttpContext.User?.Claims.Where(c => c.Type == roleClaimType).All(claim => 
                     operatorComparer.Compare(condition.Operation, claim.Value, condition.Value))
                 ).GetValueOrDefault() ? True : False;
             }
