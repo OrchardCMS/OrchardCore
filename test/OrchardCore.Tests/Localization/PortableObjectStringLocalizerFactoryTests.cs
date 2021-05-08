@@ -13,10 +13,9 @@ namespace OrchardCore.Tests.Localization
 {
     public class PortableObjectStringLocalizerFactoryTests
     {
-        // UNCOMMENT: Fix the failed unit test
-        //[Fact]
-        //public async Task LocalizerReturnsTranslationFromInnerClass()
-        //    => await StartupRunner.Run(typeof(PortableObjectStringLocalizerFactory), "ar", "مرحبا");
+       [Fact]
+        public async Task LocalizerReturnsTranslationFromInnerClass()
+            => await StartupRunner.Run(typeof(PortableObjectStringLocalizerFactory), "ar", "مرحبا");
 
         public class PortableObjectStringLocalizerFactory
         {
