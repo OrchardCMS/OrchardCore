@@ -40,9 +40,5 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="YesSql.Filters.Query"/>
-  </ItemGroup>
-
+  
 </Project>

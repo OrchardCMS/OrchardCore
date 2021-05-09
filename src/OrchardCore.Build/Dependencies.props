@@ -38,7 +38,6 @@
     <PackageManagement Include="OpenIddict.AspNetCore" Version="3.0.3" />
     <PackageManagement Include="OpenIddict.Core" Version="3.0.3" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
-    <PackageManagement Include="Parlot" Version="0.0.10" />
     <PackageManagement Include="Serilog.AspNetCore" Version="4.1.0" />
     <PackageManagement Include="Shortcodes" Version="1.3.0" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.2" />

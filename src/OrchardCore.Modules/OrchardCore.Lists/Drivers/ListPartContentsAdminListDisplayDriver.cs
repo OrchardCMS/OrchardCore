@@ -22,8 +22,6 @@ namespace OrchardCore.Lists.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
-            // TODO move this into the filter providers.
-            // Do we deprecate this functionality.
             var viewModel = new ListPartContentsAdminFilterViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)))
             {
