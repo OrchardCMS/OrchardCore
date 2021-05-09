@@ -40,6 +40,7 @@ namespace OrchardCore.Security
         {
             if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
             {
+                Response.StatusCode = (int)System.Net.HttpStatusCode.Unauthorized;
                 return Task.CompletedTask;
             }
 
@@ -56,6 +57,7 @@ namespace OrchardCore.Security
         {
             if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
             {
+                Response.StatusCode = (int)System.Net.HttpStatusCode.Forbidden;
                 return Task.CompletedTask;
             }
 
@@ -67,10 +69,5 @@ namespace OrchardCore.Security
             
             return Context.ForbidAsync(Options.ApiAuthenticationScheme);
         }
-    }
-
-    public class ApiAuthorizationOptions : AuthenticationSchemeOptions
-    {
-        public string ApiAuthenticationScheme { get; set; } = "Bearer";
     }
 }

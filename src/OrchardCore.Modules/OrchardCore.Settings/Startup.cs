@@ -1,6 +1,7 @@
 using System;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,6 +76,7 @@ namespace OrchardCore.Settings
 
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IAuthorizationHandler, SuperUserHandler>();
 
             services.AddRecipeExecutionStep<SettingsStep>();
             services.AddSingleton<ISiteService, SiteService>();

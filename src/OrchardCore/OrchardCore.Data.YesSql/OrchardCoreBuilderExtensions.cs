@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -56,7 +56,10 @@ namespace Microsoft.Extensions.DependencyInjection
                         return null;
                     }
 
-                    IConfiguration storeConfiguration = new YesSql.Configuration();
+                    IConfiguration storeConfiguration = new YesSql.Configuration
+                    {
+                        ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
+                    };
 
                     switch (shellSettings["DatabaseProvider"])
                     {

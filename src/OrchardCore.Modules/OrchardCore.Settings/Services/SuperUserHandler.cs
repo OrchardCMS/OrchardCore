@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Settings;
+using OrchardCore.Security;
 
-namespace OrchardCore.Security.AuthorizationHandlers
+namespace OrchardCore.Settings.Services
 {
     /// <summary>
     /// This authorization handler validates any permission when the user is the site owner.

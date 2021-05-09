@@ -4,12 +4,13 @@ The below table lists the different .NET libraries used in Orchard Core:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET | 12.8.1 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
+| [Angle Sharp](https://github.com/AngleSharp/AngleSharp) | Angle brackets parser library. | 0.15.0 |[MIT](https://github.com/AngleSharp/AngleSharp/blob/devel/LICENSE) |
+| [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET | 12.8.3 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Storage Blobs for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.2.0/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage | 1.2.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Castle.Core](https://github.com/castleproject/Core) | Castle DynamicProxy. | 4.4.1 |[Apache-2.0](https://github.com/castleproject/Core/blob/master/LICENSE) |
-| [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.0.5 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
+| [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.0.9 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 2.4.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
-| [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 5.0.376 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
+| [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 5.0.404 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 1.0.2 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
 | [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2031 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
@@ -24,10 +25,11 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 4.12.0 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.1 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.0.5| [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
-| [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.0.0 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
+| [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.0.3 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 4.1.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
-| [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.0.0-beta-175913881 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
+| [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.0 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.0.2 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
+| [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.4.2 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
 
 The below table lists the different libraries used as Resources:
 
@@ -36,7 +38,7 @@ The below table lists the different libraries used as Resources:
 | [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | 4.6.0 | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
 | [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | 1.3.18 | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
 | [bootstrap-slider](https://github.com/seiyria/bootstrap-slider) | Slider control for Bootstrap. | 11.0.2 | [MIT](https://github.com/seiyria/bootstrap-slider/blob/master/LICENSE.md) |
-| [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.60.0 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
+| [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.61.0 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
 | [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | 5.15.3 | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
 | [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | 3.6.0 | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |
 | [jQuery UI](https://github.com/jquery/jquery-ui) | jQuery user interface library. | 1.12.1 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
@@ -55,7 +57,7 @@ The below table lists the different Client side libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.13 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
+| [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.15.0 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
 | [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.4.1 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [GraphiQL explorer](https://github.com/onegraph/graphiql-explorer) | Explorer plugin for GraphiQL. | 0.6.3 | [MIT](https://github.com/OneGraph/graphiql-explorer/blob/master/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
@@ -64,13 +66,13 @@ The below table lists the different Client side libraries:
 | [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0.2 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
 | [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.2.4 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.11.0 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
-| [WebPack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.31.2 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
+| [WebPack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.36.0 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
 
 The below table lists the different Tests libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 7.1.0 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
+| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 7.2.0 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 16.9.4 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.4.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |

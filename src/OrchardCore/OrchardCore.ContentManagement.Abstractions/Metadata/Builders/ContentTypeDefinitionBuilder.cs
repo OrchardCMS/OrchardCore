@@ -50,6 +50,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 throw new ArgumentException("Content type name contains invalid characters", "name");
             }
+            if (_name.IsReservedContentName())
+            {
+                throw new ArgumentException("Content type name is reserved for internal use", "name");
+            }
+
             return new ContentTypeDefinition(_name, _displayName, _parts, _settings);
         }
 
