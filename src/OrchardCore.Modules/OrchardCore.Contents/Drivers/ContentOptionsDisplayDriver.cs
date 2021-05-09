@@ -21,6 +21,8 @@ namespace OrchardCore.Contents.Drivers
 
         public override IDisplayResult Edit(ContentOptionsViewModel model)
         {
+            // Map the filter result to a model so the ui can reflect current selections.
+            model.FilterResult.MapTo(model);
             return Combine(
                 Initialize<ContentOptionsViewModel>("ContentsAdminListSearch", m => BuildContentOptionsViewModel(m, model)).Location("Search:10"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminListCreate", m => BuildContentOptionsViewModel(m, model)).Location("Create:10"),
@@ -33,15 +35,13 @@ namespace OrchardCore.Contents.Drivers
         public override Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
             // Map the incoming values from a form post to the filter result.
-            model.FilterResult.MapFrom(model);            
+            model.FilterResult.MapFrom(model);
 
             return Task.FromResult<IDisplayResult>(Edit(model));
         }
 
         private static void BuildContentOptionsViewModel(ContentOptionsViewModel m, ContentOptionsViewModel model)
         {
-            // Map the filter result to a model so the ui can reflect current selections.
-            model.FilterResult.MapTo(model);
             m.ContentTypeOptions = model.ContentTypeOptions;
             m.ContentStatuses = model.ContentStatuses;
             m.ContentSorts = model.ContentSorts;

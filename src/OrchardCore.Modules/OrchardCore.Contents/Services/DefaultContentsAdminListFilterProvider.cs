@@ -91,10 +91,6 @@ namespace OrchardCore.Contents.Services
                                     break;
                             };
                         }
-                        // else
-                        // {
-                        //     query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc);
-                        // }
 
                         return query;
                     })
@@ -107,7 +103,6 @@ namespace OrchardCore.Contents.Services
                     })
                     .MapFrom<ContentOptionsViewModel>((model) =>
                     {
-                            // return (true, model.OrderBy.ToString());
                         if (model.OrderBy != ContentsOrder.Modified)
                         {
                             return (true, model.OrderBy.ToString());

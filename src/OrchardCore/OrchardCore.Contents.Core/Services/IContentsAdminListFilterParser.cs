@@ -5,6 +5,5 @@ namespace OrchardCore.Contents.Services
 {
     public interface IContentsAdminListFilterParser : IQueryParser<ContentItem>
     {
-
     }
 }

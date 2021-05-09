@@ -22,12 +22,12 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using YesSql.Filters.Query;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
 using YesSql.Services;
+using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents.Controllers
 {

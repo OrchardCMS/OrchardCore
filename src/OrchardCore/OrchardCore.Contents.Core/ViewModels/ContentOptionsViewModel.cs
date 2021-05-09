@@ -17,9 +17,6 @@ namespace OrchardCore.Contents.ViewModels
             BulkAction = ViewModels.ContentsBulkAction.None;
             ContentsStatus = ContentsStatus.Latest;
         }
-
-        public string DisplayText { get; set; }
-
         public string SearchText { get; set; }
         public string OriginalSearchText { get; set; }
 
@@ -33,15 +30,22 @@ namespace OrchardCore.Contents.ViewModels
 
         public ContentsBulkAction BulkAction { get; set; }
 
-        [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "SearchText")]
+        [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = nameof(SearchText))]
         public QueryFilterResult<ContentItem> FilterResult { get; set; }
 
         #region Values to populate
 
+        [BindNever]
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
+
+        [BindNever]
         public int ContentItemsCount { get; set; }
+
+        [BindNever]
         public int TotalItemCount { get; set; }
+
+        [BindNever]
         public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
 
         #endregion
