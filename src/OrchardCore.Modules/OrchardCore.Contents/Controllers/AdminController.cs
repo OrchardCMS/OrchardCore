@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -22,6 +24,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
@@ -49,6 +52,9 @@ namespace OrchardCore.Contents.Controllers
         private readonly dynamic New;
         private readonly ILogger _logger;
 
+        private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
+        private readonly ITypeActivatorFactory<ContentField> _contentFieldFactory;
+
         public AdminController(
             IAuthorizationService authorizationService,
             IContentManager contentManager,
@@ -64,7 +70,9 @@ namespace OrchardCore.Contents.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             IUpdateModelAccessor updateModelAccessor,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            ITypeActivatorFactory<ContentPart> contentPartFactory,
+            ITypeActivatorFactory<ContentField> contentFieldFactory)
         {
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -83,6 +91,8 @@ namespace OrchardCore.Contents.Controllers
             _shapeFactory = shapeFactory;
             New = shapeFactory;
             _logger = logger;
+            _contentPartFactory = contentPartFactory;
+            _contentFieldFactory = contentFieldFactory;
         }
 
         [HttpGet]
@@ -711,14 +721,46 @@ namespace OrchardCore.Contents.Controllers
         [HttpGet]
         public async Task<IActionResult> GetContentFormat(string contentTypeName)
         {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeName);
+            if (contentTypeDefinition == null)
+            {
+                return NotFound();
+            }
             var contentItem = await _contentManager.NewAsync(contentTypeName);
             contentItem.Owner =User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
-                return Json(contentItem);
+                return Unauthorized();
             }
-            return Unauthorized();
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = contentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                // If no existing part was not found in the content item, create a new one
+                if (part == null)
+                {
+                    part = activator.CreateInstance();
+                    contentItem.Weld(typePartDefinition.Name, part);
+                }
+                contentItem.Apply(partName, part);
+                foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
+                {
+                    var fieldName = partFieldDefinition.Name;
+
+                    if (!part.Has(fieldName))
+                    {
+                        var fieldActivator = _contentFieldFactory.GetTypeActivator(partFieldDefinition.FieldDefinition.Name);
+                        var fieldInstance = fieldActivator.CreateInstance();
+                        contentItem.Get<ContentPart>(typePartDefinition.Name).Weld(fieldName, fieldInstance);
+                        part.Apply(fieldName, fieldInstance);
+                    }
+                }
+            }
+            return Json(contentItem);
         }
     }
 }
