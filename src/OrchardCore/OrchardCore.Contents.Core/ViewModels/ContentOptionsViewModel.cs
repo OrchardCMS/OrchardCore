@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Services;
-using OrchardCore.Filters.Query;
+using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents.ViewModels
 {

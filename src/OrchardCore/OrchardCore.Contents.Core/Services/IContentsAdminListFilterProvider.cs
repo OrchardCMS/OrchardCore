@@ -1,5 +1,5 @@
 using OrchardCore.ContentManagement;
-using OrchardCore.Filters.Query;
+using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents.Services
 {

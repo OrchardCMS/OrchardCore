@@ -13,7 +13,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.ViewModels;
-using OrchardCore.Filters.Query;
+using YesSql.Filters.Query;
 using YesSql;
 using YesSql.Services;
 
@@ -25,17 +25,19 @@ namespace OrchardCore.Contents.Services
         {
             builder
                 .WithNamedTerm("status", builder => builder
-                    .OneCondition<ContentItem>((val, query, context) =>
+                    .OneCondition<ContentItem>((val, query, ctx) =>
                     {
+                        var context = (ContentQueryContext)ctx;
                         if (Enum.TryParse<ContentsStatus>(val, true, out var contentsStatus))
                         {
                             switch (contentsStatus)
                             {
-                                case ContentsStatus.Published:
-                                    query.With<ContentItemIndex>(x => x.Published);
-                                    break;
+                                // Draft is a default value and applied by the DefaultContentsAdminListFilter when no 'status' term is specified.
                                 case ContentsStatus.Draft:
                                     query.With<ContentItemIndex>(x => x.Latest && !x.Published);
+                                    break;
+                                case ContentsStatus.Published:
+                                    query.With<ContentItemIndex>(x => x.Published);
                                     break;
                                 case ContentsStatus.Owner:
                                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -43,9 +45,6 @@ namespace OrchardCore.Contents.Services
                                     query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
                                     break;
                                 case ContentsStatus.AllVersions:
-                                    query.With<ContentItemIndex>(x => x.Latest);
-                                    break;
-                                default:
                                     query.With<ContentItemIndex>(x => x.Latest);
                                     break;
                             }
@@ -77,6 +76,7 @@ namespace OrchardCore.Contents.Services
                         {
                             switch (contentsOrder)
                             {
+                                // Modified is a default value and also applied by the DefaultContentsAdminListFilter when no 'sort' term is specified.
                                 case ContentsOrder.Modified:
                                     query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
                                     break;
@@ -91,10 +91,10 @@ namespace OrchardCore.Contents.Services
                                     break;
                             };
                         }
-                        else
-                        {
-                            query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc);
-                        }
+                        // else
+                        // {
+                        //     query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc);
+                        // }
 
                         return query;
                     })
@@ -107,6 +107,7 @@ namespace OrchardCore.Contents.Services
                     })
                     .MapFrom<ContentOptionsViewModel>((model) =>
                     {
+                            // return (true, model.OrderBy.ToString());
                         if (model.OrderBy != ContentsOrder.Modified)
                         {
                             return (true, model.OrderBy.ToString());
@@ -116,8 +117,9 @@ namespace OrchardCore.Contents.Services
                     })
                 )
                 .WithNamedTerm("type", builder => builder
-                    .OneCondition<ContentItem>(async (contentType, query, context) =>
+                    .OneCondition<ContentItem>(async (contentType, query, ctx) =>
                     {
+                        var context = (ContentQueryContext)ctx;
                         var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
                         var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
                         var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
@@ -148,7 +150,7 @@ namespace OrchardCore.Contents.Services
                                     query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userNameIdentifier);
                                 }
                             }
-                        }  
+                        }
                         else
                         {
                             var listableTypes = new List<ContentTypeDefinition>();
@@ -201,19 +203,19 @@ namespace OrchardCore.Contents.Services
                                     query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
                                 }
                             }
-                        }   
+                        }
 
                         return query;
                     })
                     .MapTo<ContentOptionsViewModel>((val, model) => model.SelectedContentType = val)
-                    .MapFrom<ContentOptionsViewModel>((model) => 
+                    .MapFrom<ContentOptionsViewModel>((model) =>
                     {
                         if (!String.IsNullOrEmpty(model.SelectedContentType))
                         {
                             return (true, model.SelectedContentType);
                         }
                         return (false, String.Empty);
-                    })                    
+                    })
                 )
                 .WithDefaultTerm("text", builder => builder
                         .ManyCondition<ContentItem>(

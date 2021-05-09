@@ -22,7 +22,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Filters.Query;
+using YesSql.Filters.Query;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
@@ -221,17 +221,16 @@ namespace OrchardCore.Contents.Controllers
             }
 
             options.FilterResult = queryFilterResult;
+            options.FilterResult.MapTo(options);
 
             // With the options populated we filter the query, allowing the filters to alter the options.
             var query = await _contentsAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
 
-            // Populate route values to maintain previous route data when generating page links.
-            // TODO Calling this kills the map from list of options
-            // for the old features, i.e. Lists, and Localization, move that route value configuration into the filter provider and update when calling QueryAsync 
-            // await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
-
+            // The search text is provided back to the UI.
             options.SearchText = options.FilterResult.ToString();
             options.OriginalSearchText = options.SearchText;
+
+            // Populate route values to maintain previous route data when generating page links.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
             var routeData = new RouteData(options.RouteValues);
@@ -277,17 +276,16 @@ namespace OrchardCore.Contents.Controllers
         [FormValueRequired("submit.Filter")]
         public async Task<ActionResult> ListFilterPOST(ContentOptionsViewModel options)
         {
-            // When the user has typed something into the search input no evaluation is required.
-            // But we might normalize it for them.
+            // When the user has typed something into the search input no further evaluation of the form post is required.
             if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction(nameof(List), new RouteValueDictionary { { "q", options.SearchText } });
             }
 
+            // Evaluate the values provided in the form post and map them to the filter result and route values.
             await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
 
             // The route value must always be added after the editors have updated the models.
-
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
             return RedirectToAction(nameof(List), options.RouteValues);

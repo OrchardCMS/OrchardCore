@@ -44,7 +44,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
-using OrchardCore.Filters.Query;
+using YesSql.Filters.Query;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
@@ -199,6 +199,7 @@ namespace OrchardCore.Contents
             });
 
             services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
+            services.AddScoped<IContentsAdminListFilter, DefaultContentsAdminListFilter>();
 
             services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();

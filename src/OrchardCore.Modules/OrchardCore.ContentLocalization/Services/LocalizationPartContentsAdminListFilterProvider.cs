@@ -3,7 +3,7 @@ using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Services;
-using OrchardCore.Filters.Query;
+using YesSql.Filters.Query;
 
 namespace OrchardCore.ContentLocalization.Services
 {
@@ -21,16 +21,16 @@ namespace OrchardCore.ContentLocalization.Services
                         }
 
                         return query;
-                    }) 
+                    })
                     .MapTo<LocalizationContentsAdminFilterViewModel>((val, model) => model.SelectedCulture = val)
-                    .MapFrom<LocalizationContentsAdminFilterViewModel>((model) => 
+                    .MapFrom<LocalizationContentsAdminFilterViewModel>((model) =>
                     {
                         if (!String.IsNullOrEmpty(model.SelectedCulture))
                         {
                             return (true, model.SelectedCulture);
                         }
                         return (false, String.Empty);
-                    }) 
+                    })
                 );
         }
     }
