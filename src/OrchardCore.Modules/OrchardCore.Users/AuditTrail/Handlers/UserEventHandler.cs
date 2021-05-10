@@ -72,39 +72,31 @@ namespace OrchardCore.Users.AuditTrail.Handlers
 
         #endregion
 
-        private async Task RecordAuditTrailEventAsync(string eventName, string username)
+        private async Task RecordAuditTrailEventAsync(string eventName, string userName)
         {
-            if (String.IsNullOrEmpty(username))
+            if (String.IsNullOrEmpty(userName))
             {
                 return;
             }
 
             var userManager = GetUserManagerFromHttpContext();
+            var user = await userManager.FindByNameAsync(userName);
 
-            var user = await userManager.FindByNameAsync(username);
-            if (user == null)
+            var userId = String.Empty;
+            if (user != null)
             {
-                var eventData = new Dictionary<string, object>
-                {
-                    { "UserId", String.Empty },
-                    { "UserName", username }
-                };
-
-                await _auditTrailManager.AddAuditTrailEventAsync<UserAuditTrailEventProvider>(
-                    new AuditTrailContext(eventName, username, eventData, "user", username));
+                userId = await userManager.GetUserIdAsync(user);
+                userName = user.UserName;
             }
-            else
+
+            var eventData = new Dictionary<string, object>
             {
-                var userId = await userManager.GetUserIdAsync(user);
-                var eventData = new Dictionary<string, object>
-                {
-                    { "UserId", userId },
-                    { "UserName", user.UserName }
-                };
+                { "UserId", userId },
+                { "UserName", user.UserName }
+            };
 
-                await _auditTrailManager.AddAuditTrailEventAsync<UserAuditTrailEventProvider>(
-                    new AuditTrailContext(eventName, user.UserName, eventData, "user", userId));
-            }
+            await _auditTrailManager.AddAuditTrailEventAsync<UserAuditTrailEventProvider>(
+                new AuditTrailContext(eventName, userName, eventData, "user", userId));
         }
 
         private async Task RecordAuditTrailEventAsync(string eventName, IUser user)
