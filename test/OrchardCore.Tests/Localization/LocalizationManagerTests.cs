@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
@@ -46,6 +47,7 @@ namespace OrchardCore.Tests.Localization
                 .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
                 .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
             var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
+
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
             var key = new CultureDictionaryRecordKey("ball");
 

@@ -98,8 +98,6 @@ namespace OrchardCore.Users.Controllers
                 var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
                 if (schemes.Count() == 1)
                 {
-                    var provider = schemes.First().Name;
-
                     var dataProtector = _dataProtectionProvider.CreateProtector(nameof(DefaultExternalLogin))
                                             .ToTimeLimitedDataProtector();
 
