@@ -24,6 +24,9 @@ namespace OrchardCore.Users
                 .Column<string>("NormalizedUserName") // TODO These should have defaults. on SQL Server they will fall at 255. Exceptions are currently thrown if you go over that.
                 .Column<string>("NormalizedEmail")
                 .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
+                .Column<bool>("IsLockedOut", c => c.NotNull().WithDefault(false))
+                .Column<DateTime?>("LockoutEnd", c => c.Nullable())
+                .Column<int>("AccessFailedCount", c => c.NotNull().WithDefault(0))
                 .Column<string>("UserId")
             );
 
@@ -33,7 +36,10 @@ namespace OrchardCore.Users
                     "UserId",
                     "NormalizedUserName",
                     "NormalizedEmail",
-                    "IsEnabled")
+                    "IsEnabled",
+                    "IsLockedOut",
+                    "LockoutEnd",
+                    "AccessFailedCount")
             );
 
             SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
@@ -70,7 +76,7 @@ namespace OrchardCore.Users
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 10;
+            return 11;
         }
 
         // This code can be removed in a later version.
@@ -160,7 +166,10 @@ namespace OrchardCore.Users
                     "UserId",
                     "NormalizedUserName",
                     "NormalizedEmail",
-                    "IsEnabled")
+                    "IsEnabled"
+                    "IsLockedOut",
+                    "LockoutEnd",
+                    "AccessFailedCount")
             );
 
             SchemaBuilder.AlterIndexTable<UserByLoginInfoIndex>(table => table
@@ -197,13 +206,10 @@ namespace OrchardCore.Users
                 .AddColumn<bool>(nameof(UserIndex.IsLockedOut), c => c.NotNull().WithDefault(false)));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<DateTimeOffset?>(nameof(UserIndex.LockoutEnd), c => c.Nullable()));
+                .AddColumn<DateTime?>(nameof(UserIndex.LockoutEnd), c => c.Nullable()));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
-
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .CreateIndex("IDX_UserIndex_IsLockedOut", "IsLockedOut"));
 
             return 11;
         }      

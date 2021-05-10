@@ -12,7 +12,7 @@ namespace OrchardCore.Users.Indexes
         public string NormalizedEmail { get; set; }
         public bool IsEnabled { get; set; }
         public bool IsLockedOut { get; set; }
-        public DateTimeOffset? LockoutEnd { get; set; }
+        public DateTime? LockoutEnd { get; set; }
         public int AccessFailedCount { get; set; }
     }
 
