@@ -166,7 +166,7 @@ namespace OrchardCore.Users
                     "UserId",
                     "NormalizedUserName",
                     "NormalizedEmail",
-                    "IsEnabled"
+                    "IsEnabled",
                     "IsLockedOut",
                     "LockoutEnd",
                     "AccessFailedCount")
