@@ -87,7 +87,11 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> List([ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult, PagerParameters pagerParameters, string contentTypeId = "")
+        public async Task<IActionResult> List(
+            [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult, 
+            ContentOptionsViewModel options,
+            PagerParameters pagerParameters, 
+            string contentTypeId = "")
         {
             var context = _httpContextAccessor.HttpContext;
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions()
@@ -102,13 +106,17 @@ namespace OrchardCore.Contents.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var options = new ContentOptionsViewModel();
-
             // This is used by the AdminMenus so needs to be passed into the options.
             if (!String.IsNullOrEmpty(contentTypeId))
             {
                 options.SelectedContentType = contentTypeId;
             }
+
+            // The filter is bound seperately and mapped to the options.
+            // The options must still be bound so that options that are not filters are still bound
+            // e.g. CanCreateSelectedContentType.
+            options.FilterResult = queryFilterResult;
+            options.FilterResult.MapTo(options);
 
             // Populate the creatable types.
             if (!String.IsNullOrEmpty(options.SelectedContentType))
@@ -219,9 +227,6 @@ namespace OrchardCore.Contents.Controllers
             {
                 options.ContentTypeOptions = new List<SelectListItem>();
             }
-
-            options.FilterResult = queryFilterResult;
-            options.FilterResult.MapTo(options);
 
             // With the options populated we filter the query, allowing the filters to alter the options.
             var query = await _contentsAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
