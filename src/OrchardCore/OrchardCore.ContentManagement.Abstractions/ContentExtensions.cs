@@ -115,7 +115,8 @@ namespace OrchardCore.ContentManagement
                 element.Data = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 element.ContentItem = contentElement.ContentItem;
 
-                contentElement.Apply(name, element);
+                contentElement.Data[name] = element.Data;
+                contentElement.Elements[name] = element;
             }
 
             return contentElement;
