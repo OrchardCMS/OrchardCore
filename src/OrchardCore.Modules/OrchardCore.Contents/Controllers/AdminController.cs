@@ -733,33 +733,6 @@ namespace OrchardCore.Contents.Controllers
             {
                 return Unauthorized();
             }
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var activator = _contentPartFactory.GetTypeActivator(partName);
-
-                var part = contentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
-
-                // If no existing part was not found in the content item, create a new one
-                if (part == null)
-                {
-                    part = activator.CreateInstance();
-                    contentItem.Weld(typePartDefinition.Name, part);
-                }
-                contentItem.Apply(partName, part);
-                foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
-                {
-                    var fieldName = partFieldDefinition.Name;
-
-                    if (!part.Has(fieldName))
-                    {
-                        var fieldActivator = _contentFieldFactory.GetTypeActivator(partFieldDefinition.FieldDefinition.Name);
-                        var fieldInstance = fieldActivator.CreateInstance();
-                        contentItem.Get<ContentPart>(typePartDefinition.Name).Weld(fieldName, fieldInstance);
-                        part.Apply(fieldName, fieldInstance);
-                    }
-                }
-            }
             return Json(contentItem);
         }
     }
