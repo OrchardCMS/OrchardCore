@@ -6,24 +6,24 @@
 @{
     var auditTrailEvents = Model.AuditTrailEvents;
 
-    var orderByItems = new List<SelectListItem> 
+    var orderByItems = new List<SelectListItem>
     {
-        new SelectListItem 
+        new SelectListItem
         {
-            Text = S["Date (newest first)"], 
-            Value = AuditTrailOrderBy.DateDescending.ToString(), 
+            Text = S["Recently created"],
+            Value = AuditTrailOrderBy.DateDescending.ToString(),
             Selected = Model.OrderBy == AuditTrailOrderBy.DateDescending
         },
-        new SelectListItem 
+        new SelectListItem
         {
-            Text = S["Category (alphabetical)"], 
-            Value = AuditTrailOrderBy.CategoryAscending.ToString(), 
+            Text = S["Category"],
+            Value = AuditTrailOrderBy.CategoryAscending.ToString(),
             Selected = Model.OrderBy == AuditTrailOrderBy.CategoryAscending
         },
-        new SelectListItem 
+        new SelectListItem
         {
-            Text = S["Event name (alphabetical)"], 
-            Value = AuditTrailOrderBy.EventAscending.ToString(), 
+            Text = S["Event"],
+            Value = AuditTrailOrderBy.EventAscending.ToString(),
             Selected = Model.OrderBy == AuditTrailOrderBy.EventAscending},
     };
 }
@@ -35,22 +35,22 @@
         @await DisplayAsync(Model.FiltersShape)
         <div class="col">
             <div class="form-group">
-                <label asp-for="OrderBy">@T["Sort by:"]</label>
+                <label asp-for="OrderBy">@T["Sort by"]</label>
                 <select asp-for="OrderBy" asp-items="orderByItems" class="form-control"></select>
             </div>
         </div>
+        <div class="form-group d-flex"><button class="btn btn-primary align-self-end" type="submit">@T["Apply"]</button></div>
     </div>
-    <button class="btn btn-primary" type="submit">@T["Apply"]</button>
 </form>
 
 
-@if (!auditTrailEvents.Any()) 
+@if (!auditTrailEvents.Any())
 {
     <div class="alert alert-primary" role="alert">@T["There are no records to display."]</div>
 }
-else 
+else
 {
-    <div class="table-responsive">
+    <div class="table-responsive-sm">
         <table class="table table-hover table-striped table-bordered">
             <thead>
                 <tr>
@@ -59,24 +59,25 @@ else
                     <th scope="col">@T["Event"]</th>
                     <th scope="col">@T["User"]</th>
                     @await DisplayAsync(Model.ColumnNamesShape)
-                    <th scope="col">@T["Client IP"]</th>
+                    <th class="text-nowrap" scope="col">@T["Client IP"]</th>
                     <th scope="col">@T["Timestamp"]</th>
                     <th scope="col">@T["Summary"]</th>
                     <th scope="col">@T["Comment"]</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var auditTrailEvent in auditTrailEvents) {
+                @foreach (var ev in auditTrailEvents)
+                {
                     <tr>
-                        <td>@await DisplayAsync(auditTrailEvent.ActionsShape)</td>
-                        <td>@auditTrailEvent.CategoryDescriptor.LocalizedName</td>
-                        <td>@auditTrailEvent.EventDescriptor.LocalizedName</td>
-                        <td>@auditTrailEvent.AuditTrailEvent.UserName</td>
-                        @await DisplayAsync(auditTrailEvent.ColumnsShape)
-                        <td>@auditTrailEvent.AuditTrailEvent.ClientIpAddress</td>
-                        <td>@await DisplayAsync(await New.DateTime(Utc: auditTrailEvent.AuditTrailEvent.CreatedUtc))</td>
-                        <td>@await DisplayAsync(auditTrailEvent.SummaryShape)</td>
-                        <td>@Html.Raw(auditTrailEvent.AuditTrailEvent.Comment)</td>
+                        <td>@await DisplayAsync(ev.ActionsShape)</td>
+                        <td>@ev.CategoryDescriptor.LocalizedName</td>
+                        <td>@ev.EventDescriptor.LocalizedName</td>
+                        <td>@ev.AuditTrailEvent.UserName</td>
+                        @await DisplayAsync(ev.ColumnsShape)
+                        <td>@ev.AuditTrailEvent.ClientIpAddress</td>
+                        <td class="text-nowrap">@await DisplayAsync(await New.DateTime(Utc: ev.AuditTrailEvent.CreatedUtc, Format: "g"))</td>
+                        <td>@await DisplayAsync(ev.SummaryShape)</td>
+                        <td>@Html.Raw(ev.AuditTrailEvent.Comment)</td>
                     </tr>
                 }
             </tbody>

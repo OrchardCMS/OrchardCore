@@ -28,7 +28,7 @@ namespace OrchardCore.Contents.AuditTrail.Providers
         }
 
         public override void Describe(DescribeContext context) =>
-            context.For<ContentAuditTrailEventProvider>("Content", T["Content Item"])
+            context.For<ContentAuditTrailEventProvider>("Content", T["Content"])
                 .Event(Created, T["Created"], T["A content item was created."], BuildAuditTrailEvent, true)
                 .Event(Saved, T["Saved"], T["A content item was saved."], BuildAuditTrailEvent, true)
                 .Event(Published, T["Published"], T["A content item was published."], BuildAuditTrailEvent, true)

@@ -1,5 +1,4 @@
 @model AuditTrailDetailsViewModel
-@using System.Globalization
 
 @{
     var auditTrailEvent = Model.AuditTrailEvent;
@@ -11,20 +10,26 @@
 <zone name="Title"><h1>@RenderTitleSegments(T["Audit Trail Event"])</h1></zone>
 
 <div class="form-group">
-    <div>
-        @T["<strong>Event:</strong> {0}", eventName]
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pr-0 pb-0">@T["Category"]</div>
+        <div class="list-group-item border-0 pb-0">@category</div>
     </div>
-    <div>
-        @T["<strong>Category:</strong> {0}", category]
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["Event"]</div>
+        <div class="list-group-item border-0 pt-0 pb-0">@eventName</div>
     </div>
-    <div>
-        @T["<strong>Timestamp:</strong> {0}", await DisplayAsync(await New.DateTime(Utc: auditTrailEvent.CreatedUtc, Format: "g"))]
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["User"]</div>
+        <div class="list-group-item border-0 pt-0 pb-0">@auditTrailEvent.UserName</div>
     </div>
-    <div>
-        @T["<strong>User name:</strong> {0}", auditTrailEvent.UserName]
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["Timestamp"]</div>
+        <div class="list-group-item border-0 pt-0 pb-0">@await DisplayAsync(await New.DateTime(Utc: auditTrailEvent.CreatedUtc, Format: "g"))</div>
     </div>
-    <div>
-        @T["<strong>Client IP address:</strong> {0}", auditTrailEvent.ClientIpAddress]
+
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pt-0 pr-0 pr-0">@T["Client IP"]</div>
+        <div class="list-group-item border-0 pt-0">@auditTrailEvent.ClientIpAddress</div>
     </div>
 </div>
 

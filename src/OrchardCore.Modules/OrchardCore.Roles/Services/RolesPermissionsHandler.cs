@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -38,7 +38,7 @@ namespace OrchardCore.Roles
             // Determine what set of roles should be examined by the access check
             var rolesToExamine = new List<string> { "Anonymous" };
 
-            if (context.User.Identity.IsAuthenticated)
+            if (context.User?.Identity?.IsAuthenticated ?? false)
             {
                 rolesToExamine.Add("Authenticated");
                 // Add roles from the user

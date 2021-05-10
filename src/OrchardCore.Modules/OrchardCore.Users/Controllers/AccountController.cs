@@ -84,7 +84,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl = null)
         {
-            if (HttpContext.User != null && HttpContext.User.Identity.IsAuthenticated)
+            if (HttpContext.User?.Identity?.IsAuthenticated ?? false)
             {
                 returnUrl = null;
             }
@@ -262,7 +262,8 @@ namespace OrchardCore.Users.Controllers
                 var user = await _userService.GetAuthenticatedUserAsync(User);
                 if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    if (Url.IsLocalUrl(returnUrl)) {
+                    if (Url.IsLocalUrl(returnUrl))
+                    {
                         _notifier.Success(H["Your password has been changed successfully."]);
                         return Redirect(returnUrl);
                     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -209,7 +210,16 @@ namespace OrchardCore.AuditTrail.Services
                 return null;
             }
 
-            return _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+            var address = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress;
+            if (address != null)
+            {
+                if (IPAddress.IsLoopback(address))
+                {
+                    address = IPAddress.Loopback;
+                }
+            }
+
+            return address?.ToString();
         }
 
         private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>

@@ -18,17 +18,20 @@
 <script depends-on="jsdiff" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js" type="text/javascript" at="Foot"></script>
 
 <div class="form-group">
-    <div>
-        @T["<strong>ContentItemId:</strong> {0}", contentItem.ContentItemId]
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["Content ID"]</div>
+        <div class="list-group-item border-0 pt-0 pb-0">@contentItem.ContentItemId</div>
     </div>
 
-    @if (contentItem != null)
-    {
-       <div>
-           @T["<strong>ContentType:</strong> {0}", contentItem.ContentType]
-       </div>
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["Content type"]</div>
+        <div class="list-group-item border-0 pt-0 pb-0">@contentItem.ContentType</div>
+    </div>
 
-        if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Removed)
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["Display text"]</div>
+        <div class="list-group-item border-0 pt-0 pb-0">
+        @if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Removed)
         {
             @contentItem.DisplayText
         }
@@ -36,33 +39,33 @@
         {
             <a edit-for="@contentItem">@contentItem.DisplayText</a>
         }
+        </div>
+    </div>
 
-        if (contentItem != null && contentItem.ContentItemVersionId != latestVersionId)
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["Version"]</div>
+        <div class="list-group-item border-0 pt-0 pb-0">
+        @if (contentItem.ContentItemVersionId == latestVersionId)
         {
-            <div>
-                <a asp-route-area="OrchardCore.Contents"
-                   asp-action="Detail"
-                   asp-controller="Content"
-                   asp-route-versionNumber="@versionNumber"
-                   asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">
-                    @T["Version {0}", versionNumber]
-                </a>
-            </div>
-        }
-    }
-    else
-    {
-        <div>
             @T["Version {0}", versionNumber]
+        }
+        else
+        {
+            <a asp-route-area="OrchardCore.Contents"
+               asp-action="Detail"
+               asp-controller="Content"
+               asp-route-versionNumber="@versionNumber"
+               asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">
+                @T["Version {0}", versionNumber]
+            </a>
+        }
         </div>
-    }
+    </div>
 
-    @if (!string.IsNullOrEmpty(auditTrailEvent.Comment))
-    {
-        <div>
-            @T["<strong>Comment:</strong> {0}", auditTrailEvent.Comment]
-        </div>
-    }
+    <div class="list-group list-group-horizontal">
+        <div class="list-group-item border-0 font-weight-bold col-4 col-lg-3 col-xl-2 pt-0 pr-0">@T["Comment"]</div>
+        <div class="list-group-item border-0 pt-0">@auditTrailEvent.Comment</div>
+    </div>
 </div>
 
 @if (diffNodes != null && diffNodes.Any())
@@ -71,7 +74,7 @@
         <div class="custom-control custom-switch">
             <div class="d-inline-block" data-toggle="collapse" data-target="#beforeAfter" aria-expanded="false">
                 <input type="checkbox" class="custom-control-input" id="showBeforeAfter">
-                <label class="custom-control-label cursor-pointer" for="showBeforeAfter">@T["Show before/after"]</label>
+                <label class="custom-control-label cursor-pointer" for="showBeforeAfter">@T["Show before / after"]</label>
             </div>
         </div>
 
@@ -84,7 +87,7 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered mt-4">
+        <table class="table table-hover table-striped table-bordered">
             <thead>
                 <tr>
                     <th scope="col">@T["Action"]</th>

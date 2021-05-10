@@ -37,14 +37,12 @@ namespace OrchardCore.Users.AuditTrail.Handlers
         public Task PasswordRecoveredAsync() =>
             // We don't have the User in the HttpContext, the only way to get the user is by getting the value
             // of the Email from the form.
-            RecordAuditTrailEventAsync(
-                UserAuditTrailEventProvider.PasswordRecovered,
-                _httpContextAccessor.HttpContext.Request.Form["Email"]);
+            RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordRecovered, _httpContextAccessor.HttpContext.Request.Form["Email"]);
 
         public Task PasswordResetAsync() =>
             String.IsNullOrEmpty(_httpContextAccessor.HttpContext?.User?.Identity?.Name) ?
                 RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _httpContextAccessor.HttpContext.Request.Form["Email"]) :
-                RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _httpContextAccessor.HttpContext.User.Identity.Name);
+                RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _httpContextAccessor.HttpContext.User?.Identity?.Name);
 
         public Task RegisteredAsync(IUser user) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.SignedUp, user.UserName);
@@ -88,6 +86,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
             {
                 var eventData = new Dictionary<string, object>
                 {
+                    { "UserId", String.Empty },
                     { "UserName", username }
                 };
 
@@ -96,14 +95,15 @@ namespace OrchardCore.Users.AuditTrail.Handlers
             }
             else
             {
+                var userId = await userManager.GetUserIdAsync(user);
                 var eventData = new Dictionary<string, object>
                 {
-                    { "UserId", await userManager.GetUserIdAsync(user) },
+                    { "UserId", userId },
                     { "UserName", user.UserName }
                 };
 
                 await _auditTrailManager.AddAuditTrailEventAsync<UserAuditTrailEventProvider>(
-                    new AuditTrailContext(eventName, user.UserName, eventData, "user", user.UserName));
+                    new AuditTrailContext(eventName, user.UserName, eventData, "user", userId));
             }
         }
 
@@ -112,9 +112,10 @@ namespace OrchardCore.Users.AuditTrail.Handlers
             var userName = user.UserName;
             var userManager = GetUserManagerFromHttpContext();
 
+            var userId = await userManager.GetUserIdAsync(user);
             var eventData = new Dictionary<string, object>
             {
-                { "UserId", await userManager.GetUserIdAsync(user) },
+                { "UserId", userId },
                 { "UserName", userName }
             };
 
@@ -124,7 +125,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                     eventName == UserAuditTrailEventProvider.Created ? userName : _httpContextAccessor.GetCurrentUserName(),
                     eventData,
                     "user",
-                    userName));
+                    userId));
         }
 
         // Need to resolve the UserManager from the HttpContext to prevent circular dependency.
