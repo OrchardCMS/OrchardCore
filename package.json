@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
-    "@babel/preset-env": "^7.14.0",
+    "@babel/preset-env": "^7.14.1",
     "@babel/preset-flow": "7.13.13",
     "all-contributors-cli": "^6.20.0",
     "es6-promise": "4.2.8",
