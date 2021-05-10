@@ -1,5 +1,19 @@
 [
   {
+    "copy": true,
+    "inputs": [
+      "Assets/dist/assets/img/bg-mobile-fallback.jpg"
+    ],
+    "output": "wwwroot/assets/img/bg-mobile-fallback.jpg"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/dist/assets/mp4/bg.mp4"
+    ],
+    "output": "wwwroot/assets/mp4/bg.mp4"
+  },
+  {
     "inputs": [
       "Assets/dist/css/styles.css"
     ],
