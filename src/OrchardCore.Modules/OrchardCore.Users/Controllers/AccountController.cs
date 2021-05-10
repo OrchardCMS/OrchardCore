@@ -222,14 +222,13 @@ namespace OrchardCore.Users.Controllers
                                     }
                                 }
                             }
-                        }
 
-                        if (result.IsLockedOut)
-                        {
-                            ModelState.AddModelError(string.Empty, S["The account is locked out"]);
-                            return View();
+                            if (result.IsLockedOut)
+                            {
+                                ModelState.AddModelError(string.Empty, S["The account is locked out"]);
+                                return View();
+                            }
                         }
-                    }
 
                         ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                     }
@@ -267,7 +266,8 @@ namespace OrchardCore.Users.Controllers
                 var user = await _userService.GetAuthenticatedUserAsync(User);
                 if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    if (Url.IsLocalUrl(returnUrl)) {
+                    if (Url.IsLocalUrl(returnUrl))
+                    {
                         _notifier.Success(H["Your password has been changed successfully."]);
                         return Redirect(returnUrl);
                     }
