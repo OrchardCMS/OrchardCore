@@ -181,7 +181,7 @@ namespace OrchardCore.ContentManagement
 
             if (element is ContentField)
             {
-                contentElement.ContentItem.Elements.Clear();
+                contentElement.ContentItem?.Elements.Clear();
             }
 
             return contentElement;
