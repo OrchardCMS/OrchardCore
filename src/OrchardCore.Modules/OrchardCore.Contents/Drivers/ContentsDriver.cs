@@ -38,8 +38,7 @@ namespace OrchardCore.Contents.Drivers
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             var contentsMetadataShape = Shape("ContentsMetadata",
                 new ContentItemViewModel(contentItem))
-                .Location("Detail", "Content:before")
-                .Location("DetailAdmin", "Meta:10");
+                .Location("Detail", "Content:before");
 
             if (contentTypeDefinition != null)
             {

@@ -14,8 +14,4 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="YesSql.Core" />
-  </ItemGroup>
-
 </Project>

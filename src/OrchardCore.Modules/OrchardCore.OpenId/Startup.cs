@@ -33,7 +33,6 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
-using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;

@@ -48,11 +48,14 @@ When a list of content item ids is available, the `content_item_id` filter shoul
 {% assign my_content = Content.ContentItemVersionId["49gq8g6zndfc736x0az3zsp4w3"] %}
 ```
 
-### Rendering a content item from an alias
+### Rendering a content item from a handle
 
 ```liquid
-{% contentitem alias:"alias:test" display_type="Detail" %}
+{% contentitem handle:"alias:test", display_type="Summary" %}
 ```
+
+The default display type is "Detail" when none is specified.
+An optional `alternate` argument can be specified.
 
 ### Logging to the browser console
 

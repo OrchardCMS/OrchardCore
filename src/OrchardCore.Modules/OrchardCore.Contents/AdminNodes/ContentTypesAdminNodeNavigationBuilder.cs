@@ -90,8 +90,6 @@ namespace OrchardCore.Contents.AdminNodes
 
             if (!node.ShowAll)
             {
-                node.ContentTypes = node.ContentTypes;
-
                 typesToShow = typesToShow
                     .Where(ctd => node.ContentTypes.ToList()
                                     .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)));

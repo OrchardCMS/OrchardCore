@@ -20,9 +20,8 @@ namespace OrchardCore.ContentLocalization.Liquid
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
         {
-            var context = (LiquidTemplateContext)ctx;
             var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
             var request = _httpContextAccessor.HttpContext?.Request;
@@ -42,7 +41,7 @@ namespace OrchardCore.ContentLocalization.Liquid
                     contentItemUrl = request.Path.Value,
                     queryStringValue = request.QueryString.Value
                 });
-            return new ValueTask<FluidValue>(FluidValue.Create(url, ctx.Options));
+            return new ValueTask<FluidValue>(FluidValue.Create(url, context.Options));
         }
     }
 }

@@ -27,20 +27,20 @@
     @include make-col(12);
 }
 
-
 @each $wsize in (25, 33, 50, 66, 75) {
     .widget-size-#{$wsize} {
         @extend .widget-size-100;
+
         @include media-breakpoint-up(sm) {
-            @include make-col($wsize*12/100);
+            @include make-col(round($wsize*12/100));
         }
     }
 
     .widget .widget-size-#{$wsize} {
         @extend .widget-size-#{$wsize};
+
         @include media-breakpoint-up(md) {
-            @include make-col($wsize*12/100);
+            @include make-col(round($wsize*12/100));
         }
     }
 }
-

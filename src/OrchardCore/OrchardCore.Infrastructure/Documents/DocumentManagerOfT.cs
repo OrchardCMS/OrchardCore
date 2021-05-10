@@ -13,12 +13,12 @@ namespace OrchardCore.Documents
         where TDocumentStore : IDocumentStore where TDocument : class, IDocument, new()
     {
         public DocumentManager(
-            TDocumentStore documentStore,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
-            IOptionsSnapshot<DocumentOptions> options)
-            : base(documentStore, distributedCache, memoryCache, options)
+            IOptionsMonitor<DocumentOptions> options)
+            : base(distributedCache, memoryCache, options)
         {
+            DocumentStoreServiceType = typeof(TDocumentStore);
         }
     }
 }

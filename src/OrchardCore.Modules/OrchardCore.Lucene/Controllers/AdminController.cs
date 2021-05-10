@@ -138,7 +138,7 @@ namespace OrchardCore.Lucene.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(AdminIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -252,7 +252,7 @@ namespace OrchardCore.Lucene.Controllers
                 _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -263,17 +263,25 @@ namespace OrchardCore.Lucene.Controllers
                 return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(id))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
+
+            if (luceneIndexSettings != null)
             {
-                return NotFound();
+                if (!_luceneIndexManager.Exists(id))
+                {
+                    await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings);
+                    await _luceneIndexingService.ProcessContentItemsAsync(id);
+                }
+                else
+                {
+                    _luceneIndexingService.ResetIndex(id);
+                    await _luceneIndexingService.ProcessContentItemsAsync(id);
+                }
+
+                _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
             }
 
-            _luceneIndexingService.ResetIndex(id);
-            await _luceneIndexingService.ProcessContentItemsAsync(id);
-
-            _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
-
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -284,17 +292,21 @@ namespace OrchardCore.Lucene.Controllers
                 return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(id))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
+
+            if (luceneIndexSettings != null)
+            {
+                await _luceneIndexingService.RebuildIndexAsync(id);
+                await _luceneIndexingService.ProcessContentItemsAsync(id);
+
+                _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
+            }
+            else
             {
                 return NotFound();
             }
 
-            await _luceneIndexingService.RebuildIndexAsync(id);
-            await _luceneIndexingService.ProcessContentItemsAsync(id);
-
-            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
-
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -305,24 +317,28 @@ namespace OrchardCore.Lucene.Controllers
                 return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(model.IndexName))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(model.IndexName);
+
+            if (luceneIndexSettings != null)
+            {
+                try
+                {
+                    await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
+
+                    _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+                }
+                catch (Exception e)
+                {
+                    _notifier.Error(H["An error occurred while deleting the index."]);
+                    _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                }
+            }
+            else
             {
                 return NotFound();
             }
 
-            try
-            {
-                await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
-
-                _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
-            }
-            catch (Exception e)
-            {
-                _notifier.Error(H["An error occurred while deleting the index."]);
-                _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
-            }
-
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         public Task<IActionResult> Query(string indexName, string query)
@@ -344,7 +360,7 @@ namespace OrchardCore.Lucene.Controllers
             // Can't query if there are no indices
             if (model.Indices.Length == 0)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             if (String.IsNullOrEmpty(model.IndexName))
@@ -374,8 +390,6 @@ namespace OrchardCore.Lucene.Controllers
             {
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(model.IndexName));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
-
-                var templateContext = new LiquidTemplateContext(HttpContext.RequestServices, _templateOptions.Value);
 
                 var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
@@ -462,7 +476,7 @@ namespace OrchardCore.Lucene.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)
