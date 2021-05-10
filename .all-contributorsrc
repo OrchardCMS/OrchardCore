@@ -2326,6 +2326,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "doticca",
+      "name": "Fotis G. Pappas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6129662?v=4",
+      "profile": "http://www.doticca.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
