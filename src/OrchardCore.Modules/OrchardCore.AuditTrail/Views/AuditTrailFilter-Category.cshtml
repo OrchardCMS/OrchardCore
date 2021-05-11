@@ -21,7 +21,6 @@
     listItems.Insert(0, new SelectListItem { Text = S["All categories"], Value = "" });
 }
 
-<div class="form-group">
-    <label asp-for="@category">@T["Category"]</label>
+<div class="form-group mr-2">
     <select asp-for="@category" asp-items="listItems" class="form-control"></select>
 </div>

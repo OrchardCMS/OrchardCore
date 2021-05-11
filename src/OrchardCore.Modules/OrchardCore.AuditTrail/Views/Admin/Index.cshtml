@@ -10,19 +10,19 @@
     {
         new SelectListItem
         {
-            Text = S["Recently created"],
+            Text = S["By Timestamp"],
             Value = AuditTrailOrderBy.DateDescending.ToString(),
             Selected = Model.OrderBy == AuditTrailOrderBy.DateDescending
         },
         new SelectListItem
         {
-            Text = S["Category"],
+            Text = S["By Category"],
             Value = AuditTrailOrderBy.CategoryAscending.ToString(),
             Selected = Model.OrderBy == AuditTrailOrderBy.CategoryAscending
         },
         new SelectListItem
         {
-            Text = S["Event"],
+            Text = S["By Event"],
             Value = AuditTrailOrderBy.EventAscending.ToString(),
             Selected = Model.OrderBy == AuditTrailOrderBy.EventAscending},
     };
@@ -30,19 +30,17 @@
 
 <zone name="Title"><h1 class="mb-4">@RenderTitleSegments(T["Audit Trail"])</h1></zone>
 
-<form asp-action="Index" method="get" class="mb-4">
-    <div class="form-row">
+<form asp-action="Index" method="get">
+    <div class="form-row mb-4">
         @await DisplayAsync(Model.FiltersShape)
-        <div class="col">
-            <div class="form-group">
-                <label asp-for="OrderBy">@T["Sort by"]</label>
-                <select asp-for="OrderBy" asp-items="orderByItems" class="form-control"></select>
-            </div>
+        <div class="form-group mr-2">
+            <select asp-for="OrderBy" asp-items="orderByItems" class="form-control"></select>
         </div>
-        <div class="form-group d-flex"><button class="btn btn-primary align-self-end" type="submit">@T["Apply"]</button></div>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Apply"]</button>
+        </div>
     </div>
 </form>
-
 
 @if (!auditTrailEvents.Any())
 {
@@ -75,7 +73,7 @@ else
                         <td>@ev.AuditTrailEvent.UserName</td>
                         @await DisplayAsync(ev.ColumnsShape)
                         <td>@ev.AuditTrailEvent.ClientIpAddress</td>
-                        <td class="text-nowrap">@await DisplayAsync(await New.DateTime(Utc: ev.AuditTrailEvent.CreatedUtc, Format: "g"))</td>
+                        <td>@await DisplayAsync(await New.DateTime(Utc: ev.AuditTrailEvent.CreatedUtc, Format: "g"))</td>
                         <td>@await DisplayAsync(ev.SummaryShape)</td>
                         <td>@Html.Raw(ev.AuditTrailEvent.Comment)</td>
                     </tr>

@@ -5,7 +5,7 @@
     var fromDate = Model.FromDate;
 }
 
-<div class="form-group">
-    <label asp-for="@fromDate">@T["From"]</label>
-    <input asp-for="@fromDate" type="date" class="form-control" />
+<div class="form-group d-flex">
+    <label class="form-control border-0 pr-2" asp-for="@fromDate">@T["From"]</label>
+    <input class="form-control" asp-for="@fromDate" type="date" />
 </div>

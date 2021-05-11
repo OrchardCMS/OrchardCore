@@ -5,7 +5,7 @@
     var toDate = Model.ToDate;
 }
 
-<div class="form-group">
-    <label asp-for="@toDate">@T["To"]</label>
-    <input asp-for="@toDate" type="date" class="form-control" />
+<div class="form-group d-flex mr-2">
+    <label class="form-control border-0 pr-2" asp-for="@toDate">@T["To"]</label>
+    <input class="form-control" asp-for="@toDate" type="date" />
 </div>
