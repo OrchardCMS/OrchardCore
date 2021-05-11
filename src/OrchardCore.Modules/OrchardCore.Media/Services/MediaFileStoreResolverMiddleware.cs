@@ -107,8 +107,8 @@ namespace OrchardCore.Media.Services
                 }
             }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
+            // Always call next, this middleware always passes.
             await _next(context);
-
             return;
         }
     }
