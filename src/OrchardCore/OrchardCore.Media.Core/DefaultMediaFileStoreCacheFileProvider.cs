@@ -66,7 +66,13 @@ namespace OrchardCore.Media.Core
                 }
                 using (var fileStream = File.Create(cachePath))
                 {
-                    await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
+                    await stream.CopyToAsync(fileStream, StreamCopyBufferSize);
+                    await stream.FlushAsync();
+                    
+                    if (fileStream.Length == 0)
+                    {
+                        throw new Exception($"Error retrieving file (length equals 0 byte) : {cachePath}");
+                    }
                 }
             }
             catch (Exception ex)
