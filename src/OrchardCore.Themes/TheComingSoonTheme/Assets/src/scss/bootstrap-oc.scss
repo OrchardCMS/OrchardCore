@@ -7,12 +7,19 @@ By Orchard Core Team
 @import "../../../node_modules/bootstrap/scss/variables";
 @import "../../../node_modules/bootstrap/scss/mixins";
 
+// Global CSS
+@import "./global";
+
+// Sections
+@import "./sections/masthead";
+@import "./sections/social";
+
+// Modules
 @import "modules/_flow.scss";
 @import "modules/_messages.scss";
 @import "modules/_widgets.scss";
 @import "modules/_pager.scss";
 @import "modules/_taxonomy.scss";
-
 @import "modules/_form.scss";
 
 #togglePassword {
