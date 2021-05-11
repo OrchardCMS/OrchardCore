@@ -199,7 +199,6 @@ namespace OrchardCore.Contents
             });
 
             services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
-            services.AddScoped<IContentsAdminListFilter, DefaultContentsAdminListFilter>();
 
             services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();

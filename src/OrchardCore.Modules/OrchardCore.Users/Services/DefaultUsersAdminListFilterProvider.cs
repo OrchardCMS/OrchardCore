@@ -60,12 +60,19 @@ namespace OrchardCore.Users.Services
                         if (Enum.TryParse<UsersOrder>(val, true, out var usersOrder))
                         {
                             switch (usersOrder)
-                            {
+                            {   
+                                case UsersOrder.Name:
+                                    query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
+                                    break;
                                 // Name is provided as a default sort.
                                 case UsersOrder.Email:
                                     query.With<UserIndex>().OrderBy(u => u.NormalizedEmail);
                                     break;
                             };
+                        }
+                        else
+                        {
+                            query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);                        
                         }
 
                         return query;
@@ -86,6 +93,7 @@ namespace OrchardCore.Users.Services
 
                         return (false, String.Empty);
                     })
+                    .AlwaysRun()
                 )
                 .WithNamedTerm("role", builder => builder
                     .OneCondition<User>((val, query, ctx) =>

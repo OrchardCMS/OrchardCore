@@ -114,13 +114,14 @@ namespace OrchardCore.Contents.Controllers
 
             // The filter is bound seperately and mapped to the options.
             // The options must still be bound so that options that are not filters are still bound
-            // e.g. CanCreateSelectedContentType.
             options.FilterResult = queryFilterResult;
-            options.FilterResult.MapTo(options);
 
             // Populate the creatable types.
             if (!String.IsNullOrEmpty(options.SelectedContentType))
             {
+                // When the selected content type is provided via the route or options a placeholder node is used to apply a filter.
+                options.FilterResult.TryAddOrReplace(new ContentTypeFilterNode(options.SelectedContentType));
+
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(options.SelectedContentType);
                 if (contentTypeDefinition == null)
                 {

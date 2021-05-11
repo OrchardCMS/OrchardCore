@@ -32,7 +32,6 @@ namespace OrchardCore.Contents.Services
                         {
                             switch (contentsStatus)
                             {
-                                // Draft is a default value and applied by the DefaultContentsAdminListFilter when no 'status' term is specified.
                                 case ContentsStatus.Draft:
                                     query.With<ContentItemIndex>(x => x.Latest && !x.Published);
                                     break;
@@ -47,7 +46,15 @@ namespace OrchardCore.Contents.Services
                                 case ContentsStatus.AllVersions:
                                     query.With<ContentItemIndex>(x => x.Latest);
                                     break;
+                                default:
+                                    query.With<ContentItemIndex>(x => x.Latest);
+                                    break;                                    
                             }
+                        }
+                        else
+                        {
+                            // Draft is the default value.
+                            query.With<ContentItemIndex>(x => x.Latest);                        
                         }
 
                         return new ValueTask<IQuery<ContentItem>>(query);
@@ -68,6 +75,7 @@ namespace OrchardCore.Contents.Services
 
                         return (false, String.Empty);
                     })
+                    .AlwaysRun()
                 )
                 .WithNamedTerm("sort", builder => builder
                     .OneCondition<ContentItem>((val, query) =>
@@ -110,6 +118,7 @@ namespace OrchardCore.Contents.Services
 
                         return (false, String.Empty);
                     })
+                    .AlwaysRun()
                 )
                 .WithNamedTerm("type", builder => builder
                     .OneCondition<ContentItem>(async (contentType, query, ctx) =>
@@ -202,15 +211,23 @@ namespace OrchardCore.Contents.Services
 
                         return query;
                     })
-                    .MapTo<ContentOptionsViewModel>((val, model) => model.SelectedContentType = val)
+                    .MapTo<ContentOptionsViewModel>((val, model) => 
+                    {
+                        if (!String.IsNullOrEmpty(val))
+                        {
+                            model.SelectedContentType = val;
+                        }
+                    })
                     .MapFrom<ContentOptionsViewModel>((model) =>
                     {
                         if (!String.IsNullOrEmpty(model.SelectedContentType))
                         {
                             return (true, model.SelectedContentType);
                         }
+
                         return (false, String.Empty);
                     })
+                    .AlwaysRun()
                 )
                 .WithDefaultTerm("text", builder => builder
                         .ManyCondition<ContentItem>(

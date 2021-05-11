@@ -32,12 +32,6 @@ namespace OrchardCore.Users.Services
 
             query = await options.FilterResult.ExecuteAsync(new UserQueryContext(_serviceProvider, query));
 
-            // Default ordering.
-            if (options.Order == UsersOrder.Name)
-            {
-                query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
-            }
-
             return query;
         }
     }
