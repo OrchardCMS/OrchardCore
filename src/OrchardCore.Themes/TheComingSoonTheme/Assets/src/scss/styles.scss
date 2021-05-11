@@ -1,0 +1,12 @@
+// Core variables and mixins
+@import "./variables";
+
+// Import Bootstrap
+@import "bootstrap/scss/bootstrap.scss";
+
+// Global CSS
+@import "./global";
+
+// Sections
+@import "./sections/masthead";
+@import "./sections/social";
