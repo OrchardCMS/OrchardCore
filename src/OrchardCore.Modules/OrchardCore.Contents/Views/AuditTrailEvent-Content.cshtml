@@ -141,7 +141,7 @@
 
                 span.style.color = color;
                 span.style.fontWeight = fontWeight;
-                span.appendChild(document.createTextNode($("<textarea/>").html(part.value).text()));
+                span.appendChild(document.createTextNode($("<textarea/>").html(part.value + '\u200b').text()));
                 fragment.appendChild(span);
             });
 
