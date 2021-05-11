@@ -107,11 +107,7 @@ namespace OrchardCore.Media.Services
                 }
             }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
-            // Always call next, this middleware always passes.
-            if (await _mediaFileStoreCache.IsCachedAsync(subPathValue))
-            {
-                await _next(context);
-            }
+            await _next(context);
 
             return;
         }
