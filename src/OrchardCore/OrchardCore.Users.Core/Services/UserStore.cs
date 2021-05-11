@@ -697,7 +697,7 @@ namespace OrchardCore.Users.Services
 
             if (((User)user).LockoutEndUtc.HasValue)
             {
-                return Task.FromResult(new DateTimeOffset?(((User)user).LockoutEndUtc.Value));
+                return Task.FromResult<DateTimeOffset?>(DateTime.SpecifyKind(((User)user).LockoutEndUtc.Value, DateTimeKind.Utc));
             }
             else
             {
