@@ -21,8 +21,4 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Remove="\Assets\*;" />
-  </ItemGroup>
-
 </Project>
