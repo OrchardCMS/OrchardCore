@@ -33,14 +33,12 @@ namespace OrchardCore.Themes.TheBlogTheme
                 .DefineScript("TheBlogTheme")
                 .SetDependencies("jQuery")
                 .SetUrl("~/TheBlogTheme/scripts/scripts.min.js", "~/TheBlogTheme/scripts/scripts.js")
-                .SetVersion("5.0.1");
+                .SetVersion("5.1.0");
 
             _manifest
                 .DefineStyle("TheBlogTheme")
                 .SetUrl("~/TheBlogTheme/css/styles.min.css", "~/TheBlogTheme/css/styles.css")
-                .SetVersion("5.0.1");
-
-
+                .SetVersion("5.1.0");
         }
 
         public void Configure(ResourceManagementOptions options)
