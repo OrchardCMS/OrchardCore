@@ -34,7 +34,7 @@ namespace OrchardCore.Themes.TheAgencyTheme
             _manifest
                 .DefineScript("TheAgencyTheme")
                 .SetDependencies("anime")
-                .SetUrl("~/TheAgencyTheme/scripts/scripts.min.js", "~/TheAgencyTheme/scripts/scripts.js")
+                .SetUrl("~/TheAgencyTheme/Scripts/scripts.min.js", "~/TheAgencyTheme/Scripts/scripts.js")
                 .SetVersion("6.0.5");
 
             _manifest
