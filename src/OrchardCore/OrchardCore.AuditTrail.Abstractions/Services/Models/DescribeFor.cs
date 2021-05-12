@@ -9,17 +9,18 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         private readonly IList<AuditTrailEventDescriptor> _events = new List<AuditTrailEventDescriptor>();
 
-        public IEnumerable<AuditTrailEventDescriptor> Events => _events;
-        public string Category { get; private set; }
-        public LocalizedString Name { get; private set; }
-        public string ProviderName { get; set; }
-
         public DescribeFor(string category, string providerName, LocalizedString name)
         {
             Name = name;
             Category = category;
             ProviderName = providerName;
         }
+
+        public LocalizedString Name { get; private set; }
+        public string Category { get; private set; }
+        public string ProviderName { get; set; }
+
+        public IEnumerable<AuditTrailEventDescriptor> Events => _events;
 
         public DescribeFor Event(
             string eventName,

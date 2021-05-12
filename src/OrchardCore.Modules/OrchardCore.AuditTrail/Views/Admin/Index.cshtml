@@ -48,7 +48,7 @@
 }
 else
 {
-    <div class="table-responsive-sm">
+    <div class="table-responsive">
         <table class="table table-hover table-striped table-bordered">
             <thead>
                 <tr>
@@ -57,10 +57,10 @@ else
                     <th scope="col">@T["Event"]</th>
                     <th scope="col">@T["User"]</th>
                     @await DisplayAsync(Model.ColumnNamesShape)
-                    <th class="text-nowrap" scope="col">@T["Client IP"]</th>
+                    <th scope="col" class="text-nowrap">@T["Client IP"]</th>
                     <th scope="col">@T["Timestamp"]</th>
-                    <th scope="col">@T["Summary"]</th>
-                    <th scope="col">@T["Comment"]</th>
+                    <th scope="col" class="w-25">@T["Summary"]</th>
+                    <th scope="col" class="w-25">@T["Comment"]</th>
                 </tr>
             </thead>
             <tbody>

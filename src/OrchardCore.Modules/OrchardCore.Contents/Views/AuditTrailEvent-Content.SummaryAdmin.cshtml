@@ -4,6 +4,7 @@
 @using OrchardCore.Contents.AuditTrail.Extensions
 @using OrchardCore.Contents.AuditTrail.Models
 @using OrchardCore.Contents.AuditTrail.Providers
+@inject IStringLocalizer<ViewContext> S;
 
 @{
     var auditTrailEvent = Model.AuditTrailEvent;
@@ -13,53 +14,46 @@
     var versionNumber = auditTrailContentEvent.VersionNumber;
 
     var eventDescriptor = Model.EventDescriptor;
-    var versionText = T[$"Version {versionNumber}"];
+    var versionText = S["Version {0}", versionNumber];
     var eventName = eventDescriptor.LocalizedName.Value.ToLowerInvariant();
-}
 
-@if (contentItem != null)
-{
     var contentType = contentItem.ContentType;
     var displayText = contentItem.DisplayText;
-    var itemEditLink = await Orchard.GetItemEditLinkAsync(displayText, contentItem);
 
-    if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Restored)
+    var itemEditLink = await Orchard.GetItemEditLinkAsync(displayText, contentItem);
+}
+
+@if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Restored)
+{
+    @T["The {0} {1} was restored as {2}",
+    contentType,
+    Html.Raw(itemEditLink),
+    Html.ActionLink(versionText, "Detail", "Content",
+    new
     {
-        @T["The {0} {1} was restored as {2}",
-        contentType,
-        Html.Raw(itemEditLink),
-        Html.ActionLink(versionText.Value, "Detail", "Content",
-        new
-        {
-            area = "OrchardCore.Contents",
-            auditTrailEventId = auditTrailEvent.AuditTrailEventId,
-            versionNumber = versionNumber
-        }, null)]
-    }
-    else if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Removed)
-    {
-        @T["The {0} <strong>{1}</strong> was {2}.",
-        contentType,
-        displayText,
-        eventName]
-    }
-    else
-    {
-        @T["{0} of the {1} {2} was {3}", Html.ActionLink(versionText.Value, "Detail", "Content",
-        new
-        {
-            area = "OrchardCore.Contents",
-            auditTrailEventId = auditTrailEvent.AuditTrailEventId,
-            versionNumber = versionNumber
-        }, null),
-        contentType,
-        Html.Raw(itemEditLink),
-        eventName]
-    }
+        area = "OrchardCore.Contents",
+        auditTrailEventId = auditTrailEvent.AuditTrailEventId,
+        versionNumber = versionNumber
+    }, null)]
+}
+else if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Removed)
+{
+    @T["The {0} <strong>{1}</strong> was {2}.",
+    contentType,
+    displayText,
+    eventName]
 }
 else
 {
-    @T["<strong>{0}</strong> of content item <strong>[untitled]</strong> was {1}.",
-    versionText,
+    @T["{0} of the {1} {2} was {3}",
+    Html.ActionLink(versionText, "Detail", "Content",
+    new
+    {
+        area = "OrchardCore.Contents",
+        auditTrailEventId = auditTrailEvent.AuditTrailEventId,
+        versionNumber = versionNumber
+    }, null),
+    contentType,
+    Html.Raw(itemEditLink),
     eventName]
 }

@@ -18,11 +18,10 @@ namespace OrchardCore.AuditTrail.Services.Models
                 Category = describe.Category
             });
 
-        public DescribeFor For<T>(string category, LocalizedString name)
-            where T : IAuditTrailEventProvider
+        public DescribeFor For<T>(string category, LocalizedString name) where T : IAuditTrailEventProvider
         {
             var providerName = typeof(T).FullName;
-            if (!_describes.TryGetValue($"{providerName}.{category}", out DescribeFor describeFor))
+            if (!_describes.TryGetValue($"{providerName}.{category}", out var describeFor))
             {
                 describeFor = new DescribeFor(category, providerName, name);
                 _describes[$"{providerName}.{category}"] = describeFor;
