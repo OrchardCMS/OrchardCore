@@ -84,7 +84,6 @@ namespace OrchardCore.Contents.Services
                         {
                             switch (contentsOrder)
                             {
-                                // Modified is a default value and also applied by the DefaultContentsAdminListFilter when no 'sort' term is specified.
                                 case ContentsOrder.Modified:
                                     query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
                                     break;
@@ -98,6 +97,11 @@ namespace OrchardCore.Contents.Services
                                     query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText);
                                     break;
                             };
+                        }
+                        else
+                        {
+                            // Modified is a default value and applied when there is no filter.
+                            query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
                         }
 
                         return query;
