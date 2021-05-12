@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.DisplayManagement;
@@ -49,7 +49,14 @@ namespace OrchardCore.Profile
                 }));
 
             dynamic layout = await _layoutAccessor.GetLayoutAsync();
-            layout.ProfileNavigation.Add(menuShape);
+            //layout.ProfileNavigation.Add(menuShape);
+
+            var navigation = layout.Zones["ProfileNavigation"];
+
+            if (navigation is Shape shape)
+            {
+                await shape.AddAsync(menuShape);
+            }
 
             await next();
         }

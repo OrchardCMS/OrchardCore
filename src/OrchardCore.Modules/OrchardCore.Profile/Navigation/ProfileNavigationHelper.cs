@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +27,7 @@ namespace OrchardCore.Profile.Navigation
                     await PopulateMenuAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
                 }
 
-                parentShape.Add(menuItemShape, menuItem.Position);
+                await parentShape.AddAsync(menuItemShape, menuItem.Position);
             }
         }
 
