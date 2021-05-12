@@ -5,6 +5,7 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
+using OrchardCore.Environment.Shell.Distributed;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -30,6 +31,8 @@ namespace OrchardCore.Environment.Shell
 
             services.AddSingleton<IRunningShellTable, RunningShellTable>();
 
+            services.AddHostedService<DistributedShellHostedService>();
+
             return services;
         }
 
@@ -42,11 +45,7 @@ namespace OrchardCore.Environment.Shell
 
         public static IServiceCollection AddSetFeaturesDescriptor(this IServiceCollection services)
         {
-            services.AddSingleton<IShellDescriptorManager>(sp =>
-            {
-                var shellFeatures = sp.GetServices<ShellFeature>();
-                return new SetFeaturesShellDescriptorManager(shellFeatures);
-            });
+            services.AddSingleton<IShellDescriptorManager, SetFeaturesShellDescriptorManager>();
 
             return services;
         }

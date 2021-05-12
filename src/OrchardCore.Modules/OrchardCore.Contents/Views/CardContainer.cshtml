@@ -1,0 +1,8 @@
+@model GroupViewModel
+
+<div class="mb-3 @String.Join(" ", Model.Classes)">
+    @foreach(var card in Model.Items)
+    {
+        @await DisplayAsync(card)
+    }
+</div>

@@ -17,17 +17,17 @@ namespace OrchardCore.Title
 {
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<TitlePartViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<TitlePartSettingsViewModel>();
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<TitlePartViewModel>();
+                o.MemberAccessStrategy.Register<TitlePartSettingsViewModel>();
+            });
+
             // Title Part
             services.AddContentPart<TitlePart>()
-                .UseDisplayDriver<TitlePartDisplay>()
+                .UseDisplayDriver<TitlePartDisplayDriver>()
                 .AddHandler<TitlePartHandler>();
 
             services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();

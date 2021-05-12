@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Sitemaps",
-    Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
 
 [assembly: Feature(
@@ -14,7 +14,6 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Contents",
-        "OrchardCore.Liquid"
     },
     Category = "Content Management"
 )]
@@ -23,6 +22,17 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Sitemaps.RazorPages",
     Name = "Sitemaps for Decoupled Razor Pages",
     Description = "Provides decoupled razor pages support for dynamic sitemap generation.",
+    Dependencies = new[]
+    {
+        "OrchardCore.Sitemaps"
+    },
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Sitemaps.Cleanup",
+    Name = "Sitemaps Cleanup",
+    Description = "Cleanup sitemap cache files through a background task.",
     Dependencies = new[]
     {
         "OrchardCore.Sitemaps"

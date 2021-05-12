@@ -48,7 +48,7 @@ namespace OrchardCore.OpenId.Drivers
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
             {
                 return null;
             }
@@ -64,6 +64,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
                 model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
                 model.ResponseMode = settings.ResponseMode;
+                model.StoreExternalTokens = settings.StoreExternalTokens;
 
                 if (settings.ResponseType == OpenIdConnectResponseType.Code)
                 {
@@ -95,7 +96,7 @@ namespace OrchardCore.OpenId.Drivers
         public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
             {
                 return null;
             }
@@ -116,6 +117,7 @@ namespace OrchardCore.OpenId.Drivers
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
                 settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
                 settings.ResponseMode = model.ResponseMode;
+                settings.StoreExternalTokens = model.StoreExternalTokens;
 
                 bool useClientSecret = true;
 

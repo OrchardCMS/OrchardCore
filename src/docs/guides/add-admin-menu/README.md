@@ -10,7 +10,7 @@ Each menu item will point to its own view.
 
 ## What you will need
 
-- The current version of the .NET Core SDK. You can download it from here <https://www.microsoft.com/net/download/core>.
+- The current version of the .NET SDK. You can download it from here <https://dotnet.microsoft.com/download>.
 - A text editor and a terminal where you can type dotnet commands.
 
 ## Creating an Orchard Core CMS site and module
@@ -22,7 +22,7 @@ You can install the latest released templates using this command:
 ```dotnet new -i OrchardCore.ProjectTemplates::1.0.0-*```
 
 !!! note
-    To use the development branch of the template add `--nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+    To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
 
 Create an empty folder that will contain your site. Open a terminal, navigate to that folder and run this:
 
@@ -43,7 +43,7 @@ We also need a reference to the `OrchardCore.Admin` package in order to be able 
 ```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --version 1.0.0-*```
 
 !!! note
-    To use the development branch of the template add ` --source https://www.myget.org/F/orchardcore-preview/api/v3/index.json --version 1.0.0-*`
+    To use the development branch of the template add ` --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --version 1.0.0-*`
 
 ## Adding our controller and views
 
@@ -135,10 +135,10 @@ namespace MyModule
             // Adding our menu items to the builder.
             // The builder represents the full admin menu tree.
             builder
-                .Add(S["My Root View"], "after",  rootView => rootView               
-                    .Add(S["Child One"],"1", childOne => childOne
+                .Add(S["My Root View"], S["My Root View"].PrefixPosition(),  rootView => rootView               
+                    .Add(S["Child One"], S["Child One"].PrefixPosition(), childOne => childOne
                         .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
-                    .Add(S["Child Two"], "2", childTwo => childTwo
+                    .Add(S["Child Two"], S["Child Two"].PrefixPosition(), childTwo => childTwo
                         .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
 
             return Task.CompletedTask;
@@ -146,6 +146,9 @@ namespace MyModule
     }
 }
 ```
+
+!!! note
+    We suggest to use the `PrefixPosition` extension method for the second parameter (`position`) if you want to keep an alphabetical sort when the strings will be translated in other languages.
 
 Then you have to register this service in the `Startup.cs` file of the module.
 
@@ -168,7 +171,7 @@ From the root of the folder containing both projects, run this command:
 `dotnet run --project .\MySite\MySite.csproj`
 
 !!! note
-    If you are using the development branch of the templates, run `dotnet restore .\MySite\MySite.csproj --source https://www.myget.org/F/orchardcore-preview/api/v3/index.json` before running the application
+    If you are using the development branch of the templates, run `dotnet restore .\MySite\MySite.csproj --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json` before running the application
 
 Your application should now be running and contain the open ports:
 

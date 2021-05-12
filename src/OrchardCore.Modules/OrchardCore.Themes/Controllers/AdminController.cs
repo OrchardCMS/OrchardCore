@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
+using OrchardCore.Modules.Manifest;
 using OrchardCore.Security;
 using OrchardCore.Themes.Models;
 using OrchardCore.Themes.Services;
@@ -51,6 +52,12 @@ namespace OrchardCore.Themes.Controllers
         public async Task<ActionResult> Index()
         {
             var installThemes = await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner); // only site owners
+
+            if (!installThemes)
+            {
+                return Forbid();
+            }
+
             //&& _shellSettings.Name == ShellSettings.; // of the default tenant
             //&& _featureManager.GetEnabledFeatures().FirstOrDefault(f => f.Id == "PackagingServices") != null
 
@@ -67,7 +74,7 @@ namespace OrchardCore.Themes.Controllers
                 var tags = extensionDescriptor.Manifest.Tags.ToArray();
                 var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
 
-                /// is the theme allowed for this tenant ?
+                // Is the theme allowed for this tenant?
                 // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
 
                 return !isHidden;
@@ -157,7 +164,7 @@ namespace OrchardCore.Themes.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -172,7 +179,7 @@ namespace OrchardCore.Themes.Controllers
 
             _notifier.Success(H["The Site theme was reset."]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -187,7 +194,7 @@ namespace OrchardCore.Themes.Controllers
 
             _notifier.Success(H["The Admin theme was reset."]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -207,9 +214,9 @@ namespace OrchardCore.Themes.Controllers
 
             await _shellFeaturesManager.DisableFeaturesAsync(new[] { feature }, force: true);
 
-            _notifier.Success(H["{0} was disabled", feature.Name ?? feature.Id]);
+            _notifier.Success(H["{0} was disabled.", feature.Name ?? feature.Id]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -229,14 +236,14 @@ namespace OrchardCore.Themes.Controllers
 
             await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
 
-            _notifier.Success(H["{0} was enabled", feature.Name ?? feature.Id]);
+            _notifier.Success(H["{0} was enabled.", feature.Name ?? feature.Id]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private bool IsAdminTheme(IManifestInfo manifest)
         {
-            return manifest.Tags.Any(x => string.Equals(x, "admin", StringComparison.OrdinalIgnoreCase));
+            return manifest.Tags.Any(x => string.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

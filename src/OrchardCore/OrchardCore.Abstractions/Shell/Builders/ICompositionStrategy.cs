@@ -5,7 +5,7 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 namespace OrchardCore.Environment.Shell.Builders
 {
     /// <summary>
-    /// Service at the host level to transform the cachable descriptor into the loadable blueprint.
+    /// Service at the host level to transform the cacheable descriptor into the loadable blueprint.
     /// </summary>
     public interface ICompositionStrategy
     {

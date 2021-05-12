@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Mvc.Utilities
 {
@@ -447,31 +448,65 @@ namespace OrchardCore.Mvc.Utilities
         /// </summary>
         public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
         {
-            var nextIsUpper = true;
             attribute = attribute.Trim();
-            var result = new StringBuilder(attribute.Length);
 
-            foreach (var c in attribute)
+            var delimitersCount = 0;
+
+            for (var i = 0; i < attribute.Length; i++)
             {
-                if (c == upperAfterDelimiter)
+                if (attribute[i] == upperAfterDelimiter)
                 {
-                    nextIsUpper = true;
-                    continue;
+                    delimitersCount++;
                 }
-
-                if (nextIsUpper)
-                {
-                    result.Append(Char.ToUpperInvariant(c));
-                }
-                else
-                {
-                    result.Append(c);
-                }
-
-                nextIsUpper = false;
             }
 
-            return result.ToString();
+            var result = String.Create(attribute.Length - delimitersCount, new { attribute, upperAfterDelimiter }, (buffer, state) =>
+            {
+                var nextIsUpper = true;
+                var k = 0;
+
+                for (var i = 0; i < state.attribute.Length; i++)
+                {
+                    var c = state.attribute[i];
+
+                    if (c == state.upperAfterDelimiter)
+                    {
+                        nextIsUpper = true;
+                        continue;
+                    }
+
+                    if (nextIsUpper)
+                    {
+                        buffer[k] = Char.ToUpperInvariant(c);
+                    }
+                    else
+                    {
+                        buffer[k] = c;
+                    }
+
+                    nextIsUpper = false;
+
+                    k++;
+                }
+            });            
+
+            return result;
+        }
+
+        /// <summary>
+        /// Tests if a string is valid json.
+        /// </summary>
+        public static bool IsJson(this string json)
+        {
+            try
+            {
+                JToken.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

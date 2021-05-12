@@ -14,10 +14,10 @@ namespace OrchardCore.Scripting
             IEnumerable<IGlobalMethodProvider> globalMethodProviders)
         {
             _engines = engines;
-            GlobalMethodProviders = new List<IGlobalMethodProvider>(globalMethodProviders);
+            GlobalMethodProviders = new List<IGlobalMethodProvider>(globalMethodProviders).AsReadOnly();
         }
 
-        public IList<IGlobalMethodProvider> GlobalMethodProviders { get; }
+        public IReadOnlyList<IGlobalMethodProvider> GlobalMethodProviders { get; }
 
         public object Evaluate(string directive,
             IFileProvider fileProvider,

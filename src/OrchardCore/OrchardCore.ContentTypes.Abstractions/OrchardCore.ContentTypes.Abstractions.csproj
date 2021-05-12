@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.ContentTypes</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore ContentTypes Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for ContentTypes</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

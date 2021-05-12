@@ -1,0 +1,207 @@
+name: Functional Tests - all Databases
+on:
+# manual trigger
+  workflow_dispatch:
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+jobs:
+  test_functional_mvc:
+    name: Functional Tests - MVC
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/included:7.3.0
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "15"
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.*
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
+    - name: Functional Tests
+      run: |
+        cd test/Functional
+        npm install
+        npm run mvc:test
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: functional-mvc-screenshots
+        path: test/Functional/mvc-tests/cypress/screenshots
+        retention-days: 3
+  
+  test_functional_cms_sqlite:
+    name: Functional Tests - CMS Sqlite
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/included:7.3.0
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.*
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
+    - name: Functional Tests
+      run: |
+        cd test/Functional
+        npm install
+        npm run cms:test
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: functional-cms-sqlite-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
+        retention-days: 3
+  
+  test_functional_cms_postgresql:
+    name: Functional Tests - CMS Postgres
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/included:7.3.0
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: app
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
+      OrchardCore__DatabaseProvider: "Postgres"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.*
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
+    - name: Functional Tests
+      run: |
+        cd test/Functional
+        npm install
+        npm run cms:test
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: functional-cms-postgresql-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
+        retention-days: 3
+  
+  test_functional_cms_mysql:
+    name: Functional Tests - CMS MySql
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/included:7.3.0
+    services:
+      mariadb:
+        image: mariadb:latest
+        ports:
+          - 3306
+        env:
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: test123
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    env:
+      OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
+      OrchardCore__DatabaseProvider: "MySql"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.*
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
+    - name: Functional Tests
+      run: |
+        cd test/Functional
+        npm install
+        npm run cms:test
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: functional-cms-mysql-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
+        retention-days: 3
+
+  test_functional_cms_mssql:
+    name: Functional Tests - CMS SqlServer 2019
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/included:7.3.0
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+          - 1433
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: Password12!
+    env:
+      OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!"
+      OrchardCore__DatabaseProvider: "SqlConnection"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.*
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
+    - name: Functional Tests
+      run: |
+        cd test/Functional
+        npm install
+        npm run cms:test
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: functional-cms-mssql-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
+        retention-days: 3

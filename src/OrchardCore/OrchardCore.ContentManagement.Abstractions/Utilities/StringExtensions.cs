@@ -204,6 +204,32 @@ namespace OrchardCore.ContentManagement.Utilities
             return name;
         }
 
+        private static HashSet<string> _reservedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            nameof(ContentItem.Id),
+            nameof(ContentItem.ContentItemId),
+            nameof(ContentItem.ContentItemVersionId),
+            nameof(ContentItem.ContentType),
+            nameof(ContentItem.Published),
+            nameof(ContentItem.Latest),
+            nameof(ContentItem.ModifiedUtc),
+            nameof(ContentItem.PublishedUtc),
+            nameof(ContentItem.CreatedUtc),
+            nameof(ContentItem.Owner),
+            nameof(ContentItem.Author),
+            nameof(ContentItem.DisplayText)
+        };
+
+        public static bool IsReservedContentName(this string name)
+        {
+            if (_reservedNames.Contains(name))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Whether the char is a letter between A and Z or not
         /// </summary>

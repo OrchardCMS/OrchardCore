@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace OrchardCore.Lucene.Indexing
 {
     /// <summary>
-    /// Reprensents the information of a content type in a Lucene index.
+    /// Represents the information of a content type in a Lucene index.
     /// </summary>
     public class Mapping
     {

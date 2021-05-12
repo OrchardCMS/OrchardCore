@@ -1,14 +1,20 @@
 using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
     [HtmlTargetElement("style", Attributes = NameAttributeName)]
     [HtmlTargetElement("style", Attributes = SrcAttributeName)]
+    [HtmlTargetElement("style", Attributes = AtAttributeName)]
     public class StyleTagHelper : TagHelper
     {
+        private static readonly char[] splitSeparators = { ',', ' ' };
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
+        private const string AtAttributeName = "at";
         private const string AppendVersionAttributeName = "asp-append-version";
 
         [HtmlAttributeName(NameAttributeName)]
@@ -31,6 +37,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string DependsOn { get; set; }
         public string Version { get; set; }
 
+        [HtmlAttributeName(AtAttributeName)]
         public ResourceLocation At { get; set; }
 
         private readonly IResourceManager _resourceManager;
@@ -40,12 +47,19 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             _resourceManager = resourceManager;
         }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
+            output.SuppressOutput();
+
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
-                // Include custom script
+                // Include custom style
                 var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
+
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -75,12 +89,29 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.UseCulture(Culture);
                 }
+
+                if (!String.IsNullOrEmpty(DependsOn))
+                {
+                    setting.SetDependencies(DependsOn.Split(splitSeparators, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalStyle(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
+                }
             }
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
                 // Resource required
 
                 var setting = _resourceManager.RegisterResource("stylesheet", Name);
+
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -121,10 +152,25 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseVersion(Version);
                 }
 
-                // This allows additions to the pre registered scripts dependencies.
+                // This allows additions to the pre registered style dependencies.
                 if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(DependsOn.Split(splitSeparators, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                var childContent = await output.GetChildContentAsync();
+                if (!childContent.IsEmptyOrWhiteSpace)
+                {
+                    // Inline named style definition
+                    _resourceManager.InlineManifest.DefineStyle(Name)
+                        .SetInnerContent(childContent.GetContent());
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalStyle(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
@@ -133,6 +179,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 var definition = _resourceManager.InlineManifest.DefineStyle(Name);
                 definition.SetUrl(Src, DebugSrc);
+
+                foreach (var attribute in output.Attributes)
+                {
+                    definition.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
 
                 if (!String.IsNullOrEmpty(Version))
                 {
@@ -154,18 +205,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                // Also include the style
-
+                // Also include the style.
                 var setting = _resourceManager.RegisterResource("stylesheet", Name);
-
-                if (At != ResourceLocation.Unspecified)
-                {
-                    setting.AtLocation(At);
-                }
-                else
-                {
-                    setting.AtLocation(ResourceLocation.Head);
-                }
 
                 if (UseCdn != null)
                 {
@@ -186,9 +227,53 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.UseCulture(Culture);
                 }
-            }
 
-            output.TagName = null;
+                if (At != ResourceLocation.Unspecified)
+                {
+                    setting.AtLocation(At);
+                }
+                else
+                {
+                    setting.AtLocation(ResourceLocation.Head);
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalStyle(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
+                }
+            }
+            else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            {
+                // Custom style content
+
+                var childContent = await output.GetChildContentAsync();
+
+                var builder = new TagBuilder("style");
+                builder.InnerHtml.AppendHtml(childContent);
+                builder.TagRenderMode = TagRenderMode.Normal;
+
+                foreach (var attribute in output.Attributes)
+                {
+                    builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
+                }
+
+                // If no type was specified, define a default one
+                if (!builder.Attributes.ContainsKey("type"))
+                {
+                    builder.Attributes.Add("type", "text/css");
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    output.Content.SetHtmlContent(builder);
+                }
+                else
+                {
+                    _resourceManager.RegisterStyle(builder);
+                }
+            }
         }
     }
 }

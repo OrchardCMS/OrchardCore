@@ -1,7 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Infrastructure</Title>
+    <Description>$(OCCMSDescription)
+
+    Implementation for OrchardCoreCMS Infrastructure </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Infrastructure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,12 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MailKit" />
-    <PackageReference Include="MessagePack" />
+    <PackageReference Include="HtmlSanitizer" />
+    <PackageReference Include="MimeKit" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Data\OrchardCore.Data.csproj" />
+    <ProjectReference Include="..\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore\OrchardCore.csproj" />
   </ItemGroup>

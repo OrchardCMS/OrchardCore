@@ -9,10 +9,12 @@
     var culture = await Orchard.GetContentCultureAsync(Model.MarkdownBodyPart.ContentItem);
 }
 
-<script name="simplemde" depends-on="admin" asp-src="~/OrchardCore.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
-<style name="simplemdecss" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css" debug-src="~/OrchardCore.Markdown/Styles/simplemde.css"></style>
+<style asp-name="codemirror"></style>
+<style asp-name="mdecss" asp-src="~/OrchardCore.Markdown/Styles/mde.min.css" debug-src="~/OrchardCore.Markdown/Styles/mde.css"></style>
 
-<div class="form-group">
+@await DisplayAsync(await New.ShortcodeModal())
+
+<div class="form-group mde-editor">
     <label asp-for="Markdown">@Model.TypePartDefinition.DisplayName()</label>
     <span class="hint">@T["The markdown text of the content item."]</span>
     <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text"></textarea>
@@ -20,21 +22,27 @@
 
 <script at="Foot">
     $(function () {
-        var simplemde = new SimpleMDE({
-            element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
-            forceSync: true,
-            toolbar: simplemdeToolbar,
-            autoDownloadFontAwesome: false
-        });
+        var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
+        @* When part is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
+        if (markdownElement) {
+            var mde = new EasyMDE({
+                element: markdownElement,
+                forceSync: true,
+                toolbar: mdeToolbar,
+                autoDownloadFontAwesome: false
+            });
 
-        simplemde.codemirror.on('change', function () {
-            $(document).trigger('contentpreview:render');
-        });
+            initializeMdeShortcodeWrapper(mde);
 
-        @if(culture.IsRightToLeft())
-        {
-            <text>$('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
-$('.CodeMirror').attr('style', 'text-align:right');</text>
+            mde.codemirror.on('change', function () {
+                $(document).trigger('contentpreview:render');
+            });
+
+            @if (culture.IsRightToLeft())
+            {
+                <text>$('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
+                $('.CodeMirror').attr('style', 'text-align:right');</text>
+            }
         }
     });
 </script>

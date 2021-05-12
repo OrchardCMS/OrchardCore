@@ -8,8 +8,6 @@ namespace OrchardCore.Sitemaps.Builders
     public class SitemapTypeBuilder : SitemapTypeBuilderBase<Sitemap>
     {
         private static readonly XNamespace Namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
-        private static readonly XNamespace SchemaInstance = "http://wwww.w3.org/2001/XMLSchema-instance";
-        private static readonly XNamespace SchemaLocation = "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd";
 
         private readonly IEnumerable<ISitemapSourceBuilder> _sitemapSourceBuilders;
 
@@ -22,9 +20,7 @@ namespace OrchardCore.Sitemaps.Builders
         {
             context.Response = new SitemapResponse
             {
-                ResponseElement = new XElement(Namespace + "urlset",
-                    new XAttribute(XNamespace.Xmlns + "xsi", SchemaInstance),
-                    new XAttribute(SchemaInstance + "schemaLocation", SchemaLocation))
+                ResponseElement = new XElement(Namespace + "urlset")
             };
 
             foreach (var source in sitemap.SitemapSources)

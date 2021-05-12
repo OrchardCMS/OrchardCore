@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -19,15 +23,27 @@ namespace OrchardCore.Tenants.Workflows.Activities
     {
         private readonly IClock _clock;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IEmailAddressValidator _emailAddressValidator;
+        private readonly IdentityOptions _identityOptions;
 
-        public SetupTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, ISetupService setupService, IClock clock, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<SetupTenantTask> localizer)
+        public SetupTenantTask(
+            IClock clock,
+            IUpdateModelAccessor updateModelAccessor,
+            IEmailAddressValidator emailAddressValidator,
+            IOptions<IdentityOptions> identityOptions,
+            IShellSettingsManager shellSettingsManager,
+            IShellHost shellHost,
+            ISetupService setupService,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<SetupTenantTask> localizer)
             : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {
             SetupService = setupService;
             _clock = clock;
-            _expressionEvaluator = expressionEvaluator;
             _updateModelAccessor = updateModelAccessor;
+            _emailAddressValidator = emailAddressValidator;
+            _identityOptions = identityOptions.Value;
         }
 
         protected ISetupService SetupService { get; }
@@ -98,7 +114,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext))?.Trim();
+            var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
             if (string.IsNullOrWhiteSpace(tenantName))
             {
@@ -120,15 +136,26 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            var siteName = (await _expressionEvaluator.EvaluateAsync(SiteName, workflowContext))?.Trim();
-            var adminUsername = (await _expressionEvaluator.EvaluateAsync(AdminUsername, workflowContext))?.Trim();
-            var adminEmail = (await _expressionEvaluator.EvaluateAsync(AdminEmail, workflowContext))?.Trim();
-            var adminPassword = (await _expressionEvaluator.EvaluateAsync(AdminPassword, workflowContext))?.Trim();
+            var siteName = (await ExpressionEvaluator.EvaluateAsync(SiteName, workflowContext, null))?.Trim();
+            var adminUsername = (await ExpressionEvaluator.EvaluateAsync(AdminUsername, workflowContext, null))?.Trim();
+            var adminEmail = (await ExpressionEvaluator.EvaluateAsync(AdminEmail, workflowContext, null))?.Trim();
 
-            var databaseProvider = (await _expressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext))?.Trim();
-            var databaseConnectionString = (await _expressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext))?.Trim();
-            var databaseTablePrefix = (await _expressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext))?.Trim();
-            var recipeName = (await _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext))?.Trim();
+            if (string.IsNullOrEmpty(adminUsername) || adminUsername.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+            {
+                return Outcomes("Failed");
+            }
+
+            if (string.IsNullOrEmpty(adminEmail) || !_emailAddressValidator.Validate(adminEmail))
+            {
+                return Outcomes("Failed");
+            }
+
+            var adminPassword = (await ExpressionEvaluator.EvaluateAsync(AdminPassword, workflowContext, null))?.Trim();
+
+            var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
+            var databaseConnectionString = (await ExpressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null))?.Trim();
+            var databaseTablePrefix = (await ExpressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
+            var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
 
             if (string.IsNullOrEmpty(databaseProvider))
             {
@@ -156,17 +183,20 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var setupContext = new SetupContext
             {
                 ShellSettings = shellSettings,
-                SiteName = siteName,
                 EnabledFeatures = null,
-                AdminUsername = adminUsername,
-                AdminEmail = adminEmail,
-                AdminPassword = adminPassword,
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipe,
-                SiteTimeZone = _clock.GetSystemTimeZone().TimeZoneId,
-                DatabaseProvider = databaseProvider,
-                DatabaseConnectionString = databaseConnectionString,
-                DatabaseTablePrefix = databaseTablePrefix
+                Properties = new Dictionary<string, object>
+                {
+                    { SetupConstants.SiteName, siteName },
+                    { SetupConstants.AdminUsername, adminUsername },
+                    { SetupConstants.AdminEmail, AdminEmail },
+                    { SetupConstants.AdminPassword, adminPassword },
+                    { SetupConstants.SiteTimeZone, _clock.GetSystemTimeZone().TimeZoneId },
+                    { SetupConstants.DatabaseProvider, databaseProvider },
+                    { SetupConstants.DatabaseConnectionString, databaseConnectionString },
+                    { SetupConstants.DatabaseTablePrefix, databaseTablePrefix },
+                }
             };
 
             var executionId = await SetupService.SetupAsync(setupContext);

@@ -15,8 +15,7 @@ function initializeTagsEditor(element) {
                 var selectableTagTerms = allTagTerms;
 
                 // Leaves only filters selectableTerms.
-                if (element.dataset.leavesOnly == 'true')
-                {
+                if (element.dataset.leavesOnly == 'true') {
                     selectableTagTerms = selectableTagTerms.filter(function (tagTerm) { return tagTerm.isLeaf });
                     // Self heal when leaves only value is updated.
                     allTagTerms.forEach(function (tagTerm) {
@@ -34,11 +33,6 @@ function initializeTagsEditor(element) {
                     taxonomyContentItemId: element.dataset.taxonomyContentItemId,
                     createTagUrl: element.dataset.createTagUrl,
                     createTagErrorMessage: element.dataset.createTagErrorMessage,
-                    termEntriesKey: element.dataset.termEntriesKey,
-                    contentItemIdKey: element.dataset.contentItemIdKey,
-                    selectedKey: element.dataset.selectedKey,
-                    partName: element.dataset.partName,
-                    fieldName: element.dataset.fieldName,
                     selectedTagTerms: selectedTagTerms,
                     selectableTagTerms: selectableTagTerms,
                     allTagTerms: allTagTerms
@@ -50,6 +44,16 @@ function initializeTagsEditor(element) {
                         return true;
                     }
                     return false;
+                },
+                selectedTagTermsIds: function() {
+                    if (!this.selectedTagTerms) {
+                        return [];
+                    }
+                    if (Array.isArray(this.selectedTagTerms)) {
+                        return this.selectedTagTerms.map(function (tagTerm) { return tagTerm.contentItemId });
+                    } else {
+                        return this.selectedTagTerms.contentItemId;
+                    }
                 }
             },
             methods: {
@@ -74,7 +78,7 @@ function initializeTagsEditor(element) {
 
                             // Add to selectedTerms to display in vue-multi-select.
                             self.selectedTagTerms.push(tagTerm);
-                            
+
                         },
                         error: function () {
                             alert(self.createTagErrorMessage);
@@ -90,14 +94,6 @@ function initializeTagsEditor(element) {
                     var tagTerm = this.allTagTerms.find(function (tagTerm) { return tagTerm.contentItemId === removedTagTerm.contentItemId });
                     tagTerm.selected = false;
                     $(document).trigger('contentpreview:render');
-                },
-                termEntriesContentItemName(tagTerm) {
-                    var indexOf = this.allTagTerms.indexOf(tagTerm);
-                    return `${this.partName}.${this.fieldName}.${this.termEntriesKey}[${indexOf}].${this.contentItemIdKey}`;
-                },
-                termEntriesSelectedName(tagTerm) {
-                    var indexOf = this.allTagTerms.indexOf(tagTerm);
-                    return `${this.partName}.${this.fieldName}.${this.termEntriesKey}[${indexOf}].${this.selectedKey}`;
                 }
             }
         });

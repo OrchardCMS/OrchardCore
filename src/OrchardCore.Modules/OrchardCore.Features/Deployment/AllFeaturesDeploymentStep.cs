@@ -11,5 +11,7 @@ namespace OrchardCore.Features.Deployment
         {
             Name = "AllFeatures";
         }
+
+        public bool IgnoreDisabledFeatures { get; set; }
     }
 }

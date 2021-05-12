@@ -24,6 +24,7 @@ public static class OrchardRazorHelperExtensions
     /// <summary>
     /// Renders an object in the browser's console.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="content">The object to render.</param>
     /// <returns>The encoded script rendering the object to the console.</returns>
     public static IHtmlContent ConsoleLog(this IOrchardHelper orchardHelper, object content)

@@ -9,7 +9,7 @@ namespace OrchardCore.Deployment.Steps
         {
             Name = nameof(RecipeFileDeploymentStep);
         }
-                
+
         public string RecipeName { get; set; }
 
         public string DisplayName { get; set; }

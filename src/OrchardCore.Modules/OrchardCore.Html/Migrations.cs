@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Html.Settings;
 using YesSql;
 
 namespace OrchardCore.Html
@@ -34,18 +35,25 @@ namespace OrchardCore.Html
                 .Attachable()
                 .WithDescription("Provides an HTML Body for your content item."));
 
+            // Shortcut other migration steps on new content definition schemas.
+            return 5;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom1()
+        {
             return 2;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom2()
         {
             return 3;
         }
 
+        // This code can be removed in a later version.
         public async Task<int> UpdateFrom3()
         {
-            // This code can be removed in RC
-
             // Update content type definitions
             foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
             {
@@ -83,7 +91,7 @@ namespace OrchardCore.Html
                     lastDocumentId = contentItemVersion.Id;
                 }
 
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
             }
 
             bool UpdateBody(JToken content)
@@ -110,6 +118,24 @@ namespace OrchardCore.Html
             }
 
             return 4;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom4()
+        {
+            // For backwards compatability with liquid filters we disable html sanitization on existing field definitions.
+            foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
+            {
+                if (contentType.Parts.Any(x => x.PartDefinition.Name == "HtmlBodyPart"))
+                {
+                    _contentDefinitionManager.AlterTypeDefinition(contentType.Name, x => x.WithPart("HtmlBodyPart", part =>
+                    {
+                        part.MergeSettings<HtmlBodyPartSettings>(x => x.SanitizeHtml = false);
+                    }));
+                }
+            }
+
+            return 5;
         }
     }
 }

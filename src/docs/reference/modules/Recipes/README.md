@@ -1,4 +1,4 @@
-# Recipes (OrchardCore.Recipes)
+# Recipes (`OrchardCore.Recipes`)
 
 ## Recipe file
 
@@ -33,6 +33,12 @@ A recipe file should look like this:
 
 !!! note
     if `issetuprecipe` is equal to true, the recipe will be available in the Recipes list during the setup.
+
+!!! note
+    Recipes, despite being JSON files, may contain comments:
+    ```json
+    // This is a comment.
+    ```
 
 ## Recipe steps
 
@@ -325,12 +331,61 @@ The Deployment step allows you to create a deployment plan with deployment steps
     }
 ```
 
+### CustomSettings Step
+
+The CustomSettings step allows you to populate your custom settings with initial values.
+
+```json
+    {
+      "name": "custom-settings",
+      "MyCustomSettings": {
+        "ContentItemId": "400d6c7pwj8675crzacd6gyywt",
+        "ContentItemVersionId": null,
+        "ContentType": "MyCustomSettings",
+        "DisplayText": "",
+        "Latest": false,
+        "Published": false,
+        "ModifiedUtc": null,
+        "PublishedUtc": null,
+        "CreatedUtc": null,
+        "Owner": "",
+        "Author": "",
+        "MyCustomSettingsPart": {
+          "MyTextField": {
+            "Text": "My custom text"
+          }
+        }
+      }
+    }
+```
+
+### Recipes Step
+
+The Recipes step allows you to execute other recipes from the current recipe. You can use this to modularize your recipes. E.g. instead of having a single large setup recipe you can put content into multiple smaller ones and execute them from the setup recipe.
+
+```json
+    {
+      "name": "recipes",
+      "Values": [
+        {
+          "executionid": "MyApp",
+          "name": "MyApp.Pages"
+        },
+        {
+          "executionid": "MyApp",
+          "name": "MyApp.Blog"
+        }
+      ]
+    }
+```
+
+As `executionid` use a custom identifier to distinguish these recipe executions from others. As `name` use the `name` field from the given recipe's head (this is left blank when you export to recipes).
+
 ### Other settings Step
 
 Here are other available steps:
 
 - `Command`
-- `custom-settings`
 - `FacebookLoginSettings`
 - `FacebookSettings`
 - `GitHubAuthentication`

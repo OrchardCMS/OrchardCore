@@ -4,9 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
-    {% render_section "HeadMeta", required: false %}
     {% resources type: "Meta" %}
-    <link type="image/x-icon" rel="shortcut icon" href="/TheBlogTheme/favicon.ico">
+    {% link type:"image/x-icon", rel:"shortcut icon", href:"~/TheBlogTheme/favicon.ico" %}
 
     <!-- Bootstrap core CSS -->
     {% style name:"theblogtheme-vendor-bootstrap", version:"4" %}
@@ -33,6 +32,7 @@
     {% resources type: "HeadScript" %}
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
+    {% render_section "HeadMeta", required: false %}
 </head>
 <body dir="{{ Culture.Dir }}">
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">

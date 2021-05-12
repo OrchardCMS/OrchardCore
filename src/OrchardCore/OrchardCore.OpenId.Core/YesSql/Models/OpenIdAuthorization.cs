@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using Newtonsoft.Json.Linq;
 
@@ -6,8 +7,12 @@ namespace OrchardCore.OpenId.YesSql.Models
     public class OpenIdAuthorization
     {
         /// <summary>
-        /// Gets or sets the unique identifier
-        /// associated with the current application.
+        /// The name of the collection that is used for this type.
+        /// </summary>
+        public const string OpenIdCollection = "OpenId";
+                
+        /// <summary>
+        /// Gets or sets the unique identifier associated with the current application.
         /// </summary>
         public string AuthorizationId { get; set; }
 
@@ -18,16 +23,19 @@ namespace OrchardCore.OpenId.YesSql.Models
         public string ApplicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the physical identifier
-        /// associated with the current authorization.
+        /// Gets or sets the creation date of the current authorization.
+        /// </summary>
+        public DateTime? CreationDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the physical identifier associated with the current authorization.
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the additional properties
-        /// associated with the current authorization.
+        /// Gets or sets the additional properties associated with the current authorization.
         /// </summary>
-        public virtual JObject Properties { get; set; }
+        public JObject Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes associated with the current authorization.

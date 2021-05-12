@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Forms.Helpers
 {
@@ -27,6 +28,7 @@ namespace OrchardCore.Forms.Helpers
 
             foreach (var item in errorList)
             {
+                item.RawValue = item.RawValue is JArray jarray ? jarray.ToObject<object[]>() : item.RawValue;
                 modelState.SetModelValue(item.Key, item.RawValue, item.AttemptedValue);
                 foreach (var error in item.ErrorMessages)
                 {

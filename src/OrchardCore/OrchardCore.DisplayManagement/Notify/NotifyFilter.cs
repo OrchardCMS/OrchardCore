@@ -19,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Notify
     {
         public const string CookiePrefix = "orch_notify";
         private readonly INotifier _notifier;
-        private readonly dynamic _shapeFactory;
+        private readonly IShapeFactory _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            DeserializeNotifyEntries(messages, out NotifyEntry[] messageEntries);
+            DeserializeNotifyEntries(messages, out var messageEntries);
 
             if (messageEntries == null)
             {
@@ -120,12 +120,17 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            dynamic layout = await _layoutAccessor.GetLayoutAsync();
+            var layout = await _layoutAccessor.GetLayoutAsync();
+
             var messagesZone = layout.Zones["Messages"];
 
-            foreach (var messageEntry in _existingEntries)
+            if (messagesZone is IShape zone)
             {
-                messagesZone = messagesZone.Add(await _shapeFactory.Message(messageEntry));
+                foreach (var messageEntry in _existingEntries)
+                {
+                    // Also retrieve the actual zone in case it was only a temporary empty zone created on demand.
+                    zone = await zone.AddAsync(await _shapeFactory.CreateAsync("Message", Arguments.From(messageEntry)));
+                }
             }
 
             DeleteCookies(filterContext);

@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Lucene</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Lucene Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for Lucene.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

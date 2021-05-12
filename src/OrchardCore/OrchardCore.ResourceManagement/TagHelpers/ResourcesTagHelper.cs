@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
 
@@ -35,46 +36,50 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             try
             {
+                using var sw = new StringWriter();
+
                 switch (Type)
                 {
                     case ResourceType.Meta:
-                        _resourceManager.RenderMeta(output.Content);
+                        _resourceManager.RenderMeta(sw);
                         break;
 
                     case ResourceType.HeadLink:
-                        _resourceManager.RenderHeadLink(output.Content);
+                        _resourceManager.RenderHeadLink(sw);
                         break;
 
                     case ResourceType.Stylesheet:
-                        _resourceManager.RenderStylesheet(output.Content);
+                        _resourceManager.RenderStylesheet(sw);
                         break;
 
                     case ResourceType.HeadScript:
-                        _resourceManager.RenderHeadScript(output.Content);
+                        _resourceManager.RenderHeadScript(sw);
                         break;
 
                     case ResourceType.FootScript:
-                        _resourceManager.RenderFootScript(output.Content);
+                        _resourceManager.RenderFootScript(sw);
                         break;
 
                     case ResourceType.Header:
-                        _resourceManager.RenderMeta(output.Content);
-                        _resourceManager.RenderHeadLink(output.Content);
-                        _resourceManager.RenderStylesheet(output.Content);
-                        _resourceManager.RenderHeadScript(output.Content);
+                        _resourceManager.RenderMeta(sw);
+                        _resourceManager.RenderHeadLink(sw);
+                        _resourceManager.RenderStylesheet(sw);
+                        _resourceManager.RenderHeadScript(sw);
                         break;
 
                     case ResourceType.Footer:
-                        _resourceManager.RenderFootScript(output.Content);
+                        _resourceManager.RenderFootScript(sw);
                         break;
 
                     default:
                         break;
                 }
+
+                output.Content.AppendHtml(sw.ToString());
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured while rendering {Type} resource.", Type);
+                _logger.LogError(ex, "An error occurred while rendering {Type} resource.", Type);
             }
             finally
             {

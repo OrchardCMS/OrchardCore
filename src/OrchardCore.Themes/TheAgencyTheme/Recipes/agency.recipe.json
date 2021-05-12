@@ -2,9 +2,9 @@
   "name": "Agency",
   "displayName": "Agency",
   "description": "Ready to use company website.",
-  "author": "The Orchard Team",
-  "website": "https://orchardproject.net",
-  "version": "2.0",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc2",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "agency" ],
@@ -18,7 +18,6 @@
   "steps": [
     {
       "name": "feature",
-      "disable": [],
       "enable": [
         // SaaS
         "OrchardCore.HomeRoute",
@@ -50,11 +49,13 @@
         "OrchardCore.Flows",
         "OrchardCore.Layers",
         "OrchardCore.Lists",
-        "OrchardCore.Liquid",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
+        "OrchardCore.Placements",
         "OrchardCore.Queries",
+        "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
@@ -85,85 +86,6 @@
     {
       "name": "ContentDefinition",
       "ContentTypes": [
-        {
-          "Name": "LiquidPage",
-          "DisplayName": "Liquid Page",
-          "Hidden": false,
-          "Settings": {
-            "ContentTypeSettings": {
-              "Creatable": true,
-              "Draftable": true,
-              "Versionable": true,
-              "Listable": true
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPage",
-              "Name": "LiquidPage",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "AutoroutePartSettings": {
-                  "AllowCustomPath": true,
-                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
-                  "ShowHomepageOption": true
-                },
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
-            },
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "3"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "HtmlWidget",
-          "DisplayName": "Html",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "HtmlWidget",
-              "Name": "HtmlWidget",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
         {
           "Name": "Page",
           "DisplayName": "Page",
@@ -495,6 +417,52 @@
           ]
         },
         {
+          "Name": "RawHtml",
+          "DisplayName": "Html",
+          "Settings": {
+            "ContentTypeSettings": {           
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "RawHtml",
+              "Name": "RawHtml",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blockquote",
+          "DisplayName": "Blockquote",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Blockquote",
+              "Name": "Blockquote",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
           "Name": "Container",
           "DisplayName": "Container",
           "Settings": {
@@ -527,79 +495,11 @@
           ]
         },
         {
-          "Name": "Blockquote",
-          "DisplayName": "Blockquote",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Blockquote",
-              "Name": "Blockquote",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "ImageWidget",
-          "DisplayName": "Image",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Image",
-              "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidWidget",
-          "DisplayName": "Liquid",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
           "Name": "Image",
           "DisplayName": "Image",
           "Settings": {
             "ContentTypeSettings": {
+              "Draftable": true,
               "Versionable": true,
               "Securable": true,
               "Stereotype": "Widget"
@@ -651,39 +551,6 @@
         }
       ],
       "ContentParts": [
-        {
-          "Name": "HtmlWidget",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "HtmlField",
-              "Name": "Content",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Content",
-                  "Editor": "Multiline",
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "MenuItem",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Link",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Link",
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
         {
           "Name": "Service",
           "Settings": {},
@@ -866,6 +733,23 @@
           ]
         },
         {
+          "Name": "RawHtml",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Content",
+                  "Editor": "Multiline",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
           "Name": "Blockquote",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [
@@ -943,11 +827,11 @@
       "Data": [
         {
           "ContentItemId": "[js: uuid()]",
-          "ContentType": "HtmlWidget",
+          "ContentType": "RawHtml",
           "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
             "Layer": "Always",
@@ -955,7 +839,7 @@
             "RenderTitle": false,
             "Position": 10
           },
-          "HtmlWidget": {
+          "RawHtml": {
             "Content": {
               "Html": "[file:text('Snippets/footer.html')]"
             }
@@ -968,12 +852,32 @@
       "Layers": [
         {
           "Name": "Always",
-          "Rule": "true",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
           "Name": "Homepage",
-          "Rule": "isHomepage()",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -983,71 +887,71 @@
       "Files": [
         {
           "TargetPath": "about/1.jpg",
-          "SourcePath": "../wwwroot/img/about/1.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/about/1.jpg"
         },
         {
           "TargetPath": "about/2.jpg",
-          "SourcePath": "../wwwroot/img/about/2.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/about/2.jpg"
         },
         {
           "TargetPath": "about/3.jpg",
-          "SourcePath": "../wwwroot/img/about/3.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/about/3.jpg"
         },
         {
           "TargetPath": "about/4.jpg",
-          "SourcePath": "../wwwroot/img/about/4.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/about/4.jpg"
         },
         {
           "TargetPath": "logos/creative-market.jpg",
-          "SourcePath": "../wwwroot/img/logos/creative-market.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/logos/creative-market.jpg"
         },
         {
           "TargetPath": "logos/designmodo.jpg",
-          "SourcePath": "../wwwroot/img/logos/designmodo.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/logos/designmodo.jpg"
         },
         {
           "TargetPath": "logos/envato.jpg",
-          "SourcePath": "../wwwroot/img/logos/envato.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/logos/envato.jpg"
         },
         {
           "TargetPath": "logos/themeforest.jpg",
-          "SourcePath": "../wwwroot/img/logos/themeforest.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/logos/themeforest.jpg"
         },
         {
           "TargetPath": "portfolio/01-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/01-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/01-full.jpg"
         },
         {
           "TargetPath": "portfolio/02-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/02-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/02-full.jpg"
         },
         {
           "TargetPath": "portfolio/03-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/03-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/03-full.jpg"
         },
         {
           "TargetPath": "portfolio/04-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/04-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/04-full.jpg"
         },
         {
           "TargetPath": "portfolio/05-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/05-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/05-full.jpg"
         },
         {
           "TargetPath": "portfolio/06-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/06-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/06-full.jpg"
         },
         {
           "TargetPath": "team/1.jpg",
-          "SourcePath": "../wwwroot/img/team/1.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/team/1.jpg"
         },
         {
           "TargetPath": "team/2.jpg",
-          "SourcePath": "../wwwroot/img/team/2.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/team/2.jpg"
         },
         {
           "TargetPath": "team/3.jpg",
-          "SourcePath": "../wwwroot/img/team/3.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/team/3.jpg"
         }
       ]
     },
@@ -1061,7 +965,7 @@
           "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "MenuPart": {},
           "TitlePart": {
@@ -1072,6 +976,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Services",
                 "LinkMenuItemPart": {
                   "Name": "Services",
                   "Url": "~/#services"
@@ -1080,6 +985,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Portfolio",
                 "LinkMenuItemPart": {
                   "Name": "Portfolio",
                   "Url": "~/#portfolio"
@@ -1088,6 +994,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "About",
                 "LinkMenuItemPart": {
                   "Name": "About",
                   "Url": "~/#about"
@@ -1096,6 +1003,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Team",
                 "LinkMenuItemPart": {
                   "Name": "Team",
                   "Url": "~/#team"
@@ -1104,6 +1012,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Contact",
                 "LinkMenuItemPart": {
                   "Name": "Contact",
                   "Url": "~/#contact"
@@ -1122,7 +1031,7 @@
           "DisplayText": "[js: parameters('SiteName')]",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LandingPage": {},
           "AutoroutePart": {
@@ -1674,7 +1583,35 @@
           "Content": "[file:text('Snippets/landingpage.liquid')]"
         }
       }
-    }
-
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "medium": {
+          "Hint": "A medium image (480px x 480px)",
+          "Width": 480,
+          "Height": 480,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },        
+        "small": {
+          "Hint": "A small image (240px x 240px)",
+          "Width": 240,
+          "Height": 240,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },        
+        "extrasmall": {
+          "Hint": "A extra small image (160px x 160px)",
+          "Width": 160,
+          "Height": 160,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
+    }  
   ]
 }

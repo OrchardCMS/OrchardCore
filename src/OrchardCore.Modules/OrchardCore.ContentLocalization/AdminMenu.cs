@@ -27,7 +27,8 @@ namespace OrchardCore.ContentLocalization
             builder
                 .Add(S["Configuration"], localization => localization
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Content Culture Picker"], S["Content Culture Picker"], registration => registration
+                        .Add(S["Content Culture Picker"], S["Content Culture Picker"].PrefixPosition(), registration => registration
+                        .AddClass("contentculturepicker").Id("contentculturepicker")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentCulturePickerSettingsDriver.GroupId })
                             .Permission(Permissions.ManageContentCulturePicker)
                             .LocalNav()

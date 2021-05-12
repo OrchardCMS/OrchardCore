@@ -1,4 +1,4 @@
-# Orchard Core Theming explained
+# Orchard Core Theming explained (`OrchardCore.Themes`)
 
 This article explains how a Content Item is rendered, and the many ways in which the HTML that is rendered can be customized.  
 It also explains the fundamental theming concepts, namely __Shapes__, __Alternates__, __Templates__, __Differentiators__, __Content Zones__ and __Display Types__.
@@ -100,9 +100,9 @@ The __Bag__ part will invoke all available display drivers recursively, to rende
 
 Each of these drivers return one or more shapes that are added to named zones (or sections) of a global __Shape__ called the `Content` shape.
 
-For instance the `TitleDisplayDriver` class will return a shape of type `TitlePart` in the `Header` zone of the main shape at position `5`. See [TitlePartDisplay](../../../../OrchardCore.Modules/OrchardCore.Title/Drivers/TitlePartDisplay.cs#L14-L20)
+For instance the `TitleDisplayDriver` class will return a shape of type `TitlePart` in the `Header` zone of the main shape at position `5`. See [TitlePartDisplayDriver](../../../../OrchardCore.Modules/OrchardCore.Title/Drivers/TitlePartDisplayDriver.cs#L14-L20)
 
-Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See [BagPartDisplay](../../../../OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplay.cs#L39-L45).
+Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See [BagPartDisplayDriver](../../../../OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplayDriver.cs#L39-L45).
 
 Once all the drivers for all the parts and all the fields have returned their shapes to specific zones of the main `Content` shape, Orchard will look for a matching template.
 Template matching is done dynamically, and if no specific ones are created for a Content Type, then the file `Content.cshtml` (or `Content.liquid`) is used.  
@@ -138,14 +138,14 @@ In this case we can provide a template named `Content-Portfolio.cshtml` in order
 This file can be created by copying the original `Content.cshtml` file or by creating a brand new one.
 
 Many other alternates are available to be able to selectively create templates for a content item.  
-See [Content templates](../Templates/#content-templates)
+See [Content templates](../Templates/README.md#content-templates)
 
 ### Customizing Part templates
 
 It might not be necessary to change the __Content__ template, but only to change how a single part or field is rendered.  
 These are also rendered as shapes and have specific templates that can be customized.
 
-The __Title__ part can be customized by creating a template for the `TitlePart` shape. See [`Title`](../Title/)
+The __Title__ part can be customized by creating a template for the `TitlePart` shape. See [`Title`](../Title/README.md)
 
 Changing how the title is rendered for every content items would mean creating one of these files:
 
@@ -161,7 +161,7 @@ Changing how the title is rendered for every content items would mean creating o
 <h1>{{ Model.Title }}</h1>
 ```
 
-Assuming only the title of __Portfolio__ content items should be customized, alternates can be used to create a specialized template. Content part shapes have alternates specific to their parent's content type, in this case `Portfolio__TitlePart`. see [Content type, Display type, Part type](../Templates/#contenttype_displaytype__parttype)
+Assuming only the title of __Portfolio__ content items should be customized, alternates can be used to create a specialized template. Content part shapes have alternates specific to their parent's content type, in this case `Portfolio__TitlePart`. see [Content type, Display type, Part type](../Templates/README.md#contenttype_displaytype__parttype)
 
 The template file name for this shape is `Portfolio-TitlePart.cshtml`.
 
@@ -169,11 +169,11 @@ The template file name for this shape is `Portfolio-TitlePart.cshtml`.
 
 Because multiple fields of the same type can be added to the same content type or even the same content part, their shape type is not the optimal way to customize the template. Fortunately different alternates based on their name are available.
 
-For a list of available shape alternates for fields see [Content field templates](../Templates/#content-field-templates)
+For a list of available shape alternates for fields see [Content field templates](../Templates/README.md#content-field-templates)
 
 In our case, the __Project__ has a __Text__ field named `Url`. The best shape to override in this case is `Project__Url` which will match the template `Project-Url.cshtml`.
 
-The model accessible from this field is described here [Available fields](../ContentFields/#available-fields)
+The model accessible from this field is described here [Available fields](../ContentFields/README.md#available-fields)
 
 This page explains that the __Text__ field contains a property `Text` that contains the value of the field.
 
@@ -199,7 +199,7 @@ When content items are rendered in a list, the convention is to use the `Summary
 Looking at how our __Portfolio__ content item is rendered, the __Project__ content items are displayed as a list, using the `Summary` display type.  
 Alternates exist to target templates for a specific display type.  
 For instance we can customize how __Project__ content items are displayed when rendered as part of a list by create a template for the shape `Content_Summary__Project`, which corresponds to the file `Content-Project.Summary.cshtml`.  
-See [Templates documentation](../Templates/#content_displaytype__contenttype)
+See [Templates documentation](../Templates/README.md#content_displaytype__contenttype)
 
 Here, the `_` in the shape name is replaced by a dot (`.`) in the template name, and the dotted portion of the name is moved at the end.
 
@@ -219,7 +219,7 @@ The `TitlePart` shape is rendered in the zone called `Header`.
 Some templating helpers provide ways to select and remove these shapes.
 
 In order to cherrypick specific shapes from a zone, shapes are given a nickname called a __Differentiator__.  
-This is necessary, as multiple identical shape types can be added to content zones. See [Shape differentiators](../Templates/#shape-differentiators)
+This is necessary, as multiple identical shape types can be added to content zones. See [Shape differentiators](../Templates/README.md#shape-differentiators)
 
 For the `Url` text field the differentiator is `Project-Url`. For the __Markdown__ part it is `MarkdownPart`.
 

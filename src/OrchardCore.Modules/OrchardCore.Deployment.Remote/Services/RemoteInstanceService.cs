@@ -2,93 +2,80 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment.Remote.Models;
-using YesSql;
+using OrchardCore.Documents;
 
 namespace OrchardCore.Deployment.Remote.Services
 {
     public class RemoteInstanceService
     {
-        private readonly ISession _session;
-        private RemoteInstanceList _remoteInstanceList;
+        private readonly IDocumentManager<RemoteInstanceList> _documentManager;
 
-        public RemoteInstanceService(ISession session)
+        public RemoteInstanceService(IDocumentManager<RemoteInstanceList> documentManager) => _documentManager = documentManager;
+
+        /// <summary>
+        /// Loads the remote instances document from the store for updating and that should not be cached.
+        /// </summary>
+        public Task<RemoteInstanceList> LoadRemoteInstanceListAsync() => _documentManager.GetOrCreateMutableAsync();
+
+        /// <summary>
+        /// Gets the remote instances document from the cache for sharing and that should not be updated.
+        /// </summary>
+        public Task<RemoteInstanceList> GetRemoteInstanceListAsync() => _documentManager.GetOrCreateImmutableAsync();
+
+        public async Task<RemoteInstance> LoadRemoteInstanceAsync(string id)
         {
-            _session = session;
-        }
-
-        public async Task<RemoteInstanceList> GetRemoteInstanceListAsync()
-        {
-            if (_remoteInstanceList != null)
-            {
-                return _remoteInstanceList;
-            }
-
-            _remoteInstanceList = await _session.Query<RemoteInstanceList>().FirstOrDefaultAsync();
-
-            if (_remoteInstanceList == null)
-            {
-                _remoteInstanceList = new RemoteInstanceList();
-                _session.Save(_remoteInstanceList);
-            }
-
-            return _remoteInstanceList;
+            var remoteInstanceList = await LoadRemoteInstanceListAsync();
+            return FindRemoteInstance(remoteInstanceList, id);
         }
 
         public async Task<RemoteInstance> GetRemoteInstanceAsync(string id)
         {
             var remoteInstanceList = await GetRemoteInstanceListAsync();
-            return remoteInstanceList.RemoteInstances.FirstOrDefault(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            return FindRemoteInstance(remoteInstanceList, id);
         }
 
         public async Task DeleteRemoteInstanceAsync(string id)
         {
-            var remoteInstanceList = await GetRemoteInstanceListAsync();
-            var remoteInstance = await GetRemoteInstanceAsync(id);
+            var remoteInstanceList = await LoadRemoteInstanceListAsync();
+            var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
 
             if (remoteInstance != null)
             {
                 remoteInstanceList.RemoteInstances.Remove(remoteInstance);
-                _session.Save(remoteInstanceList);
+                await _documentManager.UpdateAsync(remoteInstanceList);
             }
         }
 
-        public async Task<RemoteInstance> CreateRemoteInstanceAsync(string name, string url, string clientName, string apiKey)
+        public async Task CreateRemoteInstanceAsync(string name, string url, string clientName, string apiKey)
         {
-            var remoteInstanceList = await GetRemoteInstanceListAsync();
+            var remoteInstanceList = await LoadRemoteInstanceListAsync();
 
-            var remoteInstance = new RemoteInstance
+            remoteInstanceList.RemoteInstances.Add(new RemoteInstance
             {
                 Id = Guid.NewGuid().ToString("n"),
                 Name = name,
                 Url = url,
                 ClientName = clientName,
                 ApiKey = apiKey,
-            };
+            });
 
-            remoteInstanceList.RemoteInstances.Add(remoteInstance);
-            _session.Save(remoteInstanceList);
-
-            return remoteInstance;
+            await _documentManager.UpdateAsync(remoteInstanceList);
         }
 
-        public async Task<bool> TryUpdateRemoteInstance(string id, string name, string url, string clientName, string apiKey)
+        public async Task UpdateRemoteInstance(string id, string name, string url, string clientName, string apiKey)
         {
-            var remoteInstanceList = await GetRemoteInstanceListAsync();
-            var remoteInstance = await GetRemoteInstanceAsync(id);
-
-            if (remoteInstance == null)
-            {
-                return false;
-            }
+            var remoteInstanceList = await LoadRemoteInstanceListAsync();
+            var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
 
             remoteInstance.Name = name;
             remoteInstance.Url = url;
             remoteInstance.ClientName = clientName;
             remoteInstance.ApiKey = apiKey;
 
-            _session.Save(_remoteInstanceList);
-
-            return true;
+            await _documentManager.UpdateAsync(remoteInstanceList);
         }
+
+        private static RemoteInstance FindRemoteInstance(RemoteInstanceList remoteInstanceList, string id) =>
+            remoteInstanceList.RemoteInstances.FirstOrDefault(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
     }
 }

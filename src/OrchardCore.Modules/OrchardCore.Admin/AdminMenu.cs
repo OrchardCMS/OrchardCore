@@ -25,7 +25,7 @@ namespace OrchardCore.Admin
             builder
                 .Add(S["Configuration"], design => design
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Admin"], S["Admin"], admin => admin
+                        .Add(S["Admin"], S["Admin"].PrefixPosition(), admin => admin
                         .AddClass("admin").Id("admin")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AdminSiteSettingsDisplayDriver.GroupId })
                             .Permission(PermissionsAdminSettings.ManageAdminSettings)

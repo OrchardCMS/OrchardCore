@@ -1,4 +1,4 @@
-# Dynamic Cache (OrchardCore.DynamicCache)
+# Dynamic Cache (`OrchardCore.DynamicCache`)
 
 ## Purpose
 
@@ -208,7 +208,7 @@ There are four tags that allow you to alter the current cache scope. It's safe t
 Displaying content items from a query:
 
 ```liquid
-{% cache "recent-blog-posts"}
+{% cache "recent-blog-posts" %}
     {% assign recentBlogPosts = Queries.RecentBlogPosts | query %}
     {% for item in recentBlogPosts %}
         {{ item | display_text }}
@@ -221,6 +221,7 @@ Displaying content items from a query:
 
 Each item that is displayed by the query will now add its own cache dependency to the `recent-blog-posts` cache block.
 
-### Razor cache tag
+### Razor cache tag helper
 
-This has not yet been implemented. If you feel up to it, and you'd like to help out, then please raise a pull request.
+!!! note
+    This has been renamed from `<cache>` to `<dynamic-cache>` to prevent collisions with the ASP.NET Core cache tag helper.

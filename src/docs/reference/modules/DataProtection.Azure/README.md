@@ -1,4 +1,4 @@
-# Data Protection (Azure Storage) (OrchardCore.DataProtection.Azure)
+# Data Protection (Azure Storage) (`OrchardCore.DataProtection.Azure`)
 
 ## Purpose
 

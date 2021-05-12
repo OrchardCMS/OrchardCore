@@ -13,6 +13,7 @@ public static class TaxonomyOrchardHelperExtensions
     /// <summary>
     /// Returns a term from its content item id and taxonomy.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="taxonomyContentItemId">The taxonomy content item id.</param>
     /// <param name="termContentItemId">The term content item id.</param>
     /// <returns>A content item id <c>null</c> if it was not found.</returns>
@@ -32,6 +33,7 @@ public static class TaxonomyOrchardHelperExtensions
     /// <summary>
     /// Returns the list of terms including their parents.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="taxonomyContentItemId">The taxonomy content item id.</param>
     /// <param name="termContentItemId">The term content item id.</param>
     /// <returns>A list content items.</returns>

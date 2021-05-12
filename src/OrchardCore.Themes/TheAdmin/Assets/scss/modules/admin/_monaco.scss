@@ -1,0 +1,19 @@
+div.editor-widget.find-widget {
+    .button.codicon {
+        background-color: transparent;
+        border-color: transparent;
+        display: flex;
+        color: rgb(97,97,97);
+        box-shadow: none;
+    }
+
+    .button.codicon:focus {
+        background-color: transparent;
+        border-color: transparent;
+    }
+
+    .button.codicon:active {
+        background-color: transparent;
+        border-color: transparent;
+    }
+}

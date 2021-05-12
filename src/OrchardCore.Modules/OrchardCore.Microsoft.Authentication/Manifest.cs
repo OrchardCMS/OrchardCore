@@ -1,11 +1,11 @@
-using OrchardCore.Modules.Manifest;
 using OrchardCore.Microsoft.Authentication;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Microsoft Authentication",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Microsoft Authentication"
 )]
 

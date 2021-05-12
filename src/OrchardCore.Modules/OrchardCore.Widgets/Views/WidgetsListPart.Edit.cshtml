@@ -54,6 +54,7 @@
                                     CanDelete: true,
                                     //Input hidden
                                     //Prefixes
+                                    PrefixValue: widget.ContentItemId,
                                     HtmlFieldPrefix: htmlFieldPrefix,
                                     PrefixesId: Html.IdFor(x => x.Prefixes),
                                     PrefixesName: Html.NameFor(x => x.Prefixes),
@@ -132,7 +133,7 @@
                                 <div class="dropdown-menu">
                                     @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                                     {
-                                        <a class="dropdown-item add-list-widget  btn-sm"
+                                        <a class="dropdown-item add-list-widget btn-sm"
                                         data-target-id="@widgetTemplatePlaceholderId"
                                         data-zones-name="@Html.NameFor(x => x.Zones)"
                                         data-prefixes-name="@Html.NameFor(x => x.Prefixes)"

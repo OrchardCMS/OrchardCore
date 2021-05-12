@@ -1,8 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Apis.GraphQL</RootNamespace>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore GraphQL Apis Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for GraphQL Apis</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework GraphQL Apis Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

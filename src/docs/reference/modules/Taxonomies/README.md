@@ -1,4 +1,4 @@
-# Taxonomies (OrchardCore.Taxonomies)
+# Taxonomies (`OrchardCore.Taxonomies`)
 
 This module provides a Taxonomy content type that is used to define managed vocabularies (categories) of any type.  
 Taxonomy content items are made of terms organized as a hierarchy. Using the Taxonomy Field allows any content item
@@ -12,7 +12,7 @@ Display for a taxonomy is routable by enabling `Container routing` feature on th
 
 The display for the `Taxonomy` is then rendered by the `TaxonomyPart` shape.
 
-This uses the `TermShape` to display a heirachy of the `Terms`
+This uses the `TermShape` to display a hierarchy of the `Terms`
 
 ### TermPart
 
@@ -28,23 +28,31 @@ It is a reusable shape which may also be called from a content item, similar to 
 
 You might invoke the `TermShape` from a content template to render a sidebar of associated taxonomy terms.
 
-``` liquid tab="Liquid"
-{% shape "term", alias: "alias:categories" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<shape type="Term" alias="Categories" />
-```
+    ``` liquid
+    {% shape "term", alias: "alias:categories" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <shape type="Term" alias="Categories" />
+    ```
 
 You can also specify a `TermContentItemId` to render a part of the term hierarchy.
 
-``` liquid tab="Liquid"
-{% shape "term", TaxonomyContentItemId: "taxonomyContentItemId" TermContentItemId: "termContentItemId" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<shape type="Term" TaxonomyContentItemId="taxonomyContentItemId" TermContentItemId="termContentItemId" />
-```
+    ``` liquid
+    {% shape "term", TaxonomyContentItemId: "taxonomyContentItemId" TermContentItemId: "termContentItemId" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <shape type="Term" TaxonomyContentItemId="taxonomyContentItemId" TermContentItemId="termContentItemId" />
+    ```
 
 | Property | Description |
 | --------- | ------------ |
@@ -62,34 +70,38 @@ You can also specify a `TermContentItemId` to render a part of the term hierarch
 
 #### Term Examples
 
-``` liquid tab="Liquid"
-<ul class="list-group list-group-flush {{ Model.Classes | join: " " }}">
-    {% for item in Model.Items %}
-        {% shape_add_classes item "list-group-item border-0 pb-0" %}
-        {{ item | shape_render }}
-    {% endfor %}
-</ul>
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@model dynamic
-@if ((bool)Model.HasItems)
-{
-    TagBuilder tag = Tag(Model, "ul");
+    ``` liquid
+    <ul class="list-group list-group-flush {{ Model.Classes | join: " " }}">
+        {% for item in Model.Items %}
+            {% shape_add_classes item "list-group-item border-0 pb-0" %}
+            {{ item | shape_render }}
+        {% endfor %}
+    </ul>
+    ```
 
-    foreach (var item in Model.Items)
+=== "Razor"
+
+    ``` html
+    @model dynamic
+    @if ((bool)Model.HasItems)
     {
-        tag.InnerHtml.AppendHtml(await DisplayAsync(item));
-    }
+        TagBuilder tag = Tag(Model, "ul");
 
+        foreach (var item in Model.Items)
+        {
+            tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
+
+        @tag
+    }
+    else
+    {
+        <p class="alert alert-warning">@T["The list is empty"]</p>
+    }
     @tag
-}
-else
-{
-    <p class="alert alert-warning">@T["The list is empty"]</p>
-}
-@tag
-```
+    ```
 
 ### TermItem
 
@@ -122,42 +134,47 @@ The `TermItem` shape is used to render a term item.
 
 #### TermItem Example
 
-``` liquid tab="Liquid"
-<li class="list-group-item border-0 pb-0">
-    {% shape_clear_alternates Model %}
-    {% shape_type Model "TermContentItem" %}
-    {{ Model | shape_render }}
-    {% if Model.HasItems %}
-        <ul class="list-group list-group-flush">
-            {% for item in Model.Items %}
-                {% shape_add_classes item "list-group-item border-0 pb-0" %}
-                {{ item | shape_render }}
-            {% endfor %}
-        </ul>
-    {% endif %}
-</li>
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@model dynamic
-@{
-    // Morphing the shape to keep Model untouched
-    Model.Metadata.Alternates.Clear();
-    Model.Metadata.Type = "TermContentItem";
-}
-<li>
-    @await DisplayAsync(Model)
-    @if ((bool)Model.HasItems)
-    {
-        <ul>
-            @foreach (var item in Model.Items)
-            {
-                @await DisplayAsync(item)
-            }
-        </ul>
+    ``` liquid
+    <li class="list-group-item border-0 pb-0">
+        {% shape_clear_alternates Model %}
+        {% shape_type Model "TermContentItem" %}
+        {{ Model | shape_render }}
+        {% if Model.HasItems %}
+            <ul class="list-group list-group-flush">
+                {% for item in Model.Items %}
+                    {% shape_add_classes item "list-group-item border-0 pb-0" %}
+                    {{ item | shape_render }}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </li>
+    ```
+
+=== "Razor"
+
+    ``` html
+    @model dynamic
+    @{
+        // Morphing the shape to keep Model untouched
+        Model.Metadata.Alternates.Clear();
+        Model.Metadata.Type = "TermContentItem";
     }
-</li>
-```
+    <li>
+        @await DisplayAsync(Model)
+        @if ((bool)Model.HasItems)
+        {
+            <ul>
+                @foreach (var item in Model.Items)
+                {
+                    @await DisplayAsync(item)
+                }
+            </ul>
+        }
+    </li>
+    ```
+
 ### TermContentItem
 
 The `TermContentItem` shape is used to render the term content item.
@@ -188,15 +205,19 @@ available on the `TermItem` shape are still available.
 
 #### TermContentItem Example
 
-``` liquid tab="Liquid"
-{{ Model.TermContentItem | shape_build_display: "Summary" | shape_render }}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@model dynamic
+    ``` liquid
+    {{ Model.TermContentItem | shape_build_display: "Summary" | shape_render }}
+    ```
 
-@await Orchard.DisplayAsync(Model.TermContentItem as ContentItem, "Summary")
-```
+=== "Razor"
+
+    ``` html
+    @model dynamic
+
+    @await Orchard.DisplayAsync(Model.TermContentItem as ContentItem, "Summary")
+    ```
 
 ### TaxonomyField
 
@@ -343,21 +364,39 @@ When using the `Tags` mode the display text property of the tag is stored as wel
 
 You can access the `TagNames` property directly with the following accessor:
 
-``` liquid tab="Liquid"
-{% for tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames %}
-    <span class="badge badge-secondary">
-        <i class="fas fa-tag fa-xs fa-rotate-90 align-middle"></i>
-        <span class="align-middle"> {{ tagName }} </span> 
-    </span>
-{% endfor %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@foreach (var tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames)
-{
-    <span class="taxonomy-tag-term">@tagName</span>
-}
-```
+    ``` liquid
+    {% for tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames %}
+        <span class="badge badge-secondary">
+            <i class="fas fa-tag fa-xs fa-rotate-90 align-middle"></i>
+            <span class="align-middle"> {{ tagName }} </span> 
+        </span>
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @foreach (var tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames)
+    {
+        <span class="taxonomy-tag-term">@tagName</span>
+    }
+    ```
 
 !!! note
     If the display text property of the term is updated any content items will need to be republished to reflect this change.
+
+## Taxonomies Contents List Filters
+
+Provides taxonomy filters in the admin contents list.
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/DpaN02c2sDI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/nyPgQMwizbU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/G9lkGRD9G_E" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NVjRz5ru7N4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

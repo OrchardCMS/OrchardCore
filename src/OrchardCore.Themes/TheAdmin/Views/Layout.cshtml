@@ -1,41 +1,65 @@
-﻿<!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
+@inject DarkModeService DarkModeService
+@{
+    var adminSettings = Site.As<AdminSettings>();
+    var darkMode = await DarkModeService.IsDarkModeAsync();
+
+    // Branding is pre-rendered to allow resource injection
+    var brandingHtml = await DisplayAsync(await New.AdminBranding());
+}
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-tenant="@DarkModeService.CurrentTenant" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <style asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css"></style>
 
-    <script asp-name="font-awesome" at="Foot" version="5"></script>
-    <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
-    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui, jQuery-ui-i18n" at="Foot"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
+
+    <script asp-name="font-awesome" at="Head" version="5"></script>
+    <script asp-name="font-awesome-v4-shims" at="Head" version="5"></script>
+    <script asp-name="js-cookie" at="Foot" version="2"></script>
+    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery" at="Foot"></script>
     <resources type="Header" />
 
-    <!-- This script can't wait to the footer -->
-    <script type="text/javascript" asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
+    <!-- This script can't wait till the footer -->
+    <script asp-src="~/TheAdmin/Scripts/TheAdmin-header.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin-header.js"></script>
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
-            <div class="collapse navbar-collapse" id="navbar-links">
-                <div class="mr-auto">
-                    @await RenderSectionAsync("NavbarTop", required: false)
+        <div class="ta-navbar-top navbar-expand-lg bg-primary">
+            <div class="d-flex w-100">
+                @brandingHtml
+                <div class="flex-grow-1">
+                    @if (adminSettings.DisplayTitlesInTopbar)
+                    {
+                        @await RenderSectionAsync("Title", required: false)
+                    }
                 </div>
-                <ul class="nav navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>
-                    </li>
-                </ul>
-                <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
-                    <button type="submit" class="btn btn-link nav-link" role="button"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
-                </form>
+                <div class="d-flex align-items-center">
+                    @await RenderSectionAsync("NavbarTop", required: false)
+                    @if (adminSettings.DisplayDarkMode)
+                    {
+                        <a id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                            @if (darkMode)
+                            {
+                                <i class="fas fa-sun"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-moon"></i>
+                            }
+                        </a>
+                    }
+                    <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]" role="button">
+                        <i class="fa fa-fw fa-external-link"></i>
+                    </a>
+                    @await DisplayAsync(await New.UserMenu())
+                </div>
             </div>
         </div>
 
@@ -50,15 +74,17 @@
             @await RenderSectionAsync("Header", required: false)
             @await RenderSectionAsync("Messages", required: false)
             @await RenderSectionAsync("Breadcrumbs", required: false)
-
+            @if (!adminSettings.DisplayTitlesInTopbar)
+            {
+                @await RenderSectionAsync("Title", required: false)
+            }
             @await RenderBodyAsync()
         </div>
-    </div><!-- /.ta-wrapper -->
 
-    @await RenderSectionAsync("Footer", required: false)
+        @await RenderSectionAsync("Footer", required: false)
 
+    </div>
     <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
-
     <resources type="Footer" />
 </body>
 </html>

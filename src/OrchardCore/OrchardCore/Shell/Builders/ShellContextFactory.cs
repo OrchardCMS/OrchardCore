@@ -35,16 +35,16 @@ namespace OrchardCore.Environment.Shell.Builders
 
             var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
 
-            ShellDescriptor currentDescriptor;
-            using (var scope = describedContext.ServiceProvider.CreateScope())
+            ShellDescriptor currentDescriptor = null;
+            await describedContext.CreateScope().UsingServiceScopeAsync(async scope =>
             {
                 var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
                 currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
-            }
+            });
 
             if (currentDescriptor != null)
             {
-                describedContext.Release();
+                describedContext.Dispose();
                 return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
 
@@ -52,7 +52,7 @@ namespace OrchardCore.Environment.Shell.Builders
         }
 
         // TODO: This should be provided by a ISetupService that returns a set of ShellFeature instances.
-        async Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
+        Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
@@ -60,7 +60,7 @@ namespace OrchardCore.Environment.Shell.Builders
             }
             var descriptor = MinimumShellDescriptor();
 
-            return await CreateDescribedContextAsync(settings, descriptor);
+            return CreateDescribedContextAsync(settings, descriptor);
         }
 
         public async Task<ShellContext> CreateDescribedContextAsync(ShellSettings settings, ShellDescriptor shellDescriptor)
@@ -96,8 +96,7 @@ namespace OrchardCore.Environment.Shell.Builders
             return new ShellDescriptor
             {
                 SerialNumber = -1,
-                Features = new List<ShellFeature>(_shellFeatures),
-                Parameters = new List<ShellParameter>()
+                Features = new List<ShellFeature>(_shellFeatures)
             };
         }
     }

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Zones;
 
@@ -14,19 +14,37 @@ namespace OrchardCore.DisplayManagement.Shapes
     [DebuggerTypeProxy(typeof(ShapeDebugView))]
     public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
     {
-        private List<string> _classes;
-        private Dictionary<string, string> _attributes;
-        private readonly List<IPositioned> _items = new List<IPositioned>();
         private bool _sorted = false;
 
         public ShapeMetadata Metadata { get; } = new ShapeMetadata();
 
         public string Id { get; set; }
         public string TagName { get; set; }
+
+        private List<string> _classes;
         public IList<string> Classes => _classes ??= new List<string>();
+
+        private Dictionary<string, string> _attributes;
         public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
-        public IEnumerable<dynamic> Items => _items;
-        public bool HasItems => _items.Count > 0;
+
+        private List<IPositioned> _items;
+        public IReadOnlyList<IPositioned> Items
+        {
+            get
+            {
+                _items ??= new List<IPositioned>();
+
+                if (!_sorted)
+                {
+                    _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+                    _sorted = true;
+                }
+
+                return _items;
+            }
+        }
+
+        public bool HasItems => _items != null && _items.Count > 0;
 
         public string Position
         {
@@ -34,11 +52,11 @@ namespace OrchardCore.DisplayManagement.Shapes
             set { Metadata.Position = value; }
         }
 
-        public virtual Shape Add(object item, string position = null)
+        public virtual ValueTask<IShape> AddAsync(object item, string position)
         {
             if (item == null)
             {
-                return this;
+                return new ValueTask<IShape>(this);
             }
 
             if (position == null)
@@ -47,6 +65,8 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
 
             _sorted = false;
+
+            _items ??= new List<IPositioned>();
 
             if (item is IHtmlContent)
             {
@@ -70,21 +90,16 @@ namespace OrchardCore.DisplayManagement.Shapes
                 }
             }
 
-            return this;
-        }
-
-        public Shape AddRange(IEnumerable<object> items, string position = null)
-        {
-            foreach (var item in items)
-            {
-                Add(item, position);
-            }
-
-            return this;
+            return new ValueTask<IShape>(this);
         }
 
         public void Remove(string shapeName)
         {
+            if (_items == null)
+            {
+                return;
+            }
+
             for (var i = _items.Count - 1; i >= 0; i--)
             {
                 if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
@@ -97,6 +112,11 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IShape Named(string shapeName)
         {
+            if (_items == null)
+            {
+                return null;
+            }
+
             for (var i = 0; i < _items.Count; i++)
             {
                 if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
@@ -110,6 +130,11 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IShape NormalizedNamed(string shapeName)
         {
+            if (_items == null)
+            {
+                return null;
+            }
+
             for (var i = 0; i < _items.Count; i++)
             {
                 if (_items[i] is IShape shape && shape.Metadata.Name?.Replace("__", "-") == shapeName)
@@ -123,9 +148,14 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
+            if (_items == null)
+            {
+                return Enumerable.Empty<object>().GetEnumerator();
+            }
+
             if (!_sorted)
             {
-                _items.Sort(FlatPositionComparer.Instance);
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;
             }
 
@@ -134,9 +164,14 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public IEnumerator GetEnumerator()
         {
+            if (_items == null)
+            {
+                return Enumerable.Empty<object>().GetEnumerator();
+            }
+
             if (!_sorted)
             {
-                _items.Sort(FlatPositionComparer.Instance);
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;
             }
 
@@ -156,50 +191,26 @@ namespace OrchardCore.DisplayManagement.Shapes
             return base.TryConvert(binder, out result);
         }
 
-        public static TagBuilder GetTagBuilder(Shape shape, string defaultTagName = "span")
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            var tagName = defaultTagName;
-
-            // We keep this for backward compatibility
-            if (shape.Properties.TryGetValue("Tag", out var value) && value is string valueString)
+            // In case AddAsync() is called on a dynamic object, to prevent Copmosite from seing it as a property assignment
+            if (binder.Name == "AddAsync")
             {
-                tagName = valueString;
+                result = AddAsync(args.Length > 0 ? args[0] : null, args.Length > 1 ? args[1].ToString() : "");
+                return true;
             }
 
-            if (!String.IsNullOrEmpty(shape.TagName))
-            {
-                tagName = shape.TagName;
-            }
-
-            return GetTagBuilder(tagName, shape.Id, shape.Classes, shape.Attributes);
-        }
-
-        public static TagBuilder GetTagBuilder(string tagName, string id, IEnumerable<string> classes, IDictionary<string, string> attributes)
-        {
-            var tagBuilder = new TagBuilder(tagName);
-
-            if (attributes != null)
-            {
-                tagBuilder.MergeAttributes(attributes, false);
-            }
-
-            foreach (var cssClass in classes ?? Enumerable.Empty<string>())
-            {
-                tagBuilder.AddCssClass(cssClass);
-            }
-
-            if (!String.IsNullOrWhiteSpace(id))
-            {
-                tagBuilder.Attributes["id"] = id;
-            }
-            return tagBuilder;
+            return base.TryInvokeMember(binder, args, out result);
         }
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            var name = binder.Name;
+            return TryGetMemberImpl(binder.Name, out result);
+        }
 
-            if (!base.TryGetMember(binder, out result) || (null == result))
+        protected override bool TryGetMemberImpl(string name, out object result)
+        {
+            if (!base.TryGetMemberImpl(name, out result) || (null == result))
             {
                 // Try to get a Named shape
                 result = Named(name);
@@ -216,21 +227,20 @@ namespace OrchardCore.DisplayManagement.Shapes
         protected override bool TrySetMemberImpl(string name, object value)
         {
             // We set the Shape real properties for Razor
+
             if (name == "Id")
             {
                 Id = value as string;
 
                 return true;
             }
-
-            if (name == "TagName")
+            else if (name == "TagName")
             {
                 TagName = value as string;
 
                 return true;
             }
-
-            if (name == "Attributes")
+            else if (name == "Attributes")
             {
                 if (value is Dictionary<string, string> attributes)
                 {
@@ -250,8 +260,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                     }
                 }
             }
-
-            if (name == "Classes")
+            else if (name == "Classes")
             {
                 if (value is List<string> classes)
                 {

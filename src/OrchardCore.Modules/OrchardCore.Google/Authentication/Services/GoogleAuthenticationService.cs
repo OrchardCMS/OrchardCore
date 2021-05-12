@@ -24,12 +24,19 @@ namespace OrchardCore.Google.Authentication.Services
             return container.As<GoogleAuthenticationSettings>();
         }
 
+        public async Task<GoogleAuthenticationSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
+            return container.As<GoogleAuthenticationSettings>();
+        }
+
         public async Task UpdateSettingsAsync(GoogleAuthenticationSettings settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
+
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GoogleAuthenticationSettings>(nameof(GoogleAuthenticationSettings), aspect =>
             {
@@ -37,6 +44,7 @@ namespace OrchardCore.Google.Authentication.Services
                 aspect.ClientSecret = settings.ClientSecret;
                 aspect.CallbackPath = settings.CallbackPath;
             });
+
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
@@ -48,6 +56,7 @@ namespace OrchardCore.Google.Authentication.Services
                 CallbackPath = settings.CallbackPath,
                 ClientSecret = settings.ClientSecret
             };
+
             var vc = new ValidationContext(obj);
             return Validator.TryValidateObject(obj, vc, ImmutableArray.CreateBuilder<ValidationResult>());
         }

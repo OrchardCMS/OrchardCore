@@ -44,14 +44,14 @@ namespace OrchardCore.FileStorage.FileSystem
             return Task.FromResult<IFileStoreEntry>(null);
         }
 
-        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+        public IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
             var physicalPath = GetPhysicalPath(path);
             var results = new List<IFileStoreEntry>();
 
             if (!Directory.Exists(physicalPath))
             {
-                return Task.FromResult((IEnumerable<IFileStoreEntry>)results);
+                return results.ToAsyncEnumerable();
             }
 
             // Add directories.
@@ -78,7 +78,7 @@ namespace OrchardCore.FileStorage.FileSystem
                         return new FileSystemStoreEntry(filePath, fileSystemInfo);
                     }));
 
-            return Task.FromResult((IEnumerable<IFileStoreEntry>)results);
+            return results.ToAsyncEnumerable();
         }
 
         public Task<bool> TryCreateDirectoryAsync(string path)
@@ -186,12 +186,13 @@ namespace OrchardCore.FileStorage.FileSystem
 
         public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
-            if (!File.Exists(fileStoreEntry.Path))
+            var physicalPath = GetPhysicalPath(fileStoreEntry.Path);
+            if (!File.Exists(physicalPath))
             {
                 throw new FileStoreException($"Cannot get file stream because the file '{fileStoreEntry.Path}' does not exist.");
             }
 
-            var stream = File.OpenRead(fileStoreEntry.Path);
+            var stream = File.OpenRead(physicalPath);
 
             return Task.FromResult<Stream>(stream);
         }

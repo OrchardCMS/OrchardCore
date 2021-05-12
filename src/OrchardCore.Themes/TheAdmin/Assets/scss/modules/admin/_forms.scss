@@ -1,0 +1,92 @@
+.hint {
+    @extend .small, .text-muted;
+    @include word-wrap;
+}
+
+.hint,
+.text-muted {
+    &.dashed::before {
+        content: '\2014\00a0';
+    }
+}
+
+.validation-summary-errors {
+    @extend .alert, .alert-danger;
+    padding-bottom: 0;
+}
+
+.field-validation-error {
+    @extend small;
+}
+
+.input-validation-error {
+    @extend .is-invalid;
+}
+
+.has-validation-error {
+    @extend .is-invalid;
+}
+
+.inline-form {
+    display: inline;
+}
+
+.code,
+.form-control.code {
+    font-family: $font-family-monospace;
+    font-size: $code-font-size;
+    padding: $kbd-padding-y $kbd-padding-x;
+    color: $pre-color;
+    @include border-radius($border-radius);
+}
+
+.label-link {
+    float: right;
+    font-size: 12px;
+}
+// When the validation message in inside the label, add a separator
+label .field-validation-error::before {
+    content: "- ";
+}
+
+.button {
+    @extend .btn, .btn-primary;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+select[multiple] {
+    min-height: 300px;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+.has-filter .form-control, .has-search .form-control {
+    padding-left: 2rem;
+}
+
+.has-filter .form-control-feedback, .has-search .form-control-feedback {
+    position: absolute;
+    left: 10px;
+    z-index: 4;
+    display: block;
+    width: 1rem;
+    height: 2rem;
+    line-height: 1rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
+}
+
+.has-search .form-control-feedback {
+    left: 10px;
+}
+
+.has-filter .form-control-feedback {
+    left: 55px;
+}

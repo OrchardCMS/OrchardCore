@@ -24,7 +24,7 @@ namespace OrchardCore.Features
             builder
                 .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(S["Features"], S["Features"], deployment => deployment
+                    .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
                         .Action("Features", "Admin", new { area = "OrchardCore.Features" })
                         .Permission(Permissions.ManageFeatures)
                         .LocalNav()

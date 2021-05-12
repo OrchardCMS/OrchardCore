@@ -1,8 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+
+    <!-- NuGet properties-->
+    <Title>The Agency theme</Title>
+    <Description>$(OCCMSDescription)
+
+    Orchard Core CMS theme adapted for agency websites.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Theme</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,10 +25,6 @@
 
   <ItemGroup>
     <EmbeddedResource Remove="**\*.less;**\*.scss;" />
-    <EmbeddedResource Remove="wwwroot\gulpfile.js" />
-    <EmbeddedResource Remove="wwwroot\index.html" />
-    <EmbeddedResource Remove="wwwroot\package-lock.json" />
-    <EmbeddedResource Remove="wwwroot\package.json" />
   </ItemGroup>
 
 </Project>

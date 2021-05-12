@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Services;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
@@ -38,10 +39,6 @@ namespace OrchardCore.Lists
     {
         private readonly AdminOptions _adminOptions;
 
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ListPartViewModel>();
-        }
 
         public Startup(IOptions<AdminOptions> adminOptions)
         {
@@ -50,11 +47,20 @@ namespace OrchardCore.Lists
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ListPartViewModel>();
+            })
+            .AddLiquidFilter<ListCountFilter>("list_count")
+            .AddLiquidFilter<ListItemsFilter>("list_items")
+            .AddLiquidFilter<ContainerFilter>("container");
+
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
             services.AddScoped<IContentHandler, ContainedPartHandler>();
             services.AddContentPart<ContainedPart>();
-            services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
+            services.AddScoped<IContentsAdminListFilter, ListPartContentsAdminListFilter>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ListPartContentsAdminListDisplayDriver>();
 
             // List Part
             services.AddContentPart<ListPart>()
@@ -65,24 +71,10 @@ namespace OrchardCore.Lists
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
-
-            // Feeds
-            // TODO: Create feature
-            services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
-            services.AddContentPart<ListPart>()
-                .UseDisplayDriver<ListPartFeedDisplayDriver>()
-                .AddHandler<ListPartFeedHandler>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaControllerRoute(
-                name: "ListFeed",
-                areaName: "OrchardCore.Feeds",
-                pattern: "Contents/Lists/{contentItemId}/rss",
-                defaults: new { controller = "Feed", action = "Index", format = "rss" }
-            );
-
             routes.MapAreaControllerRoute(
                 name: "ListOrder",
                 areaName: "OrchardCore.Lists",
@@ -115,13 +107,26 @@ namespace OrchardCore.Lists
         }
     }
 
-    [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
+    [RequireFeatures("OrchardCore.Feeds")]
+    public class FeedsStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddLiquidFilter<ListCountFilter>("list_count");
-            services.AddLiquidFilter<ListItemsFilter>("list_items");
+            // Feeds
+            services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
+
+            services.AddContentPart<ListPart>()
+                .UseDisplayDriver<ListPartFeedDisplayDriver>()
+                .AddHandler<ListPartFeedHandler>();
+        }
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "ListFeed",
+                areaName: "OrchardCore.Feeds",
+                pattern: "Contents/Lists/{contentItemId}/rss",
+                defaults: new { controller = "Feed", action = "Index", format = "rss" }
+            );
         }
     }
 }

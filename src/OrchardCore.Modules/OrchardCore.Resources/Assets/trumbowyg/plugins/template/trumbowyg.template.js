@@ -17,6 +17,9 @@
             fr: {
                 template: 'Patron'
             },
+            hu: {
+                template: 'Sablon'
+            },
             ja: {
                 template: 'テンプレート'
             },
