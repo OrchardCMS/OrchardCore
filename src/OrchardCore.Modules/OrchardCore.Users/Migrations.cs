@@ -25,7 +25,7 @@ namespace OrchardCore.Users
                 .Column<string>("NormalizedEmail")
                 .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
                 .Column<bool>("IsLockedOut", c => c.NotNull().WithDefault(false))
-                .Column<DateTime?>("LockoutEnd", c => c.Nullable())
+                .Column<DateTime?>("LockoutEndUtc", c => c.Nullable())
                 .Column<int>("AccessFailedCount", c => c.NotNull().WithDefault(0))
                 .Column<string>("UserId")
             );
@@ -38,7 +38,7 @@ namespace OrchardCore.Users
                     "NormalizedEmail",
                     "IsEnabled",
                     "IsLockedOut",
-                    "LockoutEnd",
+                    "LockoutEndUtc",
                     "AccessFailedCount")
             );
 
@@ -168,7 +168,7 @@ namespace OrchardCore.Users
                     "NormalizedEmail",
                     "IsEnabled",
                     "IsLockedOut",
-                    "LockoutEnd",
+                    "LockoutEndUtc",
                     "AccessFailedCount")
             );
 
@@ -206,7 +206,7 @@ namespace OrchardCore.Users
                 .AddColumn<bool>(nameof(UserIndex.IsLockedOut), c => c.NotNull().WithDefault(false)));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<DateTime?>(nameof(UserIndex.LockoutEnd), c => c.Nullable()));
+                .AddColumn<DateTime?>(nameof(UserIndex.LockoutEndUtc), c => c.Nullable()));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));

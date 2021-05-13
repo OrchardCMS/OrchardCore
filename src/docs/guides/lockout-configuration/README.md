@@ -53,4 +53,4 @@ Finally, create a file called `appsettings.json` with this configuration in json
 
 ## Summary
 
-You just learnt how to configure the Lockout settings from an `appsettings.json` file.
+You just learned how to configure the Lockout settings from an `appsettings.json` file.

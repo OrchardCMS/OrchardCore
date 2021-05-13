@@ -12,7 +12,7 @@ namespace OrchardCore.Users.Indexes
         public string NormalizedEmail { get; set; }
         public bool IsEnabled { get; set; }
         public bool IsLockedOut { get; set; }
-        public DateTime? LockoutEnd { get; set; }
+        public DateTime? LockoutEndUtc { get; set; }
         public int AccessFailedCount { get; set; }
     }
 
@@ -30,7 +30,7 @@ namespace OrchardCore.Users.Indexes
                         NormalizedEmail = user.NormalizedEmail,
                         IsEnabled = user.IsEnabled,
                         IsLockedOut = user.IsLockedOut,
-                        LockoutEnd = user.LockoutEndUtc,
+                        LockoutEndUtc = user.LockoutEndUtc,
                         AccessFailedCount = user.AccessFailedCount
                     };
                 });
