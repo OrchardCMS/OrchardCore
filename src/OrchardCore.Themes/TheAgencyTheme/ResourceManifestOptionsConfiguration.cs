@@ -34,18 +34,18 @@ namespace OrchardCore.Themes.TheAgencyTheme
             _manifest
                 .DefineScript("TheAgencyTheme")
                 .SetDependencies("anime")
-                .SetUrl("~/TheAgencyTheme/Scripts/scripts.min.js", "~/TheAgencyTheme/Scripts/scripts.js")
+                .SetUrl("~/TheAgencyTheme/js/scripts.min.js", "~/TheAgencyTheme/js/scripts.js")
                 .SetVersion("6.0.5");
 
             _manifest
                 .DefineStyle("TheAgencyTheme")
-                .SetUrl("~/TheAgencyTheme/Styles/styles.min.css", "~/TheAgencyTheme/Styles/styles.css")
+                .SetUrl("~/TheAgencyTheme/css/styles.min.css", "~/TheAgencyTheme/css/styles.css")
                 .SetVersion("6.0.5");
 
             _manifest
                 .DefineStyle("TheAgencyTheme-bootstrap-oc")
                 .SetDependencies("TheAgencyTheme")
-                .SetUrl("~/TheAgencyTheme/Styles/bootstrap-oc.min.css", "~/TheAgencyTheme/Styles/bootstrap-oc.css")
+                .SetUrl("~/TheAgencyTheme/css/bootstrap-oc.min.css", "~/TheAgencyTheme/css/bootstrap-oc.css")
                 .SetVersion("1.0.0");
         }
 

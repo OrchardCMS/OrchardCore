@@ -10,18 +10,18 @@
     "inputs": [
       "Assets/dist/css/styles.css"
     ],
-    "output": "wwwroot/Styles/styles.css"
+    "output": "wwwroot/css/styles.css"
   },
   {
     "inputs": [
-      "Assets/scss/bootstrap-oc.scss"
+      "Assets/src/scss/bootstrap-oc.scss"
     ],
-    "output": "wwwroot/Styles/bootstrap-oc.css"
+    "output": "wwwroot/css/bootstrap-oc.css"
   },
   {
     "inputs": [
       "Assets/dist/js/scripts.js"
     ],
-    "output": "wwwroot/Scripts/scripts.js"
+    "output": "wwwroot/js/scripts.js"
   }
 ]
