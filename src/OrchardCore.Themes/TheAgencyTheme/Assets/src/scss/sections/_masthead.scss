@@ -1,0 +1,49 @@
+// Styling for the masthead
+header.masthead {
+    padding-top: 6rem + 4.5rem;
+    padding-bottom: 6rem;
+    text-align: center;
+    color: $white;
+    background-image: url("../assets/img/header-bg.jpg");
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: cover;
+
+    .masthead-subheading {
+        font-size: 1.5rem;
+        font-style: italic;
+        line-height: 1.5rem;
+        margin-bottom: 25px;
+        font-family: $subheadings-font-family;
+    }
+
+    .masthead-heading {
+        font-size: 3.25rem;
+        font-weight: 700;
+        line-height: 3.25rem;
+        margin-bottom: 2rem;
+        font-family: $headings-font-family;
+    }
+}
+
+@include media-breakpoint-up(md) {
+    header.masthead {
+        padding-top: 12.5rem + 4.5rem;
+        padding-bottom: 12.5rem;
+
+        .masthead-subheading {
+            font-size: 2.25rem;
+            font-style: italic;
+            line-height: 2.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .masthead-heading {
+            font-size: 4.5rem;
+            font-weight: 700;
+            line-height: 4.5rem;
+            margin-bottom: 4rem;
+        }
+    }
+}

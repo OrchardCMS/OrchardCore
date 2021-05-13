@@ -1154,15 +1154,15 @@
       "Files": [
         {
           "TargetPath": "about-bg.jpg",
-          "SourcePath": "../wwwroot/img/about-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/about-bg.jpg"
         },
         {
           "TargetPath": "home-bg.jpg",
-          "SourcePath": "../wwwroot/img/home-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/home-bg.jpg"
         },
         {
           "TargetPath": "post-bg.jpg",
-          "SourcePath": "../wwwroot/img/post-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/post-bg.jpg"
         }
       ]
     },
