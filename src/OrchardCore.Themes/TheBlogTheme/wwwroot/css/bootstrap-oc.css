@@ -35,15 +35,15 @@ By Orchard Core Team
 }
 
 .message-secondary {
-  color: #464a4e;
-  background-color: #e7e8ea;
-  border-color: #dddfe2;
+  color: #383d41;
+  background-color: #e2e3e5;
+  border-color: #d6d8db;
 }
 .message-secondary hr {
-  border-top-color: #cfd2d6;
+  border-top-color: #c8cbcf;
 }
 .message-secondary .alert-link {
-  color: #2e3133;
+  color: #202326;
 }
 
 .message-success {
@@ -271,7 +271,7 @@ ul.pager li.active .page-link {
   border-color: #0085A1;
 }
 ul.pager li.disabled .page-link {
-  color: #868e96;
+  color: #6c757d;
   pointer-events: none;
   cursor: auto;
   background-color: #fff;
