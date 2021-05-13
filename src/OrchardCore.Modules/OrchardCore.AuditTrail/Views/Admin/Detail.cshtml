@@ -9,28 +9,31 @@
 
 <zone name="Title"><h1>@RenderTitleSegments(T["Audit Trail Event"])</h1></zone>
 
-<div class="form-group border rounded">
-    <div class="list-group list-group-horizontal">
-        <div class="list-group-item border-0 font-weight-bold col-5 col-sm-4 col-lg-3 col-xl-2 pr-0 pb-0">@T["Category"]</div>
-        <div class="list-group-item border-0 pb-0">@category</div>
-    </div>
-    <div class="list-group list-group-horizontal">
-        <div class="list-group-item border-0 font-weight-bold col-5 col-sm-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["Event"]</div>
-        <div class="list-group-item border-0 pt-0 pb-0">@eventName</div>
-    </div>
-    <div class="list-group list-group-horizontal">
-        <div class="list-group-item border-0 font-weight-bold col-5 col-sm-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["User"]</div>
-        <div class="list-group-item border-0 pt-0 pb-0">@auditTrailEvent.UserName</div>
-    </div>
-    <div class="list-group list-group-horizontal">
-        <div class="list-group-item border-0 font-weight-bold col-5 col-sm-4 col-lg-3 col-xl-2 pt-0 pr-0 pb-0">@T["Timestamp"]</div>
-        <div class="list-group-item border-0 pt-0 pb-0">@await DisplayAsync(await New.DateTime(Utc: auditTrailEvent.CreatedUtc, Format: "g"))</div>
-    </div>
-
-    <div class="list-group list-group-horizontal">
-        <div class="list-group-item border-0 font-weight-bold col-5 col-sm-4 col-lg-3 col-xl-2 pt-0 pr-0 pr-0">@T["Client IP"]</div>
-        <div class="list-group-item border-0 pt-0">@auditTrailEvent.ClientIpAddress</div>
-    </div>
+<div class="form-group border rounded pl-2 pt-2 pr-2">
+    <table class="table table-sm table-hover">
+        <tbody>
+            <tr>
+                <th class="border-top-0 w-25">@T["Category"]</th>
+                <td class="border-top-0">@category</td>
+            </tr>
+            <tr>
+                <th>@T["Event"]</th>
+                <td>@eventName</td>
+            </tr>
+            <tr>
+                <th>@T["User"]</th>
+                <td>@auditTrailEvent.UserName</td>
+            </tr>
+            <tr>
+                <th>@T["Timestamp"]</th>
+                <td>@await DisplayAsync(await New.DateTime(Utc: auditTrailEvent.CreatedUtc, Format: "g"))</td>
+            </tr>
+            <tr>
+                <th>@T["Client IP"]</th>
+                <td>@auditTrailEvent.ClientIpAddress</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 @await DisplayAsync(Model.DetailsShape)
