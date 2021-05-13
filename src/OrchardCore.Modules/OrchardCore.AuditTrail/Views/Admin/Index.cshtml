@@ -61,7 +61,6 @@ else
                     <th scope="col">@T["Category"]</th>
                     <th scope="col">@T["Event"]</th>
                     <th scope="col">@T["User"]</th>
-                    @await DisplayAsync(Model.ColumnNamesShape)
                     <th scope="col" class="text-nowrap">@T["Client IP"]</th>
                     <th scope="col">@T["Timestamp"]</th>
                     <th scope="col" class="w-25">@T["Summary"]</th>
@@ -76,7 +75,6 @@ else
                         <td>@ev.CategoryDescriptor.LocalizedName</td>
                         <td>@ev.EventDescriptor.LocalizedName</td>
                         <td>@ev.AuditTrailEvent.UserName</td>
-                        @await DisplayAsync(ev.ColumnsShape)
                         <td>@ev.AuditTrailEvent.ClientIpAddress</td>
                         <td>@await DisplayAsync(await New.DateTime(Utc: ev.AuditTrailEvent.CreatedUtc, Format: "g"))</td>
                         <td>@await DisplayAsync(ev.SummaryShape)</td>

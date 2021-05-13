@@ -32,18 +32,5 @@ namespace OrchardCore.AuditTrail.Services
         /// <param name="displayType">The display type.</param>
         /// <returns>A tree of shapes.</returns>
         Task<IShape> BuildDisplayActionsAsync(AuditTrailEvent auditTrailEvent, string displayType);
-
-        /// <summary>
-        /// Builds a shape tree to display the content of custom columns.
-        /// </summary>
-        /// <param name="auditTrailEvent">The AuditTrailEvent.</param>
-        /// <returns>A tree of shapes.</returns>
-        Task<IShape> BuildDisplayColumnsAsync(AuditTrailEvent auditTrailEvent);
-
-        /// <summary>
-        /// Builds a shape tree to display custom column names.
-        /// </summary>
-        /// <returns>A tree of shapes.</returns>
-        Task<IShape> BuildDisplayColumnNamesAsync();
     }
 }

@@ -84,7 +84,6 @@ namespace OrchardCore.AuditTrail.Controllers
 
             foreach (var model in auditTrailEventsSummaryViewModel)
             {
-                model.ColumnsShape = await _auditTrailEventDisplayManager.BuildDisplayColumnsAsync(model.AuditTrailEvent);
                 model.SummaryShape = await _auditTrailEventDisplayManager.BuildDisplayAsync(model.AuditTrailEvent, "SummaryAdmin");
                 model.ActionsShape = await _auditTrailEventDisplayManager.BuildDisplayActionsAsync(model.AuditTrailEvent, "SummaryAdmin");
             }
@@ -92,7 +91,6 @@ namespace OrchardCore.AuditTrail.Controllers
             return View(new AuditTrailViewModel
             {
                 AuditTrailEvents = auditTrailEventsSummaryViewModel,
-                ColumnNamesShape = await _auditTrailEventDisplayManager.BuildDisplayColumnNamesAsync(),
                 FiltersShape = await _auditTrailEventDisplayManager.BuildDisplayFiltersAsync(filters),
                 OrderBy = orderBy ?? AuditTrailOrderBy.DateDescending,
                 PagerShape = pagerShape

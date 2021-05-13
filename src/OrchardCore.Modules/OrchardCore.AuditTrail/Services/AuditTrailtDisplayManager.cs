@@ -42,26 +42,6 @@ namespace OrchardCore.AuditTrail.Services
             return shape;
         }
 
-        public async Task<IShape> BuildDisplayColumnNamesAsync()
-        {
-            var shape = await _shapeFactory.CreateAsync("AuditTrailEventColumnNames");
-
-            var context = new DisplayColumnNamesContext(shape);
-            await _auditTrailDisplayHandler.InvokeAsync((handler, context) => handler.DisplayColumnNamesAsync(context), context, _logger);
-
-            return shape;
-        }
-
-        public async Task<IShape> BuildDisplayColumnsAsync(AuditTrailEvent auditTrailEvent)
-        {
-            var shape = await _shapeFactory.CreateAsync("AuditTrailEventColumns");
-
-            var context = new DisplayColumnsContext(auditTrailEvent, shape);
-            await _auditTrailDisplayHandler.InvokeAsync((handler, context) => handler.DisplayColumnsAsync(context), context, _logger);
-
-            return shape;
-        }
-
         public Task<IShape> BuildDisplayAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
             BuildDisplayAsync("AuditTrailEvent", auditTrailEvent, displayType);
 
