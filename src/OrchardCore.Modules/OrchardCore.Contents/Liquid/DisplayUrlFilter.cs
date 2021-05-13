@@ -32,11 +32,11 @@ namespace OrchardCore.Contents.Liquid
 
             if (contentItem == null)
             {
-                routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues);
                 if (string.IsNullOrEmpty(input.ToStringValue()))
                 {
                     return StringValue.Empty;
                 }
+                routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues);
                 routeValues[_autorouteOptions.ContentItemIdKey] = input.ToStringValue();
             }
             else
