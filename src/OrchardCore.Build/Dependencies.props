@@ -48,7 +48,7 @@
     <PackageManagement Include="YesSql" Version="3.0.4" />
     <PackageManagement Include="YesSql.Core" Version="3.0.4" />
     <PackageManagement Include="YesSql.Abstractions" Version="3.0.4" />
-    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.04" />
+    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.0.4" />
     <PackageManagement Include="YesSql.Filters.Query" Version="3.0.4" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
     <PackageManagement Include="ZString" Version="2.4.2" />
