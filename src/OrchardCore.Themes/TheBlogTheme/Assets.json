@@ -21,6 +21,6 @@
     "inputs": [
       "Assets/dist/js/scripts.js"
     ],
-    "output": "wwwroot/scripts/scripts.js"
+    "output": "wwwroot/js/scripts.js"
   }
 ]
