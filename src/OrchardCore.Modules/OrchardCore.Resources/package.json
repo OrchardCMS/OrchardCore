@@ -4,7 +4,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.3",
     "@popperjs/core": "2.9.2",
-    "bootstrap": "5.0.0",
+    "bootstrap": "5.0.1",
     "bootstrap-scss": "4.6.0",
     "bootstrap-select": "1.14.0-beta2",
     "bootstrap-slider": "11.0.2",

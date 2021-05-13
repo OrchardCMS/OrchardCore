@@ -3,23 +3,15 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
-
-function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
-
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
@@ -45,18 +37,26 @@ function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArra
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function _iterableToArrayLimit(arr, i) { var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]); if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
-  * Bootstrap v5.0.0 (https://getbootstrap.com/)
+  * Bootstrap v5.0.1 (https://getbootstrap.com/)
   * Copyright 2011-2021 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
@@ -90,11 +90,84 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var Popper__namespace = /*#__PURE__*/_interopNamespace(Popper);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): util/index.js
+   * Bootstrap (v5.0.1): dom/selector-engine.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
+  /**
+   * ------------------------------------------------------------------------
+   * Constants
+   * ------------------------------------------------------------------------
+   */
+
+
+  var NODE_TEXT = 3;
+  var SelectorEngine = {
+    find: function find(selector) {
+      var _ref;
+
+      var element = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document.documentElement;
+      return (_ref = []).concat.apply(_ref, _toConsumableArray(Element.prototype.querySelectorAll.call(element, selector)));
+    },
+    findOne: function findOne(selector) {
+      var element = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document.documentElement;
+      return Element.prototype.querySelector.call(element, selector);
+    },
+    children: function children(element, selector) {
+      var _ref2;
+
+      return (_ref2 = []).concat.apply(_ref2, _toConsumableArray(element.children)).filter(function (child) {
+        return child.matches(selector);
+      });
+    },
+    parents: function parents(element, selector) {
+      var parents = [];
+      var ancestor = element.parentNode;
+
+      while (ancestor && ancestor.nodeType === Node.ELEMENT_NODE && ancestor.nodeType !== NODE_TEXT) {
+        if (ancestor.matches(selector)) {
+          parents.push(ancestor);
+        }
+
+        ancestor = ancestor.parentNode;
+      }
+
+      return parents;
+    },
+    prev: function prev(element, selector) {
+      var previous = element.previousElementSibling;
+
+      while (previous) {
+        if (previous.matches(selector)) {
+          return [previous];
+        }
+
+        previous = previous.previousElementSibling;
+      }
+
+      return [];
+    },
+    next: function next(element, selector) {
+      var next = element.nextElementSibling;
+
+      while (next) {
+        if (next.matches(selector)) {
+          return [next];
+        }
+
+        next = next.nextElementSibling;
+      }
+
+      return [];
+    }
+  };
+  /**
+   * --------------------------------------------------------------------------
+   * Bootstrap (v5.0.1): util/index.js
+   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+   * --------------------------------------------------------------------------
+   */
 
   var MAX_UID = 1000000;
   var MILLISECONDS_MULTIPLIER = 1000;
@@ -189,7 +262,28 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
 
   var isElement = function isElement(obj) {
-    return (obj[0] || obj).nodeType;
+    if (!obj || _typeof(obj) !== 'object') {
+      return false;
+    }
+
+    if (typeof obj.jquery !== 'undefined') {
+      obj = obj[0];
+    }
+
+    return typeof obj.nodeType !== 'undefined';
+  };
+
+  var getElement = function getElement(obj) {
+    if (isElement(obj)) {
+      // it's a jQuery object or a node element
+      return obj.jquery ? obj[0] : obj;
+    }
+
+    if (typeof obj === 'string' && obj.length > 0) {
+      return SelectorEngine.findOne(obj);
+    }
+
+    return null;
   };
 
   var emulateTransitionEnd = function emulateTransitionEnd(element, duration) {
@@ -304,12 +398,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     return document.documentElement.dir === 'rtl';
   };
 
-  var defineJQueryPlugin = function defineJQueryPlugin(name, plugin) {
+  var defineJQueryPlugin = function defineJQueryPlugin(plugin) {
     onDOMContentLoaded(function () {
       var $ = getjQuery();
       /* istanbul ignore if */
 
       if ($) {
+        var name = plugin.NAME;
         var JQUERY_NO_CONFLICT = $.fn[name];
         $.fn[name] = plugin.jQueryInterface;
         $.fn[name].Constructor = plugin;
@@ -329,7 +424,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): dom/data.js
+   * Bootstrap (v5.0.1): dom/data.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -381,7 +476,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): dom/event-handler.js
+   * Bootstrap (v5.0.1): dom/event-handler.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -674,7 +769,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): base-component.js
+   * Bootstrap (v5.0.1): base-component.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -685,13 +780,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * ------------------------------------------------------------------------
    */
 
-  var VERSION = '5.0.0';
+  var VERSION = '5.0.1';
 
   var BaseComponent = /*#__PURE__*/function () {
     function BaseComponent(element) {
       _classCallCheck(this, BaseComponent);
 
-      element = typeof element === 'string' ? document.querySelector(element) : element;
+      element = getElement(element);
 
       if (!element) {
         return;
@@ -704,9 +799,29 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     _createClass(BaseComponent, [{
       key: "dispose",
       value: function dispose() {
+        var _this = this;
+
         Data.remove(this._element, this.constructor.DATA_KEY);
-        EventHandler.off(this._element, ".".concat(this.constructor.DATA_KEY));
-        this._element = null;
+        EventHandler.off(this._element, this.constructor.EVENT_KEY);
+        Object.getOwnPropertyNames(this).forEach(function (propertyName) {
+          _this[propertyName] = null;
+        });
+      }
+    }, {
+      key: "_queueCallback",
+      value: function _queueCallback(callback, element) {
+        var isAnimated = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+        if (!isAnimated) {
+          execute(callback);
+          return;
+        }
+
+        var transitionDuration = getTransitionDurationFromElement(element);
+        EventHandler.one(element, 'transitionend', function () {
+          return execute(callback);
+        });
+        emulateTransitionEnd(element, transitionDuration);
       }
       /** Static */
 
@@ -720,13 +835,28 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       get: function get() {
         return VERSION;
       }
+    }, {
+      key: "NAME",
+      get: function get() {
+        throw new Error('You have to implement the static method "NAME", for each component!');
+      }
+    }, {
+      key: "DATA_KEY",
+      get: function get() {
+        return "bs.".concat(this.NAME);
+      }
+    }, {
+      key: "EVENT_KEY",
+      get: function get() {
+        return ".".concat(this.DATA_KEY);
+      }
     }]);
 
     return BaseComponent;
   }();
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): alert.js
+   * Bootstrap (v5.0.1): alert.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -794,21 +924,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_removeElement",
       value: function _removeElement(element) {
-        var _this = this;
+        var _this2 = this;
 
         element.classList.remove(CLASS_NAME_SHOW$9);
+        var isAnimated = element.classList.contains(CLASS_NAME_FADE$6);
 
-        if (!element.classList.contains(CLASS_NAME_FADE$6)) {
-          this._destroyElement(element);
-
-          return;
-        }
-
-        var transitionDuration = getTransitionDurationFromElement(element);
-        EventHandler.one(element, 'transitionend', function () {
-          return _this._destroyElement(element);
-        });
-        emulateTransitionEnd(element, transitionDuration);
+        this._queueCallback(function () {
+          return _this2._destroyElement(element);
+        }, element, isAnimated);
       }
     }, {
       key: "_destroyElement",
@@ -821,10 +944,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       } // Static
 
     }], [{
-      key: "DATA_KEY",
+      key: "NAME",
       get: // Getters
       function get() {
-        return DATA_KEY$b;
+        return NAME$c;
       }
     }, {
       key: "jQueryInterface",
@@ -871,10 +994,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * add .Alert to jQuery only if jQuery is present
    */
 
-  defineJQueryPlugin(NAME$c, Alert);
+  defineJQueryPlugin(Alert);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): button.js
+   * Bootstrap (v5.0.1): button.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -918,10 +1041,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       } // Static
 
     }], [{
-      key: "DATA_KEY",
+      key: "NAME",
       get: // Getters
       function get() {
-        return DATA_KEY$a;
+        return NAME$b;
       }
     }, {
       key: "jQueryInterface",
@@ -967,10 +1090,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * add .Button to jQuery only if jQuery is present
    */
 
-  defineJQueryPlugin(NAME$b, Button);
+  defineJQueryPlugin(Button);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): dom/manipulator.js
+   * Bootstrap (v5.0.1): dom/manipulator.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1042,80 +1165,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): dom/selector-engine.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
-   * --------------------------------------------------------------------------
-   */
-
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
-
-  var NODE_TEXT = 3;
-  var SelectorEngine = {
-    find: function find(selector) {
-      var _ref;
-
-      var element = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document.documentElement;
-      return (_ref = []).concat.apply(_ref, _toConsumableArray(Element.prototype.querySelectorAll.call(element, selector)));
-    },
-    findOne: function findOne(selector) {
-      var element = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document.documentElement;
-      return Element.prototype.querySelector.call(element, selector);
-    },
-    children: function children(element, selector) {
-      var _ref2;
-
-      return (_ref2 = []).concat.apply(_ref2, _toConsumableArray(element.children)).filter(function (child) {
-        return child.matches(selector);
-      });
-    },
-    parents: function parents(element, selector) {
-      var parents = [];
-      var ancestor = element.parentNode;
-
-      while (ancestor && ancestor.nodeType === Node.ELEMENT_NODE && ancestor.nodeType !== NODE_TEXT) {
-        if (ancestor.matches(selector)) {
-          parents.push(ancestor);
-        }
-
-        ancestor = ancestor.parentNode;
-      }
-
-      return parents;
-    },
-    prev: function prev(element, selector) {
-      var previous = element.previousElementSibling;
-
-      while (previous) {
-        if (previous.matches(selector)) {
-          return [previous];
-        }
-
-        previous = previous.previousElementSibling;
-      }
-
-      return [];
-    },
-    next: function next(element, selector) {
-      var next = element.nextElementSibling;
-
-      while (next) {
-        if (next.matches(selector)) {
-          return [next];
-        }
-
-        next = next.nextElementSibling;
-      }
-
-      return [];
-    }
-  };
-  /**
-   * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): carousel.js
+   * Bootstrap (v5.0.1): carousel.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1199,27 +1249,27 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super3 = _createSuper(Carousel);
 
     function Carousel(element, config) {
-      var _this2;
+      var _this3;
 
       _classCallCheck(this, Carousel);
 
-      _this2 = _super3.call(this, element);
-      _this2._items = null;
-      _this2._interval = null;
-      _this2._activeElement = null;
-      _this2._isPaused = false;
-      _this2._isSliding = false;
-      _this2.touchTimeout = null;
-      _this2.touchStartX = 0;
-      _this2.touchDeltaX = 0;
-      _this2._config = _this2._getConfig(config);
-      _this2._indicatorsElement = SelectorEngine.findOne(SELECTOR_INDICATORS, _this2._element);
-      _this2._touchSupported = 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0;
-      _this2._pointerEvent = Boolean(window.PointerEvent);
+      _this3 = _super3.call(this, element);
+      _this3._items = null;
+      _this3._interval = null;
+      _this3._activeElement = null;
+      _this3._isPaused = false;
+      _this3._isSliding = false;
+      _this3.touchTimeout = null;
+      _this3.touchStartX = 0;
+      _this3.touchDeltaX = 0;
+      _this3._config = _this3._getConfig(config);
+      _this3._indicatorsElement = SelectorEngine.findOne(SELECTOR_INDICATORS, _this3._element);
+      _this3._touchSupported = 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0;
+      _this3._pointerEvent = Boolean(window.PointerEvent);
 
-      _this2._addEventListeners();
+      _this3._addEventListeners();
 
-      return _this2;
+      return _this3;
     } // Getters
 
 
@@ -1283,7 +1333,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "to",
       value: function to(index) {
-        var _this3 = this;
+        var _this4 = this;
 
         this._activeElement = SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
 
@@ -1295,7 +1345,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         if (this._isSliding) {
           EventHandler.one(this._element, EVENT_SLID, function () {
-            return _this3.to(index);
+            return _this4.to(index);
           });
           return;
         }
@@ -1309,19 +1359,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var order = index > activeIndex ? ORDER_NEXT : ORDER_PREV;
 
         this._slide(order, this._items[index]);
-      }
-    }, {
-      key: "dispose",
-      value: function dispose() {
-        this._items = null;
-        this._config = null;
-        this._interval = null;
-        this._isPaused = null;
-        this._isSliding = null;
-        this._activeElement = null;
-        this._indicatorsElement = null;
-
-        _get(_getPrototypeOf(Carousel.prototype), "dispose", this).call(this);
       } // Private
 
     }, {
@@ -1352,20 +1389,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_addEventListeners",
       value: function _addEventListeners() {
-        var _this4 = this;
+        var _this5 = this;
 
         if (this._config.keyboard) {
           EventHandler.on(this._element, EVENT_KEYDOWN, function (event) {
-            return _this4._keydown(event);
+            return _this5._keydown(event);
           });
         }
 
         if (this._config.pause === 'hover') {
           EventHandler.on(this._element, EVENT_MOUSEENTER, function (event) {
-            return _this4.pause(event);
+            return _this5.pause(event);
           });
           EventHandler.on(this._element, EVENT_MOUSELEAVE, function (event) {
-            return _this4.cycle(event);
+            return _this5.cycle(event);
           });
         }
 
@@ -1376,29 +1413,29 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_addTouchEventListeners",
       value: function _addTouchEventListeners() {
-        var _this5 = this;
+        var _this6 = this;
 
         var start = function start(event) {
-          if (_this5._pointerEvent && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH)) {
-            _this5.touchStartX = event.clientX;
-          } else if (!_this5._pointerEvent) {
-            _this5.touchStartX = event.touches[0].clientX;
+          if (_this6._pointerEvent && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH)) {
+            _this6.touchStartX = event.clientX;
+          } else if (!_this6._pointerEvent) {
+            _this6.touchStartX = event.touches[0].clientX;
           }
         };
 
         var move = function move(event) {
           // ensure swiping with one touch and not pinching
-          _this5.touchDeltaX = event.touches && event.touches.length > 1 ? 0 : event.touches[0].clientX - _this5.touchStartX;
+          _this6.touchDeltaX = event.touches && event.touches.length > 1 ? 0 : event.touches[0].clientX - _this6.touchStartX;
         };
 
         var end = function end(event) {
-          if (_this5._pointerEvent && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH)) {
-            _this5.touchDeltaX = event.clientX - _this5.touchStartX;
+          if (_this6._pointerEvent && (event.pointerType === POINTER_TYPE_PEN || event.pointerType === POINTER_TYPE_TOUCH)) {
+            _this6.touchDeltaX = event.clientX - _this6.touchStartX;
           }
 
-          _this5._handleSwipe();
+          _this6._handleSwipe();
 
-          if (_this5._config.pause === 'hover') {
+          if (_this6._config.pause === 'hover') {
             // If it's a touch-enabled device, mouseenter/leave are fired as
             // part of the mouse compatibility events on first tap - the carousel
             // would stop cycling until user tapped out of it;
@@ -1406,15 +1443,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             // (as if it's the second time we tap on it, mouseenter compat event
             // is NOT fired) and after a timeout (to allow for mouse compatibility
             // events to fire) we explicitly restart cycling
-            _this5.pause();
+            _this6.pause();
 
-            if (_this5.touchTimeout) {
-              clearTimeout(_this5.touchTimeout);
+            if (_this6.touchTimeout) {
+              clearTimeout(_this6.touchTimeout);
             }
 
-            _this5.touchTimeout = setTimeout(function (event) {
-              return _this5.cycle(event);
-            }, TOUCHEVENT_COMPAT_WAIT + _this5._config.interval);
+            _this6.touchTimeout = setTimeout(function (event) {
+              return _this6.cycle(event);
+            }, TOUCHEVENT_COMPAT_WAIT + _this6._config.interval);
           }
         };
 
@@ -1540,7 +1577,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_slide",
       value: function _slide(directionOrOrder, element) {
-        var _this6 = this;
+        var _this7 = this;
 
         var order = this._directionToOrder(directionOrOrder);
 
@@ -1585,37 +1622,35 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         this._activeElement = nextElement;
 
-        if (this._element.classList.contains(CLASS_NAME_SLIDE)) {
-          nextElement.classList.add(orderClassName);
-          reflow(nextElement);
-          activeElement.classList.add(directionalClassName);
-          nextElement.classList.add(directionalClassName);
-          var transitionDuration = getTransitionDurationFromElement(activeElement);
-          EventHandler.one(activeElement, 'transitionend', function () {
-            nextElement.classList.remove(directionalClassName, orderClassName);
-            nextElement.classList.add(CLASS_NAME_ACTIVE$2);
-            activeElement.classList.remove(CLASS_NAME_ACTIVE$2, orderClassName, directionalClassName);
-            _this6._isSliding = false;
-            setTimeout(function () {
-              EventHandler.trigger(_this6._element, EVENT_SLID, {
-                relatedTarget: nextElement,
-                direction: eventDirectionName,
-                from: activeElementIndex,
-                to: nextElementIndex
-              });
-            }, 0);
-          });
-          emulateTransitionEnd(activeElement, transitionDuration);
-        } else {
-          activeElement.classList.remove(CLASS_NAME_ACTIVE$2);
-          nextElement.classList.add(CLASS_NAME_ACTIVE$2);
-          this._isSliding = false;
-          EventHandler.trigger(this._element, EVENT_SLID, {
+        var triggerSlidEvent = function triggerSlidEvent() {
+          EventHandler.trigger(_this7._element, EVENT_SLID, {
             relatedTarget: nextElement,
             direction: eventDirectionName,
             from: activeElementIndex,
             to: nextElementIndex
           });
+        };
+
+        if (this._element.classList.contains(CLASS_NAME_SLIDE)) {
+          nextElement.classList.add(orderClassName);
+          reflow(nextElement);
+          activeElement.classList.add(directionalClassName);
+          nextElement.classList.add(directionalClassName);
+
+          var completeCallBack = function completeCallBack() {
+            nextElement.classList.remove(directionalClassName, orderClassName);
+            nextElement.classList.add(CLASS_NAME_ACTIVE$2);
+            activeElement.classList.remove(CLASS_NAME_ACTIVE$2, orderClassName, directionalClassName);
+            _this7._isSliding = false;
+            setTimeout(triggerSlidEvent, 0);
+          };
+
+          this._queueCallback(completeCallBack, activeElement, true);
+        } else {
+          activeElement.classList.remove(CLASS_NAME_ACTIVE$2);
+          nextElement.classList.add(CLASS_NAME_ACTIVE$2);
+          this._isSliding = false;
+          triggerSlidEvent();
         }
 
         if (isCycling) {
@@ -1655,9 +1690,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return Default$9;
       }
     }, {
-      key: "DATA_KEY",
+      key: "NAME",
       get: function get() {
-        return DATA_KEY$9;
+        return NAME$a;
       }
     }, {
       key: "carouselInterface",
@@ -1747,10 +1782,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * add .Carousel to jQuery only if jQuery is present
    */
 
-  defineJQueryPlugin(NAME$a, Carousel);
+  defineJQueryPlugin(Carousel);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): collapse.js
+   * Bootstrap (v5.0.1): collapse.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1798,41 +1833,41 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super4 = _createSuper(Collapse);
 
     function Collapse(element, config) {
-      var _this7;
+      var _this8;
 
       _classCallCheck(this, Collapse);
 
-      _this7 = _super4.call(this, element);
-      _this7._isTransitioning = false;
-      _this7._config = _this7._getConfig(config);
-      _this7._triggerArray = SelectorEngine.find("".concat(SELECTOR_DATA_TOGGLE$4, "[href=\"#").concat(_this7._element.id, "\"],") + "".concat(SELECTOR_DATA_TOGGLE$4, "[data-bs-target=\"#").concat(_this7._element.id, "\"]"));
+      _this8 = _super4.call(this, element);
+      _this8._isTransitioning = false;
+      _this8._config = _this8._getConfig(config);
+      _this8._triggerArray = SelectorEngine.find("".concat(SELECTOR_DATA_TOGGLE$4, "[href=\"#").concat(_this8._element.id, "\"],") + "".concat(SELECTOR_DATA_TOGGLE$4, "[data-bs-target=\"#").concat(_this8._element.id, "\"]"));
       var toggleList = SelectorEngine.find(SELECTOR_DATA_TOGGLE$4);
 
       for (var i = 0, len = toggleList.length; i < len; i++) {
         var elem = toggleList[i];
         var selector = getSelectorFromElement(elem);
         var filterElement = SelectorEngine.find(selector).filter(function (foundElem) {
-          return foundElem === _this7._element;
+          return foundElem === _this8._element;
         });
 
         if (selector !== null && filterElement.length) {
-          _this7._selector = selector;
+          _this8._selector = selector;
 
-          _this7._triggerArray.push(elem);
+          _this8._triggerArray.push(elem);
         }
       }
 
-      _this7._parent = _this7._config.parent ? _this7._getParent() : null;
+      _this8._parent = _this8._config.parent ? _this8._getParent() : null;
 
-      if (!_this7._config.parent) {
-        _this7._addAriaAndCollapsedClass(_this7._element, _this7._triggerArray);
+      if (!_this8._config.parent) {
+        _this8._addAriaAndCollapsedClass(_this8._element, _this8._triggerArray);
       }
 
-      if (_this7._config.toggle) {
-        _this7.toggle();
+      if (_this8._config.toggle) {
+        _this8.toggle();
       }
 
-      return _this7;
+      return _this8;
     } // Getters
 
 
@@ -1849,7 +1884,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "show",
       value: function show() {
-        var _this8 = this;
+        var _this9 = this;
 
         if (this._isTransitioning || this._element.classList.contains(CLASS_NAME_SHOW$8)) {
           return;
@@ -1860,8 +1895,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         if (this._parent) {
           actives = SelectorEngine.find(SELECTOR_ACTIVES, this._parent).filter(function (elem) {
-            if (typeof _this8._config.parent === 'string') {
-              return elem.getAttribute('data-bs-parent') === _this8._config.parent;
+            if (typeof _this9._config.parent === 'string') {
+              return elem.getAttribute('data-bs-parent') === _this9._config.parent;
             }
 
             return elem.classList.contains(CLASS_NAME_COLLAPSE);
@@ -1921,28 +1956,28 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this.setTransitioning(true);
 
         var complete = function complete() {
-          _this8._element.classList.remove(CLASS_NAME_COLLAPSING);
+          _this9._element.classList.remove(CLASS_NAME_COLLAPSING);
 
-          _this8._element.classList.add(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$8);
+          _this9._element.classList.add(CLASS_NAME_COLLAPSE, CLASS_NAME_SHOW$8);
 
-          _this8._element.style[dimension] = '';
+          _this9._element.style[dimension] = '';
 
-          _this8.setTransitioning(false);
+          _this9.setTransitioning(false);
 
-          EventHandler.trigger(_this8._element, EVENT_SHOWN$5);
+          EventHandler.trigger(_this9._element, EVENT_SHOWN$5);
         };
 
         var capitalizedDimension = dimension[0].toUpperCase() + dimension.slice(1);
         var scrollSize = "scroll".concat(capitalizedDimension);
-        var transitionDuration = getTransitionDurationFromElement(this._element);
-        EventHandler.one(this._element, 'transitionend', complete);
-        emulateTransitionEnd(this._element, transitionDuration);
+
+        this._queueCallback(complete, this._element, true);
+
         this._element.style[dimension] = "".concat(this._element[scrollSize], "px");
       }
     }, {
       key: "hide",
       value: function hide() {
-        var _this9 = this;
+        var _this10 = this;
 
         if (this._isTransitioning || !this._element.classList.contains(CLASS_NAME_SHOW$8)) {
           return;
@@ -1980,34 +2015,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this.setTransitioning(true);
 
         var complete = function complete() {
-          _this9.setTransitioning(false);
+          _this10.setTransitioning(false);
 
-          _this9._element.classList.remove(CLASS_NAME_COLLAPSING);
+          _this10._element.classList.remove(CLASS_NAME_COLLAPSING);
 
-          _this9._element.classList.add(CLASS_NAME_COLLAPSE);
+          _this10._element.classList.add(CLASS_NAME_COLLAPSE);
 
-          EventHandler.trigger(_this9._element, EVENT_HIDDEN$5);
+          EventHandler.trigger(_this10._element, EVENT_HIDDEN$5);
         };
 
         this._element.style[dimension] = '';
-        var transitionDuration = getTransitionDurationFromElement(this._element);
-        EventHandler.one(this._element, 'transitionend', complete);
-        emulateTransitionEnd(this._element, transitionDuration);
+
+        this._queueCallback(complete, this._element, true);
       }
     }, {
       key: "setTransitioning",
       value: function setTransitioning(isTransitioning) {
         this._isTransitioning = isTransitioning;
-      }
-    }, {
-      key: "dispose",
-      value: function dispose() {
-        _get(_getPrototypeOf(Collapse.prototype), "dispose", this).call(this);
-
-        this._config = null;
-        this._parent = null;
-        this._triggerArray = null;
-        this._isTransitioning = null;
       } // Private
 
     }, {
@@ -2027,24 +2051,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getParent",
       value: function _getParent() {
-        var _this10 = this;
+        var _this11 = this;
 
         var parent = this._config.parent;
-
-        if (isElement(parent)) {
-          // it's a jQuery object
-          if (typeof parent.jquery !== 'undefined' || typeof parent[0] !== 'undefined') {
-            parent = parent[0];
-          }
-        } else {
-          parent = SelectorEngine.findOne(parent);
-        }
-
+        parent = getElement(parent);
         var selector = "".concat(SELECTOR_DATA_TOGGLE$4, "[data-bs-parent=\"").concat(parent, "\"]");
         SelectorEngine.find(selector, parent).forEach(function (element) {
           var selected = getElementFromSelector(element);
 
-          _this10._addAriaAndCollapsedClass(selected, [element]);
+          _this11._addAriaAndCollapsedClass(selected, [element]);
         });
         return parent;
       }
@@ -2073,9 +2088,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return Default$8;
       }
     }, {
-      key: "DATA_KEY",
+      key: "NAME",
       get: function get() {
-        return DATA_KEY$8;
+        return NAME$9;
       }
     }, {
       key: "collapseInterface",
@@ -2153,10 +2168,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * add .Collapse to jQuery only if jQuery is present
    */
 
-  defineJQueryPlugin(NAME$9, Collapse);
+  defineJQueryPlugin(Collapse);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): dropdown.js
+   * Bootstrap (v5.0.1): dropdown.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2230,19 +2245,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super5 = _createSuper(Dropdown);
 
     function Dropdown(element, config) {
-      var _this11;
+      var _this12;
 
       _classCallCheck(this, Dropdown);
 
-      _this11 = _super5.call(this, element);
-      _this11._popper = null;
-      _this11._config = _this11._getConfig(config);
-      _this11._menu = _this11._getMenuElement();
-      _this11._inNavbar = _this11._detectNavbar();
+      _this12 = _super5.call(this, element);
+      _this12._popper = null;
+      _this12._config = _this12._getConfig(config);
+      _this12._menu = _this12._getMenuElement();
+      _this12._inNavbar = _this12._detectNavbar();
 
-      _this11._addEventListeners();
+      _this12._addEventListeners();
 
-      return _this11;
+      return _this12;
     } // Getters
 
 
@@ -2293,11 +2308,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           if (this._config.reference === 'parent') {
             referenceElement = parent;
           } else if (isElement(this._config.reference)) {
-            referenceElement = this._config.reference; // Check if it's jQuery element
-
-            if (typeof this._config.reference.jquery !== 'undefined') {
-              referenceElement = this._config.reference[0];
-            }
+            referenceElement = getElement(this._config.reference);
           } else if (_typeof(this._config.reference) === 'object') {
             referenceElement = this._config.reference;
           }
@@ -2352,12 +2363,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "dispose",
       value: function dispose() {
-        this._menu = null;
-
         if (this._popper) {
           this._popper.destroy();
-
-          this._popper = null;
         }
 
         _get(_getPrototypeOf(Dropdown.prototype), "dispose", this).call(this);
@@ -2375,12 +2382,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_addEventListeners",
       value: function _addEventListeners() {
-        var _this12 = this;
+        var _this13 = this;
 
         EventHandler.on(this._element, EVENT_CLICK, function (event) {
           event.preventDefault();
 
-          _this12.toggle();
+          _this13.toggle();
         });
       }
     }, {
@@ -2463,7 +2470,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getOffset",
       value: function _getOffset() {
-        var _this13 = this;
+        var _this14 = this;
 
         var offset = this._config.offset;
 
@@ -2475,7 +2482,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         if (typeof offset === 'function') {
           return function (popperData) {
-            return offset(popperData, _this13._element);
+            return offset(popperData, _this14._element);
           };
         }
 
@@ -2544,9 +2551,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return DefaultType$7;
       }
     }, {
-      key: "DATA_KEY",
+      key: "NAME",
       get: function get() {
-        return DATA_KEY$7;
+        return NAME$8;
       }
     }, {
       key: "dropdownInterface",
@@ -2577,14 +2584,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "clearMenus",
       value: function clearMenus(event) {
-        if (event) {
-          if (event.button === RIGHT_MOUSE_BUTTON || event.type === 'keyup' && event.key !== TAB_KEY) {
-            return;
-          }
-
-          if (/input|select|option|textarea|form/i.test(event.target.tagName)) {
-            return;
-          }
+        if (event && (event.button === RIGHT_MOUSE_BUTTON || event.type === 'keyup' && event.key !== TAB_KEY)) {
+          return;
         }
 
         var toggles = SelectorEngine.find(SELECTOR_DATA_TOGGLE$3);
@@ -2610,10 +2611,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
             if (composedPath.includes(context._element) || context._config.autoClose === 'inside' && !isMenuTarget || context._config.autoClose === 'outside' && isMenuTarget) {
               continue;
-            } // Tab navigation through the dropdown menu shouldn't close the menu
+            } // Tab navigation through the dropdown menu or events from contained inputs shouldn't close the menu
 
 
-            if (event.type === 'keyup' && event.key === TAB_KEY && context._menu.contains(event.target)) {
+            if (context._menu.contains(event.target) && (event.type === 'keyup' && event.key === TAB_KEY || /input|select|option|textarea|form/i.test(event.target.tagName))) {
               continue;
             }
 
@@ -2633,7 +2634,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "dataApiKeydownHandler",
       value: function dataApiKeydownHandler(event) {
-        var _this14 = this;
+        var _this15 = this;
 
         // If not input/textarea:
         //  - And not a key in REGEXP_KEYDOWN => not a dropdown command
@@ -2660,7 +2661,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         var getToggleButton = function getToggleButton() {
-          return _this14.matches(SELECTOR_DATA_TOGGLE$3) ? _this14 : SelectorEngine.prev(_this14, SELECTOR_DATA_TOGGLE$3)[0];
+          return _this15.matches(SELECTOR_DATA_TOGGLE$3) ? _this15 : SelectorEngine.prev(_this15, SELECTOR_DATA_TOGGLE$3)[0];
         };
 
         if (event.key === ESCAPE_KEY$2) {
@@ -2707,10 +2708,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * add .Dropdown to jQuery only if jQuery is present
    */
 
-  defineJQueryPlugin(NAME$8, Dropdown);
+  defineJQueryPlugin(Dropdown);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): util/scrollBar.js
+   * Bootstrap (v5.0.1): util/scrollBar.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2792,7 +2793,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): util/backdrop.js
+   * Bootstrap (v5.0.1): util/backdrop.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2850,7 +2851,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "hide",
       value: function hide(callback) {
-        var _this15 = this;
+        var _this16 = this;
 
         if (!this._config.isVisible) {
           execute(callback);
@@ -2860,7 +2861,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._getElement().classList.remove(CLASS_NAME_SHOW$6);
 
         this._emulateAnimation(function () {
-          _this15.dispose();
+          _this16.dispose();
 
           execute(callback);
         });
@@ -2886,13 +2887,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "_getConfig",
       value: function _getConfig(config) {
         config = _objectSpread(_objectSpread({}, Default$6), _typeof(config) === 'object' ? config : {});
+        config.rootElement = config.rootElement || document.body;
         typeCheckConfig(NAME$7, config, DefaultType$6);
         return config;
       }
     }, {
       key: "_append",
       value: function _append() {
-        var _this16 = this;
+        var _this17 = this;
 
         if (this._isAppended) {
           return;
@@ -2901,7 +2903,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._config.rootElement.appendChild(this._getElement());
 
         EventHandler.on(this._getElement(), EVENT_MOUSEDOWN, function () {
-          execute(_this16._config.clickCallback);
+          execute(_this17._config.clickCallback);
         });
         this._isAppended = true;
       }
@@ -2938,7 +2940,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }();
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): modal.js
+   * Bootstrap (v5.0.1): modal.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2970,7 +2972,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var EVENT_HIDDEN$3 = "hidden".concat(EVENT_KEY$6);
   var EVENT_SHOW$3 = "show".concat(EVENT_KEY$6);
   var EVENT_SHOWN$3 = "shown".concat(EVENT_KEY$6);
-  var EVENT_FOCUSIN$1 = "focusin".concat(EVENT_KEY$6);
+  var EVENT_FOCUSIN$2 = "focusin".concat(EVENT_KEY$6);
   var EVENT_RESIZE = "resize".concat(EVENT_KEY$6);
   var EVENT_CLICK_DISMISS$2 = "click.dismiss".concat(EVENT_KEY$6);
   var EVENT_KEYDOWN_DISMISS$1 = "keydown.dismiss".concat(EVENT_KEY$6);
@@ -2997,18 +2999,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super6 = _createSuper(Modal);
 
     function Modal(element, config) {
-      var _this17;
+      var _this18;
 
       _classCallCheck(this, Modal);
 
-      _this17 = _super6.call(this, element);
-      _this17._config = _this17._getConfig(config);
-      _this17._dialog = SelectorEngine.findOne(SELECTOR_DIALOG, _this17._element);
-      _this17._backdrop = _this17._initializeBackDrop();
-      _this17._isShown = false;
-      _this17._ignoreBackdropClick = false;
-      _this17._isTransitioning = false;
-      return _this17;
+      _this18 = _super6.call(this, element);
+      _this18._config = _this18._getConfig(config);
+      _this18._dialog = SelectorEngine.findOne(SELECTOR_DIALOG, _this18._element);
+      _this18._backdrop = _this18._initializeBackDrop();
+      _this18._isShown = false;
+      _this18._ignoreBackdropClick = false;
+      _this18._isTransitioning = false;
+      return _this18;
     } // Getters
 
 
@@ -3021,7 +3023,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "show",
       value: function show(relatedTarget) {
-        var _this18 = this;
+        var _this19 = this;
 
         if (this._isShown || this._isTransitioning) {
           return;
@@ -3050,24 +3052,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._setResizeEvent();
 
         EventHandler.on(this._element, EVENT_CLICK_DISMISS$2, SELECTOR_DATA_DISMISS$2, function (event) {
-          return _this18.hide(event);
+          return _this19.hide(event);
         });
         EventHandler.on(this._dialog, EVENT_MOUSEDOWN_DISMISS, function () {
-          EventHandler.one(_this18._element, EVENT_MOUSEUP_DISMISS, function (event) {
-            if (event.target === _this18._element) {
-              _this18._ignoreBackdropClick = true;
+          EventHandler.one(_this19._element, EVENT_MOUSEUP_DISMISS, function (event) {
+            if (event.target === _this19._element) {
+              _this19._ignoreBackdropClick = true;
             }
           });
         });
 
         this._showBackdrop(function () {
-          return _this18._showElement(relatedTarget);
+          return _this19._showElement(relatedTarget);
         });
       }
     }, {
       key: "hide",
       value: function hide(event) {
-        var _this19 = this;
+        var _this20 = this;
 
         if (event) {
           event.preventDefault();
@@ -3095,22 +3097,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         this._setResizeEvent();
 
-        EventHandler.off(document, EVENT_FOCUSIN$1);
+        EventHandler.off(document, EVENT_FOCUSIN$2);
 
         this._element.classList.remove(CLASS_NAME_SHOW$5);
 
         EventHandler.off(this._element, EVENT_CLICK_DISMISS$2);
         EventHandler.off(this._dialog, EVENT_MOUSEDOWN_DISMISS);
 
-        if (isAnimated) {
-          var transitionDuration = getTransitionDurationFromElement(this._element);
-          EventHandler.one(this._element, 'transitionend', function (event) {
-            return _this19._hideModal(event);
-          });
-          emulateTransitionEnd(this._element, transitionDuration);
-        } else {
-          this._hideModal();
-        }
+        this._queueCallback(function () {
+          return _this20._hideModal();
+        }, this._element, isAnimated);
       }
     }, {
       key: "dispose",
@@ -3118,6 +3114,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         [window, this._dialog].forEach(function (htmlElement) {
           return EventHandler.off(htmlElement, EVENT_KEY$6);
         });
+
+        this._backdrop.dispose();
 
         _get(_getPrototypeOf(Modal.prototype), "dispose", this).call(this);
         /**
@@ -3127,16 +3125,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
          */
 
 
-        EventHandler.off(document, EVENT_FOCUSIN$1);
-        this._config = null;
-        this._dialog = null;
-
-        this._backdrop.dispose();
-
-        this._backdrop = null;
-        this._isShown = null;
-        this._ignoreBackdropClick = null;
-        this._isTransitioning = null;
+        EventHandler.off(document, EVENT_FOCUSIN$2);
       }
     }, {
       key: "handleUpdate",
@@ -3163,7 +3152,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_showElement",
       value: function _showElement(relatedTarget) {
-        var _this20 = this;
+        var _this21 = this;
 
         var isAnimated = this._isAnimated();
 
@@ -3199,50 +3188,44 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         var transitionComplete = function transitionComplete() {
-          if (_this20._config.focus) {
-            _this20._element.focus();
+          if (_this21._config.focus) {
+            _this21._element.focus();
           }
 
-          _this20._isTransitioning = false;
-          EventHandler.trigger(_this20._element, EVENT_SHOWN$3, {
+          _this21._isTransitioning = false;
+          EventHandler.trigger(_this21._element, EVENT_SHOWN$3, {
             relatedTarget: relatedTarget
           });
         };
 
-        if (isAnimated) {
-          var transitionDuration = getTransitionDurationFromElement(this._dialog);
-          EventHandler.one(this._dialog, 'transitionend', transitionComplete);
-          emulateTransitionEnd(this._dialog, transitionDuration);
-        } else {
-          transitionComplete();
-        }
+        this._queueCallback(transitionComplete, this._dialog, isAnimated);
       }
     }, {
       key: "_enforceFocus",
       value: function _enforceFocus() {
-        var _this21 = this;
+        var _this22 = this;
 
-        EventHandler.off(document, EVENT_FOCUSIN$1); // guard against infinite focus loop
+        EventHandler.off(document, EVENT_FOCUSIN$2); // guard against infinite focus loop
 
-        EventHandler.on(document, EVENT_FOCUSIN$1, function (event) {
-          if (document !== event.target && _this21._element !== event.target && !_this21._element.contains(event.target)) {
-            _this21._element.focus();
+        EventHandler.on(document, EVENT_FOCUSIN$2, function (event) {
+          if (document !== event.target && _this22._element !== event.target && !_this22._element.contains(event.target)) {
+            _this22._element.focus();
           }
         });
       }
     }, {
       key: "_setEscapeEvent",
       value: function _setEscapeEvent() {
-        var _this22 = this;
+        var _this23 = this;
 
         if (this._isShown) {
           EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS$1, function (event) {
-            if (_this22._config.keyboard && event.key === ESCAPE_KEY$1) {
+            if (_this23._config.keyboard && event.key === ESCAPE_KEY$1) {
               event.preventDefault();
 
-              _this22.hide();
-            } else if (!_this22._config.keyboard && event.key === ESCAPE_KEY$1) {
-              _this22._triggerBackdropTransition();
+              _this23.hide();
+            } else if (!_this23._config.keyboard && event.key === ESCAPE_KEY$1) {
+              _this23._triggerBackdropTransition();
             }
           });
         } else {
@@ -3252,11 +3235,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_setResizeEvent",
       value: function _setResizeEvent() {
-        var _this23 = this;
+        var _this24 = this;
 
         if (this._isShown) {
           EventHandler.on(window, EVENT_RESIZE, function () {
-            return _this23._adjustDialog();
+            return _this24._adjustDialog();
           });
         } else {
           EventHandler.off(window, EVENT_RESIZE);
@@ -3265,7 +3248,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_hideModal",
       value: function _hideModal() {
-        var _this24 = this;
+        var _this25 = this;
 
         this._element.style.display = 'none';
 
@@ -3280,20 +3263,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._backdrop.hide(function () {
           document.body.classList.remove(CLASS_NAME_OPEN);
 
-          _this24._resetAdjustments();
+          _this25._resetAdjustments();
 
           reset();
-          EventHandler.trigger(_this24._element, EVENT_HIDDEN$3);
+          EventHandler.trigger(_this25._element, EVENT_HIDDEN$3);
         });
       }
     }, {
       key: "_showBackdrop",
       value: function _showBackdrop(callback) {
-        var _this25 = this;
+        var _this26 = this;
 
         EventHandler.on(this._element, EVENT_CLICK_DISMISS$2, function (event) {
-          if (_this25._ignoreBackdropClick) {
-            _this25._ignoreBackdropClick = false;
+          if (_this26._ignoreBackdropClick) {
+            _this26._ignoreBackdropClick = false;
             return;
           }
 
@@ -3301,10 +3284,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             return;
           }
 
-          if (_this25._config.backdrop === true) {
-            _this25.hide();
-          } else if (_this25._config.backdrop === 'static') {
-            _this25._triggerBackdropTransition();
+          if (_this26._config.backdrop === true) {
+            _this26.hide();
+          } else if (_this26._config.backdrop === 'static') {
+            _this26._triggerBackdropTransition();
           }
         });
 
@@ -3318,7 +3301,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_triggerBackdropTransition",
       value: function _triggerBackdropTransition() {
-        var _this26 = this;
+        var _this27 = this;
 
         var hideEvent = EventHandler.trigger(this._element, EVENT_HIDE_PREVENTED);
 
@@ -3337,13 +3320,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var modalTransitionDuration = getTransitionDurationFromElement(this._dialog);
         EventHandler.off(this._element, 'transitionend');
         EventHandler.one(this._element, 'transitionend', function () {
-          _this26._element.classList.remove(CLASS_NAME_STATIC);
+          _this27._element.classList.remove(CLASS_NAME_STATIC);
 
           if (!isModalOverflowing) {
-            EventHandler.one(_this26._element, 'transitionend', function () {
-              _this26._element.style.overflowY = '';
+            EventHandler.one(_this27._element, 'transitionend', function () {
+              _this27._element.style.overflowY = '';
             });
-            emulateTransitionEnd(_this26._element, modalTransitionDuration);
+            emulateTransitionEnd(_this27._element, modalTransitionDuration);
           }
         });
         emulateTransitionEnd(this._element, modalTransitionDuration);
@@ -3381,9 +3364,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return Default$5;
       }
     }, {
-      key: "DATA_KEY",
+      key: "NAME",
       get: function get() {
-        return DATA_KEY$6;
+        return NAME$6;
       }
     }, {
       key: "jQueryInterface",
@@ -3414,7 +3397,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
   EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$2, function (event) {
-    var _this27 = this;
+    var _this28 = this;
 
     var target = getElementFromSelector(this);
 
@@ -3429,8 +3412,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       EventHandler.one(target, EVENT_HIDDEN$3, function () {
-        if (isVisible(_this27)) {
-          _this27.focus();
+        if (isVisible(_this28)) {
+          _this28.focus();
         }
       });
     });
@@ -3444,10 +3427,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * add .Modal to jQuery only if jQuery is present
    */
 
-  defineJQueryPlugin(NAME$6, Modal);
+  defineJQueryPlugin(Modal);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): offcanvas.js
+   * Bootstrap (v5.0.1): offcanvas.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3480,7 +3463,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var EVENT_SHOWN$2 = "shown".concat(EVENT_KEY$5);
   var EVENT_HIDE$2 = "hide".concat(EVENT_KEY$5);
   var EVENT_HIDDEN$2 = "hidden".concat(EVENT_KEY$5);
-  var EVENT_FOCUSIN = "focusin".concat(EVENT_KEY$5);
+  var EVENT_FOCUSIN$1 = "focusin".concat(EVENT_KEY$5);
   var EVENT_CLICK_DATA_API$1 = "click".concat(EVENT_KEY$5).concat(DATA_API_KEY$2);
   var EVENT_CLICK_DISMISS$1 = "click.dismiss".concat(EVENT_KEY$5);
   var EVENT_KEYDOWN_DISMISS = "keydown.dismiss".concat(EVENT_KEY$5);
@@ -3498,18 +3481,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super7 = _createSuper(Offcanvas);
 
     function Offcanvas(element, config) {
-      var _this28;
+      var _this29;
 
       _classCallCheck(this, Offcanvas);
 
-      _this28 = _super7.call(this, element);
-      _this28._config = _this28._getConfig(config);
-      _this28._isShown = false;
-      _this28._backdrop = _this28._initializeBackDrop();
+      _this29 = _super7.call(this, element);
+      _this29._config = _this29._getConfig(config);
+      _this29._isShown = false;
+      _this29._backdrop = _this29._initializeBackDrop();
 
-      _this28._addEventListeners();
+      _this29._addEventListeners();
 
-      return _this28;
+      return _this29;
     } // Getters
 
 
@@ -3522,7 +3505,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "show",
       value: function show(relatedTarget) {
-        var _this29 = this;
+        var _this30 = this;
 
         if (this._isShown) {
           return;
@@ -3556,19 +3539,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._element.classList.add(CLASS_NAME_SHOW$4);
 
         var completeCallBack = function completeCallBack() {
-          EventHandler.trigger(_this29._element, EVENT_SHOWN$2, {
+          EventHandler.trigger(_this30._element, EVENT_SHOWN$2, {
             relatedTarget: relatedTarget
           });
         };
 
-        var transitionDuration = getTransitionDurationFromElement(this._element);
-        EventHandler.one(this._element, 'transitionend', completeCallBack);
-        emulateTransitionEnd(this._element, transitionDuration);
+        this._queueCallback(completeCallBack, this._element, true);
       }
     }, {
       key: "hide",
       value: function hide() {
-        var _this30 = this;
+        var _this31 = this;
 
         if (!this._isShown) {
           return;
@@ -3580,7 +3561,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return;
         }
 
-        EventHandler.off(document, EVENT_FOCUSIN);
+        EventHandler.off(document, EVENT_FOCUSIN$1);
 
         this._element.blur();
 
@@ -3591,24 +3572,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._backdrop.hide();
 
         var completeCallback = function completeCallback() {
-          _this30._element.setAttribute('aria-hidden', true);
+          _this31._element.setAttribute('aria-hidden', true);
 
-          _this30._element.removeAttribute('aria-modal');
+          _this31._element.removeAttribute('aria-modal');
 
-          _this30._element.removeAttribute('role');
+          _this31._element.removeAttribute('role');
 
-          _this30._element.style.visibility = 'hidden';
+          _this31._element.style.visibility = 'hidden';
 
-          if (!_this30._config.scroll) {
+          if (!_this31._config.scroll) {
             reset();
           }
 
-          EventHandler.trigger(_this30._element, EVENT_HIDDEN$2);
+          EventHandler.trigger(_this31._element, EVENT_HIDDEN$2);
         };
 
-        var transitionDuration = getTransitionDurationFromElement(this._element);
-        EventHandler.one(this._element, 'transitionend', completeCallback);
-        emulateTransitionEnd(this._element, transitionDuration);
+        this._queueCallback(completeCallback, this._element, true);
       }
     }, {
       key: "dispose",
@@ -3617,9 +3596,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         _get(_getPrototypeOf(Offcanvas.prototype), "dispose", this).call(this);
 
-        EventHandler.off(document, EVENT_FOCUSIN);
-        this._config = null;
-        this._backdrop = null;
+        EventHandler.off(document, EVENT_FOCUSIN$1);
       } // Private
 
     }, {
@@ -3632,23 +3609,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_initializeBackDrop",
       value: function _initializeBackDrop() {
-        var _this31 = this;
+        var _this32 = this;
 
         return new Backdrop({
           isVisible: this._config.backdrop,
           isAnimated: true,
           rootElement: this._element.parentNode,
           clickCallback: function clickCallback() {
-            return _this31.hide();
+            return _this32.hide();
           }
         });
       }
     }, {
       key: "_enforceFocusOnElement",
       value: function _enforceFocusOnElement(element) {
-        EventHandler.off(document, EVENT_FOCUSIN); // guard against infinite focus loop
+        EventHandler.off(document, EVENT_FOCUSIN$1); // guard against infinite focus loop
 
-        EventHandler.on(document, EVENT_FOCUSIN, function (event) {
+        EventHandler.on(document, EVENT_FOCUSIN$1, function (event) {
           if (document !== event.target && element !== event.target && !element.contains(event.target)) {
             element.focus();
           }
@@ -3658,27 +3635,27 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_addEventListeners",
       value: function _addEventListeners() {
-        var _this32 = this;
+        var _this33 = this;
 
         EventHandler.on(this._element, EVENT_CLICK_DISMISS$1, SELECTOR_DATA_DISMISS$1, function () {
-          return _this32.hide();
+          return _this33.hide();
         });
         EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS, function (event) {
-          if (_this32._config.keyboard && event.key === ESCAPE_KEY) {
-            _this32.hide();
+          if (_this33._config.keyboard && event.key === ESCAPE_KEY) {
+            _this33.hide();
           }
         });
       } // Static
 
     }], [{
+      key: "NAME",
+      get: function get() {
+        return NAME$5;
+      }
+    }, {
       key: "Default",
       get: function get() {
         return Default$4;
-      }
-    }, {
-      key: "DATA_KEY",
-      get: function get() {
-        return DATA_KEY$5;
       }
     }, {
       key: "jQueryInterface",
@@ -3709,7 +3686,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
   EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$1, function (event) {
-    var _this33 = this;
+    var _this34 = this;
 
     var target = getElementFromSelector(this);
 
@@ -3723,8 +3700,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     EventHandler.one(target, EVENT_HIDDEN$2, function () {
       // focus on trigger when it is closed
-      if (isVisible(_this33)) {
-        _this33.focus();
+      if (isVisible(_this34)) {
+        _this34.focus();
       }
     }); // avoid conflict when clicking a toggler of an offcanvas, while another is open
 
@@ -3748,10 +3725,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * ------------------------------------------------------------------------
    */
 
-  defineJQueryPlugin(NAME$5, Offcanvas);
+  defineJQueryPlugin(Offcanvas);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): util/sanitizer.js
+   * Bootstrap (v5.0.1): util/sanitizer.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3879,7 +3856,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): tooltip.js
+   * Bootstrap (v5.0.1): tooltip.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3976,7 +3953,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super8 = _createSuper(Tooltip);
 
     function Tooltip(element, config) {
-      var _this34;
+      var _this35;
 
       _classCallCheck(this, Tooltip);
 
@@ -3984,20 +3961,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         throw new TypeError('Bootstrap\'s tooltips require Popper (https://popper.js.org)');
       }
 
-      _this34 = _super8.call(this, element); // private
+      _this35 = _super8.call(this, element); // private
 
-      _this34._isEnabled = true;
-      _this34._timeout = 0;
-      _this34._hoverState = '';
-      _this34._activeTrigger = {};
-      _this34._popper = null; // Protected
+      _this35._isEnabled = true;
+      _this35._timeout = 0;
+      _this35._hoverState = '';
+      _this35._activeTrigger = {};
+      _this35._popper = null; // Protected
 
-      _this34.config = _this34._getConfig(config);
-      _this34.tip = null;
+      _this35._config = _this35._getConfig(config);
+      _this35.tip = null;
 
-      _this34._setListeners();
+      _this35._setListeners();
 
-      return _this34;
+      return _this35;
     } // Getters
 
 
@@ -4054,25 +4031,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           this.tip.parentNode.removeChild(this.tip);
         }
 
-        this._isEnabled = null;
-        this._timeout = null;
-        this._hoverState = null;
-        this._activeTrigger = null;
-
         if (this._popper) {
           this._popper.destroy();
         }
-
-        this._popper = null;
-        this.config = null;
-        this.tip = null;
 
         _get(_getPrototypeOf(Tooltip.prototype), "dispose", this).call(this);
       }
     }, {
       key: "show",
       value: function show() {
-        var _this35 = this;
+        var _this36 = this;
 
         if (this._element.style.display === 'none') {
           throw new Error('Please use show on visible elements');
@@ -4098,18 +4066,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         this.setContent();
 
-        if (this.config.animation) {
+        if (this._config.animation) {
           tip.classList.add(CLASS_NAME_FADE$3);
         }
 
-        var placement = typeof this.config.placement === 'function' ? this.config.placement.call(this, tip, this._element) : this.config.placement;
+        var placement = typeof this._config.placement === 'function' ? this._config.placement.call(this, tip, this._element) : this._config.placement;
 
         var attachment = this._getAttachment(placement);
 
         this._addAttachmentClass(attachment);
 
-        var container = this._getContainer();
-
+        var container = this._config.container;
         Data.set(tip, this.constructor.DATA_KEY, this);
 
         if (!this._element.ownerDocument.documentElement.contains(this.tip)) {
@@ -4124,7 +4091,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         tip.classList.add(CLASS_NAME_SHOW$3);
-        var customClass = typeof this.config.customClass === 'function' ? this.config.customClass() : this.config.customClass;
+        var customClass = typeof this._config.customClass === 'function' ? this._config.customClass() : this._config.customClass;
 
         if (customClass) {
           var _tip$classList;
@@ -4145,27 +4112,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         var complete = function complete() {
-          var prevHoverState = _this35._hoverState;
-          _this35._hoverState = null;
-          EventHandler.trigger(_this35._element, _this35.constructor.Event.SHOWN);
+          var prevHoverState = _this36._hoverState;
+          _this36._hoverState = null;
+          EventHandler.trigger(_this36._element, _this36.constructor.Event.SHOWN);
 
           if (prevHoverState === HOVER_STATE_OUT) {
-            _this35._leave(null, _this35);
+            _this36._leave(null, _this36);
           }
         };
 
-        if (this.tip.classList.contains(CLASS_NAME_FADE$3)) {
-          var transitionDuration = getTransitionDurationFromElement(this.tip);
-          EventHandler.one(this.tip, 'transitionend', complete);
-          emulateTransitionEnd(this.tip, transitionDuration);
-        } else {
-          complete();
-        }
+        var isAnimated = this.tip.classList.contains(CLASS_NAME_FADE$3);
+
+        this._queueCallback(complete, this.tip, isAnimated);
       }
     }, {
       key: "hide",
       value: function hide() {
-        var _this36 = this;
+        var _this37 = this;
 
         if (!this._popper) {
           return;
@@ -4174,24 +4137,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var tip = this.getTipElement();
 
         var complete = function complete() {
-          if (_this36._isWithActiveTrigger()) {
+          if (_this37._isWithActiveTrigger()) {
             return;
           }
 
-          if (_this36._hoverState !== HOVER_STATE_SHOW && tip.parentNode) {
+          if (_this37._hoverState !== HOVER_STATE_SHOW && tip.parentNode) {
             tip.parentNode.removeChild(tip);
           }
 
-          _this36._cleanTipClass();
+          _this37._cleanTipClass();
 
-          _this36._element.removeAttribute('aria-describedby');
+          _this37._element.removeAttribute('aria-describedby');
 
-          EventHandler.trigger(_this36._element, _this36.constructor.Event.HIDDEN);
+          EventHandler.trigger(_this37._element, _this37.constructor.Event.HIDDEN);
 
-          if (_this36._popper) {
-            _this36._popper.destroy();
+          if (_this37._popper) {
+            _this37._popper.destroy();
 
-            _this36._popper = null;
+            _this37._popper = null;
           }
         };
 
@@ -4215,14 +4178,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._activeTrigger[TRIGGER_CLICK] = false;
         this._activeTrigger[TRIGGER_FOCUS] = false;
         this._activeTrigger[TRIGGER_HOVER] = false;
+        var isAnimated = this.tip.classList.contains(CLASS_NAME_FADE$3);
 
-        if (this.tip.classList.contains(CLASS_NAME_FADE$3)) {
-          var transitionDuration = getTransitionDurationFromElement(tip);
-          EventHandler.one(tip, 'transitionend', complete);
-          emulateTransitionEnd(tip, transitionDuration);
-        } else {
-          complete();
-        }
+        this._queueCallback(complete, this.tip, isAnimated);
 
         this._hoverState = '';
       }
@@ -4247,7 +4205,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         var element = document.createElement('div');
-        element.innerHTML = this.config.template;
+        element.innerHTML = this._config.template;
         this.tip = element.children[0];
         return this.tip;
       }
@@ -4265,13 +4223,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return;
         }
 
-        if (_typeof(content) === 'object' && isElement(content)) {
-          if (content.jquery) {
-            content = content[0];
-          } // content is a DOM node or a jQuery
+        if (isElement(content)) {
+          content = getElement(content); // content is a DOM node or a jQuery
 
-
-          if (this.config.html) {
+          if (this._config.html) {
             if (content.parentNode !== element) {
               element.innerHTML = '';
               element.appendChild(content);
@@ -4283,9 +4238,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return;
         }
 
-        if (this.config.html) {
-          if (this.config.sanitize) {
-            content = sanitizeHtml(content, this.config.allowList, this.config.sanitizeFn);
+        if (this._config.html) {
+          if (this._config.sanitize) {
+            content = sanitizeHtml(content, this._config.allowList, this._config.sanitizeFn);
           }
 
           element.innerHTML = content;
@@ -4299,7 +4254,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var title = this._element.getAttribute('data-bs-original-title');
 
         if (!title) {
-          title = typeof this.config.title === 'function' ? this.config.title.call(this._element) : this.config.title;
+          title = typeof this._config.title === 'function' ? this._config.title.call(this._element) : this._config.title;
         }
 
         return title;
@@ -4334,9 +4289,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getOffset",
       value: function _getOffset() {
-        var _this37 = this;
+        var _this38 = this;
 
-        var offset = this.config.offset;
+        var offset = this._config.offset;
 
         if (typeof offset === 'string') {
           return offset.split(',').map(function (val) {
@@ -4346,7 +4301,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         if (typeof offset === 'function') {
           return function (popperData) {
-            return offset(popperData, _this37._element);
+            return offset(popperData, _this38._element);
           };
         }
 
@@ -4355,14 +4310,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getPopperConfig",
       value: function _getPopperConfig(attachment) {
-        var _this38 = this;
+        var _this39 = this;
 
         var defaultBsPopperConfig = {
           placement: attachment,
           modifiers: [{
             name: 'flip',
             options: {
-              fallbackPlacements: this.config.fallbackPlacements
+              fallbackPlacements: this._config.fallbackPlacements
             }
           }, {
             name: 'offset',
@@ -4372,7 +4327,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }, {
             name: 'preventOverflow',
             options: {
-              boundary: this.config.boundary
+              boundary: this._config.boundary
             }
           }, {
             name: 'arrow',
@@ -4384,34 +4339,21 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             enabled: true,
             phase: 'afterWrite',
             fn: function fn(data) {
-              return _this38._handlePopperPlacementChange(data);
+              return _this39._handlePopperPlacementChange(data);
             }
           }],
           onFirstUpdate: function onFirstUpdate(data) {
             if (data.options.placement !== data.placement) {
-              _this38._handlePopperPlacementChange(data);
+              _this39._handlePopperPlacementChange(data);
             }
           }
         };
-        return _objectSpread(_objectSpread({}, defaultBsPopperConfig), typeof this.config.popperConfig === 'function' ? this.config.popperConfig(defaultBsPopperConfig) : this.config.popperConfig);
+        return _objectSpread(_objectSpread({}, defaultBsPopperConfig), typeof this._config.popperConfig === 'function' ? this._config.popperConfig(defaultBsPopperConfig) : this._config.popperConfig);
       }
     }, {
       key: "_addAttachmentClass",
       value: function _addAttachmentClass(attachment) {
         this.getTipElement().classList.add("".concat(CLASS_PREFIX$1, "-").concat(this.updateAttachment(attachment)));
-      }
-    }, {
-      key: "_getContainer",
-      value: function _getContainer() {
-        if (this.config.container === false) {
-          return document.body;
-        }
-
-        if (isElement(this.config.container)) {
-          return this.config.container;
-        }
-
-        return SelectorEngine.findOne(this.config.container);
       }
     }, {
       key: "_getAttachment",
@@ -4421,36 +4363,37 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_setListeners",
       value: function _setListeners() {
-        var _this39 = this;
+        var _this40 = this;
 
-        var triggers = this.config.trigger.split(' ');
+        var triggers = this._config.trigger.split(' ');
+
         triggers.forEach(function (trigger) {
           if (trigger === 'click') {
-            EventHandler.on(_this39._element, _this39.constructor.Event.CLICK, _this39.config.selector, function (event) {
-              return _this39.toggle(event);
+            EventHandler.on(_this40._element, _this40.constructor.Event.CLICK, _this40._config.selector, function (event) {
+              return _this40.toggle(event);
             });
           } else if (trigger !== TRIGGER_MANUAL) {
-            var eventIn = trigger === TRIGGER_HOVER ? _this39.constructor.Event.MOUSEENTER : _this39.constructor.Event.FOCUSIN;
-            var eventOut = trigger === TRIGGER_HOVER ? _this39.constructor.Event.MOUSELEAVE : _this39.constructor.Event.FOCUSOUT;
-            EventHandler.on(_this39._element, eventIn, _this39.config.selector, function (event) {
-              return _this39._enter(event);
+            var eventIn = trigger === TRIGGER_HOVER ? _this40.constructor.Event.MOUSEENTER : _this40.constructor.Event.FOCUSIN;
+            var eventOut = trigger === TRIGGER_HOVER ? _this40.constructor.Event.MOUSELEAVE : _this40.constructor.Event.FOCUSOUT;
+            EventHandler.on(_this40._element, eventIn, _this40._config.selector, function (event) {
+              return _this40._enter(event);
             });
-            EventHandler.on(_this39._element, eventOut, _this39.config.selector, function (event) {
-              return _this39._leave(event);
+            EventHandler.on(_this40._element, eventOut, _this40._config.selector, function (event) {
+              return _this40._leave(event);
             });
           }
         });
 
         this._hideModalHandler = function () {
-          if (_this39._element) {
-            _this39.hide();
+          if (_this40._element) {
+            _this40.hide();
           }
         };
 
         EventHandler.on(this._element.closest(".".concat(CLASS_NAME_MODAL)), 'hide.bs.modal', this._hideModalHandler);
 
-        if (this.config.selector) {
-          this.config = _objectSpread(_objectSpread({}, this.config), {}, {
+        if (this._config.selector) {
+          this._config = _objectSpread(_objectSpread({}, this._config), {}, {
             trigger: 'manual',
             selector: ''
           });
@@ -4492,7 +4435,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         clearTimeout(context._timeout);
         context._hoverState = HOVER_STATE_SHOW;
 
-        if (!context.config.delay || !context.config.delay.show) {
+        if (!context._config.delay || !context._config.delay.show) {
           context.show();
           return;
         }
@@ -4501,7 +4444,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           if (context._hoverState === HOVER_STATE_SHOW) {
             context.show();
           }
-        }, context.config.delay.show);
+        }, context._config.delay.show);
       }
     }, {
       key: "_leave",
@@ -4519,7 +4462,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         clearTimeout(context._timeout);
         context._hoverState = HOVER_STATE_OUT;
 
-        if (!context.config.delay || !context.config.delay.hide) {
+        if (!context._config.delay || !context._config.delay.hide) {
           context.hide();
           return;
         }
@@ -4528,7 +4471,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           if (context._hoverState === HOVER_STATE_OUT) {
             context.hide();
           }
-        }, context.config.delay.hide);
+        }, context._config.delay.hide);
       }
     }, {
       key: "_isWithActiveTrigger",
@@ -4550,12 +4493,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             delete dataAttributes[dataAttr];
           }
         });
-
-        if (config && _typeof(config.container) === 'object' && config.container.jquery) {
-          config.container = config.container[0];
-        }
-
         config = _objectSpread(_objectSpread(_objectSpread({}, this.constructor.Default), dataAttributes), _typeof(config) === 'object' && config ? config : {});
+        config.container = config.container === false ? document.body : getElement(config.container);
 
         if (typeof config.delay === 'number') {
           config.delay = {
@@ -4585,10 +4524,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       value: function _getDelegateConfig() {
         var config = {};
 
-        if (this.config) {
-          for (var key in this.config) {
-            if (this.constructor.Default[key] !== this.config[key]) {
-              config[key] = this.config[key];
+        if (this._config) {
+          for (var key in this._config) {
+            if (this.constructor.Default[key] !== this._config[key]) {
+              config[key] = this._config[key];
             }
           }
         }
@@ -4636,19 +4575,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return NAME$4;
       }
     }, {
-      key: "DATA_KEY",
-      get: function get() {
-        return DATA_KEY$4;
-      }
-    }, {
       key: "Event",
       get: function get() {
         return Event$2;
-      }
-    }, {
-      key: "EVENT_KEY",
-      get: function get() {
-        return EVENT_KEY$4;
       }
     }, {
       key: "DefaultType",
@@ -4692,10 +4621,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    */
 
 
-  defineJQueryPlugin(NAME$4, Tooltip);
+  defineJQueryPlugin(Tooltip);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): popover.js
+   * Bootstrap (v5.0.1): popover.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -4788,7 +4717,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getContent",
       value: function _getContent() {
-        return this._element.getAttribute('data-bs-content') || this.config.content;
+        return this._element.getAttribute('data-bs-content') || this._config.content;
       }
     }, {
       key: "_cleanTipClass",
@@ -4817,19 +4746,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return NAME$3;
       }
     }, {
-      key: "DATA_KEY",
-      get: function get() {
-        return DATA_KEY$3;
-      }
-    }, {
       key: "Event",
       get: function get() {
         return Event$1;
-      }
-    }, {
-      key: "EVENT_KEY",
-      get: function get() {
-        return EVENT_KEY$3;
       }
     }, {
       key: "DefaultType",
@@ -4874,10 +4793,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    */
 
 
-  defineJQueryPlugin(NAME$3, Popover);
+  defineJQueryPlugin(Popover);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): scrollspy.js
+   * Bootstrap (v5.0.1): scrollspy.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -4928,27 +4847,27 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super10 = _createSuper(ScrollSpy);
 
     function ScrollSpy(element, config) {
-      var _this40;
+      var _this41;
 
       _classCallCheck(this, ScrollSpy);
 
-      _this40 = _super10.call(this, element);
-      _this40._scrollElement = _this40._element.tagName === 'BODY' ? window : _this40._element;
-      _this40._config = _this40._getConfig(config);
-      _this40._selector = "".concat(_this40._config.target, " ").concat(SELECTOR_NAV_LINKS, ", ").concat(_this40._config.target, " ").concat(SELECTOR_LIST_ITEMS, ", ").concat(_this40._config.target, " .").concat(CLASS_NAME_DROPDOWN_ITEM);
-      _this40._offsets = [];
-      _this40._targets = [];
-      _this40._activeTarget = null;
-      _this40._scrollHeight = 0;
-      EventHandler.on(_this40._scrollElement, EVENT_SCROLL, function () {
-        return _this40._process();
+      _this41 = _super10.call(this, element);
+      _this41._scrollElement = _this41._element.tagName === 'BODY' ? window : _this41._element;
+      _this41._config = _this41._getConfig(config);
+      _this41._selector = "".concat(_this41._config.target, " ").concat(SELECTOR_NAV_LINKS, ", ").concat(_this41._config.target, " ").concat(SELECTOR_LIST_ITEMS, ", ").concat(_this41._config.target, " .").concat(CLASS_NAME_DROPDOWN_ITEM);
+      _this41._offsets = [];
+      _this41._targets = [];
+      _this41._activeTarget = null;
+      _this41._scrollHeight = 0;
+      EventHandler.on(_this41._scrollElement, EVENT_SCROLL, function () {
+        return _this41._process();
       });
 
-      _this40.refresh();
+      _this41.refresh();
 
-      _this40._process();
+      _this41._process();
 
-      return _this40;
+      return _this41;
     } // Getters
 
 
@@ -4956,7 +4875,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "refresh",
       value: // Public
       function refresh() {
-        var _this41 = this;
+        var _this42 = this;
 
         var autoMethod = this._scrollElement === this._scrollElement.window ? METHOD_OFFSET : METHOD_POSITION;
         var offsetMethod = this._config.method === 'auto' ? autoMethod : this._config.method;
@@ -4983,24 +4902,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }).sort(function (a, b) {
           return a[0] - b[0];
         }).forEach(function (item) {
-          _this41._offsets.push(item[0]);
+          _this42._offsets.push(item[0]);
 
-          _this41._targets.push(item[1]);
+          _this42._targets.push(item[1]);
         });
       }
     }, {
       key: "dispose",
       value: function dispose() {
-        _get(_getPrototypeOf(ScrollSpy.prototype), "dispose", this).call(this);
-
         EventHandler.off(this._scrollElement, EVENT_KEY$2);
-        this._scrollElement = null;
-        this._config = null;
-        this._selector = null;
-        this._offsets = null;
-        this._targets = null;
-        this._activeTarget = null;
-        this._scrollHeight = null;
+
+        _get(_getPrototypeOf(ScrollSpy.prototype), "dispose", this).call(this);
       } // Private
 
     }, {
@@ -5130,9 +5042,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return Default$1;
       }
     }, {
-      key: "DATA_KEY",
+      key: "NAME",
       get: function get() {
-        return DATA_KEY$2;
+        return NAME$2;
       }
     }, {
       key: "jQueryInterface",
@@ -5174,10 +5086,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * add .ScrollSpy to jQuery only if jQuery is present
    */
 
-  defineJQueryPlugin(NAME$2, ScrollSpy);
+  defineJQueryPlugin(ScrollSpy);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): tab.js
+   * Bootstrap (v5.0.1): tab.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -5229,7 +5141,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "show",
       value: // Public
       function show() {
-        var _this42 = this;
+        var _this43 = this;
 
         if (this._element.parentNode && this._element.parentNode.nodeType === Node.ELEMENT_NODE && this._element.classList.contains(CLASS_NAME_ACTIVE)) {
           return;
@@ -5261,9 +5173,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         var complete = function complete() {
           EventHandler.trigger(previous, EVENT_HIDDEN$1, {
-            relatedTarget: _this42._element
+            relatedTarget: _this43._element
           });
-          EventHandler.trigger(_this42._element, EVENT_SHOWN$1, {
+          EventHandler.trigger(_this43._element, EVENT_SHOWN$1, {
             relatedTarget: previous
           });
         };
@@ -5278,21 +5190,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_activate",
       value: function _activate(element, container, callback) {
-        var _this43 = this;
+        var _this44 = this;
 
         var activeElements = container && (container.nodeName === 'UL' || container.nodeName === 'OL') ? SelectorEngine.find(SELECTOR_ACTIVE_UL, container) : SelectorEngine.children(container, SELECTOR_ACTIVE);
         var active = activeElements[0];
         var isTransitioning = callback && active && active.classList.contains(CLASS_NAME_FADE$1);
 
         var complete = function complete() {
-          return _this43._transitionComplete(element, active, callback);
+          return _this44._transitionComplete(element, active, callback);
         };
 
         if (active && isTransitioning) {
-          var transitionDuration = getTransitionDurationFromElement(active);
           active.classList.remove(CLASS_NAME_SHOW$1);
-          EventHandler.one(active, 'transitionend', complete);
-          emulateTransitionEnd(active, transitionDuration);
+
+          this._queueCallback(complete, element, true);
         } else {
           complete();
         }
@@ -5349,10 +5260,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       } // Static
 
     }], [{
-      key: "DATA_KEY",
+      key: "NAME",
       get: // Getters
       function get() {
-        return DATA_KEY$1;
+        return NAME$1;
       }
     }, {
       key: "jQueryInterface",
@@ -5399,10 +5310,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * add .Tab to jQuery only if jQuery is present
    */
 
-  defineJQueryPlugin(NAME$1, Tab);
+  defineJQueryPlugin(Tab);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): toast.js
+   * Bootstrap (v5.0.1): toast.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -5417,6 +5328,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var DATA_KEY = 'bs.toast';
   var EVENT_KEY = ".".concat(DATA_KEY);
   var EVENT_CLICK_DISMISS = "click.dismiss".concat(EVENT_KEY);
+  var EVENT_MOUSEOVER = "mouseover".concat(EVENT_KEY);
+  var EVENT_MOUSEOUT = "mouseout".concat(EVENT_KEY);
+  var EVENT_FOCUSIN = "focusin".concat(EVENT_KEY);
+  var EVENT_FOCUSOUT = "focusout".concat(EVENT_KEY);
   var EVENT_HIDE = "hide".concat(EVENT_KEY);
   var EVENT_HIDDEN = "hidden".concat(EVENT_KEY);
   var EVENT_SHOW = "show".concat(EVENT_KEY);
@@ -5448,17 +5363,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super12 = _createSuper(Toast);
 
     function Toast(element, config) {
-      var _this44;
+      var _this45;
 
       _classCallCheck(this, Toast);
 
-      _this44 = _super12.call(this, element);
-      _this44._config = _this44._getConfig(config);
-      _this44._timeout = null;
+      _this45 = _super12.call(this, element);
+      _this45._config = _this45._getConfig(config);
+      _this45._timeout = null;
+      _this45._hasMouseInteraction = false;
+      _this45._hasKeyboardInteraction = false;
 
-      _this44._setListeners();
+      _this45._setListeners();
 
-      return _this44;
+      return _this45;
     } // Getters
 
 
@@ -5466,7 +5383,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "show",
       value: // Public
       function show() {
-        var _this45 = this;
+        var _this46 = this;
 
         var showEvent = EventHandler.trigger(this._element, EVENT_SHOW);
 
@@ -5481,17 +5398,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         var complete = function complete() {
-          _this45._element.classList.remove(CLASS_NAME_SHOWING);
+          _this46._element.classList.remove(CLASS_NAME_SHOWING);
 
-          _this45._element.classList.add(CLASS_NAME_SHOW);
+          _this46._element.classList.add(CLASS_NAME_SHOW);
 
-          EventHandler.trigger(_this45._element, EVENT_SHOWN);
+          EventHandler.trigger(_this46._element, EVENT_SHOWN);
 
-          if (_this45._config.autohide) {
-            _this45._timeout = setTimeout(function () {
-              _this45.hide();
-            }, _this45._config.delay);
-          }
+          _this46._maybeScheduleHide();
         };
 
         this._element.classList.remove(CLASS_NAME_HIDE);
@@ -5500,18 +5413,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         this._element.classList.add(CLASS_NAME_SHOWING);
 
-        if (this._config.animation) {
-          var transitionDuration = getTransitionDurationFromElement(this._element);
-          EventHandler.one(this._element, 'transitionend', complete);
-          emulateTransitionEnd(this._element, transitionDuration);
-        } else {
-          complete();
-        }
+        this._queueCallback(complete, this._element, this._config.animation);
       }
     }, {
       key: "hide",
       value: function hide() {
-        var _this46 = this;
+        var _this47 = this;
 
         if (!this._element.classList.contains(CLASS_NAME_SHOW)) {
           return;
@@ -5524,20 +5431,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         var complete = function complete() {
-          _this46._element.classList.add(CLASS_NAME_HIDE);
+          _this47._element.classList.add(CLASS_NAME_HIDE);
 
-          EventHandler.trigger(_this46._element, EVENT_HIDDEN);
+          EventHandler.trigger(_this47._element, EVENT_HIDDEN);
         };
 
         this._element.classList.remove(CLASS_NAME_SHOW);
 
-        if (this._config.animation) {
-          var transitionDuration = getTransitionDurationFromElement(this._element);
-          EventHandler.one(this._element, 'transitionend', complete);
-          emulateTransitionEnd(this._element, transitionDuration);
-        } else {
-          complete();
-        }
+        this._queueCallback(complete, this._element, this._config.animation);
       }
     }, {
       key: "dispose",
@@ -5549,8 +5450,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         _get(_getPrototypeOf(Toast.prototype), "dispose", this).call(this);
-
-        this._config = null;
       } // Private
 
     }, {
@@ -5561,12 +5460,70 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return config;
       }
     }, {
+      key: "_maybeScheduleHide",
+      value: function _maybeScheduleHide() {
+        var _this48 = this;
+
+        if (!this._config.autohide) {
+          return;
+        }
+
+        if (this._hasMouseInteraction || this._hasKeyboardInteraction) {
+          return;
+        }
+
+        this._timeout = setTimeout(function () {
+          _this48.hide();
+        }, this._config.delay);
+      }
+    }, {
+      key: "_onInteraction",
+      value: function _onInteraction(event, isInteracting) {
+        switch (event.type) {
+          case 'mouseover':
+          case 'mouseout':
+            this._hasMouseInteraction = isInteracting;
+            break;
+
+          case 'focusin':
+          case 'focusout':
+            this._hasKeyboardInteraction = isInteracting;
+            break;
+        }
+
+        if (isInteracting) {
+          this._clearTimeout();
+
+          return;
+        }
+
+        var nextElement = event.relatedTarget;
+
+        if (this._element === nextElement || this._element.contains(nextElement)) {
+          return;
+        }
+
+        this._maybeScheduleHide();
+      }
+    }, {
       key: "_setListeners",
       value: function _setListeners() {
-        var _this47 = this;
+        var _this49 = this;
 
         EventHandler.on(this._element, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function () {
-          return _this47.hide();
+          return _this49.hide();
+        });
+        EventHandler.on(this._element, EVENT_MOUSEOVER, function (event) {
+          return _this49._onInteraction(event, true);
+        });
+        EventHandler.on(this._element, EVENT_MOUSEOUT, function (event) {
+          return _this49._onInteraction(event, false);
+        });
+        EventHandler.on(this._element, EVENT_FOCUSIN, function (event) {
+          return _this49._onInteraction(event, true);
+        });
+        EventHandler.on(this._element, EVENT_FOCUSOUT, function (event) {
+          return _this49._onInteraction(event, false);
         });
       }
     }, {
@@ -5587,9 +5544,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return Default;
       }
     }, {
-      key: "DATA_KEY",
+      key: "NAME",
       get: function get() {
-        return DATA_KEY;
+        return NAME;
       }
     }, {
       key: "jQueryInterface",
@@ -5624,10 +5581,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    */
 
 
-  defineJQueryPlugin(NAME, Toast);
+  defineJQueryPlugin(Toast);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0): index.umd.js
+   * Bootstrap (v5.0.1): index.umd.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */

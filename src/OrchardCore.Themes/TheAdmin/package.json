@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@popperjs/core": "2.9.2",
-    "bootstrap": "5.0.0",
+    "bootstrap": "5.0.1",
     "bootstrap-select": "1.14.0-beta2",
     "bootstrap-slider": "11.0.2"
   }
