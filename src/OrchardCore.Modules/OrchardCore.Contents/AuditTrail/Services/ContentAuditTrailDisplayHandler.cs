@@ -74,7 +74,13 @@ namespace OrchardCore.Contents.AuditTrail.Services
             }
 
             var previousContentItem = previousAuditTrailEvent.As<AuditTrailContentEvent>().ContentItem;
-            if (JObject.FromObject(contentItem).FindDiff(JObject.FromObject(previousContentItem), out var diff))
+
+            var current = JObject.FromObject(contentItem);
+            var previous = JObject.FromObject(previousContentItem);
+            previous.Remove(nameof(AuditTrailPart));
+            current.Remove(nameof(AuditTrailPart));
+
+            if (current.FindDiff(previous, out var diff))
             {
                 return diff.GenerateDiffNodes(contentItem.ContentType);
             }
