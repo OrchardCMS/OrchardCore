@@ -78,12 +78,6 @@ namespace OrchardCore.Media.Controllers
             }
 
             // create default folders if not exist
-
-            if (await _mediaFileStore.GetDirectoryInfoAsync(_mediaOptions.AssetsUsersFolder) == null)
-            {
-                await _mediaFileStore.TryCreateDirectoryAsync(_mediaOptions.AssetsUsersFolder);
-            }
-
             if (await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
                 && await _mediaFileStore.GetDirectoryInfoAsync($"{_mediaOptions.AssetsUsersFolder}/{User.Identity.Name}") == null)
             {               
@@ -158,7 +152,7 @@ namespace OrchardCore.Media.Controllers
 
             if(path == _mediaOptions.AssetsUsersFolder)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot upload to UsersForlder and RolesFolder"]);                
+                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot upload to UsersForlder"]);                
             }
 
             if (string.IsNullOrEmpty(path))
@@ -235,6 +229,11 @@ namespace OrchardCore.Media.Controllers
             if (string.IsNullOrEmpty(path))
             {
                 return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete root media folder"]);
+            }
+
+            if (path == _mediaOptions.AssetsUsersFolder)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete users folder"]);
             }
 
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(path);

@@ -99,13 +99,13 @@ namespace OrchardCore.Media.Services
                 }
             }
 
-            if (levelOneFolder != _mediaOptions.AssetsUsersFolder && path != "")
-            {
-                if(!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageRootFolderMedia))
-                {
-                    return;
-                }                
-            }
+            //if (levelOneFolder != _mediaOptions.AssetsUsersFolder && path != "")
+            //{
+            //    if(!await authorizationService.AuthorizeAsync(context.User, Permissions.ManageRootFolderMedia))
+            //    {
+            //        return;
+            //    }                
+            //}
 
             if (await authorizationService.AuthorizeAsync(context.User, Permissions.ManageMedia))
             {
