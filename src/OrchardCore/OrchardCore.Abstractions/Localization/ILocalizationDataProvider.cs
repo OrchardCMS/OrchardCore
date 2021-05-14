@@ -4,6 +4,6 @@ namespace OrchardCore.Localization
 {
     public interface ILocalizationDataProvider
     {
-        IEnumerable<DataLocalizedString> GetAllStrings();
+        IEnumerable<DataLocalizedString> GetDescriptors();
     }
 }

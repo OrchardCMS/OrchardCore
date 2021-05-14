@@ -17,7 +17,7 @@ namespace OrchardCore.DataLocalization.Services
         }
         
         // TODO: Check if there's a better way to get the fields
-        public IEnumerable<DataLocalizedString> GetAllStrings()
+        public IEnumerable<DataLocalizedString> GetDescriptors()
             => _contentDefinitionService.GetTypes()
                     .SelectMany(t => t.TypeDefinition.Parts)
                     .SelectMany(p => p.PartDefinition.Fields.Select(f => new DataLocalizedString(ContentFieldsContext, f.Name)));

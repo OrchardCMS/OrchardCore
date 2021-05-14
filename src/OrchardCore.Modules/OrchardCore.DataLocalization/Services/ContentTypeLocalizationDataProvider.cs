@@ -16,7 +16,7 @@ namespace OrchardCore.DataLocalization.Services
             _contentDefinitionService = contentDefinitionService;
         }
         
-        public IEnumerable<DataLocalizedString> GetAllStrings()
+        public IEnumerable<DataLocalizedString> GetDescriptors()
             => _contentDefinitionService.GetTypes().Select(t => new DataLocalizedString(ContentTypesContext, t.DisplayName));
     }
 }

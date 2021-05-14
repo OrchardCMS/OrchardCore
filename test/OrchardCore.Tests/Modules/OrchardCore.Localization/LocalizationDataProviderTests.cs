@@ -23,7 +23,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
                         new EditTypeViewModel { DisplayName = "News" }
                     });
             var localizationDataProvider = new ContentTypeDataLocalizationProvider(contentDefinitionService.Object);
-            var localizedStrings = localizationDataProvider.GetAllStrings();
+            var localizedStrings = localizationDataProvider.GetDescriptors();
 
             Assert.Equal(3, localizedStrings.Count());
             Assert.True(localizedStrings.All(s => s.Context == "Content Types"));
@@ -40,7 +40,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
                     new EditTypeViewModel { DisplayName = "Person", TypeDefinition = CreateContentTypeDefinition("Person", "Person",  new [] { "FirstName", "LastName" }) },
                 });
             var localizationDataProvider = new ContentFieldDataLocalizationProvider(contentDefinitionService.Object);
-            var localizedStrings = localizationDataProvider.GetAllStrings();
+            var localizedStrings = localizationDataProvider.GetDescriptors();
 
             Assert.Equal(5, localizedStrings.Count());
             Assert.True(localizedStrings.All(s => s.Context == "Content Fields"));
