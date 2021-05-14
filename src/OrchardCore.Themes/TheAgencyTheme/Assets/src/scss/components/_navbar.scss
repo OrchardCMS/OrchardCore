@@ -1,0 +1,90 @@
+// Styling for the navbar
+#mainNav {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: $gray-900;
+
+    .navbar-toggler {
+        padding: 0.75rem;
+        font-family: $headings-font-family;
+        font-size: 0.75rem;
+        color: $white;
+        text-transform: uppercase;
+        background-color: $primary;
+        border: 0;
+    }
+
+    .navbar-brand {
+        color: $primary;
+        font-family: $headings-font-family;
+        font-weight: $headings-font-weight;
+        letter-spacing: $headings-letter-spacing;
+        text-transform: uppercase;
+
+        img {
+            height: 1.5rem;
+        }
+    }
+
+    .navbar-nav {
+        .nav-item {
+            .nav-link {
+                font-family: $headings-font-family;
+                font-size: 0.95rem;
+                color: $white;
+                letter-spacing: $headings-letter-spacing;
+
+                &.active,
+                &:hover {
+                    color: $primary;
+                }
+            }
+        }
+    }
+}
+
+// Responsive styling for screen width equal to or greater than the large breakpoint
+@include media-breakpoint-up(lg) {
+    #mainNav {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        border: none;
+        background-color: transparent;
+        transition: padding-top 0.3s ease-in-out,
+            padding-bottom 0.3s ease-in-out;
+
+        .navbar-brand {
+            font-size: 1.5em;
+            transition: font-size 0.3s ease-in-out;
+
+            img {
+                height: 2rem;
+                transition: height 0.3s ease-in-out;
+            }
+        }
+
+        // Styling for when the navbar shrinks on larger screens
+        &.navbar-shrink {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            background-color: $gray-900;
+
+            .navbar-brand {
+                font-size: 1.25em;
+
+                svg,
+                img {
+                    height: 1.5rem;
+                }
+            }
+        }
+
+        .navbar-nav .nav-item {
+            margin-right: 1rem;
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
+}

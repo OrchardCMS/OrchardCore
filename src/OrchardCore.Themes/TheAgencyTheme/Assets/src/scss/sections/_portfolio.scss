@@ -1,0 +1,105 @@
+// Styling for the portfolio section
+#portfolio {
+    .portfolio-item {
+        max-width: 25rem;
+        margin-left: auto;
+        margin-right: auto;
+
+        .portfolio-link {
+            position: relative;
+            display: block;
+            margin: 0 auto;
+
+            .portfolio-hover {
+                display: flex;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: fade-out($primary, 0.1);
+                align-items: center;
+                justify-content: center;
+                opacity: 0;
+                transition: opacity ease-in-out 0.25s;
+
+                .portfolio-hover-content {
+                    font-size: 1.25rem;
+                    color: white;
+                }
+            }
+
+            &:hover {
+                .portfolio-hover {
+                    opacity: 1;
+                }
+            }
+        }
+
+        .portfolio-caption {
+            padding: 1.5rem;
+            text-align: center;
+            background-color: $white;
+
+            .portfolio-caption-heading {
+                font-size: 1.5rem;
+                font-family: $headings-font-family;
+                font-weight: $headings-font-weight;
+                margin-bottom: 0;
+            }
+
+            .portfolio-caption-subheading {
+                font-style: italic;
+                font-family: $subheadings-font-family;
+            }
+        }
+    }
+}
+
+.portfolio-modal {
+    .modal-dialog {
+        margin: 1rem;
+        max-width: 100vw;
+    }
+
+    .modal-content {
+        padding-top: 6rem;
+        padding-bottom: 6rem;
+        text-align: center;
+
+        h2 {
+            font-size: 3rem;
+            line-height: 3rem;
+        }
+
+        p.item-intro {
+            font-style: italic;
+            margin-bottom: 2rem;
+            font-family: $subheadings-font-family;
+        }
+
+        p {
+            margin-bottom: 2rem;
+        }
+
+        ul.list-inline {
+            margin-bottom: 2rem;
+        }
+
+        img {
+            margin-bottom: 2rem;
+        }
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        width: 3rem;
+        height: 3rem;
+        cursor: pointer;
+        background-color: transparent;
+
+        &:hover {
+            opacity: 0.3;
+        }
+    }
+}

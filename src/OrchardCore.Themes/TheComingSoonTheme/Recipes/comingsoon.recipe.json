@@ -332,7 +332,7 @@
             "Title": "Coming Soon"
           },
           "HtmlBodyPart": {
-            "Html": "\r\n<div class=\"input-group input-group-newsletter\">\r\n                <input class=\"form-control\" aria-describedby=\"basic-addon\" aria-label=\"Enter email...\" type=\"email\" placeholder=\"Enter email...\">\r\n                <div class=\"input-group-append\">\r\n                  <button class=\"btn btn-secondary\" type=\"button\">Notify Me!</button>\r\n                </div>\r\n              </div>"
+            "Html": "\r\n<div class=\"input-group input-group-newsletter\">\r\n                <input class=\"form-control\" aria-describedby=\"submit-button\" aria-label=\"Enter email...\" type=\"email\" placeholder=\"Enter email...\">\r\n                <div class=\"input-group-append\">\r\n                  <button class=\"btn btn-secondary\" id=\"submit-button\" type=\"button\">Notify Me!</button>\r\n                </div>\r\n              </div>"
           },
           "SocialIcons": {
             "ContentItems": [
