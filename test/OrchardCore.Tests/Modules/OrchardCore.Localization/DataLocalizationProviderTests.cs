@@ -10,7 +10,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Localization
 {
-    public class LocalizationDataProviderTests
+    public class DataLocalizationProviderTests
     {
         [Fact]
         public void ContentTypeDataLocalizationProvider_GetLocalizedStrings()
@@ -22,8 +22,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
                         new EditTypeViewModel { DisplayName = "BlogPost" },
                         new EditTypeViewModel { DisplayName = "News" }
                     });
-            var localizationDataProvider = new ContentTypeDataLocalizationProvider(contentDefinitionService.Object);
-            var localizedStrings = localizationDataProvider.GetDescriptors();
+            var dataLocalizationProvider = new ContentTypeDataLocalizationProvider(contentDefinitionService.Object);
+            var localizedStrings = dataLocalizationProvider.GetDescriptors();
 
             Assert.Equal(3, localizedStrings.Count());
             Assert.True(localizedStrings.All(s => s.Context == "Content Types"));
@@ -39,8 +39,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
                     new EditTypeViewModel { DisplayName = "BlogPost", TypeDefinition = CreateContentTypeDefinition("BlogPost", "Blog Post", new [] { "Title", "Body", "Author" }) },
                     new EditTypeViewModel { DisplayName = "Person", TypeDefinition = CreateContentTypeDefinition("Person", "Person",  new [] { "FirstName", "LastName" }) },
                 });
-            var localizationDataProvider = new ContentFieldDataLocalizationProvider(contentDefinitionService.Object);
-            var localizedStrings = localizationDataProvider.GetDescriptors();
+            var dataLocalizationProvider = new ContentFieldDataLocalizationProvider(contentDefinitionService.Object);
+            var localizedStrings = dataLocalizationProvider.GetDescriptors();
 
             Assert.Equal(5, localizedStrings.Count());
             Assert.True(localizedStrings.All(s => s.Context == "Content Fields"));
