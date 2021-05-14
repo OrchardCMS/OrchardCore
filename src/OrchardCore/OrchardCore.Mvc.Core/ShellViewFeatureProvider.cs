@@ -31,13 +31,7 @@ namespace OrchardCore.Mvc
         {
             EnsureScopedServices();
 
-            // Module compiled views are only served if not in dev mode or if the 'refs' folder doesn't exists.
-            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-            if (!_hostingEnvironment.IsDevelopment() || !refsFolderExists)
-            {
-                PopulateFeatureInternal(parts, feature);
-            }
+            PopulateFeatureInternal(parts, feature);
 
             // Apply views feature providers registered at the tenant level.
             foreach (var provider in _featureProviders)
@@ -82,8 +76,23 @@ namespace OrchardCore.Mvc
             var modules = _applicationContext.Application.Modules;
             var moduleFeature = new ViewsFeature();
             
+            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
+
             foreach (var module in modules)
             {
+                // If the module and the application assemblies are at the same location,
+                // this means that the module is as a project in dev and not referenced as a package.                
+                if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
+                    == Path.GetDirectoryName(_applicationContext.Application.Assembly.Location))
+                {
+                    // Do not serve Module compiled views in dev mode  and the 'refs' folder exists.
+                    if (refsFolderExists &&_hostingEnvironment.IsDevelopment())
+                    {
+                       continue;
+                    }
+                }
+                
+                // Module compiled views are only served if not in dev mode or if the 'refs' folder doesn't exists.
                 var assembliesWithViews = new List<Assembly>();
 
                 var relatedAssemblyAttribute = module.Assembly.GetCustomAttribute<RelatedAssemblyAttribute>();
