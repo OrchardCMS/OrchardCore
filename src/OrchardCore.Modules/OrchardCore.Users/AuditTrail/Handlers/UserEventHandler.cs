@@ -95,7 +95,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                 { "UserName", user.UserName }
             };
 
-            await _auditTrailManager.AddAuditTrailEventAsync<UserAuditTrailEventProvider>(
+            await _auditTrailManager.RecordAuditTrailEventAsync<UserAuditTrailEventProvider>(
                 new AuditTrailContext(eventName, userName, eventData, "user", userId));
         }
 
@@ -111,7 +111,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                 { "UserName", userName }
             };
 
-            await _auditTrailManager.AddAuditTrailEventAsync<UserAuditTrailEventProvider>(
+            await _auditTrailManager.RecordAuditTrailEventAsync<UserAuditTrailEventProvider>(
                 new AuditTrailContext(
                     eventName,
                     eventName == UserAuditTrailEventProvider.Created ? userName : _httpContextAccessor.GetCurrentUserName(),

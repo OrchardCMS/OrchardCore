@@ -42,7 +42,7 @@ namespace OrchardCore.AuditTrail.Services
             return shape;
         }
 
-        public Task<IShape> BuildDisplayAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
+        public Task<IShape> BuildDisplayEventAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
             BuildDisplayAsync("AuditTrailEvent", auditTrailEvent, displayType);
 
         public Task<IShape> BuildDisplayActionsAsync(AuditTrailEvent auditTrailEvent, string displayType) =>

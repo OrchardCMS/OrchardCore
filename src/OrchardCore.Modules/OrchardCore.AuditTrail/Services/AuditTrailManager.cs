@@ -61,7 +61,7 @@ namespace OrchardCore.AuditTrail.Services
             T = stringLocalizer;
         }
 
-        public async Task AddAuditTrailEventAsync<TAuditTrailEventProvider>(AuditTrailContext auditTrailContext)
+        public async Task RecordAuditTrailEventAsync<TAuditTrailEventProvider>(AuditTrailContext auditTrailContext)
             where TAuditTrailEventProvider : IAuditTrailEventProvider
         {
             if (_shellSettings.State == TenantState.Initializing && String.IsNullOrEmpty(auditTrailContext.UserName))
@@ -124,7 +124,7 @@ namespace OrchardCore.AuditTrail.Services
             {
                 var filterContext = new QueryFilterContext(query, filters);
 
-                _auditTrailEventHandlers.Invoke((handler, context) => handler.Filter(context), filterContext, _logger);
+                _auditTrailEventHandlers.Invoke((handler, context) => handler.FilterAsync(context), filterContext, _logger);
 
                 query = filterContext.Query;
             }

@@ -36,7 +36,10 @@ namespace OrchardCore.AuditTrail.Drivers
         {
             if (context.GroupId == AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId)
             {
-                if (!await IsAuthorizedToManageAuditTrailSettingsAsync()) return null;
+                if (!await IsAuthorizedToManageAuditTrailSettingsAsync())
+                {
+                    return null;
+                }
 
                 var model = new AuditTrailTrimmingSettingsViewModel();
 

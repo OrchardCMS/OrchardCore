@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Indexes;
@@ -13,7 +14,7 @@ namespace OrchardCore.AuditTrail.Services
             T = stringLocalizer;
         }
 
-        public override void Filter(QueryFilterContext context)
+        public override Task FilterAsync(QueryFilterContext context)
         {
             var userName = context.Filters.Get("username")?.Trim();
             var category = context.Filters.Get("category");
@@ -39,6 +40,8 @@ namespace OrchardCore.AuditTrail.Services
             {
                 context.Query.With<AuditTrailEventIndex>(index => index.CreatedUtc <= to.Value.AddDays(1));
             }
+
+            return Task.CompletedTask;
         }
 
         private DateTime? GetDateFromFilter(Filters filters, string fieldName, string prefix)

@@ -22,6 +22,6 @@ namespace OrchardCore.AuditTrail.Services
         /// <summary>
         /// Filters Audit Trail events based on the values of a query string.
         /// </summary>
-        void Filter(QueryFilterContext context);
+        Task FilterAsync(QueryFilterContext context);
     }
 }

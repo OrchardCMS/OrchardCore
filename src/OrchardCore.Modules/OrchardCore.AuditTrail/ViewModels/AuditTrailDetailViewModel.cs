@@ -1,10 +1,10 @@
-﻿using OrchardCore.AuditTrail.Models;
+using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.AuditTrail.ViewModels
 {
-    public class AuditTrailDetailsViewModel
+    public class AuditTrailDetailViewModel
     {
         public AuditTrailEvent AuditTrailEvent { get; set; }
         public AuditTrailEventDescriptor Descriptor { get; set; }

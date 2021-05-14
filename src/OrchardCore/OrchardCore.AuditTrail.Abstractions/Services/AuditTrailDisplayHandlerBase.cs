@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Services.Models;
 
 namespace OrchardCore.AuditTrail.Services

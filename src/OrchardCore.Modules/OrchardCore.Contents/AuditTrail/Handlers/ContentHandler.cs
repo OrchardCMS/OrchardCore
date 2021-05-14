@@ -91,7 +91,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 { "VersionNumber", versionNumber }
             };
 
-            await _auditTrailManager.AddAuditTrailEventAsync<ContentAuditTrailEventProvider>(new AuditTrailContext
+            await _auditTrailManager.RecordAuditTrailEventAsync<ContentAuditTrailEventProvider>(new AuditTrailContext
             (
                 eventName,
                 _httpContextAccessor.GetCurrentUserName(),

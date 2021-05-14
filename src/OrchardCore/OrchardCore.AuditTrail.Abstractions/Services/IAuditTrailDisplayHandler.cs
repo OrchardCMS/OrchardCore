@@ -9,12 +9,12 @@ namespace OrchardCore.AuditTrail.Services
     public interface IAuditTrailDisplayHandler
     {
         /// <summary>
-        /// Adds custom UI elements which can be used to filter Audit Trail events.
+        /// Adds custom UI elements used to filter Audit Trail events.
         /// </summary>
         Task DisplayFiltersAsync(DisplayFiltersContext context);
 
         /// <summary>
-        /// Adds custom data while rendering a given Audit Trail event.
+        /// Adds custom properties used to render an Audit Trail event.
         /// </summary>
         Task DisplayEventAsync(DisplayEventContext context);
     }

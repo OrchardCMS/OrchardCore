@@ -8,26 +8,26 @@ using System.Threading.Tasks;
 namespace OrchardCore.AuditTrail.Services
 {
     /// <summary>
-    /// Central service for the Audit Trail feature.
+    /// Describes a service managing audit trail events.
     /// </summary>
     public interface IAuditTrailManager
     {
         /// <summary>
         /// Records an audit trail event.
         /// </summary>
-        /// <typeparam name="TAuditTrailEventProvider">The audit trail event provider type to determine the scope of the event name.</typeparam>
+        /// <typeparam name="TAuditTrailEventProvider">The provider type to determine the event scope.</typeparam>
         /// <param name="auditTrailContext">The context used to create a new audit trail event.</param>
-        Task AddAuditTrailEventAsync<TAuditTrailEventProvider>(AuditTrailContext auditTrailContext)
+        Task RecordAuditTrailEventAsync<TAuditTrailEventProvider>(AuditTrailContext auditTrailContext)
             where TAuditTrailEventProvider : IAuditTrailEventProvider;
 
         /// <summary>
-        /// Gets a page of events from the audit trail.
+        /// Gets a page of audit trail events.
         /// </summary>
         /// <param name="page">The page number to get events from.</param>
         /// <param name="pageSize">The number of events to get.</param>
-        /// <param name="orderBy">The value to order by.</param>
-        /// <param name="filters">Optional. An object to filter the records on.</param>
-        /// <returns>A page of events.</returns>
+        /// <param name="filters">An optional <see cref="Filters"/>.</param>
+        /// <param name="orderBy">an optional <see cref="AuditTrailOrderBy"/>.</param>
+        /// <returns>The <see cref="AuditTrailEventSearchResults"/>.</returns>
         Task<AuditTrailEventSearchResults> GetAuditTrailEventsAsync(
             int page,
             int pageSize,
@@ -35,10 +35,10 @@ namespace OrchardCore.AuditTrail.Services
             AuditTrailOrderBy orderBy = AuditTrailOrderBy.DateDescending);
 
         /// <summary>
-        /// Gets a single event from the audit trail by ID.
+        /// Gets a single audit trail event by ID.
         /// </summary>
         /// <param name="auditTrailEventId">The event ID.</param>
-        /// <returns>A single event.</returns>
+        /// <returns>The <see cref="AuditTrailEvent"/>.</returns>
         Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId);
 
         /// <summary>
@@ -48,21 +48,22 @@ namespace OrchardCore.AuditTrail.Services
         Task<int> TrimAsync(TimeSpan retentionPeriod);
 
         /// <summary>
-        /// Describes all audit trail events provided by the system.
+        /// Describes all audit trail event categories.
         /// </summary>
-        /// <returns>A list of audit trail category descriptors.</returns>
+        /// <returns>The list of <see cref="AuditTrailCategoryDescriptor"/>.</returns>
         IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories();
 
         /// <summary>
         /// Describes all audit trail event providers.
         /// </summary>
+        /// <returns>The <see cref="DescribeContext"/>.</returns>
         DescribeContext DescribeProviders();
 
         /// <summary>
         /// Describes a single audit trail event.
         /// </summary>
-        /// <param name="auditTrailEvent">The audit trail event for which to find its descriptor.</param>
-        /// <returns>A single audit trail event descriptor.</returns>
+        /// <param name="auditTrailEvent">The <see cref="AuditTrailEvent"/> to describe.</param>
+        /// <returns>The <see cref="AuditTrailEventDescriptor"/>.</returns>
         AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent auditTrailEvent);
     }
 }

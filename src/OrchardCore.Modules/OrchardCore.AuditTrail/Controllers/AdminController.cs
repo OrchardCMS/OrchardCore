@@ -84,7 +84,7 @@ namespace OrchardCore.AuditTrail.Controllers
 
             foreach (var model in auditTrailEventsSummaryViewModel)
             {
-                model.SummaryShape = await _auditTrailEventDisplayManager.BuildDisplayAsync(model.AuditTrailEvent, "SummaryAdmin");
+                model.SummaryShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(model.AuditTrailEvent, "SummaryAdmin");
                 model.ActionsShape = await _auditTrailEventDisplayManager.BuildDisplayActionsAsync(model.AuditTrailEvent, "SummaryAdmin");
             }
 
@@ -110,11 +110,11 @@ namespace OrchardCore.AuditTrail.Controllers
                 return NotFound();
             }
 
-            return View(new AuditTrailDetailsViewModel
+            return View(new AuditTrailDetailViewModel
             {
                 AuditTrailEvent = auditTrailEvent,
                 Descriptor = _auditTrailManager.DescribeEvent(auditTrailEvent),
-                DetailsShape = await _auditTrailEventDisplayManager.BuildDisplayAsync(auditTrailEvent, "Detail")
+                DetailsShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(auditTrailEvent, "Detail")
             });
         }
     }
