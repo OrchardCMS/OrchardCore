@@ -74,7 +74,7 @@ else
                         <td>@await DisplayAsync(ev.ActionsShape)</td>
                         <td>@ev.CategoryDescriptor.LocalizedName</td>
                         <td>@ev.EventDescriptor.LocalizedName</td>
-                        <td>@ev.AuditTrailEvent.UserName Kéchichian</td>
+                        <td>@ev.AuditTrailEvent.UserName</td>
                         <td>@ev.AuditTrailEvent.ClientIpAddress</td>
                         <td>@await DisplayAsync(await New.DateTime(Utc: ev.AuditTrailEvent.CreatedUtc, Format: "g"))</td>
                         <td>@await DisplayAsync(ev.SummaryShape)</td>
