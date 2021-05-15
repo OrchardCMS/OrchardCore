@@ -7,6 +7,6 @@ namespace OrchardCore.AuditTrail.Settings
     {
         public bool EnableClientIpAddressLogging { get; set; }
         public IList<AuditTrailEventSetting> EventSettings { get; set; } = new List<AuditTrailEventSetting>();
-        public string[] IgnoredContentTypeNames { get; set; } = Array.Empty<string>();
+        public string[] AllowedContentTypeNames { get; set; } = Array.Empty<string>();
     }
 }

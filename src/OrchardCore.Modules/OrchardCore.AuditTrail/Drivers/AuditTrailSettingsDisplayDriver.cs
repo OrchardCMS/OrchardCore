@@ -8,7 +8,6 @@ using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.AuditTrail.ViewModels;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -76,7 +75,7 @@ namespace OrchardCore.AuditTrail.Drivers
 
                     model.Categories = categories;
                     model.EnableClientIpAddressLogging = settings.EnableClientIpAddressLogging;
-                    model.IgnoredContentTypeNames = settings.IgnoredContentTypeNames;
+                    model.AllowedContentTypeNames = settings.AllowedContentTypeNames;
                 }).Location("Content:1").OnGroup(AuditTrailSettingsGroupId);
 
         public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, BuildEditorContext context)
@@ -106,7 +105,7 @@ namespace OrchardCore.AuditTrail.Drivers
                 }
 
                 settings.EnableClientIpAddressLogging = model.EnableClientIpAddressLogging;
-                settings.IgnoredContentTypeNames = model.IgnoredContentTypeNames;
+                settings.AllowedContentTypeNames = model.AllowedContentTypeNames;
 
                 settings.EventSettings = eventSettings
                     .SelectMany(categorySettings => categorySettings.Events

@@ -6,6 +6,6 @@ namespace OrchardCore.AuditTrail.ViewModels
     {
         public bool EnableClientIpAddressLogging { get; set; }
         public AuditTrailCategorySettingsViewModel[] Categories { get; set; } = Array.Empty<AuditTrailCategorySettingsViewModel>();
-        public string[] IgnoredContentTypeNames { get; set; } = Array.Empty<string>();
+        public string[] AllowedContentTypeNames { get; set; } = Array.Empty<string>();
     }
 }

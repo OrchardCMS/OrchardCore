@@ -2,7 +2,7 @@
 
 <section>
     <div class="form-group">
-        <h5>@T["Audit trail events to record"]</h5>
+        <h5>@T["Events to record"]</h5>
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -36,8 +36,8 @@
                                         @e.Name
                                     </td>
                                     <td>@e.Description</td>
-                                    <td class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input check-all-slave" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled" />
+                                    <td class="custom-control custom-checkbox check-all-slave">
+                                        <input type="checkbox" class="custom-control-input" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled" />
                                         <label class="custom-control-label" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">@e.Name</label>
                                         <input asp-for="Categories[categoriesIndex].Events[eventsIndex].Name" type="hidden">
                                     </td>
@@ -61,12 +61,18 @@
         <span class="hint">@T["Whether the client IP address is recorded."]</span>
     </div>
 
-    <div class="form-group" asp-validation-class-for="IgnoredContentTypeNames">
-        <h5>@T["Ignored content types"]</h5>
-        @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.IgnoredContentTypeNames, htmlName = Html.NameFor(m => m.IgnoredContentTypeNames) })
-        <span asp-validation-for="IgnoredContentTypeNames"></span>
-        <span class="hint">@T["Select any content type to be ignored."]</span>
-</div>
+    <div class="form-group check-all-container" asp-validation-class-for="AllowedContentTypeNames">
+        <h5>@T["Allowed content types"]</h5>
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input check-all-master" id="select-all" />
+            <label class="custom-control-label" for="select-all">@T["Select all"]</label>
+        </div>
+        <div class="check-all-slave">
+            @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.AllowedContentTypeNames, htmlName = Html.NameFor(m => m.AllowedContentTypeNames) })
+        </div>
+        <span asp-validation-for="AllowedContentTypeNames"></span>
+        <span class="hint">@T["The content types whose events are recorded."]</span>
+    </div>
 </section>
 
 <script at="Foot" type="text/javascript">
@@ -74,7 +80,7 @@
         $('.check-all-container').each(function () {
             var container = $(this);
             var master = container.find('input[type="checkbox"].check-all-master');
-            var slaves = container.find('input[type="checkbox"]:not(:disabled).check-all-slave');
+            var slaves = container.find('.check-all-slave input[type="checkbox"]:not(:disabled)');
 
             var updateMaster = function () {
                 var allChecked = slaves.filter(':not(:checked)').length == 0;
