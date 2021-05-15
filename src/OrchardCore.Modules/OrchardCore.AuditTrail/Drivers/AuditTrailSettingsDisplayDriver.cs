@@ -74,8 +74,8 @@ namespace OrchardCore.AuditTrail.Drivers
                         .ToArray();
 
                     model.Categories = categories;
-                    model.EnableClientIpAddressLogging = settings.EnableClientIpAddressLogging;
-                    model.AllowedContentTypeNames = settings.AllowedContentTypeNames;
+                    model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
+                    model.AllowedContentTypes = settings.AllowedContentTypes;
                 }).Location("Content:1").OnGroup(AuditTrailSettingsGroupId);
 
         public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, BuildEditorContext context)
@@ -104,8 +104,8 @@ namespace OrchardCore.AuditTrail.Drivers
                     eventSetting.IsEnabled = eventSettingViewModel.IsEnabled || descriptor.IsMandatory;
                 }
 
-                settings.EnableClientIpAddressLogging = model.EnableClientIpAddressLogging;
-                settings.AllowedContentTypeNames = model.AllowedContentTypeNames;
+                settings.ClientIpAddressAllowed = model.ClientIpAddressAllowed;
+                settings.AllowedContentTypes = model.AllowedContentTypes;
 
                 settings.EventSettings = eventSettings
                     .SelectMany(categorySettings => categorySettings.Events

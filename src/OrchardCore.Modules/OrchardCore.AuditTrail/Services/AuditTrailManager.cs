@@ -102,7 +102,7 @@ namespace OrchardCore.AuditTrail.Services
                     EventFilterData = context.EventFilterData,
                     EventFilterKey = context.EventFilterKey,
                     ClientIpAddress = String.IsNullOrEmpty(context.ClientIpAddress)
-                        ? await GetClientAddressAsync()
+                        ? await GetClientIpAddressAsync()
                         : context.ClientIpAddress
                 };
 
@@ -216,10 +216,10 @@ namespace OrchardCore.AuditTrail.Services
                 .Select(categoryDescriptor => categoryDescriptor.Category)
                 .FirstOrDefault();
 
-        private async Task<string> GetClientAddressAsync()
+        private async Task<string> GetClientIpAddressAsync()
         {
             var settings = await GetAuditTrailSettingsAsync();
-            if (!settings.EnableClientIpAddressLogging)
+            if (!settings.ClientIpAddressAllowed)
             {
                 return null;
             }

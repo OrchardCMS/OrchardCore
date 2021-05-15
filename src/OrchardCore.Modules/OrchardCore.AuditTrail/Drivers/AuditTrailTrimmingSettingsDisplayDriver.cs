@@ -27,7 +27,7 @@ namespace OrchardCore.AuditTrail.Drivers
                 ? null
                 : Initialize<AuditTrailTrimmingSettingsViewModel>("AuditTrailTrimmingSettings_Edit", model =>
                 {
-                    model.RetentionPeriodDays = section.RetentionPeriodDays;
+                    model.RetentionDays = section.RetentionDays;
                     model.LastRunUtc = section.LastRunUtc;
                     model.Disabled = section.Disabled;
                 }).Location("Content:10").OnGroup(AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId);
@@ -42,10 +42,9 @@ namespace OrchardCore.AuditTrail.Drivers
                 }
 
                 var model = new AuditTrailTrimmingSettingsViewModel();
-
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                section.RetentionPeriodDays = model.RetentionPeriodDays;
+                section.RetentionDays = model.RetentionDays;
                 section.Disabled = model.Disabled;
             }
 

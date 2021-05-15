@@ -76,7 +76,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
             var auditTrailSettings = siteSettings.As<AuditTrailSettings>();
-            if (!auditTrailSettings.AllowedContentTypeNames.Contains(content.ContentItem.ContentType))
+            if (!auditTrailSettings.AllowedContentTypes.Contains(content.ContentItem.ContentType))
             {
                 return;
             }

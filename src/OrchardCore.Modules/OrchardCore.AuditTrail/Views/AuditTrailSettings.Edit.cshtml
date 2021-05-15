@@ -1,8 +1,14 @@
 @model AuditTrailSettingsViewModel
 
+@{ 
+    RenderTitleSegments(T["Audit Trail"]);
+}
+
+<zone name="Title" position="before"><h1 class="float-left pr-2">@T["Audit Trail"]</h1></zone>
+
 <section>
     <div class="form-group">
-        <h5>@T["Events to record"]</h5>
+        <label class="" for="Categories">@T["Events to record"]</label>
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -52,26 +58,25 @@
         </table>
     </div>
 
-    <div class="form-group" asp-validation-class-for="EnableClientIpAddressLogging">
-        <h5>@T["Client IP address logging"]</h5>
-        <div class="custom-control custom-checkbox">
-            <input asp-for="EnableClientIpAddressLogging" class="custom-control-input" type="checkbox" />
-            <label asp-for="EnableClientIpAddressLogging" class="custom-control-label">@T["Enable client IP address logging"]</label>
-        </div>
-        <span class="hint">@T["Whether the client IP address is recorded."]</span>
-    </div>
-
-    <div class="form-group check-all-container" asp-validation-class-for="AllowedContentTypeNames">
-        <h5>@T["Allowed content types"]</h5>
+    <div class="form-group check-all-container" asp-validation-class-for="AllowedContentTypes">
+        <label asp-for="AllowedContentTypes">@T["Allowed content types"]</label>
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input check-all-master" id="select-all" />
             <label class="custom-control-label" for="select-all">@T["Select all"]</label>
         </div>
         <div class="check-all-slave">
-            @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.AllowedContentTypeNames, htmlName = Html.NameFor(m => m.AllowedContentTypeNames) })
+            @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.AllowedContentTypes, htmlName = Html.NameFor(m => m.AllowedContentTypes) })
         </div>
-        <span asp-validation-for="AllowedContentTypeNames"></span>
-        <span class="hint">@T["The content types whose events are recorded."]</span>
+        <span asp-validation-for="AllowedContentTypes"></span>
+        <span class="hint">@T["The types of content whose events are recorded."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="ClientIpAddressAllowed">
+        <div class="custom-control custom-checkbox">
+            <input asp-for="ClientIpAddressAllowed" class="custom-control-input" type="checkbox" />
+            <label asp-for="ClientIpAddressAllowed" class="custom-control-label">@T["Allow client IP address"]</label>
+        </div>
+        <span class="hint">@T["Whether the client IP address is recorded."]</span>
     </div>
 </section>
 

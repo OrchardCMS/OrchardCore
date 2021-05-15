@@ -6,17 +6,17 @@
 
 <section>
     <div class="form-group">
-        <h5>@T["Trimming settings"]</h5>
+        @*<h5>@T["Trimming settings"]</h5>*@
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="Disabled" checked="@Model.Disabled" />
-            <label class="custom-control-label" asp-for="Disabled">@T["Disabled"]</label>
+            <label class="custom-control-label" asp-for="Disabled">@T["Disable trimming task"]</label>
         </div>
         <span class="hint">@T["Whether the trimming task is disabled."]</span>
     </div>
 
-    <div class="form-group" asp-validation-class-for="RetentionPeriodDays">
-        <label asp-for="RetentionPeriodDays">@T["Retention period"]</label>
-        <input asp-for="RetentionPeriodDays" type="number" class="form-control" />
+    <div class="form-group" asp-validation-class-for="RetentionDays">
+        <label asp-for="RetentionDays">@T["Retention period"]</label>
+        <input asp-for="RetentionDays" type="number" class="form-control" />
         <span class="hint">@T["The number of days an event is retained."]</span>
     </div>
 
