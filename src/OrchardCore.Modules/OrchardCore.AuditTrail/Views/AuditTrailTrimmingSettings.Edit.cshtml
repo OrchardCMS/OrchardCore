@@ -1,29 +1,28 @@
 @model AuditTrailTrimmingSettingsViewModel
 
-@{ 
+@{
     var lastRunUtc = Model.LastRunUtc;
 }
 
 <section>
-    <h5 class="form-group">@T["Trimming settings"]</h5>
-
-    <div class="col-md-6 col-lg-4 form-group">
+    <div class="form-group">
+        <h5>@T["Trimming settings"]</h5>
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="Disabled" checked="@Model.Disabled" />
             <label class="custom-control-label" asp-for="Disabled">@T["Disabled"]</label>
-            <span class="hint">— @T["Check to disable audit trail trimming."]</span>
         </div>
+        <span class="hint">@T["Whether the audit trail trimming is disabled."]</span>
     </div>
 
-    <div class="col-md-6 col-lg-4 form-group" asp-validation-class-for="RetentionPeriodDays">
+    <div class="form-group" asp-validation-class-for="RetentionPeriodDays">
         <label asp-for="RetentionPeriodDays">@T["Retention period"]</label>
-        <input asp-for="RetentionPeriodDays" type="number" class="form-control">
-        <span class="hint">@T["The number of days of audit log data to retain."]</span>
+        <input asp-for="RetentionPeriodDays" type="number" class="form-control" />
+        <span class="hint">@T["The number of days an audit trail event is retained."]</span>
     </div>
 
-    <div class="col-md-6 col-lg-4 form-group" asp-validation-class-for="LastRunUtc">
+    <div class="form-group" asp-validation-class-for="LastRunUtc">
         <label asp-for="LastRunUtc">@T["Last run"]</label>
-        <h6>@(lastRunUtc.HasValue ? await DisplayAsync(await New.DateTime(Utc: lastRunUtc.Value)) : T["Never"])</h6>
-        <span class="hint">@T["Indicates the last time the audit trail trimming process was run."]</span>
+        <div class="form-control">@(lastRunUtc.HasValue ? await DisplayAsync(await New.DateTime(Utc: lastRunUtc.Value, Format: "g")) : T["Never"])</div>
+        <span class="hint">@T["The last time the audit trail trimming was run."]</span>
     </div>
 </section>

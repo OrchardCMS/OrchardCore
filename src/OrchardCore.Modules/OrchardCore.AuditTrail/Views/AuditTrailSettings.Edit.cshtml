@@ -5,65 +5,72 @@
 }
 
 <section>
-    <zone name="Title"><h4>@T["Events to record in the audit trail"]</h4></zone>
-
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th scope="col">@T["Event"]</th>
-                <th scope="col">@T["Description"]</th>
-                <th scope="col">@T["Enabled"]</th>
-            </tr>
-        </thead>
-        @{ var categoriesIndex = 0; }
-        @foreach (var category in Model.Categories)
-        {
-            <tbody class="check-all-container">
-                <tr class="table-secondary">
-                    <td colspan="2">
-                        <strong>@category.Name</strong>
-                    </td>
-                    <td class="custom-checkbox">
-                        <input type="checkbox" class="custom-control-input check-all-master" id="@category.Name" />
-                        <label class="custom-control-label" for="@category.Name">@T["Select all"]</label>
-                    </td>
+    <div class="form-group">
+        <h5>@T["Audit trail events to record"]</h5>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">@T["Event"]</th>
+                    <th scope="col">@T["Description"]</th>
+                    <th scope="col">@T["Enabled"]</th>
                 </tr>
-                @{ var eventsIndex = 0; }
-                @foreach (var e in category.Events)
+            </thead>
+            @{
+                var categoriesIndex = 0;
+                foreach (var category in Model.Categories)
                 {
-                    <tr>
-                        <td>
-                            <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].Event">
-                            <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].Name">
-                            @e.Name
-                        </td>
-                        <td>@e.Description</td>
-                        <td class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input check-all-slave" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">
-                            <label class="custom-control-label" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">@e.Name</label>
-                            <input asp-for="Categories[categoriesIndex].Events[eventsIndex].Name" type="hidden">
-                        </td>
-                    </tr>
-                    eventsIndex++;
+                    <tbody class="check-all-container">
+                        <tr class="table-secondary">
+                            <td colspan="2">
+                                <strong>@category.Name</strong>
+                            </td>
+                            <td class="custom-checkbox">
+                                <input type="checkbox" class="custom-control-input check-all-master" id="@category.Name" />
+                                <label class="custom-control-label" for="@category.Name">@T["Select all"]</label>
+                            </td>
+                        </tr>
+                        @{
+                            var eventsIndex = 0;
+                            foreach (var e in category.Events)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].Event">
+                                        <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].Name">
+                                        @e.Name
+                                    </td>
+                                    <td>@e.Description</td>
+                                    <td class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input check-all-slave" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled" />
+                                        <label class="custom-control-label" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">@e.Name</label>
+                                        <input asp-for="Categories[categoriesIndex].Events[eventsIndex].Name" type="hidden">
+                                    </td>
+                                </tr>
+                                eventsIndex++;
+                            }
+                        }
+                    </tbody>
+                    categoriesIndex++;
                 }
-            </tbody>
-            categoriesIndex++;
-        }
-    </table>
-
-    <h5 class="form-group">@T["Client IP address logging"]</h5>
-    <div class="form-group" asp-validation-class-for="EnableClientIpAddressLogging">
-        <div class="custom-control custom-checkbox">
-            <input asp-for="EnableClientIpAddressLogging" class="custom-control-input" type="checkbox">
-            <label asp-for="EnableClientIpAddressLogging" class="custom-control-label">@T["Enable client IP address logging"]</label>
-            <span class="hint">— @T["When enabled, the client IP address will be recorded in audit trail event records."]</span>
-        </div>
+            }
+        </table>
     </div>
 
-    <h5 class="form-group">@T["Ignored content types"]</h5>
-    <button class="btn btn-primary form-group" type="button" data-toggle="modal" data-target="#contentTypesModal" aria-expanded="true">
-        @T["Set ignored content types"]
-    </button>
+    <div class="form-group" asp-validation-class-for="EnableClientIpAddressLogging">
+        <h5>@T["Client IP address logging"]</h5>
+        <div class="custom-control custom-checkbox">
+            <input asp-for="EnableClientIpAddressLogging" class="custom-control-input" type="checkbox" />
+            <label asp-for="EnableClientIpAddressLogging" class="custom-control-label">@T["Enable client IP address logging"]</label>
+        </div>
+        <span class="hint">@T["Whether the client IP address is recorded."]</span>
+    </div>
+
+    <div class="form-group">
+        <h5>@T["Ignored content types"]</h5>
+        <button class="btn btn-primary form-group" type="button" data-toggle="modal" data-target="#contentTypesModal" aria-expanded="true">
+            @T["Set ignored content types"]
+        </button>
+    </div>
 </section>
 
 <div class="modal fade" id="contentTypesModal" tabindex="-1" role="dialog" aria-labelledby="contentTypesModalLabel" aria-hidden="true">
@@ -81,12 +88,12 @@
                     {
                         <li class="list-group-item">
                             <div class="custom-control custom-checkbox">
-                                <input asp-for="IgnoredContentTypes[contentTypesIndex].Selected" class="custom-control-input" type="checkbox">
+                                <input asp-for="IgnoredContentTypes[contentTypesIndex].Selected" class="custom-control-input" type="checkbox" />
                                 <label asp-for="IgnoredContentTypes[contentTypesIndex].Selected" class="custom-control-label">
                                     @ignoredContentType.DisplayName
                                 </label>
                             </div>
-                            <input asp-for="IgnoredContentTypes[contentTypesIndex].Name" type="hidden" />
+                            <input asp-for="IgnoredContentTypes[contentTypesIndex].Name" type="hidden">
                         </li>
                         contentTypesIndex++;
                     }
@@ -98,7 +105,6 @@
         </div>
     </div>
 </div>
-
 
 <script at="Foot" type="text/javascript">
     $(function () {

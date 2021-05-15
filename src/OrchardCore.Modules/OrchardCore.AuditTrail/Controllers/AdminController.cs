@@ -68,19 +68,21 @@ namespace OrchardCore.AuditTrail.Controllers
                 .SelectMany(categoryDescriptor => categoryDescriptor.Events)
                 .ToDictionary(eventDescriptor => eventDescriptor.FullEventName);
 
-            var auditTrailEventsSummaryViewModel = searchResult.AuditTrailEvents.Select(auditTrailEvent =>
-            {
-                var eventDescriptor = eventDescriptors.ContainsKey(auditTrailEvent.FullEventName)
-                    ? eventDescriptors[auditTrailEvent.FullEventName]
-                    : AuditTrailEventDescriptor.Basic(auditTrailEvent);
-
-                return new AuditTrailEventSummaryViewModel
+            var auditTrailEventsSummaryViewModel = searchResult.AuditTrailEvents
+                .Select(auditTrailEvent =>
                 {
-                    AuditTrailEvent = auditTrailEvent,
-                    EventDescriptor = eventDescriptor,
-                    CategoryDescriptor = eventDescriptor.CategoryDescriptor,
-                };
-            }).ToArray();
+                    var eventDescriptor = eventDescriptors.ContainsKey(auditTrailEvent.FullEventName)
+                        ? eventDescriptors[auditTrailEvent.FullEventName]
+                        : AuditTrailEventDescriptor.Basic(auditTrailEvent);
+
+                    return new AuditTrailEventSummaryViewModel
+                    {
+                        AuditTrailEvent = auditTrailEvent,
+                        EventDescriptor = eventDescriptor,
+                        CategoryDescriptor = eventDescriptor.CategoryDescriptor,
+                    };
+                })
+                .ToArray();
 
             foreach (var model in auditTrailEventsSummaryViewModel)
             {
