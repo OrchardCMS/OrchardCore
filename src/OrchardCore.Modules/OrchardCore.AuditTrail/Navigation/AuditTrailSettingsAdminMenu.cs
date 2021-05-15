@@ -18,7 +18,7 @@ namespace OrchardCore.AuditTrail.Navigation
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -27,9 +27,10 @@ namespace OrchardCore.AuditTrail.Navigation
                  .Add(T["Configuration"], configuration => configuration
                      .Add(T["Settings"], settings => settings
                         .Add(T["Audit Trail"], T["Audit Trail"], settings => settings
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId })
-                        .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
-                        .LocalNav())));
+                        .AddClass("audittrail").Id("audittrail")
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId })
+                            .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
+                            .LocalNav())));
 
             return Task.CompletedTask;
         }

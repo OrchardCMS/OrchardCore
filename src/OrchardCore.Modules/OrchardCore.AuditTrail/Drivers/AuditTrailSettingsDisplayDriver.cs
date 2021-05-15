@@ -23,18 +23,15 @@ namespace OrchardCore.AuditTrail.Drivers
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IContentDefinitionManager _contentDefitinionManager;
 
         public AuditTrailSettingsDisplayDriver(
             IAuditTrailManager auditTrailManager,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            IContentDefinitionManager contentDefitinionManager)
+            IAuthorizationService authorizationService)
         {
             _auditTrailManager = auditTrailManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
-            _contentDefitinionManager = contentDefitinionManager;
         }
 
         public override async Task<IDisplayResult> EditAsync(AuditTrailSettings settings, BuildEditorContext context) =>
@@ -62,7 +59,7 @@ namespace OrchardCore.AuditTrail.Drivers
                                 Name = categoryDescriptor.Name.First(),
                                 Events = categoryDescriptor.Events.Select(eventDescriptor =>
                                 {
-                                    var eventSetting = GetOrCreate(eventSettings.ToList(), eventDescriptor);
+                                    var eventSetting = GetOrCreate(eventSettings, eventDescriptor);
 
                                     return new AuditTrailEventSettingsViewModel
                                     {
@@ -73,22 +70,13 @@ namespace OrchardCore.AuditTrail.Drivers
                                         IsMandatory = eventDescriptor.IsMandatory
                                     };
                                 })
-                                .ToList()
+                                .ToArray()
                             })
-                        .ToList();
+                        .ToArray();
 
                     model.Categories = categories;
                     model.EnableClientIpAddressLogging = settings.EnableClientIpAddressLogging;
-                    model.IgnoredContentTypes = _contentDefitinionManager.ListTypeDefinitions()
-                        .Select(contentTypeDefiniton =>
-                            new IgnoredContentTypesViewModel
-                            {
-                                Name = contentTypeDefiniton.Name,
-                                DisplayName = contentTypeDefiniton.DisplayName,
-                                Selected = settings.IgnoredContentTypeNames.Contains(contentTypeDefiniton.Name)
-                            })
-                        .OrderBy(contentTypeDefinition => contentTypeDefinition.DisplayName)
-                        .ToList();
+                    model.IgnoredContentTypeNames = settings.IgnoredContentTypeNames;
                 }).Location("Content:1").OnGroup(AuditTrailSettingsGroupId);
 
         public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, BuildEditorContext context)
@@ -118,17 +106,17 @@ namespace OrchardCore.AuditTrail.Drivers
                 }
 
                 settings.EnableClientIpAddressLogging = model.EnableClientIpAddressLogging;
-                settings.IgnoredContentTypes = model.IgnoredContentTypes;
-
-                settings.IgnoredContentTypeNames = model.IgnoredContentTypes
-                    .Where(ignoredContentType => ignoredContentType.Selected)
-                    .Select(ignoredContentType => ignoredContentType.Name)
-                    .ToArray();
+                settings.IgnoredContentTypeNames = model.IgnoredContentTypeNames;
 
                 settings.EventSettings = eventSettings
                     .SelectMany(categorySettings => categorySettings.Events
                         .Select(eventSettings =>
-                            new AuditTrailEventSetting { EventName = eventSettings.Event, IsEnabled = eventSettings.IsEnabled }));
+                            new AuditTrailEventSetting
+                            {
+                                EventName = eventSettings.Event,
+                                IsEnabled = eventSettings.IsEnabled
+                            }))
+                    .ToArray();
             }
 
             return await EditAsync(settings, context);

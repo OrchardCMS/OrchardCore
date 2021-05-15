@@ -18,14 +18,14 @@ namespace OrchardCore.AuditTrail.Navigation
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
             builder
                 .Add(T["Audit Trail"], "10", configuration => configuration
-                    .AddClass("audittrail").Id("audittrail")
+                .AddClass("audittrail").Id("audittrail")
                     .Action(nameof(AdminController.Index), "Admin", new { area = "OrchardCore.AuditTrail" })
                     .Permission(AuditTrailPermissions.ViewAuditTrail)
                     .LocalNav());

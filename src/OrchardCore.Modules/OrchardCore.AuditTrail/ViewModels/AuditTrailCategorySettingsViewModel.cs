@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Localization;
-using System.Collections.Generic;
 
 namespace OrchardCore.AuditTrail.ViewModels
 {
@@ -7,6 +6,6 @@ namespace OrchardCore.AuditTrail.ViewModels
     {
         public string Category { get; set; }
         public LocalizedString Name { get; set; }
-        public List<AuditTrailEventSettingsViewModel> Events { get; set; }
+        public AuditTrailEventSettingsViewModel[] Events { get; set; }
     }
 }

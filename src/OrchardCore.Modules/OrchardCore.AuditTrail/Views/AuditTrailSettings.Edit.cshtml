@@ -1,9 +1,5 @@
 @model AuditTrailSettingsViewModel
 
-@{
-    var contentTypesIndex = 0;
-}
-
 <section>
     <div class="form-group">
         <h5>@T["Audit trail events to record"]</h5>
@@ -65,46 +61,13 @@
         <span class="hint">@T["Whether the client IP address is recorded."]</span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" asp-validation-class-for="IgnoredContentTypeNames">
         <h5>@T["Ignored content types"]</h5>
-        <button class="btn btn-primary form-group" type="button" data-toggle="modal" data-target="#contentTypesModal" aria-expanded="true">
-            @T["Set ignored content types"]
-        </button>
-    </div>
-</section>
-
-<div class="modal fade" id="contentTypesModal" tabindex="-1" role="dialog" aria-labelledby="contentTypesModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="contentTypesModalLabel">@T["Ignored content types"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <ul class="list-group mb-3">
-                    @foreach (var ignoredContentType in Model.IgnoredContentTypes)
-                    {
-                        <li class="list-group-item">
-                            <div class="custom-control custom-checkbox">
-                                <input asp-for="IgnoredContentTypes[contentTypesIndex].Selected" class="custom-control-input" type="checkbox" />
-                                <label asp-for="IgnoredContentTypes[contentTypesIndex].Selected" class="custom-control-label">
-                                    @ignoredContentType.DisplayName
-                                </label>
-                            </div>
-                            <input asp-for="IgnoredContentTypes[contentTypesIndex].Name" type="hidden">
-                        </li>
-                        contentTypesIndex++;
-                    }
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Close"]</button>
-            </div>
-        </div>
-    </div>
+        @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.IgnoredContentTypeNames, htmlName = Html.NameFor(m => m.IgnoredContentTypeNames) })
+        <span asp-validation-for="IgnoredContentTypeNames"></span>
+        <span class="hint">@T["Select any content type to be ignored."]</span>
 </div>
+</section>
 
 <script at="Foot" type="text/javascript">
     $(function () {
