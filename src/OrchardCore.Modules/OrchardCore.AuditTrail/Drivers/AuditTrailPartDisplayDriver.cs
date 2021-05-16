@@ -14,7 +14,7 @@ namespace OrchardCore.AuditTrail.Drivers
         public override IDisplayResult Edit(AuditTrailPart part, BuildPartEditorContext context)
         {
             var settings = context.TypePartDefinition.GetSettings<AuditTrailPartSettings>();
-            if (settings.ShowAuditTrailCommentInput)
+            if (settings.ShowCommentInput)
             {
                 return Initialize<AuditTrailCommentViewModel>(GetEditorShapeType(context), model =>
                 {

@@ -16,8 +16,8 @@ namespace OrchardCore.AuditTrail.Services
         /// Records an audit trail event.
         /// </summary>
         /// <typeparam name="TAuditTrailEventProvider">The provider type to determine the event scope.</typeparam>
-        /// <param name="auditTrailContext">The context used to create a new audit trail event.</param>
-        Task RecordAuditTrailEventAsync<TAuditTrailEventProvider>(AuditTrailContext auditTrailContext)
+        /// <param name="context">The <see cref="AuditTrailContext"/> used to create a new audit trail event.</param>
+        Task RecordEventAsync<TAuditTrailEventProvider>(AuditTrailContext context)
             where TAuditTrailEventProvider : IAuditTrailEventProvider;
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace OrchardCore.AuditTrail.Services
         /// <param name="filters">An optional <see cref="Filters"/>.</param>
         /// <param name="orderBy">an optional <see cref="AuditTrailOrderBy"/>.</param>
         /// <returns>The <see cref="AuditTrailEventSearchResults"/>.</returns>
-        Task<AuditTrailEventSearchResults> GetAuditTrailEventsAsync(
+        Task<AuditTrailEventSearchResults> GetEventsAsync(
             int page,
             int pageSize,
             Filters filters = null,
@@ -37,21 +37,15 @@ namespace OrchardCore.AuditTrail.Services
         /// <summary>
         /// Gets a single audit trail event by ID.
         /// </summary>
-        /// <param name="auditTrailEventId">The event ID.</param>
+        /// <param name="eventId">The event ID.</param>
         /// <returns>The <see cref="AuditTrailEvent"/>.</returns>
-        Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId);
+        Task<AuditTrailEvent> GetEventAsync(string eventId);
 
         /// <summary>
         /// Trims the audit trail by deleting all events older than the specified retention period.
         /// </summary>
         /// <returns>The number of the deleted events.</returns>
-        Task<int> TrimAsync(TimeSpan retentionPeriod);
-
-        /// <summary>
-        /// Describes all audit trail event categories.
-        /// </summary>
-        /// <returns>The list of <see cref="AuditTrailCategoryDescriptor"/>.</returns>
-        IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories();
+        Task<int> TrimEventsAsync(TimeSpan retentionPeriod);
 
         /// <summary>
         /// Describes all audit trail event providers.
@@ -60,10 +54,16 @@ namespace OrchardCore.AuditTrail.Services
         DescribeContext DescribeProviders();
 
         /// <summary>
+        /// Describes all audit trail event categories.
+        /// </summary>
+        /// <returns>The list of <see cref="AuditTrailCategoryDescriptor"/>.</returns>
+        IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories();
+
+        /// <summary>
         /// Describes a single audit trail event.
         /// </summary>
-        /// <param name="auditTrailEvent">The <see cref="AuditTrailEvent"/> to describe.</param>
+        /// <param name="event">The <see cref="AuditTrailEvent"/> to describe.</param>
         /// <returns>The <see cref="AuditTrailEventDescriptor"/>.</returns>
-        AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent auditTrailEvent);
+        AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event);
     }
 }

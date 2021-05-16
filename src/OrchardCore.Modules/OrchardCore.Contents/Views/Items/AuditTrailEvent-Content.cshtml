@@ -30,7 +30,7 @@
             </tr>
             <tr>
                 <th>@T["Display text"]</th>
-                @if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Removed)
+                @if (auditTrailEvent.Name == ContentAuditTrailEventProvider.Removed)
                 {
                     <td>@contentItem.DisplayText</td>
                 }

@@ -1,9 +1,9 @@
 @model AuditTrailDetailViewModel
 
 @{
-    var auditTrailEvent = Model.AuditTrailEvent;
+    var auditTrailEvent = Model.Event;
     var eventDescriptor = Model.Descriptor;
-    var category = eventDescriptor.CategoryDescriptor.LocalizedName;
+    var category = eventDescriptor.Category.LocalizedName;
     var eventName = eventDescriptor.LocalizedName;
 }
 

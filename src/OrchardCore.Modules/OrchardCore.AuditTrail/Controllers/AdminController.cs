@@ -51,10 +51,10 @@ namespace OrchardCore.AuditTrail.Controllers
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
             var filters = Filters.From(QueryHelpers.ParseQuery(Request.QueryString.Value), _updateModelAccessor.ModelUpdater);
 
-            var searchResult = await _auditTrailManager.GetAuditTrailEventsAsync(pager.Page, pager.PageSize, filters, orderBy ?? AuditTrailOrderBy.DateDescending);
+            var searchResult = await _auditTrailManager.GetEventsAsync(pager.Page, pager.PageSize, filters, orderBy ?? AuditTrailOrderBy.DateDescending);
             if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
             {
-                searchResult.AuditTrailEvents = Enumerable.Empty<AuditTrailEvent>();
+                searchResult.Events = Enumerable.Empty<AuditTrailEvent>();
             }
 
             var pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
@@ -66,33 +66,33 @@ namespace OrchardCore.AuditTrail.Controllers
 
             var eventDescriptors = _auditTrailManager.DescribeCategories()
                 .SelectMany(categoryDescriptor => categoryDescriptor.Events)
-                .ToDictionary(eventDescriptor => eventDescriptor.FullEventName);
+                .ToDictionary(eventDescriptor => eventDescriptor.FullName);
 
-            var auditTrailEventsSummaryViewModel = searchResult.AuditTrailEvents
-                .Select(auditTrailEvent =>
+            var eventSummariesViewModel = searchResult.Events
+                .Select(@event =>
                 {
-                    var eventDescriptor = eventDescriptors.ContainsKey(auditTrailEvent.FullEventName)
-                        ? eventDescriptors[auditTrailEvent.FullEventName]
-                        : AuditTrailEventDescriptor.Basic(auditTrailEvent);
+                    var eventDescriptor = eventDescriptors.ContainsKey(@event.FullName)
+                        ? eventDescriptors[@event.FullName]
+                        : AuditTrailEventDescriptor.Default(@event);
 
                     return new AuditTrailEventSummaryViewModel
                     {
-                        AuditTrailEvent = auditTrailEvent,
+                        Event = @event,
                         EventDescriptor = eventDescriptor,
-                        CategoryDescriptor = eventDescriptor.CategoryDescriptor,
+                        CategoryDescriptor = eventDescriptor.Category,
                     };
                 })
                 .ToArray();
 
-            foreach (var model in auditTrailEventsSummaryViewModel)
+            foreach (var model in eventSummariesViewModel)
             {
-                model.SummaryShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(model.AuditTrailEvent, "SummaryAdmin");
-                model.ActionsShape = await _auditTrailEventDisplayManager.BuildDisplayActionsAsync(model.AuditTrailEvent, "SummaryAdmin");
+                model.SummaryShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(model.Event, "SummaryAdmin");
+                model.ActionsShape = await _auditTrailEventDisplayManager.BuildDisplayActionsAsync(model.Event, "SummaryAdmin");
             }
 
             return View(new AuditTrailViewModel
             {
-                AuditTrailEvents = auditTrailEventsSummaryViewModel,
+                Events = eventSummariesViewModel,
                 FiltersShape = await _auditTrailEventDisplayManager.BuildDisplayFiltersAsync(filters),
                 OrderBy = orderBy ?? AuditTrailOrderBy.DateDescending,
                 PagerShape = pagerShape
@@ -106,17 +106,17 @@ namespace OrchardCore.AuditTrail.Controllers
                 return Forbid();
             }
 
-            var auditTrailEvent = await _auditTrailManager.GetAuditTrailEventAsync(auditTrailEventId);
-            if (auditTrailEvent == null)
+            var @event = await _auditTrailManager.GetEventAsync(auditTrailEventId);
+            if (@event == null)
             {
                 return NotFound();
             }
 
             return View(new AuditTrailDetailViewModel
             {
-                AuditTrailEvent = auditTrailEvent,
-                Descriptor = _auditTrailManager.DescribeEvent(auditTrailEvent),
-                DetailsShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(auditTrailEvent, "Detail")
+                Event = @event,
+                Descriptor = _auditTrailManager.DescribeEvent(@event),
+                DetailsShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(@event, "Detail")
             });
         }
     }

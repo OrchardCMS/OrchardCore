@@ -75,8 +75,8 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            var auditTrailSettings = siteSettings.As<AuditTrailSettings>();
-            if (!auditTrailSettings.AllowedContentTypes.Contains(content.ContentItem.ContentType))
+            var settings = siteSettings.As<AuditTrailSettings>();
+            if (!settings.AllowedContentTypes.Contains(content.ContentItem.ContentType))
             {
                 return;
             }
@@ -91,7 +91,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 { "VersionNumber", versionNumber }
             };
 
-            await _auditTrailManager.RecordAuditTrailEventAsync<ContentAuditTrailEventProvider>(
+            await _auditTrailManager.RecordEventAsync<ContentAuditTrailEventProvider>(
                 new AuditTrailContext
                 (
                     "Content",

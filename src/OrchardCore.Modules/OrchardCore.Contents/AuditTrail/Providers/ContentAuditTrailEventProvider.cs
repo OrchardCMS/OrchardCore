@@ -29,19 +29,19 @@ namespace OrchardCore.Contents.AuditTrail.Providers
 
         public override void Describe(DescribeContext context) =>
             context.For<ContentAuditTrailEventProvider>("Content", T["Content"])
-                .Event(Created, T["Created"], T["A content item was created."], BuildAuditTrailEvent, true)
-                .Event(Saved, T["Saved"], T["A content item was saved."], BuildAuditTrailEvent, true)
-                .Event(Published, T["Published"], T["A content item was published."], BuildAuditTrailEvent, true)
-                .Event(Unpublished, T["Unpublished"], T["A content item was unpublished."], BuildAuditTrailEvent, true)
-                .Event(Removed, T["Removed"], T["A content item was deleted."], BuildAuditTrailEvent, true)
-                .Event(Cloned, T["Cloned"], T["A content item was cloned."], BuildAuditTrailEvent, true)
-                .Event(Restored, T["Restored"], T["A content item was restored to a previous version."], BuildAuditTrailEvent, true);
+                .Event(Created, T["Created"], T["A content item was created."], BuildEvent, true)
+                .Event(Saved, T["Saved"], T["A content item was saved."], BuildEvent, true)
+                .Event(Published, T["Published"], T["A content item was published."], BuildEvent, true)
+                .Event(Unpublished, T["Unpublished"], T["A content item was unpublished."], BuildEvent, true)
+                .Event(Removed, T["Removed"], T["A content item was deleted."], BuildEvent, true)
+                .Event(Cloned, T["Cloned"], T["A content item was cloned."], BuildEvent, true)
+                .Event(Restored, T["Restored"], T["A content item was restored to a previous version."], BuildEvent, true);
 
-        private void BuildAuditTrailEvent(AuditTrailEvent auditTrailEvent, Dictionary<string, object> eventData)
+        private void BuildEvent(AuditTrailEvent @event, Dictionary<string, object> eventData)
         {
-            auditTrailEvent.Put(new AuditTrailContentEvent
+            @event.Put(new AuditTrailContentEvent
             {
-                EventName = auditTrailEvent.EventName,
+                EventName = @event.Name,
                 ContentItem = eventData.Get<ContentItem>("ContentItem"),
                 VersionNumber = eventData.Get<int>("VersionNumber"),
             });

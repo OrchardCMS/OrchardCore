@@ -18,8 +18,8 @@ namespace OrchardCore.AuditTrail.Drivers
             return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
             {
                 var settings = model.GetSettings<AuditTrailPartSettings>();
-                viewModel.ShowAuditTrailCommentInput = settings.ShowAuditTrailCommentInput;
-                viewModel.AuditTrailPartSettings = settings;
+                viewModel.ShowCommentInput = settings.ShowCommentInput;
+                viewModel.Settings = settings;
             }).Location("Content");
         }
 
@@ -29,11 +29,11 @@ namespace OrchardCore.AuditTrail.Drivers
 
             var viewModel = new AuditTrailPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowAuditTrailCommentInput))
+            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput))
             {
                 context.Builder.WithSettings(new AuditTrailPartSettings
                 {
-                    ShowAuditTrailCommentInput = viewModel.ShowAuditTrailCommentInput
+                    ShowCommentInput = viewModel.ShowCommentInput
                 });
             }
 

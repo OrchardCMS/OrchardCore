@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.AuditTrail.Extensions;
@@ -26,7 +25,6 @@ namespace OrchardCore.AuditTrail.Services
     public class AuditTrailManager : IAuditTrailManager
     {
         private readonly IClock _clock;
-        private readonly IStringLocalizer T;
         private readonly YesSql.ISession _session;
         private readonly ISiteService _siteService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -40,13 +38,12 @@ namespace OrchardCore.AuditTrail.Services
             IClock clock,
             YesSql.ISession session,
             ISiteService siteService,
-            ILogger<AuditTrailManager> logger,
             IHttpContextAccessor httpContextAccessor,
-            IStringLocalizer<AuditTrailManager> stringLocalizer,
-            IAuditTrailIdGenerator auditTrailIdGenerator,
             IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers,
             IEnumerable<IAuditTrailEventProvider> auditTrailEventProviders,
-            ShellSettings shellSettings)
+            IAuditTrailIdGenerator auditTrailIdGenerator,
+            ShellSettings shellSettings,
+            ILogger<AuditTrailManager> logger)
         {
             _clock = clock;
             _session = session;
@@ -57,23 +54,21 @@ namespace OrchardCore.AuditTrail.Services
             _auditTrailIdGenerator = auditTrailIdGenerator;
             _shellSettings = shellSettings;
             _logger = logger;
-
-            T = stringLocalizer;
         }
 
-        public async Task RecordAuditTrailEventAsync<TAuditTrailEventProvider>(AuditTrailContext auditTrailContext)
+        public async Task RecordEventAsync<TAuditTrailEventProvider>(AuditTrailContext context)
             where TAuditTrailEventProvider : IAuditTrailEventProvider
         {
-            if (_shellSettings.State == TenantState.Initializing && String.IsNullOrEmpty(auditTrailContext.UserName))
+            if (_shellSettings.State == TenantState.Initializing && String.IsNullOrEmpty(context.UserName))
             {
                 var feature = _httpContextAccessor.HttpContext.Features.Get<RecipeEnvironmentFeature>();
                 if (feature != null && feature.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
                 {
-                    auditTrailContext.UserName = (string)adminUsername;
+                    context.UserName = (string)adminUsername;
                 }
             }
 
-            var eventDescriptors = DescribeEvents(auditTrailContext.EventName, typeof(TAuditTrailEventProvider).FullName);
+            var eventDescriptors = DescribeEvents(context.EventName, typeof(TAuditTrailEventProvider).FullName);
             foreach (var eventDescriptor in eventDescriptors)
             {
                 if (!await IsEventEnabledAsync(eventDescriptor))
@@ -81,37 +76,38 @@ namespace OrchardCore.AuditTrail.Services
                     continue;
                 }
 
-                var context = new AuditTrailCreateContext(
-                    auditTrailContext.Category,
-                    auditTrailContext.EventName,
-                    auditTrailContext.CorrelationId,
-                    auditTrailContext.UserName,
-                    auditTrailContext.EventData);
+                var createContext = new AuditTrailCreateContext(
+                    context.Category,
+                    context.EventName,
+                    context.CorrelationId,
+                    context.UserName,
+                    context.EventData);
 
-                await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), context, _logger);
+                await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), createContext, _logger);
 
                 var @event = new AuditTrailEvent
                 {
                     EventId = _auditTrailIdGenerator.GenerateUniqueId(),
-                    Category = context.Category,
-                    EventName = context.EventName,
-                    FullEventName = eventDescriptor.FullEventName,
-                    CorrelationId = context.CorrelationId,
-                    UserName = context.UserName ?? "",
-                    ClientIpAddress = String.IsNullOrEmpty(context.ClientIpAddress)
+                    Category = createContext.Category,
+                    Name = createContext.EventName,
+                    FullName = eventDescriptor.FullName,
+                    CorrelationId = createContext.CorrelationId,
+                    UserName = createContext.UserName ?? "",
+                    ClientIpAddress = String.IsNullOrEmpty(createContext.ClientIpAddress)
                         ? await GetClientIpAddressAsync()
-                        : context.ClientIpAddress,
-                    CreatedUtc = context.CreatedUtc ?? _clock.UtcNow,
-                    Comment = context.Comment.NewlinesToHtml()
+                        : createContext.ClientIpAddress,
+                    CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow,
+                    Comment = createContext.Comment.NewlinesToHtml()
                 };
 
-                eventDescriptor.BuildAuditTrailEvent(@event, context.EventData);
-                await _auditTrailEventHandlers.InvokeAsync((handler, context, @event) => handler.AlterAsync(context, @event), context, @event, _logger);
+                eventDescriptor.BuildEvent(@event, createContext.EventData);
+                await _auditTrailEventHandlers.InvokeAsync((handler, context, @event) => handler.AlterAsync(context, @event), createContext, @event, _logger);
+
                 _session.Save(@event, AuditTrailEvent.Collection);
             }
         }
 
-        public async Task<AuditTrailEventSearchResults> GetAuditTrailEventsAsync(
+        public async Task<AuditTrailEventSearchResults> GetEventsAsync(
             int page,
             int pageSize,
             Filters filters = null,
@@ -122,9 +118,7 @@ namespace OrchardCore.AuditTrail.Services
             if (filters != null)
             {
                 var filterContext = new QueryFilterContext(query, filters);
-
                 _auditTrailEventHandlers.Invoke((handler, context) => handler.FilterAsync(context), filterContext, _logger);
-
                 query = filterContext.Query;
             }
 
@@ -143,7 +137,7 @@ namespace OrchardCore.AuditTrail.Services
                     break;
             }
 
-            var auditTrailEventsTotalCount = await query.CountAsync();
+            var totalCount = await query.CountAsync();
 
             if (pageSize > 0)
             {
@@ -155,65 +149,59 @@ namespace OrchardCore.AuditTrail.Services
                 query = query.Take(pageSize);
             }
 
-            var auditTrailEvents = await query.ListAsync();
+            var events = await query.ListAsync();
 
             return new AuditTrailEventSearchResults
             {
-                AuditTrailEvents = auditTrailEvents,
-                TotalCount = auditTrailEventsTotalCount
+                Events = events,
+                TotalCount = totalCount
             };
         }
 
-        public async Task<int> TrimAsync(TimeSpan retentionPeriod)
+        public Task<AuditTrailEvent> GetEventAsync(string eventId) =>
+            _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
+                .Where(index => index.EventId == eventId)
+                .FirstOrDefaultAsync();
+
+        public async Task<int> TrimEventsAsync(TimeSpan retentionPeriod)
         {
             var dateThreshold = _clock.UtcNow.AddDays(1) - retentionPeriod;
 
-            var auditTrailEvents = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
+            var events = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
                 .Where(index => index.CreatedUtc <= dateThreshold)
                 .ListAsync();
 
             var deletedEvents = 0;
-            foreach (var auditTrailEvent in auditTrailEvents)
+            foreach (var @event in events)
             {
-                _session.Delete(auditTrailEvent, collection: AuditTrailEvent.Collection);
+                _session.Delete(@event, collection: AuditTrailEvent.Collection);
                 deletedEvents++;
             }
 
             return deletedEvents;
         }
 
-        public Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId) =>
-            _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
-                .Where(index => index.EventId == auditTrailEventId)
-                .FirstOrDefaultAsync();
+        public DescribeContext DescribeProviders()
+        {
+            var context = new DescribeContext();
+            _auditTrailEventProviders.Invoke((provider, context) => provider.Describe(context), context, _logger);
+            return context;
+        }
 
         public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() => DescribeProviders().Describe();
 
-        public DescribeContext DescribeProviders()
-        {
-            var describeContext = new DescribeContext();
-            _auditTrailEventProviders.Invoke((provider, context) => provider.Describe(context), describeContext, _logger);
-            return describeContext;
-        }
-
-        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent auditTrailEvent) =>
+        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) =>
             DescribeCategories()
-                .SelectMany(categoryDescriptor => categoryDescriptor.Events
-                    .Where(eventDescriptor => eventDescriptor.FullEventName == auditTrailEvent.FullEventName))
+                .SelectMany(category => category.Events
+                    .Where(ev => ev.FullName == @event.FullName))
                 .FirstOrDefault();
 
         private IEnumerable<AuditTrailEventDescriptor> DescribeEvents(string eventName, string providerName) =>
             DescribeCategories()
-                .Where(categoryDescriptor => categoryDescriptor.Category == DescribeProviderCategory(providerName))
-                .SelectMany(categoryDescriptor => categoryDescriptor.Events
-                    .Where(eventDescriptor => eventDescriptor.EventName == eventName)
-                .ToArray());
-
-        private string DescribeProviderCategory(string providerName) =>
-            DescribeProviders().Describe()
                 .Where(category => category.ProviderName == providerName)
-                .Select(categoryDescriptor => categoryDescriptor.Category)
-                .FirstOrDefault();
+                .SelectMany(category => category.Events
+                    .Where(ev => ev.FullName == category.FullName + eventName)
+                .ToArray());
 
         private async Task<string> GetClientIpAddressAsync()
         {
@@ -245,12 +233,11 @@ namespace OrchardCore.AuditTrail.Services
                 return true;
             }
 
-            var auditTrailSettings = await GetAuditTrailSettingsAsync();
+            var settings = await GetAuditTrailSettingsAsync();
 
-            var auditTrailEventSetting = auditTrailSettings.EventSettings
-                .FirstOrDefault(eventSetting => eventSetting.EventName == eventDescriptor.FullEventName);
+            var eventSettings = settings.EventSettings.FirstOrDefault(eventSetting => eventSetting.EventName == eventDescriptor.FullName);
 
-            return auditTrailEventSetting != null ? auditTrailEventSetting.IsEnabled : eventDescriptor.IsEnabledByDefault;
+            return eventSettings != null ? eventSettings.IsEnabled : eventDescriptor.IsEnabledByDefault;
         }
     }
 }

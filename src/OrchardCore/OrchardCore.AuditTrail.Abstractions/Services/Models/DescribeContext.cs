@@ -12,19 +12,21 @@ namespace OrchardCore.AuditTrail.Services.Models
         public IEnumerable<AuditTrailCategoryDescriptor> Describe() =>
             _describes.Values.Select(describe => new AuditTrailCategoryDescriptor
             {
+                Name = describe.Category,
                 ProviderName = describe.ProviderName,
-                LocalizedName = describe.Name,
-                Events = describe.Events,
-                Category = describe.Category
+                LocalizedName = describe.LocalizedName,
+                Events = describe.Events
             });
 
-        public DescribeFor For<T>(string category, LocalizedString name) where T : IAuditTrailEventProvider
+        public DescribeFor For<T>(string category, LocalizedString localizedName) where T : IAuditTrailEventProvider
         {
             var providerName = typeof(T).FullName;
-            if (!_describes.TryGetValue($"{providerName}.{category}", out var describeFor))
+
+            var categoryFullName = providerName + category;
+            if (!_describes.TryGetValue(categoryFullName, out var describeFor))
             {
-                describeFor = new DescribeFor(category, providerName, name);
-                _describes[$"{providerName}.{category}"] = describeFor;
+                describeFor = new DescribeFor(category, categoryFullName, providerName, localizedName);
+                _describes[categoryFullName] = describeFor;
             }
 
             return describeFor;

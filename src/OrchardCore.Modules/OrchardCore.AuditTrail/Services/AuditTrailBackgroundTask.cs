@@ -21,8 +21,8 @@ namespace OrchardCore.AuditTrail.Services
         {
             var siteService = serviceProvider.GetRequiredService<ISiteService>();
 
-            var auditTrailTrimmingSettings = (await siteService.GetSiteSettingsAsync()).As<AuditTrailTrimmingSettings>();
-            if (auditTrailTrimmingSettings.Disabled)
+            var settings = (await siteService.GetSiteSettingsAsync()).As<AuditTrailTrimmingSettings>();
+            if (settings.Disabled)
             {
                 return;
             }
@@ -36,9 +36,9 @@ namespace OrchardCore.AuditTrail.Services
                 var auditTrailManager = serviceProvider.GetRequiredService<IAuditTrailManager>();
 
                 logger.LogDebug("Starting Audit Trail trimming.");
-                var deletedEvents = await auditTrailManager.TrimAsync(TimeSpan.FromDays(auditTrailTrimmingSettings.RetentionDays));
+                var deletedEvents = await auditTrailManager.TrimEventsAsync(TimeSpan.FromDays(settings.RetentionDays));
                 logger.LogDebug("Audit Trail trimming completed. {0} events were deleted.", deletedEvents);
-                auditTrailTrimmingSettings.LastRunUtc = clock.UtcNow;
+                settings.LastRunUtc = clock.UtcNow;
 
                 var container = await siteService.LoadSiteSettingsAsync();
                 container.Alter<AuditTrailTrimmingSettings>(nameof(AuditTrailTrimmingSettings), settings =>

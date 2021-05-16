@@ -30,21 +30,21 @@ namespace OrchardCore.Users.AuditTrail.Providers
 
         public override void Describe(DescribeContext context) =>
             context.For<UserAuditTrailEventProvider>("User", T["User"])
-                .Event(SignedUp, T["Signed up"], T["A user was successfully signed up."], BuildAuditTrailEvent, true)
-                .Event(LoggedIn, T["Logged in"], T["A user was successfully logged in."], BuildAuditTrailEvent, true)
-                .Event(LogInFailed, T["Login failed"], T["An attempt to login failed due to incorrect credentials."], BuildAuditTrailEvent, true)
-                .Event(PasswordReset, T["Password reset"], T["A user successfully reset the password."], BuildAuditTrailEvent, true)
-                .Event(PasswordRecovered, T["Password recovered"], T["A user successfully recovered the password."], BuildAuditTrailEvent, true)
-                .Event(Enabled, T["Enabled"], T["A user was enabled."], BuildAuditTrailEvent, true)
-                .Event(Disabled, T["Disabled"], T["A user was disabled."], BuildAuditTrailEvent, true)
-                .Event(Created, T["Created"], T["A user was created."], BuildAuditTrailEvent, true)
-                .Event(Deleted, T["Deleted"], T["A user was deleted."], BuildAuditTrailEvent, true);
+                .Event(SignedUp, T["Signed up"], T["A user was successfully signed up."], BuildEvent, true)
+                .Event(LoggedIn, T["Logged in"], T["A user was successfully logged in."], BuildEvent, true)
+                .Event(LogInFailed, T["Login failed"], T["An attempt to login failed due to incorrect credentials."], BuildEvent, true)
+                .Event(PasswordReset, T["Password reset"], T["A user successfully reset the password."], BuildEvent, true)
+                .Event(PasswordRecovered, T["Password recovered"], T["A user successfully recovered the password."], BuildEvent, true)
+                .Event(Enabled, T["Enabled"], T["A user was enabled."], BuildEvent, true)
+                .Event(Disabled, T["Disabled"], T["A user was disabled."], BuildEvent, true)
+                .Event(Created, T["Created"], T["A user was created."], BuildEvent, true)
+                .Event(Deleted, T["Deleted"], T["A user was deleted."], BuildEvent, true);
 
-        private void BuildAuditTrailEvent(AuditTrailEvent auditTrailEvent, Dictionary<string, object> eventData)
+        private void BuildEvent(AuditTrailEvent @event, Dictionary<string, object> eventData)
         {
-            auditTrailEvent.Put(new AuditTrailUserEvent
+            @event.Put(new AuditTrailUserEvent
             {
-                EventName = auditTrailEvent.EventName,
+                EventName = @event.Name,
                 UserName = eventData.Get<string>("UserName"),
                 UserId = eventData.Get<string>("UserId")
             });

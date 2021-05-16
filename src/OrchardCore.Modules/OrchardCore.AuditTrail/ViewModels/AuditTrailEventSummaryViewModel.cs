@@ -6,7 +6,7 @@ namespace OrchardCore.AuditTrail.ViewModels
 {
     public class AuditTrailEventSummaryViewModel
     {
-        public AuditTrailEvent AuditTrailEvent { get; set; }
+        public AuditTrailEvent Event { get; set; }
         public AuditTrailEventDescriptor EventDescriptor { get; set; }
         public AuditTrailCategoryDescriptor CategoryDescriptor { get; set; }
         public IShape SummaryShape { get; set; }

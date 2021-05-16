@@ -5,7 +5,7 @@ namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailEventSearchResults
     {
-        public IEnumerable<AuditTrailEvent> AuditTrailEvents { get; set; }
+        public IEnumerable<AuditTrailEvent> Events { get; set; }
         public int TotalCount { get; set; }
     }
 }

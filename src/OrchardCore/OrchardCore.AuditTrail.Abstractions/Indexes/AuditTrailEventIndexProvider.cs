@@ -15,7 +15,7 @@ namespace OrchardCore.AuditTrail.Indexes
                     {
                         EventId = auditTrailEvent.EventId,
                         Category = auditTrailEvent.Category,
-                        EventName = auditTrailEvent.EventName,
+                        EventName = auditTrailEvent.Name,
                         CorrelationId = auditTrailEvent.CorrelationId,
                         UserName = auditTrailEvent.UserName,
                         CreatedUtc = auditTrailEvent.CreatedUtc

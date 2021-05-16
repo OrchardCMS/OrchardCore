@@ -48,20 +48,20 @@ namespace OrchardCore.AuditTrail.Services
         public Task<IShape> BuildDisplayActionsAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
             BuildDisplayAsync("AuditTrailEventActions", auditTrailEvent, displayType);
 
-        private async Task<IShape> BuildDisplayAsync(string shapeType, AuditTrailEvent auditTrailEvent, string displayType)
+        private async Task<IShape> BuildDisplayAsync(string shapeType, AuditTrailEvent @event, string displayType)
         {
             displayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
             shapeType = displayType != "Detail" ? shapeType + "_" + displayType : shapeType;
 
             var shape = await _shapeFactory.CreateAsync<AuditTrailEventViewModel>(shapeType, model =>
             {
-                model.AuditTrailEvent = auditTrailEvent;
-                model.EventDescriptor = _auditTrailManager.DescribeEvent(auditTrailEvent);
+                model.AuditTrailEvent = @event;
+                model.EventDescriptor = _auditTrailManager.DescribeEvent(@event);
             });
 
             shape.Metadata.DisplayType = displayType;
-            shape.Metadata.Alternates.Add($"{shapeType}__{auditTrailEvent.Category}");
-            shape.Metadata.Alternates.Add($"{shapeType}__{auditTrailEvent.Category}__{auditTrailEvent.EventName}");
+            shape.Metadata.Alternates.Add($"{shapeType}__{@event.Category}");
+            shape.Metadata.Alternates.Add($"{shapeType}__{@event.Category}__{@event.Name}");
 
             var context = new DisplayEventContext(shape);
             await _auditTrailDisplayHandler.InvokeAsync((handler, context) => handler.DisplayEventAsync(context), context, _logger);

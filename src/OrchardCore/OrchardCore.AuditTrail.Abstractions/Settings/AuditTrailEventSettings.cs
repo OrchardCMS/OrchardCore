@@ -1,6 +1,6 @@
-﻿namespace OrchardCore.AuditTrail.Settings
+namespace OrchardCore.AuditTrail.Settings
 {
-    public class AuditTrailEventSetting
+    public class AuditTrailEventSettings
     {
         public string EventName { get; set; }
         public bool IsEnabled { get; set; }

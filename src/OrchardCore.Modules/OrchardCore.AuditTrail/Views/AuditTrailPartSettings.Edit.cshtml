@@ -1,9 +1,9 @@
-﻿@model AuditTrailPartSettingsViewModel
+@model AuditTrailPartSettingsViewModel
 
 <div class="form-group">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" asp-for="ShowAuditTrailCommentInput" class="custom-control-input" checked="@Model.ShowAuditTrailCommentInput">
-        <label class="custom-control-label" asp-for="ShowAuditTrailCommentInput">@T["Show comment input"]</label>
+        <input type="checkbox" asp-for="ShowCommentInput" class="custom-control-input" checked="@Model.ShowCommentInput">
+        <label class="custom-control-label" asp-for="ShowCommentInput">@T["Show comment input"]</label>
         <span class="hint">— @T["The default value this field will be initialized with when creating a new item."]</span>
     </div>
 </div>

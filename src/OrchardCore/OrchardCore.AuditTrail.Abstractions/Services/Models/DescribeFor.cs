@@ -9,42 +9,46 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         private readonly IList<AuditTrailEventDescriptor> _events = new List<AuditTrailEventDescriptor>();
 
-        public DescribeFor(string category, string providerName, LocalizedString name)
+        public DescribeFor(string category, string categoryFullName, string providerName, LocalizedString localizedName)
         {
             Category = category;
-            Name = name;
+            CategoryFullName = categoryFullName;
             ProviderName = providerName;
+            LocalizedName = localizedName;
         }
 
         public string Category { get; private set; }
-        public LocalizedString Name { get; private set; }
+        public string CategoryFullName { get; private set; }
         public string ProviderName { get; set; }
-
+        public LocalizedString LocalizedName { get; private set; }
         public IEnumerable<AuditTrailEventDescriptor> Events => _events;
 
         public DescribeFor Event(
-            string eventName,
-            LocalizedString name,
+            string name,
+            LocalizedString localizedName,
             LocalizedString description,
-            Action<AuditTrailEvent, Dictionary<string, object>> buildAuditTrailEvent,
+            Action<AuditTrailEvent, Dictionary<string, object>> buildEvent,
             bool enableByDefault = false,
             bool isMandatory = false)
         {
             _events.Add(new AuditTrailEventDescriptor
             {
-                FullEventName = $"{ProviderName}.{eventName}",
-                EventName = eventName,
-                LocalizedName = name,
+                Name = name,
+                FullName = CategoryFullName + name,
+                LocalizedName = localizedName,
                 Description = description,
-                BuildAuditTrailEvent = buildAuditTrailEvent,
-                IsEnabledByDefault = enableByDefault,
-                IsMandatory = isMandatory,
-                CategoryDescriptor = new AuditTrailCategoryDescriptor
+
+                Category = new AuditTrailCategoryDescriptor
                 {
-                    LocalizedName = Name,
-                    Category = Category,
+                    Name = Category,
+                    FullName = CategoryFullName,
+                    LocalizedName = LocalizedName,
                     Events = Events
-                }
+                },
+
+                BuildEvent = buildEvent,
+                IsEnabledByDefault = enableByDefault,
+                IsMandatory = isMandatory
             });
 
             return this;

@@ -23,7 +23,7 @@
     var itemEditLink = await Orchard.GetItemEditLinkAsync(displayText, contentItem);
 }
 
-@if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Restored)
+@if (auditTrailEvent.Name == ContentAuditTrailEventProvider.Restored)
 {
     @T["The {0} {1} was restored as {2}",
     contentType,
@@ -36,7 +36,7 @@
         versionNumber = versionNumber
     }, null)]
 }
-else if (auditTrailEvent.EventName == ContentAuditTrailEventProvider.Removed)
+else if (auditTrailEvent.Name == ContentAuditTrailEventProvider.Removed)
 {
     @T["The {0} <strong>{1}</strong> was {2}.",
     contentType,

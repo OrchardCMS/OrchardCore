@@ -41,7 +41,7 @@ namespace OrchardCore.AuditTrail.Drivers
                     var descriptors = _auditTrailManager.DescribeCategories();
                     var eventSettings = settings.EventSettings;
 
-                    var categories = descriptors.GroupBy(categoryDescriptor => categoryDescriptor.Category)
+                    var categories = descriptors.GroupBy(categoryDescriptor => categoryDescriptor.Name)
                         .Select(categoryDescriptor =>
                         new
                         {
@@ -62,7 +62,7 @@ namespace OrchardCore.AuditTrail.Drivers
 
                                     return new AuditTrailEventSettingsViewModel
                                     {
-                                        Event = eventDescriptor.FullEventName,
+                                        Event = eventDescriptor.FullName,
                                         Name = eventDescriptor.LocalizedName,
                                         Description = eventDescriptor.Description,
                                         IsEnabled = eventDescriptor.IsMandatory || eventSetting.IsEnabled,
@@ -89,9 +89,9 @@ namespace OrchardCore.AuditTrail.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 var eventSettings = model.Categories;
-                var eventsDictionary = _auditTrailManager.DescribeProviders().Describe()
+                var eventDescriptors = _auditTrailManager.DescribeProviders().Describe()
                     .SelectMany(categoryDescriptor => categoryDescriptor.Events)
-                    .ToDictionary(eventDescriptor => eventDescriptor.FullEventName);
+                    .ToDictionary(eventDescriptor => eventDescriptor.FullName);
 
                 foreach (var eventSettingViewModel in model.Categories.SelectMany(categorySettings => categorySettings.Events))
                 {
@@ -100,7 +100,7 @@ namespace OrchardCore.AuditTrail.Drivers
                             .Where(eventSettings => eventSettings.Event == eventSettingViewModel.Event))
                             .FirstOrDefault();
 
-                    var descriptor = eventsDictionary[eventSetting.Event];
+                    var descriptor = eventDescriptors[eventSetting.Event];
                     eventSetting.IsEnabled = eventSettingViewModel.IsEnabled || descriptor.IsMandatory;
                 }
 
@@ -110,7 +110,7 @@ namespace OrchardCore.AuditTrail.Drivers
                 settings.EventSettings = eventSettings
                     .SelectMany(categorySettings => categorySettings.Events
                         .Select(eventSettings =>
-                            new AuditTrailEventSetting
+                            new AuditTrailEventSettings
                             {
                                 EventName = eventSettings.Event,
                                 IsEnabled = eventSettings.IsEnabled
@@ -128,15 +128,15 @@ namespace OrchardCore.AuditTrail.Drivers
         /// We're creating settings on the fly so that when the user updates the settings the first time,
         /// we won't log a massive amount of event settings that have changed.
         /// </summary>
-        private static AuditTrailEventSetting GetOrCreate(IList<AuditTrailEventSetting> settings, AuditTrailEventDescriptor descriptor)
+        private static AuditTrailEventSettings GetOrCreate(IList<AuditTrailEventSettings> settings, AuditTrailEventDescriptor descriptor)
         {
-            var setting = settings.FirstOrDefault(x => x.EventName == descriptor.FullEventName);
+            var setting = settings.FirstOrDefault(x => x.EventName == descriptor.FullName);
 
             if (setting == null)
             {
-                setting = new AuditTrailEventSetting
+                setting = new AuditTrailEventSettings
                 {
-                    EventName = descriptor.FullEventName,
+                    EventName = descriptor.FullName,
                     IsEnabled = descriptor.IsMandatory || descriptor.IsEnabledByDefault
                 };
 
