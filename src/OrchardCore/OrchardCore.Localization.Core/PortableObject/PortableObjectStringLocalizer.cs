@@ -210,7 +210,7 @@ namespace OrchardCore.Localization.PortableObject
                             var dataAnnotationKey = dataAnnotationKeys.Where(k => k.Contains(name)).SingleOrDefault();
                             if (dataAnnotationKey != null)
                             {
-                                translation = dictionary[dataAnnotationKey];
+                                translation = dictionary[new CultureDictionaryRecordKey(dataAnnotationKey)];
 
                                 return translation;
                             }

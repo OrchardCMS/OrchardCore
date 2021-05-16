@@ -17,8 +17,8 @@ namespace OrchardCore.Localization.Extensions
             }
 
             return cultureDictionary.Translations
-                .Where(t => t.Key.StartsWith(DataAnnotationsContext, StringComparison.OrdinalIgnoreCase))
-                .Select(t => t.Key)
+                .Where(t => t.Key.ToString().StartsWith(DataAnnotationsContext, StringComparison.OrdinalIgnoreCase))
+                .Select(t => t.Key.ToString())
                 .ToList();
         }
     }
