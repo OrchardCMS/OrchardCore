@@ -30,7 +30,7 @@ namespace OrchardCore.AuditTrail.Services
         private readonly YesSql.ISession _session;
         private readonly ISiteService _siteService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuditTrailIdGenerator _auditTrailEventIdGenerator;
+        private readonly IAuditTrailIdGenerator _auditTrailIdGenerator;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
         private readonly IEnumerable<IAuditTrailEventProvider> _auditTrailEventProviders;
         private readonly ShellSettings _shellSettings;
@@ -43,7 +43,7 @@ namespace OrchardCore.AuditTrail.Services
             ILogger<AuditTrailManager> logger,
             IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<AuditTrailManager> stringLocalizer,
-            IAuditTrailIdGenerator auditTrailEventIdGenerator,
+            IAuditTrailIdGenerator auditTrailIdGenerator,
             IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers,
             IEnumerable<IAuditTrailEventProvider> auditTrailEventProviders,
             ShellSettings shellSettings)
@@ -54,7 +54,7 @@ namespace OrchardCore.AuditTrail.Services
             _httpContextAccessor = httpContextAccessor;
             _auditTrailEventHandlers = auditTrailEventHandlers;
             _auditTrailEventProviders = auditTrailEventProviders;
-            _auditTrailEventIdGenerator = auditTrailEventIdGenerator;
+            _auditTrailIdGenerator = auditTrailIdGenerator;
             _shellSettings = shellSettings;
             _logger = logger;
 
@@ -82,28 +82,27 @@ namespace OrchardCore.AuditTrail.Services
                 }
 
                 var context = new AuditTrailCreateContext(
+                    auditTrailContext.Category,
                     auditTrailContext.EventName,
+                    auditTrailContext.CorrelationId,
                     auditTrailContext.UserName,
-                    auditTrailContext.EventData,
-                    auditTrailContext.EventFilterKey,
-                    auditTrailContext.EventFilterData);
+                    auditTrailContext.EventData);
 
                 await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), context, _logger);
 
                 var @event = new AuditTrailEvent
                 {
-                    AuditTrailEventId = _auditTrailEventIdGenerator.GenerateUniqueId(),
-                    Category = eventDescriptor.CategoryDescriptor.Category,
+                    EventId = _auditTrailIdGenerator.GenerateUniqueId(),
+                    Category = context.Category,
                     EventName = context.EventName,
                     FullEventName = eventDescriptor.FullEventName,
+                    CorrelationId = context.CorrelationId,
                     UserName = context.UserName ?? "",
-                    CreatedUtc = context.CreatedUtc ?? _clock.UtcNow,
-                    Comment = context.Comment.NewlinesToHtml(),
-                    EventFilterData = context.EventFilterData,
-                    EventFilterKey = context.EventFilterKey,
                     ClientIpAddress = String.IsNullOrEmpty(context.ClientIpAddress)
                         ? await GetClientIpAddressAsync()
-                        : context.ClientIpAddress
+                        : context.ClientIpAddress,
+                    CreatedUtc = context.CreatedUtc ?? _clock.UtcNow,
+                    Comment = context.Comment.NewlinesToHtml()
                 };
 
                 eventDescriptor.BuildAuditTrailEvent(@event, context.EventData);
@@ -185,7 +184,7 @@ namespace OrchardCore.AuditTrail.Services
 
         public Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId) =>
             _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
-                .Where(index => index.AuditTrailEventId == auditTrailEventId)
+                .Where(index => index.EventId == auditTrailEventId)
                 .FirstOrDefaultAsync();
 
         public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() => DescribeProviders().Describe();

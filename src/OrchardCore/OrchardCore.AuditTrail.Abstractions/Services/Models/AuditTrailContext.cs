@@ -4,24 +4,24 @@ namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailContext
     {
-        public string EventName { get; set; }
-        public string UserName { get; set; }
-        public Dictionary<string, object> EventData { get; set; }
-        public string EventFilterKey { get; set; }
-        public string EventFilterData { get; set; }
-
         public AuditTrailContext(
+            string category,
             string eventName,
+            string correlationId,
             string userName,
-            Dictionary<string, object> eventData,
-            string eventFilterKey,
-            string eventFilterData)
+            Dictionary<string, object> eventData)
         {
+            Category = category;
             EventName = eventName;
+            CorrelationId = correlationId;
             UserName = userName;
             EventData = eventData;
-            EventFilterKey = eventFilterKey;
-            EventFilterData = eventFilterData;
         }
+
+        public string Category { get; set; }
+        public string EventName { get; set; }
+        public string CorrelationId { get; set; }
+        public string UserName { get; set; }
+        public Dictionary<string, object> EventData { get; set; }
     }
 }

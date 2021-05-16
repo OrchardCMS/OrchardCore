@@ -11,13 +11,13 @@ namespace OrchardCore.AuditTrail.Services.Models
 
         public DescribeFor(string category, string providerName, LocalizedString name)
         {
-            Name = name;
             Category = category;
+            Name = name;
             ProviderName = providerName;
         }
 
-        public LocalizedString Name { get; private set; }
         public string Category { get; private set; }
+        public LocalizedString Name { get; private set; }
         public string ProviderName { get; set; }
 
         public IEnumerable<AuditTrailEventDescriptor> Events => _events;

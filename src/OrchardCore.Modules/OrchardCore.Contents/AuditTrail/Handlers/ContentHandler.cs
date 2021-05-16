@@ -91,14 +91,15 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 { "VersionNumber", versionNumber }
             };
 
-            await _auditTrailManager.RecordAuditTrailEventAsync<ContentAuditTrailEventProvider>(new AuditTrailContext
-            (
-                eventName,
-                _httpContextAccessor.GetCurrentUserName(),
-                eventData,
-                "content",
-                content.ContentItem.ContentItemId)
-            );
+            await _auditTrailManager.RecordAuditTrailEventAsync<ContentAuditTrailEventProvider>(
+                new AuditTrailContext
+                (
+                    "Content",
+                    eventName,
+                    content.ContentItem.ContentItemId,
+                    _httpContextAccessor.GetCurrentUserName(),
+                    eventData
+                ));
         }
     }
 }

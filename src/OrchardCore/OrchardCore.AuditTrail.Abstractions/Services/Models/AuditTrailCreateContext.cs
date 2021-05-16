@@ -5,16 +5,16 @@ namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailCreateContext : AuditTrailContext
     {
-        public string Comment { get; set; } = string.Empty;
-        public DateTime? CreatedUtc { get; set; }
-        public string ClientIpAddress { get; set; }
-
         public AuditTrailCreateContext(
+            string category,
             string eventName,
+            string correlationId,
             string userName,
-            Dictionary<string, object> eventData,
-            string eventFilterKey,
-            string eventFilterData)
-            : base(eventName, userName, eventData, eventFilterKey, eventFilterData) { }
+            Dictionary<string, object> eventData)
+            : base(category, eventName, correlationId, userName, eventData) { }
+
+        public string ClientIpAddress { get; set; }
+        public DateTime? CreatedUtc { get; set; }
+        public string Comment { get; set; } = String.Empty;
     }
 }

@@ -96,7 +96,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
             };
 
             await _auditTrailManager.RecordAuditTrailEventAsync<UserAuditTrailEventProvider>(
-                new AuditTrailContext(eventName, userName, eventData, "user", userId));
+                new AuditTrailContext("User", eventName, userId, userName, eventData));
         }
 
         private async Task RecordAuditTrailEventAsync(string eventName, IUser user)
@@ -112,12 +112,14 @@ namespace OrchardCore.Users.AuditTrail.Handlers
             };
 
             await _auditTrailManager.RecordAuditTrailEventAsync<UserAuditTrailEventProvider>(
-                new AuditTrailContext(
+                new AuditTrailContext
+                (
+                    "User",
                     eventName,
+                    userId,
                     eventName == UserAuditTrailEventProvider.Created ? userName : _httpContextAccessor.GetCurrentUserName(),
-                    eventData,
-                    "user",
-                    userId));
+                    eventData
+                ));
         }
 
         // Need to resolve the UserManager from the HttpContext to prevent circular dependency.

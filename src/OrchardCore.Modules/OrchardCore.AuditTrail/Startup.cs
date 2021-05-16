@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Indexes;
-using OrchardCore.AuditTrail.Migrations;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Navigation;
 using OrchardCore.AuditTrail.Permissions;
@@ -37,7 +36,7 @@ namespace OrchardCore.AuditTrail
 
             services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));
 
-            services.AddScoped<IDataMigration, AuditTrailMigrations>();
+            services.AddScoped<IDataMigration, Migrations>();
             services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
             services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 

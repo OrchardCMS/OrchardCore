@@ -60,7 +60,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         public async Task<ActionResult> Detail(int versionNumber, string auditTrailEventId)
         {
             var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
-                .Where(index => index.AuditTrailEventId == auditTrailEventId)
+                .Where(index => index.EventId == auditTrailEventId)
                 .FirstOrDefaultAsync())
                 ?.As<AuditTrailContentEvent>()
                 ?.ContentItem;
@@ -99,7 +99,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         public async Task<ActionResult> Restore(string auditTrailEventId)
         {
             var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
-                .Where(index => index.AuditTrailEventId == auditTrailEventId)
+                .Where(index => index.EventId == auditTrailEventId)
                 .FirstOrDefaultAsync())
                 ?.As<AuditTrailContentEvent>()
                 ?.ContentItem;

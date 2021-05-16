@@ -13,17 +13,12 @@ namespace OrchardCore.AuditTrail.Models
         /// <summary>
         /// The ID of the event.
         /// </summary>
-        public string AuditTrailEventId { get; set; }
+        public string EventId { get; set; }
 
         /// <summary>
-        /// The date and time when the event occurred.
+        /// The category the event belongs to.
         /// </summary>
-        public DateTime CreatedUtc { get; set; }
-
-        /// <summary>
-        /// The user name of the user who caused the event to occur.
-        /// </summary>
-        public string UserName { get; set; }
+        public string Category { get; set; }
 
         /// <summary>
         /// Just the name of the event without the name of the provider.
@@ -36,28 +31,28 @@ namespace OrchardCore.AuditTrail.Models
         public virtual string FullEventName { get; set; }
 
         /// <summary>
-        /// The category the event belongs to.
+        /// The correlation id used to associate an event to e.g. a content item.
         /// </summary>
-        public string Category { get; set; }
+        public string CorrelationId { get; set; }
 
         /// <summary>
-        /// The filter key of the event that can be used to query the event on.
+        /// The user name of the user who caused the event to occur.
         /// </summary>
-        public string EventFilterKey { get; set; }
-
-        /// <summary>
-        /// The filter data of the event that is returned by the filter queries.
-        /// </summary>
-        public string EventFilterData { get; set; }
-
-        /// <summary>
-        /// The comment of the event.
-        /// </summary>
-        public string Comment { get; set; }
+        public string UserName { get; set; }
 
         /// <summary>
         /// The IP address of the user who caused the event to occur.
         /// </summary>
         public string ClientIpAddress { get; set; }
+
+        /// <summary>
+        /// The date and time when the event occurred.
+        /// </summary>
+        public DateTime CreatedUtc { get; set; }
+
+        /// <summary>
+        /// The comment of the event.
+        /// </summary>
+        public string Comment { get; set; }
     }
 }

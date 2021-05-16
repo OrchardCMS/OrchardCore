@@ -13,13 +13,12 @@ namespace OrchardCore.AuditTrail.Indexes
                 {
                     return new AuditTrailEventIndex
                     {
-                        AuditTrailEventId = auditTrailEvent.AuditTrailEventId,
+                        EventId = auditTrailEvent.EventId,
                         Category = auditTrailEvent.Category,
-                        CreatedUtc = auditTrailEvent.CreatedUtc,
-                        EventFilterData = auditTrailEvent.EventFilterData,
-                        EventFilterKey = auditTrailEvent.EventFilterKey,
                         EventName = auditTrailEvent.EventName,
-                        UserName = auditTrailEvent.UserName
+                        CorrelationId = auditTrailEvent.CorrelationId,
+                        UserName = auditTrailEvent.UserName,
+                        CreatedUtc = auditTrailEvent.CreatedUtc
                     };
                 });
     }

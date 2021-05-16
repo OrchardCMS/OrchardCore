@@ -9,7 +9,7 @@
 <style asp-src="~/OrchardCore.Contents/Styles/audittrail-disabledcontent.min.css" debug-src="~/OrchardCore.Contents/Styles/audittrail-disabledcontent.css"></style>
 <script asp-src="~/OrchardCore.Contents/Scripts/audittrail-disabledcontent.min.js" debug-src="~/OrchardCore.Contents/Scripts/audittrail-disabledcontent.js" at="Foot" depends-on="admin"></script>
 
-<zone name="Title"><h1>@RenderTitleSegments(T["{0} - {1} (version {2})", contentItem.ContentType, contentItem.DisplayText, versionNumber])</h1></zone>
+<zone name="Title"><h1>@RenderTitleSegments(T["{0} {1} - Version {2}", contentItem.ContentType, contentItem.DisplayText, versionNumber])</h1></zone>
 
 <div class="disabledContent__wrapper">
     @await DisplayAsync(Model)

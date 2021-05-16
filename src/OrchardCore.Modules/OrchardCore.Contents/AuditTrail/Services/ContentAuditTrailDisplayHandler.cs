@@ -63,8 +63,8 @@ namespace OrchardCore.Contents.AuditTrail.Services
                 .Where(index =>
                     index.Category == "Content" &&
                     index.CreatedUtc <= auditTrailEvent.CreatedUtc &&
-                    index.AuditTrailEventId != auditTrailEvent.AuditTrailEventId &&
-                    index.EventFilterData == contentItem.ContentItemId)
+                    index.EventId != auditTrailEvent.EventId &&
+                    index.CorrelationId == contentItem.ContentItemId)
                 .OrderByDescending(index => index.Id)
                 .FirstOrDefaultAsync();
 

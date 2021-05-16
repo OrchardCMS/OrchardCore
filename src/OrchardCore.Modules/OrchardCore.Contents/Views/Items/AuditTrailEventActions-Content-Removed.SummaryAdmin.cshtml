@@ -11,14 +11,14 @@
     var latestVersionId = ((IShape)Model).GetProperty<string>("LatestVersionId");
 }
 
-<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId">@T["Details"]</a>
+<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.EventId">@T["Details"]</a>
 @if (contentItem != null && contentItem.ContentItemVersionId != latestVersionId)
 {
     <form>
         <a asp-route-area="OrchardCore.Contents"
            asp-controller="Content"
            asp-action="Restore"
-           asp-route-auditTrailEventId="@auditTrailEvent.AuditTrailEventId"
+           asp-route-auditTrailEventId="@auditTrailEvent.EventId"
            data-title="@T["Restore content item"]"
            data-message="@T["Are you sure you want to restore this content item?"]"
            data-ok-text="@T["Yes"]"
