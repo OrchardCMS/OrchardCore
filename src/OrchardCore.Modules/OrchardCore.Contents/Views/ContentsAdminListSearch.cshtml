@@ -5,9 +5,9 @@
             <i class="fa fa-filter" title="@T["Filters"]"></i>
         </button>
         <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-right</text>}" aria-labelledby="filter-dropdown">
-            <a class="dropdown-item" href="?Options.ContentsStatus=Draft">@T["Only draft items"]</a>
-            <a class="dropdown-item" href="?Options.ContentsStatus=Published">@T["Only published items"]</a>
-            <a class="dropdown-item" href="?Options.ContentsStatus=Owner">@T["Owned by me"]</a>
+            <a class="dropdown-item" href="?q=status:Draft">@T["Only draft items"]</a>
+            <a class="dropdown-item" href="?q=status:Published">@T["Only published items"]</a>
+            <a class="dropdown-item" href="?q=status:Owner">@T["Owned by me"]</a>
         </div>
     </div>
     <input asp-for="OriginalSearchText" type="hidden"></input>
