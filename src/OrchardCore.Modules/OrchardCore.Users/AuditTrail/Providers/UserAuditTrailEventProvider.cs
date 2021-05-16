@@ -13,7 +13,7 @@ namespace OrchardCore.Users.AuditTrail.Providers
     [RequireFeatures("OrchardCore.AuditTrail")]
     public class UserAuditTrailEventProvider : AuditTrailEventProviderBase
     {
-        public const string SignedUp = nameof(SignedUp);
+        public const string Registered = nameof(Registered);
         public const string LoggedIn = nameof(LoggedIn);
         public const string LogInFailed = nameof(LogInFailed);
         public const string PasswordReset = nameof(PasswordReset);
@@ -30,7 +30,7 @@ namespace OrchardCore.Users.AuditTrail.Providers
 
         public override void Describe(DescribeContext context) =>
             context.For<UserAuditTrailEventProvider>("User", S["User"])
-                .Event(SignedUp, S["Signed up"], S["A user was successfully signed up."], BuildEvent, true)
+                .Event(Registered, S["Registered"], S["A user was successfully registered."], BuildEvent, true)
                 .Event(LoggedIn, S["Logged in"], S["A user was successfully logged in."], BuildEvent, true)
                 .Event(LogInFailed, S["Login failed"], S["An attempt to login failed due to incorrect credentials."], BuildEvent, true)
                 .Event(PasswordReset, S["Password reset"], S["A user successfully reset the password."], BuildEvent, true)

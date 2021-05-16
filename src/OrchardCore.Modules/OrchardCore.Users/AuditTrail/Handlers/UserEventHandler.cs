@@ -45,7 +45,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                 RecordAuditTrailEventAsync(UserAuditTrailEventProvider.PasswordReset, _httpContextAccessor.HttpContext.User?.Identity?.Name);
 
         public Task RegisteredAsync(IUser user) =>
-            RecordAuditTrailEventAsync(UserAuditTrailEventProvider.SignedUp, user.UserName);
+            RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Registered, user.UserName);
 
         public Task DisabledAsync(UserContext context) =>
            RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Disabled, context.User);
