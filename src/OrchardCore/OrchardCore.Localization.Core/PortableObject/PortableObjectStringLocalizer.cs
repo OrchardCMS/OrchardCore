@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Localization.DataAnnotations;
-using OrchardCore.Localization.Extensions;
 
 namespace OrchardCore.Localization.PortableObject
 {
@@ -14,6 +13,9 @@ namespace OrchardCore.Localization.PortableObject
     /// </summary>
     public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
+        private static readonly string DataAnnotationsDefaultErrorMessagesContext = typeof(DataAnnotationsDefaultErrorMessages).FullName;
+        private static readonly string LocalizedDataAnnotationsMvcOptionsContext = typeof(LocalizedDataAnnotationsMvcOptions).FullName;
+
         private readonly ILocalizationManager _localizationManager;
         private readonly bool _fallBackToParentCulture;
         private readonly ILogger _logger;
@@ -204,14 +206,13 @@ namespace OrchardCore.Localization.PortableObject
                         var key = CultureDictionaryRecord.GetKey(name, context);
 
                         // Extract translation from data annotations attributes
-                        if (context == typeof(LocalizedDataAnnotationsMvcOptions).FullName)
+                        if (context == LocalizedDataAnnotationsMvcOptionsContext)
                         {
-                            var dataAnnotationKeys = dictionary.GetDataAnnotationKeys();
-                            var dataAnnotationKey = dataAnnotationKeys.Where(k => k.Contains(name)).SingleOrDefault();
-                            if (dataAnnotationKey != null)
-                            {
-                                translation = dictionary[new CultureDictionaryRecordKey(dataAnnotationKey)];
+                            key = CultureDictionaryRecord.GetKey(name, DataAnnotationsDefaultErrorMessagesContext);
+                            translation = dictionary[key];
 
+                            if (translation != null)
+                            {
                                 return translation;
                             }
                         }
