@@ -4,10 +4,17 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization.DataAnnotations
 {
+    /// <summary>
+    /// Provides a validation for a <see cref="DefaultModelMetadata"/>.
+    /// </summary>
     public class LocalizedValidationMetadataProvider : IValidationMetadataProvider
     {
         private readonly IStringLocalizer _stringLocalizer;
 
+        /// <summary>
+        /// Initializes a new instance of a <see cref="LocalizedValidationMetadataProvider"/> with string localizer.
+        /// </summary>
+        /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
         public LocalizedValidationMetadataProvider(IStringLocalizer stringLocalizer)
         {
             _stringLocalizer = stringLocalizer;
