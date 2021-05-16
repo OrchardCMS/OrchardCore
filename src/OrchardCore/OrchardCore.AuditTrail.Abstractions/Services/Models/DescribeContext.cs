@@ -13,6 +13,7 @@ namespace OrchardCore.AuditTrail.Services.Models
             _describes.Values.Select(describe => new AuditTrailCategoryDescriptor
             {
                 Name = describe.Category,
+                FullName = describe.CategoryFullName,
                 ProviderName = describe.ProviderName,
                 LocalizedName = describe.LocalizedName,
                 Events = describe.Events
