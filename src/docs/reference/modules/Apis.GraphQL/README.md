@@ -2,7 +2,7 @@
 
 ## GraphQL
 
-The GraphQL module allows client applications to query the content handled by an Orchard websites.  
+The GraphQL module allows client applications to query the content handled by an Orchard website.  
 It enables the GraphiQL Explorer view to test GraphQL queries, and provides HTTP endpoints to send client queries.
 
 ## HTTP Methods, Headers, and Body
@@ -80,7 +80,7 @@ Configuration is done via the standard shell configuration, as follows.
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Apis.GraphQL": {
+    "OrchardCore_Apis_GraphQL": {
       "ExposeExceptions": true,
       "MaxDepth": 50, 
       "MaxComplexity": 100, 

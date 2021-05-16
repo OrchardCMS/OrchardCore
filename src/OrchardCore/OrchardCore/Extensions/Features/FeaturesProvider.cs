@@ -1,29 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Environment.Extensions.Features
 {
     public class FeaturesProvider : IFeaturesProvider
     {
-        public const string FeatureProviderCacheKey = "FeatureProvider:Features";
+        public const string FeatureProviderStateKey = "FeatureProvider:Features";
 
         private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
 
-        private readonly ILogger L;
-
-        public FeaturesProvider(
-            IEnumerable<IFeatureBuilderEvents> featureBuilderEvents,
-            ILogger<FeaturesProvider> logger)
+        public FeaturesProvider(IEnumerable<IFeatureBuilderEvents> featureBuilderEvents)
         {
             _featureBuilderEvents = featureBuilderEvents;
-            L = logger;
         }
 
-        public IEnumerable<IFeatureInfo> GetFeatures(
-            IExtensionInfo extensionInfo,
-            IManifestInfo manifestInfo)
+        public IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo)
         {
             var featuresInfos = new List<IFeatureInfo>();
 
@@ -45,7 +37,7 @@ namespace OrchardCore.Environment.Extensions.Features
                     var featureDependencyIds = feature.Dependencies
                         .Select(e => e.Trim()).ToArray();
 
-                    if (!int.TryParse(feature.Priority ?? manifestInfo.ModuleInfo.Priority, out int featurePriority))
+                    if (!Int32.TryParse(feature.Priority ?? manifestInfo.ModuleInfo.Priority, out var featurePriority))
                     {
                         featurePriority = 0;
                     }
@@ -102,7 +94,7 @@ namespace OrchardCore.Environment.Extensions.Features
                 var featureDependencyIds = manifestInfo.ModuleInfo.Dependencies
                     .Select(e => e.Trim()).ToArray();
 
-                if (!int.TryParse(manifestInfo.ModuleInfo.Priority, out int featurePriority))
+                if (!Int32.TryParse(manifestInfo.ModuleInfo.Priority, out var featurePriority))
                 {
                     featurePriority = 0;
                 }

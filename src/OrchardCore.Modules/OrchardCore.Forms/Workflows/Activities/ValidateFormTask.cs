@@ -11,7 +11,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     public class ValidateFormTask : TaskActivity
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer<ValidateFormTask> S;
+        private readonly IStringLocalizer S;
 
         public ValidateFormTask(
             IUpdateModelAccessor updateModelAccessor,

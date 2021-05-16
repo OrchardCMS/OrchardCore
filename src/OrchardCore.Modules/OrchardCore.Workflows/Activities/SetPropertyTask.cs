@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Activities
     public class SetPropertyTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<SetPropertyTask> S;
+        private readonly IStringLocalizer S;
 
         public SetPropertyTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<SetPropertyTask> localizer)
         {

@@ -1,11 +1,16 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Modules;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
 using YesSql;
@@ -18,18 +23,24 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IEnumerable<IContentHandler> _contentHandlers;
         private readonly ISession _session;
+        private readonly ILogger _logger;
 
         public TagController(
-            ISession session,
             IContentManager contentManager,
             IAuthorizationService authorizationService,
-            IContentDefinitionManager contentDefinitionManager)
+            IContentDefinitionManager contentDefinitionManager,
+            IEnumerable<IContentHandler> contentHandlers,
+            ISession session,
+            ILogger<TagController> logger)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
             _contentDefinitionManager = contentDefinitionManager;
+            _contentHandlers = contentHandlers;
             _session = session;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -61,12 +72,18 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var part = taxonomy.As<TaxonomyPart>();
 
-            // Create tag term without running content item display manager update editor.
-            // This creates empty parts, if parts are attached to the tag term, with no data.
-            // This allows parts that have validation = required to still be created, and
-            // later edited with the taxonomy editor.
+            // Create tag term but only run content handlers not content item display manager update editor.
+            // This creates empty parts, if parts are attached to the tag term, with empty data.
+            // But still generates valid autoroute paths from the handler. 
             var contentItem = await _contentManager.NewAsync(part.TermContentType);
             contentItem.DisplayText = displayText;
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
+
+            var updateContentContext = new UpdateContentContext(contentItem);
+
+            await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, _logger);
+            await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, _logger);
 
             if (!ModelState.IsValid)
             {

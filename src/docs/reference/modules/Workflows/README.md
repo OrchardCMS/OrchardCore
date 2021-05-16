@@ -1,4 +1,4 @@
-# Workflows (OrchardCore.Workflows)
+# Workflows (`OrchardCore.Workflows`)
 
 The Workflows module provides a way for users to visually implement business rules using flowchart diagrams.
 
@@ -201,46 +201,48 @@ For example, if you have a workflow that starts with the **Content Created Event
 {{ Workflow.Input.ContentItem.DisplayText }}
 ```
 
-For more examples of supported content item filters, see the documentation on [Liquid](..//OrchardCore.Modules/OrchardCore.Liquid/).
+For more examples of supported content item filters, see the documentation on [Liquid](../Liquid/README.md).
 
 ## Activities out of the box
 
 The following activities are available with any default Orchard installation:
 
-| Activity | Type | Description | Documentation |
-| -------- | ---- | ----------- | ------------- |
-| **Workflows** | * | * | * |
-| Correlate | Task | Correlate the current workflow instance with a value. | [link] |
-| For Each | Task | Iterate over a list. | [link] |
-| Fork | Task | Fork workflow execution into separate paths of execution. | [link] |
-| For Loop | Task | Iterates for N times. | [link] |
-| If / Else | Task | Evaluate a boolean condition and continues execution based on the outcome. | [link] |
-| Join | Task | Join a forked workflow execution back into a single path of execution. | [link] |
-| Log | Task | Write a log entry. | [link] |
-| Notify | Task | Display a notification. | [link] |
-| Script | Task | Execute script and continue execution based on the returned outcome. | [link] |
-| Set Output | Task | Evaluate a script expression and store the result into the workflow's output. | [link] |
-| Set Property | Task | Execute script and continue execution based on the returned outcome. | [link] |
-| While Loop | Task | Iterate while a condition is true. | [link] |
+| Activity | Type | Description |
+| -------- | ---- | ----------- |
+| **Workflows** | * | * |
+| Correlate | Task | Correlate the current workflow instance with a value. |
+| For Each | Task | Iterate over a list. |
+| Fork | Task | Fork workflow execution into separate paths of execution. |
+| For Loop | Task | Iterates for N times. |
+| If / Else | Task | Evaluate a boolean condition and continues execution based on the outcome. |
+| Join | Task | Join a forked workflow execution back into a single path of execution. |
+| Log | Task | Write a log entry. |
+| Notify | Task | Display a notification. |
+| Script | Task | Execute script and continue execution based on the returned outcome. |
+| Set Output | Task | Evaluate a script expression and store the result into the workflow's output. |
+| Set Property | Task | Execute script and continue execution based on the returned outcome. |
+| While Loop | Task | Iterate while a condition is true. |
 | **HTTP Workflow Activities** | * | * | * |
-| HTTP Redirect | Task | Redirect the user agent to the specified URL (301/302). | [link] |
-| HTTP Request | Task | Perform a HTTP request to a given URL. | [link] |
-| Filter Incoming HTTP Request | Event | Executes when the specified HTTP request comes in. Similar to an MVC Action Filter. | [link] |
-| Signal | Event | Executes when a signal is triggered. | [link] |
+| HTTP Redirect | Task | Redirect the user agent to the specified URL (301/302). |
+| HTTP Request | Task | Perform a HTTP request to a given URL. |
+| Filter Incoming HTTP Request | Event | Executes when the specified HTTP request comes in. Similar to an MVC Action Filter. |
+| Signal | Event | Executes when a signal is triggered. |
 | **Email** | * | * | * |
-| Send Email | Task | Send an email. | [link] |
+| Send Email | Task | Send an email. |
 | **Timer Workflow Activities** | * | * | * |
-| Timer | Event | Executes repeatedly according to a specified CRON expression. | [link] |
+| Timer | Event | Executes repeatedly according to a specified CRON expression. |
 | **Contents** | * | * | * |
-| Content Created | Event | Executes when content is created. | [link] |
-| Content Deleted | Event | Executes when content is deleted. | [link] |
-| Content Published | Event | Executes when content is published. | [link] |
-| Content Unpublished | Event | Executes when content is unpublished. | [link] |
-| Content Updated | Event | Executes when content is updated. | [link] |
-| Content Versioned| Event | Executes when content is versioned. | [link] |
-| Create Content | Task | Create a content item. | [link] |
-| Delete Content | Task | Delete a content item. | [link] |
-| Publish Content | Task | Publish a content item. | [link] |
+| Content Created | Event | Executes when content is created. |
+| Content Deleted | Event | Executes when content is deleted. |
+| Content Published | Event | Executes when content is published. |
+| Content Unpublished | Event | Executes when content is unpublished. |
+| Content Updated | Event | Executes when content is updated. |
+| Content Versioned| Event | Executes when content is versioned. |
+| Create Content | Task | Create a content item. |
+| Delete Content | Task | Delete a content item. |
+| Publish Content | Task | Publish a content item. |
+**User** | * | * | * |
+| ValidateUser | Task | Used to check if the user is logged in and has the specified role(s). |
 
 ## Developing Custom Activities
 
@@ -351,7 +353,7 @@ public class NotifyTask : TaskActivity
 The following is an example of a simple activity display driver:
 
 ```csharp
-public class NotifyTaskDisplay : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
+public class NotifyTaskDisplayDriver : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
 {
     protected override void EditActivity(NotifyTask activity, NotifyTaskViewModel model)
     {
@@ -412,17 +414,3 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Design.cshtml`
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
-
-## CREDITS
-
-### jsPlumb
-
-<https://github.com/jsplumb/jsplumb>  
-Copyright (c) 2010 - 2014 jsPlumb, <http://jsplumbtoolkit.com>  
-License: dual-licensed under both MIT and GPLv
-
-### NCrontab
-
-<https://github.com/atifaziz/NCrontab>  
-Copyright (C) Atif Aziz  
-License: Apache License 2.0

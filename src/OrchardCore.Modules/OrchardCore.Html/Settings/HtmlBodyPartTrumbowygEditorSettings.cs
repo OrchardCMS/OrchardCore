@@ -4,5 +4,6 @@ namespace OrchardCore.Html.Settings
     {
         public string Options { get; set; }
         public bool InsertMediaWithUrl { get; set; }
+        public bool AllowCustomScripts { get; set; }
     }
 }

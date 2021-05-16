@@ -54,7 +54,7 @@ namespace OrchardCore.Mvc
                         if (assets.Any())
                         {
                             var asset = assets.First();
-                            var index = asset.ModuleAssetPath.IndexOf(module.Root);
+                            var index = asset.ModuleAssetPath.IndexOf(module.Root, StringComparison.Ordinal);
 
                             // Resolve the physical "{ModuleProjectDirectory}" from the project asset.
                             var filePath = asset.ModuleAssetPath.Substring(index + module.Root.Length);

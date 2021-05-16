@@ -20,29 +20,33 @@ The `Menu` shape is used to render a Menu.
 
 #### Menu Example
 
-``` liquid tab="Liquid"
-<nav>
-    <ul class="nav navbar-nav {{ Model.Classes | join: " " }}">
-        {% for item in Model.Items %}
-            {{ item | shape_render }}
-        {% endfor %}
-    </ul>
-</nav>
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@{
-    TagBuilder tag = Tag(Model, "ul");
-    tag.AddCssClass("nav navbar-nav");
+    ``` liquid
+    <nav>
+        <ul class="nav navbar-nav {{ Model.Classes | join: " " }}">
+            {% for item in Model.Items %}
+                {{ item | shape_render }}
+            {% endfor %}
+        </ul>
+    </nav>
+    ```
 
-    foreach (var item in Model.Items)
-    {
-        tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+=== "Razor"
+
+    ``` html
+    @{
+        TagBuilder tag = Tag(Model, "ul");
+        tag.AddCssClass("nav navbar-nav");
+
+        foreach (var item in Model.Items)
+        {
+            tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
     }
-}
 
-@tag
-```
+    @tag
+    ```
 
 ### `MenuItem`
 
@@ -70,53 +74,57 @@ The `MenuItem` shape is used to render a menu item.
 
 #### MenuItem Example
 
-```liquid
-<li class="nav-item{% if Model.HasItems %} dropdown{% endif %}">
-    {% shape_clear_alternates Model %}
-    {% shape_type Model "MenuItemLink" %}
-    {{ Model | shape_render }}
-    {% if Model.HasItems %}
-    <div class="dropdown-menu">
-        {% for item in Model.Items %}
-        {{ item | shape_render }}
-        {% endfor %}
-    </div>
-    {% endif %}
-</li>
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@{
-    TagBuilder tag = Tag(Model, "li");
+    ``` liquid
+    <li class="nav-item{% if Model.HasItems %} dropdown{% endif %}">
+        {% shape_clear_alternates Model %}
+        {% shape_type Model "MenuItemLink" %}
+        {{ Model | shape_render }}
+        {% if Model.HasItems %}
+        <div class="dropdown-menu">
+            {% for item in Model.Items %}
+            {{ item | shape_render }}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </li>
+    ```
 
-    if ((bool)Model.HasItems)
-    {
-        tag.AddCssClass("dropdown");
-    }
+=== "Razor"
 
-    // Morphing the shape to keep Model untouched
-    Model.Metadata.Alternates.Clear();
-    Model.Metadata.Type = "MenuItemLink";
+    ``` html
+    @{
+        TagBuilder tag = Tag(Model, "li");
 
-    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
-
-    if ((bool)(Model.HasItems))
-    {
-        TagBuilder parentTag = Tag(Model, "div");
-        parentTag.AddCssClass("dropdown-menu");
-
-        foreach (var item in Model.Items)
+        if ((bool)Model.HasItems)
         {
-            item.ParentTag = parentTag;
-            parentTag.InnerHtml.AppendHtml(await DisplayAsync(item));
+            tag.AddCssClass("dropdown");
         }
 
-        tag.InnerHtml.AppendHtml(parentTag);
-    }
-}
+        // Morphing the shape to keep Model untouched
+        Model.Metadata.Alternates.Clear();
+        Model.Metadata.Type = "MenuItemLink";
 
-@tag
-```
+        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+
+        if ((bool)(Model.HasItems))
+        {
+            TagBuilder parentTag = Tag(Model, "div");
+            parentTag.AddCssClass("dropdown-menu");
+
+            foreach (var item in Model.Items)
+            {
+                item.ParentTag = parentTag;
+                parentTag.InnerHtml.AppendHtml(await DisplayAsync(item));
+            }
+
+            tag.InnerHtml.AppendHtml(parentTag);
+        }
+    }
+
+    @tag
+    ```
 
 ### `MenuItemLink`
 
@@ -146,33 +154,91 @@ available on the `MenuItem` shape are still available.
 
 #### `MenuItemLink` Example
 
-``` liquid tab="Liquid"
-{% assign link = Model.ContentItem.Content.LinkMenuItemPart %}
+=== "Liquid"
 
-{% if Model.HasItems %}
-    <a href="{{ link.Url | href }}" class="nav-link dropdown-toggle">{{ link.Name }}<b class="caret"></b></a>
-{% else %}
-    <a href="{{ link.Url | href }}" class="nav-link">{{ link.Name }}</a>
-{% endif %}
+    ``` liquid
+    {% assign link = Model.ContentItem.Content.LinkMenuItemPart %}
+
+    {% if Model.HasItems %}
+        <a href="{{ link.Url | href }}" class="nav-link dropdown-toggle">{{ link.Name }}<b class="caret"></b></a>
+    {% else %}
+        <a href="{{ link.Url | href }}" class="nav-link">{{ link.Name }}</a>
+    {% endif %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @using OrchardCore.ContentManagement
+
+    @{
+        ContentItem contentItem = Model.ContentItem;
+        var link = contentItem.Content["LinkMenuItemPart"];
+    }
+
+    if ((bool)(Model.HasItems))
+    {
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="@Url.Content((string)link.Url)">@link.Name<b class="caret"></b></a>
+    }
+    else
+    {
+        <a class="nav-link" href="@Url.Content((string)link.Url)">@link.Name</a>
+    }
+    ```
+
+## Mark active item in a menu
+
+Some times you need to set a menu item as active if it is the currently displayed one.
+Because menus are cached, this must be done from javascript. OrchardCore.Menu module provides a script to help you with that.
+
+``` javascript
+function activateLinks(options,cb)
 ```
 
-``` html tab="Razor"
-@using OrchardCore.ContentManagement
+| Parameter | Description|
+| -------- | ----------- |
+| `options: {class:'active',selector:null,traverse:0}` | Use `class` to define what class you want to add to the parent of the anchor tag that has the current url as href. If you want to apply it to a child, set the `selector` property. Use the `traverse` to a positive number in order to seek a less specific url in the menu tree then the currently displayed on. ex. If you have a link to '/todo-items' in menu and you have navigated to '/todo-items/Create', it will try to find the item with traverse item less segments in the menu and activate it. |
+| `cb: function( items )` | If it finds an active item, the call back is hit for extra configuration. ex. Expand a menu item if the active one is nested.|
 
-@{
-    ContentItem contentItem = Model.ContentItem;
-    var link = contentItem.Content["LinkMenuItemPart"];
-}
+### `activateLinks` usage in `Layout` file
 
-if ((bool)(Model.HasItems))
-{
-    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="@Url.Content((string)link.Url)">@link.Name<b class="caret"></b></a>
-}
-else
-{
-    <a class="nav-link" href="@Url.Content((string)link.Url)">@link.Name</a>
-}
-```
+=== "Liquid"
+
+    ``` liquid
+    ...
+    {% script at:"Foot", src:"~/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"~/OrchardCore.Menu/Scripts/activate-links.js" %}
+    ...
+        <resources type="Footer" />
+    ...
+        <script>
+            (function ($) {
+                $('#mainNav').activateLinks({ selector: 'a', traverse: 2 }, function (items) {
+                    var parents = $(items).closest(".has-treeview")
+                    parents.addClass('menu-open');
+                });
+            })(jQuery);
+        </script>
+    ...
+    ```
+
+=== "Razor"
+
+    ``` html
+    ...
+    <script at="Foot" asp-src="~/OrchardCore.Menu/Scripts/activate-links.min.js" debug-src="~/OrchardCore.Menu/Scripts/activate-links.js"></script>
+    ...
+    <resources type="Footer" />
+    ...
+    <script>
+        (function ($) {
+            $('#mainNav').activateLinks({ selector: 'a', traverse: 2 }, function (items) {
+                var parents = $(items).closest(".has-treeview")
+                parents.addClass('menu-open');
+            });
+        })(jQuery);
+    </script>
+    ...
+    ```
 
 ## CREDITS
 

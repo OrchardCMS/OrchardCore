@@ -12,8 +12,9 @@ namespace OrchardCore.Users.Commands
     {
         private readonly IUserService _userService;
 
-        public UserCommands(IUserService userService,
-                            IStringLocalizer<UserCommands> localizer) : base(localizer)
+        public UserCommands(
+            IUserService userService,
+            IStringLocalizer<UserCommands> localizer) : base(localizer)
         {
             _userService = userService;
         }

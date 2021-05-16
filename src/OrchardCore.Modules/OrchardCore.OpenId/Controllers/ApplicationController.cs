@@ -28,10 +28,11 @@ namespace OrchardCore.OpenId.Controllers
     public class ApplicationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<ApplicationController> S;
-        private readonly IHtmlLocalizer<ApplicationController> H;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
         private readonly ISiteService _siteService;
         private readonly IOpenIdApplicationManager _applicationManager;
+        private readonly IOpenIdScopeManager _scopeManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly dynamic New;
@@ -42,6 +43,7 @@ namespace OrchardCore.OpenId.Controllers
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
             IOpenIdApplicationManager applicationManager,
+            IOpenIdScopeManager scopeManager,
             IHtmlLocalizer<ApplicationController> htmlLocalizer,
             INotifier notifier,
             ShellDescriptor shellDescriptor)
@@ -52,6 +54,7 @@ namespace OrchardCore.OpenId.Controllers
             H = htmlLocalizer;
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
+            _scopeManager = scopeManager;
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
         }
@@ -72,7 +75,7 @@ namespace OrchardCore.OpenId.Controllers
                 Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
 
-            foreach (var application in await _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
+            await foreach (var application in _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
             {
                 model.Applications.Add(new OpenIdApplicationEntry
                 {
@@ -110,6 +113,14 @@ namespace OrchardCore.OpenId.Controllers
                 _notifier.Warning(H["There are no registered services to provide roles."]);
             }
 
+            await foreach (var scope in _scopeManager.ListAsync(null, null, default))
+            {
+                model.ScopeEntries.Add(new CreateOpenIdApplicationViewModel.ScopeEntry
+                {
+                    Name = await _scopeManager.GetNameAsync(scope)
+                });
+            }
+            
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
@@ -159,11 +170,6 @@ namespace OrchardCore.OpenId.Controllers
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
             }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Logout);
-            }
-
             if (model.AllowAuthorizationCodeFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
@@ -194,6 +200,31 @@ namespace OrchardCore.OpenId.Controllers
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
             }
 
+            if (model.AllowAuthorizationCodeFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
+            }
+            if (model.AllowImplicitFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Token);
+                }
+            }
+            if (model.AllowHybridFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+                }
+            }
+
             descriptor.PostLogoutRedirectUris.UnionWith(
                 from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                 select new Uri(uri, UriKind.Absolute));
@@ -206,11 +237,15 @@ namespace OrchardCore.OpenId.Controllers
                 .Where(role => role.Selected)
                 .Select(role => role.Name));
 
+            descriptor.Permissions.UnionWith(model.ScopeEntries
+                .Where(scope => scope.Selected)
+                .Select(scope => OpenIddictConstants.Permissions.Prefixes.Scope + scope.Name));
+
             await _applicationManager.CreateAsync(descriptor);
 
             if (string.IsNullOrEmpty(returnUrl))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             return LocalRedirect(returnUrl);
@@ -229,7 +264,7 @@ namespace OrchardCore.OpenId.Controllers
                 return NotFound();
             }
 
-            Task<bool> HasPermissionAsync(string permission) => _applicationManager.HasPermissionAsync(application, permission);
+            ValueTask<bool> HasPermissionAsync(string permission) => _applicationManager.HasPermissionAsync(application, permission);
 
             var model = new EditOpenIdApplicationViewModel
             {
@@ -267,6 +302,17 @@ namespace OrchardCore.OpenId.Controllers
                 _notifier.Warning(H["There are no registered services to provide roles."]);
             }
 
+            var permissions = await _applicationManager.GetPermissionsAsync(application);
+            await foreach (var scope in _scopeManager.ListAsync())
+            {
+                var scopeName = await _scopeManager.GetNameAsync(scope);
+                model.ScopeEntries.Add(new EditOpenIdApplicationViewModel.ScopeEntry
+                {
+                    Name = scopeName,
+                    Selected = await _applicationManager.HasPermissionAsync(application, OpenIddictConstants.Permissions.Prefixes.Scope + scopeName)
+                });
+            }
+
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
@@ -289,7 +335,7 @@ namespace OrchardCore.OpenId.Controllers
             // If the application was a public client and is now a confidential client, ensure a client secret was provided.
             if (string.IsNullOrEmpty(model.ClientSecret) &&
                !string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase) &&
-                await _applicationManager.IsPublicAsync(application))
+                await _applicationManager.HasClientTypeAsync(application, OpenIddictConstants.ClientTypes.Public))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["Setting a new client secret is required."]);
             }
@@ -409,13 +455,73 @@ namespace OrchardCore.OpenId.Controllers
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Token);
             }
 
+            if (model.AllowAuthorizationCodeFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Code);
+            }
+
+            if (model.AllowImplicitFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Token);
+                }
+                else
+                {
+                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Token);
+                }
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Token);
+            }
+            if (model.AllowHybridFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+                }
+                else
+                {
+                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+                }
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+            }
+
             descriptor.Roles.Clear();
 
-            foreach (string selectedRole in (model.RoleEntries
+            foreach (var selectedRole in (model.RoleEntries
                 .Where(role => role.Selected)
                 .Select(role => role.Name)))
             {
                 descriptor.Roles.Add(selectedRole);
+            }
+
+            descriptor.Permissions.RemoveWhere(permission => permission.StartsWith(OpenIddictConstants.Permissions.Prefixes.Scope));
+            foreach (var selectedScope in (model.ScopeEntries
+                .Where(scope => scope.Selected)
+                .Select(scope => scope.Name)))
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Prefixes.Scope + selectedScope);
             }
 
             descriptor.PostLogoutRedirectUris.Clear();
@@ -438,7 +544,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (string.IsNullOrEmpty(returnUrl))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             return LocalRedirect(returnUrl);

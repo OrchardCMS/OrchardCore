@@ -3,14 +3,18 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Localization.Drivers;
+using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Localization
 {
@@ -19,6 +23,8 @@ namespace OrchardCore.Localization
     /// </summary>
     public class Startup : StartupBase
     {
+        public override int ConfigureOrder => -100;
+
         /// <inheritdocs />
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -51,4 +57,19 @@ namespace OrchardCore.Localization
             app.UseRequestLocalization(options);
         }
     }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class LocalizationDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<LocalizationSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<LocalizationDeploymentStartup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<LocalizationSettings>(S["Culture settings"], S["Exports the culture settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<LocalizationSettings>());
+        }
+    }    
 }

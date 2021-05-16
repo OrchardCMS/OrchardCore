@@ -7,7 +7,7 @@ namespace OrchardCore.Deployment
 {
     public class FileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
     {
-        private readonly IStringLocalizer<FileDownloadDeploymentTargetProvider> S;
+        private readonly IStringLocalizer S;
 
         public FileDownloadDeploymentTargetProvider(IStringLocalizer<FileDownloadDeploymentTargetProvider> stringLocalizer)
         {

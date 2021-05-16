@@ -45,40 +45,60 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.4.1         | -              |
-| jQuery.slim           | Script | 3.4.1         | -              |
+| jQuery                | Script | 3.6.0         | -              |
+| jQuery.slim           | Script | 3.6.0         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
-| popper                | Script | 1.16.0        | -              |
-| bootstrap             | Script | 3.4.0, 4.4.1  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.4.1  | -              |
-| codemirror            | Script | 5.52.2        | -              |
-| codemirror            | Style  | 5.52.2        | -              |
-| font-awesome          | Style  | 4.7.0, 5.12.1 | -              |
-| font-awesome          | Script | 5.12.1        | -              |
-| font-awesome-v4-shims | Script | 5.12.1        | -              |
+| jquery.easing         | Script | 1.4.1         | -              |
+| jquery-resizable-dom  | Script | 0.35.0        | -              |
+| js-cookie             | Script | 2.2.1         | jQuery         |
+| popper                | Script | 1.16.1        | -              |
+| bootstrap             | Script | 3.4.0, 4.6.0  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.6.0  | -              |
+| bootstrap-select      | Script | 1.13.18       | -              |
+| bootstrap-select      | Style  | 1.13.18       | -              |
+| bootstrap-slider      | Script | 11.0.2        | -              |
+| bootstrap-slider      | Style  | 11.0.2        | -              |
+| codemirror            | Script | 5.61.0        | -              |
+| codemirror            | Style  | 5.61.0        | -              |
+| font-awesome          | Style  | 4.7.0, 5.15.3 | -              |
+| font-awesome          | Script | 5.15.3        | -              |
+| font-awesome-v4-shims | Script | 5.15.3        | -              |
+| Sortable              | Script | 1.10.2        | -              |
+| trumbowyg             | Script | 2.23.0        | -              |
+| vue-multiselect       | Script | 2.1.6         | -              |
+| vuedraggable          | Script | 2.24.3        | Sortable       |
+| monaco-loader         | Script | 0.24.0        | -              |
+| monaco                | Script | 0.24.0        | monaco-loader  |
 
 ### Registering a Resource Manifest
 
-Named resources are registered by implementing the `IResourceManifestProvider` interface.
+Named resources are registered by configuring the `ResourceManagementOptions` options.
 
 This example is provided from `TheBlogTheme` to demonstrate.
 
 ```csharp
-public class ResourceManifest : IResourceManifestProvider
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    public void BuildManifests(IResourceManifestBuilder builder)
-    {
-        var manifest = builder.Add();
+    private static ResourceManifest _manifest;
 
-        manifest
+    static ResourceManagementOptionsConfiguration()
+    {
+        _manifest = new ResourceManifest();
+
+        _manifest
             .DefineScript("TheBlogTheme-vendor-jQuery")
             .SetUrl("~/TheBlogTheme/vendor/jquery/jquery.min.js", "~/TheBlogTheme/vendor/jquery/jquery.js")
             .SetCdn("https://code.jquery.com/jquery-3.4.1.min.js", "https://code.jquery.com/jquery-3.4.1.js")
             .SetCdnIntegrity("sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh", "sha384-mlceH9HlqLp7GMKHrj5Ara1+LvdTZVMx4S1U43/NxCvAkzIo8WJ0FE7duLel3wVo")
             .SetVersion("3.4.1");
-        }
     }
+
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
 
 ```
 
@@ -92,8 +112,8 @@ We set the Cdn Integrity Hashes and the version to `3.4.1`
 This script will then be available for the tag helper or API to register by name. 
 
 !!! note "Registration"
-    Make sure to register this `IResourceManifestProvider` in the `Startup` or your theme or module.
-    `serviceCollection.AddScoped<IResourceManifestProvider, ResourceManifest>();`
+    Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
+    `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
 
 ## Usage
 
@@ -128,10 +148,10 @@ settings.AtFoot();
 ##### Set the version to use
 
 ```csharp
-settings.UseVersion("3.3");
+settings.UseVersion("3.4");
 ```
 
-This will use the latest available version between `3.3` and `3.4`. If the version is not available an exception is thrown.
+This will use the latest available version between `3.4` and `3.5`. If the version is not available an exception is thrown.
 
 ##### Append a version
 
@@ -169,90 +189,122 @@ resourceManager.AppendMeta(new MetaEntry { Name = "keywords", Content = "orchard
 
 ### Using the Tag Helpers
 
-From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper *, OrchardCore.ResourceManagement`.
+From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper *, OrchardCore.ResourceManagement`, and take a direct reference to the `OrchardCore.ResourceManagement` nuget package.
 
-#### Register a named script
+#### Register a named script or stylesheet
 
 This example registers the script named `bootstrap` and all its dependencies (jquery).
 
-``` liquid tab="Liquid"
-{% script name:"bootstrap" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<script asp-name="bootstrap"></script>
-```
+    ``` liquid
+    {% script name:"bootstrap" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <script asp-name="bootstrap"></script>
+    ```
 
 And for a stylesheet:
 
-``` html tab="Razor"
-<style asp-name="bootstrap"></style>
-```
+=== "Liquid"
+
+    ``` liquid
+    {% style name:"bootstrap" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <style asp-name="bootstrap"></style>
+    ```
 
 ##### Force the CDN
 
 You can force a resource to be used from its CDN. By default the behavior is defined by configuration.
 
-``` liquid tab="Liquid"
-{% script name:"bootstrap", use_cdn:"true" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<script asp-name="bootstrap" use-cdn="true"></script>
-```
+    ``` liquid
+    {% script name:"bootstrap", use_cdn:"true" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <script asp-name="bootstrap" use-cdn="true"></script>
+    ```
 
 ##### Use specific version
 
 This example will use the latest available version with a Major version of `3`, like `3.4.0`. If the version is not specified
 the latest one is always used.
 
-``` liquid tab="Liquid"
-{% script name:"bootstrap", version:"4" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<script asp-name="bootstrap" version="3"></script>
-```
+    ``` liquid
+    {% script name:"bootstrap", version:"4" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <script asp-name="bootstrap" version="3"></script>
+    ```
 
 ##### Append a Version Hash
 
 You can append a version hash that will be calculated, and calculation cached, and appended in the format ?v=eER9OO6zWGKaIq1RlNjImsrWN9y2oTgQKg2TrJnDUWk
 
-``` liquid tab="Liquid"
-{% script name:"bootstrap", append_version:"true" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<script asp-name="bootstrap" asp-append-version="true"></script>
-```
+    ``` liquid
+    {% script name:"bootstrap", append_version:"true" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <script asp-name="bootstrap" asp-append-version="true"></script>
+    ```
 
 ##### Specify location
 
-By default all scripts are rendered in the footer. You can override it like this:
+Specify a location the script should load using `at`, for example `Foot` to rendered wherever the `FootScript` helper is located or `Head` to render with the `HeadScript` [See Foot Resources](#foot-resources). If the location is not specified, or specified as `Inline`, the script will be inserted wherever it is placed (inline).
 
-``` liquid tab="Liquid"
-{% script name:"bootstrap", at:"Foot" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<script asp-name="bootstrap" at="Foot"></script>
-```
+    ``` liquid
+    {% script name:"bootstrap", at:"Foot" %}
+    ```
 
-Styles, however, are always injected in the header section of the HTML document.
+=== "Razor"
+
+    ``` html
+    <script asp-name="bootstrap" at="Foot"></script>
+    ```
+
+Link and styles tag helpers always inject into the header section of the HTML document, unless the `at` location is set to `Inline`.
 
 #### Inline definition
 
 You can declare a new resource directly from a view, and it will be injected only once even if the view is called multiple time.
 
-``` liquid tab="Liquid"
-{% script name:"foo", src:"~/TheTheme/js/foo.min.js", debug_src:"~/TheTheme/js/foo.js", depends_on:"jQuery", version:"1.0" %}
-{% script name:"bar", src:"~/TheTheme/js/bar.min.js", debug_src:"~/TheTheme/js/bar.js", depends_on:"foo:1.0", version:"1.0" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<script asp-name="foo" asp-src="~/TheTheme/js/foo.min.js?v=1.0" debug-src="~/TheTheme/js/foo.js?v=1.0" depends-on="jQuery" version="1.0"></script>
-<script asp-name="bar" asp-src="~/TheTheme/js/bar.min.js?v=1.0" debug-src="~/TheTheme/js/bar.js?v=1.0" depends-on="foo:1.0" version="1.0"></script>
-```
+    ``` liquid
+    {% script name:"foo", src:"~/TheTheme/js/foo.min.js", debug_src:"~/TheTheme/js/foo.js", depends_on:"jQuery", version:"1.0" %}
+    {% script name:"bar", src:"~/TheTheme/js/bar.min.js", debug_src:"~/TheTheme/js/bar.js", depends_on:"foo:1.0", version:"1.0" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <script asp-name="foo" asp-src="~/TheTheme/js/foo.min.js?v=1.0" debug-src="~/TheTheme/js/foo.js?v=1.0" depends-on="jQuery" version="1.0"></script>
+    <script asp-name="bar" asp-src="~/TheTheme/js/bar.min.js?v=1.0" debug-src="~/TheTheme/js/bar.js?v=1.0" depends-on="foo:1.0" version="1.0"></script>
+    ```
 
 We define a script named `foo` with a dependency on `jQuery` with the version `1.0`. 
 
@@ -268,15 +320,19 @@ When rendering the scripts the resource manager will order the output based on t
 
 You can also do the same for a stylesheet:
 
-``` liquid tab="Liquid"
-{% style name:"bar", src:"~/TheTheme/css/bar.min.css", debug_src:"~/TheTheme/css/bar.css", depends_on:"foo" %}
-{% style name:"foo", src:"~/TheTheme/css/foo.min.css", debug_src:"~/TheTheme/css/foo.css", depends_on:"bootstrap" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<style asp-name="bar" asp-src="~/TheTheme/css/bar.min.css" debug-src="~/TheTheme/css/bar.css" depends-on="foo"></style>
-<style asp-name="foo" asp-src="~/TheTheme/css/foo.min.css" debug-src="~/TheTheme/css/foo.css" depends-on="bootstrap"></style>
-```
+    ``` liquid
+    {% style name:"bar", src:"~/TheTheme/css/bar.min.css", debug_src:"~/TheTheme/css/bar.css", depends_on:"foo" %}
+    {% style name:"foo", src:"~/TheTheme/css/foo.min.css", debug_src:"~/TheTheme/css/foo.css", depends_on:"bootstrap" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <style asp-name="bar" asp-src="~/TheTheme/css/bar.min.css" debug-src="~/TheTheme/css/bar.css" depends-on="foo"></style>
+    <style asp-name="foo" asp-src="~/TheTheme/css/foo.min.css" debug-src="~/TheTheme/css/foo.css" depends-on="bootstrap"></style>
+    ```
 
 In this example define a style named `bar` with a dependency on the style named `foo`
 
@@ -289,33 +345,147 @@ When rendering the scripts the resource manager will order the output based on t
 3. `bar`
 
 !!! note
-    You do not have to define a name for your script or style unless you want to reference it as a dependency.
+    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`.
 
 #### Custom scripts
 
 The following example demonstrates how to inject a custom script in the footer section.
 
-``` liquid tab="Liquid"
-{% scriptblock at: "Foot" %}
-    document.write('<!-- some script -->');
-{% endscriptblock %}
+=== "Liquid"
+
+    ``` liquid
+    {% scriptblock at: "Foot" %}
+        document.write('<!-- some script -->');
+    {% endscriptblock %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <script at="Foot">
+        document.write('<!-- some script -->');
+    </script>
+    ```
+
+You can also inject a named custom script.
+
+=== "Liquid"
+
+    ``` liquid
+    {% scriptblock name: "Carousel", at: "Foot", depends_on:"jQuery" %}
+        document.write('<!-- some script -->');
+    {% endscriptblock %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <script asp-name="Carousel" at="Foot" depends-on="jQuery">
+        document.write('<!-- some script -->');
+    </script>
+    ```
+
+Named script will only be injected once and can optionally specify dependencies.
+
+#### Custom style
+
+The following example demonstrates how to inject a custom style in the head section.
+The style block will be injected after all stylesheet resources.
+
+=== "Liquid"
+
+    ``` liquid
+    {% styleblock at: "Head" %}
+        .my-class {
+            /* some style */
+        }
+    {% endstyleblock %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <style at="Head">
+        .my-class {
+            /* some style */
+        }
+    </style>
+    ```
+
+You can also inject a named style block.
+The style block will only be injected once based on its name and can optionally specify dependencies.
+
+=== "Liquid"
+
+    ``` liquid
+    {% styleblock name: "my-style", depends_on:"the-theme" %}
+        .my-class {
+            /* some style */
+        }
+    {% endstyleblock %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <style asp-name="my-style" depends-on="the-theme">
+        .my-class {
+            /* some style */
+        }
+    </style>
+    ```
+
+#### Link tag
+
+A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script). 
+
+=== "Liquid"
+
+    ``` liquid
+    {% link rel:"icon", type:"image/png", sizes:"16x16", src:"~/MyTheme/favicon/favicon-16x16.png" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <link asp-src="~/MyTheme/favicon/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" />
+    ```
+
+Output
+
+```text
+<link href="/MyTheme/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
 ```
 
-``` html tab="Razor"
-<script at="Foot">
-    document.write('<!-- some script -->');
-</script>
-```
+##### Using a file in the media library
+If you wish to use files contained in the media library when using the link tag helper, you can use the `AssetUrl` helper directly in razor but in liquid you will need to first assign the filter result to a variable like so to generate the correct URL:
+
+=== "Liquid"
+
+    ``` liquid
+    {% assign image_url = 'favicon/favicon-16x16.png' | asset_url %}
+    {% link rel:"icon", type:"image/png", sizes:"16x16", src:image_url %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <link asp-src=@Orchard.AssetUrl("favicon/favicon-16x16.png") rel="icon" type="image/png" sizes="16x16" />
+    ```
 
 #### Meta tags
 
-``` liquid tab="Liquid"
-{% meta name:"description", content:"This is a website" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<meta asp-name="description" content="This is a website" />
-```
+    ``` liquid
+    {% meta name:"description", content:"This is a website" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <meta asp-name="description" content="This is a website" />
+    ```
 
 These properties are available:
 
@@ -335,44 +505,63 @@ Your `Layout.cshtml` or `Layout.liquid` must make a call to the resource manager
 
 These are generally rendered at the lower portion of the `<head>` section.
 
-``` liquid tab="Liquid"
-<head>
-    ...
-    {% resources type: "Meta" %}
-    {% resources type: "HeadLink" %}
-    {% resources type: "HeadScript" %}
-    {% resources type: "Stylesheet" %}
-</head>    
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<head>
-    ...
-    <resources type="Meta" />
-    <resources type="HeadLink" />
-    <resources type="HeadScript" />
-    <resources type="Stylesheet" />
-</head>
-```
+    ``` liquid
+    <head>
+        ...
+        {% resources type: "Meta" %}
+        {% resources type: "HeadLink" %}
+        {% resources type: "HeadScript" %}
+        {% resources type: "Stylesheet" %}
+    </head>
+    ```
+
+=== "Razor"
+
+    ``` html
+    <head>
+        ...
+        <resources type="Meta" />
+        <resources type="HeadLink" />
+        <resources type="HeadScript" />
+        <resources type="Stylesheet" />
+    </head>
+    ```
 
 #### Foot Resources
 
 These should be rendered at the bottom of the `<body>` section.
 
-``` liquid tab="Liquid"
-<body>
-    ...
-    {% resources type: "FootScript" %}
-</body>    
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<body>
-    ...
-    <resources type="FootScript" />
-</body>
-```
+    ``` liquid
+    <body>
+        ...
+        {% resources type: "FootScript" %}
+    </body>    
+    ```
 
+=== "Razor"
+
+    ``` html
+    <body>
+        ...
+        <resources type="FootScript" />
+    </body>
+    ```
+
+!!! note
+    When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.ResourceManagement` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
+    
 ### Logging
 
 If you register a resource by name and it is not found this will be logged as an error in your `App_Data/Logs` folder.
+
+## CDN disabled by default
+
+The `UseCdn` option, configured in the _Configuration -> Settings -> General_ section, is disabled by default.
+This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
+
+!!! note
+    It is recommended to enable the CDN setting after setup.

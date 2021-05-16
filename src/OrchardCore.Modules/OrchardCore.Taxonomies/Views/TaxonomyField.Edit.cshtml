@@ -12,7 +12,7 @@
 
 @if (!String.IsNullOrEmpty(settings.Hint))
 {
-    <span class="hint">— @settings.Hint</span>
+    <span class="hint dashed">@settings.Hint</span>
 }
 
 @if (Model.Taxonomy == null)
@@ -36,7 +36,7 @@
         for (var e = entry.Level; e < previousLevel; e++)
         {
             WriteLiteral("</div>");
-            closingDivs = 0;
+            closingDivs--;
         }
 
         @if (!settings.Unique)

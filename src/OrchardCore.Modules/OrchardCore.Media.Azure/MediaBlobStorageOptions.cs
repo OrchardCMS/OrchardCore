@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.FileStorage.AzureBlob;
 
 namespace OrchardCore.Media.Azure

@@ -11,6 +11,17 @@ namespace OrchardCore.Localization
         /// Creates new instance of <see cref="CultureDictionaryRecord"/>.
         /// </summary>
         /// <param name="messageId">The message Id.</param>
+        /// <param name="translations">a list of translations</param>
+        public CultureDictionaryRecord(string messageId, params string[] translations)
+            : this(messageId, null, translations)
+        {
+
+        }
+
+        /// <summary>
+        /// Creates new instance of <see cref="CultureDictionaryRecord"/>.
+        /// </summary>
+        /// <param name="messageId">The message Id.</param>
         /// <param name="context">The message context.</param>
         /// <param name="translations">a list of translations</param>
         public CultureDictionaryRecord(string messageId, string context, string[] translations)
@@ -22,7 +33,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets the resource key.
         /// </summary>
-        public string Key { get; }
+        public CultureDictionaryRecordKey Key { get; }
 
         /// <summary>
         /// Gets the translation values.
@@ -35,19 +46,14 @@ namespace OrchardCore.Localization
         /// <param name="messageId">The message Id.</param>
         /// <param name="context">The message context.</param>
         /// <returns>The resource key.</returns>
-        public static string GetKey(string messageId, string context)
+        public static CultureDictionaryRecordKey GetKey(string messageId, string context)
         {
-            if (string.IsNullOrEmpty(messageId))
+            if (String.IsNullOrEmpty(messageId))
             {
                 throw new ArgumentException("MessageId can't be empty.", nameof(messageId));
             }
 
-            if (string.IsNullOrEmpty(context))
-            {
-                return messageId;
-            }
-
-            return context.ToLowerInvariant() + "|" + messageId;
+            return new CultureDictionaryRecordKey(messageId, context);
         }
     }
 }

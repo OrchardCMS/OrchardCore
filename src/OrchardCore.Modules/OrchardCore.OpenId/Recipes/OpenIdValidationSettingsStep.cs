@@ -19,16 +19,18 @@ namespace OrchardCore.OpenId.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, nameof(OpenIdValidationSettings), StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, nameof(OpenIdValidationSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             var model = context.Step.ToObject<OpenIdValidationSettingsStepModel>();
-            var settings = await _validationService.GetSettingsAsync();
+            var settings = await _validationService.LoadSettingsAsync();
+
             settings.Tenant = model.Tenant;
             settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.Audience = model.Audience;
+            settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
 
             await _validationService.UpdateSettingsAsync(settings);
         }

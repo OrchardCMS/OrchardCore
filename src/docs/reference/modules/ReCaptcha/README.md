@@ -1,4 +1,4 @@
-# ReCaptcha
+# ReCaptcha (`OrchardCore.ReCaptcha`)
 
 The OrchardCore.ReCaptcha module can be used to prevent robots from abusing your OrchardCore website.
 

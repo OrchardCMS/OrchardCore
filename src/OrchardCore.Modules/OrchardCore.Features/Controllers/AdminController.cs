@@ -11,7 +11,6 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Features.Models;
-using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
 
@@ -19,16 +18,14 @@ namespace OrchardCore.Features.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly IModuleService _moduleService;
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
-            IModuleService moduleService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
             IShellFeaturesManager shellFeaturesManager,
@@ -36,7 +33,6 @@ namespace OrchardCore.Features.Controllers
             ShellSettings shellSettings,
             INotifier notifier)
         {
-            _moduleService = moduleService;
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
@@ -195,7 +191,7 @@ namespace OrchardCore.Features.Controllers
         {
             foreach (var feature in features)
             {
-                _notifier.Success(H["{0} was {1}", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
+                _notifier.Success(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
             }
         }
     }

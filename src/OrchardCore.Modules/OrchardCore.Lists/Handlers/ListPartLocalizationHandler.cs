@@ -12,6 +12,7 @@ namespace OrchardCore.Lists.Drivers
     public class ListPartLocalizationHandler : ContentLocalizationPartHandlerBase<ListPart>
     {
         private readonly ISession _session;
+
         public ListPartLocalizationHandler(ISession session)
         {
             _session = session;

@@ -23,34 +23,28 @@ using YesSql.Sql;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
-    public class ContentItemsFieldTypeTests : IDisposable
+    public class ContentItemsFieldTypeTests : IAsyncLifetime
     {
         protected IStore _store;
         protected IStore _prefixedStore;
         protected string _prefix;
         protected string _tempFilename;
-        private Task _initializeTask;
 
-        public ContentItemsFieldTypeTests()
-        {
-            _initializeTask = InitializeAsync();
-        }
-
-        private async Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             var connectionStringTemplate = @"Data Source={0};Cache=Shared";
 
             _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            _store = await StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename)));
+            _store = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename)));
 
             _prefix = "tp";
-            _prefixedStore = await StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
+            _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
 
             await CreateTablesAsync(_store);
             await CreateTablesAsync(_prefixedStore);
         }
 
-        public void Dispose()
+        public Task DisposeAsync()
         {
             _store.Dispose();
             _store = null;
@@ -60,24 +54,40 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             if (File.Exists(_tempFilename))
             {
-                File.Delete(_tempFilename);
+                try
+                {
+                    File.Delete(_tempFilename);
+                }
+                catch
+                {
+
+                }
             }
 
             var prefixFilename = _tempFilename + _prefix;
 
             if (File.Exists(prefixFilename))
             {
-                File.Delete(prefixFilename);
+                try
+                {
+                    File.Delete(prefixFilename);
+                }
+                catch
+                {
+
+                }
             }
+
+            return Task.CompletedTask;
         }
 
         private async Task CreateTablesAsync(IStore store)
         {
             using (var session = store.CreateSession())
             {
-                var builder = new SchemaBuilder(store.Configuration, await session.DemandAsync());
+                var builder = new SchemaBuilder(store.Configuration, await session.BeginTransactionAsync());
 
-                builder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
+                builder.CreateMapIndexTable<ContentItemIndex>(table => table
                     .Column<string>("ContentItemId", c => c.WithLength(26))
                     .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                     .Column<bool>("Latest")
@@ -91,14 +101,16 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
                 );
 
-                builder.CreateMapIndexTable(nameof(AnimalIndex), column => column
+                builder.CreateMapIndexTable<AnimalIndex>(table => table
                     .Column<string>(nameof(AnimalIndex.Name))
                 );
 
-                builder.CreateMapIndexTable(nameof(AnimalTraitsIndex), column => column
+                builder.CreateMapIndexTable<AnimalTraitsIndex>(table => table
                     .Column<bool>(nameof(AnimalTraitsIndex.IsHappy))
                     .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
                 );
+
+                await session.SaveChangesAsync();
             }
 
             store.RegisterIndexes<ContentItemIndexProvider>();
@@ -107,7 +119,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldFilterByContentItemIndex()
         {
-            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())
@@ -115,6 +126,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => _store.CreateSession());
                 services.Services.AddScoped(x => new ShellSettings());
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<ContentItemIndex>>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
 
                 var returnType = new ListGraphType<StringGraphType>();
@@ -139,7 +152,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
-                await session.CommitAsync();
+                await session.SaveChangesAsync();
 
                 var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -154,13 +167,15 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldFilterByContentItemIndexWhenSqlTablePrefixIsUsed()
         {
-            await _initializeTask;
             _prefixedStore.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())
             {
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => _prefixedStore.CreateSession());
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<ContentItemIndex>>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalTraitsIndex>>();
 
                 var shellSettings = new ShellSettings();
                 shellSettings["TablePrefix"] = _prefix;
@@ -190,7 +205,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
-                await session.CommitAsync();
+                await session.SaveChangesAsync();
 
                 var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -202,10 +217,65 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
+
+        [Theory]
+        [InlineData("animal")]
+        [InlineData("ANIMAL")]
+        [InlineData("Animal")]
+        public async Task ShouldFilterByAliasIndexRegardlessOfInputFieldCase(string fieldName)
+        {
+            _store.RegisterIndexes<AnimalIndexProvider>();
+
+            using (var services = new FakeServiceCollection())
+            {
+                services.Populate(new ServiceCollection());
+                services.Services.AddScoped(x => _store.CreateSession());
+                services.Services.AddScoped(x => new ShellSettings());
+                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+                services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+                services.Build();
+
+                var returnType = new ListGraphType<StringGraphType>
+                {
+                    ResolvedType = new StringGraphType() { Name = "Animal" }
+                };
+
+                // setup the whereinput fieldname with the test data
+                var animalWhereInput = new AnimalPartWhereInput(fieldName);
+                var inputs = new FieldType { Name = "Inputs", Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
+
+                var context = new ResolveFieldContext
+                {
+                    Arguments = new Dictionary<string, object>(),
+                    UserContext = new GraphQLContext
+                    {
+                        ServiceProvider = services
+                    },
+                    ReturnType = returnType,
+                    FieldDefinition = inputs
+                };
+
+                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+                ci.Weld(new AnimalPart { Name = "doug" });
+
+                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                session.Save(ci);
+                await session.SaveChangesAsync();
+
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+
+                context.Arguments["where"] = JObject.Parse(string.Concat("{ ", fieldName, ": { name: \"doug\" } }"));
+                var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+
+                Assert.Single(dogs);
+                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+            }
+        }
+
         [Fact]
         public async Task ShouldBeAbleToUseTheSameIndexForMultipleAliases()
         {
-            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())
@@ -216,6 +286,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+
                 services.Build();
 
                 var retrunType = new ListGraphType<StringGraphType>();
@@ -236,7 +308,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
-                await session.CommitAsync();
+                await session.SaveChangesAsync();
 
                 var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -257,7 +329,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldFilterOnMultipleIndexesOnSameAlias()
         {
-            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
             _store.RegisterIndexes<AnimalTraitsIndexProvider>();
 
@@ -270,6 +341,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalTraitsIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleIndexesIndexProvider>();
+
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalTraitsIndex>>();
                 services.Build();
 
                 var retrunType = new ListGraphType<StringGraphType>();
@@ -298,7 +372,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci);
                 session.Save(ci1);
                 session.Save(ci2);
-                await session.CommitAsync();
+                await session.SaveChangesAsync();
 
                 var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -315,7 +389,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldFilterPartsWithoutAPrefixWhenThePartHasNoPrefix()
         {
-            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())
@@ -326,6 +399,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
 
                 var returnType = new ListGraphType<StringGraphType>();
@@ -350,7 +424,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
-                await session.CommitAsync();
+                await session.SaveChangesAsync();
 
                 var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -365,7 +439,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldFilterByCollapsedWhereInputForCollapsedParts()
         {
-            await _initializeTask;
             _store.RegisterIndexes<AnimalIndexProvider>();
 
             using (var services = new FakeServiceCollection())
@@ -376,6 +449,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
 
                 var returnType = new ListGraphType<StringGraphType>();
@@ -411,7 +485,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
-                await session.CommitAsync();
+                await session.SaveChangesAsync();
 
                 var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
@@ -431,6 +505,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
             Name = "Test";
             Description = "Foo";
             AddField(new FieldType { Name = "Animal", Type = typeof(StringGraphType), Metadata = new Dictionary<string, object> { { "PartName", "AnimalPart" } } });
+        }
+
+        public AnimalPartWhereInput(string fieldName)
+        {
+            Name = "Test";
+            Description = "Foo";
+            AddField(new FieldType { Name = fieldName, Type = typeof(StringGraphType), Metadata = new Dictionary<string, object> { { "PartName", "AnimalPart" } } });
         }
     }
 
@@ -467,9 +548,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     return new AnimalIndex
                     {
-                        Name = contentItem.As<Animal>() != null ?
-                                contentItem.As<Animal>().Name
-                                : contentItem.As<AnimalPart>().Name
+                        Name = contentItem.As<Animal>() != null
+                            ? contentItem.As<Animal>().Name
+                            : contentItem.As<AnimalPart>().Name
                     };
                 });
         }
@@ -518,19 +599,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 Alias = "cats",
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = "dogs",
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = nameof(AnimalPart),
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             }
         };
 
@@ -548,19 +629,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 Alias = "animals.name",
                 Index = $"Name",
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = "animals.isHappy",
                 Index = $"IsHappy",
-                With = q => q.With<AnimalTraitsIndex>()
+                IndexType = typeof(AnimalTraitsIndex)
             },
             new IndexAlias
             {
                 Alias = "animals.isScary",
                 Index = $"IsScary",
-                With = q => q.With<AnimalTraitsIndex>()
+                IndexType = typeof(AnimalTraitsIndex)
             }
         };
 

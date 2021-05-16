@@ -1,6 +1,7 @@
 @using OrchardCore.Liquid.ViewModels;
 @model LiquidPartViewModel
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
@@ -12,28 +13,31 @@
 <div class="form-group">
     <label asp-for="Liquid">@T["Body"]</label>
     <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
-    <span class="hint">@T["The body of the content item, in Liquid format."]</span>
+    <span class="hint">
+        @T["The body of the content item, in Liquid format."]
+        <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Liquid" target="_blank">@T["See documentation"]</a>
+    </span>
 </div>
 
 <script at="Foot">
-$(function () {
-    var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
+    $(function () {
+        var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
 
-    if (textArea == null) {
-        return;
-    }
+        if (textArea == null) {
+            return;
+        }
 
-    var editor = CodeMirror.fromTextArea(textArea, {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
+        var editor = CodeMirror.fromTextArea(textArea, {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+
+        editor.on('change', function (cm) {
+            document.getElementById('@Html.IdFor(x => x.Liquid)').value = cm.getValue();
+            $(document).trigger('contentpreview:render');
+        });
     });
-
-    editor.on('change', function (cm) {
-        document.getElementById('@Html.IdFor(x => x.Liquid)').value = cm.getValue();
-        $(document).trigger('contentpreview:render');
-    });
-});
 </script>

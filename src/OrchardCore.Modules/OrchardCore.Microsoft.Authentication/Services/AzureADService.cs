@@ -12,7 +12,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
     public class AzureADService : IAzureADService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<AzureADService> S;
+        private readonly IStringLocalizer S;
 
         public AzureADService(
             ISiteService siteService,
@@ -25,6 +25,12 @@ namespace OrchardCore.Microsoft.Authentication.Services
         public async Task<AzureADSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
+            return container.As<AzureADSettings>();
+        }
+
+        public async Task<AzureADSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
             return container.As<AzureADSettings>();
         }
 
@@ -43,6 +49,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 aspect.DisplayName = settings.DisplayName;
                 aspect.TenantId = settings.TenantId;
             });
+
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
@@ -53,17 +60,17 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            if (string.IsNullOrWhiteSpace(settings.DisplayName))
+            if (String.IsNullOrWhiteSpace(settings.DisplayName))
             {
                 yield return new ValidationResult(S["DisplayName is required"], new string[] { nameof(settings.DisplayName) });
             }
 
-            if (string.IsNullOrWhiteSpace(settings.AppId))
+            if (String.IsNullOrWhiteSpace(settings.AppId))
             {
                 yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
             }
 
-            if (string.IsNullOrWhiteSpace(settings.TenantId))
+            if (String.IsNullOrWhiteSpace(settings.TenantId))
             {
                 yield return new ValidationResult(S["TenantId is required"], new string[] { nameof(settings.TenantId) });
             }

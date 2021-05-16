@@ -3,11 +3,11 @@
 @model ShapeViewModel<ContentDefinitionDeploymentStep>
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
-<h5>@T["Content Definitions"]</h5>
+<h5>@T["Update Content Definitions"]</h5>
 
 @if (Model.Value.IncludeAll)
 {
-    <span class="badge badge-success">All</span>
+    <span class="badge ta-badge">All</span>
 }
 else
 {
@@ -17,7 +17,7 @@ else
     var allTypes = ContentDefinitionManager.ListTypeDefinitions();
     var allParts = ContentDefinitionManager.ListPartDefinitions();
 
-    var avaParts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
+    var parts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
 
     if (contentTypes?.Length > 0)
     {
@@ -25,19 +25,20 @@ else
         {
             if (contentTypes.Contains(def.Name))
             {
-                <span class="badge badge-info">@def.DisplayName</span>
+                <span class="badge ta-badge">@def.DisplayName</span>
             }
         }
     }
 
     if (contentParts?.Length > 0)
     {
-        foreach (var part in avaParts)
+        foreach (var part in parts)
         {
             if (contentParts.Contains(part.Name))
             {
-                <span class="badge badge-dark">@part.Name</span>
+                <span class="badge ta-badge">@part.Name</span>
             }
         }
     }
 }
+<span class="hint d-block">@T["Content Definitions should be placed before any content steps."]</span>

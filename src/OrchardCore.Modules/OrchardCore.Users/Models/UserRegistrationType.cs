@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Users.Models
 {
     public enum UserRegistrationType

@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Google.Authentication.Services;
 using OrchardCore.Google.Authentication.Settings;
 
@@ -17,19 +19,19 @@ namespace OrchardCore.Google.Authentication.Configuration
     {
         private readonly GoogleAuthenticationService _googleAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<GoogleOptionsConfiguration> _logger;
-        private readonly string _tenantPrefix;
+        private readonly ShellSettings _shellSettings;
+        private readonly ILogger _logger;
 
         public GoogleOptionsConfiguration(
             GoogleAuthenticationService googleAuthenticationService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<GoogleOptionsConfiguration> logger,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            ILogger<GoogleOptionsConfiguration> logger)
         {
             _googleAuthenticationService = googleAuthenticationService;
             _dataProtectionProvider = dataProtectionProvider;
+            _shellSettings = shellSettings;
             _logger = logger;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public void Configure(AuthenticationOptions options)
@@ -40,9 +42,6 @@ namespace OrchardCore.Google.Authentication.Configuration
                 return;
             }
 
-            if (!_googleAuthenticationService.CheckSettings(settings))
-                return;
-
             options.AddScheme(GoogleDefaults.AuthenticationScheme, builder =>
             {
                 builder.DisplayName = "Google";
@@ -52,12 +51,18 @@ namespace OrchardCore.Google.Authentication.Configuration
 
         public void Configure(string name, GoogleOptions options)
         {
-            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme))
+            if (!String.Equals(name, GoogleDefaults.AuthenticationScheme))
             {
                 return;
             }
+
             var settings = GetGoogleAuthenticationSettingsAsync().GetAwaiter().GetResult();
-            options.ClientId = settings?.ClientID ?? string.Empty;
+            if (settings == null)
+            {
+                return;
+            }
+
+            options.ClientId = settings.ClientID;
             try
             {
                 options.ClientSecret = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Unprotect(settings.ClientSecret);
@@ -71,6 +76,8 @@ namespace OrchardCore.Google.Authentication.Configuration
             {
                 options.CallbackPath = settings.CallbackPath;
             }
+
+            options.SaveTokens = settings.SaveTokens;
         }
 
         public void Configure(GoogleOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
@@ -80,9 +87,14 @@ namespace OrchardCore.Google.Authentication.Configuration
             var settings = await _googleAuthenticationService.GetSettingsAsync();
             if (!_googleAuthenticationService.CheckSettings(settings))
             {
-                _logger.LogWarning("Google Authentication is not correctly configured.");
+                if (_shellSettings.State == TenantState.Running)
+                {
+                    _logger.LogWarning("Google Authentication is not correctly configured.");
+                }
+
                 return null;
             }
+
             return settings;
         }
     }

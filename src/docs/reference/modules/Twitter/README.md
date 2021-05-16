@@ -1,4 +1,4 @@
-# Twitter (OrchardCore.Twitter)
+# Twitter (`OrchardCore.Twitter`)
 
 This module adds Twitter for Websites features to OrchardCore.
 

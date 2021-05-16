@@ -19,13 +19,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 .AddCommands()
 
+                .AddSecurity()
                 .AddMvc()
+                .AddIdGeneration()
                 .AddEmailAddressValidator()
+                .AddHtmlSanitizer()
                 .AddSetupFeatures("OrchardCore.Setup")
 
                 .AddDataAccess()
                 .AddDataStorage()
                 .AddBackgroundService()
+                .AddScripting()
 
                 .AddTheming()
                 .AddLiquidViews()

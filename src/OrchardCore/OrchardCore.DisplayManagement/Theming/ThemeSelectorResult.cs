@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.DisplayManagement.Theming
 {
     public class ThemeSelectorResult

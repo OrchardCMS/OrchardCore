@@ -37,7 +37,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
         public override async Task<IDisplayResult> EditAsync(TwitterSigninSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
             {
                 return null;
             }
@@ -48,6 +48,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 {
                     model.CallbackPath = settings.CallbackPath;
                 }
+                model.SaveTokens = settings.SaveTokens;
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Signin);
         }
 
@@ -56,7 +57,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
             if (context.GroupId == TwitterConstants.Features.Signin)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
                 {
                     return null;
                 }
@@ -68,7 +69,8 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 {
                     var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Signin);
                     settings.CallbackPath = model.CallbackPath;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    settings.SaveTokens = model.SaveTokens;
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services
@@ -11,7 +12,7 @@ namespace OrchardCore.Media.Services
         private readonly IMediaFileStore _fileStore;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
         private readonly ShellSettings _shellSettings;
-        private readonly ILogger<TempDirCleanerService> _logger;
+        private readonly ILogger _logger;
 
         public TempDirCleanerService(IMediaFileStore fileStore,
             AttachedMediaFieldFileService attachedMediaFieldFileService,
@@ -26,7 +27,7 @@ namespace OrchardCore.Media.Services
 
         public async Task ActivatedAsync()
         {
-            if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
+            if (_shellSettings.State == TenantState.Running)
             {
                 try
                 {
@@ -37,9 +38,7 @@ namespace OrchardCore.Media.Services
                         return;
                     }
 
-                    var contents = await _fileStore.GetDirectoryContentAsync(tempDir);
-
-                    foreach (var c in contents)
+                    await foreach (var c in _fileStore.GetDirectoryContentAsync(tempDir))
                     {
                         var result = c.IsDirectory ?
                             await _fileStore.TryDeleteDirectoryAsync(c.Path)

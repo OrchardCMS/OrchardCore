@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
@@ -29,6 +30,7 @@ namespace OrchardCore.Lucene
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
+        private readonly ILogger _logger;
 
         public LuceneIndexingService(
             IShellHost shellHost,
@@ -47,11 +49,8 @@ namespace OrchardCore.Lucene
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
             _siteService = siteService;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
 
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
@@ -157,7 +156,7 @@ namespace OrchardCore.Lucene
                                 if (contentItem != null)
                                 {
                                     publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), Logger);
+                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                                 }
                             }
 
@@ -167,7 +166,7 @@ namespace OrchardCore.Lucene
                                 if (contentItem != null)
                                 {
                                     latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), Logger);
+                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                                 }
                             }
 
@@ -188,7 +187,9 @@ namespace OrchardCore.Lucene
                                     continue;
                                 }
 
-                                bool ignoreIndexedCulture = settings.Culture == "any" ? false : context.ContentItem.Content?.LocalizationPart?.Culture != settings.Culture;
+                                var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
+                                var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
+                                var ignoreIndexedCulture = settings.Culture == "any" ? false : culture != settings.Culture;
 
                                 // Ignore if the content item content type or culture is not indexed in this index
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
@@ -227,7 +228,7 @@ namespace OrchardCore.Lucene
                     }
 
                     _indexingState.Update();
-                });
+                }, activateShell: false);
             } while (batch.Length == BatchSize);
         }
 
@@ -256,7 +257,11 @@ namespace OrchardCore.Lucene
         /// <returns></returns>
         public Task DeleteIndexAsync(string indexName)
         {
-            _indexManager.DeleteIndex(indexName);
+            if (_indexManager.Exists(indexName))
+            {
+                _indexManager.DeleteIndex(indexName);
+            }
+
             return _luceneIndexSettingsService.DeleteIndexAsync(indexName);
         }
 
@@ -275,7 +280,11 @@ namespace OrchardCore.Lucene
         /// </summary>
         public async Task RebuildIndexAsync(string indexName)
         {
-            _indexManager.DeleteIndex(indexName);
+            if (_indexManager.Exists(indexName))
+            {
+                _indexManager.DeleteIndex(indexName);
+            }
+
             await _indexManager.CreateIndexAsync(indexName);
 
             ResetIndex(indexName);

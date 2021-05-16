@@ -69,6 +69,8 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a where a = 1", "SELECT [a] WHERE [a] = 1;")]
         [InlineData("select a where a = 1.234", "SELECT [a] WHERE [a] = 1.234;")]
         [InlineData("select a where a = 'foo'", "SELECT [a] WHERE [a] = 'foo';")]
+        [InlineData("select a where a like '%foo%'", "SELECT [a] WHERE [a] LIKE '%foo%';")]
+        [InlineData("select a where a not like '%foo%'", "SELECT [a] WHERE [a] NOT LIKE '%foo%';")]
         [InlineData("select a where a between b and c", "SELECT [a] WHERE [a] BETWEEN [b] AND [c];")]
         [InlineData("select a where a not between b and c", "SELECT [a] WHERE [a] NOT BETWEEN [b] AND [c];")]
         [InlineData("select a where a = b or c = d", "SELECT [a] WHERE [a] = [b] OR [c] = [d];")]
@@ -76,6 +78,9 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a where (a = b) or (c = d) and e", "SELECT [a] WHERE ([a] = [b]) OR ([c] = [d]) AND [e];")]
         [InlineData("select a where test(arg)", "SELECT [a] WHERE test([arg]);")]
         [InlineData("select a where b in (1,2,3)", "SELECT [a] WHERE [b] IN (1, 2, 3);")]
+        [InlineData("select a where b in (select b)", "SELECT [a] WHERE [b] IN (SELECT [b]);")]
+        [InlineData("select a where b not in (1,2,3)", "SELECT [a] WHERE [b] NOT IN (1, 2, 3);")]
+        [InlineData("select a where b not in (select b)", "SELECT [a] WHERE [b] NOT IN (SELECT [b]);")]
         [InlineData("select a where b = (select Avg(c) from d)", "SELECT [a] WHERE [b] = (SELECT Avg([c]) FROM [tp_d]);")]
         public void ShouldParseExpression(string sql, string expectedSql)
         {
@@ -108,6 +113,10 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a from b inner join c on b.b1 = c.c1", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1];")]
         [InlineData("select a from b as ba inner join c as ca on ba.b1 = ca.c1", "SELECT [a] FROM [tp_b] AS ba INNER JOIN [tp_c] AS ca ON ba.[b1] = ca.[c1];")]
         [InlineData("select a from b inner join c on b.b1 = c.c1 left join d on d.a = d.b", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1] LEFT JOIN [tp_d] ON [tp_d].[a] = [tp_d].[b];")]
+        [InlineData("select a from b inner join c on b.b1 = c.c1 and b.b2 = c.c2", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1] AND [tp_b].[b2] = [tp_c].[c2];")]
+        [InlineData("select a from b inner join c on b.b1 = c.c1 and b.b2 = @param", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1] AND [tp_b].[b2] = @param;")]
+        [InlineData("select a from b inner join c on 1 = 1 and @param = 'foo'", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON 1 = 1 AND @param = 'foo';")]
+        [InlineData("select a from b inner join c on 1 = @param left join d on d.a = @param left join e on e.a = 'foo'", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON 1 = @param LEFT JOIN [tp_d] ON [tp_d].[a] = @param LEFT JOIN [tp_e] ON [tp_e].[a] = 'foo';")]
         public void ShouldParseJoinClause(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
@@ -178,6 +187,22 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("SELECT /* comment */ a;", "SELECT [a];")]
         [InlineData("SELECT /* comment \n comment */ a;", "SELECT [a];")]
         public void ShouldParseComments(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
+
+        [Theory]
+        [InlineData("select COUNT(1) over () from a", "SELECT COUNT(1) OVER () FROM [tp_a];")]
+        [InlineData("select COUNT(1) over () a from b", "SELECT COUNT(1) OVER () AS a FROM [tp_b];")]
+        [InlineData("select COUNT(1) over (partition by a) from b", "SELECT COUNT(1) OVER (PARTITION BY [a]) FROM [tp_b];")]
+        [InlineData("select COUNT(1) over (order by a) from b", "SELECT COUNT(1) OVER (ORDER BY [a]) FROM [tp_b];")]
+        [InlineData("select COUNT(1) over (order by a, b) from c", "SELECT COUNT(1) OVER (ORDER BY [a], [b]) FROM [tp_c];")]
+        [InlineData("select COUNT(1) over (order by a asc, b desc, c desc) from d", "SELECT COUNT(1) OVER (ORDER BY [a] ASC, [b] DESC, [c] DESC) FROM [tp_d];")]
+        [InlineData("select COUNT(1) over (partition by a order by b) from c", "SELECT COUNT(1) OVER (PARTITION BY [a] ORDER BY [b]) FROM [tp_c];")]
+        [InlineData("select COUNT(1) over () a, MAX(b) over () c from d", "SELECT COUNT(1) OVER () AS a, MAX([b]) OVER () AS c FROM [tp_d];")]
+        public void ShouldParseWindowFunction(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
             Assert.True(result);

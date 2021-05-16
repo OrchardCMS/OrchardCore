@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
@@ -39,20 +39,26 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public async Task<IHtmlContent> ExecuteAsync(DisplayContext context)
         {
-            var shape = context.Value as IShape;
+            var shape = context.Value;
 
-            // non-shape arguments are returned as a no-op
-            if (shape == null)
+            // Check if the shape is null or empty.
+            if (shape.IsNullOrEmpty())
             {
-                return CoerceHtmlString(context.Value);
+                return HtmlString.Empty;
+            }
+
+            // Check if the shape is pre-rendered.
+            if (shape is IHtmlContent htmlContent)
+            {
+                return htmlContent;
             }
 
             var shapeMetadata = shape.Metadata;
 
             // can't really cope with a shape that has no type information
-            if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
+            if (shapeMetadata == null || String.IsNullOrEmpty(shapeMetadata.Type))
             {
-                return CoerceHtmlString(context.Value);
+                return new HtmlContentString(context.Value.ToString());
             }
 
             // Copy the current context such that the rendering can customize it if necessary
@@ -93,7 +99,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 // invoking ShapeMetadata displaying events
                 shapeMetadata.Displaying.Invoke(action => action(displayContext), _logger);
 
-                // use pre-fectched content if available (e.g. coming from specific cache implementation)
+                // use pre-fetched content if available (e.g. coming from specific cache implementation)
                 if (displayContext.ChildContent != null)
                 {
                     shape.Metadata.ChildContent = displayContext.ChildContent;
@@ -181,13 +187,13 @@ namespace OrchardCore.DisplayManagement.Implementation
         {
             // Note: The shape type of a descriptor is a fundamental shape type that never contains
             // any '__' separator. If a shape type contains some '__' separators, its fundamental
-            // shape type is the left part just before the 1st occurence of the '__' separator.
+            // shape type is the left part just before the 1st occurrence of the '__' separator.
 
             // As a fast path we 1st use the shapeType as is but it may contain some '__'.
             if (!shapeTable.Descriptors.TryGetValue(shapeType, out var shapeDescriptor))
             {
                 // Check if not a fundamental type.
-                var index = shapeType.IndexOf("__");
+                var index = shapeType.IndexOf("__", StringComparison.Ordinal);
 
                 if (index > 0)
                 {
@@ -252,35 +258,9 @@ namespace OrchardCore.DisplayManagement.Implementation
             return null;
         }
 
-        private static IHtmlContent CoerceHtmlString(object value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-
-            if (value is IHtmlContent result)
-            {
-                return result;
-
-                // To prevent the result from being rendered lately, we can
-                // serialize it right away. But performance seems to be better
-                // like this, until we find this is an issue.
-
-                //using (var html = new StringWriter())
-                //{
-                //    result.WriteTo(html, htmlEncoder);
-                //    return new HtmlString(html.ToString());
-                //}
-            }
-
-            // Convert to a string and HTML-encode it
-            return new StringHtmlContent(value.ToString());
-        }
-
         private static bool TryGetParentShapeTypeName(ref string shapeTypeScan)
         {
-            var delimiterIndex = shapeTypeScan.LastIndexOf("__");
+            var delimiterIndex = shapeTypeScan.LastIndexOf("__", StringComparison.Ordinal);
             if (delimiterIndex > 0)
             {
                 shapeTypeScan = shapeTypeScan.Substring(0, delimiterIndex);
@@ -291,14 +271,14 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         private static ValueTask<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)
         {
-            async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
+            static async ValueTask<IHtmlContent> Awaited(Task<IHtmlContent> task)
             {
-                return CoerceHtmlString(await task);
+                return (await task) ?? HtmlString.Empty;
             }
 
             if (shapeBinding?.BindingAsync == null)
             {
-                // todo: create result from all child shapes
+                // Todo: create result from all child shapes.
                 return new ValueTask<IHtmlContent>(shape.Metadata.ChildContent ?? HtmlString.Empty);
             }
 
@@ -309,7 +289,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 return Awaited(task);
             }
 
-            return new ValueTask<IHtmlContent>(CoerceHtmlString(task.Result));
+            return new ValueTask<IHtmlContent>(task.Result ?? HtmlString.Empty);
         }
     }
 }

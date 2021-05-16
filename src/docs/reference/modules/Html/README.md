@@ -33,15 +33,22 @@ The following properties are available on `HtmlBodyPart`:
 | `Content` | The raw content of the part. |
 | `ContentItem` | The content item containing this part. |
 
+## Sanitization
+
+By default all HTML input is sanitized when the `HtmlBodyPart` is saved.
+
+You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../../core/Sanitizer/README.md)
+
 ## Editors
 
 The __HtmlBody Part__ editor can be different for each content type. In the __HtmlBody Part__ settings of a 
 content type, just select the one that needs to be used.
 
-There are two predefined editor names:
+There are three predefined editor names:
 
 - `Default` is the editor that is used by default.
 - `Wysiwyg` is the editor that provides a WYSIWYG experience.
+- `Monaco` is the editor that provides a source code experience.
 
 ### Custom Editors
 
@@ -54,8 +61,8 @@ render the actual HTML for the editor.
 
 #### Declaration
 
-To declare a new editor, create a shape named `HtmlBody_Option__{Name}` where `{Name}` is a value 
-of your choosing. This will be represented by a file named `HtmlBody-{Name}.Option.cshtml`.
+To declare a new editor, create a shape named `HtmlBodyPart_Option__{Name}` where `{Name}` is a value 
+of your choosing. This will be represented by a file named `HtmlBodyPart-{Name}.Option.cshtml`.
 
 Sample content:
 
@@ -68,7 +75,7 @@ Sample content:
 
 #### HTML Editor
 
-To define what HTML to render when the editor is selected from the settings, a shape named `HtmlBody_Editor__{Name}` corresponding to a file `Body-{Name}.Editor.cshtml` can be created.
+To define what HTML to render when the editor is selected from the settings, a shape named `HtmlBodyPart_Edit__{Name}` corresponding to a file `HtmlBodyPart-{Name}.Edit.cshtml` can be created.
 
 Sample content:
 
@@ -86,17 +93,5 @@ Sample content:
 ### Overriding the predefined editors
 
 You can override the HTML editor for the `Default` editor by creating a shape file named  
-`HtmlBody.Editor.cshtml`. The Wysiwyg editor is defined by using the file named  
-`HtmlBody-Wysiwyg.Editor.cshtml`.
-
-## CREDITS
-
-### Trumbowyg
-
-<https://github.com/Alex-D/Trumbowyg>  
-Copyright (c) 2012-2016 Alexandre Demode (Alex-D)  
-License: MIT
-
-<https://github.com/RickStrahl/jquery-resizable>  
-Copyright (c) 2013-2019 West Wind Technologies
-License: MIT
+`HtmlBodyPart.Edit.cshtml`. The Wysiwyg editor is defined by using the file named  
+`HtmlBodyPart-Wysiwyg.Edit.cshtml`.

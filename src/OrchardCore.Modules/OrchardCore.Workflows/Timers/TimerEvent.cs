@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Timers
     {
         public static string EventName => nameof(TimerEvent);
         private readonly IClock _clock;
-        private readonly IStringLocalizer<TimerEvent> S;
+        private readonly IStringLocalizer S;
 
         public TimerEvent(IClock clock, IStringLocalizer<TimerEvent> localizer)
         {
@@ -30,12 +30,6 @@ namespace OrchardCore.Workflows.Timers
         public string CronExpression
         {
             get => GetProperty(() => "*/5 * * * *");
-            set => SetProperty(value);
-        }
-
-        public DateTime? StartAtUtc
-        {
-            get => GetProperty<DateTime?>();
             set => SetProperty(value);
         }
 
@@ -68,13 +62,7 @@ namespace OrchardCore.Workflows.Timers
 
         private bool IsExpired()
         {
-            var startedUtc = StartedUtc;
-
-            if (StartedUtc == null)
-            {
-                StartedUtc = StartAtUtc ?? _clock.UtcNow;
-            }
-
+            StartedUtc ??= _clock.UtcNow;
             var schedule = CrontabSchedule.Parse(CronExpression);
             var whenUtc = schedule.GetNextOccurrence(StartedUtc.Value);
 

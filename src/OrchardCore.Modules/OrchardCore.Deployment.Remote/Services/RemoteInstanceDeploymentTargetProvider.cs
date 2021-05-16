@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
@@ -10,7 +10,7 @@ namespace OrchardCore.Deployment
     public class RemoteInstanceDeploymentTargetProvider : IDeploymentTargetProvider
     {
         private readonly RemoteInstanceService _service;
-        private readonly IStringLocalizer<RemoteInstanceDeploymentTargetProvider> S;
+        private readonly IStringLocalizer S;
 
         public RemoteInstanceDeploymentTargetProvider(
             IStringLocalizer<RemoteInstanceDeploymentTargetProvider> stringLocalizer,

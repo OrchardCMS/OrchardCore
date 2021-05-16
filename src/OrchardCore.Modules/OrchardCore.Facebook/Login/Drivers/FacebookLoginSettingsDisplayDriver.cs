@@ -33,7 +33,7 @@ namespace OrchardCore.Facebook.Login.Drivers
         public override async Task<IDisplayResult> EditAsync(FacebookLoginSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
             {
                 return null;
             }
@@ -41,6 +41,7 @@ namespace OrchardCore.Facebook.Login.Drivers
             return Initialize<FacebookLoginSettingsViewModel>("FacebookLoginSettings_Edit", model =>
             {
                 model.CallbackPath = settings.CallbackPath.Value;
+                model.SaveTokens = settings.SaveTokens;
             }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
         }
 
@@ -49,7 +50,7 @@ namespace OrchardCore.Facebook.Login.Drivers
             if (context.GroupId == FacebookConstants.Features.Login)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
                 {
                     return null;
                 }
@@ -60,7 +61,8 @@ namespace OrchardCore.Facebook.Login.Drivers
                 if (context.Updater.ModelState.IsValid)
                 {
                     settings.CallbackPath = model.CallbackPath;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    settings.SaveTokens = model.SaveTokens;
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

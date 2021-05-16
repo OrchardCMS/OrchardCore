@@ -18,19 +18,13 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication
 {
-    public class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IPermissionProvider, Permissions>();
-        }
-    }
-
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class MicrosoftAccountStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+
             services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
@@ -52,6 +46,8 @@ namespace OrchardCore.Microsoft.Authentication
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+
             services.AddSingleton<IAzureADService, AzureADService>();
             services.AddRecipeExecutionStep<AzureADSettingsStep>();
             services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
@@ -60,10 +56,19 @@ namespace OrchardCore.Microsoft.Authentication
             services.TryAddEnumerable(new[]
             {
                 // Orchard-specific initializers:
+
+                #pragma warning disable CS0618
+                // The net5.0 5.0.3 build obsoletes 'AzureADOptions' and 'AzureADDefaults', 'Microsoft.Identity.Web' should be used instead.
+                // The build warning is disabled temporarily until the code can be migrated.
+
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, AzureADOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<AzureADOptions>, AzureADOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<PolicySchemeOptions>, AzureADOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>(),
+
+                // Restore the obsolete warning disabled above
+                #pragma warning restore CS0618
+
                 // Built-in initializers:
                 ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
             });

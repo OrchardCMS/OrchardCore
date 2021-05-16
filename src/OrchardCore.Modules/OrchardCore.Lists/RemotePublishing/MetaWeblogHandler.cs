@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -35,22 +33,20 @@ namespace OrchardCore.Lists.RemotePublishing
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly HtmlEncoder _htmlEncoder;
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMembershipService _membershipService;
         private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
         private readonly ISession _session;
-        private readonly IStringLocalizer<MetaWeblogHandler> S;
+        private readonly IStringLocalizer S;
 
-        public MetaWeblogHandler(IContentManager contentManager,
+        public MetaWeblogHandler(
+            IContentManager contentManager,
             IAuthorizationService authorizationService,
             IMembershipService membershipService,
             ISession session,
-            HtmlEncoder htmlEncoder,
             IContentDefinitionManager contentDefinitionManager,
             IMediaFileStore mediaFileStore,
             IEnumerable<IMetaWeblogDriver> metaWeblogDrivers,
-            ILogger<MetaWeblogHandler> logger,
             IStringLocalizer<MetaWeblogHandler> localizer)
         {
             _contentManager = contentManager;
@@ -58,14 +54,10 @@ namespace OrchardCore.Lists.RemotePublishing
             _authorizationService = authorizationService;
             _metaWeblogDrivers = metaWeblogDrivers;
             _session = session;
-            _htmlEncoder = htmlEncoder;
             _mediaFileStore = mediaFileStore;
             _membershipService = membershipService;
-            Logger = logger;
             S = localizer;
         }
-
-        private ILogger Logger { get; }
 
         public void SetCapabilities(XElement options)
         {
@@ -202,7 +194,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 foreach (var list in await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == type.Name).ListAsync())
                 {
                     // User needs to at least have permission to edit its own blog posts to access the service
-                    if (await _authorizationService.AuthorizeAsync(user, Permissions.EditContent, list))
+                    if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, list))
                     {
                         var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(list);
                         var displayRouteValues = metadata.DisplayRouteValues;
@@ -229,7 +221,7 @@ namespace OrchardCore.Lists.RemotePublishing
             var user = await ValidateUserAsync(userName, password);
 
             // User needs to at least have permission to edit its own blog posts to access the service
-            await CheckAccessAsync(Permissions.EditContent, user, null);
+            await CheckAccessAsync(CommonPermissions.EditContent, user, null);
 
             var list = await _contentManager.GetAsync(contentItemId);
 
@@ -273,7 +265,7 @@ namespace OrchardCore.Lists.RemotePublishing
             var user = await ValidateUserAsync(userName, password);
 
             // User needs permission to edit or publish its own blog posts
-            await CheckAccessAsync(publish ? Permissions.PublishContent : Permissions.EditContent, user, null);
+            await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, null);
 
             var list = await _contentManager.GetAsync(contentItemId);
 
@@ -285,7 +277,7 @@ namespace OrchardCore.Lists.RemotePublishing
             var postType = GetContainedContentTypes(list).FirstOrDefault();
             var contentItem = await _contentManager.NewAsync(postType.Name);
 
-            contentItem.Owner = userName;
+            contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
             contentItem.Alter<ContainedPart>(x => x.ListContentItemId = list.ContentItemId);
 
             foreach (var driver in _metaWeblogDrivers)
@@ -311,6 +303,10 @@ namespace OrchardCore.Lists.RemotePublishing
             if (publish && (publishedUtc == null || publishedUtc <= DateTime.UtcNow))
             {
                 await _contentManager.PublishAsync(contentItem);
+            }
+            else
+            {
+                await _contentManager.SaveDraftAsync(contentItem);
             }
 
             if (publishedUtc != null)
@@ -341,7 +337,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 throw new ArgumentException();
             }
 
-            await CheckAccessAsync(Permissions.EditContent, user, contentItem);
+            await CheckAccessAsync(CommonPermissions.EditContent, user, contentItem);
 
             var postStruct = await CreateBlogStructAsync(context, contentItem);
 
@@ -375,7 +371,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 throw new Exception(S["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
             }
 
-            await CheckAccessAsync(publish ? Permissions.PublishContent : Permissions.EditContent, user, contentItem);
+            await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, contentItem);
 
             foreach (var driver in _metaWeblogDrivers)
             {
@@ -398,6 +394,10 @@ namespace OrchardCore.Lists.RemotePublishing
             if (publish && (publishedUtc == null || publishedUtc <= DateTime.UtcNow))
             {
                 await _contentManager.PublishAsync(contentItem);
+            }
+            else
+            {
+                await _contentManager.SaveDraftAsync(contentItem);
             }
 
             if (publishedUtc != null)
@@ -426,7 +426,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 throw new ArgumentException();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.DeleteContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
             {
                 throw new InvalidOperationException(S["Not authorized to delete this content"].Value);
             }

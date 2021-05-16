@@ -1,0 +1,66 @@
+// Tabs =================================================================
+
+.tab-pane {
+    border-left: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-right: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-top: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-bottom-left-radius: $nav-tabs-border-radius;
+    border-bottom-right-radius: $nav-tabs-border-radius;
+    border-top-right-radius: $nav-tabs-border-radius;
+    margin-bottom: map-get($map: $spacers, $key: 3);
+    padding-left: map-get($map: $spacers, $key: 3);
+    padding-right: map-get($map: $spacers, $key: 3);
+    padding-top: map-get($map: $spacers, $key: 3);
+}
+
+.nav-tabs {
+    border-bottom: none;
+    margin-top: 1px;
+    margin-bottom: -1px;
+
+    .nav-link {
+        border: none;
+        color: $white;
+        background-color: $gray-600;
+        @include transition($btn-transition);
+
+        &:hover {
+            background-color: darken($gray-600, 7.5%);
+        }
+
+        &.active {
+            border-left: $nav-tabs-border-width solid $nav-tabs-border-color;
+            border-right: $nav-tabs-border-width solid $nav-tabs-border-color;
+            border-top: $nav-tabs-border-width solid $nav-tabs-border-color;
+            cursor: initial;
+            color: $gray-900;
+            background-color: $white;
+
+            &:hover {
+                background-color: $white;
+            }
+        }
+    }
+
+    .nav-item {
+        margin-bottom: 0px;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .nav-tabs {
+        .nav-item:not(.nav-link) {
+            padding-bottom: map-get($map: $spacers, $key: 1);
+        }
+
+        .nav-link {
+            border-bottom-left-radius: $nav-tabs-border-radius;
+            border-bottom-right-radius: $nav-tabs-border-radius;
+
+            &.active {
+                border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
+            }
+        }
+    }
+}

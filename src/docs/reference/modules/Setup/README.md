@@ -1,5 +1,7 @@
 # Setup (`OrchardCore.Setup`)
 
+When you begin with an empty site, a start screen allows you to setup the different parameters as the Title, the selected database, or the recipe that will be used to generate the site. This is done by the Setup module.
+
 ## Recipe Parameters
 
 During setup, all recipes have access to the setup screen values using these parameters:
@@ -7,6 +9,7 @@ During setup, all recipes have access to the setup screen values using these par
 | Parameter | Description |
 | --- | --- |
 | `SiteName` | The name of the site. |
+| `AdminUserId` | The user id of the super user. |
 | `AdminUsername` | The username of the super user. |
 | `AdminEmail` | The email of the super user. |
 | `AdminPassword` | The password of the super user. |
@@ -14,29 +17,45 @@ During setup, all recipes have access to the setup screen values using these par
 | `DatabaseConnectionString` | The connection string. |
 | `DatabaseTablePrefix` | The database table prefix. |
 
-These parameters can be used in the recipe using a scripted value like `[js: parameters('AdminUsername')]`.
+These parameters can be used in the recipe using a scripted value like `[js: parameters('AdminUserId')]`.
 
-### Custom Parameters
+### Recipe Configuration Keys
 
-Custom parameters can also be used in the recipe, using a scripted value like `[js: configuration('CustomParameterKey')]`.
+Custom configuration keys can also be used in the recipe, using a scripted key value like `[js: configuration('CustomConfigurationKey')]`.
 
-The value will be retrieved from the `appsettings.json` tenant file.
+The key will be retrieved from the current [IShellConfiguration](../../core/Configuration/README.md). 
+
+For example to provide a key for a tenant
 
 ```json
     {
         "ConnectionString": "...",
         "DatabaseProvider": "Sqlite",
         "TablePrefix": "Test",
-        "CustomParameterKey": "Custom Parameter Value"
+        "CustomConfigurationKey": "Custom Configuration Value"
     }
 ```
 
-## Configuration
+Other configuration keys can also be used, i.e. from the hosts `appsettings.json` 
+
+`[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]`
+
+In this example we also provide a default value, which will be used if the key is not found.
+
+```json
+    {
+        "OrchardCore_Admin" : {
+            "AdminUrlPrefix" : "MyAdmin"
+        }
+    }
+```
+
+## Setup Configuration
 
 The following configuration values are used by default and can be customized:
 
 ```json
-    "OrchardCore.Setup": {
+    "OrchardCore_Setup": {
       "DefaultCulture": "", // When using "" the system OS culture will be used
       "SupportedCultures": [
         "ar", 
@@ -80,3 +99,11 @@ The following configuration values are used by default and can be customized:
 | --- | --- |
 | `DefaultCulture` | The default culture that will be used for the setup screen. |
 | `SupportedCultures` | The list of the supported cultures for the setup screen. |
+
+## CDN disabled by default
+
+The `UseCdn` option, configured in the _Configuration -> Settings -> General_ section, is disabled by default.
+This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
+
+!!! note
+    It is recommended to enable the CDN setting after setup.

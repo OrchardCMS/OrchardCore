@@ -1,12 +1,20 @@
 @using OrchardCore.GitHub.ViewModels;
 @model GitHubAuthenticationSettingsViewModel;
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+<p class="alert alert-warning">
+    @T["The current tenant will be reloaded when the settings are saved."]
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/GitHub/#authenticate-with-github" target="_blank">@T["See documentation"]</a>
+</p>
+
+@if (Model.HasDecryptionError)
+{
+    <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+}
 
 <h3>@T["GitHub Authentication Settings"]</h3>
 
 <div class="form-group row" asp-validation-class-for="ClientID">
-    <div class="col-lg">
+    <div class="col-large">
         <label asp-for="ClientID">@T["Client ID"]</label>
         <input asp-for="ClientID" class="form-control" />
         <span asp-validation-for="ClientID"></span>
@@ -15,7 +23,7 @@
 </div>
 
 <div class="form-group row" asp-validation-class-for="ClientSecret">
-    <div class="col-lg">
+    <div class="col-large">
         <label asp-for="ClientSecret">@T["Client secret"]</label>
         <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" />
         <span asp-validation-for="ClientSecret"></span>
@@ -24,10 +32,18 @@
 </div>
 
 <div class="form-group row" asp-validation-class-for="CallbackUrl">
-    <div class="col-lg">
+    <div class="col-large">
         <label asp-for="CallbackUrl">@T["CallbackPath"]</label>
         <input asp-for="CallbackUrl" class="form-control" placeholder="/signin-github" />
         <span asp-validation-for="CallbackUrl"></span>
         <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+    </div>
+</div>
+
+<div class="form-group" asp-validation-class-for="SaveTokens">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="SaveTokens">
+        <label class="custom-control-label" asp-for="SaveTokens">@T["Store tokens"]</label>
+        <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
     </div>
 </div>

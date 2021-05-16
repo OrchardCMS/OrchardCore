@@ -39,8 +39,8 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer<WorkflowController> H;
-        private readonly IStringLocalizer<WorkflowController> S;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
 
         public WorkflowController(
             ISiteService siteService,
@@ -93,10 +93,10 @@ namespace OrchardCore.Workflows.Controllers
             switch (model.Options.Filter)
             {
                 case WorkflowFilter.Finished:
-                    query = query.Where(x => x.WorkflowStatus == WorkflowStatus.Finished);
+                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Finished);
                     break;
                 case WorkflowFilter.Faulted:
-                    query = query.Where(x => x.WorkflowStatus == WorkflowStatus.Faulted);
+                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Faulted);
                     break;
                 case WorkflowFilter.All:
                 default:
@@ -159,7 +159,7 @@ namespace OrchardCore.Workflows.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Filter", model.Options.Filter },
                 { "Options.OrderBy", model.Options.OrderBy }
             });
@@ -182,7 +182,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             var blockingActivities = workflow.BlockingActivities.ToDictionary(x => x.ActivityId);
             var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowType, workflow);
-            var activityContexts = await Task.WhenAll(workflowType.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
+            var activityContexts = await Task.WhenAll(workflowType.Activities.Select(x => _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
 
             var activityDesignShapes = new List<dynamic>();
 
@@ -241,7 +241,7 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             await _workflowStore.DeleteAsync(workflow);
             _notifier.Success(H["Workflow {0} has been deleted.", id]);
-            return RedirectToAction("Index", new { workflowTypeId = workflowType.Id });
+            return RedirectToAction(nameof(Index), new { workflowTypeId = workflowType.Id });
         }
 
         [HttpPost]
@@ -278,7 +278,7 @@ namespace OrchardCore.Workflows.Controllers
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            return RedirectToAction("Index", new { workflowTypeId, page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
+            return RedirectToAction(nameof(Index), new { workflowTypeId, page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
         }
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)

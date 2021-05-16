@@ -1,40 +1,71 @@
-using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Threading.Tasks;
+using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Routing
 {
     public class SitemapEntries
     {
-        private IImmutableDictionary<string, string> _sitemapPaths;
-        private IImmutableDictionary<string, string> _sitemapIds;
+        private readonly ISitemapManager _sitemapManager;
 
-        public SitemapEntries()
+        private SitemapRouteDocument _document;
+
+        public SitemapEntries(ISitemapManager sitemapManager)
         {
-            _sitemapPaths = ImmutableDictionary<string, string>.Empty;
-            _sitemapIds = ImmutableDictionary<string, string>.Empty;
+            _sitemapManager = sitemapManager;
         }
 
-        public bool TryGetPath(string sitemapId, out string path)
+        public async Task<(bool, string)> TryGetSitemapIdByPathAsync(string path)
         {
-            return _sitemapIds.TryGetValue(sitemapId, out path);
-        }
-
-        public bool TryGetSitemapId(string path, out string sitemapId)
-        {
-            return _sitemapPaths.TryGetValue(path, out sitemapId);
-        }
-
-        public void BuildEntries(IEnumerable<SitemapEntry> entries)
-        {
-            var pathBuilder = ImmutableDictionary.CreateBuilder<string, string>();
-            var idBuilder = ImmutableDictionary.CreateBuilder<string, string>();
-            foreach (var entry in entries)
+            var identifier = await _sitemapManager.GetIdentifierAsync();
+            if (_document == null || _document.Identifier != identifier)
             {
-                pathBuilder.Add(entry.Path, entry.SitemapId);
-                idBuilder.Add(entry.SitemapId, entry.Path);
+                await BuildEntriesAsync(identifier);
             }
-            _sitemapPaths = pathBuilder.ToImmutable();
-            _sitemapIds = idBuilder.ToImmutable();
+
+            if (_document.SitemapIds.TryGetValue(path, out var sitemapId))
+            {
+                return (true, sitemapId);
+            }
+
+            return (false, sitemapId);
+        }
+
+        public async Task<(bool, string)> TryGetPathBySitemapIdAsync(string sitemapId)
+        {
+            var identifier = await _sitemapManager.GetIdentifierAsync();
+            if (_document == null || _document.Identifier != identifier)
+            {
+                await BuildEntriesAsync(identifier);
+            }
+
+            if (_document.SitemapPaths.TryGetValue(sitemapId, out var path))
+            {
+                return (true, path);
+            }
+
+            return (false, path);
+        }
+
+        private async Task BuildEntriesAsync(string identifier)
+        {
+            var document = new SitemapRouteDocument()
+            {
+                Identifier = identifier
+            };
+
+            var sitemaps = await _sitemapManager.GetSitemapsAsync();
+            foreach (var sitemap in sitemaps)
+            {
+                if (!sitemap.Enabled)
+                {
+                    continue;
+                }
+
+                document.SitemapIds[sitemap.Path] = sitemap.SitemapId;
+                document.SitemapPaths[sitemap.SitemapId] = sitemap.Path;
+            }
+
+            _document = document;
         }
     }
 }

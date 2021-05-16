@@ -1,8 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- NuGet properties-->
+    <Title>Target for Modular OrchardCore Application with MVC</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Converts the application into a modular application and adds Asp.Net MVC pipeline.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework MVC</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +17,7 @@
     When a package is not directly referenced, e.g only through the reference of this bundle package,
     the files in its build folder are not evaluated on building if this folder is marked as private.
     This can be defined by using the 'PrivateAssets' attribute.
-    
+
     Here, only project references are used but when packing the bundle they become package references,
     and with the same 'PrivateAssets' attribute.
   -->

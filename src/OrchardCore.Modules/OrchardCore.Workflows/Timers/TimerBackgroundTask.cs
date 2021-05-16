@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Timers
         public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
             var workflowManager = serviceProvider.GetRequiredService<IWorkflowManager>();
-            return workflowManager.TriggerEventAsync(TimerEvent.EventName);
+            return workflowManager.TriggerEventAsync(TimerEvent.EventName, null, null, isExclusive: true, isAlwaysCorrelated: true);
         }
     }
 }

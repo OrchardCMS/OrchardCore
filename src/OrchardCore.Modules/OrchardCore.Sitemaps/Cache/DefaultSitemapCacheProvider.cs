@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -38,9 +39,9 @@ namespace OrchardCore.Sitemaps.Cache
             _logger = logger;
         }
 
-        public Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(string path)
+        public Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(string cacheFileName)
         {
-            var fileInfo = _fileProvider.GetFileInfo(path);
+            var fileInfo = _fileProvider.GetFileInfo(cacheFileName);
             if (fileInfo.Exists)
             {
                 return Task.FromResult<ISitemapCacheFileResolver>(new PhysicalSitemapCacheFileResolver(fileInfo));
@@ -49,9 +50,9 @@ namespace OrchardCore.Sitemaps.Cache
             return Task.FromResult<ISitemapCacheFileResolver>(null);
         }
 
-        public async Task SetSitemapCacheAsync(Stream stream, string path, CancellationToken cancellationToken)
+        public async Task SetSitemapCacheAsync(Stream stream, string cacheFileName, CancellationToken cancellationToken)
         {
-            var cachePath = Path.Combine(_fileProvider.Root, path);
+            var cachePath = Path.Combine(_fileProvider.Root, cacheFileName);
 
             using (var fileStream = File.Create(cachePath))
             {
@@ -60,9 +61,41 @@ namespace OrchardCore.Sitemaps.Cache
             }
         }
 
-        public Task ClearSitemapCacheAsync(string path)
+        public Task CleanSitemapCacheAsync(IEnumerable<string> validCacheFileNames)
         {
-            var fileInfo = _fileProvider.GetFileInfo(path);
+            var folders = _fileProvider.GetDirectoryContents(String.Empty);
+            foreach (var fileInfo in folders)
+            {
+                if (fileInfo.IsDirectory)
+                {
+                    // Sitemap cache only stores files, so any folder that has been created by the user will be ignored.
+                    continue;
+                }
+                else
+                {
+                    // Check if the file is valid and still needs to be cached.
+                    if (validCacheFileNames.Contains(fileInfo.Name, StringComparer.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        File.Delete(fileInfo.PhysicalPath);
+                    }
+                    catch (IOException ex)
+                    {
+                        _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
+                    }
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task ClearSitemapCacheAsync(string cacheFileName)
+        {
+            var fileInfo = _fileProvider.GetFileInfo(cacheFileName);
             if (fileInfo.Exists)
             {
                 try
@@ -78,7 +111,6 @@ namespace OrchardCore.Sitemaps.Cache
             return Task.CompletedTask;
         }
 
-
         public Task<bool> PurgeAllAsync()
         {
             var hasErrors = false;
@@ -87,7 +119,7 @@ namespace OrchardCore.Sitemaps.Cache
             {
                 if (fileInfo.IsDirectory)
                 {
-                    // Sitemap cache only stores files, so any folder has been created by the user and will be ignored.
+                    // Sitemap cache only stores files, so any folder that has been created by the user will be ignored.
                     continue;
                 }
                 else
@@ -105,26 +137,6 @@ namespace OrchardCore.Sitemaps.Cache
             }
 
             return Task.FromResult(hasErrors);
-        }
-
-        public Task<IEnumerable<string>> ListAsync()
-        {
-            var results = new List<string>();
-            var folders = _fileProvider.GetDirectoryContents(String.Empty);
-            foreach (var fileInfo in folders)
-            {
-                if (fileInfo.IsDirectory)
-                {
-                    // Sitemap cache only stores files, so any folder has been created by the user and will be ignored.
-                    continue;
-                }
-                else
-                {
-                    results.Add(fileInfo.Name);
-                }
-            }
-
-            return Task.FromResult<IEnumerable<string>>(results);
         }
 
         public Task<bool> PurgeAsync(string cacheFileName)
@@ -150,6 +162,26 @@ namespace OrchardCore.Sitemaps.Cache
             }
 
             return Task.FromResult(failed);
+        }
+
+        public Task<IEnumerable<string>> ListAsync()
+        {
+            var results = new List<string>();
+            var folders = _fileProvider.GetDirectoryContents(String.Empty);
+            foreach (var fileInfo in folders)
+            {
+                if (fileInfo.IsDirectory)
+                {
+                    // Sitemap cache only stores files, so any folder that has been created by the user will be ignored.
+                    continue;
+                }
+                else
+                {
+                    results.Add(fileInfo.Name);
+                }
+            }
+
+            return Task.FromResult<IEnumerable<string>>(results);
         }
 
         private string GetSitemapCachePath(IWebHostEnvironment webHostEnvironment, string cachePath, ShellSettings shellSettings)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
@@ -43,11 +44,15 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             if (!Name[0].IsLetter())
             {
-                throw new ArgumentException("Content type name must start with a letter", "name");
+                throw new ArgumentException("Content part name must start with a letter", "name");
             }
             if (!String.Equals(Name, Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentException("Content type name contains invalid characters", "name");
+                throw new ArgumentException("Content part name contains invalid characters", "name");
+            }
+            if (Name.IsReservedContentName())
+            {
+                throw new ArgumentException("Content part name is reserved for internal use", "name");
             }
 
             return new ContentPartDefinition(Name, _fields, _settings);
@@ -134,6 +139,32 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             var configurer = new FieldConfigurerImpl(existingField, _part);
             configuration(configurer);
             _fields.Add(configurer.Build());
+            return this;
+        }
+
+        public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
+        {
+            var existingField = _fields.FirstOrDefault(x => x.Name == fieldName);
+
+            if (existingField != null)
+            {
+                var toRemove = _fields.Where(x => x.Name == fieldName).ToArray();
+                foreach (var remove in toRemove)
+                {
+                    _fields.Remove(remove);
+                }
+            }
+            else
+            {
+                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+            }
+
+            var configurer = new FieldConfigurerImpl(existingField, _part);
+
+            await configurationAsync(configurer);
+
+            _fields.Add(configurer.Build());
+
             return this;
         }
 

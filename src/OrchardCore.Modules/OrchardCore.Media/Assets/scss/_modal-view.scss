@@ -5,15 +5,13 @@
 
 .modal-content .modal-body #mediaApp {
     position: static;
-    margin: 0px -15px 0px -15px;
-    margin-top: 0;
     height: 100%;
 }
 
 .media-modal .modal-body {
     height: 100%;
     overflow-y: auto;
-    padding-bottom: 0px; // to keep the line separating the dir browser from the thumbnails straight to the bottom.
+    padding: 0; // to keep the line separating the dir browser from the thumbnails straight to the bottom.
     
      #mediaContainer {
 
@@ -23,7 +21,6 @@
 
         #mediaContainerMain {
             border-left: $media-border-content;
-            padding-left: 1.5rem !important;
             margin-left: 0 !important;
         }
 
@@ -43,9 +40,6 @@
     }
 }
 
-#mediaModalBody.html-body-part {
-    z-index: 99999; //to make it visible when trumbowyg is full screen.
-}
 #createFolderModal, #renameMediaModal {
     z-index: 100000; // required only because of the issue with z-index of trumbowyg on full screen.
 }

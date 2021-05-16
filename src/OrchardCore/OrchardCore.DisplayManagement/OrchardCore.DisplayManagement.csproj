@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore DisplayManagement</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Library for DisplayManagement. Provides BaseDisplayManager, Shape, Layout and Theming support.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework DisplayManagement</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

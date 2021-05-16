@@ -1,4 +1,4 @@
-# Data Protection (Azure Storage) (OrchardCore.DataProtection.Azure)
+# Data Protection (Azure Storage) (`OrchardCore.DataProtection.Azure`)
 
 ## Purpose
 
@@ -14,7 +14,7 @@ These settings need to be available to the `IShellConfiguration` implementation.
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.DataProtection.Azure": {
+    "OrchardCore_DataProtection_Azure": {
       "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
       // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "dataprotection",
@@ -47,7 +47,7 @@ When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tena
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.DataProtection.Azure": {
+    "OrchardCore_DataProtection_Azure": {
       "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
       // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "{{ ShellSettings.Name }}-dataprotection",

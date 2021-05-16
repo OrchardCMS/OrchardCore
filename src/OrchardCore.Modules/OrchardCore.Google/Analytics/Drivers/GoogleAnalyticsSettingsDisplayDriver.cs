@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Google.Analytics.Settings;
 using OrchardCore.Google.Analytics.ViewModels;
 using OrchardCore.Settings;
@@ -15,25 +14,19 @@ namespace OrchardCore.Google.Analytics.Drivers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
 
         public GoogleAnalyticsSettingsDisplayDriver(
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+            IHttpContextAccessor httpContextAccessor)
         {
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
         }
 
         public override async Task<IDisplayResult> EditAsync(GoogleAnalyticsSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
             {
                 return null;
             }
@@ -49,7 +42,7 @@ namespace OrchardCore.Google.Analytics.Drivers
             if (context.GroupId == GoogleConstants.Features.GoogleAnalytics)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
                 {
                     return null;
                 }

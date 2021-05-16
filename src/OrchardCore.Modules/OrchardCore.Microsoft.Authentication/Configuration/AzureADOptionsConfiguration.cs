@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -5,11 +6,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
+
+#pragma warning disable CS0618
+// The net5.0 5.0.3 build obsoletes 'AzureADOptions' and 'AzureADDefaults', 'Microsoft.Identity.Web' should be used instead.
+// The build warning is disabled temporarily until the code can be migrated.
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
@@ -19,16 +25,16 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         IConfigureNamedOptions<AzureADOptions>
     {
         private readonly IAzureADService _azureADService;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<AzureADOptionsConfiguration> _logger;
+        private readonly ShellSettings _shellSettings;
+        private readonly ILogger _logger;
 
         public AzureADOptionsConfiguration(
             IAzureADService loginService,
-            IDataProtectionProvider dataProtectionProvider,
+            ShellSettings shellSettings,
             ILogger<AzureADOptionsConfiguration> logger)
         {
             _azureADService = loginService;
-            _dataProtectionProvider = dataProtectionProvider;
+            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -56,7 +62,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, AzureADOptions options)
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
+            if (!String.Equals(name, AzureADDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -66,9 +72,11 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             {
                 return;
             }
+
             options.ClientId = loginSettings.AppId;
             options.TenantId = loginSettings.TenantId;
             options.Instance = "https://login.microsoftonline.com/";
+
             if (loginSettings.CallbackPath.HasValue)
             {
                 options.CallbackPath = loginSettings.CallbackPath;
@@ -79,10 +87,11 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, PolicySchemeOptions options)
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
+            if (!String.Equals(name, AzureADDefaults.AuthenticationScheme))
             {
                 return;
             }
+
             options.ForwardDefault = "Identity.External";
             options.ForwardChallenge = AzureADDefaults.OpenIdScheme;
         }
@@ -93,10 +102,18 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             var settings = await _azureADService.GetSettingsAsync();
             if (_azureADService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
+                if (_shellSettings.State == TenantState.Running)
+                {
+                    _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
+                }
+
                 return null;
             }
+
             return settings;
         }
     }
 }
+
+// Restore the obsolete warning disabled above
+#pragma warning restore CS0618

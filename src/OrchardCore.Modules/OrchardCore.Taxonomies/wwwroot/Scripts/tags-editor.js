@@ -39,11 +39,6 @@ function initializeTagsEditor(element) {
           taxonomyContentItemId: element.dataset.taxonomyContentItemId,
           createTagUrl: element.dataset.createTagUrl,
           createTagErrorMessage: element.dataset.createTagErrorMessage,
-          termEntriesKey: element.dataset.termEntriesKey,
-          contentItemIdKey: element.dataset.contentItemIdKey,
-          selectedKey: element.dataset.selectedKey,
-          partName: element.dataset.partName,
-          fieldName: element.dataset.fieldName,
           selectedTagTerms: selectedTagTerms,
           selectableTagTerms: selectableTagTerms,
           allTagTerms: allTagTerms
@@ -56,6 +51,19 @@ function initializeTagsEditor(element) {
           }
 
           return false;
+        },
+        selectedTagTermsIds: function selectedTagTermsIds() {
+          if (!this.selectedTagTerms) {
+            return [];
+          }
+
+          if (Array.isArray(this.selectedTagTerms)) {
+            return this.selectedTagTerms.map(function (tagTerm) {
+              return tagTerm.contentItemId;
+            });
+          } else {
+            return this.selectedTagTerms.contentItemId;
+          }
         }
       },
       methods: {
@@ -98,14 +106,6 @@ function initializeTagsEditor(element) {
           });
           tagTerm.selected = false;
           $(document).trigger('contentpreview:render');
-        },
-        termEntriesContentItemName: function termEntriesContentItemName(tagTerm) {
-          var indexOf = this.allTagTerms.indexOf(tagTerm);
-          return "".concat(this.partName, ".").concat(this.fieldName, ".").concat(this.termEntriesKey, "[").concat(indexOf, "].").concat(this.contentItemIdKey);
-        },
-        termEntriesSelectedName: function termEntriesSelectedName(tagTerm) {
-          var indexOf = this.allTagTerms.indexOf(tagTerm);
-          return "".concat(this.partName, ".").concat(this.fieldName, ".").concat(this.termEntriesKey, "[").concat(indexOf, "].").concat(this.selectedKey);
         }
       }
     });

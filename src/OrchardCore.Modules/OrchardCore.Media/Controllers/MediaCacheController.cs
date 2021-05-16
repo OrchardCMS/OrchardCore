@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IMediaFileStoreCache _mediaFileStoreCache;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<MediaCacheController> H;
+        private readonly IHtmlLocalizer H;
 
         public MediaCacheController(
             IAuthorizationService authorizationService,
@@ -59,7 +59,7 @@ namespace OrchardCore.Media.Controllers
             if (_mediaFileStoreCache == null)
             {
                 _notifier.Error(H["The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]);
-                RedirectToAction("Index");
+                RedirectToAction(nameof(Index));
             }
 
             var hasErrors = await _mediaFileStoreCache.PurgeAsync();
@@ -72,7 +72,7 @@ namespace OrchardCore.Media.Controllers
                 _notifier.Information(H["Asset cache purged."]);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
     }
 }

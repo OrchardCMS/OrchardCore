@@ -9,7 +9,7 @@ namespace OrchardCore.Themes.TheTheme
     {
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddScoped<IResourceManifestProvider, ResourceManifest>();
+            serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
     }
 }

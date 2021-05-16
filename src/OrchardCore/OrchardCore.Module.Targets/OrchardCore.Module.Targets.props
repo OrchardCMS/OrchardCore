@@ -2,7 +2,7 @@
 
   <!--
     This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
-    Module that references it will embedd in its assembly all assets files and mapping infos.
+    Module that references it will embed in its assembly all assets files and mapping infos.
   -->
 
   <PropertyGroup>
@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\$(AssemblyName).props</PackagePath>
+      <PackagePath>build\$(AssemblyName).props</PackagePath>
     </None>
   </ItemGroup>
 

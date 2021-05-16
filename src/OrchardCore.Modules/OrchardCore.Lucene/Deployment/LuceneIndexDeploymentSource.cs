@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Lucene.Model;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Lucene.Deployment
 {
@@ -12,7 +11,7 @@ namespace OrchardCore.Lucene.Deployment
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-        public LuceneIndexDeploymentSource(LuceneIndexSettingsService luceneIndexSettingsService, ISiteService siteService)
+        public LuceneIndexDeploymentSource(LuceneIndexSettingsService luceneIndexSettingsService)
         {
             _luceneIndexSettingsService = luceneIndexSettingsService;
         }

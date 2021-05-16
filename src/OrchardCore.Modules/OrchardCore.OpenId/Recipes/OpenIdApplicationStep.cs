@@ -64,7 +64,7 @@ namespace OrchardCore.OpenId.Recipes
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
             }
-            if (model.AllowRefreshTokenFlow)
+            if (model.AllowLogoutEndpoint)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
             }
@@ -72,6 +72,31 @@ namespace OrchardCore.OpenId.Recipes
                 model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
+            }
+            
+            if (model.AllowAuthorizationCodeFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
+            }
+            if (model.AllowImplicitFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Token);
+                }
+            }
+            if (model.AllowHybridFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+                }
             }
 
             descriptor.PostLogoutRedirectUris.UnionWith(

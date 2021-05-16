@@ -1,8 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Admin</RootNamespace>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore Admin Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions of OrchardCore Admin Module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
+
   </PropertyGroup>
 
   <ItemGroup>

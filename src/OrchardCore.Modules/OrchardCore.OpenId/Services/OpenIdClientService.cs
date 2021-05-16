@@ -14,7 +14,7 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdClientService : IOpenIdClientService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdClientService> S;
+        private readonly IStringLocalizer S;
 
         public OpenIdClientService(
             ISiteService siteService,
@@ -27,6 +27,12 @@ namespace OrchardCore.OpenId.Services
         public async Task<OpenIdClientSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
+            return container.As<OpenIdClientSettings>();
+        }
+
+        public async Task<OpenIdClientSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
             return container.As<OpenIdClientSettings>();
         }
 
@@ -65,7 +71,7 @@ namespace OrchardCore.OpenId.Services
                     nameof(settings.Authority)
                 }));
             }
-            else if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
+            else if (!String.IsNullOrEmpty(settings.Authority.Query) || !String.IsNullOrEmpty(settings.Authority.Fragment))
             {
                 results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                 {
@@ -73,7 +79,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (string.IsNullOrEmpty(settings.ResponseType))
+            if (String.IsNullOrEmpty(settings.ResponseType))
             {
                 results.Add(new ValidationResult(S["The response type cannot be null or empty."], new[]
                 {
@@ -90,7 +96,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (string.IsNullOrEmpty(settings.ResponseMode))
+            if (String.IsNullOrEmpty(settings.ResponseMode))
             {
                 results.Add(new ValidationResult(S["The response mode cannot be null or empty."], new[]
                 {

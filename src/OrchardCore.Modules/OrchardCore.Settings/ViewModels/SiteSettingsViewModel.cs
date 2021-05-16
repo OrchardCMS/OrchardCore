@@ -11,5 +11,7 @@ namespace OrchardCore.Settings.ViewModels
         public string CdnBaseUrl { get; set; }
         public ResourceDebugMode ResourceDebugMode { get; set; }
         public bool AppendVersion { get; set; }
+        public string Meta { get; set; }
+        public CacheMode CacheMode { get; set; }
     }
 }

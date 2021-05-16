@@ -45,6 +45,10 @@ namespace OrchardCore.Demo
                             .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
                         .Add(S["This is Menu Item 3.2"], subItem => subItem
                             .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
+
+                    )
+                    .Add(S["Todo (Liquid - Frontend)"], "0", item => item
+                        .Action("Index", "Todo", new { area = "OrchardCore.Demo" })
                     )
                 );
 

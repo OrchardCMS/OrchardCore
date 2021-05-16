@@ -15,6 +15,7 @@ namespace OrchardCore.XmlRpc.Controllers
     {
         private readonly IXmlRpcWriter _writer;
         private readonly IEnumerable<IXmlRpcHandler> _xmlRpcHandlers;
+        private readonly ILogger _logger;
 
         public HomeController(
             IXmlRpcWriter writer,
@@ -23,19 +24,16 @@ namespace OrchardCore.XmlRpc.Controllers
         {
             _writer = writer;
             _xmlRpcHandlers = xmlRpcHandlers;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        private ILogger Logger { get; }
 
         [HttpPost, ActionName("Index")]
         [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> ServiceEndpoint([ModelBinder(BinderType = typeof(MethodCallModelBinder))]XRpcMethodCall methodCall)
+        public async Task<IActionResult> ServiceEndpoint([ModelBinder(BinderType = typeof(MethodCallModelBinder))] XRpcMethodCall methodCall)
         {
-            if (Logger.IsEnabled(LogLevel.Debug))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("XmlRpc method '{XmlRpcMethodName}' invoked", methodCall.MethodName);
+                _logger.LogDebug("XmlRpc method '{XmlRpcMethodName}' invoked", methodCall.MethodName);
             }
 
             var methodResponse = await DispatchAsync(methodCall);

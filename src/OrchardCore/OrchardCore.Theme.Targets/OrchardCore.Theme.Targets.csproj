@@ -1,18 +1,33 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- NuGet properties-->
+    <Title>Target for OrchardCore Theme</Title>
+    <Description>$(OCCMSDescription)
+
+    Converts project/library into an OrchardCore Theme that can be referenced in OrchardCore CMS application.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <!-- Add a ".props" file in the package specific to the "Theme" module type -->
+  <!--
+    Add the necessary '.props' and '.targets' files under the 'build\' folder of this package,
+    so that a referencing project is built / packed and considered as an 'OrchardCore' theme.
+
+    When packaging a project that references this package, and that targets multiple TFMs, the
+    scripts under the 'build\' folder are not executed, so we pack another '.props' file under
+    the 'buildMultiTargeting\' folder, that will just import the one under the `build\` folder.
+  -->
+
   <ItemGroup>
     <None Include="OrchardCore.Theme.Targets.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Theme.Targets.props</PackagePath>
+      <PackagePath>build\OrchardCore.Theme.Targets.props</PackagePath>
+    </None>
+    <None Include="buildMultiTargeting\OrchardCore.Theme.Targets.props" Pack="true">
+      <PackagePath>buildMultiTargeting\OrchardCore.Theme.Targets.props</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
-        IStringLocalizer S;
+        private readonly IStringLocalizer S;
 
         public ContentTypeSettingsDisplayDriver(IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer)
         {

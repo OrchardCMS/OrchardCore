@@ -1,4 +1,3 @@
-using System;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy

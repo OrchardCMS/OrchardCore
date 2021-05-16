@@ -2,6 +2,8 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -15,32 +17,27 @@ using OrchardCore.Localization.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Drivers
-{
+{    
     /// <summary>
-    /// Represents a <see cref="DisplayDriver"/> for the localization settings section in the admin site.
+    /// Represents a <see cref="SectionDisplayDriver{TModel,TSection}"/> for the localization settings section in the admin site.
     /// </summary>
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
 
-        /// <summary>
-        /// Creates a new instance of <see cref="LocalizationSettingsDisplayDriver"/>.
-        /// </summary>
-        /// <param name="notifier">The <see cref="INotifier"/>.</param>
-        /// <param name="shellHost">The <see cref="IShellHost"/>.</param>
-        /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
-        /// <param name="h">The <see cref="IHtmlLocalizer"/>.</param>
-        /// <param name="s">The <see cref="IStringLocalizer"/>.</param>
         public LocalizationSettingsDisplayDriver(
             INotifier notifier,
             IShellHost shellHost,
             ShellSettings shellSettings,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService,
             IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
             IStringLocalizer<LocalizationSettingsDisplayDriver> s
         )
@@ -48,13 +45,22 @@ namespace OrchardCore.Localization.Drivers
             _notifier = notifier;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
             H = h;
             S = s;
         }
 
         /// <inheritdocs />
-        public override IDisplayResult Edit(LocalizationSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(LocalizationSettings settings, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+            {
+                return null;
+            }
+
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
                 {
                     model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
@@ -62,9 +68,9 @@ namespace OrchardCore.Localization.Drivers
                         {
                             return new CultureEntry
                             {
-                                Supported = section.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
+                                Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
                                 CultureInfo = cultureInfo,
-                                IsDefault = String.Equals(section.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                                IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
                             };
                         }).ToArray();
 
@@ -78,6 +84,13 @@ namespace OrchardCore.Localization.Drivers
         /// <inheritdocs />
         public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+            {
+                return null;
+            }
+
             if (context.GroupId == GroupId)
             {
                 var model = new LocalizationSettingsViewModel();
@@ -102,10 +115,14 @@ namespace OrchardCore.Localization.Drivers
                         section.DefaultCulture = section.SupportedCultures[0];
                     }
 
-                    // We always reset the tenant for the default culture and also supported cultures to take effect
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    // We always release the tenant for the default culture and also supported cultures to take effect
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-                    _notifier.Warning(H["The site has been restarted for the settings to take effect"]);
+                    // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
+                    using (CultureScope.Create(section.DefaultCulture))
+                    {
+                        _notifier.Warning(H["The site has been restarted for the settings to take effect."]);
+                    }
                 }
             }
 

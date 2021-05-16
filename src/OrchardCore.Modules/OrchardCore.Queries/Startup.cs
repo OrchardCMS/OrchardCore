@@ -1,4 +1,6 @@
 using System;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,6 +51,19 @@ namespace OrchardCore.Queries
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
+
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
+                o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
+                {
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
+                    var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
+
+                    return FluidValue.Create(await queryManager.GetQueryAsync(name), context.Options);
+                });
+            })
+            .AddLiquidFilter<QueryFilter>("query");
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -89,17 +104,6 @@ namespace OrchardCore.Queries
                 pattern: _adminOptions.AdminUrlPrefix + "/Queries/Sql/Query",
                 defaults: new { controller = typeof(Sql.Controllers.AdminController).ControllerName(), action = nameof(Sql.Controllers.AdminController.Query) }
             );
-        }
-    }
-
-    [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ILiquidTemplateEventHandler, QueriesLiquidTemplateEventHandler>();
-
-            services.AddLiquidFilter<QueryFilter>("query");
         }
     }
 }

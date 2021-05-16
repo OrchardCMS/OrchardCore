@@ -14,13 +14,15 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Locking.Distributed;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Modules
 {
     internal class ModularBackgroundService : BackgroundService
     {
-        private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
-        private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan PollingTime = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
 
         private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers =
             new ConcurrentDictionary<string, BackgroundTaskScheduler>();
@@ -30,24 +32,26 @@ namespace OrchardCore.Modules
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
+        private readonly IClock _clock;
 
         public ModularBackgroundService(
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<ModularBackgroundService> logger)
+            ILogger<ModularBackgroundService> logger,
+            IClock clock)
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
-            Logger = logger;
+            _logger = logger;
+            _clock = clock;
         }
-
-        public ILogger Logger { get; set; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             stoppingToken.Register(() =>
             {
-                Logger.LogError("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
+                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
             while (GetRunningShells().Count() < 1)
@@ -64,9 +68,9 @@ namespace OrchardCore.Modules
 
             var previousShells = Enumerable.Empty<ShellContext>();
 
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
-                while (!stoppingToken.IsCancellationRequested)
+                try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
@@ -77,10 +81,10 @@ namespace OrchardCore.Modules
                     await RunAsync(runningShells, stoppingToken);
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(ModularBackgroundService));
+                }
             }
         }
 
@@ -108,6 +112,18 @@ namespace OrchardCore.Modules
                         break;
                     }
 
+                    var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
+
+                    // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
+                    (var locker, var locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
+                    if (!locked)
+                    {
+                        _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                        return;
+                    }
+
+                    await using var acquiredLock = locker;
+
                     await shellScope.UsingAsync(async scope =>
                     {
                         var taskName = scheduler.Name;
@@ -119,19 +135,40 @@ namespace OrchardCore.Modules
                             return;
                         }
 
+                        var siteService = scope.ServiceProvider.GetService<ISiteService>();
+                        if (siteService != null)
+                        {
+                            try
+                            {
+                                _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
+                            }
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
+                            }
+                        }
+
+                        var context = new BackgroundTaskEventContext(taskName, scope);
+                        var handlers = scope.ServiceProvider.GetServices<IBackgroundTaskEventHandler>();
+
+                        await handlers.InvokeAsync((handler, context, token) => handler.ExecutingAsync(context, token), context, stoppingToken, _logger);
+
                         try
                         {
-                            Logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
 
                             scheduler.Run();
                             await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
-                            Logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
-                        catch (Exception e)
+                        catch (Exception ex) when (!ex.IsFatal())
                         {
-                            Logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            context.Exception = ex;
                         }
+
+                        await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);
                     });
                 }
             });
@@ -171,8 +208,22 @@ namespace OrchardCore.Modules
                     }
 
                     var settingsProvider = scope.ServiceProvider.GetService<IBackgroundTaskSettingsProvider>();
-
                     _changeTokens[tenant] = settingsProvider?.ChangeToken ?? NullChangeToken.Singleton;
+
+                    ITimeZone timeZone = null;
+
+                    var siteService = scope.ServiceProvider.GetService<ISiteService>();
+                    if (siteService != null)
+                    {
+                        try
+                        {
+                            timeZone = _clock.GetTimeZone((await siteService.GetSiteSettingsAsync()).TimeZoneId);
+                        }
+                        catch (Exception ex) when (!ex.IsFatal())
+                        {
+                            _logger.LogError(ex, "Error while getting the time zone from the site settings of the tenant '{TenantName}'.", tenant);
+                        }
+                    }
 
                     foreach (var task in tasks)
                     {
@@ -180,8 +231,10 @@ namespace OrchardCore.Modules
 
                         if (!_schedulers.TryGetValue(tenant + taskName, out var scheduler))
                         {
-                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime);
+                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _clock);
                         }
+
+                        scheduler.TimeZone = timeZone;
 
                         if (!scheduler.Released && scheduler.Updated)
                         {
@@ -190,19 +243,19 @@ namespace OrchardCore.Modules
 
                         BackgroundTaskSettings settings = null;
 
-                        try
+                        if (settingsProvider != null)
                         {
-                            if (settingsProvider != null)
+                            try
                             {
                                 settings = await settingsProvider.GetSettingsAsync(task);
                             }
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                _logger.LogError(ex, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            }
                         }
 
-                        settings = settings ?? task.GetDefaultSettings();
+                        settings ??= task.GetDefaultSettings();
 
                         if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
                         {
@@ -296,6 +349,24 @@ namespace OrchardCore.Modules
         }
     }
 
+    internal static class HttpContextExtensions
+    {
+        public static void SetBaseUrl(this HttpContext context, string baseUrl)
+        {
+            if (Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri))
+            {
+                context.Request.Scheme = uri.Scheme;
+                context.Request.Host = new HostString(uri.Host, uri.Port);
+                context.Request.PathBase = uri.AbsolutePath;
+
+                if (!String.IsNullOrWhiteSpace(uri.Query))
+                {
+                    context.Request.QueryString = new QueryString(uri.Query);
+                }
+            }
+        }
+    }
+
     internal static class ShellExtensions
     {
         public static HttpContext CreateHttpContext(this ShellContext shell)
@@ -316,7 +387,9 @@ namespace OrchardCore.Modules
         {
             var context = new DefaultHttpContext().UseShellScopeServices();
 
-            var urlHost = settings.RequestUrlHost?.Split('/',
+            context.Request.Scheme = "https";
+
+            var urlHost = settings.RequestUrlHost?.Split(new[] { ',', ' ' },
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
             context.Request.Host = new HostString(urlHost ?? "localhost");
