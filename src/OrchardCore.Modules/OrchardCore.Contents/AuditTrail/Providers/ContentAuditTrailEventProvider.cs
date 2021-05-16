@@ -24,20 +24,20 @@ namespace OrchardCore.Contents.AuditTrail.Providers
 
         public ContentAuditTrailEventProvider(IStringLocalizer<ContentAuditTrailEventProvider> stringLocalizer)
         {
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public override void Describe(DescribeContext context) =>
-            context.For<ContentAuditTrailEventProvider>("Content", T["Content"])
-                .Event(Created, T["Created"], T["A content item was created."], BuildEvent, true)
-                .Event(Saved, T["Saved"], T["A content item was saved."], BuildEvent, true)
-                .Event(Published, T["Published"], T["A content item was published."], BuildEvent, true)
-                .Event(Unpublished, T["Unpublished"], T["A content item was unpublished."], BuildEvent, true)
-                .Event(Removed, T["Removed"], T["A content item was deleted."], BuildEvent, true)
-                .Event(Cloned, T["Cloned"], T["A content item was cloned."], BuildEvent, true)
-                .Event(Restored, T["Restored"], T["A content item was restored to a previous version."], BuildEvent, true);
+            context.For<ContentAuditTrailEventProvider>("Content", S["Content"])
+                .Event(Created, S["Created"], S["A content item was created."], BuildEvent, true)
+                .Event(Saved, S["Saved"], S["A content item was saved."], BuildEvent, true)
+                .Event(Published, S["Published"], S["A content item was published."], BuildEvent, true)
+                .Event(Unpublished, S["Unpublished"], S["A content item was unpublished."], BuildEvent, true)
+                .Event(Removed, S["Removed"], S["A content item was deleted."], BuildEvent, true)
+                .Event(Cloned, S["Cloned"], S["A content item was cloned."], BuildEvent, true)
+                .Event(Restored, S["Restored"], S["A content item was restored to a previous version."], BuildEvent, true);
 
-        private void BuildEvent(AuditTrailEvent @event, Dictionary<string, object> eventData)
+        private static void BuildEvent(AuditTrailEvent @event, Dictionary<string, object> eventData)
         {
             @event.Put(new AuditTrailContentEvent
             {

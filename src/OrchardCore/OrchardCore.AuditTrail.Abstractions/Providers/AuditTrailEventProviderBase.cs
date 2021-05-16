@@ -7,6 +7,6 @@ namespace OrchardCore.AuditTrail.Providers
     {
         public abstract void Describe(DescribeContext context);
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer S { get; set; }
     }
 }
