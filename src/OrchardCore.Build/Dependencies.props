@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <PackageManagement Include="AngleSharp" Version="0.15.0" />
-    <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.0.2" />
-    <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.0" />
+    <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.1.0" />
+    <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
     <PackageManagement Include="Azure.Identity" Version="1.4.0" />
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.8.3" />
     <PackageManagement Include="BenchmarkDotNet" Version="0.12.1" />
