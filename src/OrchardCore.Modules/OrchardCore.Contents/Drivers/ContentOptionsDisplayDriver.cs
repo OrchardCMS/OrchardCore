@@ -16,7 +16,13 @@ namespace OrchardCore.Contents.Drivers
 
         public override IDisplayResult Display(ContentOptionsViewModel model)
         {
-            return Initialize<ContentOptionsViewModel>("ContentsAdminListBulkActions", m => BuildContentOptionsViewModel(m, model)).Location("BulkActions", "Content:10");
+            return Combine(
+                Initialize<ContentOptionsViewModel>("ContentsAdminListBulkActions", m => BuildContentOptionsViewModel(m, model)).Location("BulkActions", "Content:10"),
+                View("ContentsAdminFilters_Thumbnail__DisplayText", model).Location("Thumbnail", "Content:10.1"),
+                View("ContentsAdminFilters_Thumbnail__ContentType", model).Location("Thumbnail", "Content:11.1"),
+                View("ContentsAdminFilters_Thumbnail__Status", model).Location("Thumbnail", "Content:12.1"),
+                View("ContentsAdminFilters_Thumbnail__Sort", model).Location("Thumbnail", "Content:30.1")
+            );
         }
 
         public override IDisplayResult Edit(ContentOptionsViewModel model)
@@ -29,6 +35,7 @@ namespace OrchardCore.Contents.Drivers
                 Initialize<ContentOptionsViewModel>("ContentsAdminListSummary", m => BuildContentOptionsViewModel(m, model)).Location("Summary:10"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminListFilters", m => BuildContentOptionsViewModel(m, model)).Location("Actions:10.1"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminList_Fields_BulkActions", m => BuildContentOptionsViewModel(m, model)).Location("Actions:10.1")
+                
             );
         }
 
@@ -56,6 +63,7 @@ namespace OrchardCore.Contents.Drivers
             m.ContentsStatus = model.ContentsStatus;
             m.OrderBy = model.OrderBy;
             m.SelectedContentType = model.SelectedContentType;
+            m.FilterResult = model.FilterResult;
         }
     }
 }

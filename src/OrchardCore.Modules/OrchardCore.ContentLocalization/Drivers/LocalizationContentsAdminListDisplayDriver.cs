@@ -31,6 +31,9 @@ namespace OrchardCore.ContentLocalization.Drivers
             Prefix = "Localization";
         }
 
+        public override IDisplayResult Display(ContentOptionsViewModel model)
+            => View("ContentsAdminFilters_Thumbnail__Culture", model).Location("Thumbnail", "Content:20.1");
+        
         public override IDisplayResult Edit(ContentOptionsViewModel model, IUpdateModel updater)
         {
             return Initialize<LocalizationContentsAdminFilterViewModel>("ContentsAdminList__LocalizationPartFilter", async m =>

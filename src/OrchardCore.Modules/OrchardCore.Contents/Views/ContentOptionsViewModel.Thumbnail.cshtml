@@ -1,0 +1,11 @@
+@model IShape
+@using OrchardCore.DisplayManagement.Shapes
+@{
+    var content = Model.GetProperty<Shape>("Content");
+    foreach(IShape shape in content)
+    {
+        shape.Metadata.Wrappers.Add("ContentsAdminFilters_Thumbnail__Card");
+    }
+}
+@await DisplayAsync(content)
+
