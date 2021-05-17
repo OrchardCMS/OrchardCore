@@ -5,14 +5,16 @@
 @inject IStringLocalizer<ViewContext> S;
 
 @{
-    var categoryName = Model.Category;
+    var category = Model.Category;
     var categories = Model.Categories;
 
-    var listItems = categories.GroupBy(category => category.Name)
-        .Select(descriptor => descriptor.First()).Select(category =>
+    var listItems = categories
+        .GroupBy(category => category.Name)
+        .Select(categories => categories.First())
+        .Select(category =>
             new SelectListItem
             {
-                Selected = category.Name == categoryName,
+                Selected = category.Name == Model.Category,
                 Text = category.LocalizedName.Value,
                 Value = category.Name
             })
@@ -22,5 +24,5 @@
 }
 
 <div class="form-group mr-2">
-    <select asp-for="@categoryName" asp-items="listItems" class="form-control"></select>
+    <select asp-for="@category" asp-items="listItems" class="form-control"></select>
 </div>
