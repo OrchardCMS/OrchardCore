@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Permissions;
 using OrchardCore.AuditTrail.Services;
@@ -64,22 +65,24 @@ namespace OrchardCore.AuditTrail.Controllers
                 TotalItemCount = searchResult.TotalCount
             }));
 
-            var descriptors = _auditTrailManager.DescribeCategories()
-                .SelectMany(categoryDescriptor => categoryDescriptor.Events)
-                .ToDictionary(eventDescriptor => eventDescriptor.FullName);
+            var categories = _auditTrailManager.DescribeCategories();
 
             var eventSummariesViewModel = searchResult.Events
                 .Select(@event =>
                 {
-                    var descriptor = descriptors.ContainsKey(@event.FullName)
-                        ? descriptors[@event.FullName]
-                        : AuditTrailEventDescriptor.Default(@event);
+                    var category = categories.FirstOrDefault(category => category.Name == @event.Category);
+
+                    var descriptor = category?.Events.FirstOrDefault(x => x.Name == @event.Name);
+                    if (descriptor == null)
+                    {
+                        descriptor = AuditTrailEventDescriptor.Default(@event);
+                    }
 
                     return new AuditTrailEventSummaryViewModel
                     {
                         Event = @event,
-                        Descriptor = descriptor,
-                        Category = descriptor.Category,
+                        LocalizedName = descriptor.LocalizedName,
+                        Category = descriptor.LocalizedCategory,
                     };
                 })
                 .ToArray();

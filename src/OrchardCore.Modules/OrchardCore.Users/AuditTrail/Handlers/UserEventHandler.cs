@@ -72,7 +72,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
 
         #endregion
 
-        private async Task RecordAuditTrailEventAsync(string eventName, string userName)
+        private async Task RecordAuditTrailEventAsync(string name, string userName)
         {
             if (String.IsNullOrEmpty(userName))
             {
@@ -95,30 +95,29 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                 { "UserName", user.UserName }
             };
 
-            await _auditTrailManager.RecordEventAsync<UserAuditTrailEventProvider>(
-                new AuditTrailContext("User", eventName, userId, userName, eventData));
+            await _auditTrailManager.RecordEventAsync(new AuditTrailContext("User", name, userId, userName, eventData));
         }
 
-        private async Task RecordAuditTrailEventAsync(string eventName, IUser user)
+        private async Task RecordAuditTrailEventAsync(string name, IUser user)
         {
             var userName = user.UserName;
             var userManager = GetUserManagerFromHttpContext();
 
             var userId = await userManager.GetUserIdAsync(user);
-            var eventData = new Dictionary<string, object>
+            var data = new Dictionary<string, object>
             {
                 { "UserId", userId },
                 { "UserName", userName }
             };
 
-            await _auditTrailManager.RecordEventAsync<UserAuditTrailEventProvider>(
+            await _auditTrailManager.RecordEventAsync(
                 new AuditTrailContext
                 (
                     "User",
-                    eventName,
+                    name,
                     userId,
-                    eventName == UserAuditTrailEventProvider.Created ? userName : _httpContextAccessor.GetCurrentUserName(),
-                    eventData
+                    name == UserAuditTrailEventProvider.Created ? userName : _httpContextAccessor.GetCurrentUserName(),
+                    data
                 ));
         }
 

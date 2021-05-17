@@ -1,9 +1,8 @@
-using OrchardCore.AuditTrail.Models;
-using OrchardCore.AuditTrail.Providers;
-using OrchardCore.AuditTrail.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.AuditTrail.Models;
+using OrchardCore.AuditTrail.Services.Models;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -15,10 +14,8 @@ namespace OrchardCore.AuditTrail.Services
         /// <summary>
         /// Records an audit trail event.
         /// </summary>
-        /// <typeparam name="TAuditTrailEventProvider">The provider type to determine the event scope.</typeparam>
-        /// <param name="context">The <see cref="AuditTrailContext"/> used to create a new audit trail event.</param>
-        Task RecordEventAsync<TAuditTrailEventProvider>(AuditTrailContext context)
-            where TAuditTrailEventProvider : IAuditTrailEventProvider;
+        /// <param name="context">The <see cref="AuditTrailContext"/> used to create a new event.</param>
+        Task RecordEventAsync(AuditTrailContext context);
 
         /// <summary>
         /// Gets a page of audit trail events.
@@ -48,16 +45,11 @@ namespace OrchardCore.AuditTrail.Services
         Task<int> TrimEventsAsync(TimeSpan retentionPeriod);
 
         /// <summary>
-        /// Describes all audit trail event providers.
+        /// Describes an audit trail event category or all if category is null.
         /// </summary>
-        /// <returns>The <see cref="DescribeContext"/>.</returns>
-        DescribeContext DescribeProviders();
-
-        /// <summary>
-        /// Describes all audit trail event categories.
-        /// </summary>
+        /// <param name="category">The category or all if null.</param>
         /// <returns>The list of <see cref="AuditTrailCategoryDescriptor"/>.</returns>
-        IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories();
+        IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories(string category = null);
 
         /// <summary>
         /// Describes a single audit trail event.

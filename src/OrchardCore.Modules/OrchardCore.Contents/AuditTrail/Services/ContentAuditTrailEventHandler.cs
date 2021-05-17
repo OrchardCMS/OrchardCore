@@ -20,7 +20,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
                 return Task.CompletedTask;
             }
 
-            var content = context.EventData.Get<ContentItem>("ContentItem");
+            var content = context.Data.Get<ContentItem>("ContentItem");
             if (content == null)
             {
                 return Task.CompletedTask;

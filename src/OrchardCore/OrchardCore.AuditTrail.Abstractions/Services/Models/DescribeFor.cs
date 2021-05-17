@@ -9,17 +9,13 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         private readonly IList<AuditTrailEventDescriptor> _events = new List<AuditTrailEventDescriptor>();
 
-        public DescribeFor(string category, string categoryFullName, string providerName, LocalizedString localizedName)
+        public DescribeFor(string category, LocalizedString localizedName)
         {
             Category = category;
-            CategoryFullName = categoryFullName;
-            ProviderName = providerName;
             LocalizedName = localizedName;
         }
 
         public string Category { get; private set; }
-        public string CategoryFullName { get; private set; }
-        public string ProviderName { get; set; }
         public LocalizedString LocalizedName { get; private set; }
         public IEnumerable<AuditTrailEventDescriptor> Events => _events;
 
@@ -34,18 +30,9 @@ namespace OrchardCore.AuditTrail.Services.Models
             _events.Add(new AuditTrailEventDescriptor
             {
                 Name = name,
-                FullName = CategoryFullName + name,
+                Category = Category,
                 LocalizedName = localizedName,
                 Description = description,
-
-                Category = new AuditTrailCategoryDescriptor
-                {
-                    Name = Category,
-                    FullName = CategoryFullName,
-                    LocalizedName = LocalizedName,
-                    Events = Events
-                },
-
                 BuildEvent = buildEvent,
                 IsEnabledByDefault = enableByDefault,
                 IsMandatory = isMandatory

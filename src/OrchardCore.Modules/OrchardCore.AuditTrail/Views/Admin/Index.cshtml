@@ -72,8 +72,8 @@ else
                 {
                     <tr>
                         <td>@await DisplayAsync(ev.ActionsShape)</td>
-                        <td>@ev.Category.LocalizedName</td>
-                        <td>@ev.Descriptor.LocalizedName</td>
+                        <td>@ev.Category</td>
+                        <td>@ev.LocalizedName</td>
                         <td>@ev.Event.UserName</td>
                         <td>@ev.Event.ClientIpAddress</td>
                         <td>@await DisplayAsync(await New.DateTime(Utc: ev.Event.CreatedUtc, Format: "g"))</td>

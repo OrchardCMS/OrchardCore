@@ -37,8 +37,8 @@
                             {
                                 <tr>
                                     <td>
-                                        <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].FullName" />
-                                        <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].LocalizedName" />
+                                        <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].Name" />
+                                        <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].Category" />
                                         @ev.LocalizedName
                                     </td>
                                     <td>@ev.Description</td>
@@ -49,7 +49,6 @@
                                                disabled="@Model.Categories[categoriesIndex].Events[eventsIndex].IsMandatory"/>
 
                                         <label class="custom-control-label" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">@ev.LocalizedName</label>
-                                        <input asp-for="Categories[categoriesIndex].Events[eventsIndex].LocalizedName" type="hidden" />
                                     </td>
                                 </tr>
                                 eventsIndex++;

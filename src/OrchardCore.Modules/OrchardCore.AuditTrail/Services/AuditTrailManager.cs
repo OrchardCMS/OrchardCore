@@ -56,8 +56,7 @@ namespace OrchardCore.AuditTrail.Services
             _logger = logger;
         }
 
-        public async Task RecordEventAsync<TAuditTrailEventProvider>(AuditTrailContext context)
-            where TAuditTrailEventProvider : IAuditTrailEventProvider
+        public async Task RecordEventAsync(AuditTrailContext context)
         {
             if (_shellSettings.State == TenantState.Initializing && String.IsNullOrEmpty(context.UserName))
             {
@@ -68,20 +67,20 @@ namespace OrchardCore.AuditTrail.Services
                 }
             }
 
-            var eventDescriptors = DescribeEvents(context.EventName, typeof(TAuditTrailEventProvider).FullName);
-            foreach (var eventDescriptor in eventDescriptors)
+            var eventDescriptors = DescribeEvents(context.Category, context.Event);
+            foreach (var descriptor in eventDescriptors)
             {
-                if (!await IsEventEnabledAsync(eventDescriptor))
+                if (!await IsEventEnabledAsync(descriptor))
                 {
                     continue;
                 }
 
                 var createContext = new AuditTrailCreateContext(
                     context.Category,
-                    context.EventName,
+                    context.Event,
                     context.CorrelationId,
                     context.UserName,
-                    context.EventData);
+                    context.Data);
 
                 await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), createContext, _logger);
 
@@ -89,8 +88,7 @@ namespace OrchardCore.AuditTrail.Services
                 {
                     EventId = _auditTrailIdGenerator.GenerateUniqueId(),
                     Category = createContext.Category,
-                    Name = createContext.EventName,
-                    FullName = eventDescriptor.FullName,
+                    Name = createContext.Event,
                     CorrelationId = createContext.CorrelationId,
                     UserName = createContext.UserName ?? "",
                     ClientIpAddress = String.IsNullOrEmpty(createContext.ClientIpAddress)
@@ -100,7 +98,7 @@ namespace OrchardCore.AuditTrail.Services
                     Comment = createContext.Comment.NewlinesToHtml()
                 };
 
-                eventDescriptor.BuildEvent(@event, createContext.EventData);
+                descriptor.BuildEvent(@event, createContext.Data);
                 await _auditTrailEventHandlers.InvokeAsync((handler, context, @event) => handler.AlterAsync(context, @event), createContext, @event, _logger);
 
                 _session.Save(@event, AuditTrailEvent.Collection);
@@ -181,27 +179,30 @@ namespace OrchardCore.AuditTrail.Services
             return deletedEvents;
         }
 
-        public DescribeContext DescribeProviders()
+        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories(string category = null) => DescribeProviders(category).Describe();
+
+        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event)
         {
-            var context = new DescribeContext();
+            var fullName = $"{@event.Category}.{@event.Name}";
+
+            return DescribeCategories(@event.Category)
+                .SelectMany(category => category.Events
+                    .Where(ev => ev.Name == @event.Name))
+                .FirstOrDefault();
+        }
+
+        private IEnumerable<AuditTrailEventDescriptor> DescribeEvents(string category, string name) =>
+            DescribeCategories(category)
+                .SelectMany(category => category.Events
+                    .Where(@event => @event.Name == name)
+                .ToArray());
+
+        private DescribeContext DescribeProviders(string category = null)
+        {
+            var context = new DescribeContext() { Category = category };
             _auditTrailEventProviders.Invoke((provider, context) => provider.Describe(context), context, _logger);
             return context;
         }
-
-        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() => DescribeProviders().Describe();
-
-        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) =>
-            DescribeCategories()
-                .SelectMany(category => category.Events
-                    .Where(ev => ev.FullName == @event.FullName))
-                .FirstOrDefault();
-
-        private IEnumerable<AuditTrailEventDescriptor> DescribeEvents(string name, string providerName) =>
-            DescribeCategories()
-                .Where(category => category.ProviderName == providerName)
-                .SelectMany(category => category.Events
-                    .Where(@event => @event.FullName == category.FullName + name)
-                .ToArray());
 
         private async Task<string> GetClientIpAddressAsync()
         {
@@ -226,18 +227,21 @@ namespace OrchardCore.AuditTrail.Services
         private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>
             (await _siteService.GetSiteSettingsAsync()).As<AuditTrailSettings>();
 
-        private async Task<bool> IsEventEnabledAsync(AuditTrailEventDescriptor eventDescriptor)
+        private async Task<bool> IsEventEnabledAsync(AuditTrailEventDescriptor descriptor)
         {
-            if (eventDescriptor.IsMandatory)
+            if (descriptor.IsMandatory)
             {
                 return true;
             }
 
             var settings = await GetAuditTrailSettingsAsync();
 
-            var eventSettings = settings.Events.FirstOrDefault(eventSetting => eventSetting.FullName == eventDescriptor.FullName);
+            var eventSettings = settings.Categories
+                .Where(x => x.Name == descriptor.Category)
+                .SelectMany(x => x.Events)
+                .FirstOrDefault(settings => settings.Name == descriptor.Name);
 
-            return eventSettings != null ? eventSettings.IsEnabled : eventDescriptor.IsEnabledByDefault;
+            return eventSettings != null ? eventSettings.IsEnabled : descriptor.IsEnabledByDefault;
         }
     }
 }

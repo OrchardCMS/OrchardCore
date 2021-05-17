@@ -1,5 +1,4 @@
 using System;
-using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Entities;
 
 namespace OrchardCore.AuditTrail.Models
@@ -17,19 +16,14 @@ namespace OrchardCore.AuditTrail.Models
         public string EventId { get; set; }
 
         /// <summary>
-        /// The category the event belongs to.
-        /// </summary>
-        public string Category { get; set; }
-
-        /// <summary>
-        /// The event short name.
+        /// The event name.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// The full name prefixed by the <see cref="AuditTrailCategoryDescriptor.FullName"/>.
+        /// The category the event belongs to.
         /// </summary>
-        public virtual string FullName { get; set; }
+        public string Category { get; set; }
 
         /// <summary>
         /// The correlation id used to associate an event to e.g. a content item.

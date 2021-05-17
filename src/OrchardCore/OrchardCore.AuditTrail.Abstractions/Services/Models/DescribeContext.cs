@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Localization;
-using OrchardCore.AuditTrail.Providers;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {
@@ -9,25 +8,22 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         private readonly IDictionary<string, DescribeFor> _describes = new Dictionary<string, DescribeFor>();
 
+        public string Category { get; set; }
+
         public IEnumerable<AuditTrailCategoryDescriptor> Describe() =>
             _describes.Values.Select(describe => new AuditTrailCategoryDescriptor
             {
                 Name = describe.Category,
-                FullName = describe.CategoryFullName,
-                ProviderName = describe.ProviderName,
                 LocalizedName = describe.LocalizedName,
                 Events = describe.Events
             });
 
-        public DescribeFor For<T>(string category, LocalizedString localizedName) where T : IAuditTrailEventProvider
+        public DescribeFor For(string category, LocalizedString localizedName)
         {
-            var providerName = typeof(T).FullName;
-
-            var categoryFullName = providerName + category;
-            if (!_describes.TryGetValue(categoryFullName, out var describeFor))
+            if (!_describes.TryGetValue(category, out var describeFor))
             {
-                describeFor = new DescribeFor(category, categoryFullName, providerName, localizedName);
-                _describes[categoryFullName] = describeFor;
+                describeFor = new DescribeFor(category, localizedName);
+                _describes[category] = describeFor;
             }
 
             return describeFor;
