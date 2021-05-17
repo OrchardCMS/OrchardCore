@@ -4,7 +4,7 @@
   "dependencies": {
     "@types/bootstrap": "4.5.0",
     "@types/jquery": "3.5.5",
-    "bootstrap": "4.6.0",
+    "bootstrap": "5.0.1",
     "jsplumb": "2.15.5"
   }
 }
