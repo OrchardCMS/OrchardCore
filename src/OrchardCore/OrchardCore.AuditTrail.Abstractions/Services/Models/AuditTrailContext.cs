@@ -6,20 +6,20 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         public AuditTrailContext(
             string category,
-            string @event,
+            string name,
             string correlationId,
             string userName,
             Dictionary<string, object> data)
         {
             Category = category;
-            Event = @event;
+            Name = name;
             CorrelationId = correlationId;
             UserName = userName;
             Data = data;
         }
 
         public string Category { get; set; }
-        public string Event { get; set; }
+        public string Name { get; set; }
         public string CorrelationId { get; set; }
         public string UserName { get; set; }
         public Dictionary<string, object> Data { get; set; }

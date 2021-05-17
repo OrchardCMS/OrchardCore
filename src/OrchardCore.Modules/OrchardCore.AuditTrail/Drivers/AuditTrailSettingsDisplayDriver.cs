@@ -39,7 +39,7 @@ namespace OrchardCore.AuditTrail.Drivers
                 : Initialize<AuditTrailSettingsViewModel>("AuditTrailSettings_Edit", model =>
                 {
                     var categoryDescriptors = _auditTrailManager.DescribeCategories();
-                    var eventsSettings = settings.Categories.SelectMany(x => x.Events).ToList();
+                    var eventsSettings = settings.Categories.SelectMany(category => category.Events).ToList();
 
                     var categoriesSettingsViewModels = categoryDescriptors
                         .Select(category => new AuditTrailCategorySettingsViewModel()
@@ -115,7 +115,7 @@ namespace OrchardCore.AuditTrail.Drivers
         /// </summary>
         private static AuditTrailEventSettings GetOrCreate(IList<AuditTrailEventSettings> eventsSettings, AuditTrailEventDescriptor descriptor)
         {
-            var settings = eventsSettings.FirstOrDefault(settings => settings.Name == descriptor.Name && settings.Category == descriptor.Category);
+            var settings = eventsSettings.FirstOrDefault(settings => settings.Category == descriptor.Category && settings.Name == descriptor.Name);
             if (settings == null)
             {
                 settings = new AuditTrailEventSettings

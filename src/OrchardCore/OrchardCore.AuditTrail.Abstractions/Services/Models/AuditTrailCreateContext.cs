@@ -7,11 +7,11 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         public AuditTrailCreateContext(
             string category,
-            string eventName,
+            string name,
             string correlationId,
             string userName,
             Dictionary<string, object> eventData)
-            : base(category, eventName, correlationId, userName, eventData) { }
+            : base(category, name, correlationId, userName, eventData) { }
 
         public string ClientIpAddress { get; set; }
         public DateTime? CreatedUtc { get; set; }

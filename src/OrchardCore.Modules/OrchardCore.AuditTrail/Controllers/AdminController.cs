@@ -65,14 +65,16 @@ namespace OrchardCore.AuditTrail.Controllers
                 TotalItemCount = searchResult.TotalCount
             }));
 
-            var categories = _auditTrailManager.DescribeCategories();
+            var categories = _auditTrailManager.DescribeCategories()
+                .ToLookup(category => category.Name);
 
             var eventSummariesViewModel = searchResult.Events
                 .Select(@event =>
                 {
-                    var category = categories.FirstOrDefault(category => category.Name == @event.Category);
+                    var descriptor = categories[@event.Category]
+                        .SelectMany(category => category.Events)
+                        .FirstOrDefault(descriptor => descriptor.Name == @event.Name);
 
-                    var descriptor = category?.Events.FirstOrDefault(x => x.Name == @event.Name);
                     if (descriptor == null)
                     {
                         descriptor = AuditTrailEventDescriptor.Default(@event);

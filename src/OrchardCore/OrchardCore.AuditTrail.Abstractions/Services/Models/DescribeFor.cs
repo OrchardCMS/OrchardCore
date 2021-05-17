@@ -7,6 +7,7 @@ namespace OrchardCore.AuditTrail.Services.Models
 {
     public class DescribeFor
     {
+        private readonly HashSet<string> _names = new HashSet<string>();
         private readonly IList<AuditTrailEventDescriptor> _events = new List<AuditTrailEventDescriptor>();
 
         public DescribeFor(string category, LocalizedString localizedName)
@@ -27,16 +28,19 @@ namespace OrchardCore.AuditTrail.Services.Models
             bool enableByDefault = false,
             bool isMandatory = false)
         {
-            _events.Add(new AuditTrailEventDescriptor
+            if (_names.Add(name))
             {
-                Name = name,
-                Category = Category,
-                LocalizedName = localizedName,
-                Description = description,
-                BuildEvent = buildEvent,
-                IsEnabledByDefault = enableByDefault,
-                IsMandatory = isMandatory
-            });
+                _events.Add(new AuditTrailEventDescriptor
+                {
+                    Name = name,
+                    Category = Category,
+                    LocalizedName = localizedName,
+                    Description = description,
+                    BuildEvent = buildEvent,
+                    IsEnabledByDefault = enableByDefault,
+                    IsMandatory = isMandatory
+                });
+            }
 
             return this;
         }

@@ -67,42 +67,39 @@ namespace OrchardCore.AuditTrail.Services
                 }
             }
 
-            var eventDescriptors = DescribeEvents(context.Category, context.Event);
-            foreach (var descriptor in eventDescriptors)
+            var descriptor = DescribeEvent(context.Category, context.Name);
+            if (!await IsEventEnabledAsync(descriptor))
             {
-                if (!await IsEventEnabledAsync(descriptor))
-                {
-                    continue;
-                }
-
-                var createContext = new AuditTrailCreateContext(
-                    context.Category,
-                    context.Event,
-                    context.CorrelationId,
-                    context.UserName,
-                    context.Data);
-
-                await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), createContext, _logger);
-
-                var @event = new AuditTrailEvent
-                {
-                    EventId = _auditTrailIdGenerator.GenerateUniqueId(),
-                    Category = createContext.Category,
-                    Name = createContext.Event,
-                    CorrelationId = createContext.CorrelationId,
-                    UserName = createContext.UserName ?? "",
-                    ClientIpAddress = String.IsNullOrEmpty(createContext.ClientIpAddress)
-                        ? await GetClientIpAddressAsync()
-                        : createContext.ClientIpAddress,
-                    CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow,
-                    Comment = createContext.Comment.NewlinesToHtml()
-                };
-
-                descriptor.BuildEvent(@event, createContext.Data);
-                await _auditTrailEventHandlers.InvokeAsync((handler, context, @event) => handler.AlterAsync(context, @event), createContext, @event, _logger);
-
-                _session.Save(@event, AuditTrailEvent.Collection);
+                return;
             }
+
+            var createContext = new AuditTrailCreateContext(
+                context.Category,
+                context.Name,
+                context.CorrelationId,
+                context.UserName,
+                context.Data);
+
+            await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), createContext, _logger);
+
+            var @event = new AuditTrailEvent
+            {
+                EventId = _auditTrailIdGenerator.GenerateUniqueId(),
+                Category = createContext.Category,
+                Name = createContext.Name,
+                CorrelationId = createContext.CorrelationId,
+                UserName = createContext.UserName ?? "",
+                ClientIpAddress = String.IsNullOrEmpty(createContext.ClientIpAddress)
+                    ? await GetClientIpAddressAsync()
+                    : createContext.ClientIpAddress,
+                CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow,
+                Comment = createContext.Comment.NewlinesToHtml()
+            };
+
+            descriptor.BuildEvent(@event, createContext.Data);
+            await _auditTrailEventHandlers.InvokeAsync((handler, context, @event) => handler.AlterAsync(context, @event), createContext, @event, _logger);
+
+            _session.Save(@event, AuditTrailEvent.Collection);
         }
 
         public async Task<AuditTrailEventSearchResults> GetEventsAsync(
@@ -181,21 +178,12 @@ namespace OrchardCore.AuditTrail.Services
 
         public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories(string category = null) => DescribeProviders(category).Describe();
 
-        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event)
-        {
-            var fullName = $"{@event.Category}.{@event.Name}";
+        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) => DescribeEvent(@event.Category, @event.Name);
 
-            return DescribeCategories(@event.Category)
-                .SelectMany(category => category.Events
-                    .Where(ev => ev.Name == @event.Name))
-                .FirstOrDefault();
-        }
-
-        private IEnumerable<AuditTrailEventDescriptor> DescribeEvents(string category, string name) =>
+        private AuditTrailEventDescriptor DescribeEvent(string category, string name) =>
             DescribeCategories(category)
-                .SelectMany(category => category.Events
-                    .Where(@event => @event.Name == name)
-                .ToArray());
+                .SelectMany(category => category.Events)
+                .FirstOrDefault(ev => ev.Name == name);
 
         private DescribeContext DescribeProviders(string category = null)
         {
@@ -237,8 +225,8 @@ namespace OrchardCore.AuditTrail.Services
             var settings = await GetAuditTrailSettingsAsync();
 
             var eventSettings = settings.Categories
-                .Where(x => x.Name == descriptor.Category)
-                .SelectMany(x => x.Events)
+                .Where(category => category.Name == descriptor.Category)
+                .SelectMany(category => category.Events)
                 .FirstOrDefault(settings => settings.Name == descriptor.Name);
 
             return eventSettings != null ? eventSettings.IsEnabled : descriptor.IsEnabledByDefault;
