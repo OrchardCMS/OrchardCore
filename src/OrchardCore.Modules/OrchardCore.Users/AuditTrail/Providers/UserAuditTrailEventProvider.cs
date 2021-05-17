@@ -28,8 +28,14 @@ namespace OrchardCore.Users.AuditTrail.Providers
             S = stringLocalizer;
         }
 
-        public override void Describe(DescribeContext context) =>
-            context.For<UserAuditTrailEventProvider>("User", S["User"])
+        public override void Describe(DescribeContext context)
+        {
+            if (context.Category != null && context.Category != "User")
+            {
+                return;
+            }
+
+            context.For("User", S["User"])
                 .Event(Registered, S["Registered"], S["A user was successfully registered."], BuildEvent, true)
                 .Event(LoggedIn, S["Logged in"], S["A user was successfully logged in."], BuildEvent, true)
                 .Event(LogInFailed, S["Login failed"], S["An attempt to login failed due to incorrect credentials."], BuildEvent, true)
@@ -39,12 +45,13 @@ namespace OrchardCore.Users.AuditTrail.Providers
                 .Event(Disabled, S["Disabled"], S["A user was disabled."], BuildEvent, true)
                 .Event(Created, S["Created"], S["A user was created."], BuildEvent, true)
                 .Event(Deleted, S["Deleted"], S["A user was deleted."], BuildEvent, true);
+        }
 
         private static void BuildEvent(AuditTrailEvent @event, Dictionary<string, object> eventData)
         {
             @event.Put(new AuditTrailUserEvent
             {
-                EventName = @event.Name,
+                Name = @event.Name,
                 UserName = eventData.Get<string>("UserName"),
                 UserId = eventData.Get<string>("UserId")
             });

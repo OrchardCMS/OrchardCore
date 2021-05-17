@@ -27,8 +27,14 @@ namespace OrchardCore.Contents.AuditTrail.Providers
             S = stringLocalizer;
         }
 
-        public override void Describe(DescribeContext context) =>
-            context.For<ContentAuditTrailEventProvider>("Content", S["Content"])
+        public override void Describe(DescribeContext context)
+        {
+            if (context.Category != null && context.Category != "Content")
+            {
+                return;
+            }
+
+            context.For("Content", S["Content"])
                 .Event(Created, S["Created"], S["A content item was created."], BuildEvent, true)
                 .Event(Saved, S["Saved"], S["A content item was saved."], BuildEvent, true)
                 .Event(Published, S["Published"], S["A content item was published."], BuildEvent, true)
@@ -36,12 +42,13 @@ namespace OrchardCore.Contents.AuditTrail.Providers
                 .Event(Removed, S["Removed"], S["A content item was deleted."], BuildEvent, true)
                 .Event(Cloned, S["Cloned"], S["A content item was cloned."], BuildEvent, true)
                 .Event(Restored, S["Restored"], S["A content item was restored to a previous version."], BuildEvent, true);
+        }
 
         private static void BuildEvent(AuditTrailEvent @event, Dictionary<string, object> eventData)
         {
             @event.Put(new AuditTrailContentEvent
             {
-                EventName = @event.Name,
+                Name = @event.Name,
                 ContentItem = eventData.Get<ContentItem>("ContentItem"),
                 VersionNumber = eventData.Get<int>("VersionNumber"),
             });

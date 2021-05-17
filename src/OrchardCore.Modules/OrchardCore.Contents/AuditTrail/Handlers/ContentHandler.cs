@@ -66,9 +66,9 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         public Task RestoredAsync(RestoreContentContext context) =>
             RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, context.ContentItem);
 
-        private async Task RecordAuditTrailEventAsync(string eventName, IContent content)
+        private async Task RecordAuditTrailEventAsync(string name, IContent content)
         {
-            if (eventName != ContentAuditTrailEventProvider.Restored && _restoring.Contains(content.ContentItem.ContentItemId))
+            if (name != ContentAuditTrailEventProvider.Restored && _restoring.Contains(content.ContentItem.ContentItemId))
             {
                 return;
             }
@@ -91,11 +91,11 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 { "VersionNumber", versionNumber }
             };
 
-            await _auditTrailManager.RecordEventAsync<ContentAuditTrailEventProvider>(
+            await _auditTrailManager.RecordEventAsync(
                 new AuditTrailContext
                 (
                     "Content",
-                    eventName,
+                    name,
                     content.ContentItem.ContentItemId,
                     _httpContextAccessor.GetCurrentUserName(),
                     eventData
