@@ -64,22 +64,22 @@ namespace OrchardCore.AuditTrail.Controllers
                 TotalItemCount = searchResult.TotalCount
             }));
 
-            var eventDescriptors = _auditTrailManager.DescribeCategories()
+            var descriptors = _auditTrailManager.DescribeCategories()
                 .SelectMany(categoryDescriptor => categoryDescriptor.Events)
                 .ToDictionary(eventDescriptor => eventDescriptor.FullName);
 
             var eventSummariesViewModel = searchResult.Events
                 .Select(@event =>
                 {
-                    var eventDescriptor = eventDescriptors.ContainsKey(@event.FullName)
-                        ? eventDescriptors[@event.FullName]
+                    var descriptor = descriptors.ContainsKey(@event.FullName)
+                        ? descriptors[@event.FullName]
                         : AuditTrailEventDescriptor.Default(@event);
 
                     return new AuditTrailEventSummaryViewModel
                     {
                         Event = @event,
-                        EventDescriptor = eventDescriptor,
-                        CategoryDescriptor = eventDescriptor.Category,
+                        Descriptor = descriptor,
+                        Category = descriptor.Category,
                     };
                 })
                 .ToArray();
@@ -92,9 +92,9 @@ namespace OrchardCore.AuditTrail.Controllers
 
             return View(new AuditTrailViewModel
             {
-                Events = eventSummariesViewModel,
                 FiltersShape = await _auditTrailEventDisplayManager.BuildDisplayFiltersAsync(filters),
                 OrderBy = orderBy ?? AuditTrailOrderBy.DateDescending,
+                Events = eventSummariesViewModel,
                 PagerShape = pagerShape
             });
         }

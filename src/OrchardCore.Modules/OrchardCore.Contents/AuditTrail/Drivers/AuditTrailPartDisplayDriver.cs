@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using OrchardCore.AuditTrail.Models;
-using OrchardCore.AuditTrail.Settings;
-using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.Contents.AuditTrail.Models;
+using OrchardCore.Contents.AuditTrail.Settings;
+using OrchardCore.Contents.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.AuditTrail.Drivers
+namespace OrchardCore.Contents.AuditTrail.Drivers
 {
     public class AuditTrailPartDisplayDriver : ContentPartDisplayDriver<AuditTrailPart>
     {

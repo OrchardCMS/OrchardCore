@@ -10,7 +10,7 @@ namespace OrchardCore.AuditTrail.Indexes
     {
         public string EventId { get; set; }
         public string Category { get; set; }
-        public string EventName { get; set; }
+        public string Name { get; set; }
         public string CorrelationId { get; set; }
         public string UserName { get; set; }
         public DateTime CreatedUtc { get; set; }

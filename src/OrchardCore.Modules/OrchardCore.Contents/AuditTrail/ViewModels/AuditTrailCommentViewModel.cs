@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.AuditTrail.ViewModels
+namespace OrchardCore.Contents.AuditTrail.ViewModels
 {
     public class AuditTrailCommentViewModel
     {

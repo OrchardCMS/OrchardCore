@@ -4,8 +4,8 @@ namespace OrchardCore.AuditTrail.ViewModels
 {
     public class AuditTrailCategorySettingsViewModel
     {
-        public string Category { get; set; }
-        public LocalizedString Name { get; set; }
+        public string Name { get; set; }
+        public LocalizedString LocalizedName { get; set; }
         public AuditTrailEventSettingsViewModel[] Events { get; set; }
     }
 }

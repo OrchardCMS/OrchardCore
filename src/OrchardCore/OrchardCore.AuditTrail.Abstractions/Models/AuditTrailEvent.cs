@@ -27,7 +27,7 @@ namespace OrchardCore.AuditTrail.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// The full name containing the <see cref="AuditTrailCategoryDescriptor.FullName"/>.
+        /// The full name prefixed by the <see cref="AuditTrailCategoryDescriptor.FullName"/>.
         /// </summary>
         public virtual string FullName { get; set; }
 

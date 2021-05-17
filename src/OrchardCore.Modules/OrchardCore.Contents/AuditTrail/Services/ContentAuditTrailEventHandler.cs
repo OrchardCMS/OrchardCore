@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using GraphQL;
 using OrchardCore.AuditTrail.Extensions;
-using OrchardCore.AuditTrail.Models;
+using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;

@@ -55,8 +55,8 @@ namespace OrchardCore.AuditTrail.Services
 
             var shape = await _shapeFactory.CreateAsync<AuditTrailEventViewModel>(shapeType, model =>
             {
-                model.AuditTrailEvent = @event;
-                model.EventDescriptor = _auditTrailManager.DescribeEvent(@event);
+                model.Event = @event;
+                model.Descriptor = _auditTrailManager.DescribeEvent(@event);
             });
 
             shape.Metadata.DisplayType = displayType;

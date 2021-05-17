@@ -128,7 +128,7 @@ namespace OrchardCore.AuditTrail.Services
                     query.With<AuditTrailEventIndex>().OrderBy(index => index.Category).ThenByDescending(index => index.CreatedUtc);
                     break;
                 case AuditTrailOrderBy.EventAscending:
-                    query.With<AuditTrailEventIndex>().OrderBy(index => index.EventName).ThenByDescending(index => index.CreatedUtc);
+                    query.With<AuditTrailEventIndex>().OrderBy(index => index.Name).ThenByDescending(index => index.CreatedUtc);
                     break;
                 case AuditTrailOrderBy.DateDescending:
                     query.With<AuditTrailEventIndex>().OrderByDescending(index => index.Id);
@@ -196,11 +196,11 @@ namespace OrchardCore.AuditTrail.Services
                     .Where(ev => ev.FullName == @event.FullName))
                 .FirstOrDefault();
 
-        private IEnumerable<AuditTrailEventDescriptor> DescribeEvents(string eventName, string providerName) =>
+        private IEnumerable<AuditTrailEventDescriptor> DescribeEvents(string name, string providerName) =>
             DescribeCategories()
                 .Where(category => category.ProviderName == providerName)
                 .SelectMany(category => category.Events
-                    .Where(ev => ev.FullName == category.FullName + eventName)
+                    .Where(@event => @event.FullName == category.FullName + name)
                 .ToArray());
 
         private async Task<string> GetClientIpAddressAsync()
@@ -235,7 +235,7 @@ namespace OrchardCore.AuditTrail.Services
 
             var settings = await GetAuditTrailSettingsAsync();
 
-            var eventSettings = settings.EventSettings.FirstOrDefault(eventSetting => eventSetting.EventName == eventDescriptor.FullName);
+            var eventSettings = settings.Events.FirstOrDefault(eventSetting => eventSetting.FullName == eventDescriptor.FullName);
 
             return eventSettings != null ? eventSettings.IsEnabled : eventDescriptor.IsEnabledByDefault;
         }

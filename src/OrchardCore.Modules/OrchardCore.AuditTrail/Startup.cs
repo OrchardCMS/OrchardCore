@@ -14,9 +14,6 @@ using OrchardCore.AuditTrail.Permissions;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.BackgroundTasks;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -58,12 +55,8 @@ namespace OrchardCore.AuditTrail
             services.AddScoped<INavigationProvider, AuditTrailAdminMenu>();
             services.AddScoped<INavigationProvider, AuditTrailSettingsAdminMenu>();
 
-            services.AddContentPart<AuditTrailPart>()
-                .UseDisplayDriver<AuditTrailPartDisplayDriver>();
-
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
 
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AuditTrailSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
@@ -94,10 +87,11 @@ namespace OrchardCore.AuditTrail
                 pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
+
             routes.MapAreaControllerRoute(
                 name: "AuditTrailIndex",
-                areaName: "OrchardCore.AdminMenu",
-                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Create",
+                areaName: "OrchardCore.AuditTrail",
+                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Detail",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Detail) }
             );
         }

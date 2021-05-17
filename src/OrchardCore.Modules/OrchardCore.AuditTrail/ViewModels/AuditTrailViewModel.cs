@@ -6,9 +6,9 @@ namespace OrchardCore.AuditTrail.ViewModels
 {
     public class AuditTrailViewModel
     {
-        public IEnumerable<AuditTrailEventSummaryViewModel> Events { get; set; }
         public IShape FiltersShape { get; set; }
         public AuditTrailOrderBy OrderBy { get; set; }
+        public IEnumerable<AuditTrailEventSummaryViewModel> Events { get; set; }
         public IShape PagerShape { get; set; }
     }
 }

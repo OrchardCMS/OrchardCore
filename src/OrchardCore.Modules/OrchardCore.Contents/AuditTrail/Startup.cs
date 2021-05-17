@@ -6,11 +6,17 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.AuditTrail.Providers;
 using OrchardCore.AuditTrail.Services;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.AuditTrail.Controllers;
+using OrchardCore.Contents.AuditTrail.Drivers;
 using OrchardCore.Contents.AuditTrail.Handlers;
+using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Providers;
 using OrchardCore.Contents.AuditTrail.Services;
+using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 
@@ -28,6 +34,10 @@ namespace OrchardCore.Contents.AuditTrail
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddContentPart<AuditTrailPart>().UseDisplayDriver<AuditTrailPartDisplayDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
+
             services.AddScoped<IAuditTrailEventProvider, ContentAuditTrailEventProvider>();
             services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
             services.AddScoped<IAuditTrailDisplayHandler, ContentAuditTrailDisplayHandler>();

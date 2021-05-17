@@ -1,11 +1,10 @@
 @model AuditTrailEventViewModel
 @using OrchardCore.AuditTrail.ViewModels
-@using OrchardCore.ContentManagement
 @using OrchardCore.Entities
 @using OrchardCore.Users.AuditTrail.Models
 
 @{
-    var userEvent = Model.AuditTrailEvent.As<AuditTrailUserEvent>();
+    var userEvent = Model.Event.As<AuditTrailUserEvent>();
 }
 
 <div class="form-group border rounded pl-2 pt-2 pr-2">

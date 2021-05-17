@@ -1,6 +1,6 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.AuditTrail.Models
+namespace OrchardCore.Contents.AuditTrail.Models
 {
     public class AuditTrailPart : ContentPart
     {

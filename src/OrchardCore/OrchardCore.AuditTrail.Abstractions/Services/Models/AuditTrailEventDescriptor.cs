@@ -18,11 +18,13 @@ namespace OrchardCore.AuditTrail.Services.Models
         public bool IsMandatory { get; set; }
 
         /// <summary>
-        /// Returns a default descriptor based on an event record.
-        /// This is useful in cases where event records were previously stored by providers that are no longer enabled.
+        /// Returns a default descriptor based on an event record in case the related provider is no longer registered.
         /// </summary>
-        public static AuditTrailEventDescriptor Default(AuditTrailEvent @event) =>
-            new AuditTrailEventDescriptor
+        public static AuditTrailEventDescriptor Default(AuditTrailEvent @event)
+        {
+            var categoryFullName = @event.FullName.Replace(@event.Name, "");
+
+            return new AuditTrailEventDescriptor
             {
                 Name = @event.Name,
                 FullName = @event.FullName,
@@ -31,9 +33,12 @@ namespace OrchardCore.AuditTrail.Services.Models
                 Category = new AuditTrailCategoryDescriptor
                 {
                     Name = @event.Category,
+                    FullName = categoryFullName,
+                    ProviderName = categoryFullName.Replace(@event.Category, ""),
                     LocalizedName = new LocalizedString(@event.Category, @event.Category),
                     Events = Enumerable.Empty<AuditTrailEventDescriptor>()
                 }
             };
+        }
     }
 }

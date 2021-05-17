@@ -1,8 +1,3 @@
 @model AuditTrailEventViewModel
-@using OrchardCore.AuditTrail.ViewModels
 
-@{
-    var auditTrailEvent = Model.AuditTrailEvent;
-}
-
-<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.EventId">@T["Details"]</a>
+<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@Model.Event.EventId">@T["Details"]</a>

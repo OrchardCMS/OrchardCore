@@ -1,15 +1,13 @@
 @model AuditTrailEventViewModel
 @using OrchardCore.AuditTrail.Services.Models
 @using OrchardCore.AuditTrail.ViewModels
-@using OrchardCore.ContentManagement
 @using OrchardCore.Contents.AuditTrail.Models
 @using OrchardCore.Contents.AuditTrail.Providers
 
 @{
-    var auditTrailEvent = Model.AuditTrailEvent;
-    var auditTrailContentEvent = auditTrailEvent.As<AuditTrailContentEvent>();
-    var contentItem = auditTrailContentEvent.ContentItem;
-    var versionNumber = auditTrailContentEvent.VersionNumber;
+    var contentEvent = Model.Event.As<AuditTrailContentEvent>();
+    var contentItem = contentEvent.ContentItem;
+    var versionNumber = contentEvent.VersionNumber;
     var latestVersionId = ((IShape)Model).GetProperty<string>("LatestVersionId");
     var diffNodes = ((IShape)Model).GetProperty<DiffNode[]>("DiffNodes");
 }
@@ -30,7 +28,7 @@
             </tr>
             <tr>
                 <th>@T["Display text"]</th>
-                @if (auditTrailEvent.Name == ContentAuditTrailEventProvider.Removed)
+                @if (Model.Event.Name == ContentAuditTrailEventProvider.Removed)
                 {
                     <td>@contentItem.DisplayText</td>
                 }
@@ -52,7 +50,7 @@
                            asp-action="Detail"
                            asp-controller="Content"
                            asp-route-versionNumber="@versionNumber"
-                           asp-route-auditTrailEventId="@auditTrailEvent.EventId">
+                           asp-route-auditTrailEventId="@Model.Event.EventId">
                             @T["Version {0}", versionNumber]
                         </a>
                     </td>
@@ -60,7 +58,7 @@
             </tr>
             <tr>
                 <th>@T["Comment"]</th>
-                <td>@auditTrailEvent.Comment</td>
+                <td>@Model.Event.Comment</td>
             </tr>
         </tbody>
     </table>

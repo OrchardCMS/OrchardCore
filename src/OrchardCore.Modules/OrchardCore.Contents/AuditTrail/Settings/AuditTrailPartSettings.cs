@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace OrchardCore.AuditTrail.Settings
+namespace OrchardCore.Contents.AuditTrail.Settings
 {
     public class AuditTrailPartSettings
     {
