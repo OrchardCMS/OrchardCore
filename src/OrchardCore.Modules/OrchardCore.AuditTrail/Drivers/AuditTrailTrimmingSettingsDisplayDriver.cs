@@ -30,7 +30,7 @@ namespace OrchardCore.AuditTrail.Drivers
                     model.RetentionDays = section.RetentionDays;
                     model.LastRunUtc = section.LastRunUtc;
                     model.Disabled = section.Disabled;
-                }).Location("Content:10").OnGroup(AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId);
+                }).Location("Content:10#Trimming").OnGroup(AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId);
 
         public override async Task<IDisplayResult> UpdateAsync(AuditTrailTrimmingSettings section, BuildEditorContext context)
         {
