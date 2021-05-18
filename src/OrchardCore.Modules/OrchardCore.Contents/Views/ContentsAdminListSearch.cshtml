@@ -1,7 +1,7 @@
 @model ContentOptionsViewModel
 @inject IDisplayManager<ContentOptionsViewModel> DisplayManager
 @{
-    var thumbnail = await DisplayManager.BuildDisplayAsync(Model, null, "Thumbnail");
+    var syntaxThumbnail = await DisplayManager.BuildDisplayAsync(Model, null, "Thumbnail");
 }
 <div class="input-group input-group-sm w-50 d-inline-flex has-filter">
     <div class="input-group-prepend">
@@ -39,7 +39,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-12 card-columns">
-                            @await DisplayAsync(thumbnail)
+                            @await DisplayAsync(syntaxThumbnail)
                         </div>
                     </div>
                     <div class="card mb-3">
@@ -61,22 +61,27 @@
                                     <span class="hint">@T["Multiple"]</span>
                                     <span class="hint dashed">@T["Logical operators and groups are supported"]
                                     <ul class="list-unstyled">
+                                        @*NB The operators and examples are not localizable.*@
                                         <li>
-                                            <span class="hint">@T["OR"]</span>
-                                            <span class="hint dashed">@T["The default operator when whitespace is found, e.g. text:foo bar equals text:foo OR bar"]</span>
+                                            <span class="hint">OR</span>
+                                            <span class="hint dashed">@T["The default operator when whitespace is found, e.g."]&nbsp text:foo bar -> text:foo OR bar</span>
                                         </li>
                                         <li>
-                                            <span class="hint">@T["AND"]</span>
-                                            <span class="hint dashed">@T["Combines, e.g. text:foo AND bar"]</span>
+                                            <span class="hint">AND</span>
+                                            <span class="hint dashed">@T["Combines, e.g."]&nbsp text:foo AND bar</span>
                                         </li>
                                         <li>
-                                            <span class="hint">@T["NOT"]</span>
-                                            <span class="hint dashed">@T["Negates, e.g. text:foo NOT bar"]</span>
+                                            <span class="hint">NOT</span>
+                                            <span class="hint dashed">@T["Negates, e.g."]&nbsp text:foo NOT bar</span>
                                         </li>
                                         <li>
-                                            <span class="hint">@T["( ... )"]</span>
-                                            <span class="hint">@T["Groups operators, e.g. text:((foo OR BAR) NOT baz)"]</span>
+                                            <span class="hint">( ... )</span>
+                                            <span class="hint">@T["Groups operators, e.g."]&nbsp text:((foo OR bar) NOT baz)</span>
                                         </li>
+                                        <li>
+                                            <span class="hint">" ... "</span>
+                                            <span class="hint">@T["Escape operators, e.g."]&nbsp text:"foo bar"</span>
+                                        </li>                                        
                                     </ul>
                                 </li>
                             </ul>
@@ -85,9 +90,16 @@
                     <div class="card">
                         <div class="card-body">
                             <h4>@T["Current filter"]</h4>
-                            <pre>@Model.FilterResult.ToString()</pre>
-                            <pre class="d-inline">@Model.FilterResult.ToNormalizedString()</pre>
-                            <span class="hint dashed">@T["including all implied groups and operators"]</span>
+                            @if (!String.IsNullOrEmpty(Model.FilterResult.ToString()))
+                            {
+                                <pre>@Model.FilterResult.ToString()</pre>
+                                <pre class="d-inline">@Model.FilterResult.ToNormalizedString()</pre>
+                                <span class="hint dashed">@T["including all implied groups and operators"]</span>
+                            }
+                            else
+                            {
+                                <p class="alert alert-info mt-3 mb-0">@T["No current filter applied"]</p>
+                            }
                         </div>
                     </div>
                 </div>
