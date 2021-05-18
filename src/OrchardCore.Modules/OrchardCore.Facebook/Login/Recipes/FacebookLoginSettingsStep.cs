@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Facebook.Login.Services;
+using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -20,7 +21,7 @@ namespace OrchardCore.Facebook.Login.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "FacebookLoginSettings", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, nameof(FacebookLoginSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

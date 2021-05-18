@@ -23,11 +23,11 @@ namespace OrchardCore.OpenId.Deployment
                 return;
             }
 
-            var ValidationSettings = await _openIdValidationService.GetSettingsAsync();
+            var validationSettings = await _openIdValidationService.GetSettingsAsync();
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "OpenIdValidation"),
-                new JProperty("OpenIdValidation", JObject.FromObject(ValidationSettings))
+                new JProperty("OpenIdValidation", JObject.FromObject(validationSettings))
             ));
         }
     }

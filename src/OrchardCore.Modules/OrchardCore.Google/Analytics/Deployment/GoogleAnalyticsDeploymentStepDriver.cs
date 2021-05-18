@@ -3,7 +3,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Google.Analytics.Deployment;
 
-namespace OrchardCore.Facebook.Deployment
+namespace OrchardCore.Google.Analytics.Deployment
 {
     public class GoogleAnalyticsDeploymentStepDriver : DisplayDriver<DeploymentStep, GoogleAnalyticsDeploymentStep>
     {

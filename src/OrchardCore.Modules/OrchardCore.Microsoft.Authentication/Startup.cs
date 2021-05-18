@@ -52,10 +52,6 @@ namespace OrchardCore.Microsoft.Authentication
 
             services.AddSingleton<IAzureADService, AzureADService>();
             services.AddRecipeExecutionStep<AzureADSettingsStep>();
-            // Deployment
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AzureADDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, AzureADDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AzureADDeploymentStep>>();
 
             services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuAAD>();
@@ -79,6 +75,17 @@ namespace OrchardCore.Microsoft.Authentication
                 // Built-in initializers:
                 ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AzureADDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, AzureADDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AzureADDeploymentStep>>();
         }
     }
 }

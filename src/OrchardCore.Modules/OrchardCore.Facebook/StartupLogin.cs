@@ -37,13 +37,21 @@ namespace OrchardCore.Facebook
                 ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
 
                 // Deployment
-                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, FacebookLoginDeploymentStepDriver>(),
-                ServiceDescriptor.Transient<IDeploymentSource, FacebookLoginDeploymentSource>(),
-                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<FacebookLoginDeploymentStep>>(),
 
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>()
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<DeploymentStep>, FacebookLoginDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, FacebookLoginDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<FacebookLoginDeploymentStep>>();
         }
     }
 }
