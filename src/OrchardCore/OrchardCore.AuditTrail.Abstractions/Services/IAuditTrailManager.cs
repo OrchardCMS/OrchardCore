@@ -45,16 +45,23 @@ namespace OrchardCore.AuditTrail.Services
         Task<int> TrimEventsAsync(TimeSpan retentionPeriod);
 
         /// <summary>
+        /// Describes a single audit trail event.
+        /// </summary>
+        /// <param name="event">The <see cref="AuditTrailEvent"/> to describe.</param>
+        /// <returns>The <see cref="AuditTrailEventDescriptor"/>.</returns>
+        AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event);
+
+        /// <summary>
         /// Describes all audit trail event categories.
         /// </summary>
         /// <returns>The list of <see cref="AuditTrailCategoryDescriptor"/>.</returns>
         IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories();
 
         /// <summary>
-        /// Describes a single audit trail event.
+        /// Describes a single audit trail event category.
         /// </summary>
-        /// <param name="event">The <see cref="AuditTrailEvent"/> to describe.</param>
-        /// <returns>The <see cref="AuditTrailEventDescriptor"/>.</returns>
-        AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event);
+        /// <param name="name">The category name.</param>
+        /// <returns>The <see cref="AuditTrailCategoryDescriptor"/>.</returns>
+        AuditTrailCategoryDescriptor DescribeCategory(string name);
     }
 }

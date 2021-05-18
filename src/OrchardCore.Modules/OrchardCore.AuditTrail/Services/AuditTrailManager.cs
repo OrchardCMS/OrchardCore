@@ -176,10 +176,17 @@ namespace OrchardCore.AuditTrail.Services
             return deletedEvents;
         }
 
-        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() => DescribeProviders().Describe();
-
         public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) =>
-            DescribeEvent(@event.Name, @event.Category) ?? AuditTrailEventDescriptor.Default(@event);
+            DescribeEvent(@event.Name, @event.Category)
+            ?? AuditTrailEventDescriptor.Default(@event);
+
+        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() =>
+            DescribeProviders().Describe();
+
+        public AuditTrailCategoryDescriptor DescribeCategory(string name) =>
+            DescribeProviders(name).Describe()
+                .FirstOrDefault(category => category.Name == name)
+                ?? AuditTrailCategoryDescriptor.Default(name);
 
         private AuditTrailEventDescriptor DescribeEvent(string name, string categoryName) =>
             DescribeProviders(categoryName).Describe()
