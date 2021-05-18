@@ -1,7 +1,6 @@
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Google.Analytics.Deployment;
 
 namespace OrchardCore.Google.Analytics.Deployment
 {
