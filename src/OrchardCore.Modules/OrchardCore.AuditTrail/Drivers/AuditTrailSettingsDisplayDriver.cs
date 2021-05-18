@@ -72,7 +72,7 @@ namespace OrchardCore.AuditTrail.Drivers
 
                 model.Categories = categoriesViewModel;
                 model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
-            }).Location("Content:1#Audit Trail").OnGroup(AuditTrailSettingsGroup.Id);
+            }).Location("Content:1#Events").OnGroup(AuditTrailSettingsGroup.Id);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, BuildEditorContext context)

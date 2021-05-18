@@ -6,9 +6,9 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         public DisplayEventContext(IShape shape)
         {
-            EventShape = shape;
+            Shape = shape;
         }
 
-        public IShape EventShape { get; }
+        public IShape Shape { get; }
     }
 }

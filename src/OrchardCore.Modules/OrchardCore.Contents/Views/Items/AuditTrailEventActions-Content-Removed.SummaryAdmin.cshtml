@@ -10,7 +10,7 @@
     var latestVersionId = ((IShape)Model).GetProperty<string>("LatestVersionId");
 }
 
-<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@Model.Event.EventId">@T["Detail"]</a>
+<a asp-action="Display" asp-controller="Admin" asp-route-auditTrailEventId="@Model.Event.EventId">@T["Details"]</a>
 @if (contentItem != null && contentItem.ContentItemVersionId != latestVersionId)
 {
     <form>

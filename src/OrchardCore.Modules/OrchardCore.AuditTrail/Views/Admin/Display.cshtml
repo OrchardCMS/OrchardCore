@@ -1,10 +1,8 @@
-@model AuditTrailDetailViewModel
+@model AuditTrailDisplayViewModel
 
 @{
-    var auditTrailEvent = Model.Event;
-    var eventDescriptor = Model.Descriptor;
-    var category = eventDescriptor.LocalizedCategory;
-    var eventName = eventDescriptor.LocalizedName;
+    var name = Model.Descriptor.LocalizedName;
+    var category = Model.Descriptor.LocalizedCategory;
 }
 
 <zone name="Title"><h1>@RenderTitleSegments(T["Audit Trail Event"])</h1></zone>
@@ -18,22 +16,22 @@
             </tr>
             <tr>
                 <th>@T["Event"]</th>
-                <td>@eventName</td>
+                <td>@name</td>
             </tr>
             <tr>
                 <th>@T["User"]</th>
-                <td>@auditTrailEvent.UserName</td>
+                <td>@Model.Event.UserName</td>
             </tr>
             <tr>
                 <th>@T["Timestamp"]</th>
-                <td>@await DisplayAsync(await New.DateTime(Utc: auditTrailEvent.CreatedUtc, Format: "g"))</td>
+                <td>@await DisplayAsync(await New.DateTime(Utc: Model.Event.CreatedUtc, Format: "g"))</td>
             </tr>
             <tr>
                 <th>@T["Client IP"]</th>
-                <td>@auditTrailEvent.ClientIpAddress</td>
+                <td>@Model.Event.ClientIpAddress</td>
             </tr>
         </tbody>
     </table>
 </div>
 
-@await DisplayAsync(Model.DetailShape)
+@await DisplayAsync(Model.EventShape)

@@ -66,7 +66,7 @@ namespace OrchardCore.AuditTrail.Controllers
             var categories = _auditTrailManager.DescribeCategories()
                 .ToLookup(category => category.Name);
 
-            var eventSummariesViewModel = searchResult.Events
+            var eventsViewModel = searchResult.Events
                 .Select(@event =>
                 {
                     var descriptor = categories[@event.Category]
@@ -78,7 +78,7 @@ namespace OrchardCore.AuditTrail.Controllers
                         descriptor = AuditTrailEventDescriptor.Default(@event);
                     }
 
-                    return new AuditTrailEventSummaryViewModel
+                    return new AuditTrailEventItemViewModel
                     {
                         Event = @event,
                         LocalizedName = descriptor.LocalizedName,
@@ -87,22 +87,22 @@ namespace OrchardCore.AuditTrail.Controllers
                 })
                 .ToArray();
 
-            foreach (var model in eventSummariesViewModel)
+            foreach (var model in eventsViewModel)
             {
-                model.SummaryShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(model.Event, "SummaryAdmin");
                 model.ActionsShape = await _auditTrailEventDisplayManager.BuildDisplayActionsAsync(model.Event, "SummaryAdmin");
+                model.EventShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(model.Event, "SummaryAdmin");
             }
 
-            return View(new AuditTrailViewModel
+            return View(new AuditTrailEventListViewModel
             {
                 FiltersShape = await _auditTrailEventDisplayManager.BuildDisplayFiltersAsync(filters),
                 OrderBy = orderBy ?? AuditTrailOrderBy.DateDescending,
-                Events = eventSummariesViewModel,
+                Items = eventsViewModel,
                 PagerShape = pagerShape
             });
         }
 
-        public async Task<ActionResult> Detail(string auditTrailEventId)
+        public async Task<ActionResult> Display(string auditTrailEventId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, AuditTrailPermissions.ViewAuditTrail))
             {
@@ -115,11 +115,11 @@ namespace OrchardCore.AuditTrail.Controllers
                 return NotFound();
             }
 
-            return View(new AuditTrailDetailViewModel
+            return View(new AuditTrailDisplayViewModel
             {
                 Event = @event,
                 Descriptor = _auditTrailManager.DescribeEvent(@event),
-                DetailShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(@event, "Detail")
+                EventShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(@event, "Detail")
             });
         }
     }

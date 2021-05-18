@@ -57,7 +57,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             _logger = logger;
         }
 
-        public async Task<ActionResult> Detail(int versionNumber, string auditTrailEventId)
+        public async Task<ActionResult> Display(int versionNumber, string auditTrailEventId)
         {
             var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
                 .Where(index => index.EventId == auditTrailEventId)

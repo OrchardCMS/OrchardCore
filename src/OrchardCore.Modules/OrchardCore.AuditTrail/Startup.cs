@@ -88,10 +88,10 @@ namespace OrchardCore.AuditTrail
             );
 
             routes.MapAreaControllerRoute(
-                name: "AuditTrailDetail",
+                name: "AuditTrailDisplay",
                 areaName: "OrchardCore.AuditTrail",
-                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Detail/{auditTrailEventId}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Detail) }
+                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Display/{auditTrailEventId}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
             );
         }
     }

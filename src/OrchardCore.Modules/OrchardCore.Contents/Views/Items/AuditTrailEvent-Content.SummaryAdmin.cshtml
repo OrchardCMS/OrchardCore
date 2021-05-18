@@ -27,7 +27,7 @@
     @T["The {0} {1} was restored as {2}",
     contentType,
     Html.Raw(itemEditLink),
-    Html.ActionLink(versionText, "Detail", "Content",
+    Html.ActionLink(versionText, "Display", "Content",
     new
     {
         area = "OrchardCore.Contents",
@@ -45,7 +45,7 @@ else if (Model.Event.Name == ContentAuditTrailEventProvider.Removed)
 else
 {
     @T["{0} of the {1} {2} was {3}",
-    Html.ActionLink(versionText, "Detail", "Content",
+    Html.ActionLink(versionText, "Display", "Content",
     new
     {
         area = "OrchardCore.Contents",

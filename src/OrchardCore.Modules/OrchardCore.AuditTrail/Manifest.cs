@@ -11,6 +11,6 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.AuditTrail",
     Name = "Audit Trail",
-    Category = "Security",
-    Description = "Provides a log for recording and viewing back-end changes."
+    Description = "Provides a log for recording and viewing back-end changes.",
+    Category = "Security"
 )]

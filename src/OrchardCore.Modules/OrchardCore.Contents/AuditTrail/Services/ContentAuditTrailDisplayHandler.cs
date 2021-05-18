@@ -31,13 +31,13 @@ namespace OrchardCore.Contents.AuditTrail.Services
 
         public override async Task DisplayEventAsync(DisplayEventContext context)
         {
-            var model = context.EventShape.As<AuditTrailEventViewModel>();
+            var model = context.Shape.As<AuditTrailEventViewModel>();
             if (model.Event.Category == "Content")
             {
-                if (context.EventShape.Metadata.DisplayType == "Detail")
+                if (context.Shape.Metadata.DisplayType == "Detail")
                 {
                     var diffNodes = await BuildDiffNodesAsync(model.Event);
-                    context.EventShape.Properties["DiffNodes"] = diffNodes;
+                    context.Shape.Properties["DiffNodes"] = diffNodes;
                 }
 
                 var contentItem = model.Event.As<AuditTrailContentEvent>().ContentItem;
@@ -51,7 +51,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
                     _latestVersionId[contentItem.ContentItemId] = latestVersionId;
                 }
 
-                context.EventShape.Properties["LatestVersionId"] = latestVersionId;
+                context.Shape.Properties["LatestVersionId"] = latestVersionId;
             }
         }
 

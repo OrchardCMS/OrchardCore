@@ -1,8 +1,11 @@
 @model AuditTrailSettingsViewModel
 
 @{ 
-    RenderTitleSegments(T["Audit Trail"]);
+    Title.Clear();
+    RenderTitleSegments(T["Audit Trail Settings"]);
 }
+ 
+<zone name="Title" position="before"><h1 class="float-left pr-2">@T["Audit Trail"]</h1></zone>
 
 <section>
     <div class="form-group">
