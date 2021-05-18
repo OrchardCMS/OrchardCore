@@ -72,7 +72,7 @@ namespace OrchardCore.AuditTrail.Controllers
                 .Select(@event =>
                 {
                     var descriptor = categories[@event.Category]
-                        .SelectMany(category => category.Events)
+                        .FirstOrDefault()?.Events
                         .FirstOrDefault(descriptor => descriptor.Name == @event.Name);
 
                     if (descriptor == null)

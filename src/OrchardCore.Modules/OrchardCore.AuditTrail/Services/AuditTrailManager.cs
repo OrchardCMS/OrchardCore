@@ -68,7 +68,7 @@ namespace OrchardCore.AuditTrail.Services
             }
 
             var descriptor = DescribeEvent(context.Name, context.Category);
-            if (!await IsEventEnabledAsync(descriptor))
+            if (descriptor == null || !await IsEventEnabledAsync(descriptor))
             {
                 return;
             }
@@ -181,9 +181,9 @@ namespace OrchardCore.AuditTrail.Services
         public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) =>
             DescribeEvent(@event.Name, @event.Category) ?? AuditTrailEventDescriptor.Default(@event);
 
-        private AuditTrailEventDescriptor DescribeEvent(string name, string category) =>
-            DescribeProviders(category).Describe()
-                .FirstOrDefault(descriptor => descriptor.Name == category)?.Events
+        private AuditTrailEventDescriptor DescribeEvent(string name, string categoryName) =>
+            DescribeProviders(categoryName).Describe()
+                .FirstOrDefault(category => category.Name == categoryName)?.Events
                 .FirstOrDefault(@event => @event.Name == name);
 
         private DescribeContext DescribeProviders(string category = null)
@@ -218,11 +218,6 @@ namespace OrchardCore.AuditTrail.Services
 
         private async Task<bool> IsEventEnabledAsync(AuditTrailEventDescriptor descriptor)
         {
-            if (descriptor == null)
-            {
-                return false;
-            }
-
             if (descriptor.IsMandatory)
             {
                 return true;
