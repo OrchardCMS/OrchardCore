@@ -119,7 +119,7 @@ namespace OrchardCore.AuditTrail.Controllers
             {
                 Event = @event,
                 Descriptor = _auditTrailManager.DescribeEvent(@event),
-                DetailsShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(@event, "Detail")
+                DetailShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(@event, "Detail")
             });
         }
     }
