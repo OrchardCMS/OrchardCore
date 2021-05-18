@@ -35,6 +35,7 @@ namespace OrchardCore.AuditTrail.Services.Models
                     Name = name,
                     Category = Category,
                     LocalizedName = localizedName,
+                    LocalizedCategory = LocalizedName,
                     Description = description,
                     BuildEvent = buildEvent,
                     IsEnabledByDefault = enableByDefault,
