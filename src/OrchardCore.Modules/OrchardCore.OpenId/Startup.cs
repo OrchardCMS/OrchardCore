@@ -180,12 +180,7 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
 
-                ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
-
-                // Deployment
-                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>(),
-                ServiceDescriptor.Transient<IDeploymentSource, OpenIdServerDeploymentSource>(),
-                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>(),
+                ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>()
             });
 
             // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
@@ -202,6 +197,17 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>(),
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>()
             });
+        }
+
+        [RequireFeatures("OrchardCore.Deployment")]
+        public class ServerDeploymentStartup : StartupBase
+        {
+            public override void ConfigureServices(IServiceCollection services)
+            {
+                services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>();
+                services.AddTransient<IDeploymentSource, OpenIdServerDeploymentSource>();
+                services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>();
+            }
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -298,12 +304,7 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
                 ServiceDescriptor.Scoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>(),
-                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>(),
-
-                // Deployment
-                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, OpenIdValidationDeploymentStepDriver>(),
-                ServiceDescriptor.Transient<IDeploymentSource, OpenIdValidationDeploymentSource>(),
-                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdValidationDeploymentStep>>()
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
             });
 
             // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
@@ -320,6 +321,17 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>()
             });
+        }
+
+        [RequireFeatures("OrchardCore.Deployment")]
+        public class ValidationDeploymentStartup : StartupBase
+        {
+            public override void ConfigureServices(IServiceCollection services)
+            {
+                services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdValidationDeploymentStepDriver>();
+                services.AddTransient<IDeploymentSource, OpenIdValidationDeploymentSource>();
+                services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdValidationDeploymentStep>>();
+            }
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
