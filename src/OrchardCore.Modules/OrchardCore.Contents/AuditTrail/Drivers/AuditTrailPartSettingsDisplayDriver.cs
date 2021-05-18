@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.AuditTrail.ViewModels;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;

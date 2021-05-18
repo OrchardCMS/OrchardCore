@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
-using OrchardCore.AuditTrail.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.AuditTrail.Providers;
+using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -75,7 +75,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            var settings = siteSettings.As<AuditTrailSettings>();
+            var settings = siteSettings.As<ContentAuditTrailSettings>();
             if (!settings.AllowedContentTypes.Contains(content.ContentItem.ContentType))
             {
                 return;

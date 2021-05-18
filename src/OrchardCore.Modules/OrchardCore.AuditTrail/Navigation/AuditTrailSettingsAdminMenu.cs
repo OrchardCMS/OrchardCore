@@ -1,8 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.AuditTrail.Drivers;
-using OrchardCore.AuditTrail.Permissions;
+using OrchardCore.AuditTrail.Settings;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AuditTrail.Navigation
@@ -28,7 +27,7 @@ namespace OrchardCore.AuditTrail.Navigation
                      .Add(T["Settings"], settings => settings
                         .Add(T["Audit Trail"], T["Audit Trail"], settings => settings
                         .AddClass("audittrail").Id("audittrail")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId })
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AuditTrailSettingsGroup.Id })
                             .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
                             .LocalNav())));
 

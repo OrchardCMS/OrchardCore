@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Controllers;
-using OrchardCore.AuditTrail.Permissions;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AuditTrail.Navigation

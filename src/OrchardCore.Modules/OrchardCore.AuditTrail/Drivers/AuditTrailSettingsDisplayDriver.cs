@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.AuditTrail.Permissions;
 using OrchardCore.AuditTrail.Services;
-using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
@@ -17,8 +14,6 @@ namespace OrchardCore.AuditTrail.Drivers
 {
     public class AuditTrailSettingsDisplayDriver : SectionDisplayDriver<ISite, AuditTrailSettings>
     {
-        public const string AuditTrailSettingsGroupId = "AuditTrail";
-
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -71,13 +66,12 @@ namespace OrchardCore.AuditTrail.Drivers
                     .ToArray();
 
                     model.Categories = categoriesViewModel;
-                    model.AllowedContentTypes = settings.AllowedContentTypes;
                     model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
-                }).Location("Content:1").OnGroup(AuditTrailSettingsGroupId);
+                }).Location("Content:1#Audit Trail").OnGroup(AuditTrailSettingsGroup.Id);
 
         public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == AuditTrailSettingsGroupId)
+            if (context.GroupId == AuditTrailSettingsGroup.Id)
             {
                 if (!await IsAuthorizedToManageAuditTrailSettingsAsync())
                 {
@@ -104,7 +98,6 @@ namespace OrchardCore.AuditTrail.Drivers
                     })
                     .ToArray();
 
-                settings.AllowedContentTypes = model.AllowedContentTypes;
                 settings.ClientIpAddressAllowed = model.ClientIpAddressAllowed;
             }
 

@@ -10,7 +10,6 @@ using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Navigation;
-using OrchardCore.AuditTrail.Permissions;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.BackgroundTasks;
@@ -51,7 +50,7 @@ namespace OrchardCore.AuditTrail
             services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
             services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
-            services.AddScoped<IPermissionProvider, AuditTrailPermissions>();
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AuditTrailAdminMenu>();
             services.AddScoped<INavigationProvider, AuditTrailSettingsAdminMenu>();
 

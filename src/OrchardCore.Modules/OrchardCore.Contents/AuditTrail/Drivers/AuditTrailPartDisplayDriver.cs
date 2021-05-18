@@ -16,7 +16,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             var settings = context.TypePartDefinition.GetSettings<AuditTrailPartSettings>();
             if (settings.ShowCommentInput)
             {
-                return Initialize<AuditTrailCommentViewModel>(GetEditorShapeType(context), model =>
+                return Initialize<AuditTrailPartViewModel>(GetEditorShapeType(context), model =>
                 {
                     if (part.ShowComment)
                     {

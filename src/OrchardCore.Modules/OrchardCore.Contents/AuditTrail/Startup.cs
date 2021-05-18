@@ -17,8 +17,10 @@ using OrchardCore.Contents.AuditTrail.Providers;
 using OrchardCore.Contents.AuditTrail.Services;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.AuditTrail
 {
@@ -41,6 +43,7 @@ namespace OrchardCore.Contents.AuditTrail
             services.AddScoped<IAuditTrailEventProvider, ContentAuditTrailEventProvider>();
             services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
             services.AddScoped<IAuditTrailDisplayHandler, ContentAuditTrailDisplayHandler>();
+            services.AddScoped<IDisplayDriver<ISite>, ContentAuditTrailSettingsDisplayDriver>();
 
             services.AddScoped<ContentHandler>();
             services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<ContentHandler>());
