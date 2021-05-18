@@ -6,12 +6,12 @@ namespace OrchardCore.AuditTrail.Services.Models
     public class AuditTrailCreateContext : AuditTrailContext
     {
         public AuditTrailCreateContext(
-            string category,
             string name,
+            string category,
             string correlationId,
             string userName,
-            Dictionary<string, object> eventData)
-            : base(category, name, correlationId, userName, eventData) { }
+            Dictionary<string, object> data)
+            : base(name, category, correlationId, userName, data) { }
 
         public string ClientIpAddress { get; set; }
         public DateTime? CreatedUtc { get; set; }

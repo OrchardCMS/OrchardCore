@@ -94,8 +94,8 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
             await _auditTrailManager.RecordEventAsync(
                 new AuditTrailContext
                 (
-                    "Content",
                     name,
+                    "Content",
                     content.ContentItem.ContentItemId,
                     _httpContextAccessor.GetCurrentUserName(),
                     eventData

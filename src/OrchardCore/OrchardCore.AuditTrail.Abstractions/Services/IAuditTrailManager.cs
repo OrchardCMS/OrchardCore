@@ -45,11 +45,10 @@ namespace OrchardCore.AuditTrail.Services
         Task<int> TrimEventsAsync(TimeSpan retentionPeriod);
 
         /// <summary>
-        /// Describes an audit trail event category or all if category is null.
+        /// Describes all audit trail event categories.
         /// </summary>
-        /// <param name="category">The category or all if null.</param>
         /// <returns>The list of <see cref="AuditTrailCategoryDescriptor"/>.</returns>
-        IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories(string category = null);
+        IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories();
 
         /// <summary>
         /// Describes a single audit trail event.

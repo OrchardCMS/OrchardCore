@@ -38,34 +38,39 @@ namespace OrchardCore.AuditTrail.Drivers
                 ? null
                 : Initialize<AuditTrailSettingsViewModel>("AuditTrailSettings_Edit", model =>
                 {
-                    var categoryDescriptors = _auditTrailManager.DescribeCategories();
-                    var eventsSettings = settings.Categories.SelectMany(category => category.Events).ToList();
+                    var categories = _auditTrailManager.DescribeCategories();
 
-                    var categoriesSettingsViewModels = categoryDescriptors
+                    var settingsGroups = settings.Categories
+                        .ToLookup(category => category.Events
+                            .FirstOrDefault()?.Category ?? "");
+
+                    var categoriesViewModel = categories
                         .Select(category => new AuditTrailCategorySettingsViewModel()
                         {
                             Name = category.Name,
                             LocalizedName = category.LocalizedName,
                             Events = category.Events
-                            .Select(@event =>
-                            {
-                                var eventSettings = GetOrCreate(eventsSettings, @event);
-
-                                return new AuditTrailEventSettingsViewModel()
+                                .Select(@event =>
                                 {
-                                    Name = @event.Name,
-                                    Category = @event.Category,
-                                    LocalizedName = @event.LocalizedName,
-                                    Description = @event.Description,
-                                    IsEnabled = @event.IsMandatory || eventSettings.IsEnabled,
-                                    IsMandatory = @event.IsMandatory
-                                };
-                            })
+                                    var settings = settingsGroups[@event.Category]
+                                        .FirstOrDefault()?.Events
+                                        .FirstOrDefault(settings => settings.Name == @event.Name);
+
+                                    return new AuditTrailEventSettingsViewModel()
+                                    {
+                                        Name = @event.Name,
+                                        Category = @event.Category,
+                                        LocalizedName = @event.LocalizedName,
+                                        Description = @event.Description,
+                                        IsEnabled = @event.IsMandatory || (settings?.IsEnabled ?? @event.IsEnabledByDefault),
+                                        IsMandatory = @event.IsMandatory
+                                    };
+                                })
                             .ToArray()
                         })
                     .ToArray();
 
-                    model.Categories = categoriesSettingsViewModels;
+                    model.Categories = categoriesViewModel;
                     model.AllowedContentTypes = settings.AllowedContentTypes;
                     model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
                 }).Location("Content:1").OnGroup(AuditTrailSettingsGroupId);
@@ -108,27 +113,5 @@ namespace OrchardCore.AuditTrail.Drivers
 
         private Task<bool> IsAuthorizedToManageAuditTrailSettingsAsync() =>
              _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AuditTrailPermissions.ManageAuditTrailSettings);
-
-        /// <summary>
-        /// We're creating settings on the fly so that when the user updates the settings the first time,
-        /// we won't log a massive amount of event settings that have changed.
-        /// </summary>
-        private static AuditTrailEventSettings GetOrCreate(IList<AuditTrailEventSettings> eventsSettings, AuditTrailEventDescriptor descriptor)
-        {
-            var settings = eventsSettings.FirstOrDefault(settings => settings.Category == descriptor.Category && settings.Name == descriptor.Name);
-            if (settings == null)
-            {
-                settings = new AuditTrailEventSettings
-                {
-                    Name = descriptor.Name,
-                    Category = descriptor.Category,
-                    IsEnabled = descriptor.IsMandatory || descriptor.IsEnabledByDefault
-                };
-
-                eventsSettings.Add(settings);
-            }
-
-            return settings;
-        }
     }
 }

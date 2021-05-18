@@ -67,15 +67,15 @@ namespace OrchardCore.AuditTrail.Services
                 }
             }
 
-            var descriptor = DescribeEvent(context.Category, context.Name);
+            var descriptor = DescribeEvent(context.Name, context.Category);
             if (!await IsEventEnabledAsync(descriptor))
             {
                 return;
             }
 
             var createContext = new AuditTrailCreateContext(
-                context.Category,
                 context.Name,
+                context.Category,
                 context.CorrelationId,
                 context.UserName,
                 context.Data);
@@ -176,12 +176,12 @@ namespace OrchardCore.AuditTrail.Services
             return deletedEvents;
         }
 
-        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories(string category = null) => DescribeProviders(category).Describe();
+        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() => DescribeProviders().Describe();
 
-        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) => DescribeEvent(@event.Category, @event.Name);
+        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) => DescribeEvent(@event.Name, @event.Category);
 
-        private AuditTrailEventDescriptor DescribeEvent(string category, string name) =>
-            DescribeCategories(category)
+        private AuditTrailEventDescriptor DescribeEvent(string name, string category) =>
+            DescribeProviders(category).Describe()
                 .SelectMany(category => category.Events)
                 .FirstOrDefault(ev => ev.Name == name);
 
@@ -217,6 +217,11 @@ namespace OrchardCore.AuditTrail.Services
 
         private async Task<bool> IsEventEnabledAsync(AuditTrailEventDescriptor descriptor)
         {
+            if (descriptor == null)
+            {
+                return false;
+            }
+
             if (descriptor.IsMandatory)
             {
                 return true;
