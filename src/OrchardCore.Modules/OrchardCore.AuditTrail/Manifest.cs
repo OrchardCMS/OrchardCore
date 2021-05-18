@@ -1,20 +1,16 @@
 using OrchardCore.Modules.Manifest;
-using static OrchardCore.AuditTrail.Constants.FeatureIds;
 
 [assembly: Module(
-    Name = "AuditTrail",
-    Author = "Finitive",
-    Version = "1.0",
+    Name = "Audit Trail",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Security"
 )]
 
 [assembly: Feature(
-    Id = OrchardCore_AuditTrail,
-    Name = "AuditTrail",
+    Id = "OrchardCore.AuditTrail",
+    Name = "Audit Trail",
     Category = "Security",
-    Description = "Provides a log for recording and viewing back-end changes.",
-    Dependencies = new[]
-    {
-        "OrchardCore.ContentTypes"
-    }
+    Description = "Provides a log for recording and viewing back-end changes."
 )]
