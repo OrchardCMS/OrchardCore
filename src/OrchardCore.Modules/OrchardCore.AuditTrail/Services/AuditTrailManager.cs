@@ -178,12 +178,13 @@ namespace OrchardCore.AuditTrail.Services
 
         public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() => DescribeProviders().Describe();
 
-        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) => DescribeEvent(@event.Name, @event.Category);
+        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) =>
+            DescribeEvent(@event.Name, @event.Category) ?? AuditTrailEventDescriptor.Default(@event);
 
         private AuditTrailEventDescriptor DescribeEvent(string name, string category) =>
             DescribeProviders(category).Describe()
-                .SelectMany(category => category.Events)
-                .FirstOrDefault(ev => ev.Name == name);
+                .FirstOrDefault(descriptor => descriptor.Name == category)?.Events
+                .FirstOrDefault(@event => @event.Name == name);
 
         private DescribeContext DescribeProviders(string category = null)
         {
@@ -230,11 +231,10 @@ namespace OrchardCore.AuditTrail.Services
             var settings = await GetAuditTrailSettingsAsync();
 
             var eventSettings = settings.Categories
-                .Where(category => category.Name == descriptor.Category)
-                .SelectMany(category => category.Events)
+                .FirstOrDefault(category => category.Name == descriptor.Category)?.Events
                 .FirstOrDefault(settings => settings.Name == descriptor.Name);
 
-            return eventSettings != null ? eventSettings.IsEnabled : descriptor.IsEnabledByDefault;
+            return eventSettings?.IsEnabled ?? descriptor.IsEnabledByDefault;
         }
     }
 }

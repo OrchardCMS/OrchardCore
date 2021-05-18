@@ -42,7 +42,7 @@ namespace OrchardCore.AuditTrail.Drivers
 
                     var settingsGroups = settings.Categories
                         .ToLookup(category => category.Events
-                            .FirstOrDefault()?.Category ?? "");
+                        .FirstOrDefault()?.Category ?? "");
 
                     var categoriesViewModel = categories
                         .Select(category => new AuditTrailCategorySettingsViewModel()

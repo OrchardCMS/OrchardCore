@@ -26,7 +26,8 @@ namespace OrchardCore.AuditTrail.Services.Models
                 Name = @event.Name,
                 Category = @event.Category,
                 LocalizedName = new LocalizedString(@event.Name, @event.Name),
-                LocalizedCategory = new LocalizedString(@event.Category, @event.Category)
+                LocalizedCategory = new LocalizedString(@event.Category, @event.Category),
+                BuildEvent = (@event, data) => { }
             };
         }
     }
