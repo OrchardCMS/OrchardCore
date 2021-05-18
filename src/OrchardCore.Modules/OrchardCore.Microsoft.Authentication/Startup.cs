@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Microsoft.Authentication.Configuration;
+using OrchardCore.Microsoft.Authentication.Deployment;
 using OrchardCore.Microsoft.Authentication.Drivers;
 using OrchardCore.Microsoft.Authentication.Recipes;
 using OrchardCore.Microsoft.Authentication.Services;
@@ -50,6 +52,11 @@ namespace OrchardCore.Microsoft.Authentication
 
             services.AddSingleton<IAzureADService, AzureADService>();
             services.AddRecipeExecutionStep<AzureADSettingsStep>();
+            // Deployment
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AzureADDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, AzureADDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AzureADDeploymentStep>>();
+
             services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuAAD>();
             // Register the options initializers required by the Policy Scheme, Cookie and OpenId Connect Handler.

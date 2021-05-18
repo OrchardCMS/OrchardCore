@@ -298,7 +298,12 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
                 ServiceDescriptor.Scoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>(),
-                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>(),
+
+                // Deployment
+                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, OpenIdValidationDeploymentStepDriver>(),
+                ServiceDescriptor.Transient<IDeploymentSource, OpenIdValidationDeploymentSource>(),
+                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdValidationDeploymentStep>>()
             });
 
             // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
