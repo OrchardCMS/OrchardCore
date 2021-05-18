@@ -60,7 +60,7 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
                 ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
-            });         
+            });
         }
     }
 
@@ -199,17 +199,6 @@ namespace OrchardCore.OpenId
             });
         }
 
-        [RequireFeatures("OrchardCore.Deployment")]
-        public class ServerDeploymentStartup : StartupBase
-        {
-            public override void ConfigureServices(IServiceCollection services)
-            {
-                services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>();
-                services.AddTransient<IDeploymentSource, OpenIdServerDeploymentSource>();
-                services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>();
-            }
-        }
-
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var options = serviceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
@@ -284,6 +273,17 @@ namespace OrchardCore.OpenId
         }
     }
 
+    [RequireFeatures("OrchardCore.Deployment", OpenIdConstants.Features.Server)]
+    public class ServerDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, OpenIdServerDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>();
+        }
+    }
+
     [Feature(OpenIdConstants.Features.Validation)]
     public class ValidationStartup : StartupBase
     {
@@ -323,17 +323,6 @@ namespace OrchardCore.OpenId
             });
         }
 
-        [RequireFeatures("OrchardCore.Deployment")]
-        public class ValidationDeploymentStartup : StartupBase
-        {
-            public override void ConfigureServices(IServiceCollection services)
-            {
-                services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdValidationDeploymentStepDriver>();
-                services.AddTransient<IDeploymentSource, OpenIdValidationDeploymentSource>();
-                services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdValidationDeploymentStep>>();
-            }
-        }
-
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var options = serviceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
@@ -344,6 +333,17 @@ namespace OrchardCore.OpenId
                 pattern: options.AdminUrlPrefix + "/OpenId/ValidationConfiguration",
                 defaults: new { controller = typeof(ValidationConfigurationController).ControllerName(), action = nameof(ValidationConfigurationController.Index) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", OpenIdConstants.Features.Validation)]
+    public class ValidationDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdValidationDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, OpenIdValidationDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdValidationDeploymentStep>>();
         }
     }
 
