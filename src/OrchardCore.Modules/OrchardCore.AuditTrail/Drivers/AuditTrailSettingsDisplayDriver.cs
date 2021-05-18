@@ -28,56 +28,63 @@ namespace OrchardCore.AuditTrail.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(AuditTrailSettings settings, BuildEditorContext context) =>
-            !await IsAuthorizedToManageAuditTrailSettingsAsync()
-                ? null
-                : Initialize<AuditTrailSettingsViewModel>("AuditTrailSettings_Edit", model =>
-                {
-                    var categories = _auditTrailManager.DescribeCategories();
+        public override async Task<IDisplayResult> EditAsync(AuditTrailSettings settings, BuildEditorContext context)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+            {
+                return null;
+            }
 
-                    var settingsGroups = settings.Categories
-                        .ToLookup(category => category.Events
-                        .FirstOrDefault()?.Category ?? "");
+            return Initialize<AuditTrailSettingsViewModel>("AuditTrailSettings_Edit", model =>
+            {
+                var categories = _auditTrailManager.DescribeCategories();
 
-                    var categoriesViewModel = categories
-                        .Select(category => new AuditTrailCategorySettingsViewModel()
-                        {
-                            Name = category.Name,
-                            LocalizedName = category.LocalizedName,
-                            Events = category.Events
-                                .Select(@event =>
+                var settingsGroups = settings.Categories
+                    .ToLookup(category => category.Events
+                    .FirstOrDefault()?.Category ?? "");
+
+                var categoriesViewModel = categories
+                    .Select(category => new AuditTrailCategorySettingsViewModel()
+                    {
+                        Name = category.Name,
+                        LocalizedName = category.LocalizedName,
+                        Events = category.Events
+                            .Select(@event =>
+                            {
+                                var settings = settingsGroups[@event.Category]
+                                    .FirstOrDefault()?.Events
+                                    .FirstOrDefault(settings => settings.Name == @event.Name);
+
+                                return new AuditTrailEventSettingsViewModel()
                                 {
-                                    var settings = settingsGroups[@event.Category]
-                                        .FirstOrDefault()?.Events
-                                        .FirstOrDefault(settings => settings.Name == @event.Name);
+                                    Name = @event.Name,
+                                    Category = @event.Category,
+                                    LocalizedName = @event.LocalizedName,
+                                    Description = @event.Description,
+                                    IsEnabled = @event.IsMandatory || (settings?.IsEnabled ?? @event.IsEnabledByDefault),
+                                    IsMandatory = @event.IsMandatory
+                                };
+                            })
+                        .ToArray()
+                    })
+                .ToArray();
 
-                                    return new AuditTrailEventSettingsViewModel()
-                                    {
-                                        Name = @event.Name,
-                                        Category = @event.Category,
-                                        LocalizedName = @event.LocalizedName,
-                                        Description = @event.Description,
-                                        IsEnabled = @event.IsMandatory || (settings?.IsEnabled ?? @event.IsEnabledByDefault),
-                                        IsMandatory = @event.IsMandatory
-                                    };
-                                })
-                            .ToArray()
-                        })
-                    .ToArray();
-
-                    model.Categories = categoriesViewModel;
-                    model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
-                }).Location("Content:1#Audit Trail").OnGroup(AuditTrailSettingsGroup.Id);
+                model.Categories = categoriesViewModel;
+                model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
+            }).Location("Content:1#Audit Trail").OnGroup(AuditTrailSettingsGroup.Id);
+        }
 
         public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+            {
+                return null;
+            }
+
             if (context.GroupId == AuditTrailSettingsGroup.Id)
             {
-                if (!await IsAuthorizedToManageAuditTrailSettingsAsync())
-                {
-                    return null;
-                }
-
                 var model = new AuditTrailSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
@@ -103,8 +110,5 @@ namespace OrchardCore.AuditTrail.Drivers
 
             return await EditAsync(settings, context);
         }
-
-        private Task<bool> IsAuthorizedToManageAuditTrailSettingsAsync() =>
-             _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AuditTrailPermissions.ManageAuditTrailSettings);
     }
 }

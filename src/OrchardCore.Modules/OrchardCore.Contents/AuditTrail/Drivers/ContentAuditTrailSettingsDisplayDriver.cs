@@ -23,33 +23,36 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentAuditTrailSettings section, BuildEditorContext context) =>
-            !await IsAuthorizedToManageAuditTrailSettingsAsync()
-                ? null
-                : Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
-                {
-                    model.AllowedContentTypes = section.AllowedContentTypes;
-                }).Location("Content:10#Content;5").OnGroup(AuditTrailSettingsGroup.Id);
+        public override async Task<IDisplayResult> EditAsync(ContentAuditTrailSettings section, BuildEditorContext context)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+            {
+                return null;
+            }
+
+            return Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
+            {
+                model.AllowedContentTypes = section.AllowedContentTypes;
+            }).Location("Content:10#Content;5").OnGroup(AuditTrailSettingsGroup.Id);
+        }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentAuditTrailSettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+            {
+                return null;
+            }
+
             if (context.GroupId == AuditTrailSettingsGroup.Id)
             {
-                if (!await IsAuthorizedToManageAuditTrailSettingsAsync())
-                {
-                    return null;
-                }
-
                 var model = new ContentAuditTrailSettings();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
-
                 section.AllowedContentTypes = model.AllowedContentTypes;
             }
 
             return await EditAsync(section, context);
         }
-
-        private Task<bool> IsAuthorizedToManageAuditTrailSettingsAsync() =>
-             _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AuditTrailPermissions.ManageAuditTrailSettings);
     }
 }
