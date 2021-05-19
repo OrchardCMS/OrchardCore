@@ -45,7 +45,7 @@ namespace OrchardCore.Media.Recipes
             {
                 if (!_allowedFileExtensions.Contains(Path.GetExtension(file.TargetPath), StringComparer.OrdinalIgnoreCase))
                 {
-                    _logger.LogWarning("File extension not allowed: '{0}'", file.TargetPath);
+                    _logger.LogWarning("File extension not allowed: '{Path}'", file.TargetPath);
 
                     continue;
                 }          
