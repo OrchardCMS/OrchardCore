@@ -42,7 +42,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public virtual ValueTask CreateAsync(TScope scope, CancellationToken cancellationToken)
+        public virtual async ValueTask CreateAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -51,13 +51,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(scope, checkConcurrency: true, collection: OpenIdCollection);
-
-            return new ValueTask();
+            _session.Save(scope, collection: OpenIdCollection);
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask DeleteAsync(TScope scope, CancellationToken cancellationToken)
+        public virtual async ValueTask DeleteAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -67,8 +66,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Delete(scope, collection: OpenIdCollection);
-
-            return new ValueTask();
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -395,7 +393,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask UpdateAsync(TScope scope, CancellationToken cancellationToken)
+        public virtual async ValueTask UpdateAsync(TScope scope, CancellationToken cancellationToken)
         {
             if (scope == null)
             {
@@ -406,7 +404,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             _session.Save(scope, checkConcurrency: true, collection: OpenIdCollection);
 
-            return new ValueTask();
+            try
+            {
+                await _session.SaveChangesAsync();
+            }
+            catch (ConcurrencyException exception)
+            {
+                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
+                    .AppendLine("The scope was concurrently updated and cannot be persisted in its current state.")
+                    .Append("Reload the scope from the database and retry the operation.")
+                    .ToString(), exception);
+            }
         }
     }
 }

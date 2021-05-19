@@ -43,7 +43,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public virtual ValueTask CreateAsync(TToken token, CancellationToken cancellationToken)
+        public virtual async ValueTask CreateAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -53,12 +53,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Save(token, collection: OpenIdCollection);
-
-            return new ValueTask();
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask DeleteAsync(TToken token, CancellationToken cancellationToken)
+        public virtual async ValueTask DeleteAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -68,8 +67,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Delete(token, collection: OpenIdCollection);
-
-            return new ValueTask();
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -655,7 +653,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask UpdateAsync(TToken token, CancellationToken cancellationToken)
+        public virtual async ValueTask UpdateAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
             {
@@ -666,7 +664,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             _session.Save(token, checkConcurrency: true, collection: OpenIdCollection);
 
-            return new ValueTask();
+            try
+            {
+                await _session.SaveChangesAsync();
+            }
+            catch (ConcurrencyException exception)
+            {
+                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
+                    .AppendLine("The token was concurrently updated and cannot be persisted in its current state.")
+                    .Append("Reload the token from the database and retry the operation.")
+                    .ToString(), exception);
+            }
         }
     }
 }

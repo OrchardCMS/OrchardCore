@@ -41,7 +41,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public virtual ValueTask CreateAsync(TApplication application, CancellationToken cancellationToken)
+        public virtual async ValueTask CreateAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -51,12 +51,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Save(application, collection: OpenIdCollection);
-
-            return new ValueTask();
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask DeleteAsync(TApplication application, CancellationToken cancellationToken)
+        public virtual async ValueTask DeleteAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -66,8 +65,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Delete(application, collection: OpenIdCollection);
-
-            return new ValueTask();
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -487,7 +485,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask UpdateAsync(TApplication application, CancellationToken cancellationToken)
+        public virtual async ValueTask UpdateAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -498,7 +496,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             _session.Save(application, checkConcurrency: true, collection: OpenIdCollection);
 
-            return new ValueTask();
+            try
+            {
+                await _session.SaveChangesAsync();
+            }
+            catch (ConcurrencyException exception)
+            {
+                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
+                    .AppendLine("The application was concurrently updated and cannot be persisted in its current state.")
+                    .Append("Reload the application from the database and retry the operation.")
+                    .ToString(), exception);
+            }
         }
 
         /// <inheritdoc/>

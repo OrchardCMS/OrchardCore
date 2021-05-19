@@ -43,7 +43,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public virtual ValueTask CreateAsync(TAuthorization authorization, CancellationToken cancellationToken)
+        public virtual async ValueTask CreateAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
             if (authorization == null)
             {
@@ -53,12 +53,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Save(authorization, collection: OpenIdCollection);
-
-            return new ValueTask();
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask DeleteAsync(TAuthorization authorization, CancellationToken cancellationToken)
+        public virtual async ValueTask DeleteAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
             if (authorization == null)
             {
@@ -68,8 +67,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Delete(authorization, collection: OpenIdCollection);
-
-            return new ValueTask();
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -148,7 +146,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
                 index => index.ApplicationId == client && index.Subject == subject &&
-                         index.Status == status && index.Type == type,
+                         index.Status == status && index.Type == type, 
                 collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
@@ -532,7 +530,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask UpdateAsync(TAuthorization authorization, CancellationToken cancellationToken)
+        public virtual async ValueTask UpdateAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
             if (authorization == null)
             {
@@ -543,7 +541,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             _session.Save(authorization, checkConcurrency: true, collection: OpenIdCollection);
 
-            return new ValueTask();
+            try
+            {
+                await _session.SaveChangesAsync();
+            }
+            catch (ConcurrencyException exception)
+            {
+                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
+                    .AppendLine("The authorization was concurrently updated and cannot be persisted in its current state.")
+                    .Append("Reload the authorization from the database and retry the operation.")
+                    .ToString(), exception);
+            }
         }
     }
 }
