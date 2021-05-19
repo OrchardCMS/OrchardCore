@@ -31,7 +31,7 @@ namespace OrchardCore.Themes.TheBlogTheme
 
             _manifest
                 .DefineScript("TheBlogTheme")
-                .SetDependencies("jQuery")
+                .SetDependencies("TheBlogTheme-jQuery")
                 .SetUrl("~/TheBlogTheme/js/scripts.min.js", "~/TheBlogTheme/js/scripts.js")
                 .SetVersion("5.1.0");
 
