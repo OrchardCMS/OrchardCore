@@ -99,11 +99,10 @@ namespace OrchardCore.Users.Services
 
                 newUser.UserId = newUserId;
 
-                _session.Save(user);
-
-                await _session.SaveChangesAsync();
-
                 var context = new UserContext(user);
+
+                await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
+                _session.Save(user);
                 await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             catch (Exception e)
@@ -123,13 +122,11 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _session.Delete(user);
-
             try
             {
-                await _session.SaveChangesAsync();
-
                 var context = new UserContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), context, _logger);
+                _session.Delete(user);
                 await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
             }
             catch
@@ -211,9 +208,9 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _session.Save(user);
-
             var context = new UserContext(user);
+            await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
+            _session.Save(user);
             await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
 
             return IdentityResult.Success;
