@@ -54,17 +54,17 @@ namespace OrchardCore.ReCaptcha
 
             if (_reCaptchaService.IsThisARobot())
             {
-                afterLoginZone.AddAsync(await _shapeFactory.New.ReCaptcha());
+                await afterLoginZone.AddAsync(await _shapeFactory.New.ReCaptcha());
             }
 
             var afterForgotPassword = layout.Zones["AfterForgotPassword"];
-            afterForgotPassword.AddAsync(await _shapeFactory.New.ReCaptcha());
+            await afterForgotPassword.AddAsync(await _shapeFactory.New.ReCaptcha());
 
             var afterRegister = layout.Zones["AfterRegister"];
-            afterRegister.AddAsync(await _shapeFactory.New.ReCaptcha());
+            await afterRegister.AddAsync(await _shapeFactory.New.ReCaptcha());
 
             var afterResetPassword = layout.Zones["AfterResetPassword"];
-            afterResetPassword.AddAsync(await _shapeFactory.New.ReCaptcha());
+            await afterResetPassword.AddAsync(await _shapeFactory.New.ReCaptcha());
 
             await next();
         }
