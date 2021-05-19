@@ -1,9 +1,5 @@
 @model AuditTrailTrimmingSettingsViewModel
 
-@{
-    var lastRunUtc = Model.LastRunUtc;
-}
-
 <section>
     <div class="form-group">
         <div class="custom-control custom-checkbox">
@@ -21,7 +17,7 @@
 
     <div class="form-group" asp-validation-class-for="LastRunUtc">
         <label asp-for="LastRunUtc">@T["Last run"]</label>
-        <div class="form-control">@(lastRunUtc.HasValue ? await DisplayAsync(await New.DateTime(Utc: lastRunUtc.Value, Format: "g")) : T["Never"])</div>
+        <div class="form-control">@(Model.LastRunUtc.HasValue ? await DisplayAsync(await New.DateTime(Utc: Model.LastRunUtc.Value, Format: "g")) : T["Never"])</div>
         <span class="hint">@T["The last time the trimming task was run."]</span>
     </div>
 </section>

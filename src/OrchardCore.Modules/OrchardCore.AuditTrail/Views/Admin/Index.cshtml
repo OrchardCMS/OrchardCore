@@ -1,11 +1,9 @@
-@model AuditTrailEventListViewModel
+@model AuditTrailListViewModel
 @using Microsoft.Extensions.Localization
 
 @inject IStringLocalizer<ViewContext> S;
 
 @{
-    var events = Model.Items;
-
     var orderByItems = new List<SelectListItem>
     {
         new SelectListItem
@@ -47,7 +45,7 @@
     </div>
 </form>
 
-@if (!events.Any())
+@if (!Model.Items.Any())
 {
     <div class="alert alert-primary" role="alert">@T["There are no records to display."]</div>
 }
@@ -68,11 +66,11 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in events)
+                @foreach (var item in Model.Items)
                 {
                     <tr>
                         <td>@await DisplayAsync(item.ActionsShape)</td>
-                        <td>@item.Category</td>
+                        <td>@item.LocalizedCategory</td>
                         <td>@item.LocalizedName</td>
                         <td>@item.Event.UserName</td>
                         <td>@item.Event.ClientIpAddress</td>

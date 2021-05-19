@@ -6,12 +6,11 @@
 @{
     var contentEvent = Model.Event.As<AuditTrailContentEvent>();
     var contentItem = contentEvent.ContentItem;
-    var versionNumber = contentEvent.VersionNumber;
     var latestVersionId = ((IShape)Model).GetProperty<string>("LatestVersionId");
 }
 
 <a asp-action="Display" asp-controller="Admin" asp-route-auditTrailEventId="@Model.Event.EventId">@T["Details"]</a>
-@if (contentItem != null && contentItem.ContentItemVersionId != latestVersionId)
+@if (contentItem.ContentItemVersionId != latestVersionId)
 {
     <form>
         <a asp-route-area="OrchardCore.Contents"

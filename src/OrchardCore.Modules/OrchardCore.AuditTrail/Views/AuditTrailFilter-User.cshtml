@@ -1,10 +1,6 @@
 @model AuditTrailFilterViewModel
 @using OrchardCore.AuditTrail.ViewModels
 
-@{
-    var username = Model.UserName;
-}
-
 <div class="form-group mr-2">
-    <input placeholder="User" asp-for="@username" type="text" class="form-control" />
+    <input placeholder="User" asp-for="@Model.UserName" type="text" class="form-control" />
 </div>

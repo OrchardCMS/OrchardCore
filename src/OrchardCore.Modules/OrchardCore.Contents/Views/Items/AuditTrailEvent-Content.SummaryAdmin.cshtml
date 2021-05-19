@@ -7,26 +7,19 @@
 @inject IStringLocalizer<ViewContext> S;
 
 @{
-    var auditTrailContentEvent = Model.Event.As<AuditTrailContentEvent>();
-
-    var contentItem = auditTrailContentEvent.ContentItem;
-    var versionNumber = auditTrailContentEvent.VersionNumber;
-
-    var eventDescriptor = Model.Descriptor;
+    var contentEvent = Model.Event.As<AuditTrailContentEvent>();
+    var contentItem = contentEvent.ContentItem;
+    var versionNumber = contentEvent.VersionNumber;
     var versionText = S["Version {0}", versionNumber];
-    var eventName = eventDescriptor.LocalizedName.Value.ToLowerInvariant();
-
-    var contentType = contentItem.ContentType;
-    var displayText = contentItem.DisplayText;
-
-    var itemEditLink = await Orchard.GetItemEditLinkAsync(displayText, contentItem);
+    var eventName = Model.Descriptor.LocalizedName.Value.ToLowerInvariant();
+    var editForLink = await Orchard.EditForLinkAsync(contentItem.DisplayText, contentItem);
 }
 
 @if (Model.Event.Name == ContentAuditTrailEventProvider.Restored)
 {
     @T["The {0} {1} was restored as {2}",
-    contentType,
-    Html.Raw(itemEditLink),
+    contentItem.ContentType,
+    editForLink,
     Html.ActionLink(versionText, "Display", "Content",
     new
     {
@@ -38,8 +31,8 @@
 else if (Model.Event.Name == ContentAuditTrailEventProvider.Removed)
 {
     @T["The {0} <strong>{1}</strong> was {2}.",
-    contentType,
-    displayText,
+    contentItem.ContentType,
+    contentItem.DisplayText,
     eventName]
 }
 else
@@ -52,7 +45,7 @@ else
         auditTrailEventId = Model.Event.EventId,
         versionNumber = versionNumber
     }, null),
-    contentType,
-    Html.Raw(itemEditLink),
+    contentItem.ContentType,
+    editForLink,
     eventName]
 }

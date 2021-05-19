@@ -1,11 +1,7 @@
 @model AuditTrailFilterViewModel
 @using OrchardCore.AuditTrail.ViewModels
 
-@{
-    var fromDate = Model.FromDate;
-}
-
 <div class="form-group d-flex">
-    <label class="form-control border-0 pr-2" asp-for="@fromDate">@T["From"]</label>
-    <input class="form-control" asp-for="@fromDate" type="date" />
+    <label class="form-control border-0 pr-2" asp-for="@Model.FromDate">@T["From"]</label>
+    <input class="form-control" asp-for="@Model.FromDate" type="date" />
 </div>

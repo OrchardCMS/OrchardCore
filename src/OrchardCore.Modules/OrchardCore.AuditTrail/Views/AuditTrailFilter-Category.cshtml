@@ -5,10 +5,7 @@
 @inject IStringLocalizer<ViewContext> S;
 
 @{
-    var category = Model.Category;
-    var categories = Model.Categories;
-
-    var listItems = categories
+    var listItems = Model.Categories
         .GroupBy(category => category.Name)
         .Select(categories => categories.First())
         .Select(category =>
@@ -24,5 +21,5 @@
 }
 
 <div class="form-group mr-2">
-    <select asp-for="@category" asp-items="listItems" class="form-control"></select>
+    <select asp-for="@Model.Category" asp-items="listItems" class="form-control"></select>
 </div>

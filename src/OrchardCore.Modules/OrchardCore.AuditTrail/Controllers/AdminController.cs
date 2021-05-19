@@ -66,7 +66,7 @@ namespace OrchardCore.AuditTrail.Controllers
             var categories = _auditTrailManager.DescribeCategories()
                 .ToLookup(category => category.Name);
 
-            var eventsViewModel = searchResult.Events
+            var items = searchResult.Events
                 .Select(@event =>
                 {
                     var descriptor = categories[@event.Category]
@@ -78,26 +78,26 @@ namespace OrchardCore.AuditTrail.Controllers
                         descriptor = AuditTrailEventDescriptor.Default(@event);
                     }
 
-                    return new AuditTrailEventItemViewModel
+                    return new AuditTrailItemViewModel
                     {
                         Event = @event,
                         LocalizedName = descriptor.LocalizedName,
-                        Category = descriptor.LocalizedCategory,
+                        LocalizedCategory = descriptor.LocalizedCategory
                     };
                 })
                 .ToArray();
 
-            foreach (var model in eventsViewModel)
+            foreach (var item in items)
             {
-                model.ActionsShape = await _auditTrailEventDisplayManager.BuildDisplayActionsAsync(model.Event, "SummaryAdmin");
-                model.EventShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(model.Event, "SummaryAdmin");
+                item.ActionsShape = await _auditTrailEventDisplayManager.BuildDisplayActionsAsync(item.Event, "SummaryAdmin");
+                item.EventShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(item.Event, "SummaryAdmin");
             }
 
-            return View(new AuditTrailEventListViewModel
+            return View(new AuditTrailListViewModel
             {
                 FiltersShape = await _auditTrailEventDisplayManager.BuildDisplayFiltersAsync(filters),
                 OrderBy = orderBy ?? AuditTrailOrderBy.DateDescending,
-                Items = eventsViewModel,
+                Items = items,
                 PagerShape = pagerShape
             });
         }
@@ -115,10 +115,13 @@ namespace OrchardCore.AuditTrail.Controllers
                 return NotFound();
             }
 
-            return View(new AuditTrailDisplayViewModel
+            var descriptor = _auditTrailManager.DescribeEvent(@event);
+
+            return View(new AuditTrailItemViewModel
             {
                 Event = @event,
-                Descriptor = _auditTrailManager.DescribeEvent(@event),
+                LocalizedName = descriptor.LocalizedName,
+                LocalizedCategory = descriptor.LocalizedCategory,
                 EventShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(@event, "Detail")
             });
         }

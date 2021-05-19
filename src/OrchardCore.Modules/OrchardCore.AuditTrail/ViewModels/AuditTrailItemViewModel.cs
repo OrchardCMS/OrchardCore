@@ -4,11 +4,11 @@ using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.AuditTrail.ViewModels
 {
-    public class AuditTrailEventItemViewModel
+    public class AuditTrailItemViewModel
     {
         public AuditTrailEvent Event { get; set; }
-        public LocalizedString Category { get; set; }
         public LocalizedString LocalizedName { get; set; }
+        public LocalizedString LocalizedCategory { get; set; }
         public IShape ActionsShape { get; set; }
         public IShape EventShape { get; set; }
     }

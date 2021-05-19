@@ -1,9 +1,4 @@
-@model AuditTrailDisplayViewModel
-
-@{
-    var name = Model.Descriptor.LocalizedName;
-    var category = Model.Descriptor.LocalizedCategory;
-}
+@model AuditTrailItemViewModel
 
 <zone name="Title"><h1>@RenderTitleSegments(T["Audit Trail Event"])</h1></zone>
 
@@ -12,11 +7,11 @@
         <tbody>
             <tr>
                 <th class="border-top-0 w-25">@T["Category"]</th>
-                <td class="border-top-0">@category</td>
+                <td class="border-top-0">@Model.LocalizedCategory</td>
             </tr>
             <tr>
                 <th>@T["Event"]</th>
-                <td>@name</td>
+                <td>@Model.LocalizedName</td>
             </tr>
             <tr>
                 <th>@T["User"]</th>
