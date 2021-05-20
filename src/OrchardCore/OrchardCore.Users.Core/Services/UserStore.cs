@@ -701,7 +701,7 @@ namespace OrchardCore.Users.Services
             }
             else
             {
-                return Task.FromResult(new DateTimeOffset?());
+                return Task.FromResult<DateTimeOffset?>(null);
             }
         }
 
