@@ -523,11 +523,10 @@ namespace OrchardCore.Users.Controllers
             }
 
             await _userManager.ResetAccessFailedCountAsync(user);
-            var result = await _userManager.SetLockoutEnabledAsync(user, false);
+            var result = await _userManager.SetLockoutEndDateAsync(user, null);
 
             if (result.Succeeded)
-            {
-                await _userManager.SetLockoutEndDateAsync(user, null);
+            {                
                 _notifier.Success(H["User unlocked successfully."]);
             }
             else
