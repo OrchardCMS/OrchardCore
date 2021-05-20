@@ -14,8 +14,9 @@
 .workflow-canvas {
 
     .activity {
+        max-width:280px;
         cursor: move;
-
+        
         &:hover {
             box-shadow: 2px 2px 19px #444;
             -o-box-shadow: 2px 2px 19px #444;
@@ -34,6 +35,15 @@
                     margin-right: 0.5em;
                 }
             }
+        }
+        
+        span, em {
+            /* Add an ellipsis on the workflow activity boxes. This makes the activities much easier to move when they have long text */
+            white-space:nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            display: inline-block;
         }
     }
 
