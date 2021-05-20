@@ -685,7 +685,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).IsLockedOut);
+            return Task.FromResult(((User)user).IsLockoutEnabled);
         }
 
         public Task<DateTimeOffset?> GetLockoutEndDateAsync(IUser user, CancellationToken cancellationToken)
@@ -736,7 +736,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            ((User)user).IsLockedOut = enabled;
+            ((User)user).IsLockoutEnabled = enabled;
 
             return Task.CompletedTask;
         }

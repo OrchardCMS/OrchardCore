@@ -527,13 +527,14 @@ namespace OrchardCore.Users.Controllers
 
             if (result.Succeeded)
             {
-                _notifier.Success(H["User unlocked successfully"]);
+                await _userManager.SetLockoutEndDateAsync(user, null);
+                _notifier.Success(H["User unlocked successfully."]);
             }
             else
             {
                 await _session.CancelAsync();
 
-                _notifier.Error(H["Could not unlock the user"]);
+                _notifier.Error(H["Could not unlock the user."]);
 
                 foreach (var error in result.Errors)
                 {

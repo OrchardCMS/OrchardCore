@@ -24,7 +24,7 @@ namespace OrchardCore.Users
                 .Column<string>("NormalizedUserName") // TODO These should have defaults. on SQL Server they will fall at 255. Exceptions are currently thrown if you go over that.
                 .Column<string>("NormalizedEmail")
                 .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
-                .Column<bool>("IsLockedOut", c => c.NotNull().WithDefault(false))
+                .Column<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false))
                 .Column<DateTime?>("LockoutEndUtc", c => c.Nullable())
                 .Column<int>("AccessFailedCount", c => c.NotNull().WithDefault(0))
                 .Column<string>("UserId")
@@ -37,7 +37,7 @@ namespace OrchardCore.Users
                     "NormalizedUserName",
                     "NormalizedEmail",
                     "IsEnabled",
-                    "IsLockedOut",
+                    "IsLockoutEnabled",
                     "LockoutEndUtc",
                     "AccessFailedCount")
             );
@@ -167,7 +167,7 @@ namespace OrchardCore.Users
                     "NormalizedUserName",
                     "NormalizedEmail",
                     "IsEnabled",
-                    "IsLockedOut",
+                    "IsLockoutEnabled",
                     "LockoutEndUtc",
                     "AccessFailedCount")
             );
@@ -203,7 +203,7 @@ namespace OrchardCore.Users
         public int UpdateFrom10()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.IsLockedOut), c => c.NotNull().WithDefault(false)));
+                .AddColumn<bool>(nameof(UserIndex.IsLockoutEnabled), c => c.NotNull().WithDefault(false)));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<DateTime?>(nameof(UserIndex.LockoutEndUtc), c => c.Nullable()));

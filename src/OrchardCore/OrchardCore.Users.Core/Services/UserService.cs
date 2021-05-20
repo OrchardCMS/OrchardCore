@@ -56,7 +56,7 @@ namespace OrchardCore.Users.Services
 
             if (result.IsLockedOut)
             {
-                reportError(string.Empty, S["The user is locked out"]);
+                reportError(string.Empty, S["The user is locked out."]);
                 return null;
             }
             else if (result.IsNotAllowed)
