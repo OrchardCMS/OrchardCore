@@ -1,4 +1,8 @@
-// Button Styles
+//
+// Buttons
+//
+
+// Create a new xl button variant
 
 .btn-xl {
     padding: 1.25rem 2.5rem;
@@ -6,6 +10,8 @@
     font-size: 1.125rem;
     font-weight: $headings-font-weight;
 }
+
+// Create a new social button variant
 
 .btn-social {
     height: 2.5rem;
