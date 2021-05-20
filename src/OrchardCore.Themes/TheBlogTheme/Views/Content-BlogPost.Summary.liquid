@@ -16,9 +16,9 @@
             {% assign categoryTerms = Model.ContentItem.Content.BlogPost.Category | taxonomy_terms %}
             {% for categoryTerm in categoryTerms %}
                 {% a display_for:categoryTerm %}
-                    <span class="badge badge-secondary">
+                    <span class="badge bg-secondary">
                         <i class="{{ categoryTerm.Content.Category.Icon.Text }} fa-xs align-middle"></i>
-                        <span class="align-middle"> {{ categoryTerm.DisplayText }} </span>
+                        <span class="align-middle">{{ categoryTerm.DisplayText }}</span>
                     </span>
                 {% enda %}
             {% endfor %}
@@ -26,13 +26,13 @@
             {% assign tagTerms = Model.ContentItem.Content.BlogPost.Tags | taxonomy_terms %}
             {% for tagTerm in tagTerms %}
                 {% a display_for:tagTerm %}
-                    <span class="badge badge-secondary">
+                    <span class="badge bg-secondary">
                         <i class="fas fa-tag fa-xs fa-rotate-90 align-middle"></i>
-                        <span class="align-middle"> {{ tagTerm.DisplayText }} </span> 
+                        <span class="align-middle">{{ tagTerm.DisplayText }}</span> 
                     </span>
                 {% enda %}
             {% endfor %}
         </span>
     </p>
 </div>
-<hr />
+<hr class="my-4" />
