@@ -57,10 +57,7 @@
 }
 
 // Tables ======================================================================
-
-.table {
-    @extend .table-dark;
-}
+@import "_table.scss";
 
 .table {
     &-primary {
