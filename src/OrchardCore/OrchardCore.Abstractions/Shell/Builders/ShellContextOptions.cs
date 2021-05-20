@@ -13,5 +13,11 @@ namespace OrchardCore.Environment.Shell.Builders
         /// Note: Only used if the current distributed lock implementation is not a local lock.
         /// </summary>
         public int ShellActivateLockExpiration { get; set; }
+
+        /// <summary>
+        /// The distributed lock key which used while activating a shell.
+        /// Note: Only used if the current distributed lock implementation is not a local lock.
+        /// </summary>
+        public string ShellActivateLockName { get; set; }
     }
 }
