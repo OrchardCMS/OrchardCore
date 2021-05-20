@@ -17,7 +17,7 @@ namespace OrchardCore.Resources
 
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
-        private const string codeMirrorVersion = "5.61.0";
+        private const string codeMirrorVersion = "5.61.1";
         private const string monacoEditorVersion = "0.24.0";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
@@ -197,7 +197,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn(codeMirrorUrl + "codemirror.min.js", codeMirrorUrl + "codemirror.js")
-                .SetCdnIntegrity("sha384-kvRER7zbo4uz+/pPFiESfnWO0S41b1DN9wAe+T3gkXSEJfyi4qefO9pou0JqdvyF", "sha384-vLGB4QNLPY2eH7ERiRbJWKPoNSMoSsJSXj0KWMePnxuSlf0mKjFtFPro/dQC/iLr")
+                .SetCdnIntegrity("sha384-jLyEsGKeEh7PhFy5hmNmXcbGYnCCsD5gmZpUx0CDodtHbUHUKq/WciYA658qiHRw", "sha384-YUNU/x670sKMzS6c6uTBqCfzsDiElvWDxxpNkMOb1RivEgS4fYTpTUXwW14dfvn1")
                 .SetVersion(codeMirrorVersion);
 
             manifest
@@ -268,7 +268,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror-addon-mode-simple")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/mode/simple.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/mode/simple.js")
                 .SetCdn(codeMirrorUrl + "addon/mode/simple.min.js", codeMirrorUrl + "addon/mode/simple.js")
-                .SetCdnIntegrity("sha384-FBzz0Ft3dSlSSd++RGs+vdMzcvq8Im4f5fazakDlLwBT0jvOxwKW3lUu7xODDBhW", "sha384-kc68W0dx4FAPSvzhj/C8sT+VU4RNZWdJBlJRfNI3QR77xWL9tn77tSVMkQyctrzW")
+                .SetCdnIntegrity("sha384-EnymP1wIjc1AsZM6f29pxT0z5VkDoUJ22Jx34tiDzvRvy7OiqviBVtw/evVWEaT5", "sha384-Foc3817k/CG8PVkPQtWgpBPcO0w2Noaep609FulvP/EwVUhv4JqNakD8UAORWA/s")
                 .SetVersion(codeMirrorVersion);
 
             manifest
@@ -289,7 +289,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror-mode-javascript")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/mode/javascript/javascript.min.js", "~/OrchardCore.Resources/Scripts/codemirror/mode/javascript/javascript.js")
                 .SetCdn(codeMirrorUrl + "mode/javascript/javascript.min.js", codeMirrorUrl + "mode/javascript/javascript.js")
-                .SetCdnIntegrity("sha384-lnN8ji+NayI7G02bJgxDbJQh8LKOmY9+4xGLf7m0JKeTkJkDX8S9T/T1yRWXeo4z", "sha384-yTWk8q4FBpecxeAwKCjLeu5Oc4tNYdoiJbfLSIo2M2a67xsOzyQP1eOt0IKOenEE")
+                .SetCdnIntegrity("sha384-Ysp98JoB/smxGODfMWMzYOsGRomHZ4CNGaWn4/21jwmQHZNRlXUAR3Aj4ecCP/zP", "sha384-f9lnU+9JtsLIidz31rWMtXGEbat9A4RBPDbe9mDQ57h70ErTp7jNZS4X6H3Dbxms")
                 .SetVersion(codeMirrorVersion);
 
             manifest
