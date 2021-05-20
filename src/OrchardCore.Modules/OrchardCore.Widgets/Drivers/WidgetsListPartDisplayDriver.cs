@@ -44,8 +44,8 @@ namespace OrchardCore.Widgets.Drivers
                 return null;
             }
 
-            dynamic layout = context.Layout;
-            dynamic layoutZones = layout.Zones;
+            var layout = context.Layout;
+            var layoutZones = layout.Zones;
 
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
 
@@ -63,7 +63,7 @@ namespace OrchardCore.Widgets.Drivers
                         widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
                         var contentZone = layoutZones[zone];
-                        contentZone.Add(widgetContent);
+                        await contentZone.AddAsync(widgetContent, "");
                     }
                 }
             }

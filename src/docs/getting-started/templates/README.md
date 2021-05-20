@@ -9,13 +9,13 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-*
+dotnet new -i "OrchardCore.ProjectTemplates::1.0.0-rc2-*"
 ```
 
 This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
+dotnet new -i "OrchardCore.ProjectTemplates::1.0.0-rc2-*" --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
@@ -36,7 +36,12 @@ You can pass the following CLI parameters to setup options:
 Orchard Core Cms Web App (C#)
 Author: Orchard Project
 Options:
-  -lo|--logger           Configures the logger component.
+  -fm|--framework        Configures the Framework.
+                             netcoreapp3.1 - Configures the 3.1 .NET Core Framework.
+                             net5.0        - Configures the 5.0 .NET Framework.
+                         Default: netcoreapp3.1
+
+  -lg|--logger               Configures the logger component.
                              nlog       - Configures NLog as the logger component.
                              serilog    - Configures Serilog as the logger component.
                              none       - Do not use a logger.
@@ -45,6 +50,12 @@ Options:
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
                          Default: 1.0.0-rc2
+```
+
+The .NET Framework `5.0` can be used with this command:
+
+```CMD
+dotnet new occms --framework net5.0
 ```
 
 Logging can be ignored with this command:
@@ -58,6 +69,16 @@ dotnet new occms --logger none
 ```CMD
 dotnet new ocmvc  
 ```
+
+### From Visual Studio (New Project dialog)
+
+The templates can also be used from the 'New Project' dialog in Visual Studio.
+
+![image](../assets/images/templates/new-project.png)
+
+In order to display these templates, you need to have a recent version of Visual Studio and check 'Show all .NET Core templates in the New project dialog' in 'Tools > Options'.
+
+![image](../assets/images/templates/new-project-option.png)
 
 ### From Visual Studio (manual way)
 
@@ -74,7 +95,7 @@ Now that we created a new Web Application we need to add proper dependencies so 
 
 Finally, we will need to register Orchard CMS service in our `Startup.cs` file like this:
 
-```C#
+```csharp
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -173,7 +194,7 @@ Once done, your new module will look like this:
 
 For Orchard Core to identify this module it will now require a `Manifest.cs` file. Here is an example of that file:
 
-```C#
+```csharp
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
@@ -205,7 +226,7 @@ dotnet new octheme -n "ThemeName.OrchardCore"
 
 Should be the same procedure as with modules but instead, we need to reference `OrchardCore.Theme.Targets` and the `Manifest.cs` file differs slightly:
 
-```C#
+```csharp
 using OrchardCore.DisplayManagement.Manifest;
 
 [assembly: Theme(

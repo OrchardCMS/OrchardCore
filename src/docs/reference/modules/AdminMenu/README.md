@@ -1,4 +1,4 @@
-# Admin Menu (OrchardCore.AdminMenu)
+# Admin Menu (`OrchardCore.AdminMenu`)
 
 The Admin Menu module provides a way for users to create custom admin menus through the Admin UI.
 

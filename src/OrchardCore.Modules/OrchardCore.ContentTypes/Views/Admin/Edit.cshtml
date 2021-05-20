@@ -29,6 +29,13 @@
 
     <input type="hidden" asp-for="Name" />
 
+    @if (Model.Editor.Shortcuts != null)
+    {
+        <div class="form-group">
+            @await DisplayAsync(Model.Editor.Shortcuts)
+        </div>
+    }
+
     @await DisplayAsync(Model.Editor)
 
     <div class="form-group">
@@ -43,14 +50,15 @@
                         <div class="properties">
                             <div class="related">
                                 <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                             @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
+
                             @if (!string.IsNullOrEmpty(field.DisplayMode()))
                             {
-                                <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Display mode"]"><i class="fa fa-eye text-info"></i> @field.DisplayMode()</span>
+                                <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info"></i> @field.DisplayMode()</span>
                             }
-                                @if (!string.IsNullOrEmpty(field.Editor()))
+                            @if (!string.IsNullOrEmpty(field.Editor()))
                             {
                                 <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info"></i> @field.Editor()</span>
                             }
@@ -83,12 +91,21 @@
 
                             <div class="related">
                                 <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                         }
                         else
                         {
                             <span class="hint dashed">@T["Contains the fields for the current type"]</span>
+                        }
+
+                        @if (!string.IsNullOrEmpty(part.DisplayMode()))
+                        {
+                            <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info"></i> @part.DisplayMode()</span>
+                        }
+                        @if (!string.IsNullOrEmpty(part.Editor()))
+                        {
+                            <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info"></i> @part.Editor()</span>
                         }
                     </div>
                     <input type="hidden" asp-for="OrderedPartNames" value="@part.Name" />
@@ -101,17 +118,10 @@
         <a asp-route-action="AddPartsTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Parts"]</a>
         <a asp-route-action="AddReusablePartTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Named Part"]</a>
     </div>
-    
-    @if (Model.Editor.Shortcuts != null)
-    {
-        <div class="form-group">
-            @await DisplayAsync(Model.Editor.Shortcuts)
-        </div>
-    }
 
     <div class="form-group">
         <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-        <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
+        <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
     </div>
 </form>
 

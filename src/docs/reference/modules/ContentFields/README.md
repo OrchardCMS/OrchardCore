@@ -16,7 +16,9 @@ Some fields are available in their specific module.
 | `LocalizationSetContentPickerField` | `string[] LocalizationSets` |
 | `MarkdownField` | `string Markdown` |
 | `MediaField` | `string[] Paths` |
+| `MultiTextField` | `string[] Values` |
 | `NumericField` | `decimal? Value` |
+| `GeoPointField` | `decimal Latitude, decimal Longitude` |
 | `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
 | `TextField` | `string Text` |
 | `TimeField` | `TimeSpan? Value` |
@@ -214,7 +216,7 @@ When adding the field to a content type, use the settings to specify whether to
     }
 
     <div class="field field-type-userpickerfield field-name-@name">
-        <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+        <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
         @if (users.Any())
         {
             foreach (var user in users)
@@ -233,6 +235,17 @@ When adding the field to a content type, use the settings to specify whether to
     </div>
 
     ```
+
+#### Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vqXwK69vtMw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### `MultiText Field`
+
+#### Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/WfP_rXz1id0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Creating Custom Fields
 
@@ -357,17 +370,3 @@ and register `MyCustomTextFieldDisplayDriver` to resolve for only the custom edi
     When registering a custom display mode or editor driver you must alter the registrations for existing drivers.
     You should also take a dependency in your modules `Manifest.cs` on the module that the fields reside in.
     This will make your modules `Startup.cs` run later, and allow your registrations to override the original modules. 
-
-## CREDITS
-
-### bootstrap-slider
-
-<https://github.com/seiyria/bootstrap-slider>  
-Copyright (c) 2017 Kyle Kemp, Rohit Kalkur, and contributors  
-License: MIT
-
-### Bootstrap Switch
-
-<https://github.com/Bttstrp/bootstrap-switch>  
-Copyright (c) 2013-2015 The authors of Bootstrap Switch  
-License: MIT

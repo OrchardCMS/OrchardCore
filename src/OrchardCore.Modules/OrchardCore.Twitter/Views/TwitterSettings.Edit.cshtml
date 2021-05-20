@@ -2,7 +2,12 @@
 @model TwitterSettingsViewModel;
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]
-    <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Twitter/#twitter-integration" target="_blank">@T["See documentation"]</a></p>
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Twitter/#twitter-integration" target="_blank">@T["See documentation"]</a></p>
+
+@if (Model.HasDecryptionError)
+{
+    <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+}
 
 <h3>@T["Twitter Integration Settings"]</h3>
 

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -10,6 +11,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     [HtmlTargetElement("style", Attributes = AtAttributeName)]
     public class StyleTagHelper : TagHelper
     {
+        private static readonly char[] splitSeparators = { ',', ' ' };
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
         private const string AtAttributeName = "at";
@@ -51,9 +53,9 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
-                // Include custom script
+                // Include custom style
                 var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
-                
+
                 foreach (var attribute in output.Attributes)
                 {
                     setting.SetAttribute(attribute.Name, attribute.Value.ToString());
@@ -86,6 +88,18 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
+                }
+
+                if (!String.IsNullOrEmpty(DependsOn))
+                {
+                    setting.SetDependencies(DependsOn.Split(splitSeparators, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalStyle(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
@@ -138,18 +152,25 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseVersion(Version);
                 }
 
-                // This allows additions to the pre registered scripts dependencies.
+                // This allows additions to the pre registered style dependencies.
                 if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(DependsOn.Split(splitSeparators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 var childContent = await output.GetChildContentAsync();
                 if (!childContent.IsEmptyOrWhiteSpace)
                 {
-                    // Inline content definition
+                    // Inline named style definition
                     _resourceManager.InlineManifest.DefineStyle(Name)
                         .SetInnerContent(childContent.GetContent());
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalStyle(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
@@ -184,18 +205,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                // Also include the style
-
+                // Also include the style.
                 var setting = _resourceManager.RegisterResource("stylesheet", Name);
-
-                if (At != ResourceLocation.Unspecified)
-                {
-                    setting.AtLocation(At);
-                }
-                else
-                {
-                    setting.AtLocation(ResourceLocation.Head);
-                }
 
                 if (UseCdn != null)
                 {
@@ -215,6 +226,22 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
+                }
+
+                if (At != ResourceLocation.Unspecified)
+                {
+                    setting.AtLocation(At);
+                }
+                else
+                {
+                    setting.AtLocation(ResourceLocation.Head);
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalStyle(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
             else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
@@ -238,7 +265,14 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     builder.Attributes.Add("type", "text/css");
                 }
 
-                _resourceManager.RegisterStyle(builder);
+                if (At == ResourceLocation.Inline)
+                {
+                    output.Content.SetHtmlContent(builder);
+                }
+                else
+                {
+                    _resourceManager.RegisterStyle(builder);
+                }
             }
         }
     }

@@ -8,9 +8,9 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plans"])</h1></zone>
 
 <form asp-action="Index" method="post">
-    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
     <input asp-for="Options.BulkAction" type="hidden" />
-    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input type="submit" name="submit.BulkAction" class="sr-only" />
     
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
@@ -60,7 +60,7 @@
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Edit" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="Delete" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <div class="custom-control custom-checkbox float-left">
                             <input type="checkbox" class="custom-control-input" value="@entry.DeploymentPlan.Id" name="itemIds" id="itemIds-@entry.DeploymentPlan.Id">

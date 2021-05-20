@@ -37,7 +37,7 @@
                    asp-route-area="OrchardCore.Menu"
                    asp-route-menuContentItemId="@Model.MenuPart.ContentItem.ContentItemId"
                    asp-route-menuItemId="@Model.ContentItem.ContentItemId"
-                   itemprop="RemoveUrl UnsafeUrl"
+                   data-url-af="RemoveUrl UnsafeUrl"
                    class="btn btn-danger btn-sm">
                     @T["Delete"]
                 </a>
@@ -45,6 +45,11 @@
             @if (Model.Content != null)
             {
                 @await DisplayAsync(Model.Content)
+            }
+            else
+            {
+              @*For dynamically created menus that do not have a driver*@
+              <span>@contentItem.DisplayText <span class="text-muted dashed">@contentItem.ContentType</span></span>
             }
         </div>
     </div>

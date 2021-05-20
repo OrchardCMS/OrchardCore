@@ -14,6 +14,8 @@ namespace OrchardCore.ContentLocalization.Services
 {
     public class LocalizationEntries : ILocalizationEntries
     {
+        private readonly IVolatileDocumentManager<LocalizationStateDocument> _localizationStateManager;
+
         private ImmutableDictionary<string, LocalizationEntry> _localizations = ImmutableDictionary<string, LocalizationEntry>.Empty;
 
         private ImmutableDictionary<string, ImmutableList<LocalizationEntry>> _localizationSets =
@@ -25,8 +27,9 @@ namespace OrchardCore.ContentLocalization.Services
         private string _stateIdentifier;
         private bool _initialized;
 
-        public LocalizationEntries()
+        public LocalizationEntries(IVolatileDocumentManager<LocalizationStateDocument> localizationStateManager)
         {
+            _localizationStateManager = localizationStateManager;
         }
 
         public async Task<(bool, LocalizationEntry)> TryGetLocalizationAsync(string contentItemId)
@@ -58,7 +61,7 @@ namespace OrchardCore.ContentLocalization.Services
             await EnsureInitializedAsync();
 
             // Update the cache with a new state and then refresh entries as it would be done on a next request.
-            await LocalizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
+            await _localizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
         private async Task EnsureInitializedAsync()
@@ -69,7 +72,7 @@ namespace OrchardCore.ContentLocalization.Services
             }
             else
             {
-                var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
+                var state = await _localizationStateManager.GetOrCreateImmutableAsync();
                 if (_stateIdentifier != state.Identifier)
                 {
                     await RefreshEntriesAsync(state);
@@ -134,21 +137,33 @@ namespace OrchardCore.ContentLocalization.Services
                 {
                     var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId).ListAsync();
 
-                    RemoveEntries(indexes.Where(i => !i.Published)
-                        .Select(i => new LocalizationEntry
-                        {
-                            ContentItemId = i.ContentItemId,
-                            LocalizationSet = i.LocalizationSet,
-                            Culture = i.Culture.ToLowerInvariant()
-                        }));
+                    // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
+                    // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
+                    // is not updated for the published version that may be already scanned, so the entry may not be re-added.
 
-                    AddEntries(indexes.Where(i => i.Published)
+                    var entriesToRemove = indexes
+                        .Where(i => !i.Published || i.Culture == null)
+                        .SelectMany(i => _localizations.Values.Where(e =>
+                            // The item was removed.
+                            ((!i.Published && !i.Latest) ||
+                            // The part was removed.
+                            (i.Culture == null && i.Published) ||
+                            // The item was unpublished.
+                            (!i.Published && e.DocumentId == i.DocumentId)) &&
+                            (e.ContentItemId == i.ContentItemId)));
+
+                    var entriesToAdd = indexes.
+                        Where(i => i.Published && i.Culture != null)
                         .Select(i => new LocalizationEntry
                         {
+                            DocumentId = i.DocumentId,
                             ContentItemId = i.ContentItemId,
                             LocalizationSet = i.LocalizationSet,
                             Culture = i.Culture.ToLowerInvariant()
-                        }));
+                        });
+
+                    RemoveEntries(entriesToRemove);
+                    AddEntries(entriesToAdd);
 
                     _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
                     _stateIdentifier = state.Identifier;
@@ -172,16 +187,18 @@ namespace OrchardCore.ContentLocalization.Services
             {
                 if (!_initialized)
                 {
-                    var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
+                    var state = await _localizationStateManager.GetOrCreateImmutableAsync();
 
-                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published).ListAsync();
-
-                    AddEntries(indexes.Select(i => new LocalizationEntry
+                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null).ListAsync();
+                    var entries = indexes.Select(i => new LocalizationEntry
                     {
+                        DocumentId = i.DocumentId,
                         ContentItemId = i.ContentItemId,
                         LocalizationSet = i.LocalizationSet,
                         Culture = i.Culture.ToLowerInvariant()
-                    }));
+                    });
+
+                    AddEntries(entries);
 
                     _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
                     _stateIdentifier = state.Identifier;
@@ -196,8 +213,5 @@ namespace OrchardCore.ContentLocalization.Services
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
-
-        private static IVolatileDocumentManager<LocalizationStateDocument> LocalizationStateManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<LocalizationStateDocument>>();
     }
 }

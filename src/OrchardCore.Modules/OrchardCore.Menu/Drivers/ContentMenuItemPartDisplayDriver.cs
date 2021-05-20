@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
@@ -12,18 +10,6 @@ namespace OrchardCore.Menu.Drivers
 {
     public class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<ContentMenuItemPart>
     {
-        private readonly IContentManager _contentManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public ContentMenuItemPartDisplayDriver(
-            IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager
-            )
-        {
-            _contentManager = contentManager;
-            _contentDefinitionManager = contentDefinitionManager;
-        }
-
         public override IDisplayResult Display(ContentMenuItemPart part, BuildPartDisplayContext context)
         {
             return Combine(
@@ -44,15 +30,23 @@ namespace OrchardCore.Menu.Drivers
         {
             return Initialize<ContentMenuItemPartEditViewModel>("ContentMenuItemPart_Edit", model =>
             {
-                model.Name = part.Name;
+                model.Name = part.ContentItem.DisplayText;
                 model.MenuItemPart = part;
             });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentMenuItemPart part, IUpdateModel updater)
         {
-            //Update Part Name
-            await updater.TryUpdateModelAsync(part, Prefix, x => x.Name);
+            var model = new ContentMenuItemPartEditViewModel();
+
+            if (await updater.TryUpdateModelAsync(model, Prefix))
+            {
+                part.ContentItem.DisplayText = model.Name;
+// This code can be removed in a later release.
+#pragma warning disable 0618                
+                part.Name = model.Name;
+#pragma warning restore 0618
+            }
 
             return Edit(part);
         }

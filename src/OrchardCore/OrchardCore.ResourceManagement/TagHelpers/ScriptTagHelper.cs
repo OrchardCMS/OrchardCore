@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -51,6 +52,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
+                // <script asp-src="~/TheBlogTheme/js/clean-blog.min.js"></script>
                 RequireSettings setting;
 
                 if (String.IsNullOrEmpty(DependsOn))
@@ -131,14 +133,17 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
-                if (At == ResourceLocation.Unspecified)
+                if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
                 {
-                    _resourceManager.RenderLocalScript(setting, output.Content);
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalScript(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
                 // Resource required
+                // <script asp-name="bootstrap"></script>
 
                 var setting = _resourceManager.RegisterResource("script", Name);
 
@@ -183,12 +188,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (At == ResourceLocation.Unspecified)
+                // Allow Inline to work with both named scripts, and named inline scripts.
+                if (At != ResourceLocation.Unspecified)
                 {
-                    _resourceManager.RenderLocalScript(setting, output.Content);
-                }
-                else
-                {
+                    // Named inline declaration.
                     var childContent = await output.GetChildContentAsync();
                     if (!childContent.IsEmptyOrWhiteSpace)
                     {
@@ -196,6 +199,19 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                         _resourceManager.InlineManifest.DefineScript(Name)
                             .SetInnerContent(childContent.GetContent());
                     }
+
+                    if (At == ResourceLocation.Inline)
+                    {
+                        using var sw = new StringWriter();
+                        _resourceManager.RenderLocalScript(setting, sw);
+                        output.Content.AppendHtml(sw.ToString());
+                    }
+                }
+                else
+                {
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalScript(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
@@ -266,6 +282,13 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     {
                         setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                     }
+
+                    if (At == ResourceLocation.Inline)
+                    {
+                        using var sw = new StringWriter();
+                        _resourceManager.RenderLocalScript(setting, sw);
+                        output.Content.AppendHtml(sw.ToString());
+                    }
                 }
             }
             else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
@@ -287,7 +310,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     _resourceManager.RegisterHeadScript(builder);
                 }
-                else
+                else if (At == ResourceLocation.Inline)
+                {
+                    output.Content.SetHtmlContent(builder);
+                } else
                 {
                     _resourceManager.RegisterFootScript(builder);
                 }

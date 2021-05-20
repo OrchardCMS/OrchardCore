@@ -9,9 +9,9 @@
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="Index">
-    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
     <input asp-for="Options.BulkAction" type="hidden" />
-    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input type="submit" name="submit.BulkAction" class="sr-only" />
     
     <div class="card mb-3">
         <div class="card-body bg-primary p-3">
@@ -64,7 +64,7 @@
                         </div>
                         <div class="related">
                             <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.MediaProfile.Hint))

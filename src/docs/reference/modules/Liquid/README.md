@@ -186,6 +186,14 @@ Sanitizes some HTML content.
 {{ output | sanitize_html | raw }}
 ```
 
+### `shortcode`
+
+Renders Shortcodes. Should be combined with the `raw` filter.
+
+```liquid
+{{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
+```
+
 ## Json Filters
 
 ### `json`
@@ -379,7 +387,6 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | -------- | ------- |------------ |
 | `BaseUrl` |  | The base URL of the site. | 
 | `Calendar` |  | The site's calendar. | 
-| `Culture` | `en-us` | The site's default culture as an ISO language code. | 
 | `MaxPagedCount` | `0` | The maximum number of pages that can be paged. | 
 | `MaxPageSize` | `100` | The maximum page size that can be set by a user. | 
 | `PageSize` | `10` | The default page size of lists. | 

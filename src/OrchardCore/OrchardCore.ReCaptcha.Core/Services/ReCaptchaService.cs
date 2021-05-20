@@ -45,6 +45,12 @@ namespace OrchardCore.ReCaptcha.Services
         /// <param name="reportError">Lambda for reporting errors</param>
         public override async Task<bool> ValidateCaptchaAsync(Action<string, string> reportError)
         {
+            if (!_settings.IsValid())
+            {
+                _logger.LogWarning("The ReCaptcha settings are not valid");
+                return false;
+            }
+
             var reCaptchaResponse = _httpContextAccessor.HttpContext?.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
 
             var isValid = !String.IsNullOrEmpty(reCaptchaResponse) && await VerifyCaptchaResponseAsync(reCaptchaResponse);

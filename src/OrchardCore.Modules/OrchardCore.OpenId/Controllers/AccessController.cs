@@ -400,7 +400,7 @@ namespace OrchardCore.OpenId.Controllers
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
-        public async Task<IActionResult> Token()
+        public Task<IActionResult> Token()
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
             // the global antiforgery token validation policy applied by the MVC modules stack,
@@ -411,22 +411,22 @@ namespace OrchardCore.OpenId.Controllers
             var request = HttpContext.GetOpenIddictServerRequest();
             if (request == null)
             {
-                return NotFound();
+                return Task.FromResult((IActionResult)NotFound());
             }
 
             if (request.IsPasswordGrantType())
             {
-                return await ExchangePasswordGrantType(request);
+                return ExchangePasswordGrantType(request);
             }
 
             if (request.IsClientCredentialsGrantType())
             {
-                return await ExchangeClientCredentialsGrantType(request);
+                return ExchangeClientCredentialsGrantType(request);
             }
 
             if (request.IsAuthorizationCodeGrantType() || request.IsRefreshTokenGrantType())
             {
-                return await ExchangeAuthorizationCodeOrRefreshTokenGrantType(request);
+                return ExchangeAuthorizationCodeOrRefreshTokenGrantType(request);
             }
 
             throw new NotSupportedException("The specified grant type is not supported.");
@@ -568,9 +568,6 @@ namespace OrchardCore.OpenId.Controllers
 
         private async Task<IActionResult> ExchangeAuthorizationCodeOrRefreshTokenGrantType(OpenIddictRequest request)
         {
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
-                throw new InvalidOperationException("The application details cannot be found.");
-
             // Retrieve the claims principal stored in the authorization code/refresh token.
             var info = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme) ??
                 throw new InvalidOperationException("The user principal cannot be resolved.");

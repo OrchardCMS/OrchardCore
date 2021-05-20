@@ -45,13 +45,13 @@
                             @zone
                         </div>
                         <div class="layer-zone card-body" data-zone="@zone">
-                            @if (Model.Widgets.ContainsKey(zone))
-                            {
-                                <div class="form-group">
-                                    <ul class="list-group zones">
+                            <div class="form-group">
+                                <ul class="list-group zones">
+                                    @if (Model.Widgets.ContainsKey(zone))
+                                    {
                                         @foreach (var contentItemSummary in Model.Widgets[zone])
                                         {
-                                            contentItemSummary.Tags.Add(Html.Raw("<span class=\"badge ta-badge font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
+                                            await contentItemSummary.Tags.AddAsync(Html.Raw("<span class=\"badge ta-badge font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
                                             maxPosition = Math.Max(maxPosition, (double)contentItemSummary.ContentItem.Content.LayerMetadata.Position);
 
                                             <text>
@@ -68,28 +68,31 @@
                                                 </li>
                                             </text>
                                         }
-                                    </ul>
+                                    }
+                                </ul>
+                            </div>
+                            @if (Model.Layers.Any())
+                            {
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        @T["Add Widget"]
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        @foreach (var type in widgetContentTypes)
+                                        {
+                                            var contentItem = await ContentManager.NewAsync(type.Name);
+                                            var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
+                                            createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
+                                            createRoute["LayerMetadata.Zone"] = zone;
+                                            createRoute["LayerMetadata.Position"] = maxPosition + 1;
+                                            <a class="dropdown-item add-list-widget btn-sm"
+                                               data-widget-type="@type.Name"
+                                               data-zone="@zone"
+                                               href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
+                                        }
+                                    </div>
                                 </div>
                             }
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    @T["Add Widget"]
-                                </button>
-                                <div class="dropdown-menu">
-                                    @foreach (var type in widgetContentTypes)
-                                    {
-                                        var contentItem = await ContentManager.NewAsync(type.Name);
-                                        var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
-                                        createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
-                                        createRoute["LayerMetadata.Zone"] = zone;
-                                        createRoute["LayerMetadata.Position"] = maxPosition + 1;
-                                        <a class="dropdown-item add-list-widget btn-sm"
-                                           data-widget-type="@type.Name"
-                                           data-zone="@zone"
-                                           href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
-                                    }
-                                </div>
-                            </div>
                         </div>
                     </div>
                 }
@@ -101,7 +104,7 @@
         <p>
             <span class="hint">
                 @T["Select a layer to reveal its associated widgets."]
-                <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@T["See documentation"]</a>
+                <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@T["See documentation"]</a>
             </span>
         </p>
         <div class="form-group">
@@ -117,7 +120,7 @@
                                 </div>
                                 <div>
                                     <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>
-                                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                                 </div>
                             </div>
                             <div>

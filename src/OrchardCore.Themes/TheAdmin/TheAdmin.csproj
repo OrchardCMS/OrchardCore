@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
     <!-- NuGet properties-->
     <Title>The Admin theme</Title>
     <Description>$(OCCMSDescription)
-    
+
     The default Admin theme of OrchardCore CMS</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Theme</PackageTags>
   </PropertyGroup>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Facebook.Drivers;
 using OrchardCore.Facebook.Filters;
@@ -33,7 +34,7 @@ namespace OrchardCore.Facebook
             services.AddScoped<IDisplayDriver<ISite>, FacebookSettingsDisplayDriver>();
             services.AddRecipeExecutionStep<FacebookSettingsStep>();
 
-            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
             services.Configure<MvcOptions>((options) =>
             {

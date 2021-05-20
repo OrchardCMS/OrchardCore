@@ -14,12 +14,7 @@ namespace OrchardCore.Documents
     /// </summary>
     public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
-        private const string LockKeySuffix = "_LOCK";
-        private static readonly TimeSpan DefaultLockTimeout = TimeSpan.FromSeconds(1);
-        private static readonly TimeSpan DefaultLockExpiration = TimeSpan.FromSeconds(1);
-
         private readonly IDistributedLock _distributedLock;
-        private readonly string _lockKey;
 
         private delegate Task<TDocument> UpdateDelegate();
         private UpdateDelegate _updateDelegateAsync;
@@ -28,20 +23,17 @@ namespace OrchardCore.Documents
         private AfterUpdateDelegate _afterUpdateDelegateAsync;
 
         public VolatileDocumentManager(
-            IDocumentStore documentStore,
             IDistributedCache distributedCache,
             IDistributedLock distributedLock,
             IMemoryCache memoryCache,
-            IOptionsSnapshot<DocumentOptions> options)
-            : base(documentStore, distributedCache, memoryCache, options)
+            IOptionsMonitor<DocumentOptions> options)
+            : base(distributedCache, memoryCache, options)
         {
             _isVolatile = true;
             _distributedLock = distributedLock;
-            _lockKey = _options.CacheKey + LockKeySuffix;
         }
 
-        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null,
-            TimeSpan? lockAcquireTimeout = null, TimeSpan? lockExpirationTime = null)
+        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
         {
             if (updateAsync == null)
             {
@@ -55,12 +47,13 @@ namespace OrchardCore.Documents
                 _afterUpdateDelegateAsync += document => afterUpdateAsync(document);
             }
 
-            _documentStore.AfterCommitSuccess<TDocument>(async () =>
+            DocumentStore.AfterCommitSuccess<TDocument>(async () =>
             {
-                var timeout = lockAcquireTimeout ?? DefaultLockTimeout;
-                var expiration = lockExpirationTime ?? DefaultLockExpiration;
+                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
+                    _options.CacheKey + "_LOCK",
+                    TimeSpan.FromMilliseconds(_options.LockTimeout),
+                    TimeSpan.FromMilliseconds(_options.LockExpiration));
 
-                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(_lockKey, timeout, expiration);
                 if (!locked)
                 {
                     return;

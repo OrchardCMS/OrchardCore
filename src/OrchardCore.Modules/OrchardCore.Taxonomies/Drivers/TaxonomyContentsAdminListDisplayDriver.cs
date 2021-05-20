@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.ViewModels;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -59,8 +59,8 @@ namespace OrchardCore.Taxonomies.Drivers
                     .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
                 var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
                 taxonomyContentItemIds = taxonomyContentItemIds.Intersect(fieldTaxonomyContentItemIds).ToArray();
-                
-                if (!taxonomyContentItemIds.Any()) 
+
+                if (!taxonomyContentItemIds.Any())
                 {
                     return null;
                 }
@@ -73,32 +73,33 @@ namespace OrchardCore.Taxonomies.Drivers
             foreach (var taxonomy in taxonomies)
             {
                 results.Add(
-                    Initialize<TaxonomyContentsAdminFilterViewModel>("ContentsAdminList__TaxonomyFilter", m =>
+                    Initialize<TaxonomyContentsAdminFilterViewModel>("ContentsAdminListTaxonomyFilter", m =>
                     {
+                        using var sb = ZString.CreateStringBuilder();
                         var termEntries = new List<FilterTermEntry>();
                         PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
                         var terms = new List<SelectListItem>
                             {
-                                new SelectListItem() { Text = S["Clear filter"], Value = ""  },
-                                new SelectListItem() { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
+                                new SelectListItem { Text = S["Clear filter"], Value = ""  },
+                                new SelectListItem { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
                             };
 
                         foreach (var term in termEntries)
                         {
-                            using var sb = StringBuilderPool.GetInstance();
+                            sb.Clear();
                             for (var l = 0; l < term.Level; l++)
                             {
-                                sb.Builder.Insert(0, LevelPadding);
+                                sb.Append(LevelPadding);
                             }
-                            sb.Builder.Append(term.DisplayText);
-                            var item = new SelectListItem() { Text = sb.Builder.ToString(), Value = "Term:" + term.ContentItemId };
+                            sb.Append(term.DisplayText);
+                            var item = new SelectListItem { Text = sb.ToString(), Value = "Term:" + term.ContentItemId };
                             terms.Add(item);
                         }
 
                         m.DisplayText = taxonomy.DisplayText;
                         m.Taxonomies = terms;
                     })
-                    .Location("Actions:40." + position.ToString())
+                    .Location("Actions:40." + position)
                     .Prefix("Taxonomy" + taxonomy.ContentItemId)
                 );
 
