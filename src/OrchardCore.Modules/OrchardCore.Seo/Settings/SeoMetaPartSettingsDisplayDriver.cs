@@ -1,17 +1,16 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Seo.Models;
-using OrchardCore.Seo.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Seo.Models;
+using OrchardCore.Seo.ViewModels;
 
 namespace OrchardCore.SeoMeta.Settings
 {
-    public class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
         private readonly IStringLocalizer S;
@@ -24,11 +23,6 @@ namespace OrchardCore.SeoMeta.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(SeoMetaPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<SeoMetaPartSettingsViewModel>("SeoMetaPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<SeoMetaPartSettings>();
@@ -43,11 +37,6 @@ namespace OrchardCore.SeoMeta.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(SeoMetaPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new SeoMetaPartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
