@@ -80,7 +80,16 @@ namespace OrchardCore.ReCaptcha.Services
                 return false;
             }
 
-            var reCaptchaResponse = _httpContextAccessor.HttpContext?.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
+            // If the header Content-Type of the request is "application/json" we get
+            // the ReCaptcha token from the header as this token should not be persisted in the Workflow metadata
+            var reCaptchaResponse = _httpContextAccessor.HttpContext.Request.Headers[Constants.ReCaptchaServerResponseHeaderName];
+
+            // If this is a standard form post we get the token from the form values
+            // only if the header var value is not affected.
+            if(String.IsNullOrEmpty(reCaptchaResponse) && String.Equals(_httpContextAccessor.HttpContext.Request.Headers["Content-Type"], "application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase))
+            {
+                reCaptchaResponse = _httpContextAccessor.HttpContext?.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
+            }
 
             var isValid = !String.IsNullOrEmpty(reCaptchaResponse) && await VerifyCaptchaResponseAsync(reCaptchaResponse);
 
