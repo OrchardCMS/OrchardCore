@@ -4,7 +4,7 @@
 */
 
 /*
-Bootstrap customization for Agency theme
+Bootstrap customization for The Blog theme
 By Orchard Core Team
  */
 .flow {
@@ -22,16 +22,15 @@ By Orchard Core Team
   padding: 1rem 1rem;
   margin-bottom: 1rem;
   border: 1px solid transparent;
-  border-radius: 0.25rem;
 }
 
 .message-primary {
-  color: #084298;
-  background-color: #cfe2ff;
-  border-color: #b6d4fe;
+  color: #005061;
+  background-color: #cce7ec;
+  border-color: #b3dae3;
 }
 .message-primary .alert-link {
-  color: #06357a;
+  color: #00404e;
 }
 
 .message-secondary {
@@ -210,7 +209,6 @@ ul.pager {
   display: flex;
   padding-left: 0;
   list-style: none;
-  border-radius: 0.25rem;
 }
 
 ul.pager li a {
@@ -218,13 +216,13 @@ ul.pager li a {
   display: block;
   padding: 0.375rem 0.75rem;
   margin-left: -1px;
-  color: #0d6efd;
+  color: #212529;
   background-color: #fff;
   border: 1px solid #dee2e6;
 }
 ul.pager li a:hover {
   z-index: 2;
-  color: #0a58ca;
+  color: #0085A1;
   text-decoration: none;
   background-color: #e9ecef;
   border-color: #dee2e6;
@@ -232,7 +230,7 @@ ul.pager li a:hover {
 ul.pager li a:focus {
   z-index: 2;
   outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(0, 133, 161, 0.25);
 }
 
 ul.pager li:first-child .page-link {
@@ -245,8 +243,8 @@ ul.pager li:last-child .page-link {
 ul.pager li.active .page-link {
   z-index: 1;
   color: #fff;
-  background-color: #0d6efd;
-  border-color: #0d6efd;
+  background-color: #0085A1;
+  border-color: #0085A1;
 }
 ul.pager li.disabled .page-link {
   color: #6c757d;
@@ -258,6 +256,18 @@ ul.pager li.disabled .page-link {
 
 ul.pager {
   margin-top: 1rem;
+}
+
+.term-badge > a {
+  text-decoration: none;
+}
+.term-badge .badge-secondary:hover {
+  background-color: #0085A1;
+}
+
+.taxonomy-tag ul {
+  padding-left: 0;
+  list-style: none;
 }
 
 #togglePassword {

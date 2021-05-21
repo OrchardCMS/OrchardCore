@@ -1,7 +1,8 @@
 /*
-Bootstrap customization for Agency theme
+Bootstrap customization for The Blog theme
 By Orchard Core Team
  */
+@import "variables.scss";
 @import "../../../node_modules/bootstrap/scss/functions";
 @import "../../../node_modules/bootstrap/scss/variables";
 @import "../../../node_modules/bootstrap/scss/mixins";
@@ -10,6 +11,7 @@ By Orchard Core Team
 @import "modules/_messages.scss";
 @import "modules/_widgets.scss";
 @import "modules/_pager.scss";
+@import "modules/_taxonomy.scss";
 
 #togglePassword {
     width: 44px;
