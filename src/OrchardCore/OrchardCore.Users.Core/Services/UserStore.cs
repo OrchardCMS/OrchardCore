@@ -138,6 +138,7 @@ namespace OrchardCore.Users.Services
                 {
                     return IdentityResult.Failed();
                 }
+
                 _session.Delete(user);
                 await _session.SaveChangesAsync();
                 await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
@@ -227,6 +228,7 @@ namespace OrchardCore.Users.Services
             {
                 var context = new UserUpdateContext(user);
                 await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
+
                 if (context.Cancel)
                 {
                     return IdentityResult.Failed();
