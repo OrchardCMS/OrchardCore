@@ -17,10 +17,15 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Events;
+using OrchardCore.Locking.Distributed;
+using OrchardCore.Setup.Services.Extensions;
 using YesSql;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Setup.Services
 {
+
+
     /// <summary>
     /// Represents a setup service.
     /// </summary>
@@ -34,6 +39,9 @@ namespace OrchardCore.Setup.Services
         private readonly IStringLocalizer S;
         private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IDistributedLock _distributedLock;
+        private readonly IOptions<SetupOptions> _setupOptions;
+
         private readonly string _applicationName;
         private IEnumerable<RecipeDescriptor> _recipes;
 
@@ -49,6 +57,8 @@ namespace OrchardCore.Setup.Services
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
         /// <param name="applicationLifetime">The <see cref="IHostApplicationLifetime"/>.</param>
         /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
+        /// <param name="distributedLock">Setup Distributed Lock</param>
+        /// <param name="setupOptions">Setup Options</param>
         public SetupService(
             IShellHost shellHost,
             IHostEnvironment hostingEnvironment,
@@ -58,7 +68,9 @@ namespace OrchardCore.Setup.Services
             ILogger<SetupService> logger,
             IStringLocalizer<SetupService> stringLocalizer,
             IHostApplicationLifetime applicationLifetime,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IDistributedLock distributedLock,
+            IOptions<SetupOptions> setupOptions)
         {
             _shellHost = shellHost;
             _applicationName = hostingEnvironment.ApplicationName;
@@ -69,6 +81,8 @@ namespace OrchardCore.Setup.Services
             S = stringLocalizer;
             _applicationLifetime = applicationLifetime;
             _httpContextAccessor = httpContextAccessor;
+            _distributedLock = distributedLock;
+            _setupOptions = setupOptions;
         }
 
         /// <inheridoc />
@@ -89,6 +103,15 @@ namespace OrchardCore.Setup.Services
             var initialState = context.ShellSettings.State;
             try
             {
+                // Try to acquire a lock before starting setup, it guaranty Atomic setup in multi instance environment.
+                (var locker, var locked) = await _distributedLock.TryAcquireSetupLockAsync(_setupOptions.Value);
+                if (!locked)
+                {
+                    throw new TimeoutException($"Fails to acquire a setup lock for the shell: {context.ShellSettings.Name}");
+                }
+
+                await using var acquiredLock = locker;
+
                 var executionId = await SetupInternalAsync(context);
 
                 if (context.Errors.Any())
