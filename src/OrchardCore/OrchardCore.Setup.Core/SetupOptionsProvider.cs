@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Setup.Core
@@ -11,19 +11,19 @@ namespace OrchardCore.Setup.Core
     public class SetupOptionsProvider : IConfigureOptions<SetupOptions>
     {
         /// <summary>
-        /// The shell configuration.
+        /// The shell settings.
         /// </summary>
-        private readonly IShellConfiguration _shellConfiguration;
+        private readonly ShellSettings _shellsettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SetupOptionsProvider"/> class.
         /// </summary>
-        /// <param name="shellConfiguration">
+        /// <param name="shellSettings">
         /// The shell configuration.
         /// </param>
-        public SetupOptionsProvider(IShellConfiguration shellConfiguration)
+        public SetupOptionsProvider(ShellSettings shellSettings)
         {
-            _shellConfiguration = shellConfiguration;
+            _shellsettings = shellSettings;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace OrchardCore.Setup.Core
         /// </param>
         public void Configure(SetupOptions options)
         {
-            _shellConfiguration.Bind(options);
+            _shellsettings.ShellConfiguration.Bind(options);
 
             // Only used if the current distributed lock implementation is not a local lock.
             if (options.SetupLockExpiration <= 0)
@@ -45,6 +45,11 @@ namespace OrchardCore.Setup.Core
             if (options.SetupLockTimeout <= 0)
             {
                 options.SetupLockTimeout = 30_000;
+            }
+
+            if (string.IsNullOrEmpty(options.SetupLockName))
+            {
+                options.SetupLockName = _shellsettings.Name;
             }
         }
     }
