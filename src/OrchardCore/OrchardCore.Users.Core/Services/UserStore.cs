@@ -99,10 +99,17 @@ namespace OrchardCore.Users.Services
 
                 newUser.UserId = newUserId;
 
-                var context = new UserContext(user);
+                var context = new UserCreateContext(user);
 
                 await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
+
+                if (context.Cancel)
+                {
+                    return IdentityResult.Failed();
+                }
+
                 _session.Save(user);
+                await _session.SaveChangesAsync();
                 await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             catch (Exception e)
@@ -124,13 +131,21 @@ namespace OrchardCore.Users.Services
 
             try
             {
-                var context = new UserContext(user);
+                var context = new UserDeleteContext(user);
                 await Handlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), context, _logger);
+
+                if (context.Cancel)
+                {
+                    return IdentityResult.Failed();
+                }
                 _session.Delete(user);
+                await _session.SaveChangesAsync();
                 await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
             }
-            catch
+            catch (Exception e)
             {
+                _logger.LogError(e, "Unexpected error while deleting a user.");
+
                 return IdentityResult.Failed();
             }
 
@@ -208,10 +223,25 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var context = new UserContext(user);
-            await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
-            _session.Save(user);
-            await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+            try
+            {
+                var context = new UserUpdateContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
+                if (context.Cancel)
+                {
+                    return IdentityResult.Failed();
+                }
+                
+                _session.Save(user);
+                await _session.SaveChangesAsync();
+                await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unexpected error while updating a user.");
+
+                return IdentityResult.Failed();
+            }
 
             return IdentityResult.Success;
         }
