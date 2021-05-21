@@ -24,6 +24,7 @@ namespace OrchardCore.Themes.TheBlogTheme
 
             _manifest
                 .DefineScript("TheBlogTheme")
+                .SetDependencies("TheBlogTheme-bootstrap-bundle")
                 .SetUrl("~/TheBlogTheme/js/scripts.min.js", "~/TheBlogTheme/js/scripts.js")
                 .SetVersion("6.0.0");
 
