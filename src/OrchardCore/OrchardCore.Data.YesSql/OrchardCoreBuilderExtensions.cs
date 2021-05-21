@@ -133,6 +133,13 @@ namespace Microsoft.Extensions.DependencyInjection
                             .CommitAsync();
                     });
 
+                    ShellScope.AddExceptionHandler(scope =>
+                    {
+                        return scope.ServiceProvider
+                            .GetRequiredService<IDocumentStore>()
+                            .CancelAsync();
+                    });
+
                     return session;
                 });
 
