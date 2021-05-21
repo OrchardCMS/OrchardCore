@@ -16,7 +16,14 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Display(UserIndexOptions model)
         {
-            return Initialize<UserIndexOptions>("UsersAdminListBulkActions", m => BuildUserOptionsViewModel(m, model)).Location("BulkActions", "Content:10");
+            return Combine(
+                Initialize<UserIndexOptions>("UsersAdminListBulkActions", m => BuildUserOptionsViewModel(m, model)).Location("BulkActions", "Content:10"),
+                View("UsersAdminFilters_Thumbnail__Name", model).Location("Thumbnail", "Content:10"),
+                View("UsersAdminFilters_Thumbnail__Email", model).Location("Thumbnail", "Content:20"),
+                View("UsersAdminFilters_Thumbnail__Status", model).Location("Thumbnail", "Content:30"),
+                View("UsersAdminFilters_Thumbnail__Role", model).Location("Thumbnail", "Content:40"),
+                View("UsersAdminFilters_Thumbnail__Sort", model).Location("Thumbnail", "Content:50")
+            );
         }
 
         public override IDisplayResult Edit(UserIndexOptions model)
@@ -55,6 +62,7 @@ namespace OrchardCore.Users.Drivers
             m.EndIndex = model.EndIndex;
             m.UsersCount = model.UsersCount;
             m.TotalItemCount = model.TotalItemCount;
+            m.FilterResult = model.FilterResult;
         }
     }
 }

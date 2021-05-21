@@ -4,7 +4,7 @@
     var content = Model.GetProperty<Shape>("Content");
     foreach(var shape in content.OfType<IShape>())
     {
-        shape.Metadata.Wrappers.Add("ContentsAdminFilters_Thumbnail__Card");
+        shape.Metadata.Wrappers.Add("UsersAdminFilters_Thumbnail__Card");
     }
 }
 @await DisplayAsync(content)

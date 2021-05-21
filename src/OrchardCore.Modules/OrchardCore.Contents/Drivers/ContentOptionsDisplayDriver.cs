@@ -18,10 +18,10 @@ namespace OrchardCore.Contents.Drivers
         {
             return Combine(
                 Initialize<ContentOptionsViewModel>("ContentsAdminListBulkActions", m => BuildContentOptionsViewModel(m, model)).Location("BulkActions", "Content:10"),
-                View("ContentsAdminFilters_Thumbnail__DisplayText", model).Location("Thumbnail", "Content:10.1"),
-                View("ContentsAdminFilters_Thumbnail__ContentType", model).Location("Thumbnail", "Content:11.1"),
-                View("ContentsAdminFilters_Thumbnail__Status", model).Location("Thumbnail", "Content:12.1"),
-                View("ContentsAdminFilters_Thumbnail__Sort", model).Location("Thumbnail", "Content:30.1")
+                View("ContentsAdminFilters_Thumbnail__DisplayText", model).Location("Thumbnail", "Content:10"),
+                View("ContentsAdminFilters_Thumbnail__ContentType", model).Location("Thumbnail", "Content:20"),
+                View("ContentsAdminFilters_Thumbnail__Status", model).Location("Thumbnail", "Content:30"),
+                View("ContentsAdminFilters_Thumbnail__Sort", model).Location("Thumbnail", "Content:40")
             );
         }
 

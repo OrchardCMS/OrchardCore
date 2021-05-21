@@ -16,7 +16,7 @@ namespace OrchardCore.Users.Services
         public void Build(QueryEngineBuilder<User> builder)
         {
             builder
-                .WithNamedTerm("filter", builder => builder
+                .WithNamedTerm("status", builder => builder
                     .OneCondition<User>((val, query) =>
                     {
                         if (Enum.TryParse<UsersFilter>(val, true, out var usersStatus))
