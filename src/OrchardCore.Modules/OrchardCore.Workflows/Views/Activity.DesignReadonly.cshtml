@@ -9,8 +9,10 @@
     var activityType = isEvent ? "Event" : "Task";
     var activityTypeClass = isEvent ? "fa-bolt" : "fa-caret-right";
     var cssClass = isBlocking ? "activity-blocking" : isEvent ? "activity-event" : "activity-task";
+    var xPosition = activityRecord.X <= 0 ? 0 : activityRecord.X;
+    var yPosition = activityRecord.Y <= 0 ? 0 : activityRecord.Y;
 }
-<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowTypeId}-{activityRecord.ActivityId}")" data-activity-id="@activityRecord.ActivityId" data-activity-type="@activityType">
+<div class="activity @cssClass" style="left:@(xPosition)px; top:@(yPosition)px;" id="@($"activity-{Model.WorkflowTypeId}-{activityRecord.ActivityId}")" data-activity-id="@activityRecord.ActivityId" data-activity-type="@activityType">
     @await DisplayAsync(Model.Content)
     @if (isEvent)
     {
