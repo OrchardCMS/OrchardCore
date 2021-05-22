@@ -142,6 +142,40 @@ For example, if the current locale is `en-CA` and you specified this shortcode: 
 You can disable this behavior by passing `false` as the second argument of the shortcode. 
 `[locale en false]English Text[/locale]` would render nothing if the current culture is not exactly `en`.
 
+## Rendering Shortcodes
+
+Shortcodes are automatically rendered when using a `Shape` produced by a display driver that supports Shortcodes.
+
+- `HtmlBodyPart`
+- `HtmlField`
+- `MarkdownBodyPart`
+- `MarkdownField`
+
+=== "Liquid"
+
+    ``` liquid
+    {{ Model.Content.HtmlBodyPart | shape_render }}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @await DisplayAsync(Model.Content.HtmlBodyPart)
+    ```
+
+Shortcodes can also be rendered via a liquid filter or html helper
+
+=== "Liquid"
+
+    ``` liquid
+    {{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @Html.Raw(@await Orchard.ShortcodesToHtmlAsync((string)Model.ContentItem.Content.RawHtml.Content.Html))
+    ```
 
 ## Video
 
