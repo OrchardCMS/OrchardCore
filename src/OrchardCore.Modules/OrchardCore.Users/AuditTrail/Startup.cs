@@ -1,6 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Providers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Users.AuditTrail.Drivers;
 using OrchardCore.Users.AuditTrail.Handlers;
 using OrchardCore.Users.AuditTrail.Providers;
 using OrchardCore.Users.Events;
@@ -15,10 +18,13 @@ namespace OrchardCore.Users.AuditTrail
         {
             services.AddScoped<IAuditTrailEventProvider, UserAuditTrailEventProvider>();
 
+            // TODO register and resolve same instance.
+
             services.AddScoped<IUserEventHandler, UserEventHandler>();
             services.AddScoped<ILoginFormEvent, UserEventHandler>();
             services.AddScoped<IPasswordRecoveryFormEvents, UserEventHandler>();
             services.AddScoped<IRegistrationFormEvents, UserEventHandler>();
+            services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailUserEventDisplayDriver>();
         }
     }
 }

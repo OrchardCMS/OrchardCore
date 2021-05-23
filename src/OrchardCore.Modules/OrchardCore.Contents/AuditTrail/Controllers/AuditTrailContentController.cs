@@ -23,7 +23,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
     [Admin]
-    public class ContentController : Controller
+    public class AuditTrailContentController : Controller
     {
         private readonly ISession _session;
         private readonly IContentManager _contentManager;
@@ -35,7 +35,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         private readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
 
-        public ContentController(
+        public AuditTrailContentController(
             ISession session,
             IContentManager contentManager,
             IUpdateModelAccessor updateModelAccessor,
@@ -43,8 +43,8 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IEnumerable<IAuditTrailContentHandler> auditTrailContentHandlers,
             INotifier notifier,
-            IHtmlLocalizer<ContentController> htmlLocalizer,
-            ILogger<ContentController> logger)
+            IHtmlLocalizer<AuditTrailContentController> htmlLocalizer,
+            ILogger<AuditTrailContentController> logger)
         {
             _session = session;
             _contentManager = contentManager;
@@ -57,6 +57,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             _logger = logger;
         }
 
+        // TODO vertsion number is in the audit, not needed here.
         public async Task<ActionResult> Display(int versionNumber, string auditTrailEventId)
         {
             var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
@@ -162,6 +163,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             await _auditTrailContentHandlers.InvokeAsync((handler, context) => handler.RestoredAsync(context), context, _logger);
 
             _notifier.Success(H["'{0}' has been restored.", contentItem.DisplayText]);
+
             return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
         }
     }

@@ -6,6 +6,6 @@ namespace OrchardCore.AuditTrail.Services
     public class AuditTrailDisplayHandlerBase : IAuditTrailDisplayHandler
     {
         public virtual Task DisplayFiltersAsync(DisplayFiltersContext context) => Task.CompletedTask;
-        public virtual Task DisplayEventAsync(DisplayEventContext context) => Task.CompletedTask;
+        // public virtual Task DisplayEventAsync(DisplayEventContext context) => Task.CompletedTask;
     }
 }

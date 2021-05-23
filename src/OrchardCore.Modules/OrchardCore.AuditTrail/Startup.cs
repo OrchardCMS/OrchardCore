@@ -16,6 +16,7 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -40,8 +41,17 @@ namespace OrchardCore.AuditTrail
         {
             services.AddScoped<IAuditTrailManager, AuditTrailManager>();
             services.AddScoped<IAuditTrailEventHandler, AuditTrailEventHandler>();
+
+            // This has to go
             services.AddScoped<IAuditTrailDisplayManager, AuditTrailtDisplayManager>();
             services.AddScoped<IAuditTrailDisplayHandler, AuditTrailDisplayHandler>();
+
+            // and be replaced by this
+            services
+                .AddScoped<IDisplayManager<AuditTrailEvent>, DisplayManager<AuditTrailEvent>>()
+                .AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailEventDisplayDriver>();
+
+
             services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
 
             services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));

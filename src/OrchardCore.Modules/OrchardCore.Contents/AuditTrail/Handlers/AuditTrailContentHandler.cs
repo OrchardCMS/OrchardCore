@@ -18,7 +18,7 @@ using YesSql;
 namespace OrchardCore.Contents.AuditTrail.Handlers
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
-    public class ContentHandler : ContentHandlerBase, IAuditTrailContentHandler
+    public class AuditTrailContentHandler : ContentHandlerBase, IAuditTrailContentHandler
     {
         private readonly YesSql.ISession _session;
         private readonly ISiteService _siteService;
@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
 
         private HashSet<string> _restoring = new HashSet<string>();
 
-        public ContentHandler(
+        public AuditTrailContentHandler(
             YesSql.ISession session,
             ISiteService siteService,
             IAuditTrailManager auditTrailManager,
@@ -39,32 +39,33 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override Task DraftSavedAsync(SaveDraftContentContext context) =>
-            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Saved, context.ContentItem);
+        public override Task DraftSavedAsync(SaveDraftContentContext context)
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Saved, context.ContentItem);
 
-        public override Task CreatedAsync(CreateContentContext context) =>
-            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Created, context.ContentItem);
+        public override Task CreatedAsync(CreateContentContext context)
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Created, context.ContentItem);
 
-        public override Task PublishedAsync(PublishContentContext context) =>
-            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Published, context.ContentItem);
+        public override Task PublishedAsync(PublishContentContext context)
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Published, context.ContentItem);
 
-        public override Task UnpublishedAsync(PublishContentContext context) =>
-            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Unpublished, context.ContentItem);
+        public override Task UnpublishedAsync(PublishContentContext context)
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Unpublished, context.ContentItem);
 
-        public override Task RemovedAsync(RemoveContentContext context) =>
-            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Removed, context.ContentItem);
+        public override Task RemovedAsync(RemoveContentContext context)
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Removed, context.ContentItem);
 
-        public override Task ClonedAsync(CloneContentContext context) =>
-            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Cloned, context.ContentItem);
+        public override Task ClonedAsync(CloneContentContext context)
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Cloned, context.ContentItem);
 
         public Task RestoringAsync(RestoreContentContext context)
         {
             _restoring.Add(context.ContentItem.ContentItemId);
+
             return Task.CompletedTask;
         }
 
-        public Task RestoredAsync(RestoreContentContext context) =>
-            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, context.ContentItem);
+        public Task RestoredAsync(RestoreContentContext context)
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, context.ContentItem);
 
         private async Task RecordAuditTrailEventAsync(string name, IContent content)
         {
@@ -81,8 +82,8 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 return;
             }
 
-            var versionNumber = await _session.QueryIndex<ContentItemIndex>()
-                .Where(index => index.ContentItemId == content.ContentItem.ContentItemId)
+            var versionNumber = await _session
+                .QueryIndex<ContentItemIndex>(index => index.ContentItemId == content.ContentItem.ContentItemId)
                 .CountAsync();
 
             var eventData = new Dictionary<string, object>

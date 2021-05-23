@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +23,7 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IAuditTrailDisplayManager _auditTrailEventDisplayManager;
+        private readonly IDisplayManager<AuditTrailEvent> _displayManager;
 
         public AdminController(
             ISiteService siteService,
@@ -29,7 +31,8 @@ namespace OrchardCore.AuditTrail.Controllers
             IAuditTrailManager auditTrailManager,
             IUpdateModelAccessor updateModelAccessor,
             IAuthorizationService authorizationService,
-            IAuditTrailDisplayManager auditTrailEventDisplayManager)
+            IAuditTrailDisplayManager auditTrailEventDisplayManager,
+            IDisplayManager<AuditTrailEvent> displayManager)
         {
             _siteService = siteService;
             _shapeFactory = shapeFactory;
@@ -37,6 +40,7 @@ namespace OrchardCore.AuditTrail.Controllers
             _updateModelAccessor = updateModelAccessor;
             _authorizationService = authorizationService;
             _auditTrailEventDisplayManager = auditTrailEventDisplayManager;
+            _displayManager = displayManager;
         }
 
         public async Task<ActionResult> Index(PagerParameters pagerParameters, AuditTrailOrderBy? orderBy = null)
@@ -63,43 +67,27 @@ namespace OrchardCore.AuditTrail.Controllers
                 TotalItemCount = searchResult.TotalCount
             }));
 
-            var categories = _auditTrailManager.DescribeCategories()
-                .ToLookup(category => category.Name);
+            // TODO route data for pager links
 
-            var items = searchResult.Events
-                .Select(@event =>
-                {
-                    var descriptor = categories[@event.Category]
-                        .FirstOrDefault()?.Events
-                        .FirstOrDefault(descriptor => descriptor.Name == @event.Name);
 
-                    if (descriptor == null)
-                    {
-                        descriptor = AuditTrailEventDescriptor.Default(@event);
-                    }
+            var items = new List<IShape>();
 
-                    return new AuditTrailItemViewModel
-                    {
-                        Event = @event,
-                        LocalizedName = descriptor.LocalizedName,
-                        LocalizedCategory = descriptor.LocalizedCategory
-                    };
-                })
-                .ToArray();
-
-            foreach (var item in items)
+            foreach (var auditTrailEvent in searchResult.Events)
             {
-                item.ActionsShape = await _auditTrailEventDisplayManager.BuildDisplayActionsAsync(item.Event, "SummaryAdmin");
-                item.EventShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(item.Event, "SummaryAdmin");
+                items.Add(
+                    await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
+                );
             }
 
-            return View(new AuditTrailListViewModel
+            var shapeViewModel = await _shapeFactory.CreateAsync<AuditTrailListViewModel>("AuditTrailAdminList", viewModel =>
             {
-                FiltersShape = await _auditTrailEventDisplayManager.BuildDisplayFiltersAsync(filters),
-                OrderBy = orderBy ?? AuditTrailOrderBy.DateDescending,
-                Items = items,
-                PagerShape = pagerShape
+                viewModel.Events = items;
+                viewModel.Pager = pagerShape;
+                // viewModel.Options = options;
+                // viewModel.Header = header;
             });
+
+            return View(shapeViewModel);
         }
 
         public async Task<ActionResult> Display(string auditTrailEventId)
@@ -109,21 +97,16 @@ namespace OrchardCore.AuditTrail.Controllers
                 return Forbid();
             }
 
-            var @event = await _auditTrailManager.GetEventAsync(auditTrailEventId);
-            if (@event == null)
+            var auditTrailEvent = await _auditTrailManager.GetEventAsync(auditTrailEventId);
+            if (auditTrailEvent == null)
             {
                 return NotFound();
             }
 
-            var descriptor = _auditTrailManager.DescribeEvent(@event);
 
-            return View(new AuditTrailItemViewModel
-            {
-                Event = @event,
-                LocalizedName = descriptor.LocalizedName,
-                LocalizedCategory = descriptor.LocalizedCategory,
-                EventShape = await _auditTrailEventDisplayManager.BuildDisplayEventAsync(@event, "Detail")
-            });
+            var shape = await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "DetailAdmin");
+
+            return View(new AuditTrailItemViewModel { Shape = shape});
         }
     }
 }

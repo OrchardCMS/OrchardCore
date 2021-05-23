@@ -19,13 +19,17 @@ namespace OrchardCore.Users.AuditTrail.Handlers
     {
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IServiceProvider _serviceProvider;
+        private UserManager<IUser> _userManager;
 
         public UserEventHandler(
             IAuditTrailManager auditTrailManager,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IServiceProvider serviceProvider)
         {
             _auditTrailManager = auditTrailManager;
             _httpContextAccessor = httpContextAccessor;
+            _serviceProvider = serviceProvider;
         }
 
         public Task LoggedInAsync(string userName) =>
@@ -56,6 +60,9 @@ namespace OrchardCore.Users.AuditTrail.Handlers
         public Task CreatedAsync(UserContext context) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Created, context.User);
 
+        public Task UpdatedAsync(UserContext context) =>
+            RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Updated, context.User);
+
         public Task DeletedAsync(UserContext context) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Deleted, context.User);
 
@@ -79,13 +86,13 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                 return;
             }
 
-            var userManager = GetUserManagerFromHttpContext();
-            var user = await userManager.FindByNameAsync(userName);
+            _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
+            var user = await _userManager.FindByNameAsync(userName);
 
             var userId = String.Empty;
             if (user != null)
             {
-                userId = await userManager.GetUserIdAsync(user);
+                userId = await _userManager.GetUserIdAsync(user);
                 userName = user.UserName;
             }
 
@@ -101,9 +108,9 @@ namespace OrchardCore.Users.AuditTrail.Handlers
         private async Task RecordAuditTrailEventAsync(string name, IUser user)
         {
             var userName = user.UserName;
-            var userManager = GetUserManagerFromHttpContext();
+            _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
 
-            var userId = await userManager.GetUserIdAsync(user);
+            var userId = await _userManager.GetUserIdAsync(user);
             var data = new Dictionary<string, object>
             {
                 { "UserId", userId },
@@ -116,13 +123,9 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                     name,
                     "User",
                     userId,
-                    name == UserAuditTrailEventProvider.Created ? userName : _httpContextAccessor.GetCurrentUserName(),
+                    name == UserAuditTrailEventProvider.Created ? userName : _httpContextAccessor.HttpContext.User?.Identity?.Name,
                     data
                 ));
         }
-
-        // Need to resolve the UserManager from the HttpContext to prevent circular dependency.
-        private UserManager<IUser> GetUserManagerFromHttpContext() =>
-            _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
     }
 }

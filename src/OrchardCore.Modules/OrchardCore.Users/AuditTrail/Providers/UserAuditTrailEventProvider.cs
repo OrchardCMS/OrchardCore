@@ -21,6 +21,7 @@ namespace OrchardCore.Users.AuditTrail.Providers
         public const string Enabled = nameof(Enabled);
         public const string Disabled = nameof(Disabled);
         public const string Created = nameof(Created);
+        public const string Updated = nameof(Updated);
         public const string Deleted = nameof(Deleted);
 
         public UserAuditTrailEventProvider(IStringLocalizer<UserAuditTrailEventProvider> stringLocalizer)
@@ -44,6 +45,7 @@ namespace OrchardCore.Users.AuditTrail.Providers
                 .Event(Enabled, S["Enabled"], S["A user was enabled."], BuildEvent, true)
                 .Event(Disabled, S["Disabled"], S["A user was disabled."], BuildEvent, true)
                 .Event(Created, S["Created"], S["A user was created."], BuildEvent, true)
+                .Event(Updated, S["Updated"], S["A user was updated."], BuildEvent, true)
                 .Event(Deleted, S["Deleted"], S["A user was deleted."], BuildEvent, true);
         }
 

@@ -1,4 +1,4 @@
-
+@* 
 <div class="row">
     <div class="col-lg col-12 title d-flex">
         <div class="summary d-flex flex-column flex-md-row">
@@ -55,5 +55,12 @@
         <div class="col primary">
             @await DisplayAsync(Model.Content)
         </div>
+    </div>
+} *@
+
+@if (Model.Content != null)
+{
+    <div id="accordion">
+        @await DisplayAsync(Model.Content)
     </div>
 }

@@ -42,31 +42,31 @@ namespace OrchardCore.AuditTrail.Services
             return shape;
         }
 
-        public Task<IShape> BuildDisplayEventAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
-            BuildDisplayAsync("AuditTrailEvent", auditTrailEvent, displayType);
+        // public Task<IShape> BuildDisplayEventAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
+        //     BuildDisplayAsync("AuditTrailEventOld", auditTrailEvent, displayType);
 
-        public Task<IShape> BuildDisplayActionsAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
-            BuildDisplayAsync("AuditTrailEventActions", auditTrailEvent, displayType);
+        // public Task<IShape> BuildDisplayActionsAsync(AuditTrailEvent auditTrailEvent, string displayType) =>
+        //     BuildDisplayAsync("AuditTrailEventActions", auditTrailEvent, displayType);
 
-        private async Task<IShape> BuildDisplayAsync(string shapeType, AuditTrailEvent @event, string displayType)
-        {
-            displayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
-            shapeType = displayType != "Detail" ? shapeType + "_" + displayType : shapeType;
+        // private async Task<IShape> BuildDisplayAsync(string shapeType, AuditTrailEvent @event, string displayType)
+        // {
+        //     displayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+        //     shapeType = displayType != "Detail" ? shapeType + "_" + displayType : shapeType;
 
-            var shape = await _shapeFactory.CreateAsync<AuditTrailEventViewModel>(shapeType, model =>
-            {
-                model.Event = @event;
-                model.Descriptor = _auditTrailManager.DescribeEvent(@event);
-            });
+        //     var shape = await _shapeFactory.CreateAsync<AuditTrailEventViewModel>(shapeType, model =>
+        //     {
+        //         model.AuditTrailEvent = @event;
+        //         model.Descriptor = _auditTrailManager.DescribeEvent(@event);
+        //     });
 
-            shape.Metadata.DisplayType = displayType;
-            shape.Metadata.Alternates.Add($"{shapeType}__{@event.Category}");
-            shape.Metadata.Alternates.Add($"{shapeType}__{@event.Category}__{@event.Name}");
+        //     shape.Metadata.DisplayType = displayType;
+        //     shape.Metadata.Alternates.Add($"{shapeType}__{@event.Category}");
+        //     shape.Metadata.Alternates.Add($"{shapeType}__{@event.Category}__{@event.Name}");
 
-            var context = new DisplayEventContext(shape);
-            await _auditTrailDisplayHandler.InvokeAsync((handler, context) => handler.DisplayEventAsync(context), context, _logger);
+        //     var context = new DisplayEventContext(shape);
+        //     await _auditTrailDisplayHandler.InvokeAsync((handler, context) => handler.DisplayEventAsync(context), context, _logger);
 
-            return shape;
-        }
+        //     return shape;
+        // }
     }
 }

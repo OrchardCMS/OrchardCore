@@ -1,0 +1,28 @@
+@model AuditTrailUserEventDetailViewModel
+@using OrchardCore.AuditTrail.ViewModels
+
+<div class="card mb-3">
+    <div class="card-header" id="headingUser">
+        <h6 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseUser" aria-expanded="true" aria-controls="collapseUser">
+            @T["User Details"]
+        </button>
+        </h6>
+    </div>
+    <div id="collapseUser" class="collapse show" aria-labelledby="headingUser" data-parent="#accordion">
+        <div class="card-body py-0" >
+            <table class="table table-sm table-hover mb-0">
+                <tbody>
+                    <tr>
+                        <th class="border-top-0 w-25">@T["User Id"]</th>
+                        <td class="border-top-0">@Model.UserId</td>
+                    </tr>
+                    <tr>
+                        <th>@T["User Name"]</th>
+                        <td>@Model.UserName</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -4,7 +4,7 @@
 @inject IStringLocalizer<ViewContext> S;
 
 @{
-    var orderByItems = new List<SelectListItem>
+    @* var orderByItems = new List<SelectListItem>
     {
         new SelectListItem
         {
@@ -23,11 +23,15 @@
             Text = S["Event"],
             Value = AuditTrailOrderBy.EventAscending.ToString(),
             Selected = Model.OrderBy == AuditTrailOrderBy.EventAscending},
-    };
+    }; *@
 }
 
 <zone name="Title"><h1 class="mb-4">@RenderTitleSegments(T["Audit Trail"])</h1></zone>
 
+<form asp-action="Index" method="post">
+    @await DisplayAsync(Model)
+</form>
+@* 
 <form asp-action="Index" method="get">
     <div class="form-row mb-4">
         @await DisplayAsync(Model.FiltersShape)
@@ -69,7 +73,8 @@ else
                 @foreach (var item in Model.Items)
                 {
                     <tr>
-                        <td>@await DisplayAsync(item.ActionsShape)</td>
+                        <td>@await DisplayAsync(item.ActionsShape) here</td>
+
                         <td>@item.LocalizedCategory</td>
                         <td>@item.LocalizedName</td>
                         <td>@item.Event.UserName</td>
@@ -78,10 +83,17 @@ else
                         <td>@await DisplayAsync(item.EventShape)</td>
                         <td>@Html.Raw(item.Event.Comment)</td>
                     </tr>
+                    <tr>
+                        @{
+                            var dy = (dynamic)item.Shape;
+                        }
+                        <td>@await DisplayAsync(item.Shape)</td>
+                        @Orchard.ConsoleLog(item.Shape)
+                    </tr>
                 }
             </tbody>
         </table>
     </div>
 }
 
-@await DisplayAsync(Model.PagerShape)
+@await DisplayAsync(Model.PagerShape) *@

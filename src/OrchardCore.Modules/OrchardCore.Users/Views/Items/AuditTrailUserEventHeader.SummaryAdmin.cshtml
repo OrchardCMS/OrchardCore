@@ -1,0 +1,2 @@
+@model AuditTrailUserEventViewModel
+<a asp-action="Edit" asp-controller="Admin" asp-area="OrchardCore.Users" asp-route-id="@Model.UserId" asp-route-returnUrl="@FullRequestPath">@Model.UserName</a>

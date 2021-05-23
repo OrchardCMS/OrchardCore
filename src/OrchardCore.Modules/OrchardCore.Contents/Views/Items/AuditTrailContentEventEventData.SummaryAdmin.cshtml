@@ -1,0 +1,26 @@
+@model AuditTrailContentEventViewModel
+@using OrchardCore.AuditTrail.ViewModels
+
+@{
+    var contentItem = Model.ContentItem;
+    var versionNumber = Model.VersionNumber;
+}
+
+<span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Content type"]">
+    <i class="far fa-file-alt text-secondary"></i>@contentItem.ContentType
+</span>
+      
+
+@* TODO. 
+How useful is this version number? 
+it's quite hard to make sense of it, when looking at an item in the list
+
+Would it be better and less confusing, just to have an audit trail number
+i.e. Event number for Correlation ID
+
+To me that makes more sense.
+*@
+<span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Version Number"]">
+    <i class="fas fa-code-branch text-secondary mr-1"></i>@T["Version {0}", @Model.VersionNumber]
+</span>  
+
