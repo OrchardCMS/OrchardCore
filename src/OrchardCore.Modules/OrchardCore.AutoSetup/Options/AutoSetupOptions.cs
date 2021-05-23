@@ -17,6 +17,11 @@ namespace OrchardCore.AutoSetup.Options
         public string AutoSetupPath { get; set; }
 
         /// <summary>
+        /// AutoSetup Lock Options
+        /// </summary>
+        public LockOptions LockOptions { get; set; } = new LockOptions();
+
+        /// <summary>
         /// Gets or sets the Tenants to install.
         /// </summary>
         public List<TenantSetupOptions> Tenants { get; set; } = new List<TenantSetupOptions>();

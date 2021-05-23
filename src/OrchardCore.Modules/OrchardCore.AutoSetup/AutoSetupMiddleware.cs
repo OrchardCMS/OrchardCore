@@ -16,6 +16,9 @@ using OrchardCore.Setup.Services;
 
 namespace OrchardCore.AutoSetup
 {
+    using OrchardCore.AutoSetup.Extensions;
+    using OrchardCore.Locking.Distributed;
+
     /// <summary>
     /// The auto setup middleware.
     /// </summary>
@@ -42,16 +45,27 @@ namespace OrchardCore.AutoSetup
         private readonly IShellSettingsManager _shellSettingsManager;
 
         /// <summary>
+        /// Distributed lock guaranties Atomic setup in multi instance environment.
+        /// </summary>
+        private readonly IDistributedLock _distributedLock;
+
+        /// <summary>
         /// The auto-setup options.
         /// </summary>
         private readonly AutoSetupOptions _options;
+
+        private readonly LockOptions _lockOptions;
 
         /// <summary>
         /// The logger.
         /// </summary>
         private readonly ILogger<AutoSetupMiddleware> _logger;
 
+        /// <summary>
+        /// Tennt AutoSetup Setup Configuration
+        /// </summary>
         private readonly TenantSetupOptions _setupOptions;
+
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         /// <summary>
@@ -61,6 +75,7 @@ namespace OrchardCore.AutoSetup
         /// <param name="shellHost">The Shell host.</param>
         /// <param name="shellSettings">The Shell settings.</param>
         /// <param name="shellSettingsManager">The Shell settings manager.</param>
+        /// <param name="distributedLock">The Distribued Lock</param>
         /// <param name="options">The auto-setup Options.</param>
         /// <param name="logger">The logger.</param>
         public AutoSetupMiddleware(
@@ -68,6 +83,7 @@ namespace OrchardCore.AutoSetup
             IShellHost shellHost,
             ShellSettings shellSettings,
             IShellSettingsManager shellSettingsManager,
+            IDistributedLock distributedLock,
             IOptions<AutoSetupOptions> options,
             ILogger<AutoSetupMiddleware> logger)
         {
@@ -75,9 +91,11 @@ namespace OrchardCore.AutoSetup
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _shellSettingsManager = shellSettingsManager;
+            _distributedLock = distributedLock;
             _options = options.Value;
             _logger = logger;
 
+            _lockOptions = _options.LockOptions;
             _setupOptions = _options.Tenants.FirstOrDefault(options => _shellSettings.Name == options.ShellName);
         }
 
@@ -94,7 +112,15 @@ namespace OrchardCore.AutoSetup
         {
             if (_setupOptions != null && _shellSettings.State == TenantState.Uninitialized)
             {
-                await _semaphore.WaitAsync();
+                // Try to acquire a lock before starting installation, it guaranty Atomic setup in multi instance environment.
+                (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_setupOptions.ShellName, _lockOptions);
+                if (!locked)
+                {
+                    throw new TimeoutException($"Fails to acquire a AutoSetup lock for the shell: {_setupOptions.ShellName}");
+                }
+
+                await using var acquiredLock = locker;
+
                 try
                 {
                     if (_shellSettings.State == TenantState.Uninitialized)
