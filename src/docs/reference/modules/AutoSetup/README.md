@@ -125,3 +125,39 @@ To enable the Auto Setup feature, it is necessary to add it in the Web project's
 This feature is enabled by default in the default project included in the source code, but
 is not with the application templates to prevent any unexpected behavior when a custom project
 is created.
+
+## Using Distributed Lock For Auto Setup
+
+In the case where multiple OrchardCore instances share the same Redis Database, you might need Distributed Lock for atomic Auto Setup.
+![Use case](./assets/lock-use-case.png)
+You should Enable RedisLock feature in Startup file
+
+```csharp
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services
+            .AddOrchardCms()
+            .AddSetupFeatures("OrchardCore.Redis.Lock", "OrchardCore.AutoSetup");
+    }
+```
+Make sure you set the Redis Configuration string via env. variable or configuration file
+
+```
+"OrchardCore__OrchardCore_Redis__Configuration": "localhost"
+```
+
+Optional Distributed Lock Parameters
+
+| Parameter | Description | Default Value |
+| --- | --- |
+| `LockTimeout` | The timeout in milliseconds to acquire a distributed auto setup lock. | 20 seconds |
+| `LockExpiration` | The expiration in milliseconds of the distributed setup lock. | 20 seconds |
+| `LockName` | The distributed setup lock name. | "AUTOSETUP_LOCK_{SHELL-NAME}" |
+
+Lock configuration parameters are optional and can be set via Env. Variables or configuration file 
+
+```
+"OrchardCore__OrchardCore_AutoSetup__LockOptions__LockTimeout": "10000"
+"OrchardCore__OrchardCore_AutoSetup__LockOptions__LockExpiration": "10000"
+"OrchardCore__OrchardCore_AutoSetup__LockOptions__LockName": "Orchard_AutoSetup_Lock"
+```
