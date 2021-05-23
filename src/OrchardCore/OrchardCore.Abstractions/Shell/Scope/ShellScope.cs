@@ -24,7 +24,7 @@ namespace OrchardCore.Environment.Shell.Scope
         private readonly List<Func<ShellScope, Task>> _beforeDispose = new List<Func<ShellScope, Task>>();
         private readonly HashSet<string> _deferredSignals = new HashSet<string>();
         private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
-        private readonly List<Func<ShellScope, Task>> _exceptionHandlers = new List<Func<ShellScope, Task>>();
+        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = new List<Func<ShellScope, Exception, Task>>();
 
         private bool _serviceScopeOnly;
         private bool _shellTerminated;
@@ -240,14 +240,16 @@ namespace OrchardCore.Environment.Shell.Scope
                     }
 
                     await execute(this);
-
+                }
+                catch (Exception e)
+                {
+                    await HandleExceptionAsync(e);
+                    throw;
+                }
+                finally
+                {
                     await TerminateShellInternalAsync();
                     await BeforeDisposeAsync();
-                }
-                catch
-                {
-                    await HandleExceptionAsync();
-                    throw;
                 }
             }
         }
@@ -313,22 +315,22 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
         /// </summary>
-        private void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Insert(0, callback);
+        internal void BeforeDispose(Func<ShellScope, Task> callback) => _beforeDispose.Insert(0, callback);
 
         /// <summary>
         /// Adds a Signal (if not already present) to be sent just after 'BeforeDisposeAsync()'.
         /// </summary>
-        private void DeferredSignal(string key) => _deferredSignals.Add(key);
+        internal void DeferredSignal(string key) => _deferredSignals.Add(key);
 
         /// <summary>
         /// Adds a Task to be executed in a new scope after 'BeforeDisposeAsync()'.
         /// </summary>
-        private void DeferredTask(Func<ShellScope, Task> task) => _deferredTasks.Add(task);
+        internal void DeferredTask(Func<ShellScope, Task> task) => _deferredTasks.Add(task);
 
         /// <summary>
-        /// Adds an handler to be invoked if an exception is thrown while executing this scope.
+        /// Adds an handler to be invoked if an exception is thrown while executing in this shell scope.
         /// </summary>
-        private void ExceptionHandler(Func<ShellScope, Task> callback) => _exceptionHandlers.Add(callback);
+        internal void ExceptionHandler(Func<ShellScope, Exception, Task> callback) => _exceptionHandlers.Add(callback);
 
         /// <summary>
         /// Registers a delegate to be invoked before the current shell scope will be disposed.
@@ -346,15 +348,15 @@ namespace OrchardCore.Environment.Shell.Scope
         public static void AddDeferredTask(Func<ShellScope, Task> task) => Current?.DeferredTask(task);
 
         /// <summary>
-        /// Adds an handler to be invoked if an exception is thrown while executing this scope.
+        /// Adds an handler to be invoked if an exception is thrown while executing in this shell scope.
         /// </summary>
-        public static void AddExceptionHandler(Func<ShellScope, Task> task) => Current?.ExceptionHandler(task);
+        public static void AddExceptionHandler(Func<ShellScope, Exception, Task> handler) => Current?.ExceptionHandler(handler);
 
-        public async Task HandleExceptionAsync()
+        public async Task HandleExceptionAsync(Exception e)
         {
             foreach (var callback in _exceptionHandlers)
             {
-                await callback(this);
+                await callback(this, e);
             }
         }
 
@@ -414,7 +416,7 @@ namespace OrchardCore.Environment.Shell.Scope
                                 "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
                                 task.GetType().FullName, ShellContext.Settings.Name);
 
-                            await scope.HandleExceptionAsync();
+                            await scope.HandleExceptionAsync(e);
                         }
                     },
                     activateShell: false);

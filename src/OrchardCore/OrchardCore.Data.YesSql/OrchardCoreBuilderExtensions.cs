@@ -126,19 +126,19 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     session.RegisterIndexes(scopedServices.ToArray());
 
-                    ShellScope.RegisterBeforeDispose(scope =>
-                    {
-                        return scope.ServiceProvider
-                            .GetRequiredService<IDocumentStore>()
-                            .CommitAsync();
-                    });
-
-                    ShellScope.AddExceptionHandler(scope =>
-                    {
-                        return scope.ServiceProvider
-                            .GetRequiredService<IDocumentStore>()
-                            .CancelAsync();
-                    });
+                    ShellScope.Current
+                        .RegisterBeforeDispose(scope =>
+                        {
+                            return scope.ServiceProvider
+                                .GetRequiredService<IDocumentStore>()
+                                .CommitAsync();
+                        })
+                        .AddExceptionHandler((scope, e) =>
+                        {
+                            return scope.ServiceProvider
+                                .GetRequiredService<IDocumentStore>()
+                                .CancelAsync();
+                        });
 
                     return session;
                 });

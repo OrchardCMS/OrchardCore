@@ -64,7 +64,7 @@ namespace OrchardCore.Modules
                     var feature = httpContext.Features.Get<IExceptionHandlerFeature>();
                     if (feature?.Error != null)
                     {
-                        await scope.HandleExceptionAsync();
+                        await scope.HandleExceptionAsync(feature.Error);
                     }
                 });
             }
