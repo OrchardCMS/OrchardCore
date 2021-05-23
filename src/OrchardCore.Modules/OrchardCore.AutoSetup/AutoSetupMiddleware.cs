@@ -9,15 +9,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
+using OrchardCore.AutoSetup.Extensions;
 using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Setup.Services;
+using OrchardCore.Locking.Distributed;
 
 namespace OrchardCore.AutoSetup
 {
-    using OrchardCore.AutoSetup.Extensions;
-    using OrchardCore.Locking.Distributed;
 
     /// <summary>
     /// The auto setup middleware.
@@ -54,6 +54,9 @@ namespace OrchardCore.AutoSetup
         /// </summary>
         private readonly AutoSetupOptions _options;
 
+        /// <summary>
+        /// AutoSetup Lock Options
+        /// </summary>
         private readonly LockOptions _lockOptions;
 
         /// <summary>
@@ -62,11 +65,9 @@ namespace OrchardCore.AutoSetup
         private readonly ILogger<AutoSetupMiddleware> _logger;
 
         /// <summary>
-        /// Tennt AutoSetup Setup Configuration
+        /// Tenant AutoSetup Setup Configuration
         /// </summary>
         private readonly TenantSetupOptions _setupOptions;
-
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSetupMiddleware"/> class.
@@ -121,40 +122,33 @@ namespace OrchardCore.AutoSetup
 
                 await using var acquiredLock = locker;
 
-                try
+                if (_shellSettings.State == TenantState.Uninitialized)
                 {
-                    if (_shellSettings.State == TenantState.Uninitialized)
+                    var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
+                    if (await SetupTenantAsync(setupService, _setupOptions, _shellSettings))
                     {
-                        var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
-                        if (await SetupTenantAsync(setupService, _setupOptions, _shellSettings))
+                        if (_setupOptions.IsDefault)
                         {
-                            if (_setupOptions.IsDefault)
+                            // Create the rest of the Shells for further on demand setup.
+                            foreach (var setupOptions in _options.Tenants)
                             {
-                                // Create the rest of the Shells for further on demand setup.
-                                foreach (var setupOptions in _options.Tenants)
+                                if (_setupOptions != setupOptions)
                                 {
-                                    if (_setupOptions != setupOptions)
-                                    {
-                                        await CreateTenantSettingsAsync(setupOptions);
-                                    }
+                                    await CreateTenantSettingsAsync(setupOptions);
                                 }
                             }
-
-                            var pathBase = httpContext.Request.PathBase;
-                            if (!pathBase.HasValue)
-                            {
-                                pathBase = "/";
-                            }
-
-                            httpContext.Response.Redirect(pathBase);
-
-                            return;
                         }
+
+                        var pathBase = httpContext.Request.PathBase;
+                        if (!pathBase.HasValue)
+                        {
+                            pathBase = "/";
+                        }
+
+                        httpContext.Response.Redirect(pathBase);
+
+                        return;
                     }
-                }
-                finally
-                {
-                    _semaphore.Release();
                 }
             }
 
