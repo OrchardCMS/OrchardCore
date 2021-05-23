@@ -231,9 +231,9 @@ namespace OrchardCore.Environment.Shell.Scope
 
             using (this)
             {
+                StartAsyncFlow();
                 try
                 {
-                    StartAsyncFlow();
                     if (activateShell)
                     {
                         await ActivateShellInternalAsync();
