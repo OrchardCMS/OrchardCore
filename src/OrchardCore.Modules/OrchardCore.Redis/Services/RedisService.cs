@@ -18,10 +18,12 @@ namespace OrchardCore.Redis.Services
         public RedisService(IOptions<RedisOptions> options, ILogger<RedisService> logger)
         {
             _options = options;
+            InstancePrefix = options.Value.InstancePrefix;
             _logger = logger;
         }
 
         public IConnectionMultiplexer Connection { get; private set; }
+        public string InstancePrefix { get; private set; }
         public IDatabase Database { get; private set; }
 
         public override Task ActivatingAsync() => ConnectAsync();
