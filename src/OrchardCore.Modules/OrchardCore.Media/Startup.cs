@@ -22,6 +22,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
+using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -150,6 +151,7 @@ namespace OrchardCore.Media
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
 
             services.AddRecipeExecutionStep<MediaStep>();
 
