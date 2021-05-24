@@ -482,13 +482,17 @@ Media can be optionally indexed for search as well if files are referenced via M
 - Media Text
 - Textual content of PDF files
 
-Note that standalone files, i.e. files that are just uploaded to the Media Library but never referenced from a content item via a Media Field, can't be indexed.
+!!! note
+    Standalone files, i.e. files that are just uploaded to the Media Library but never referenced from a content item via a Media Field, can't be indexed.
+
+!!! note
+    You need an indexing implementation enabled for Media Indexing and search to work. The below guide assumes you're using [Lucene](../Lucene/README.md).
 
 To set up indexing for Media do the following:
 
 1. For each Media Field open the field's editor from under the given content type's or content part's editor, and tick "Include this element in the index".
 2. When a content item of that type is published next time, Media content will be indexed as well. Check the name of the new Lucene field. You can do this by running a Lucene query for the given content type (can be done from the admin from under Search, Run Lucene Query): You should be able to see a new field named with the pattern "ContentPart.FieldTechnicalName", e.g. "BlogPost.Image".
-3. Configure the new field to be used for search. You can do this from the admin under Search, Settings, Search, and adding the name of the new field under "Default search fields" (arriving at someting like "Content.ContentItem.FullText, BlogPost.Image").
+3. Configure the new field to be used for search. You can do this from the admin under Search, Settings, Search, and adding the name of the new field under "Default search fields" (arriving at something like "Content.ContentItem.FullText, BlogPost.Image").
 4. Try searching for content only available in the Media Text of selected media files, or referenced PDF files. You should see corresponding results.
 
 ## Videos
