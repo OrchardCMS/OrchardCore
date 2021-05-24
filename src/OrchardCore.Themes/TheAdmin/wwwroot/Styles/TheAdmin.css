@@ -25015,6 +25015,7 @@ a > :root[data-theme=darkmode] code {
 }
 [dir]:root[data-theme=darkmode] .table {
   margin-bottom: 1rem;
+  background-color: #181a1b;
 }
 :root[data-theme=darkmode] .table th,
 :root[data-theme=darkmode] .table td {
@@ -25022,25 +25023,25 @@ a > :root[data-theme=darkmode] code {
 }
 [dir]:root[data-theme=darkmode] .table th, [dir]:root[data-theme=darkmode] .table td {
   padding: 0.75rem;
-  border-top: 1px solid rgba(140, 130, 115, 0.13);
+  border-top: 1px solid #2a2e2f;
 }
 :root[data-theme=darkmode] .table thead th {
   vertical-align: bottom;
 }
 [dir]:root[data-theme=darkmode] .table thead th {
-  border-bottom: 2px solid rgba(140, 130, 115, 0.13);
+  border-bottom: 2px solid #2a2e2f;
 }
 [dir]:root[data-theme=darkmode] .table tbody + tbody {
-  border-top: 2px solid rgba(140, 130, 115, 0.13);
+  border-top: 2px solid #2a2e2f;
 }
 [dir]:root[data-theme=darkmode] .table-sm th, [dir]:root[data-theme=darkmode] .table-sm td {
   padding: 0.3rem;
 }
 [dir]:root[data-theme=darkmode] .table-bordered {
-  border: 1px solid rgba(140, 130, 115, 0.13);
+  border: 1px solid #2a2e2f;
 }
 [dir]:root[data-theme=darkmode] .table-bordered th, [dir]:root[data-theme=darkmode] .table-bordered td {
-  border: 1px solid rgba(140, 130, 115, 0.13);
+  border: 1px solid #2a2e2f;
 }
 [dir]:root[data-theme=darkmode] .table-bordered thead th, [dir]:root[data-theme=darkmode] .table-bordered thead td {
   border-bottom-width: 2px;
@@ -25049,13 +25050,13 @@ a > :root[data-theme=darkmode] code {
   border: 0;
 }
 [dir]:root[data-theme=darkmode] .table-striped tbody tr:nth-of-type(odd) {
-  background-color: #181a1b;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 :root[data-theme=darkmode] .table-hover tbody tr:hover {
   color: #fff;
 }
 [dir]:root[data-theme=darkmode] .table-hover tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.075);
+  background-color: rgba(255, 255, 255, 0.075);
 }
 [dir]:root[data-theme=darkmode] .table-primary, [dir]:root[data-theme=darkmode] .table-primary > th, [dir]:root[data-theme=darkmode] .table-primary > td {
   background-color: #b8daff;
@@ -25154,13 +25155,13 @@ a > :root[data-theme=darkmode] code {
   background-color: #b1b2b2;
 }
 [dir]:root[data-theme=darkmode] .table-active, [dir]:root[data-theme=darkmode] .table-active > th, [dir]:root[data-theme=darkmode] .table-active > td {
-  background-color: rgba(0, 0, 0, 0.075);
+  background-color: rgba(255, 255, 255, 0.075);
 }
 [dir]:root[data-theme=darkmode] .table-hover .table-active:hover {
-  background-color: rgba(0, 0, 0, 0.075);
+  background-color: rgba(242, 242, 242, 0.075);
 }
 [dir]:root[data-theme=darkmode] .table-hover .table-active:hover > td, [dir]:root[data-theme=darkmode] .table-hover .table-active:hover > th {
-  background-color: rgba(0, 0, 0, 0.075);
+  background-color: rgba(242, 242, 242, 0.075);
 }
 :root[data-theme=darkmode] .table .thead-dark th {
   color: #fff;
@@ -25174,7 +25175,7 @@ a > :root[data-theme=darkmode] code {
 }
 [dir]:root[data-theme=darkmode] .table .thead-light th {
   background-color: #ebebeb;
-  border-color: rgba(140, 130, 115, 0.13);
+  border-color: #2a2e2f;
 }
 :root[data-theme=darkmode] .table-dark {
   color: #fff;
@@ -33836,13 +33837,13 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
     color: inherit;
   }
   [dir]:root[data-theme=darkmode] .table-dark th, [dir]:root[data-theme=darkmode] .table-dark td, [dir]:root[data-theme=darkmode] .table-dark thead th, [dir]:root[data-theme=darkmode] .table-dark tbody + tbody {
-    border-color: rgba(140, 130, 115, 0.13);
+    border-color: #2a2e2f;
   }
   :root[data-theme=darkmode] .table .thead-dark th {
     color: inherit;
   }
   [dir]:root[data-theme=darkmode] .table .thead-dark th {
-    border-color: rgba(140, 130, 115, 0.13);
+    border-color: #2a2e2f;
   }
 }
 @keyframes bs-notify-fadeOut {
@@ -46707,7 +46708,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   background-color: #f39c12;
 }
 [dir]:root[data-theme=darkmode] .table-active, [dir]:root[data-theme=darkmode] .table-active > th, [dir]:root[data-theme=darkmode] .table-active > td {
-  background-color: rgba(0, 0, 0, 0.075);
+  background-color: rgba(255, 255, 255, 0.075);
 }
 [dir]:root[data-theme=darkmode] .table-hover .table-primary:hover, [dir]:root[data-theme=darkmode] .table-hover .table-primary:hover > th, [dir]:root[data-theme=darkmode] .table-hover .table-primary:hover > td {
   background-color: #006fe6;
@@ -46734,7 +46735,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   background-color: #e08e0b;
 }
 [dir]:root[data-theme=darkmode] .table-hover .table-active:hover, [dir]:root[data-theme=darkmode] .table-hover .table-active:hover > th, [dir]:root[data-theme=darkmode] .table-hover .table-active:hover > td {
-  background-color: rgba(0, 0, 0, 0.075);
+  background-color: rgba(255, 255, 255, 0.075);
 }
 :root[data-theme=darkmode] .hint {
   overflow-wrap: break-word;
