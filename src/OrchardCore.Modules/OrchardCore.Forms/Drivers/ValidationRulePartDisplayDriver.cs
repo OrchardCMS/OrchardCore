@@ -1,39 +1,28 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
-using OrchardCore.Forms.Services;
 using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers
 {
     public class ValidationRulePartDisplayDriver : ContentPartDisplayDriver<ValidationRulePart>
     {
-        private readonly IEnumerable<IValidationRuleProvider> _validationRuleProviders;
-        private readonly List<ValidationOptionViewModel> validationOptionViewModels =new List<ValidationOptionViewModel>();
+        private readonly ValidationRuleOptions _validationRuleOptions;
 
-        public ValidationRulePartDisplayDriver(IEnumerable<IValidationRuleProvider> validationRuleProviders)
+        public ValidationRulePartDisplayDriver(IOptions<ValidationRuleOptions> validationRuleOptions)
         {
-            _validationRuleProviders = validationRuleProviders.OrderBy(a=>a.Index);
-            foreach (var provider in _validationRuleProviders)
-            {
-                validationOptionViewModels.Add(new ValidationOptionViewModel()
-                {
-                    DisplayName = provider.DisplayName,
-                    Name = provider.Name,
-                    IsShowOption = provider.IsShowOption,
-                    OptionPlaceHolder = provider.OptionPlaceHolder,
-                    IsShowErrorMessage = provider.IsShowErrorMessage,
-                });
-            }
+            _validationRuleOptions = validationRuleOptions.Value;
         }
-        public override IDisplayResult Display(ValidationRulePart part)
+
+        public override IDisplayResult Display(ValidationRulePart part,BuildPartDisplayContext context)
         {
             return View("ValidationRulePart", part).Location("Detail", "Content");
         }
+
 
         public override IDisplayResult Edit(ValidationRulePart part)
         {
@@ -42,7 +31,7 @@ namespace OrchardCore.Forms.Drivers
                 m.Type = part.Type;
                 m.Option = part.Option;
                 m.ErrorMessage = part.ErrorMessage;
-                m.ValidationOptionViewModels = validationOptionViewModels;
+                m.ValidationRuleProviders = _validationRuleOptions.ValidationRuleProviders;
             });
         }
 

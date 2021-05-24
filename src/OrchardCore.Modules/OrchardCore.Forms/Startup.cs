@@ -1,14 +1,16 @@
 using Fluid;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Forms.Drivers;
 using OrchardCore.Forms.Filters;
+using OrchardCore.Forms.Handlers;
 using OrchardCore.Forms.Helpers;
 using OrchardCore.Forms.Models;
-using OrchardCore.Forms.Services;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Forms
@@ -71,9 +73,12 @@ namespace OrchardCore.Forms
             services.AddContentPart<ValidationRulePart>()
                  .UseDisplayDriver<ValidationRulePartDisplayDriver>();
 
-            services.AddValidationRules();
-
             services.AddScoped<ValidationRuleHelpers>();
+            services.AddScoped<IContentHandler, ValidationRulePartContentHandler>();
+            services.AddOptions<ValidationRuleOptions>()
+                .Configure<IStringLocalizer<ValidationRuleOptions>>((options,services)=> {
+                    options.GenerateDefaultValidationRules(services);
+            });
 
             services.AddScoped<IDataMigration, Migrations>();
         }

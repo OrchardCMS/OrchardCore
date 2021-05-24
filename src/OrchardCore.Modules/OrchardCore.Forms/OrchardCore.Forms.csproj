@@ -12,23 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="Controllers\ValidationRuleController.cs~RF3440db28.TMP" />
-    <EmbeddedResource Remove="Providers\IsBeforeProvider.cs~RF34fe94ad.TMP" />
-    <EmbeddedResource Remove="wwwroot\Scripts\validationRuleHelper.js" />
-    <EmbeddedResource Remove="wwwroot\Scripts\validationRuleHelper.min.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\Scripts\validationRuleHelper.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
-    <None Include="wwwroot\Scripts\validationRuleHelper.min.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -43,7 +27,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Flows\OrchardCore.Flows.csproj" />
   </ItemGroup>
 
 </Project>

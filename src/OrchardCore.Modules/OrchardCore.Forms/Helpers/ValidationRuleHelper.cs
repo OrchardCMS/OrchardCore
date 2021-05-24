@@ -5,25 +5,17 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Flows.Models;
+using OrchardCore.Forms.Models;
 
 namespace OrchardCore.Forms.Helpers
 {
     public class ValidationRuleHelpers
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
-        private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
 
-        public ValidationRuleHelpers(
-            IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager,
-            ITypeActivatorFactory<ContentPart> contentPartFactory)
+        public ValidationRuleHelpers(IContentManager contentManager)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
-            _contentPartFactory = contentPartFactory;
         }
         public static bool ValidateLength(int len, string option)
         {
@@ -65,44 +57,11 @@ namespace OrchardCore.Forms.Helpers
             if (symbol == ">") return originResult && compareResult && originDate > compareDate;
             return originResult && compareResult && originDate < compareDate;
         }
-
-        public async Task<List<FlowPart>> GeFlowPartFromContentItemId(string contentItemId)
+        public async Task<List<ValidationRuleAspect>> GetValidationRuleAspects(string contentItemId)
         {
-            List<FlowPart> flowParts = new List<FlowPart>();
-
             var contentItem = await _contentManager.GetAsync(contentItemId);
-            if (contentItem == null) return null;
-
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            if (contentTypeDefinition == null) return null;
-
-            foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = contentTypePartDefinition.Name;
-                var partTypeName = contentTypePartDefinition.PartDefinition.Name;
-                //var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
-                var partActivator = _contentPartFactory.GetTypeActivator(partName);
-                var flowPart = contentItem.As<FlowPart>();
-                if (flowPart == null) continue;
-
-                foreach (var widget in flowPart.Widgets)
-                {
-                    var formPartTypeDefinition = _contentDefinitionManager.GetTypeDefinition(widget.ContentType);
-
-                    foreach (var formWidgetTypeDefinition in formPartTypeDefinition.Parts)
-                    {
-                        //var formPartName = formWidgetTypeDefinition.Name;
-                        var formPartTypeName = formWidgetTypeDefinition.PartDefinition.Name;
-                        //var formContentType = formWidgetTypeDefinition.ContentTypeDefinition.Name;
-                        var formPartActivator = _contentPartFactory.GetTypeActivator(formPartTypeName);
-                        var formFlowPart = widget.As<FlowPart>();
-                        if (formFlowPart == null) continue;
-
-                        flowParts.Add(formFlowPart);
-                    }
-                }
-            }
-            return flowParts;
+            var validationRuleAspectList = await _contentManager.PopulateAspectAsync<List<ValidationRuleAspect>>(contentItem);
+            return validationRuleAspectList;
         }
     }
 }

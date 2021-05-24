@@ -2,20 +2,18 @@
 
 @model ValidationRulePartEditViewModel
 @{
-    dynamic dyModel = Model;
-    var typeName = string.Empty;
-    if (Model.Type != null)
-    {
-        typeName = $"{dyModel.Metadata.Prefix}.Type";
-    }
-    var validationOptions = Model.ValidationOptionViewModels;
+    var typeName = $"{Model.Metadata.Prefix}.Type";
+    var currentProvider = Model.ValidationRuleProviders.FirstOrDefault(a => a.Name == Model.Type);
+    var isShowCurrentOption = currentProvider == null ? false: currentProvider.IsShowOption;
+    var isShowCurrentErrorMessage = currentProvider == null ? false : currentProvider.IsShowErrorMessage;
+    var validationRuleProviders = Model.ValidationRuleProviders;
 
 }
 
 <div class="form-group">
     <label asp-for="Type">@T["Validation Type"]</label>
     <select asp-for="Type" class="form-control content-preview-select" onchange="validationTypeChange(this)">
-        @foreach (var item in validationOptions)
+        @foreach (var item in validationRuleProviders)
         {
             <option value="@item.Name"
                     is-show-option="@item.IsShowOption.ToString()"
@@ -23,32 +21,20 @@
                     data-validation-option="@item.OptionPlaceHolder">
                 @T[item.DisplayName]
                 </option>
-            }
+        }
     </select>
     <span class="hint">@T["The Validation type."]</span>
 </div>
 
-<div class="form-group validation-option" style="display:none">
+<div class="form-group validation-option" style="display: @(isShowCurrentOption ? "block" : "none")">
     <label asp-for="Option">@T["Validation Options"]</label>
     <input asp-for="Option" type="text" class="form-control content-preview-text" />
-    <span class="hint">@T["For details, please visit <a href=\"{0}\">{0}</a>", "https://github.com/validatorjs/validator.js"]</span>
 </div>
 
-<div class="form-group validation-error-message" style="display:none">
+<div class="form-group validation-error-message" style="display: @(isShowCurrentErrorMessage ? "block" : "none")">
     <label asp-for="ErrorMessage">@T["Error Message"]</label>
     <input asp-for="ErrorMessage" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["Error message after the field validation fails."]</span>
 </div>
 
 <script asp-src="~/OrchardCore.Forms/Scripts/validationRuleHelper.min.js" debug-src="~/OrchardCore.Forms/Scripts/validationRuleHelper.js" asp-name="validationRuleHelper" depends-on="jQuery" at="Foot"></script>
-
-<script at="Foot">
-    (function ($) {
-        $(function () {
-            if ('@typeName' != '') {
-                var selector = 'select[name="@typeName"]'
-                validationTypeChange($(selector)[0], '@Model.Option', '@Model.ErrorMessage')
-            }
-        })
-    })(jQuery);
-</script>
