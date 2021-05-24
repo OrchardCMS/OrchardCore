@@ -8,11 +8,19 @@
     var versionNumber = contentEvent.VersionNumber;
     var latestVersionId = Model.LatestVersionId;
     var diffNodes = Model.DiffNodes;
+    var newTime = await DisplayAsync(await New.Timespan(Utc: Model.AuditTrailEvent.CreatedUtc, Format: "g"));
+    var newText = contentItem.DisplayText;
+    var oldTime = await DisplayAsync(await New.Timespan(Utc: Model.PreviousContentItem?.ModifiedUtc, Format: "g"));
+    var oldText = Model.PreviousContentItem?.DisplayText;
 }
 
-<script asp-name="jsdiff" depends-on="jQuery" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.min.js" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.js" type="text/javascript" version="4.0.2" at="Foot"></script>
-<script depends-on="jsdiff" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js" type="text/javascript" at="Foot"></script>
-
+@if (Model.PreviousContentItem != null)
+{
+    <script asp-name="jsdiff" depends-on="jQuery" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.min.js" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.js" version="4.0.2" at="Foot"></script>
+    <script at="Foot" asp-name="prism" depends-on="jsdiff" asp-src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+    <script at="Foot" asp-name="prismjson" depends-on="prism" asp-src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-json.min.js"></script>
+    <script at="Foot" asp-name="diffviewer" depends-on="prismjson" asp-src="~/OrchardCore.AuditTrail/Scripts/diffviewer.js"></script>
+}
 <div class="card mb-3">
     <div class="card-header" id="headingContent">
         <h6 class="mb-0">
@@ -72,6 +80,25 @@
         </div>
     </div>
 </div>
+
+@if (Model.PreviousContentItem != null)
+{
+<div class="card mb-3">
+    <div class="card-header" id="headingDiffViewer">
+        <h6 class="mb-0">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseDiffViewer" aria-expanded="true" aria-controls="collapseDiffViewer">
+                @T["New Diff"]
+            </button>
+        </h6>
+    </div>       
+    <div id="collapseDiffViewer" class="collapse show" aria-labelledby="headingDiffViewer" data-parent="#accordion">
+        <div class="card-body p-0">
+            <div id="diffapp" data-split="@T["Split"]" data-unified="@T["Unified"]" data-old="@Model.Previous" data-new="@Model.Current" data-old-time="@oldTime" data-old-text="@oldText" data-new-time="@newTime" data-new-text="@newText"></div>
+        </div>
+    </div>
+</div>
+}
+
 @if (diffNodes != null && diffNodes.Any())
 {
     <div class="card mb-3">

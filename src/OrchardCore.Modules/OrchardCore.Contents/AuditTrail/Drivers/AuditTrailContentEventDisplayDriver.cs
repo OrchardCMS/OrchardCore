@@ -56,12 +56,12 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
                 Initialize<AuditTrailContentEventDetailViewModel>("AuditTrailContentEventDetail_DetailAdmin", async m =>
                 {
                     BuildSummaryViewModel(m, auditTrailEvent, contentEvent, latestVersionId);
-                    m.DiffNodes = await BuildDiffNodesAsync(auditTrailEvent, contentEvent);
+                    m.DiffNodes = await BuildDiffNodesAsync(auditTrailEvent, contentEvent, m);
                 }).Location("DetailAdmin","Content:5")
             );
         }
 
-        private async Task<DiffNode[]> BuildDiffNodesAsync(AuditTrailEvent auditTrailEvent, AuditTrailContentEvent contentEvent)
+        private async Task<DiffNode[]> BuildDiffNodesAsync(AuditTrailEvent auditTrailEvent, AuditTrailContentEvent contentEvent, AuditTrailContentEventDetailViewModel model)
         {
             var contentItem = contentEvent.ContentItem;
 
@@ -85,6 +85,11 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             var previous = JObject.FromObject(previousContentItem);
             previous.Remove(nameof(AuditTrailPart));
             current.Remove(nameof(AuditTrailPart));
+
+            model.PreviousContentItem = previousContentItem;
+
+            model.Previous = previous.ToString();
+            model.Current = current.ToString();
 
             if (current.FindDiff(previous, out var diff))
             {
