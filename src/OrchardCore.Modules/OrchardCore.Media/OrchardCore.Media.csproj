@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="PdfPig" />
     <PackageReference Include="Shortcodes" />
     <PackageReference Include="SixLabors.ImageSharp.Web" />
     <PackageReference Include="System.Linq.Async" />
