@@ -13,7 +13,7 @@ namespace OrchardCore.Redis
         public ConfigurationOptions ConfigurationOptions { get; set; }
 
         /// <summary>
-        /// Prefix alowing unrelated tenants to share a Redis instance.
+        /// Prefix alowing a Redis instance to be shared.
         /// </summary>
         public string InstancePrefix { get; set; }
     }

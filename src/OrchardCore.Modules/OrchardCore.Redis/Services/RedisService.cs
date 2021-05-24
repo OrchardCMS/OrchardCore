@@ -18,8 +18,9 @@ namespace OrchardCore.Redis.Services
         public RedisService(IOptions<RedisOptions> options, ILogger<RedisService> logger)
         {
             _options = options;
-            InstancePrefix = options.Value.InstancePrefix;
             _logger = logger;
+
+            InstancePrefix = options.Value.InstancePrefix;
         }
 
         public IConnectionMultiplexer Connection { get; private set; }
