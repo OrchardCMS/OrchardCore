@@ -12,6 +12,7 @@ using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Navigation;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Settings;
+using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -24,6 +25,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
+using YesSql.Filters.Query;
 using YesSql.Indexes;
 
 namespace OrchardCore.AuditTrail
@@ -67,23 +69,29 @@ namespace OrchardCore.AuditTrail
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();
 
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AuditTrailSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
+
+            services.AddScoped<IDisplayManager<AuditTrailIndexOptions>, DisplayManager<AuditTrailIndexOptions>>();
+            services.AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
+
+            services.AddSingleton<IAuditTrailAdminListFilterParser>(sp =>
             {
-                var S = sp.GetService<IStringLocalizer<Startup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<AuditTrailSettings>(S["Audit Trail settings"], S["Exports the audit trail settings."]);
+                var filterProviders = sp.GetServices<IAuditTrailAdminListFilterProvider>();
+                var builder = new QueryEngineBuilder<AuditTrailEvent>();
+                foreach (var provider in filterProviders)
+                {
+                    provider.Build(builder);
+                }
+
+                var parser = builder.Build();
+
+                return new DefaultAuditTrailAdminListFilterParser(parser);
             });
 
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AuditTrailSettings>());
+            services.AddTransient<IAuditTrailAdminListFilterProvider, DefaultAuditTrailAdminListFilterProvider>();
 
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AuditTrailTrimmingSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<Startup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<AuditTrailTrimmingSettings>(S["Audit Trail Trimming settings"], S["Exports the audit trail trimming settings."]);
-            });
+            // TODO move to requirefeatures
 
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AuditTrailTrimmingSettings>());
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -103,6 +111,31 @@ namespace OrchardCore.AuditTrail
                 pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Display/{auditTrailEventId}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AuditTrailSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<Startup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<AuditTrailSettings>(S["Audit Trail settings"], S["Exports the audit trail settings."]);
+            });
+
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AuditTrailSettings>());
+
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AuditTrailTrimmingSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<Startup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<AuditTrailTrimmingSettings>(S["Audit Trail Trimming settings"], S["Exports the audit trail trimming settings."]);
+            });
+
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AuditTrailTrimmingSettings>());
         }
     }
 }
