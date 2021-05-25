@@ -709,7 +709,7 @@ body:not(.left-sidebar-compact) {
 
         li > figure > ul > li.active ul > li.active .item-label {
             background: rgba(0, 0, 0, 0.05);
-            color: rgba(0, 0, 0, 0.9) !important;
+            color: rgba($admin-menu-item-font-color-active, 0.9) !important;
             font-weight: 600;
             padding-left: (2 * $link-padding-left + 16) !important;
         }
