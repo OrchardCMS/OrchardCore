@@ -41,6 +41,7 @@ namespace OrchardCore.Contents.AuditTrail
             services.AddContentPart<AuditTrailPart>()
                 .UseDisplayDriver<AuditTrailPartDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
+            services.AddScoped<IContentDisplayDriver, AuditTrailContentsDriver>();
 
             services.AddScoped<IAuditTrailEventProvider, ContentAuditTrailEventProvider>();
             services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();

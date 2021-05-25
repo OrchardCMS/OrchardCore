@@ -14,81 +14,70 @@ namespace OrchardCore.AuditTrail.Services
     {
         public void Build(QueryEngineBuilder<AuditTrailEvent> builder)
         {
+            // TODO date.
+
             builder
-                .WithNamedTerm("status", builder => builder
+                .WithNamedTerm("id", builder => builder
                     .OneCondition<AuditTrailEvent>((val, query) =>
                     {
-                        // if (Enum.TryParse<UsersFilter>(val, true, out var usersStatus))
-                        // {
-                        //     switch (usersStatus)
-                        //     {
-                        //         case UsersFilter.Enabled:
-                        //             query.With<UserIndex>(u => u.IsEnabled);
-                        //             break;
-                        //         case UsersFilter.Disabled:
-                        //             query.With<UserIndex>(u => !u.IsEnabled);
-                        //             break;
-                        //     }
-                        // }
+                        if (!String.IsNullOrEmpty(val))
+                        {
+                            query.With<AuditTrailEventIndex>(x => x.CorrelationId == val);
+                        }
 
                         return query;
                     })
                     .MapTo<AuditTrailIndexOptions>((val, model) =>
                     {
-                        // if (Enum.TryParse<UsersFilter>(val, true, out var usersFilter))
-                        // {
-                        //     model.Filter = usersFilter;
-                        // }
+                        model.CorrelationId = val;
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        // switch (model.Filter)
-                        // {
-                        //     case UsersFilter.Enabled:
-                        //         return (true, model.Filter.ToString());
-                        //     case UsersFilter.Disabled:
-                        //         return (true, model.Filter.ToString());
-                        // }
-
+                        if (!String.IsNullOrEmpty(model.CorrelationId))
+                        {
+                            return (true, model.CorrelationId);
+                        }
                         return (false, String.Empty);
                     })
                 )
                 .WithNamedTerm("sort", builder => builder
                     .OneCondition<AuditTrailEvent>((val, query) =>
                     {
-                        // if (Enum.TryParse<UsersOrder>(val, true, out var usersOrder))
-                        // {
-                        //     switch (usersOrder)
-                        //     {
-                        //         case UsersOrder.Name:
-                        //             query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
-                        //             break;
-                        //         // Name is provided as a default sort.
-                        //         case UsersOrder.Email:
-                        //             query.With<UserIndex>().OrderBy(u => u.NormalizedEmail);
-                        //             break;
-                        //     };
-                        // }
-                        // else
-                        // {
-                        //     query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
-                        // }
+                        if (Enum.TryParse<AuditTrailSort>(val, true, out var auditTrailSort))
+                        {
+                            switch (auditTrailSort)
+                            {
+                                case AuditTrailSort.Timestamp:
+                                    query.With<AuditTrailEventIndex>().OrderByDescending(u => u.CreatedUtc);
+                                    break;
+                                case AuditTrailSort.Category:
+                                    query.With<AuditTrailEventIndex>().OrderBy(index => index.Category).ThenByDescending(index => index.CreatedUtc);
+                                    break;  
+                                case AuditTrailSort.Event:
+                                    query.With<AuditTrailEventIndex>().OrderBy(index => index.Name).ThenByDescending(index => index.CreatedUtc);
+                                    break;     
+                            };
+                        }
+                        else
+                        {
+                            query.With<AuditTrailEventIndex>().OrderByDescending(u => u.CreatedUtc);
+                        }
 
                         return query;
                     })
                     .MapTo<AuditTrailIndexOptions>((val, model) =>
                     {
-                        // if (Enum.TryParse<UsersOrder>(val, true, out var order))
-                        // {
-                        //     model.Order = order;
-                        // }
+                        if (Enum.TryParse<AuditTrailSort>(val, true, out var sort))
+                        {
+                            model.Sort = sort;
+                        }
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        // if (model.Order != UsersOrder.Name)
-                        // {
-                        //     return (true, model.Order.ToString());
-                        // }
+                        if (model.Sort != AuditTrailSort.Timestamp)
+                        {
+                            return (true, model.Sort.ToString());
+                        }
 
                         return (false, String.Empty);
                     })
@@ -98,9 +87,10 @@ namespace OrchardCore.AuditTrail.Services
                     .ManyCondition<AuditTrailEvent>(
                         ((val, query, ctx) =>
                         {
+                            // TODO normalized.
                             // var context = (AuditTrailQueryContext)ctx;
                             // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-                            // query.With<UserIndex>(x => x.NormalizedUserName.Contains(val));
+                            query.With<AuditTrailEventIndex>(x => x.UserName.Contains(val));
 
                             return new ValueTask<IQuery<AuditTrailEvent>>(query);
                         }),
@@ -108,32 +98,32 @@ namespace OrchardCore.AuditTrail.Services
                         {
                             // var context = (AuditTrailQueryContext)ctx;
                             // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-                            // query.With<UserIndex>(x => x.NormalizedUserName.IsNotIn<UserIndex>(s => s.NormalizedUserName, w => w.NormalizedUserName.Contains(val)));
-
-                            return new ValueTask<IQuery<AuditTrailEvent>>(query);
-                        })
-                    )
-                )
-                .WithNamedTerm("email", builder => builder
-                    .ManyCondition<AuditTrailEvent>(
-                        ((val, query, ctx) =>
-                        {
-                            // var context = (AuditTrailQueryContext)ctx;
-                            // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-                            // query.With<UserIndex>(x => x.NormalizedEmail.Contains(val));
-
-                            return new ValueTask<IQuery<AuditTrailEvent>>(query);
-                        }),
-                        ((val, query, ctx) =>
-                        {
-                            // var context = (AuditTrailQueryContext)ctx;
-                            // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-                            // query.With<UserIndex>(x => x.NormalizedEmail.IsNotIn<UserIndex>(s => s.NormalizedEmail, w => w.NormalizedEmail.Contains(val)));
+                            query.With<AuditTrailEventIndex>(x => x.UserName.IsNotIn<AuditTrailEventIndex>(s => s.UserName, w => w.UserName.Contains(val)));
 
                             return new ValueTask<IQuery<AuditTrailEvent>>(query);
                         })
                     )
                 );
+                // .WithNamedTerm("email", builder => builder
+                //     .ManyCondition<AuditTrailEvent>(
+                //         ((val, query, ctx) =>
+                //         {
+                //             // var context = (AuditTrailQueryContext)ctx;
+                //             // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+                //             // query.With<UserIndex>(x => x.NormalizedEmail.Contains(val));
+
+                //             return new ValueTask<IQuery<AuditTrailEvent>>(query);
+                //         }),
+                //         ((val, query, ctx) =>
+                //         {
+                //             // var context = (AuditTrailQueryContext)ctx;
+                //             // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+                //             // query.With<UserIndex>(x => x.NormalizedEmail.IsNotIn<UserIndex>(s => s.NormalizedEmail, w => w.NormalizedEmail.Contains(val)));
+
+                //             return new ValueTask<IQuery<AuditTrailEvent>>(query);
+                //         })
+                //     )
+                // );
 
         }
     }

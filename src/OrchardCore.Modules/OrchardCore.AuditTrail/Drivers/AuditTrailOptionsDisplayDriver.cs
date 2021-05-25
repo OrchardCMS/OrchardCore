@@ -48,13 +48,11 @@ namespace OrchardCore.AuditTrail.Drivers
         {
             m.SearchText = model.SearchText;
             m.OriginalSearchText = model.OriginalSearchText;
-            m.Order = model.Order;
-            m.Filter = model.Filter;
-            m.BulkAction = model.BulkAction;
-            m.UserSorts = model.UserSorts;
-            m.UserFilters = model.UserFilters;
-            m.UsersBulkAction = model.UsersBulkAction;
-            m.UserRoleFilters = model.UserRoleFilters;
+            m.Category = model.Category;
+            m.CorrelationId = model.CorrelationId;
+            m.Categories = model.Categories;
+            m.Sort = model.Sort;
+            m.AuditTrailSorts = model.AuditTrailSorts;
             m.StartIndex = model.StartIndex;
             m.EndIndex = model.EndIndex;
             m.EventsCount = model.EventsCount;

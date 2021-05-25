@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -13,10 +14,12 @@ namespace OrchardCore.AuditTrail.ViewModels
     {
         public string SearchText { get; set; }
         public string OriginalSearchText { get; set; }
-        public UsersOrder Order { get; set; }
-        public UsersFilter Filter { get; set; }
-        public string SelectedRole { get; set; }
-        public UsersBulkAction BulkAction { get; set; }
+        public string Category { get; set; }
+        public string UserName { get; set; }
+        public string CorrelationId { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public AuditTrailSort Sort { get; set; }
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
         public int EventsCount { get; set; }
@@ -29,41 +32,22 @@ namespace OrchardCore.AuditTrail.ViewModels
         public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
 
         [BindNever]
-        public List<SelectListItem> UserFilters { get; set; }
+        public List<SelectListItem> Categories { get; set; }
 
         [BindNever]
-        public List<SelectListItem> UserRoleFilters { get; set; }
+        public List<SelectListItem> AuditTrailSorts { get; set; }
 
+        // TODO
         [BindNever]
-        public List<SelectListItem> UserSorts { get; set; }
+        public List<SelectListItem> AuditTrailDates { get; set; }        
 
-        [BindNever]
-        public List<SelectListItem> UsersBulkAction { get; set; }
     }
 
-    public enum UsersOrder
+    public enum AuditTrailSort
     {
-        Name,
-        Email,
-    }
-
-    public enum UsersFilter
-    {
-        All,
-        Approved,
-        Pending,
-        EmailPending,
-        Enabled,
-        Disabled
-    }
-
-    public enum UsersBulkAction
-    {
-        None,
-        Delete,
-        Enable,
-        Disable,
-        Approve,
-        ChallengeEmail
+        Timestamp,
+        Category,
+        Event,
+        User
     }
 }

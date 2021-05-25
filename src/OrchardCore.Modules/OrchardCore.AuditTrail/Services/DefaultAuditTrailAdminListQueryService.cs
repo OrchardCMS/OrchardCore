@@ -28,7 +28,7 @@ namespace OrchardCore.AuditTrail.Services
         public async Task<IQuery<AuditTrailEvent>> QueryAsync(AuditTrailIndexOptions options, IUpdateModel updater)
         {
             // Because admin filters can add a different index to the query this must be added as a Query<AuditTrailEvent>()
-            var query = _session.Query<AuditTrailEvent>();
+            var query = _session.Query<AuditTrailEvent>(collection: AuditTrailEvent.Collection);
 
             query = await options.FilterResult.ExecuteAsync(new AuditTrailQueryContext(_serviceProvider, query));
 
