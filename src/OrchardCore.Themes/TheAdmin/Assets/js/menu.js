@@ -86,7 +86,7 @@ function unSetCompactStatus() {
 const resizeObserver = new ResizeObserver(entries => {
     if (isCompactExplicit)
     {
-        if(document.getElementById("left-nav").scrollHeight > document.getElementById("left-nav").clientHeight)
+        if (document.getElementById("left-nav").scrollHeight > document.getElementById("left-nav").clientHeight)
         {
             document.body.classList.add("scroll");
         }
