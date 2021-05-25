@@ -46373,7 +46373,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   padding-right: 12px;
 }
 :root[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar li > figure > ul > li.active ul > li.active .item-label {
-  color: rgba(0, 0, 0, 0.9) !important;
+  color: rgba(232, 230, 227, 0.9) !important;
   font-weight: 600;
 }
 [dir]:root[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar li > figure > ul > li.active ul > li.active .item-label {
