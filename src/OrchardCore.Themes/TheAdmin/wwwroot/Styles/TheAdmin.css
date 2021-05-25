@@ -23124,21 +23124,21 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 [dir]:root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul:before {
   padding: 0 20px;
 }
-:root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul li:first-child::before {
+:root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul > li:first-child::before {
   content: "";
   height: 1px;
   display: block;
   position: absolute;
   width: 90%;
 }
-[dir]:root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul li:first-child::before {
+[dir]:root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul > li:first-child::before {
   background: rgba(0, 0, 0, 0.1);
   margin: 0px auto;
 }
-[dir=ltr]:root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul li:first-child::before {
+[dir=ltr]:root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul > li:first-child::before {
   left: 15px;
 }
-[dir=rtl]:root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul li:first-child::before {
+[dir=rtl]:root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul > li:first-child::before {
   right: 15px;
 }
 :root[data-theme=default] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li > figure > ul {
@@ -46564,21 +46564,21 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 [dir]:root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul:before {
   padding: 0 20px;
 }
-:root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul li:first-child::before {
+:root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul > li:first-child::before {
   content: "";
   height: 1px;
   display: block;
   position: absolute;
   width: 90%;
 }
-[dir]:root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul li:first-child::before {
+[dir]:root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul > li:first-child::before {
   background: rgba(0, 0, 0, 0.1);
   margin: 0px auto;
 }
-[dir=ltr]:root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul li:first-child::before {
+[dir=ltr]:root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul > li:first-child::before {
   left: 15px;
 }
-[dir=rtl]:root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul li:first-child::before {
+[dir=rtl]:root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul > li:first-child::before {
   right: 15px;
 }
 :root[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li > figure > ul {

@@ -832,7 +832,7 @@ body:not(.left-sidebar-compact) {
                             display: block;
                         }
 
-                        > ul li:first-child::before
+                        > ul > li:first-child::before
                         {
                             background: rgba(0, 0, 0, 0.1);
                             margin: 0px auto;
