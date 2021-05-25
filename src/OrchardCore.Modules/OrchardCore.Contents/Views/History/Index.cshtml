@@ -1,0 +1,59 @@
+@model HistoryIndexViewModel
+@using OrchardCore.Contents.ViewModels;
+@using Newtonsoft.Json;
+
+@* return View(new { ContentItems = contentItemSummaries, OldContentItem = oldContentItem, NewContentItem =
+    newContentItem }); *@
+
+
+<zone Name="Title">
+    <h1>@RenderTitleSegments("Content Item History")</h1>
+</zone>
+
+<form asp-action="Index" asp-controller="History" method="get">
+    <div class="row">
+        <div class="col-md-4">
+            <ul class="list-group">
+                @foreach (var item in Model.ContentItems)
+                {
+                    <li class="list-group-item">
+                        @await DisplayAsync(item)
+                        @Orchard.ConsoleLog(item as object)
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-md-8">
+            @{
+                var newContentItem = Model.NewContentItem;
+                var newJson = JsonConvert.SerializeObject(newContentItem, Formatting.Indented);
+                var oldContentItem = Model.OldContentItem;
+                var oldJson = JsonConvert.SerializeObject(oldContentItem, Formatting.Indented);
+                var newTime = await DisplayAsync(await New.Timespan(Utc: newContentItem?.ModifiedUtc, Format: "g"));
+                var newText = newContentItem?.DisplayText;
+                var oldTime = await DisplayAsync(await New.Timespan(Utc: oldContentItem?.ModifiedUtc, Format: "g"));
+                var oldText = oldContentItem?.DisplayText;
+            }
+
+            @if (Model.OldContentItem != null)
+            {
+                <script asp-name="jsdiff" depends-on="jQuery" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js"
+                debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js"
+                cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.min.js"
+                debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.js" version="4.0.2"
+                at="Foot"></script>
+                <script at="Foot" asp-name="prism" depends-on="jsdiff"
+                asp-src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+                <script at="Foot" asp-name="prismjson" depends-on="prism"
+                asp-src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-json.min.js"></script>
+                <script at="Foot" asp-name="diffviewer" depends-on="prismjson"
+                asp-src="~/OrchardCore.AuditTrail/Scripts/diffviewer.js"></script>
+            }
+
+            <div id="diffapp" data-split="@T["Split"]" data-unified="@T["Unified"]" data-old="@oldJson"
+                data-new="@newJson" data-old-time="@oldTime" data-old-text="@oldText" data-new-time="@newTime"
+                data-new-text="@newText"></div>
+
+        </div>
+    </div>
+</form>

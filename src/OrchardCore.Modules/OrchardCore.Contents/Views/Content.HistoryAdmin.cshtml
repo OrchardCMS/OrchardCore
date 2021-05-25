@@ -1,0 +1,19 @@
+@using OrchardCore.Contents
+@using OrchardCore.ContentManagement
+@{
+    IShape model = (IShape)Model;
+    var nextVersionId = model.GetProperty<string>("NextVersionId");
+    if (!String.IsNullOrEmpty(nextVersionId))
+    {
+        foreach(IShape item in Model.Content)
+        {
+            item.Properties.Add("NextVersionId", nextVersionId);
+        }
+    }
+}
+@if (Model.Content != null)
+{
+    @await DisplayAsync(Model.Content)
+
+}
+@Orchard.ConsoleLog(Model as object)

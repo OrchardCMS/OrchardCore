@@ -44,3 +44,5 @@
 {
     <a asp-action="Clone" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" data-url-af="UnsafeUrl" class="dropdown-item btn-sm">@T["Clone"]</a>
 }
+
+<a asp-action="Index" asp-controller="History" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item btn-sm">@T["History"]</a>
