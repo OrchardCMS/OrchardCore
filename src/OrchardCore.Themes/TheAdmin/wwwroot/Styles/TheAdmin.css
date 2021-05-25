@@ -23312,8 +23312,6 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   border-width: 5px;
 }
 :root[data-theme=default] .btn-widget-add-below {
-  position: relative;
-  z-index: 9999;
   opacity: 0.7;
   transition: 0.3s opacity;
 }
@@ -46732,8 +46730,6 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   border-width: 5px;
 }
 :root[data-theme=darkmode] .btn-widget-add-below {
-  position: relative;
-  z-index: 9999;
   opacity: 0.7;
   transition: 0.3s opacity;
 }
