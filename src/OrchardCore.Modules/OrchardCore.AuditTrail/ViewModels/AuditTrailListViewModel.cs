@@ -15,9 +15,9 @@ namespace OrchardCore.AuditTrail.ViewModels
     public class AuditTrailListViewModel
     {
         public IList<IShape> Events { get; set; }
-        // public UserIndexOptions Options { get; set; } = new UserIndexOptions();
+        public AuditTrailIndexOptions Options { get; set; } = new AuditTrailIndexOptions();
         public IShape Pager { get; set; }
-        public IShape Header { get; set; }
+        public dynamic Header { get; set; }
     }
 
     // public class AuditTrailEntry

@@ -1,9 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
@@ -12,6 +17,10 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
+using OrchardCore.Routing;
+using YesSql;
+using YesSql.Services;
+using YesSql.Filters.Query;
 
 namespace OrchardCore.AuditTrail.Controllers
 {
@@ -24,6 +33,8 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IAuditTrailDisplayManager _auditTrailEventDisplayManager;
         private readonly IDisplayManager<AuditTrailEvent> _displayManager;
+        private readonly IDisplayManager<AuditTrailIndexOptions> _auditTrailOptionsDisplayManager;
+        private readonly IStringLocalizer S;
 
         public AdminController(
             ISiteService siteService,
@@ -32,7 +43,9 @@ namespace OrchardCore.AuditTrail.Controllers
             IUpdateModelAccessor updateModelAccessor,
             IAuthorizationService authorizationService,
             IAuditTrailDisplayManager auditTrailEventDisplayManager,
-            IDisplayManager<AuditTrailEvent> displayManager)
+            IDisplayManager<AuditTrailEvent> displayManager,
+            IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _siteService = siteService;
             _shapeFactory = shapeFactory;
@@ -41,9 +54,11 @@ namespace OrchardCore.AuditTrail.Controllers
             _authorizationService = authorizationService;
             _auditTrailEventDisplayManager = auditTrailEventDisplayManager;
             _displayManager = displayManager;
+            _auditTrailOptionsDisplayManager = auditTrailOptionsDisplayManager;
+            S = stringLocalizer;
         }
 
-        public async Task<ActionResult> Index(PagerParameters pagerParameters, AuditTrailOrderBy? orderBy = null)
+        public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(AuditTrailFilterEngineModelBinder), Name = "q")] QueryFilterResult<AuditTrailEvent> queryFilterResult, PagerParameters pagerParameters, AuditTrailOrderBy? orderBy = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, AuditTrailPermissions.ViewAuditTrail))
             {
@@ -55,19 +70,47 @@ namespace OrchardCore.AuditTrail.Controllers
             var filters = Filters.From(QueryHelpers.ParseQuery(Request.QueryString.Value), _updateModelAccessor.ModelUpdater);
 
             var searchResult = await _auditTrailManager.GetEventsAsync(pager.Page, pager.PageSize, filters, orderBy ?? AuditTrailOrderBy.DateDescending);
+            var options = new AuditTrailIndexOptions();
+
+            // Populate route values to maintain previous route data when generating page links
+            options.FilterResult = queryFilterResult;
+            options.FilterResult.MapTo(options);
+            // The search text is provided back to the UI.
+            options.SearchText = options.FilterResult.ToString();
+            options.OriginalSearchText = options.SearchText;
+
+            // Populate route values to maintain previous route data when generating page links.
+            options.RouteValues.TryAdd("q", options.FilterResult.ToString());
+
+            var routeData = new RouteData(options.RouteValues);
+
             if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
             {
                 searchResult.Events = Enumerable.Empty<AuditTrailEvent>();
             }
 
-            var pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
+            // TODO back to IShape
+
+            dynamic pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
             {
                 pager.Page,
                 pager.PageSize,
                 TotalItemCount = searchResult.TotalCount
             }));
+// var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
-            // TODO route data for pager links
+            options.UserFilters = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All) },
+                new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled) },
+                new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled) },
+                new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = (options.Filter == UsersFilter.All) },
+                new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = (options.Filter == UsersFilter.Enabled) },
+                new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = (options.Filter == UsersFilter.Disabled) }
+                //new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
+                //new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
+                //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
+            };
 
 
             var items = new List<IShape>();
@@ -79,15 +122,43 @@ namespace OrchardCore.AuditTrail.Controllers
                 );
             }
 
+            var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
+            options.StartIndex = startIndex;
+            options.EndIndex = startIndex + items.Count - 1;
+            options.EventsCount = items.Count;
+            options.TotalItemCount = pagerShape.TotalItemCount;
+
+            var header = await _auditTrailOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+
             var shapeViewModel = await _shapeFactory.CreateAsync<AuditTrailListViewModel>("AuditTrailAdminList", viewModel =>
             {
                 viewModel.Events = items;
                 viewModel.Pager = pagerShape;
-                // viewModel.Options = options;
-                // viewModel.Header = header;
+                viewModel.Options = options;
+                viewModel.Header = header;
             });
 
             return View(shapeViewModel);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+         public async Task<ActionResult> IndexFilterPOST(AuditTrailIndexOptions options)
+        {
+            await _auditTrailOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            // When the user has typed something into the search input no further evaluation of the form post is required.
+            if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectToAction(nameof(Index), new RouteValueDictionary { { "q", options.SearchText } });
+            }
+
+            // Evaluate the values provided in the form post and map them to the filter result and route values.
+            await _auditTrailOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+
+            // The route value must always be added after the editors have updated the models.
+            options.RouteValues.TryAdd("q", options.FilterResult.ToString());
+
+            return RedirectToAction(nameof(Index), options.RouteValues);
         }
 
         public async Task<ActionResult> Display(string auditTrailEventId)

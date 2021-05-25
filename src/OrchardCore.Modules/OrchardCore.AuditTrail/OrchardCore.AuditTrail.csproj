@@ -24,4 +24,9 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Settings.Core\OrchardCore.Settings.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YesSql.Filters.Query" />
+  </ItemGroup>
+
 </Project>
