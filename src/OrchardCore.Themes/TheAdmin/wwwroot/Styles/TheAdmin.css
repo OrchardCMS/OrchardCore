@@ -23290,41 +23290,46 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 :root[data-theme=default] svg {
   vertical-align: -0.125em;
 }
-:root[data-theme=default] .btn-widget-add-below ::-webkit-scrollbar {
+:root[data-theme=default] .btn-dropdown ::-webkit-scrollbar {
   width: 4px;
 }
-[dir]:root[data-theme=default] .btn-widget-add-below ::-webkit-scrollbar {
+[dir]:root[data-theme=default] .btn-dropdown ::-webkit-scrollbar {
   background-color: #EAEAEA;
 }
-[dir]:root[data-theme=default] .btn-widget-add-below ::-webkit-scrollbar-thumb {
+[dir]:root[data-theme=default] .btn-dropdown ::-webkit-scrollbar-thumb {
   background-color: #495057;
 }
-:root[data-theme=default] .btn-widget-add-below .dropdown-menu {
+:root[data-theme=default] .btn-dropdown .dropdown-menu {
   max-height: 200px;
   overflow: hidden auto;
   scrollbar-width: thin;
   scrollbar-color: #495057 #EAEAEA;
 }
-:root[data-theme=default] .btn-widget-add-below-wrapper:hover > .btn-widget-add-below {
+:root[data-theme=default] .btn-dropdown-wrapper:hover > .btn-dropdown {
   opacity: 1;
 }
-[dir]:root[data-theme=default] .btn-widget-add-below-wrapper:hover > .btn-widget-add-below {
+[dir]:root[data-theme=default] .btn-dropdown-wrapper:hover > .btn-dropdown {
   border-width: 5px;
 }
-:root[data-theme=default] .btn-widget-add-below {
-  opacity: 0.7;
+:root[data-theme=default] .btn-dropdown {
+  position: relative;
+  z-index: 1000;
+  opacity: 0.8;
   transition: 0.3s opacity;
 }
-:root[data-theme=default] .btn-widget-add-below > .btn-group {
+:root[data-theme=default] .btn-dropdown > .btn-group {
   bottom: 17px;
 }
-[dir]:root[data-theme=default] .btn-widget-add-below > .btn-group {
+[dir]:root[data-theme=default] .btn-dropdown > .btn-group {
   margin: 0 auto;
 }
-:root[data-theme=default] [dir=ltr] .btn-widget-add-below > .btn-group {
+:root[data-theme=default] .btn-dropdown.show {
+  z-index: 1001;
+}
+:root[data-theme=default] [dir=ltr] .btn-dropdown > .btn-group {
   left: calc(-14px + 50%);
 }
-:root[data-theme=default] [dir=rtl] .btn-widget-add-below > .btn-group {
+:root[data-theme=default] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
 }
 [dir]:root[data-theme=default] .bg-primary {
@@ -46708,41 +46713,46 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 :root[data-theme=darkmode] svg {
   vertical-align: -0.125em;
 }
-:root[data-theme=darkmode] .btn-widget-add-below ::-webkit-scrollbar {
+:root[data-theme=darkmode] .btn-dropdown ::-webkit-scrollbar {
   width: 4px;
 }
-[dir]:root[data-theme=darkmode] .btn-widget-add-below ::-webkit-scrollbar {
+[dir]:root[data-theme=darkmode] .btn-dropdown ::-webkit-scrollbar {
   background-color: #EAEAEA;
 }
-[dir]:root[data-theme=darkmode] .btn-widget-add-below ::-webkit-scrollbar-thumb {
+[dir]:root[data-theme=darkmode] .btn-dropdown ::-webkit-scrollbar-thumb {
   background-color: #495057;
 }
-:root[data-theme=darkmode] .btn-widget-add-below .dropdown-menu {
+:root[data-theme=darkmode] .btn-dropdown .dropdown-menu {
   max-height: 200px;
   overflow: hidden auto;
   scrollbar-width: thin;
   scrollbar-color: #495057 #EAEAEA;
 }
-:root[data-theme=darkmode] .btn-widget-add-below-wrapper:hover > .btn-widget-add-below {
+:root[data-theme=darkmode] .btn-dropdown-wrapper:hover > .btn-dropdown {
   opacity: 1;
 }
-[dir]:root[data-theme=darkmode] .btn-widget-add-below-wrapper:hover > .btn-widget-add-below {
+[dir]:root[data-theme=darkmode] .btn-dropdown-wrapper:hover > .btn-dropdown {
   border-width: 5px;
 }
-:root[data-theme=darkmode] .btn-widget-add-below {
-  opacity: 0.7;
+:root[data-theme=darkmode] .btn-dropdown {
+  position: relative;
+  z-index: 1000;
+  opacity: 0.8;
   transition: 0.3s opacity;
 }
-:root[data-theme=darkmode] .btn-widget-add-below > .btn-group {
+:root[data-theme=darkmode] .btn-dropdown > .btn-group {
   bottom: 17px;
 }
-[dir]:root[data-theme=darkmode] .btn-widget-add-below > .btn-group {
+[dir]:root[data-theme=darkmode] .btn-dropdown > .btn-group {
   margin: 0 auto;
 }
-:root[data-theme=darkmode] [dir=ltr] .btn-widget-add-below > .btn-group {
+:root[data-theme=darkmode] .btn-dropdown.show {
+  z-index: 1001;
+}
+:root[data-theme=darkmode] [dir=ltr] .btn-dropdown > .btn-group {
   left: calc(-14px + 50%);
 }
-:root[data-theme=darkmode] [dir=rtl] .btn-widget-add-below > .btn-group {
+:root[data-theme=darkmode] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
 }
 [dir]:root[data-theme=darkmode] .bg-primary {
