@@ -81,3 +81,25 @@ function unSetCompactStatus() {
     isCompactExplicit = false;
     persistAdminPreferences();
 }
+
+// create an Observer instance
+const resizeObserver = new ResizeObserver(entries => {
+    if (isCompactExplicit)
+    {
+        if(document.getElementById("left-nav").scrollHeight > document.getElementById("left-nav").clientHeight)
+        {
+            document.body.classList.add("scroll");
+        }
+        else
+        {
+            document.body.classList.remove("scroll");
+        }
+    }
+    else
+    {
+        document.body.classList.remove("scroll");
+    }
+})
+
+// start observing a DOM node
+resizeObserver.observe(document.getElementById("left-nav"))
