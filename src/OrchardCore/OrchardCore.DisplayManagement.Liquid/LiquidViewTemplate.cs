@@ -55,6 +55,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
+                // Defer the buffer disposing so that a template can be rendered twice.
                 var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
                 ShellScope.RegisterBeforeDispose(scope =>
                 {
