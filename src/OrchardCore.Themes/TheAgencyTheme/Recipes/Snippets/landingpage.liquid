@@ -4,7 +4,7 @@
     <div class="container">
         <div class="masthead-subheading">Welcome To Our Studio!</div>
         <div class="masthead-heading text-uppercase">{{ Model.ContentItem | display_text }}</div>
-        <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Tell Me More</a>
+        <a class="btn btn-primary btn-xl text-uppercase" href="#services">Tell Me More</a>
     </div>
 </header>
 {% endzone %}
@@ -45,7 +45,7 @@
             {% for project in Model.ContentItem.Content.Portfolio.ContentItems %}
             <div class="col-lg-4 col-sm-6 mb-4">
                 <div class="portfolio-item">
-                    <a class="portfolio-link" data-toggle="modal" href="#portfolioModal{{ forloop.index }}">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal{{ forloop.index }}">
                         <div class="portfolio-hover">
                             <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
                         </div>
@@ -151,7 +151,7 @@
     <div class="container">
         <div class="row align-items-center">
             {% for client in Model.ContentItem.Content.Clients.ContentItems %}
-            <div class="col-md-3 col-sm-6">
+            <div class="col-md-3 col-sm-6 my-3">
                 <a href="{{ client.Client.Url.Text }}">
                     <img class="img-fluid img-brand d-block mx-auto" src="{{ client.Client.Logo.Paths.first | asset_url }}" alt="">
                 </a>
@@ -205,14 +205,10 @@
 <div class="portfolio-modal modal fade" id="portfolioModal{{ forloop.index }}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="close-modal" data-dismiss="modal">
-                <div class="lr">
-                    <div class="rl"></div>
-                </div>
-            </div>
+            <div class="close-modal" data-bs-dismiss="modal"><img src="/TheAgencyTheme/assets/img/close-icon.svg" alt="Close modal" /></div>
             <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 mx-auto">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
                         <div class="modal-body">
                             <!-- Project Details Go Here -->
                             <h2 class="text-uppercase">{{ project.DisplayText }}</h2>
@@ -226,8 +222,8 @@
                                 <li>Category: Illustration</li>
                             </ul>
                             {% endcomment %}
-                            <button class="btn btn-primary" data-dismiss="modal" type="button">
-                                <i class="fa fa-times"></i>
+                            <button class="btn btn-primary" data-bs-dismiss="modal" type="button">
+                                <i class="fa fa-times me-1"></i>
                                 Close Project
                             </button>
                         </div>
