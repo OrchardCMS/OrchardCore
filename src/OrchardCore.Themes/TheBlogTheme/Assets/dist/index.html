@@ -17,29 +17,28 @@
     </head>
     <body>
         <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-            <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
                 <a class="navbar-brand" href="index.html">Start Bootstrap</a>
-                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                     Menu
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="post.html">Sample Post</a></li>
-                        <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="post.html">Sample Post</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
         <!-- Page Header-->
         <header class="masthead" style="background-image: url('assets/img/home-bg.jpg')">
-            <div class="overlay"></div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
                         <div class="site-heading">
                             <h1>Clean Blog</h1>
                             <span class="subheading">A Blog Theme by Start Bootstrap</span>
@@ -49,9 +48,10 @@
             </div>
         </header>
         <!-- Main Content-->
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <!-- Post preview-->
                     <div class="post-preview">
                         <a href="post.html">
                             <h2 class="post-title">Man must explore, and this is exploration at its greatest</h2>
@@ -63,7 +63,9 @@
                             on September 24, 2021
                         </p>
                     </div>
-                    <hr />
+                    <!-- Divider-->
+                    <hr class="my-4" />
+                    <!-- Post preview-->
                     <div class="post-preview">
                         <a href="post.html"><h2 class="post-title">I believe every human has a finite number of heartbeats. I don't intend to waste any of mine.</h2></a>
                         <p class="post-meta">
@@ -72,7 +74,9 @@
                             on September 18, 2021
                         </p>
                     </div>
-                    <hr />
+                    <!-- Divider-->
+                    <hr class="my-4" />
+                    <!-- Post preview-->
                     <div class="post-preview">
                         <a href="post.html">
                             <h2 class="post-title">Science has not yet mastered prophecy</h2>
@@ -84,7 +88,9 @@
                             on August 24, 2021
                         </p>
                     </div>
-                    <hr />
+                    <!-- Divider-->
+                    <hr class="my-4" />
+                    <!-- Post preview-->
                     <div class="post-preview">
                         <a href="post.html">
                             <h2 class="post-title">Failure is not an option</h2>
@@ -96,18 +102,18 @@
                             on July 8, 2021
                         </p>
                     </div>
-                    <hr />
+                    <!-- Divider-->
+                    <hr class="my-4" />
                     <!-- Pager-->
-                    <div class="clearfix"><a class="btn btn-primary float-right" href="#!">Older Posts →</a></div>
+                    <div class="d-flex justify-content-end mb-4"><a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a></div>
                 </div>
             </div>
         </div>
-        <hr />
         <!-- Footer-->
-        <footer>
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-md-10 mx-auto">
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
                         <ul class="list-inline text-center">
                             <li class="list-inline-item">
                                 <a href="#!">
@@ -134,14 +140,13 @@
                                 </a>
                             </li>
                         </ul>
-                        <p class="copyright text-muted">Copyright &copy; Your Website 2021</p>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Your Website 2021</div>
                     </div>
                 </div>
             </div>
         </footer>
         <!-- Bootstrap core JS-->
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
     </body>
