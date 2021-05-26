@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ViewModels;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
@@ -17,69 +14,71 @@ namespace OrchardCore.DisplayManagement.Shapes
     public class GroupShapes : IShapeAttributeProvider
     {
         [Shape]
-        public IHtmlContent AdminTabs(IShape Shape)
+        public IHtmlContent AdminTabs(IShape shape)
         {
-            var tabsGrouping = Shape.GetProperty<IList<IGrouping<string, object>>>("Tabs");
-            var tabs = tabsGrouping.Select(x => x.Key).ToArray();
-
-            if (tabs.Any())
-            {
-                var identifier = Shape.GetProperty<string>("Identifier");
-                var tabIndex = 0;
-                var tagBuilder = Shape.GetTagBuilder("ul");
-                tagBuilder.AddCssClass("nav nav-tabs flex-column flex-md-row");
-                tagBuilder.Attributes["role"] = "tablist";
-
-                foreach (var tab in tabs)
-                {
-                    var linkTag = new TagBuilder("li");
-                    linkTag.AddCssClass("nav-item");
-
-                    if (tabIndex != tabs.Length - 1)
-                    {
-                        linkTag.AddCssClass("pr-md-2");
-                    }
-
-                    var aTag = new TagBuilder("a");
-                    aTag.AddCssClass("nav-item nav-link");
-
-                    if (tabIndex == 0)
-                    {
-                        aTag.AddCssClass("active");
-                    }
-
-                    var tabId = $"tab-{tab}-{identifier}".HtmlClassify();
-
-                    aTag.Attributes["href"] = '#' + tabId;
-                    aTag.Attributes["data-toggle"] = "tab";
-                    aTag.Attributes["role"] = "tab";
-                    aTag.Attributes["aria-controls"] = tabId;
-                    aTag.Attributes["aria-selected"] = "false";
-                    aTag.InnerHtml.Append(tab);
-
-                    linkTag.InnerHtml.AppendHtml(aTag);
-                    tagBuilder.InnerHtml.AppendHtml(linkTag);
-                    tabIndex++;
-                }
-
-                return tagBuilder;
-            }
-            else
+            var tabsGrouping = shape.GetProperty<IList<IGrouping<string, object>>>("Tabs");
+            if (tabsGrouping == null)
             {
                 return HtmlString.Empty;
             }
+
+            var tabs = tabsGrouping.Select(group => group.Key).ToArray();
+            if (!tabs.Any())
+            {
+                return HtmlString.Empty;
+            }
+
+            var tagBuilder = shape.GetTagBuilder("ul");
+            var identifier = shape.GetProperty<string>("Identifier");
+            tagBuilder.AddCssClass("nav nav-tabs flex-column flex-md-row");
+            tagBuilder.Attributes["role"] = "tablist";
+
+            var tabIndex = 0;
+            foreach (var tab in tabs)
+            {
+                var linkTag = new TagBuilder("li");
+                linkTag.AddCssClass("nav-item");
+
+                if (tabIndex != tabs.Length - 1)
+                {
+                    linkTag.AddCssClass("pr-md-2");
+                }
+
+                var aTag = new TagBuilder("a");
+                aTag.AddCssClass("nav-item nav-link");
+
+                if (tabIndex == 0)
+                {
+                    aTag.AddCssClass("active");
+                }
+
+                var tabId = $"tab-{tab}-{identifier}".HtmlClassify();
+
+                aTag.Attributes["href"] = '#' + tabId;
+                aTag.Attributes["data-toggle"] = "tab";
+                aTag.Attributes["role"] = "tab";
+                aTag.Attributes["aria-controls"] = tabId;
+                aTag.Attributes["aria-selected"] = "false";
+                aTag.InnerHtml.Append(tab);
+
+                linkTag.InnerHtml.AppendHtml(aTag);
+                tagBuilder.InnerHtml.AppendHtml(linkTag);
+                tabIndex++;
+            }
+
+            return tagBuilder;
         }
 
         [Shape]
-        public async Task<IHtmlContent> Card(IDisplayHelper DisplayAsync, GroupingViewModel Shape)
+        public async Task<IHtmlContent> Card(IDisplayHelper displayAsync, GroupingViewModel shape)
         {
-            var tagBuilder = Shape.GetTagBuilder("div");
+            var tagBuilder = shape.GetTagBuilder("div");
             tagBuilder.AddCssClass("card-body");
-            Shape.Metadata.Alternates.Clear();
-            Shape.Metadata.Type = "ColumnGrouping";
+            shape.Metadata.Alternates.Clear();
+            shape.Metadata.Type = "ColumnGrouping";
 
-            tagBuilder.InnerHtml.AppendHtml(await DisplayAsync.ShapeExecuteAsync(Shape));
-            var cardIdPrefix = $"card-{Shape.Identifier}-{Shape.Grouping.Key}".HtmlClassify();
+            tagBuilder.InnerHtml.AppendHtml(await displayAsync.ShapeExecuteAsync(shape));
+            var cardIdPrefix = $"card-{shape.Identifier}-{shape.Grouping.Key}".HtmlClassify();
 
             var cardTag = new TagBuilder("div");
             cardTag.AddCssClass("card");
@@ -96,7 +95,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             buttonTag.Attributes["aria-expanded"] = "true";
             buttonTag.Attributes["aria-controls"] = $"collapse-{cardIdPrefix}";
 
-            buttonTag.InnerHtml.Append(Shape.Grouping.Key);
+            buttonTag.InnerHtml.Append(shape.Grouping.Key);
             headerTag.InnerHtml.AppendHtml(buttonTag);
 
             var bodyTag = new TagBuilder("div");
@@ -111,101 +110,101 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         [Shape]
-        public async Task<IHtmlContent> CardContainer(IDisplayHelper DisplayAsync, GroupViewModel Shape)
+        public async Task<IHtmlContent> CardContainer(IDisplayHelper displayAsync, GroupViewModel shape)
         {
-            var tagBuilder = Shape.GetTagBuilder("div");
+            var tagBuilder = shape.GetTagBuilder("div");
             tagBuilder.AddCssClass("mb-3");
 
-            foreach (var card in Shape.Items.OfType<IShape>())
+            foreach (var card in shape.Items.OfType<IShape>())
             {
-                tagBuilder.InnerHtml.AppendHtml(await DisplayAsync.ShapeExecuteAsync(card));
+                tagBuilder.InnerHtml.AppendHtml(await displayAsync.ShapeExecuteAsync(card));
             }
 
             return tagBuilder;
         }
 
         [Shape]
-        public async Task<IHtmlContent> Column(IDisplayHelper DisplayAsync, GroupViewModel Shape)
+        public async Task<IHtmlContent> Column(IDisplayHelper displayAsync, GroupViewModel shape)
         {
-            var tagBuilder = Shape.GetTagBuilder("div");
-
-            foreach (var column in Shape.Items)
+            var tagBuilder = shape.GetTagBuilder("div");
+            foreach (var column in shape.Items)
             {
-                tagBuilder.InnerHtml.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)column));
+                tagBuilder.InnerHtml.AppendHtml(await displayAsync.ShapeExecuteAsync((IShape)column));
             }
 
             return tagBuilder;
         }
 
         [Shape]
-        public async Task<IHtmlContent> ColumnContainer(IDisplayHelper DisplayAsync, GroupViewModel Shape)
+        public async Task<IHtmlContent> ColumnContainer(IDisplayHelper displayAsync, GroupViewModel shape)
         {
-            var tagBuilder = Shape.GetTagBuilder("div");
+            var tagBuilder = shape.GetTagBuilder("div");
             tagBuilder.AddCssClass("row");
-            
-            foreach (var column in Shape.Items)
+
+            foreach (var column in shape.Items)
             {
-                tagBuilder.InnerHtml.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)column));
+                tagBuilder.InnerHtml.AppendHtml(await displayAsync.ShapeExecuteAsync((IShape)column));
             }
 
             return tagBuilder;
         }
 
         [Shape]
-        public async Task<IHtmlContent> Tab(IDisplayHelper DisplayAsync, GroupingViewModel Shape)
+        public async Task<IHtmlContent> Tab(IDisplayHelper displayAsync, GroupingViewModel shape)
         {
-            var tagBuilder = Shape.GetTagBuilder("div");
-            tagBuilder.Attributes["id"] = $"tab-{Shape.Grouping.Key}-{Shape.Identifier}".HtmlClassify();
+            var tagBuilder = shape.GetTagBuilder("div");
+            tagBuilder.Attributes["id"] = $"tab-{shape.Grouping.Key}-{shape.Identifier}".HtmlClassify();
             tagBuilder.AddCssClass("tab-pane fade");
 
-            // Morphing this shape to a grouping shape to keep Model untouched
-            Shape.Metadata.Alternates.Clear();
-            Shape.Metadata.Type = "CardGrouping";
+            // Morphing this shape to a grouping shape to keep Model untouched.
+            shape.Metadata.Alternates.Clear();
+            shape.Metadata.Type = "CardGrouping";
 
-            tagBuilder.InnerHtml.AppendHtml(await DisplayAsync.ShapeExecuteAsync(Shape));
+            tagBuilder.InnerHtml.AppendHtml(await displayAsync.ShapeExecuteAsync(shape));
 
             return tagBuilder;
         }
 
         [Shape]
-        public async Task<IHtmlContent> TabContainer(IDisplayHelper DisplayAsync, GroupingsViewModel Shape, IShapeFactory ShapeFactory)
+        public async Task<IHtmlContent> TabContainer(IDisplayHelper displayAsync, GroupingsViewModel shape, IShapeFactory shapeFactory)
         {
-            var first = true;
-            var localNavigation = await ShapeFactory.CreateAsync("LocalNavigation", Arguments.From(new
+            var localNavigation = await shapeFactory.CreateAsync("LocalNavigation", Arguments.From(new
             {
-                Identifier = Shape.Identifier,
-                Tabs = Shape.Groupings
+                shape.Identifier,
+                Tabs = shape.Groupings
             }));
 
             var htmlContentBuilder = new HtmlContentBuilder();
-            htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(localNavigation));
+            htmlContentBuilder.AppendHtml(await displayAsync.ShapeExecuteAsync(localNavigation));
 
-            var tagBuilder = Shape.GetTagBuilder("div");
+            var tagBuilder = shape.GetTagBuilder("div");
             tagBuilder.AddCssClass("tab-content");
 
             htmlContentBuilder.AppendHtml(tagBuilder);
 
-            foreach (var tab in Shape.Items.OfType<IShape>())
+            var first = true;
+            foreach (var tab in shape.Items.OfType<IShape>())
             {
                 if (first)
                 {
+                    first = false;
                     tab.Classes.Add("show active");
                 }
-                first = false;
-                tagBuilder.InnerHtml.AppendHtml(await DisplayAsync.ShapeExecuteAsync(tab));
+
+                tagBuilder.InnerHtml.AppendHtml(await displayAsync.ShapeExecuteAsync(tab));
             }
 
             return htmlContentBuilder;
         }
 
         [Shape]
-        public Task<IHtmlContent> LocalNavigation(IDisplayHelper DisplayAsync, IShape Shape, IShapeFactory ShapeFactory)
+        public Task<IHtmlContent> LocalNavigation(IDisplayHelper displayAsync, IShape shape)
         {
-            // Morphing this shape to keep Model untouched
-            Shape.Metadata.Alternates.Clear();
-            Shape.Metadata.Type = "AdminTabs";
+            // Morphing this shape to keep Model untouched.
+            shape.Metadata.Alternates.Clear();
+            shape.Metadata.Type = "AdminTabs";
 
-            return DisplayAsync.ShapeExecuteAsync(Shape);
+            return displayAsync.ShapeExecuteAsync(shape);
         }
     }
 }
