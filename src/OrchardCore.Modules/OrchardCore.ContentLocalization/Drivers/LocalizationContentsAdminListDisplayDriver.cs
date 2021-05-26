@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,16 +31,20 @@ namespace OrchardCore.ContentLocalization.Drivers
             Prefix = "Localization";
         }
 
+        public override IDisplayResult Display(ContentOptionsViewModel model)
+            => View("ContentsAdminFilters_Thumbnail__Culture", model).Location("Thumbnail", "Content:20.1");
+        
         public override IDisplayResult Edit(ContentOptionsViewModel model, IUpdateModel updater)
         {
             return Initialize<LocalizationContentsAdminFilterViewModel>("ContentsAdminList__LocalizationPartFilter", async m =>
                 {
+                    model.FilterResult.MapTo(m);
                     var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
                     var cultures = new List<SelectListItem>
                     {
-                        new SelectListItem() { Text = S["All cultures"], Value = "" }
+                        new SelectListItem() { Text = S["All cultures"], Value = "", Selected = String.IsNullOrEmpty(m.SelectedCulture) }
                     };
-                    cultures.AddRange(supportedCultures.Select(culture => new SelectListItem() { Text = culture, Value = culture }));
+                    cultures.AddRange(supportedCultures.Select(culture => new SelectListItem() { Text = culture, Value = culture, Selected = culture == m.SelectedCulture }));
 
                     m.Cultures = cultures;
                 }).Location("Actions:20");
@@ -55,10 +60,7 @@ namespace OrchardCore.ContentLocalization.Drivers
                     model.RouteValues.TryAdd("Localization.ShowLocalizedContentTypes", viewModel.ShowLocalizedContentTypes);
                 }
 
-                if (!string.IsNullOrEmpty(viewModel.SelectedCulture))
-                {
-                    model.RouteValues.TryAdd("Localization.SelectedCulture", viewModel.SelectedCulture);
-                }
+                model.FilterResult.MapFrom(viewModel);
             }
 
             return Edit(model, updater);

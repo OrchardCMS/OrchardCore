@@ -43,6 +43,7 @@ using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using YesSql.Filters.Query;
 using YesSql.Indexes;
 
 namespace OrchardCore.Users
@@ -207,10 +208,26 @@ namespace OrchardCore.Users
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
 
             services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
-            services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
 
             services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
             services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
+
+            services.AddSingleton<IUsersAdminListFilterParser>(sp =>
+            {
+                var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
+                var builder = new QueryEngineBuilder<User>();
+                foreach (var provider in filterProviders)
+                {
+                    provider.Build(builder);
+                }
+
+                var parser = builder.Build();
+
+                return new DefaultUsersAdminListFilterParser(parser);
+            });
+
+            services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
+
         }
     }
 
