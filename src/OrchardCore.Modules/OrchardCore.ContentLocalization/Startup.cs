@@ -85,10 +85,7 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
             services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
-            services.Configure<RequestLocalizationOptions>(options =>
-            {
-                options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider());
-            });
+            services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -24,6 +24,8 @@ namespace OrchardCore.ContentLocalization
 
             if (localization != null)
             {
+                await culturePickerService.SetContentCulturePickerCookie(localization.Culture);
+
                 return new ProviderCultureResult(localization.Culture);
             }
 
