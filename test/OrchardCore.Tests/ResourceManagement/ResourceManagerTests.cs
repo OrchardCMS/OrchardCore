@@ -719,6 +719,74 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Fact]
+        public async Task RenderHeadAndFootScriptWithSameDependency()
+        {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineScript("required")
+                .SetUrl("required.js")
+                .SetDependencies("dependency");
+
+            manifest.DefineScript("dependency")
+                .SetUrl("dependency.js");
+
+            manifest.DefineScript("required-at-foot")
+                .SetUrl("required-at-foot.js")
+                .SetDependencies("dependency");
+
+            manifest.DefineScript("not-required")
+                .SetUrl("not-required.js");
+
+            options.ResourceManifests.Add(manifest);
+
+            var resourceManager = new ResourceManager
+            (
+                new OptionsWrapper<ResourceManagementOptions>(options),
+                StubFileVersionProvider.Instance
+            );
+
+            // Require resource.
+            resourceManager.RegisterResource("script", "required").AtHead();
+
+            // Register custom script.
+            var customScript = "doSomeAction();";
+            resourceManager.RegisterHeadScript(new HtmlString($"<script>{customScript}</script>"));
+
+            // Require resource at Foot with same dependency at Head
+            resourceManager.RegisterResource("script", "required-at-foot").AtFoot();
+
+            using var sw1 = new StringWriter();
+            resourceManager.RenderHeadScript(sw1);
+            var htmlBuilder = new HtmlContentBuilder();
+            htmlBuilder.AppendHtml(sw1.ToString());
+
+            var document = await ParseHtmlAsync(htmlBuilder);
+            var headScripts = document
+                .QuerySelectorAll<IHtmlScriptElement>("script");
+
+            using var sw2 = new StringWriter();
+            resourceManager.RenderFootScript(sw2);
+            htmlBuilder = new HtmlContentBuilder();
+            htmlBuilder.AppendHtml(sw2.ToString());
+
+            document = await ParseHtmlAsync(htmlBuilder);
+            var footScripts = document
+                .QuerySelectorAll<IHtmlScriptElement>("script");
+
+            // Should render 4 scripts in total, 3 at head and 1 at foot.
+            Assert.Equal(4, headScripts.Count() + footScripts.Count());
+
+            //Check head script positions.
+            Assert.Contains("dependency.js", headScripts.ElementAt(0).Source);
+            Assert.Contains("required.js", headScripts.ElementAt(1).Source);
+            Assert.Contains(customScript, headScripts.ElementAt(2).Text);
+
+            //Check foot script positions.
+            Assert.Contains("required-at-foot.js", footScripts.ElementAt(0).Source);
+        }
+
+        [Fact]
         public async Task RenderLocalScript()
         {
             var options = new ResourceManagementOptions();

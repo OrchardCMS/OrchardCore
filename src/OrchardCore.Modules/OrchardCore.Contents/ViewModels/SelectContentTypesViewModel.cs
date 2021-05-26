@@ -3,7 +3,7 @@ using System.Linq;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentTypes.ViewModels
+namespace OrchardCore.Contents.ViewModels
 {
     public class SelectContentTypesViewModel
     {
