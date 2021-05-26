@@ -1,13 +1,13 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Users.Models;
-using YesSql.Filters.Query;
-using YesSql;
-using YesSql.Services;
 using OrchardCore.Users.ViewModels;
 using OrchardCore.Users.Indexes;
-using Microsoft.AspNetCore.Identity;
+using YesSql;
+using YesSql.Filters.Query;
+using YesSql.Services;
 
 namespace OrchardCore.Users.Services
 {
@@ -64,7 +64,6 @@ namespace OrchardCore.Users.Services
                                 case UsersOrder.Name:
                                     query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
                                     break;
-                                // Name is provided as a default sort.
                                 case UsersOrder.Email:
                                     query.With<UserIndex>().OrderBy(u => u.NormalizedEmail);
                                     break;
