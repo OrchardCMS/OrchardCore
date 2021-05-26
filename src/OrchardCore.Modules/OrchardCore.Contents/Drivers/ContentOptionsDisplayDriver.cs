@@ -16,32 +16,35 @@ namespace OrchardCore.Contents.Drivers
 
         public override IDisplayResult Display(ContentOptionsViewModel model)
         {
-            return Initialize<ContentOptionsViewModel>("ContentsAdminListBulkActions", m => BuildContentOptionsViewModel(m, model)).Location("BulkActions", "Content:10");
+            return Combine(
+                Initialize<ContentOptionsViewModel>("ContentsAdminListBulkActions", m => BuildContentOptionsViewModel(m, model)).Location("BulkActions", "Content:10"),
+                View("ContentsAdminFilters_Thumbnail__DisplayText", model).Location("Thumbnail", "Content:10"),
+                View("ContentsAdminFilters_Thumbnail__ContentType", model).Location("Thumbnail", "Content:20"),
+                View("ContentsAdminFilters_Thumbnail__Status", model).Location("Thumbnail", "Content:30"),
+                View("ContentsAdminFilters_Thumbnail__Sort", model).Location("Thumbnail", "Content:40")
+            );
         }
 
         public override IDisplayResult Edit(ContentOptionsViewModel model)
         {
+            // Map the filter result to a model so the ui can reflect current selections.
+            model.FilterResult.MapTo(model);
             return Combine(
                 Initialize<ContentOptionsViewModel>("ContentsAdminListSearch", m => BuildContentOptionsViewModel(m, model)).Location("Search:10"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminListCreate", m => BuildContentOptionsViewModel(m, model)).Location("Create:10"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminListSummary", m => BuildContentOptionsViewModel(m, model)).Location("Summary:10"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminListFilters", m => BuildContentOptionsViewModel(m, model)).Location("Actions:10.1"),
                 Initialize<ContentOptionsViewModel>("ContentsAdminList_Fields_BulkActions", m => BuildContentOptionsViewModel(m, model)).Location("Actions:10.1")
+                
             );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        public override Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
-            var viewModel = new ContentOptionsViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-            {
-                model.RouteValues.TryAdd("Options.OrderBy", viewModel.OrderBy);
-                model.RouteValues.TryAdd("Options.ContentsStatus", viewModel.ContentsStatus);
-                model.RouteValues.TryAdd("Options.SelectedContentType", viewModel.SelectedContentType);
-                model.RouteValues.TryAdd("Options.DisplayText", viewModel.DisplayText);
-            }
+            // Map the incoming values from a form post to the filter result.
+            model.FilterResult.MapFrom(model);
 
-            return Edit(model);
+            return Task.FromResult<IDisplayResult>(Edit(model));
         }
 
         private static void BuildContentOptionsViewModel(ContentOptionsViewModel m, ContentOptionsViewModel model)
@@ -55,6 +58,12 @@ namespace OrchardCore.Contents.Drivers
             m.EndIndex = model.EndIndex;
             m.ContentItemsCount = model.ContentItemsCount;
             m.TotalItemCount = model.TotalItemCount;
+            m.SearchText = model.SearchText;
+            m.OriginalSearchText = model.OriginalSearchText;
+            m.ContentsStatus = model.ContentsStatus;
+            m.OrderBy = model.OrderBy;
+            m.SelectedContentType = model.SelectedContentType;
+            m.FilterResult = model.FilterResult;
         }
     }
 }

@@ -123,6 +123,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     nameof(Shape.Attributes) => shape.Attributes,
                     nameof(Shape.Metadata) => shape.Metadata,
                     nameof(Shape.Items) => shape.Items,
+                    nameof(Shape.Properties) => shape.Properties,
                     _ => null
                 };
 

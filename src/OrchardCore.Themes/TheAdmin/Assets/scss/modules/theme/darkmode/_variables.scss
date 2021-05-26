@@ -66,9 +66,12 @@ $text-muted: $gray-600 !default;
 
 // Tables
 
-$table-accent-bg: $gray-800 !default;
-
-$table-border-color: $gray-700 !default;
+$table-color: $white !default;
+$table-bg: $gray-800 !default;
+$table-accent-bg: rgba($white, .05) !default;
+$table-hover-color: $table-color !default;
+$table-hover-bg: rgba($white, .075) !default;
+$table-border-color: lighten($table-bg, 7.5%) !default;
 
 // Forms
 

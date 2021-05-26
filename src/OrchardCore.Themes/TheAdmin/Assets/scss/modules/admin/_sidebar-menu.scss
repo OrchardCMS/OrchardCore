@@ -582,39 +582,6 @@ body:not(.left-sidebar-compact) {
                     scrollbar-color: $scrollbar-color $admin-menu-bg-color;
                 }
 
-                @media (max-height: 414px) {
-                    > li.visible {
-                        > figure {
-                            position: static;
-                            z-index: unset;
-
-                            > ul:before {
-                                content: attr(data-title);
-                                padding: 0 20px;
-                                font-size: 14px;
-                                font-weight: bold;
-                            }
-                        }
-                    }
-
-                    > li > figure > ul {
-                        position: absolute;
-                        left: $left-navigation-width-when-compact;
-                        width: $left-navigation-width;
-                        -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                        -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                        height: calc(100vh - 52px);
-                        max-height: unset;
-                        z-index: 1;
-                        overflow-x: hidden;
-                        overflow-y: auto;
-                        scrollbar-width: thin;
-                        scrollbar-color: $scrollbar-color $admin-menu-bg-color;
-                        top: 0px;
-                    }
-                }
-
                 > li > figure > ul li .item-label:hover {
                     background-color: rgba(0, 0, 0, 0.05);
                 }
@@ -709,7 +676,7 @@ body:not(.left-sidebar-compact) {
 
         li > figure > ul > li.active ul > li.active .item-label {
             background: rgba(0, 0, 0, 0.05);
-            color: rgba(0, 0, 0, 0.9) !important;
+            color: rgba($admin-menu-item-font-color-active, 0.9) !important;
             font-weight: 600;
             padding-left: (2 * $link-padding-left + 16) !important;
         }
@@ -842,6 +809,60 @@ body:not(.left-sidebar-compact) {
         #filter,
         #filter:focus {
             display: none;
+        }
+    }
+}
+
+// Left sidebar when compacted with a scrollbar
+.left-sidebar-compact.scroll {
+    #ta-left-sidebar {
+        #left-nav {
+            > ul {
+                > li.visible {
+                    > figure {
+                        position: static;
+                        z-index: unset;
+
+                        > ul:before {
+                            content: attr(data-title);
+                            padding: 0 20px;
+                            font-size: 14px;
+                            font-weight: bold;
+                            width: 100%;
+                            display: block;
+                        }
+
+                        > ul > li:first-child::before
+                        {
+                            background: rgba(0, 0, 0, 0.1);
+                            margin: 0px auto;
+                            content: "";
+                            height: 1px;
+                            display: block;
+                            position: absolute;
+                            width: 90%;
+                            left: 15px;
+                        }
+                    }
+                }
+
+                > li > figure > ul {
+                    position: absolute;
+                    left: $left-navigation-width-when-compact;
+                    width: $left-navigation-width;
+                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    height: calc(100vh - 52px);
+                    max-height: unset;
+                    z-index: 1;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                    scrollbar-width: thin;
+                    scrollbar-color: $scrollbar-color $admin-menu-bg-color;
+                    top: 0px;
+                }
+            }
         }
     }
 }

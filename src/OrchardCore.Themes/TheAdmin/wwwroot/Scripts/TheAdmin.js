@@ -7380,7 +7380,22 @@ function unSetCompactStatus() {
   $('#left-nav > ul > li').css("transition", "");
   isCompactExplicit = false;
   persistAdminPreferences();
-}
+} // create an Observer instance
+
+
+var resizeObserver = new ResizeObserver(function (entries) {
+  if (isCompactExplicit) {
+    if (document.getElementById("left-nav").scrollHeight > document.getElementById("left-nav").clientHeight) {
+      document.body.classList.add("scroll");
+    } else {
+      document.body.classList.remove("scroll");
+    }
+  } else {
+    document.body.classList.remove("scroll");
+  }
+}); // start observing a DOM node
+
+resizeObserver.observe(document.getElementById("left-nav"));
 /*
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
