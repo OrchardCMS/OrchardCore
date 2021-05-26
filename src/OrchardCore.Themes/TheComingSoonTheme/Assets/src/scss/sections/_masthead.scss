@@ -1,24 +1,35 @@
+//
+// Masthead
+// 
+
 .masthead {
     position: relative;
     overflow: hidden;
-    padding-bottom: 3rem;
     z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    .masthead-bg {
+    // Overlay for the masthead
+    &:before {
+        content: '';
         position: absolute;
         top: 0;
         bottom: 0;
         right: 0;
         left: 0;
-        width: 100%;
-        min-height: 35rem;
         height: 100%;
-        background-color: fade-out($primary, 0.2);
-        transform: skewY(4deg);
-        transform-origin: bottom right;
+        width: 100%;
+        background-color: fade-out($black, 0.15);
     }
 
+    // Masthead content element
     .masthead-content {
+        position: relative;
+        max-width: 40rem;
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+
         h1 {
             font-size: 2.5rem;
         }
@@ -31,6 +42,7 @@
             }
         }
 
+        // Styling for the signup form input
         .input-group-newsletter {
             input {
                 height: auto;
@@ -49,22 +61,25 @@
     }
 }
 
-@media (min-width: 768px) {
+// Styling for the masthead at the large breakpoint and up
+@include media-breakpoint-up(lg) {
     .masthead {
         height: 100%;
+        width: 75vw;
         min-height: 0;
-        width: 40.5rem;
         padding-bottom: 0;
 
-        .masthead-bg {
-            min-height: 0;
-            transform: skewX(-8deg);
+        // Adds a skew effect to the masthead overlay
+        &:before {
+            transform: skewX(-9deg);
             transform-origin: top right;
         }
 
         .masthead-content {
-            padding-left: 3rem;
-            padding-right: 10rem;
+            padding-top: 0;
+            padding-bottom: 0;
+            padding-left: 2rem;
+            padding-right: 9rem;
 
             h1 {
                 font-size: 3.5rem;
@@ -73,6 +88,14 @@
             p {
                 font-size: 1.3rem;
             }
+
         }
+    }
+}
+
+// Change the width of the masthead on xl breakpoint and up
+@include media-breakpoint-up(xl) {
+    .masthead {
+        width: 65vw;
     }
 }
