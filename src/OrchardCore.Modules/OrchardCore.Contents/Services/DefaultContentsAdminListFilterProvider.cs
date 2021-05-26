@@ -41,7 +41,7 @@ namespace OrchardCore.Contents.Services
                                 case ContentsStatus.Owner:
                                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
                                     var userNameIdentifier = httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-                                    query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
+                                    query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier && x.Latest);
                                     break;
                                 case ContentsStatus.AllVersions:
                                     query.With<ContentItemIndex>(x => x.Latest);
