@@ -186,6 +186,14 @@ Sanitizes some HTML content.
 {{ output | sanitize_html | raw }}
 ```
 
+### `shortcode`
+
+Renders Shortcodes. Should be combined with the `raw` filter.
+
+```liquid
+{{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
+```
+
 ## Json Filters
 
 ### `json`

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -13,7 +12,7 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Html.Settings
 {
-    public class HtmlBodyPartMonacoEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver
+    public class HtmlBodyPartMonacoEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
     {
         private readonly IStringLocalizer S;
 
@@ -24,11 +23,6 @@ namespace OrchardCore.Html.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(HtmlBodyPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
             return Initialize<MonacoSettingsViewModel>("HtmlBodyPartMonacoSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
@@ -43,11 +37,6 @@ namespace OrchardCore.Html.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(HtmlBodyPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
             if (contentTypePartDefinition.Editor() == "Monaco")
             {
                 var model = new MonacoSettingsViewModel();
