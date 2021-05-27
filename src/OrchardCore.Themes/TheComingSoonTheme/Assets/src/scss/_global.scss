@@ -1,4 +1,6 @@
-// Global styling for this theme
+// 
+// Global
+// 
 
 html {
     height: 100%;
@@ -6,11 +8,29 @@ html {
 
 body {
     height: 100%;
-    min-height: 35rem;
     position: relative;
+
+    // Overlay for the body element
+    //
+    // This overlay will add a colored transparent overlay
+    // to the background video
+
+    &:before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: $primary;
+        opacity: 0.7;
+        z-index: 1;
+    }
 }
 
-video {
+// Styling for the background video element
+
+video.bg-video {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -22,6 +42,9 @@ video {
     z-index: 0;
 }
 
+// Mobile fallback for touch screen devices which typically
+// do not load HTML video
+
 @media (pointer: coarse) and (hover: none) {
     body {
         background: url('../assets/img/bg-mobile-fallback.jpg') $primary no-repeat center center scroll;
@@ -31,15 +54,4 @@ video {
     body video {
         display: none;
     }
-}
-
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-color: $secondary;
-    opacity: 0.7;
-    z-index: 1;
 }

@@ -163,7 +163,7 @@ namespace OrchardCore.Media.Controllers
                         error = S["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
                     });
 
-                    _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
+                    _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
 
                     continue;
                 }

@@ -1,4 +1,24 @@
-// Styling for the post page
+// 
+// Posts
+// 
+
+.section-heading {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-top: 3.75rem;
+}
+
+.caption {
+    font-size: $font-size-sm;
+    font-style: italic;
+    display: block;
+    margin: 0;
+    padding: 0.625rem;
+    text-align: center;
+}
+
+// Styling for post previews on the blog homepage
+
 .post-preview {
     >a {
         color: $gray-900;
@@ -10,39 +30,32 @@
         }
 
         >.post-title {
-            font-size: 30px;
-            margin-top: 30px;
-            margin-bottom: 10px;
+            font-size: 1.875rem;
+            margin-top: 1.875rem;
+            margin-bottom: 0.625rem;
         }
 
         >.post-subtitle {
             font-weight: 300;
-            margin: 0 0 10px;
+            margin-bottom: 0.625rem;
         }
     }
 
     >.post-meta {
-        font-size: 18px;
+        font-size: 1.125rem;
         font-style: italic;
         margin-top: 0;
         color: $gray-600;
 
         >a {
             text-decoration: none;
-            color: $gray-900;
-
-            &:focus,
-            &:hover {
-                text-decoration: underline;
-                color: $primary;
-            }
         }
     }
 
-    @media only screen and (min-width: 768px) {
+    @include media-breakpoint-up(lg) {
         >a {
             >.post-title {
-                font-size: 36px;
+                font-size: 2.25rem;
             }
         }
     }

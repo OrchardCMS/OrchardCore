@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -14,11 +18,18 @@ namespace OrchardCore.Media.Recipes
     public class MediaStep : IRecipeStepHandler
     {
         private readonly IMediaFileStore _mediaFileStore;
+        private readonly HashSet<string> _allowedFileExtensions;
+        private readonly ILogger _logger;
         private readonly static HttpClient _httpClient = new HttpClient();
 
-        public MediaStep(IMediaFileStore mediaFileStore)
+        public MediaStep(
+            IMediaFileStore mediaFileStore, 
+            IOptions<MediaOptions> options,
+            ILogger<MediaStep> logger)
         {
             _mediaFileStore = mediaFileStore;
+            _allowedFileExtensions = options.Value.AllowedFileExtensions;
+            _logger = logger;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -32,6 +43,13 @@ namespace OrchardCore.Media.Recipes
 
             foreach (var file in model.Files)
             {
+                if (!_allowedFileExtensions.Contains(Path.GetExtension(file.TargetPath), StringComparer.OrdinalIgnoreCase))
+                {
+                    _logger.LogWarning("File extension not allowed: '{Path}'", file.TargetPath);
+
+                    continue;
+                }          
+
                 Stream stream = null;
 
                 if (!String.IsNullOrWhiteSpace(file.Base64))
