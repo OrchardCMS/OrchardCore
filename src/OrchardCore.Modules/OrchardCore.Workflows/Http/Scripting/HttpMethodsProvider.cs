@@ -149,27 +149,26 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "requestDataAsJsonObject",
                 Method = serviceProvider => (Func<JObject>)(() =>
                 {
-                    JObject result;
-                    if (httpContextAccessor.HttpContext.Request.HasFormContentType)
-                    {
-                        result = new JObject((from field in httpContextAccessor.HttpContext.Request.Form
-                                 select new JProperty(field.Key, JArray.FromObject(field.Value.ToArray()))).ToArray());
-                    }
-                    else if (httpContextAccessor.HttpContext.Request.HasJsonContentType())
-                    {
-                        string json;
-                        using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
-                        {
-                            // Async read of the request body is mandatory.
-                            json = sr.ReadToEndAsync().GetAwaiter().GetResult();
-                        }
+                    JObject result = null;
 
-                        result = JObject.Parse(json);
-                    }
-                    else
+                    if(httpContextAccessor.HttpContext != null)
                     {
-                        // If we pass here then the Request Content Type is not managed
-                        result = null;
+                        if (httpContextAccessor.HttpContext.Request.HasFormContentType)
+                        {
+                            result = new JObject((from field in httpContextAccessor.HttpContext.Request.Form
+                                    select new JProperty(field.Key, JArray.FromObject(field.Value.ToArray()))).ToArray());
+                        }
+                        else if (httpContextAccessor.HttpContext.Request.HasJsonContentType())
+                        {
+                            string json;
+                            using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
+                            {
+                                // Async read of the request body is mandatory.
+                                json = sr.ReadToEndAsync().GetAwaiter().GetResult();
+                            }
+
+                            result = JObject.Parse(json);
+                        }
                     }
 
                     return result;
