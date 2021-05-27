@@ -135,6 +135,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                                  select new JProperty(param.Key, JArray.FromObject(param.Value.ToArray()))).ToArray()))
             };
 
+            // This should be deprecated
             _requestFormAsJsonMethod = new GlobalMethod
             {
                 Name = "requestFormAsJson",
