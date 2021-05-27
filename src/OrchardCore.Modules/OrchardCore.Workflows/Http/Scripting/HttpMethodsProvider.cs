@@ -163,7 +163,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                             // If we can parse first request form element key as JSON then we throw
                             if(isValidJSON(formData.First().Key.ToString()))
                             {
-                                throw new Exception("Invalid form data passed in the request.");
+                                throw new Exception("Invalid form data passed in the request. The data passed was JSON while it should be form data.");
                             }
 
                             try
