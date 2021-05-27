@@ -15,8 +15,20 @@ namespace OrchardCore.AuditTrail.ViewModels
         public string SearchText { get; set; }
         public string OriginalSearchText { get; set; }
         public string Category { get; set; }
+
+        /// <summary>
+        /// Event is a supported UI filter if a <see cref="CorrelationId"/> is provided from the route
+        /// </summary>
+        public string Event { get; set; }
         public string UserName { get; set; }
         public string CorrelationId { get; set; }
+
+        /// <summary>
+        /// Marks a <see cref="CorrelationId"/> as provided from the route, rather than a filter
+        /// </summary>
+        public bool CorrelationIdFromRoute { get; set; }
+
+        public string Date { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public AuditTrailSort Sort { get; set; }
@@ -32,14 +44,20 @@ namespace OrchardCore.AuditTrail.ViewModels
         public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
 
         [BindNever]
-        public List<SelectListItem> Categories { get; set; }
+        public List<SelectListItem> Categories { get; set; } = new List<SelectListItem>();
+
+        /// <summary>
+        /// Events for the current category when a <see cref="CorrelationId"/> is set from the route.
+        /// </summary>
+        [BindNever]
+        public List<SelectListItem> Events { get; set; } = new List<SelectListItem>();
 
         [BindNever]
-        public List<SelectListItem> AuditTrailSorts { get; set; }
+        public List<SelectListItem> AuditTrailSorts { get; set; } = new List<SelectListItem>();
 
         // TODO
         [BindNever]
-        public List<SelectListItem> AuditTrailDates { get; set; }        
+        public List<SelectListItem> AuditTrailDates { get; set; }   = new List<SelectListItem>();      
 
     }
 

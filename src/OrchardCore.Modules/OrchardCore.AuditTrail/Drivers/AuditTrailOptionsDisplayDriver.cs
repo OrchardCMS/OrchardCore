@@ -18,10 +18,10 @@ namespace OrchardCore.AuditTrail.Drivers
         {
             return Combine(
                 View("AuditTrailAdminFilters_Thumbnail__Category", model).Location("Thumbnail", "Content:10"),
-                // View("AuditTrailAdminFilters_Thumbnail__Event", model).Location("Thumbnail", "Content:10"),
-                View("AuditTrailAdminFilters_Thumbnail__Date", model).Location("Thumbnail", "Content:10"),
-                View("AuditTrailAdminFilters_Thumbnail__User", model).Location("Thumbnail", "Content:20"),
-                View("AuditTrailAdminFilters_Thumbnail__CorrelationId", model).Location("Thumbnail", "Content:30")
+                View("AuditTrailAdminFilters_Thumbnail__Event", model).Location("Thumbnail", "Content:10"),
+                View("AuditTrailAdminFilters_Thumbnail__Date", model).Location("Thumbnail", "Content:20"),
+                View("AuditTrailAdminFilters_Thumbnail__User", model).Location("Thumbnail", "Content:30"),
+                View("AuditTrailAdminFilters_Thumbnail__CorrelationId", model).Location("Thumbnail", "Content:40")
             );
         }
 
@@ -50,9 +50,14 @@ namespace OrchardCore.AuditTrail.Drivers
             m.OriginalSearchText = model.OriginalSearchText;
             m.Category = model.Category;
             m.CorrelationId = model.CorrelationId;
+            m.CorrelationIdFromRoute = model.CorrelationIdFromRoute;
             m.Categories = model.Categories;
+            m.Event = model.Event;
+            m.Events = model.Events;
             m.Sort = model.Sort;
             m.AuditTrailSorts = model.AuditTrailSorts;
+            m.Date = model.Date;
+            m.AuditTrailDates = model.AuditTrailDates;
             m.StartIndex = model.StartIndex;
             m.EndIndex = model.EndIndex;
             m.EventsCount = model.EventsCount;

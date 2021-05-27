@@ -11,7 +11,7 @@ namespace OrchardCore.AuditTrail.Services
     {
         public AuditTrailEventHandler(IStringLocalizer<AuditTrailEventHandler> stringLocalizer)
         {
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public override Task FilterAsync(QueryFilterContext context)
@@ -56,7 +56,7 @@ namespace OrchardCore.AuditTrail.Services
             }
             catch (FormatException ex)
             {
-                filters.UpdateModel.ModelState.AddModelError(prefix, T["Error parsing '{0}' date string '{1}': {2}", fieldName, dateString, ex.Message]);
+                filters.UpdateModel.ModelState.AddModelError(prefix, S["Error parsing '{0}' date string '{1}': {2}", fieldName, dateString, ex.Message]);
                 return null;
             }
         }

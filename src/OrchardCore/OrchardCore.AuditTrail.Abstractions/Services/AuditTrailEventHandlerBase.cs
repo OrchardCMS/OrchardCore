@@ -7,7 +7,7 @@ namespace OrchardCore.AuditTrail.Services
 {
     public class AuditTrailEventHandlerBase : IAuditTrailEventHandler
     {
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer S { get; set; }
 
         public virtual Task CreateAsync(AuditTrailCreateContext context) => Task.CompletedTask;
         public virtual Task AlterAsync(AuditTrailCreateContext context, AuditTrailEvent auditTrailEvent) => Task.CompletedTask;

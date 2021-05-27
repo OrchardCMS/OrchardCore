@@ -8,11 +8,11 @@ namespace OrchardCore.AuditTrail.Navigation
 {
     public class AuditTrailSettingsAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer S;
 
         public AuditTrailSettingsAdminMenu(IStringLocalizer<AuditTrailSettingsAdminMenu> stringLocalizer)
         {
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
@@ -23,9 +23,9 @@ namespace OrchardCore.AuditTrail.Navigation
             }
 
             builder
-                 .Add(T["Configuration"], configuration => configuration
-                     .Add(T["Settings"], settings => settings
-                        .Add(T["Audit Trail"], T["Audit Trail"], settings => settings
+                 .Add(S["Configuration"], configuration => configuration
+                     .Add(S["Settings"], settings => settings
+                        .Add(S["Audit Trail"], S["Audit Trail"], settings => settings
                         .AddClass("audittrail").Id("audittrail")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AuditTrailSettingsGroup.Id })
                             .Permission(AuditTrailPermissions.ManageAuditTrailSettings)

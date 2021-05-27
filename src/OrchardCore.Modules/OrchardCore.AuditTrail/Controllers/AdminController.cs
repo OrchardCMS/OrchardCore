@@ -15,6 +15,7 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using OrchardCore.Routing;
@@ -35,6 +36,7 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IAuditTrailAdminListQueryService _auditTrailAdminListQueryService;
         private readonly IDisplayManager<AuditTrailEvent> _displayManager;
         private readonly IDisplayManager<AuditTrailIndexOptions> _auditTrailOptionsDisplayManager;
+        private readonly IClock _clock;
         private readonly IStringLocalizer S;
         private readonly dynamic New;
 
@@ -48,6 +50,7 @@ namespace OrchardCore.AuditTrail.Controllers
             IAuditTrailAdminListQueryService auditTrailAdminListQueryService,
             IDisplayManager<AuditTrailEvent> displayManager,
             IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager,
+            IClock clock,
             IStringLocalizer<AdminController> stringLocalizer)
         {
             _siteService = siteService;
@@ -60,6 +63,7 @@ namespace OrchardCore.AuditTrail.Controllers
             _auditTrailAdminListQueryService = auditTrailAdminListQueryService;
             _displayManager = displayManager;
             _auditTrailOptionsDisplayManager = auditTrailOptionsDisplayManager;
+            _clock = clock;
             S = stringLocalizer;
         }
 
@@ -78,9 +82,10 @@ namespace OrchardCore.AuditTrail.Controllers
             if (!String.IsNullOrEmpty(correlationId))
             {
                 options.CorrelationId = correlationId;
+                options.CorrelationIdFromRoute = true;
             }
 
-            if (!String.IsNullOrEmpty(options.CorrelationId))
+            if (options.CorrelationIdFromRoute)
             {
                 // When the correlation id is provided via the route or options a placeholder node is used to apply a filter.
                 options.FilterResult.TryAddOrReplace(new CorrelationIdFilterNode(options.CorrelationId));
@@ -172,6 +177,37 @@ namespace OrchardCore.AuditTrail.Controllers
                 new SelectListItem { Text = S["Category"], Value = nameof(AuditTrailSort.Category), Selected = options.Sort == AuditTrailSort.Category },
                 new SelectListItem { Text = S["Event"], Value = nameof(AuditTrailSort.Event), Selected = options.Sort == AuditTrailSort.Event },
                 new SelectListItem { Text = S["User"], Value = nameof(AuditTrailSort.User), Selected = options.Sort == AuditTrailSort.User }
+            };
+
+            if (options.CorrelationIdFromRoute)
+            {
+                var firstEvent = auditTrailEvents.FirstOrDefault();
+                if (firstEvent != null)
+                {
+                    var currentCategory = categories.FirstOrDefault(x => x.Name == firstEvent.Category);
+                    if (currentCategory != null)
+                    {
+                        
+                        options.Events = currentCategory.Events.Select(category =>
+                            new SelectListItem
+                            {
+                                Selected = category.Name == options.Category,
+                                Text = category.LocalizedName.Value,
+                                Value = category.Name
+                            }).ToList();
+                    }
+                }
+            }
+
+            options.AuditTrailDates = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["Any date"], Value = String.Empty, Selected = options.Date == String.Empty },
+                new SelectListItem() { Text = S["Today"], Value = _clock.UtcNow.ToString("d"), Selected = options.Date == _clock.UtcNow.ToString("d") }//,
+                // new SelectListItem() { Text = S["Yesterday"], Value = nameof(DateFilter.yesterday), Selected = (options.SelectedDate == DateFilter.yesterday) },
+                // new SelectListItem() { Text = S["Last week"], Value = nameof(DateFilter.lastweek), Selected = (options.SelectedDate == DateFilter.lastweek) },
+                // new SelectListItem() { Text = S["Last month"], Value = nameof(DateFilter.lastmonth), Selected = (options.SelectedDate == DateFilter.lastmonth) },
+                // new SelectListItem() { Text = S["This week"], Value = nameof(DateFilter.thisweek), Selected = (options.SelectedDate == DateFilter.thisweek) },
+                // new SelectListItem() { Text = S["This month"], Value = nameof(DateFilter.thismonth), Selected = (options.SelectedDate == DateFilter.thismonth) }
             };
 
             var items = new List<IShape>();

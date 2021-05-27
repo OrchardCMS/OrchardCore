@@ -42,20 +42,14 @@ namespace OrchardCore.AuditTrail.Services
                     })
                 )
                 .WithNamedTerm("category", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query, ctx) =>
+                    .OneCondition<AuditTrailEvent>((val, query) =>
                     {
                         if (!String.IsNullOrEmpty(val))
                         {
-                            var context = (AuditTrailQueryContext)ctx;
-                            var auditTrailManager = context.ServiceProvider.GetRequiredService<IAuditTrailManager>();
-                            var category = auditTrailManager.DescribeCategories().FirstOrDefault(x => x.Name == val);
-                            if (category != null)
-                            {
-                                query.With<AuditTrailEventIndex>(x => x.Category == category.Name);
-                            }
+                            query.With<AuditTrailEventIndex>(x => x.Category == val);
                         }
 
-                        return new ValueTask<IQuery<AuditTrailEvent>>(query);
+                        return query;
                     })
                     .MapTo<AuditTrailIndexOptions>((val, model) =>
                     {
@@ -70,6 +64,54 @@ namespace OrchardCore.AuditTrail.Services
                         return (false, String.Empty);
                     })
                 )
+                .WithNamedTerm("event", builder => builder
+                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    {
+                        if (!String.IsNullOrEmpty(val))
+                        {
+                            query.With<AuditTrailEventIndex>(x => x.Name == val);
+                        }
+
+                        return query;
+                    })
+                    .MapTo<AuditTrailIndexOptions>((val, model) =>
+                    {
+                        model.Event = val;
+                    })
+                    .MapFrom<AuditTrailIndexOptions>((model) =>
+                    {
+                        if (!String.IsNullOrEmpty(model.Event))
+                        {
+                            return (true, model.Event);
+                        }
+                        return (false, String.Empty);
+                    })
+                )  
+                .WithNamedTerm("date", builder => builder
+                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    {
+                        if (!String.IsNullOrEmpty(val) && DateTime.TryParse(val, out var dd))
+                        {
+                            var previous = dd.Date.AddMinutes(-1);
+                            var tomorrow = dd.Date.AddDays(1).AddMinutes(-1);
+                            query.With<AuditTrailEventIndex>(x => x.CreatedUtc > previous && x.CreatedUtc > tomorrow);
+                        }
+
+                        return query;
+                    })
+                    .MapTo<AuditTrailIndexOptions>((val, model) =>
+                    {
+                        model.Date = val;
+                    })
+                    .MapFrom<AuditTrailIndexOptions>((model) =>
+                    {
+                        if (!String.IsNullOrEmpty(model.Date))
+                        {
+                            return (true, model.Date);
+                        }
+                        return (false, String.Empty);
+                    })
+                )                                
                 .WithNamedTerm("sort", builder => builder
                     .OneCondition<AuditTrailEvent>((val, query) =>
                     {
