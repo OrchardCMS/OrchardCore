@@ -12,7 +12,6 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Scripting;
-using OrchardCore.Infrastructure.Html;
 
 namespace OrchardCore.Workflows.Http.Scripting
 {
@@ -209,11 +208,6 @@ namespace OrchardCore.Workflows.Http.Scripting
             };
         }
 
-        public IEnumerable<GlobalMethod> GetMethods()
-        {
-            return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod, _deserializeRequestDataMethod };
-        }
-
         private static bool isValidJSON(string json)
         {
             try
@@ -260,6 +254,11 @@ namespace OrchardCore.Workflows.Http.Scripting
             }
 
             return false;
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod, _deserializeRequestDataMethod };
         }
     }
 }
