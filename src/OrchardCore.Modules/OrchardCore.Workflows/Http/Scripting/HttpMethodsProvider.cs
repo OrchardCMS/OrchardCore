@@ -158,9 +158,17 @@ namespace OrchardCore.Workflows.Http.Scripting
                     {
                         if (httpContextAccessor.HttpContext.Request.HasFormContentType)
                         {
+                            var formData = httpContextAccessor.HttpContext.Request.Form;
+
+                            // If we can parse first request form element key as JSON then we throw
+                            if(isValidJSON(formData.First().Key.ToString()))
+                            {
+                                throw new Exception("Invalid form data passed in the request.");
+                            }
+
                             try
                             {
-                                result = new JObject(httpContextAccessor.HttpContext.Request.Form.Select(
+                                result = new JObject(formData.Select(
                                 field =>
                                 {
                                     var arr = field.Value.ToArray();
@@ -205,6 +213,19 @@ namespace OrchardCore.Workflows.Http.Scripting
         public IEnumerable<GlobalMethod> GetMethods()
         {
             return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod, _requestDataAsJsonObjectMethod };
+        }
+
+        private static bool isValidJSON(string json)
+        {
+            try
+            {
+                JToken token = JObject.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
