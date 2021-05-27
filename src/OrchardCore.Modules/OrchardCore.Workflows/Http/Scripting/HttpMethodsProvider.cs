@@ -12,6 +12,7 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Scripting;
+using OrchardCore.Infrastructure.Html;
 
 namespace OrchardCore.Workflows.Http.Scripting
 {
@@ -151,6 +152,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Method = serviceProvider => (Func<JObject>)(() =>
                 {
                     JObject result = null;
+                    var sanitizer = serviceProvider.GetRequiredService<IHtmlSanitizerService>();
 
                     if(httpContextAccessor.HttpContext != null)
                     {
@@ -158,8 +160,17 @@ namespace OrchardCore.Workflows.Http.Scripting
                         {
                             try
                             {
-                                result = new JObject((from field in httpContextAccessor.HttpContext.Request.Form
-                                        select new JProperty(field.Key, JArray.FromObject(field.Value.ToArray()))).ToArray());
+                                result = new JObject(httpContextAccessor.HttpContext.Request.Form.Select(
+                                field =>
+                                {
+                                    var arr = field.Value.ToArray();
+                                    if (arr.Length == 1)
+                                    {
+                                        return new JProperty(field.Key, sanitizer.Sanitize(field.Value[0]));
+                                    }
+                                    return new JProperty(field.Key, JArray.FromObject(arr.Select(o => sanitizer.Sanitize(o))));
+                                }
+                                ).ToArray());
                             }
                             catch
                             {
@@ -172,7 +183,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                             using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
                             {
                                 // Async read of the request body is mandatory.
-                                json = sr.ReadToEndAsync().GetAwaiter().GetResult();
+                                json = sanitizer.Sanitize(sr.ReadToEndAsync().GetAwaiter().GetResult());
                             }
 
                             try
