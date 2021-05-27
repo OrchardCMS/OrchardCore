@@ -27,7 +27,7 @@ namespace OrchardCore.Workflows.Http.Scripting
         private readonly GlobalMethod _requestFormMethod;
         private readonly GlobalMethod _queryStringAsJsonMethod;
         private readonly GlobalMethod _requestFormAsJsonMethod;
-        private readonly GlobalMethod _requestDataAsJsonObjectMethod;
+        private readonly GlobalMethod _deserializeRequestDataMethod;
 
         public HttpMethodsProvider(IHttpContextAccessor httpContextAccessor)
         {
@@ -146,9 +146,9 @@ namespace OrchardCore.Workflows.Http.Scripting
                                  select new JProperty(field.Key, JArray.FromObject(field.Value.ToArray()))).ToArray()))
             };
 
-            _requestDataAsJsonObjectMethod = new GlobalMethod
+            _deserializeRequestDataMethod = new GlobalMethod
             {
-                Name = "requestDataAsJsonObject",
+                Name = "deserializeRequestData",
                 Method = serviceProvider => (Func<JObject>)(() =>
                 {
                     JObject result = null;
@@ -212,7 +212,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod, _requestDataAsJsonObjectMethod };
+            return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod, _deserializeRequestDataMethod };
         }
 
         private static bool isValidJSON(string json)
