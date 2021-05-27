@@ -89,9 +89,6 @@ namespace OrchardCore.AuditTrail
             });
 
             services.AddTransient<IAuditTrailAdminListFilterProvider, DefaultAuditTrailAdminListFilterProvider>();
-
-            // TODO move to requirefeatures
-
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -101,7 +98,7 @@ namespace OrchardCore.AuditTrail
             routes.MapAreaControllerRoute(
                 name: "AuditTrailIndex",
                 areaName: "OrchardCore.AuditTrail",
-                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail",
+                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/{correlationId?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
 

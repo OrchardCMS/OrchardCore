@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Models;
@@ -40,6 +41,35 @@ namespace OrchardCore.AuditTrail.Services
                         return (false, String.Empty);
                     })
                 )
+                .WithNamedTerm("category", builder => builder
+                    .OneCondition<AuditTrailEvent>((val, query, ctx) =>
+                    {
+                        if (!String.IsNullOrEmpty(val))
+                        {
+                            var context = (AuditTrailQueryContext)ctx;
+                            var auditTrailManager = context.ServiceProvider.GetRequiredService<IAuditTrailManager>();
+                            var category = auditTrailManager.DescribeCategories().FirstOrDefault(x => x.Name == val);
+                            if (category != null)
+                            {
+                                query.With<AuditTrailEventIndex>(x => x.Category == category.Name);
+                            }
+                        }
+
+                        return new ValueTask<IQuery<AuditTrailEvent>>(query);
+                    })
+                    .MapTo<AuditTrailIndexOptions>((val, model) =>
+                    {
+                        model.Category = val;
+                    })
+                    .MapFrom<AuditTrailIndexOptions>((model) =>
+                    {
+                        if (!String.IsNullOrEmpty(model.Category))
+                        {
+                            return (true, model.Category);
+                        }
+                        return (false, String.Empty);
+                    })
+                )
                 .WithNamedTerm("sort", builder => builder
                     .OneCondition<AuditTrailEvent>((val, query) =>
                     {
@@ -52,10 +82,10 @@ namespace OrchardCore.AuditTrail.Services
                                     break;
                                 case AuditTrailSort.Category:
                                     query.With<AuditTrailEventIndex>().OrderBy(index => index.Category).ThenByDescending(index => index.CreatedUtc);
-                                    break;  
+                                    break;
                                 case AuditTrailSort.Event:
                                     query.With<AuditTrailEventIndex>().OrderBy(index => index.Name).ThenByDescending(index => index.CreatedUtc);
-                                    break;     
+                                    break;
                             };
                         }
                         else

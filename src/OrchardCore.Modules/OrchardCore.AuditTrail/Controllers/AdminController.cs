@@ -63,19 +63,28 @@ namespace OrchardCore.AuditTrail.Controllers
             S = stringLocalizer;
         }
 
-        public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(AuditTrailFilterEngineModelBinder), Name = "q")] QueryFilterResult<AuditTrailEvent> queryFilterResult, PagerParameters pagerParameters, AuditTrailOrderBy? orderBy = null)
+        public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(AuditTrailFilterEngineModelBinder), Name = "q")] QueryFilterResult<AuditTrailEvent> queryFilterResult, PagerParameters pagerParameters, string correlationId = "")
         {
             if (!await _authorizationService.AuthorizeAsync(User, AuditTrailPermissions.ViewAuditTrail))
             {
                 return Forbid();
             }
 
-           var options = new AuditTrailIndexOptions();
+            var options = new AuditTrailIndexOptions();
 
-            // Populate route values to maintain previous route data when generating page links
-            // await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
             options.FilterResult = queryFilterResult;
-            options.FilterResult.MapTo(options);
+
+            // This is used by Contents feature for routing so needs to be passed into the options.
+            if (!String.IsNullOrEmpty(correlationId))
+            {
+                options.CorrelationId = correlationId;
+            }
+
+            if (!String.IsNullOrEmpty(options.CorrelationId))
+            {
+                // When the correlation id is provided via the route or options a placeholder node is used to apply a filter.
+                options.FilterResult.TryAddOrReplace(new CorrelationIdFilterNode(options.CorrelationId));
+            }
 
             // With the options populated we filter the query, allowing the filters to alter the options.
             var query = await _auditTrailAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
@@ -156,7 +165,7 @@ namespace OrchardCore.AuditTrail.Controllers
                 .ToList();
 
             options.Categories.Insert(0, new SelectListItem { Text = S["All categories"], Value = String.Empty, Selected = String.IsNullOrEmpty(options.Category) });
-            
+
             options.AuditTrailSorts = new List<SelectListItem>()
             {
                 new SelectListItem { Text = S["Timestamp"], Value = nameof(AuditTrailSort.Timestamp), Selected = options.Sort == AuditTrailSort.Timestamp },
