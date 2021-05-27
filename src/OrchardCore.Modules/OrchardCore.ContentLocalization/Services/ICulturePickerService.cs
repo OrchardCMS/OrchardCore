@@ -25,6 +25,6 @@ namespace OrchardCore.ContentLocalization.Services
         /// <summary>
         /// Sets the culture cookie if the setting is enabled
         /// </summary>
-        Task SetContentCulturePickerCookie(string targetCulture);
+        void SetContentCulturePickerCookie(string targetCulture);
     }
 }

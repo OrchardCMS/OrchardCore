@@ -103,21 +103,16 @@ namespace OrchardCore.ContentLocalization.Services
             return Enumerable.Empty<LocalizationEntry>();
         }
 
-        public async Task SetContentCulturePickerCookie(string targetCulture)
+        public void SetContentCulturePickerCookie(string targetCulture)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
-
-            if (settings.SetCookie)
-            {
-                var response = _httpContextAccessor.HttpContext.Response;
-                // Set the cookie to handle redirecting to a custom controller
-                response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
-                response.Cookies.Append(
-                    CookieRequestCultureProvider.DefaultCookieName,
-                    CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
-                    new CookieOptions { Expires = DateTime.UtcNow.AddDays(_culturePickerOptions.CookieLifeTime) }
-                );
-            }
+            var response = _httpContextAccessor.HttpContext.Response;
+            // Set the cookie to handle redirecting to a custom controller
+            response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
+            response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
+                new CookieOptions { Expires = DateTime.UtcNow.AddDays(_culturePickerOptions.CookieLifeTime) }
+            );
         }
     }
 }

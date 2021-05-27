@@ -49,8 +49,10 @@ namespace OrchardCore.ContentLocalization.Controllers
             if (supportedCultures.Any(t => t == targetCulture))
             {
                 var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
-
-                await _culturePickerService.SetContentCulturePickerCookie(targetCulture);
+                if (settings.SetCookie)
+                {
+                    _culturePickerService.SetContentCulturePickerCookie(targetCulture);
+                }
 
                 // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url
                 var localizations = await _culturePickerService.GetLocalizationsFromRouteAsync(contentItemUrl);
