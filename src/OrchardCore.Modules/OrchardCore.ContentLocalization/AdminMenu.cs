@@ -28,7 +28,6 @@ namespace OrchardCore.ContentLocalization
                 .Add(S["Configuration"], localization => localization
                     .Add(S["Settings"], settings => settings
                         .Add(S["Localization"], localization => localization
-                            .AddClass("contentlocalization").Id("contentlocalization")
                             .Add(S["Content Request Culture Provider"], S["Content Request Culture Provider"].PrefixPosition(), registration => registration
                                 .AddClass("contentrequestcultureprovider").Id("contentrequestcultureprovider")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentRequestCultureProviderSettingsDriver.GroupId })
