@@ -70,8 +70,6 @@ namespace OrchardCore.Contents.Drivers
 
                 });
 
-                results.Add(Initialize<ContentItemViewModel>("ContentsHistoryAdmin_HistoryAdmin", m => m.ContentItem = contentItem).Location("HistoryAdmin", "Content:10"));
-
                 results.Add(contentsMetadataShape);
                 results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
                 results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
