@@ -124,6 +124,21 @@ namespace OrchardCore.AutoSetup
 
                 if (_shellSettings.State == TenantState.Uninitialized)
                 {
+                    var pathBase = httpContext.Request.PathBase;
+                    if (!pathBase.HasValue)
+                    {
+                        pathBase = "/";
+                    }
+
+                    // Check if tenant was Installed by another instance
+                    var settings = await _shellSettingsManager.LoadSettingsAsync(_shellSettings.Name);
+                    if (settings.State != TenantState.Uninitialized)
+                    {
+                        await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
+                        httpContext.Response.Redirect(pathBase);
+                        return;
+                    }
+
                     var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
                     if (await SetupTenantAsync(setupService, _setupOptions, _shellSettings))
                     {
@@ -137,12 +152,6 @@ namespace OrchardCore.AutoSetup
                                     await CreateTenantSettingsAsync(setupOptions);
                                 }
                             }
-                        }
-
-                        var pathBase = httpContext.Request.PathBase;
-                        if (!pathBase.HasValue)
-                        {
-                            pathBase = "/";
                         }
 
                         httpContext.Response.Redirect(pathBase);
