@@ -152,7 +152,6 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Method = serviceProvider => (Func<JObject>)(() =>
                 {
                     JObject result = null;
-                    var sanitizer = serviceProvider.GetRequiredService<IHtmlSanitizerService>();
 
                     if(httpContextAccessor.HttpContext != null)
                     {
@@ -174,9 +173,9 @@ namespace OrchardCore.Workflows.Http.Scripting
                                     var arr = field.Value.ToArray();
                                     if (arr.Length == 1)
                                     {
-                                        return new JProperty(field.Key, sanitizer.Sanitize(field.Value[0]));
+                                        return new JProperty(field.Key, field.Value[0]);
                                     }
-                                    return new JProperty(field.Key, JArray.FromObject(arr.Select(o => sanitizer.Sanitize(o))));
+                                    return new JProperty(field.Key, JArray.FromObject(arr));
                                 }
                                 ).ToArray());
                             }
@@ -191,7 +190,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                             using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
                             {
                                 // Async read of the request body is mandatory.
-                                json = sanitizer.Sanitize(sr.ReadToEndAsync().GetAwaiter().GetResult());
+                                json = sr.ReadToEndAsync().GetAwaiter().GetResult();
                             }
 
                             try
