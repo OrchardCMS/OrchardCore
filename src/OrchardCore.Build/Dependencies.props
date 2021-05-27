@@ -27,7 +27,6 @@
     <PackageManagement Include="MailKit" Version="2.12.0" />
     <PackageManagement Include="Markdig" Version="0.24.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
-    <PackageManagement Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
     <PackageManagement Include="MimeKit" Version="2.12.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
