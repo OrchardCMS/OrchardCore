@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Scripting;
@@ -148,9 +149,9 @@ namespace OrchardCore.Workflows.Http.Scripting
             _deserializeRequestDataMethod = new GlobalMethod
             {
                 Name = "deserializeRequestData",
-                Method = serviceProvider => (Func<JObject>)(() =>
+                Method = serviceProvider => (Func<Dictionary<string, object>>)(() =>
                 {
-                    JObject result = null;
+                    Dictionary<string, object> result = null;
 
                     if(httpContextAccessor.HttpContext != null)
                     {
@@ -166,17 +167,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
                             try
                             {
-                                result = new JObject(formData.Select(
-                                field =>
-                                {
-                                    var arr = field.Value.ToArray();
-                                    if (arr.Length == 1)
-                                    {
-                                        return new JProperty(field.Key, field.Value[0]);
-                                    }
-                                    return new JProperty(field.Key, JArray.FromObject(arr));
-                                }
-                                ).ToArray());
+                                result = formData.ToDictionary(x => x.Key, x => (object) x.Value);
                             }
                             catch
                             {
@@ -194,7 +185,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
                             try
                             {
-                                result = JObject.Parse(json);
+                                result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                             }
                             catch
                             {
