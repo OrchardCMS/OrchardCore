@@ -156,8 +156,15 @@ namespace OrchardCore.Workflows.Http.Scripting
                     {
                         if (httpContextAccessor.HttpContext.Request.HasFormContentType)
                         {
-                            result = new JObject((from field in httpContextAccessor.HttpContext.Request.Form
-                                    select new JProperty(field.Key, JArray.FromObject(field.Value.ToArray()))).ToArray());
+                            try
+                            {
+                                result = new JObject((from field in httpContextAccessor.HttpContext.Request.Form
+                                        select new JProperty(field.Key, JArray.FromObject(field.Value.ToArray()))).ToArray());
+                            }
+                            catch
+                            {
+                                throw new Exception("Invalid form data passed in the request.");
+                            }
                         }
                         else if (HasJsonContentType(httpContextAccessor.HttpContext.Request))
                         {
@@ -168,7 +175,14 @@ namespace OrchardCore.Workflows.Http.Scripting
                                 json = sr.ReadToEndAsync().GetAwaiter().GetResult();
                             }
 
-                            result = JObject.Parse(json);
+                            try
+                            {
+                                result = JObject.Parse(json);
+                            }
+                            catch
+                            {
+                                throw new Exception("Invalid JSON passed in the request.");
+                            }
                         }
                     }
 
