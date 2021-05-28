@@ -15,8 +15,6 @@ namespace OrchardCore.AuditTrail.Services
     {
         public void Build(QueryEngineBuilder<AuditTrailEvent> builder)
         {
-            // TODO date.
-
             builder
                 .WithNamedTerm("id", builder => builder
                     .OneCondition<AuditTrailEvent>((val, query) =>
@@ -86,15 +84,31 @@ namespace OrchardCore.AuditTrail.Services
                         }
                         return (false, String.Empty);
                     })
-                )  
+                )
                 .WithNamedTerm("date", builder => builder
                     .OneCondition<AuditTrailEvent>((val, query) =>
                     {
-                        if (!String.IsNullOrEmpty(val) && DateTime.TryParse(val, out var dd))
+                        if (!String.IsNullOrEmpty(val))
                         {
-                            var previous = dd.Date.AddMinutes(-1);
-                            var tomorrow = dd.Date.AddDays(1).AddMinutes(-1);
-                            query.With<AuditTrailEventIndex>(x => x.CreatedUtc > previous && x.CreatedUtc > tomorrow);
+                            DateTime? start = null;
+                            DateTime? end = null;
+                            var split = val.Split("..", 2);
+                            if (split.Length == 1 && DateTime.TryParse(val, out var date))
+                            {
+                                start = date.Date;
+                                end = date.Date.AddDays(1);
+                            }
+                            else if (split.Length == 2 && DateTime.TryParse(split[0], out var splitStart) && DateTime.TryParse(split[1], out var splitEnd))
+                            {
+                                start = splitStart;
+                                // TODO if time component is zero add a day?
+                                end = splitEnd.Date;
+                            }
+
+                            if (start != null && end != null)
+                            {
+                                query.With<AuditTrailEventIndex>(x => x.CreatedUtc >= start.GetValueOrDefault() && x.CreatedUtc < end.GetValueOrDefault());
+                            }
                         }
 
                         return query;
@@ -111,7 +125,7 @@ namespace OrchardCore.AuditTrail.Services
                         }
                         return (false, String.Empty);
                     })
-                )                                
+                )
                 .WithNamedTerm("sort", builder => builder
                     .OneCondition<AuditTrailEvent>((val, query) =>
                     {
@@ -197,6 +211,15 @@ namespace OrchardCore.AuditTrail.Services
                 //     )
                 // );
 
+        }
+    }
+
+    public static class DateTimeExtensions
+    {
+        public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.AddDays(-1 * diff).Date;
         }
     }
 }

@@ -187,7 +187,7 @@ namespace OrchardCore.AuditTrail.Controllers
                     var currentCategory = categories.FirstOrDefault(x => x.Name == firstEvent.Category);
                     if (currentCategory != null)
                     {
-                        
+
                         options.Events = currentCategory.Events.Select(category =>
                             new SelectListItem
                             {
@@ -199,16 +199,33 @@ namespace OrchardCore.AuditTrail.Controllers
                 }
             }
 
+            // TODO move all of this to options.
+
             options.AuditTrailDates = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["Any date"], Value = String.Empty, Selected = options.Date == String.Empty },
-                new SelectListItem() { Text = S["Today"], Value = _clock.UtcNow.ToString("d"), Selected = options.Date == _clock.UtcNow.ToString("d") }//,
+                new SelectListItem() { Text = S["Today"], Value = _clock.UtcNow.ToString("yyyy-MM-dd"), Selected = options.Date == _clock.UtcNow.ToString("yyyy-MM-dd") },
+                new SelectListItem() { Text = S["Yesterday"], Value = _clock.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"), Selected = options.Date == _clock.UtcNow.ToString("yyyy-MM-dd") }//,
+                // new SelectListItem() { Text = S["Last week"], Value = _clock.UtcNow.StartOfWeek(DayOfWeek.Monday).AddDays(-7).ToString("yyyy-MM-dd") + ".." + , Selected = options.Date == _clock.UtcNow.ToString("yyyy-MM-dd") }//,
                 // new SelectListItem() { Text = S["Yesterday"], Value = nameof(DateFilter.yesterday), Selected = (options.SelectedDate == DateFilter.yesterday) },
                 // new SelectListItem() { Text = S["Last week"], Value = nameof(DateFilter.lastweek), Selected = (options.SelectedDate == DateFilter.lastweek) },
                 // new SelectListItem() { Text = S["Last month"], Value = nameof(DateFilter.lastmonth), Selected = (options.SelectedDate == DateFilter.lastmonth) },
                 // new SelectListItem() { Text = S["This week"], Value = nameof(DateFilter.thisweek), Selected = (options.SelectedDate == DateFilter.thisweek) },
                 // new SelectListItem() { Text = S["This month"], Value = nameof(DateFilter.thismonth), Selected = (options.SelectedDate == DateFilter.thismonth) }
             };
+
+            // Last week
+
+            var start = _clock.UtcNow.StartOfWeek(DayOfWeek.Monday).AddDays(-7);
+            var end = start.AddDays(7);
+            var dateSearchFilter = $"{start.ToString("yyyy-MM-dd")}..{end.ToString("yyyy-MM-dd")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["Last week"], dateSearchFilter, options.Date == dateSearchFilter));
+
+            // This week
+            start = _clock.UtcNow.StartOfWeek(DayOfWeek.Monday);
+            end = start.AddDays(7);
+            dateSearchFilter = $"{start.ToString("yyyy-MM-dd")}..{end.ToString("yyyy-MM-dd")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["This week"], dateSearchFilter, options.Date == dateSearchFilter));
 
             var items = new List<IShape>();
 
