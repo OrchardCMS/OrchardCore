@@ -19,7 +19,7 @@ namespace OrchardCore.AutoSetup
 {
 
     /// <summary>
-    /// The auto-setup middleware.
+    /// The auto setup middleware.
     /// </summary>
     public class AutoSetupMiddleware
     {
@@ -49,7 +49,7 @@ namespace OrchardCore.AutoSetup
         private readonly IDistributedLock _distributedLock;
 
         /// <summary>
-        /// The auto-setup options.
+        /// The auto setup options.
         /// </summary>
         private readonly AutoSetupOptions _options;
 
@@ -59,7 +59,7 @@ namespace OrchardCore.AutoSetup
         private readonly ILogger<AutoSetupMiddleware> _logger;
 
         /// <summary>
-        /// The auto-setup lock options.
+        /// The auto setup lock options.
         /// </summary>
         private readonly LockOptions _lockOptions;
 
@@ -76,7 +76,7 @@ namespace OrchardCore.AutoSetup
         /// <param name="shellSettings">The shell settings.</param>
         /// <param name="shellSettingsManager">The shell settings manager.</param>
         /// <param name="distributedLock">The distributed lock.</param>
-        /// <param name="options">The auto-setup options.</param>
+        /// <param name="options">The auto setup options.</param>
         /// <param name="logger">The logger.</param>
         public AutoSetupMiddleware(
             RequestDelegate next,
@@ -100,7 +100,7 @@ namespace OrchardCore.AutoSetup
         }
 
         /// <summary>
-        /// The auto-setup middleware invoke.
+        /// The auto setup middleware invoke.
         /// </summary>
         /// <param name="httpContext">
         /// The http context.
@@ -116,7 +116,7 @@ namespace OrchardCore.AutoSetup
                 (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_lockOptions);
                 if (!locked)
                 {
-                    throw new TimeoutException($"Fails to acquire an auto-setup lock for the tenant: {_setupOptions.ShellName}");
+                    throw new TimeoutException($"Fails to acquire an auto setup lock for the tenant: {_setupOptions.ShellName}");
                 }
 
                 await using var acquiredLock = locker;
