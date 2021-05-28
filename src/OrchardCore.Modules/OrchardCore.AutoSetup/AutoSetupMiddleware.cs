@@ -45,7 +45,7 @@ namespace OrchardCore.AutoSetup
         private readonly IShellSettingsManager _shellSettingsManager;
 
         /// <summary>
-        /// Distributed lock guaranties Atomic setup in multi instance environment.
+        /// Distributed lock guaranties Atomic setup in multi instances environment.
         /// </summary>
         private readonly IDistributedLock _distributedLock;
 
@@ -96,7 +96,7 @@ namespace OrchardCore.AutoSetup
             _options = options.Value;
             _logger = logger;
 
-            _lockOptions = _options.LockOptions;
+            _lockOptions = _options.LockOptions ?? new LockOptions();
             _setupOptions = _options.Tenants.FirstOrDefault(options => _shellSettings.Name == options.ShellName);
         }
 
@@ -113,8 +113,8 @@ namespace OrchardCore.AutoSetup
         {
             if (_setupOptions != null && _shellSettings.State == TenantState.Uninitialized)
             {
-                // Try to acquire a lock before starting installation, it guaranty Atomic setup in multi instance environment.
-                (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_setupOptions.ShellName, _lockOptions);
+                // Try to acquire a lock before starting installation, it guaranties Atomic setup in multi instances environment.
+                (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_lockOptions);
                 if (!locked)
                 {
                     throw new TimeoutException($"Fails to acquire a AutoSetup lock for the shell: {_setupOptions.ShellName}");

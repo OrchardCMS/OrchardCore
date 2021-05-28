@@ -15,10 +15,12 @@ namespace OrchardCore.Environment.Shell.Builders
         /// </summary>
         public static Task<(ILocker locker, bool locked)> TryAcquireShellActivateLockAsync(this ShellContext shellContext)
         {
-            var lockService = shellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
+            // If the shell is initializing, force the usage of a local lock.
+            var lockService = shellContext.Settings.State == TenantState.Initializing
+                                  ? (ILock)shellContext.ServiceProvider.GetRequiredService<ILocalLock>()
+                                  : shellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
 
             TimeSpan timeout, expiration;
-            string lockName = null;
             if (lockService is ILocalLock)
             {
                 // If it is a local lock, don't use any timeout and expiration.
@@ -30,10 +32,9 @@ namespace OrchardCore.Environment.Shell.Builders
                 var options = shellContext.ServiceProvider.GetRequiredService<IOptions<ShellContextOptions>>();
                 timeout = TimeSpan.FromMilliseconds(options.Value.ShellActivateLockTimeout);
                 expiration = TimeSpan.FromMilliseconds(options.Value.ShellActivateLockExpiration);
-                lockName = options.Value.ShellActivateLockName;
             }
 
-            return lockService.TryAcquireLockAsync(lockName ?? "SHELL_ACTIVATE_LOCK", timeout, expiration);
+            return lockService.TryAcquireLockAsync("SHELL_ACTIVATE_LOCK", timeout, expiration);
         }
     }
 }

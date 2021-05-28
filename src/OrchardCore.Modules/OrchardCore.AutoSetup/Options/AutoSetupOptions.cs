@@ -19,7 +19,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <summary>
         /// AutoSetup Lock Options
         /// </summary>
-        public LockOptions LockOptions { get; set; } = new LockOptions();
+        public LockOptions LockOptions { get; set; }
 
         /// <summary>
         /// Gets or sets the Tenants to install.
@@ -51,6 +51,11 @@ namespace OrchardCore.AutoSetup.Options
             if (Tenants.Count(tenant => tenant.IsDefault) != 1)
             {
                 yield return new ValidationResult("The Single Default Tenant should be provided");
+            }
+
+            if (LockOptions != null && (LockOptions.LockExpiration <= 0 || LockOptions.LockTimeout <= 0))
+            {
+                yield return new ValidationResult("LockOption's LockExpiration and LockTimeout should be greater then zero");
             }
 
             foreach (var validationResult in Tenants.SelectMany(tenant => tenant.Validate(validationContext)))
