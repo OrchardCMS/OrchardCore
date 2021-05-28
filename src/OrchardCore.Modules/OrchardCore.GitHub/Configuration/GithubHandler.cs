@@ -72,7 +72,7 @@ namespace OrchardCore.GitHub.Configuration
             var response = await Backchannel.SendAsync(requestMessage, Context.RequestAborted);
             if (response.IsSuccessStatusCode)
             {
-                var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync(Context.RequestAborted));
+                var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
 
                 if(payload.RootElement.TryGetProperty("error", out var error))
