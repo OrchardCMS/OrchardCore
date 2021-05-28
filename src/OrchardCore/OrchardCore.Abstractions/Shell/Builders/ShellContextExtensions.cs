@@ -17,8 +17,8 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             // If the shell is initializing, force the usage of a local lock.
             var lockService = shellContext.Settings.State == TenantState.Initializing
-                                  ? (ILock)shellContext.ServiceProvider.GetRequiredService<ILocalLock>()
-                                  : shellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
+                ? (ILock)shellContext.ServiceProvider.GetRequiredService<ILocalLock>()
+                : shellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
 
             TimeSpan timeout, expiration;
             if (lockService is ILocalLock)
