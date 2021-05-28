@@ -57,11 +57,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 // Defer the buffer disposing so that a template can be rendered twice.
                 var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
-                ShellScope.RegisterBeforeDispose(scope =>
-                {
-                    content.Dispose();
-                    return Task.CompletedTask;
-                });
+                ShellScope.Current.RegisterBeforeDispose(scope => content.Dispose());
 
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
                 await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
