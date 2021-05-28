@@ -128,9 +128,9 @@ is created.
 
 ## Using Distributed Lock For Auto Setup
 
-In the case where multiple OrchardCore instances share the same Redis Database, you might need Distributed Lock for atomic Auto Setup.
+If multiple OrchardCore instances sharing the same database are launched, you might need a distributed lock for an atomic auto setup.
 ![Use case](./assets/lock-use-case.png)
-You should Enable RedisLock feature in Startup file
+You should enable the Redis Lock feature in the startup file.
 
 ```csharp
     public void ConfigureServices(IServiceCollection services)
@@ -140,24 +140,22 @@ You should Enable RedisLock feature in Startup file
             .AddSetupFeatures("OrchardCore.Redis.Lock", "OrchardCore.AutoSetup");
     }
 ```
-Make sure you set the Redis Configuration string via env. variable or configuration file
+Make sure you set the Redis configuration string via an environment variable or a configuration file.
 
 ```
-"OrchardCore__OrchardCore_Redis__Configuration": "localhost"
+"OrchardCore__OrchardCore_Redis__Configuration": "192.168.99.100:6379,allowAdmin=true"
 ```
 
 Optional Distributed Lock Parameters
 
 | Parameter | Description | Default Value |
 | --- | --- |
-| `LockTimeout` | The timeout in milliseconds to acquire a distributed auto setup lock. | 20 seconds |
-| `LockExpiration` | The expiration in milliseconds of the distributed setup lock. | 20 seconds |
-| `LockName` | The distributed setup lock name. | "AUTOSETUP_LOCK_{SHELL-NAME}" |
+| `LockTimeout` | The timeout in milliseconds to acquire a distributed auto setup lock. | 30 seconds |
+| `LockExpiration` | The expiration in milliseconds of the distributed setup lock. | 30 seconds |
 
-Lock configuration parameters are optional and can be set via Env. Variables or configuration file 
+Lock configuration parameters are optional and can be set via environment variables or a configuration file .
 
 ```
 "OrchardCore__OrchardCore_AutoSetup__LockOptions__LockTimeout": "10000"
 "OrchardCore__OrchardCore_AutoSetup__LockOptions__LockExpiration": "10000"
-"OrchardCore__OrchardCore_AutoSetup__LockOptions__LockName": "Orchard_AutoSetup_Lock"
 ```
