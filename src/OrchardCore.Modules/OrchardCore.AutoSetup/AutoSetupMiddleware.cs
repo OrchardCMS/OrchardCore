@@ -95,7 +95,7 @@ namespace OrchardCore.AutoSetup
             _options = options.Value;
             _logger = logger;
 
-            _lockOptions = _options.LockOptions ?? new LockOptions();
+            _lockOptions = _options.LockOptions;
             _setupOptions = _options.Tenants.FirstOrDefault(options => _shellSettings.Name == options.ShellName);
         }
 
