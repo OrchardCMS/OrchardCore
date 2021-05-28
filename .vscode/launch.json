@@ -67,7 +67,7 @@
       "name": ".NET Core Attach",
       "type": "coreclr",
       "request": "attach",
-      "processId": 0
+      "processId": "${command:pickProcess}"
     },
     {
       "name": ".NET Core Launch (publish framework dependent) - net5.0",
