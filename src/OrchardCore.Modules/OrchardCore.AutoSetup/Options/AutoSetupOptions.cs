@@ -11,18 +11,18 @@ namespace OrchardCore.AutoSetup.Options
     public class AutoSetupOptions : IValidatableObject
     {
         /// <summary>
-        /// Gets or sets the Url which will trigger AutoSetup.
-        /// Leave it Empty if you want to Trigger Setup on any request.
+        /// Gets or sets the url which will trigger the auto setup.
+        /// Leave it empty if you want to trigger the auto setup on any request.
         /// </summary>
         public string AutoSetupPath { get; set; }
 
         /// <summary>
-        /// AutoSetup Lock Options
+        /// Auto setup lock options.
         /// </summary>
         public LockOptions LockOptions { get; set; }
 
         /// <summary>
-        /// Gets or sets the Tenants to install.
+        /// Gets or sets the tenants to install.
         /// </summary>
         public List<TenantSetupOptions> Tenants { get; set; } = new List<TenantSetupOptions>();
 
@@ -32,7 +32,7 @@ namespace OrchardCore.AutoSetup.Options
         public bool ConfigurationExists { get; set; }
 
         /// <summary>
-        /// AutoSetupOptions Validation logic.
+        /// Auto setup options validation logic.
         /// </summary>
         /// <param name="validationContext">The validation context.</param>
         /// <returns>The collection of errors.</returns>
