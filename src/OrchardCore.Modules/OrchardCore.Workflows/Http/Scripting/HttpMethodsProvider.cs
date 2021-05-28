@@ -152,7 +152,8 @@ namespace OrchardCore.Workflows.Http.Scripting
 
                     if(httpContextAccessor.HttpContext != null)
                     {
-                        if (httpContextAccessor.HttpContext.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
+                        var method = httpContextAccessor.HttpContext.Request.Method;
+                        if (method.Equals("POST", StringComparison.OrdinalIgnoreCase) || method.Equals("PUT", StringComparison.OrdinalIgnoreCase) || method.Equals("PATCH", StringComparison.OrdinalIgnoreCase))
                         {
                             if (httpContextAccessor.HttpContext.Request.HasFormContentType)
                             {
