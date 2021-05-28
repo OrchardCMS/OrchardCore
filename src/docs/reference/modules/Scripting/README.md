@@ -113,7 +113,7 @@ Here is a list of javascript methods provided by Orchard Modules.
 | `absoluteUrl(relativePath: String): String` | Returns the absolute URL for the relative path argument.  |
 | `readBody(): String` | Returns the raw HTTP request body.  |
 | `requestForm(name: String): String | Array` | Returns the value(s) of the form field name passed in as an argument. |
-| `deserializeRequestData(): Dictionary<string, object>` | Deserialize the request data as a Dictionary<string, object> for requests that sends JSON or form data. Replaces deprecated queryStringAsJson and requestFormAsJson methods |
+| `deserializeRequestData(): Dictionary<string, object>` | Deserializes the request data as a Dictionary<string, object> for requests that send JSON or form data. Replaces deprecated queryStringAsJson and requestFormAsJson methods |
 
 #### Recipes (`OrchardCore.Recipes`)
 
