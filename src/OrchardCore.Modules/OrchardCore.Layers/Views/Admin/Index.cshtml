@@ -16,7 +16,9 @@
 
 <form id="undo-form" asp-action="UpdatePosition" method="post">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
         @T["Widget successfully moved. <a href=\"javascript:console.log('submit');$('#undo-form').submit();\"><strong>Undo</strong></a>."]
     </div>
     <input id="layer-undo-message-contentItemId" type="hidden" name="contentItemId" value="" />
@@ -38,12 +40,12 @@
                 {
                     double maxPosition = 0;
 
-                    <div class="card">
+                    <div class="card form-group">
                         <div class="card-header text-muted">
                             @zone
                         </div>
                         <div class="layer-zone card-body" data-zone="@zone">
-                            <div class="mb-3">
+                            <div class="form-group">
                                 <ul class="list-group zones">
                                     @if (Model.Widgets.ContainsKey(zone))
                                     {
@@ -71,23 +73,25 @@
                             </div>
                             @if (Model.Layers.Any())
                             {
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        @T["Add Widget"]
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        @foreach (var type in widgetContentTypes)
-                                        {
-                                            var contentItem = await ContentManager.NewAsync(type.Name);
-                                            var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
-                                            createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
-                                            createRoute["LayerMetadata.Zone"] = zone;
-                                            createRoute["LayerMetadata.Position"] = maxPosition + 1;
-                                            <a class="dropdown-item add-list-widget btn-sm"
-                                               data-widget-type="@type.Name"
-                                               data-zone="@zone"
-                                               href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
-                                        }
+                                <div class="btn-dropdown-wrapper w-100">
+                                    <div class="btn-group btn-dropdown">
+                                        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            @T["Add Widget"]
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            @foreach (var type in widgetContentTypes)
+                                            {
+                                                var contentItem = await ContentManager.NewAsync(type.Name);
+                                                var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
+                                                createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
+                                                createRoute["LayerMetadata.Zone"] = zone;
+                                                createRoute["LayerMetadata.Position"] = maxPosition + 1;
+                                                <a class="dropdown-item add-list-widget btn-sm"
+                                                data-widget-type="@type.Name"
+                                                data-zone="@zone"
+                                                href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             }
@@ -105,16 +109,16 @@
                 <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@T["See documentation"]</a>
             </span>
         </p>
-        <div class="mb-3">
+        <div class="form-group">
             <ul class="list-group">
                 @foreach (var layer in Model.Layers)
                 {
                     <li class="list-group-item">
                         <div class="properties">
                             <div class="d-flex flex-wrap">
-                                <div class="form-check me-auto flex-grow-1">
-                                    <input type="checkbox" class="form-check-input layer-check" id="@layer.Name" value="@layer.Name">
-                                    <label class="form-check-label" for="@layer.Name">@layer.Name</label>
+                                <div class="custom-control custom-checkbox mr-auto flex-grow-1">
+                                    <input type="checkbox" class="custom-control-input layer-check" id="@layer.Name" value="@layer.Name">
+                                    <label class="custom-control-label" for="@layer.Name">@layer.Name</label>
                                 </div>
                                 <div>
                                     <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>

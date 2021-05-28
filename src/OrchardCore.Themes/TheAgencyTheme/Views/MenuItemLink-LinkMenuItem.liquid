@@ -1,2 +1,2 @@
-﻿{% assign link = Model.ContentItem.Content.LinkMenuItemPart %}
-<a class="nav-link js-scroll-trigger" href="{{ link.Url | href }}">{{ Model.ContentItem.DisplayText }}</a>
+{% assign link = Model.ContentItem.Content.LinkMenuItemPart %}
+<a class="nav-link" href="{{ link.Url | href }}">{{ Model.ContentItem.DisplayText }}</a>

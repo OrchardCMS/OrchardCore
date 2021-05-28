@@ -1,0 +1,25 @@
+// Portfolio item 4 modal popup
+#portfolioModal4.portfolio-modal.modal.fade(tabindex='-1', role='dialog', aria-hidden='true')
+    .modal-dialog
+        .modal-content
+            .close-modal(data-bs-dismiss='modal')
+                img(src='assets/img/close-icon.svg', alt='Close modal')
+            .container
+                .row.justify-content-center
+                    .col-lg-8
+                        .modal-body
+                            // Project details
+                            h2.text-uppercase Project Name
+                            p.item-intro.text-muted Lorem ipsum dolor sit amet consectetur.
+                            img.img-fluid.d-block.mx-auto(src='assets/img/portfolio/4.jpg', alt='...')
+                            p Use this area to describe your project. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est blanditiis dolorem culpa incidunt minus dignissimos deserunt repellat aperiam quasi sunt officia expedita beatae cupiditate, maiores repudiandae, nostrum, reiciendis facere nemo!
+                            ul.list-inline
+                                li
+                                    strong Client:
+                                    | Lines
+                                li
+                                    strong Category:
+                                    | Branding
+                            button.btn.btn-primary.btn-xl.text-uppercase(data-bs-dismiss='modal', type='button')
+                                i.fas.fa-times.me-1
+                                | Close Project

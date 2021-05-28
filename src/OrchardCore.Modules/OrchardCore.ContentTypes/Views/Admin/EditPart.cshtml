@@ -14,24 +14,16 @@
 <form asp-action="EditPart">
     @Html.ValidationSummary()
 
-    <div class="mb-3">
-        <div class="w-sm-75 w-md-50 w-lg-25">
-            <label asp-for="Name">@T["Technical Name"]</label>
-            <input asp-for="Name" class="form-control" readonly />
-        </div>
-        <span class="hint">@T["Technical name of the part."]</span>
-    </div>
-
     @if (Model.Editor.Shortcuts != null)
     {
-        <div class="mb-3">
+        <div class="form-group">
             @await DisplayAsync(Model.Editor.Shortcuts)
         </div>
     }
 
     @await DisplayAsync(Model.Editor)
 
-    <div class="mb-3">
+    <div class="form-group">
         <h3>@T["Fields"]</h3>
 
         @if (Model.PartDefinition != null)
@@ -53,11 +45,11 @@
             </ul>
         }
     </div>
-    <div class="mb-3">
+    <div class="form-group">
         <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
     </div>
 
-    <div class="mb-3">
+    <div class="form-group">
         <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
     </div>
