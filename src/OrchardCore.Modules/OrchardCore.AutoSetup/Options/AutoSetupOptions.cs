@@ -40,22 +40,22 @@ namespace OrchardCore.AutoSetup.Options
         {
             if (!String.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith("/"))
             {
-                yield return new ValidationResult($"The field {nameof(AutoSetupPath)} should be empty or start with /");
+                yield return new ValidationResult($"The field '{nameof(AutoSetupPath)}' should be empty or start with '/'.");
             }
 
             if (Tenants.Count == 0)
             {
-                yield return new ValidationResult($"The field {nameof(Tenants)} should contain at least one tenant");
+                yield return new ValidationResult($"The field '{nameof(Tenants)}' should contain at least one tenant.");
             }
 
             if (Tenants.Count(tenant => tenant.IsDefault) != 1)
             {
-                yield return new ValidationResult("The Single Default Tenant should be provided");
+                yield return new ValidationResult("The single 'Default' tenant should be provided.");
             }
 
             if (LockOptions != null && (LockOptions.LockExpiration <= 0 || LockOptions.LockTimeout <= 0))
             {
-                yield return new ValidationResult("LockOption's LockExpiration and LockTimeout should be greater then zero");
+                yield return new ValidationResult("Lock option's 'LockExpiration' and 'LockTimeout' should be greater than zero.");
             }
 
             foreach (var validationResult in Tenants.SelectMany(tenant => tenant.Validate(validationContext)))
