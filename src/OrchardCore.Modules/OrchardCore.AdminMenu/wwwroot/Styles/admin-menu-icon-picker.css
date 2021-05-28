@@ -348,7 +348,7 @@
   min-height: 258px;
 }
 :root[data-theme=darkmode] #iconPickerModal .iconpicker-item {
-  background-color: #222;
+  background-color: #181a1b;
 }
 :root[data-theme=darkmode] .remove-icon, :root[data-theme=darkmode] .sample-icon {
   width: 40px;
