@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Scripting;
@@ -25,6 +27,7 @@ namespace OrchardCore.Workflows.Http.Scripting
         private readonly GlobalMethod _requestFormMethod;
         private readonly GlobalMethod _queryStringAsJsonMethod;
         private readonly GlobalMethod _requestFormAsJsonMethod;
+        private readonly GlobalMethod _deserializeRequestDataMethod;
 
         public HttpMethodsProvider(IHttpContextAccessor httpContextAccessor)
         {
@@ -134,6 +137,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                                  select new JProperty(param.Key, JArray.FromObject(param.Value.ToArray()))).ToArray()))
             };
 
+            // This should be deprecated
             _requestFormAsJsonMethod = new GlobalMethod
             {
                 Name = "requestFormAsJson",
@@ -141,11 +145,111 @@ namespace OrchardCore.Workflows.Http.Scripting
                     new JObject((from field in httpContextAccessor.HttpContext.Request.Form
                                  select new JProperty(field.Key, JArray.FromObject(field.Value.ToArray()))).ToArray()))
             };
+
+            _deserializeRequestDataMethod = new GlobalMethod
+            {
+                Name = "deserializeRequestData",
+                Method = serviceProvider => (Func<Dictionary<string, object>>)(() =>
+                {
+                    Dictionary<string, object> result = null;
+
+                    if(httpContextAccessor.HttpContext != null)
+                    {
+                        if (httpContextAccessor.HttpContext.Request.HasFormContentType)
+                        {
+                            var formData = httpContextAccessor.HttpContext.Request.Form;
+
+                            // If we can parse first request form element key as JSON then we throw
+                            if(isValidJSON(formData.First().Key.ToString()))
+                            {
+                                throw new Exception("Invalid form data passed in the request. The data passed was JSON while it should be form data.");
+                            }
+
+                            try
+                            {
+                                result = formData.ToDictionary(x => x.Key, x => (object) x.Value);
+                            }
+                            catch
+                            {
+                                throw new Exception("Invalid form data passed in the request.");
+                            }
+                        }
+                        else if (HasJsonContentType(httpContextAccessor.HttpContext.Request))
+                        {
+                            string json;
+                            using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
+                            {
+                                // Async read of the request body is mandatory.
+                                json = sr.ReadToEndAsync().GetAwaiter().GetResult();
+                            }
+
+                            try
+                            {
+                                result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                            }
+                            catch
+                            {
+                                throw new Exception("Invalid JSON passed in the request.");
+                            }
+                        }
+                    }
+
+                    return result;
+                })
+            };
+        }
+
+        private static bool isValidJSON(string json)
+        {
+            try
+            {
+                JToken token = JObject.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks the Content-Type header for JSON types.
+        /// This method needs to be removed after we drop support for netcoreapp3.1
+        /// It is now part of net5.0 see :
+        /// https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httprequestjsonextensions.hasjsoncontenttype?view=aspnetcore-5.0
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private static bool HasJsonContentType(HttpRequest request)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (!MediaTypeHeaderValue.TryParse(request.ContentType, out var mt))
+            {
+                return false;
+            }
+
+            // Matches application/json
+            if (mt.MediaType.Equals("application/json", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            // Matches +json, e.g. application/ld+json
+            if (mt.Suffix.Equals("json", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod };
+            return new[] { _httpContextMethod, _queryStringMethod, _responseWriteMethod, _absoluteUrlMethod, _readBodyMethod, _requestFormMethod, _queryStringAsJsonMethod, _requestFormAsJsonMethod, _deserializeRequestDataMethod };
         }
     }
 }

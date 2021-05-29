@@ -15,7 +15,6 @@ namespace OrchardCore.Themes.TheTheme
                 .DefineStyle("TheTheme-bootstrap-oc")
                 .SetUrl("~/TheTheme/css/bootstrap-oc.min.css", "~/TheTheme/css/bootstrap-oc.css")
                 .SetVersion("1.0.0");
-
         }
 
         public void Configure(ResourceManagementOptions options)
