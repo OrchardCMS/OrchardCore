@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "lib": [
+      "dom",
+      "ES2015",
+      "es2015.collection",
+      "es2015.iterable",
+      "es2015.promise"
+    ]
+  }
+}

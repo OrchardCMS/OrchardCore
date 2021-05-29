@@ -11,7 +11,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="wwwroot\monaco\liquid-intellisense.ts" />
+    <EmbeddedResource Remove="wwwroot\monaco\monaco.d.ts" />
+    <EmbeddedResource Remove="wwwroot\monaco\tsconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\monaco\liquid-intellisense.ts">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+    <None Include="wwwroot\monaco\monaco.d.ts">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+    <None Include="wwwroot\monaco\tsconfig.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
