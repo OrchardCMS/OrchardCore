@@ -28,23 +28,29 @@ namespace OrchardCore.Shortcodes
 {
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ShortcodeViewModel>();
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<Context, object>((obj, name) => obj[name]);
-
-            // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
-            FluidValue.SetTypeMapping<Context>(o => new ObjectValue(o));
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.NamedOrDefault(name));
-
-            // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
-            FluidValue.SetTypeMapping<Sc.Arguments>(o => new ObjectValue(o));
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ShortcodeViewModel>();
+
+                o.MemberAccessStrategy.Register<Context, object>((obj, name) => obj[name]);
+
+                o.ValueConverters.Add(x =>
+                {
+                    return x switch
+                    {
+                        // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
+                        Context c => new ObjectValue(c),
+                        // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
+                        Sc.Arguments a => new ObjectValue(a),
+                        _ => null
+                    };
+                });
+
+                o.MemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.NamedOrDefault(name));
+            });
+
             services.AddScoped<IShortcodeService, ShortcodeService>();
             services.AddScoped<IShortcodeDescriptorManager, ShortcodeDescriptorManager>();
             services.AddScoped<IShortcodeDescriptorProvider, ShortcodeOptionsDescriptorProvider>();

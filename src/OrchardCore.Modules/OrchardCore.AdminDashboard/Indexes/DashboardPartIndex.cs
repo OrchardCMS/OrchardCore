@@ -1,5 +1,5 @@
-using OrchardCore.ContentManagement;
 using OrchardCore.AdminDashboard.Models;
+using OrchardCore.ContentManagement;
 using YesSql.Indexes;
 
 namespace OrchardCore.AdminDashboard.Indexes

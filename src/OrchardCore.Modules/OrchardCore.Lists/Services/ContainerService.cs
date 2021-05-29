@@ -95,7 +95,8 @@ namespace OrchardCore.Lists.Services
                 .With<ContentItemIndex>(ci => ci.Latest || ci.Published)
                 .OrderByDescending(x => x.CreatedUtc);
 
-            var contentItemGroups = (await containedItemsQuery.ListAsync()).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
+            // Load items so that loading handlers are invoked.
+            var contentItemGroups = (await containedItemsQuery.ListAsync(_contentManager)).ToLookup(l => l.As<ContainedPart>()?.ListContentItemId);
 
             foreach (var contentItemGroup in contentItemGroups)
             {
@@ -186,7 +187,8 @@ namespace OrchardCore.Lists.Services
                 // syntactically incorrect.
                 query.Take(pager.PageSize + 1);
 
-                var containedItems = await query.ListAsync();
+                // Load items so that loading handlers are invoked.
+                var containedItems = await query.ListAsync(_contentManager);
 
                 if (!containedItems.Any())
                 {
@@ -242,7 +244,8 @@ namespace OrchardCore.Lists.Services
 
                 query.Take(pager.PageSize + 1);
 
-                var containedItems = await query.ListAsync();
+                // Load items so that loading handlers are invoked.
+                var containedItems = await query.ListAsync(_contentManager);
 
                 if (!containedItems.Any())
                 {
@@ -295,7 +298,8 @@ namespace OrchardCore.Lists.Services
 
                 query.Take(pager.PageSize + 1);
 
-                var containedItems = await query.ListAsync();
+                // Load items so that loading handlers are invoked.
+                var containedItems = await query.ListAsync(_contentManager);
 
                 if (!containedItems.Any())
                 {

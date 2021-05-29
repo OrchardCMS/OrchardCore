@@ -1,24 +1,28 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Documents;
-using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Routing
 {
     public class SitemapEntries
     {
-        public SitemapEntries()
+        private readonly ISitemapManager _sitemapManager;
+
+        private SitemapRouteDocument _document;
+
+        public SitemapEntries(ISitemapManager sitemapManager)
         {
+            _sitemapManager = sitemapManager;
         }
 
         public async Task<(bool, string)> TryGetSitemapIdByPathAsync(string path)
         {
-            var document = await GetDocumentAsync();
+            var identifier = await _sitemapManager.GetIdentifierAsync();
+            if (_document == null || _document.Identifier != identifier)
+            {
+                await BuildEntriesAsync(identifier);
+            }
 
-            if (document.SitemapIds.TryGetValue(path, out var sitemapId))
+            if (_document.SitemapIds.TryGetValue(path, out var sitemapId))
             {
                 return (true, sitemapId);
             }
@@ -28,9 +32,13 @@ namespace OrchardCore.Sitemaps.Routing
 
         public async Task<(bool, string)> TryGetPathBySitemapIdAsync(string sitemapId)
         {
-            var document = await GetDocumentAsync();
+            var identifier = await _sitemapManager.GetIdentifierAsync();
+            if (_document == null || _document.Identifier != identifier)
+            {
+                await BuildEntriesAsync(identifier);
+            }
 
-            if (document.SitemapPaths.TryGetValue(sitemapId, out var path))
+            if (_document.SitemapPaths.TryGetValue(sitemapId, out var path))
             {
                 return (true, path);
             }
@@ -38,18 +46,14 @@ namespace OrchardCore.Sitemaps.Routing
             return (false, path);
         }
 
-        public async Task BuildEntriesAsync(IEnumerable<SitemapType> sitemaps)
+        private async Task BuildEntriesAsync(string identifier)
         {
-            var document = await LoadDocumentAsync();
-            BuildEntries(document, sitemaps);
-            await DocumentManager.UpdateAsync(document);
-        }
+            var document = new SitemapRouteDocument()
+            {
+                Identifier = identifier
+            };
 
-        private void BuildEntries(SitemapRouteDocument document, IEnumerable<SitemapType> sitemaps)
-        {
-            document.SitemapIds.Clear();
-            document.SitemapPaths.Clear();
-
+            var sitemaps = await _sitemapManager.GetSitemapsAsync();
             foreach (var sitemap in sitemaps)
             {
                 if (!sitemap.Enabled)
@@ -60,31 +64,8 @@ namespace OrchardCore.Sitemaps.Routing
                 document.SitemapIds[sitemap.Path] = sitemap.SitemapId;
                 document.SitemapPaths[sitemap.SitemapId] = sitemap.Path;
             }
+
+            _document = document;
         }
-
-        /// <summary>
-        /// Loads the sitemap route document for updating and that should not be cached.
-        /// </summary>
-        private Task<SitemapRouteDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
-
-        /// <summary>
-        /// Gets the sitemap route document for sharing and that should not be updated.
-        /// </summary>
-        private Task<SitemapRouteDocument> GetDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
-
-        private async Task<SitemapRouteDocument> CreateDocumentAsync()
-        {
-            var sitemaps = await SitemapManager.GetSitemapsAsync();
-
-            var document = new SitemapRouteDocument();
-            BuildEntries(document, sitemaps);
-
-            return document;
-        }
-
-        private static ISitemapManager SitemapManager => ShellScope.Services.GetRequiredService<ISitemapManager>();
-
-        private static IVolatileDocumentManager<SitemapRouteDocument> DocumentManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<SitemapRouteDocument>>();
     }
 }

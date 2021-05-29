@@ -21,7 +21,7 @@
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
@@ -180,7 +180,7 @@
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
@@ -300,5 +300,19 @@
       "node_modules/js-cookie/src/js.cookie.js"
     ],
     "output": "wwwroot/Scripts/js.cookie.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/monaco/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/monaco-editor/min/**/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/@"
   }
 ]

@@ -18,6 +18,7 @@ Some fields are available in their specific module.
 | `MediaField` | `string[] Paths` |
 | `MultiTextField` | `string[] Values` |
 | `NumericField` | `decimal? Value` |
+| `GeoPointField` | `decimal Latitude, decimal Longitude` |
 | `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
 | `TextField` | `string Text` |
 | `TimeField` | `TimeSpan? Value` |
@@ -234,6 +235,17 @@ When adding the field to a content type, use the settings to specify whether to
     </div>
 
     ```
+
+#### Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vqXwK69vtMw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### `MultiText Field`
+
+#### Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/WfP_rXz1id0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Creating Custom Fields
 

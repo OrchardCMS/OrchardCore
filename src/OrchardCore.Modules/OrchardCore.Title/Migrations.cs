@@ -70,7 +70,7 @@ namespace OrchardCore.Title
                     lastDocumentId = contentItemVersion.Id;
                 }
 
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
             }
 
             bool UpdateTitle(JToken content)

@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents;
 using OrchardCore.Mvc.Utilities;
 
-namespace OrchardCore.Content.Controllers
+namespace OrchardCore.Contents.Controllers
 {
     [Route("api/content")]
     [ApiController]

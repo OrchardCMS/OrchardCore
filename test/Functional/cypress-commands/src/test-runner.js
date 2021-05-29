@@ -21,7 +21,7 @@ export function deleteDirectory(dir) {
 }
 
 // Host the dotnet application, does not rebuild
-export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='netcoreapp3.1' }={}) {
+export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net5.0' }={}) {
   if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
     global.log("Application already built, skipping build");
   } else {
@@ -53,7 +53,7 @@ export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersio
 }
 
 // combines the functions above, useful when triggering tests from CI
-export function e2e(dir, assembly, { dotnetVersion='netcoreapp3.1' }={}) {
+export function e2e(dir, assembly, { dotnetVersion='net5.0' }={}) {
   deleteDirectory(path.join(dir, "App_Data_Tests"));
   var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 

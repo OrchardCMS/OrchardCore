@@ -7,6 +7,8 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using Xunit;
 
 namespace OrchardCore.Tests.Routing
@@ -228,7 +230,7 @@ namespace OrchardCore.Tests.Routing
             });
         }
 
-        private ShellContext CreateShellContext()
+        private static ShellContext CreateShellContext()
         {
             return new ShellContext()
             {
@@ -237,11 +239,12 @@ namespace OrchardCore.Tests.Routing
             };
         }
 
-        private IServiceProvider CreateServiceProvider()
+        private static IServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
             services.AddSingleton<IStubAutorouteEntries, StubAutorouteEntries>();
-            return services.BuildServiceProvider();
+            services.AddSingleton<IDistributedLock, LocalLock>();
+            return services.AddLogging().BuildServiceProvider();
         }
 
         public interface IStubAutorouteEntries : IAutorouteEntries
@@ -252,6 +255,7 @@ namespace OrchardCore.Tests.Routing
 
         private class StubAutorouteEntries : AutorouteEntries, IStubAutorouteEntries
         {
+            public StubAutorouteEntries() : base(null) { }
             public new void AddEntries(IEnumerable<AutorouteEntry> entries) => base.AddEntries(entries);
             public new void RemoveEntries(IEnumerable<AutorouteEntry> entries) => base.RemoveEntries(entries);
             protected override Task InitializeEntriesAsync() => Task.CompletedTask;
