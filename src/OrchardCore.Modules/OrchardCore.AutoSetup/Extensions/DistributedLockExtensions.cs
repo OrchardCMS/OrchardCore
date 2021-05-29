@@ -25,22 +25,32 @@ namespace OrchardCore.AutoSetup.Extensions
         /// </returns>
         public static Task<(ILocker locker, bool locked)> TryAcquireAutoSetupLockAsync(this IDistributedLock distributedLock, LockOptions lockOptions)
         {
-            var timeout = lockOptions?.LockTimeout ?? 0;
-            if (timeout <= 0)
+            TimeSpan timeout, expiration;
+            if (distributedLock is ILocalLock)
             {
-                timeout = 30_000;
+                // If it is a local lock, don't use any timeout and expiration.
+                timeout = expiration = TimeSpan.MaxValue;
+            }
+            else
+            {
+                // If it is a distributed lock, use the configured timeout and expiration.
+                var lockTimeout = lockOptions?.LockTimeout ?? 0;
+                if (lockTimeout <= 0)
+                {
+                    lockTimeout = 30_000;
+                }
+
+                var lockExpiration = lockOptions?.LockExpiration ?? 0;
+                if (lockExpiration <= 0)
+                {
+                    lockExpiration = 30_000;
+                }
+
+                timeout = TimeSpan.FromMilliseconds(lockTimeout);
+                expiration = TimeSpan.FromMilliseconds(lockExpiration);
             }
 
-            var expiration = lockOptions?.LockExpiration ?? 0;
-            if (expiration <= 0)
-            {
-                expiration = 30_000;
-            }
-
-            return distributedLock.TryAcquireLockAsync(
-                "AUTOSETUP_LOCK",
-                TimeSpan.FromMilliseconds(timeout),
-                TimeSpan.FromMilliseconds(expiration));
+            return distributedLock.TryAcquireLockAsync("AUTOSETUP_LOCK", timeout, expiration);
         }
     }
 }
