@@ -34,6 +34,9 @@ namespace OrchardCore.Media.Handlers
                     }
                 }
 
+                // It doesn't really makes sense to store file contents without analyzing them for search as well.
+                var fileIndexingOptions = options | DocumentIndexOptions.Analyze;
+
                 foreach (var path in field.Paths.Where(path => path.EndsWith(".pdf")))
                 {
                     using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
@@ -44,7 +47,7 @@ namespace OrchardCore.Media.Handlers
                         {
                             foreach (var key in context.Keys)
                             {
-                                context.DocumentIndex.Set(key + ".FileText", page.Text, options);
+                                context.DocumentIndex.Set(key + ".FileText", page.Text, fileIndexingOptions);
                             }
                         }
                     }
