@@ -29,7 +29,7 @@ namespace OrchardCore.Media.Handlers
                     {
                         foreach (var mediaText in field.MediaTexts)
                         {
-                            context.DocumentIndex.Set(key, mediaText, options);
+                            context.DocumentIndex.Set(key + ".MediaText", mediaText, options);
                         }
                     }
                 }
@@ -44,7 +44,7 @@ namespace OrchardCore.Media.Handlers
                         {
                             foreach (var key in context.Keys)
                             {
-                                context.DocumentIndex.Set(key, page.Text, options);
+                                context.DocumentIndex.Set(key + ".FileText", page.Text, options);
                             }
                         }
                     }
