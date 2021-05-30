@@ -57,7 +57,8 @@ namespace OrchardCore.Media.Handlers
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key, "NULL", options);
+                    context.DocumentIndex.Set(key + ".MediaText", "NULL", options);
+                    context.DocumentIndex.Set(key + ".FileText", "NULL", options);
                 }
             }
         }
