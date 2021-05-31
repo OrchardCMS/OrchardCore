@@ -9,17 +9,22 @@ using OrchardCore.Security;
 namespace OrchardCore.Roles
 {
     /// <summary>
-    /// This authorization handler ensures that implied permissions are checked.
+    /// This authorization handler ensures that Anonymous and Authenticated permissions are checked.
     /// </summary>
     public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly RoleManager<IRole> _roleManager;
+        private readonly IPermissionGrantingService _permissionGrantingService;
+
 
         private IEnumerable<RoleClaim> _anonymousClaims = null, _authenticatedClaims = null;
 
-        public RolesPermissionsHandler(RoleManager<IRole> roleManager)
+        public RolesPermissionsHandler(
+            RoleManager<IRole> roleManager,
+            IPermissionGrantingService permissionGrantingService)
         {
             _roleManager = roleManager;
+            _permissionGrantingService = permissionGrantingService;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
@@ -44,7 +49,7 @@ namespace OrchardCore.Roles
                 }
             }
 
-            if (requirement.Permission.IsGranted(claims))
+            if (_permissionGrantingService.IsGranted(requirement, claims))
             {
                 context.Succeed(requirement);
                 return;

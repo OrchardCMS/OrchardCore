@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Moq;
 using OrchardCore.Roles;
@@ -23,27 +20,23 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
         {
             // Arrange
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
-            var roleManager = RolesMockHelper.MockRoleManager<IRole>();
 
-            var anonymousRole = new Role
-            {
-                RoleName = "Anonymous",
-                RoleClaims = new List<RoleClaim> {
-                    new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
+            var permissionHandler = CreatePermissionHandler(
+                new Role
+                {
+                    RoleName = "Anonymous",
+                    RoleClaims = new List<RoleClaim> {
+                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
+                    }
+                },
+                new Role
+                {
+                    RoleName = "Authenticated",
+                    RoleClaims = new List<RoleClaim> {
+                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
+                    }
                 }
-            };
-            roleManager.Setup(m => m.FindByNameAsync(anonymousRole.RoleName)).ReturnsAsync(anonymousRole);
-
-            var authenticatedRole = new Role
-            {
-                RoleName = "Authenticated",
-                RoleClaims = new List<RoleClaim> {
-                    new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
-                }
-            };
-            roleManager.Setup(m => m.FindByNameAsync(authenticatedRole.RoleName)).ReturnsAsync(authenticatedRole);
-
-            var permissionHandler = new RolesPermissionsHandler(roleManager.Object);
+            );
 
             // Act
             await permissionHandler.HandleAsync(context);
@@ -57,8 +50,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
         {
             // Arrange
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), new[] { "Other" }, true);
-            var roleManager = RolesMockHelper.MockRoleManager<IRole>();
-            var permissionHandler = new RolesPermissionsHandler(roleManager.Object);
+
+            var permissionHandler = CreatePermissionHandler();
 
             await context.SuccessAsync("Required");
 
@@ -78,18 +71,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var required = new Permission("Required", "Foo", new[] { level1 });
 
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required);
-            var roleManager = RolesMockHelper.MockRoleManager<IRole>();
 
-            var anonymousRole = new Role
-            {
-                RoleName = "Anonymous",
-                RoleClaims = new List<RoleClaim> {
-                    new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
+            var permissionHandler = CreatePermissionHandler(
+                new Role
+                {
+                    RoleName = "Anonymous",
+                    RoleClaims = new List<RoleClaim> {
+                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
+                    }
                 }
-            };
-            roleManager.Setup(m => m.FindByNameAsync(anonymousRole.RoleName)).ReturnsAsync(anonymousRole);
-
-            var permissionHandler = new RolesPermissionsHandler(roleManager.Object);
+            );
 
             // Act
             await permissionHandler.HandleAsync(context);
@@ -105,33 +96,42 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
         {
             // Arrange
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
-            var roleManager = RolesMockHelper.MockRoleManager<IRole>();
 
-            var anonymousRole = new Role
-            {
-                RoleName = "Anonymous",
-                RoleClaims = new List<RoleClaim> {
-                    new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
+            var permissionHandler = CreatePermissionHandler(
+                new Role
+                {
+                    RoleName = "Anonymous",
+                    RoleClaims = new List<RoleClaim> {
+                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
+                    }
+                },
+                new Role
+                {
+                    RoleName = "Authenticated",
+                    RoleClaims = new List<RoleClaim> {
+                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
+                    }
                 }
-            };
-            roleManager.Setup(m => m.FindByNameAsync(anonymousRole.RoleName)).ReturnsAsync(anonymousRole);
-
-            var authenticatedRole = new Role
-            {
-                RoleName = "Authenticated",
-                RoleClaims = new List<RoleClaim> {
-                    new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
-                }
-            };
-            roleManager.Setup(m => m.FindByNameAsync(authenticatedRole.RoleName)).ReturnsAsync(authenticatedRole);
-
-            var permissionHandler = new RolesPermissionsHandler(roleManager.Object);
+            );
 
             // Act
             await permissionHandler.HandleAsync(context);
 
             // Assert
             Assert.True(context.HasSucceeded);
+        }
+
+        private static RolesPermissionsHandler CreatePermissionHandler(params Role[] roles)
+        {
+            var roleManager = RolesMockHelper.MockRoleManager<IRole>();
+
+            foreach(var role in roles)
+            {
+                roleManager.Setup(m => m.FindByNameAsync(role.RoleName)).ReturnsAsync(role);
+            }
+
+            var permissionGrantingService = new DefaultPermissionGrantingService();
+            return new RolesPermissionsHandler(roleManager.Object, permissionGrantingService);
         }
     }
 }

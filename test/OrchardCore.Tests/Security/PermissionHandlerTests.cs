@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
 using OrchardCore.Security.Permissions;
 using Xunit;
@@ -14,7 +15,7 @@ namespace OrchardCore.Tests.Security
         {
             // Arrange
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), new[] { "Allowed" }, true);
-            var permissionHandler = new PermissionHandler();
+            var permissionHandler = CreatePermissionHandler();
 
             // Act
             await permissionHandler.HandleAsync(context);
@@ -28,7 +29,7 @@ namespace OrchardCore.Tests.Security
         {
             // Arrange
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), new[] { "Other" }, true);
-            var permissionHandler = new PermissionHandler();
+            var permissionHandler = CreatePermissionHandler();
 
             await context.SuccessAsync("Required");
 
@@ -44,7 +45,7 @@ namespace OrchardCore.Tests.Security
         {
             // Arrange
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Allowed"), new[] { "Allowed" });
-            var permissionHandler = new PermissionHandler();
+            var permissionHandler = CreatePermissionHandler();
 
             // Act
             await permissionHandler.HandleAsync(context);
@@ -62,7 +63,7 @@ namespace OrchardCore.Tests.Security
             var required = new Permission("Required", "Foo", new[] { level1 });
 
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, new[] { "Implicit2" }, true);
-            var permissionHandler = new PermissionHandler();
+            var permissionHandler = CreatePermissionHandler();
 
             // Act
             await permissionHandler.HandleAsync(context);
@@ -78,13 +79,19 @@ namespace OrchardCore.Tests.Security
             var required = new Permission("required");
 
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, new[] { "ReQuIrEd" }, true);
-            var permissionHandler = new PermissionHandler();
+            var permissionHandler = CreatePermissionHandler();
 
             // Act
             await permissionHandler.HandleAsync(context);
 
             // Assert
             Assert.True(context.HasSucceeded);
+        }
+
+        private static PermissionHandler CreatePermissionHandler()
+        {
+            var permissionGrantingService = new DefaultPermissionGrantingService();
+            return new PermissionHandler(permissionGrantingService);
         }
     }
 }

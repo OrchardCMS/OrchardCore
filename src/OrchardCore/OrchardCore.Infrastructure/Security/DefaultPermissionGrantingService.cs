@@ -6,15 +6,13 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security
 {
-    public static class PermissionExtensions
+    /// <summary>
+    /// Default implementation if <see cref="IPermissionGrantingService"/>.
+    /// It is responsible for checking implied permissions.
+    /// </summary>
+    public class DefaultPermissionGrantingService : IPermissionGrantingService
     {
-        /// <summary>
-        /// Evaluates if the specified <see cref="Permission"/> is granted by provided claims.
-        /// </summary>
-        /// <param name="permission">The <see cref="Permission"/> to test</param>
-        /// <param name="claims">Provided claims.</param>
-        /// <returns>True if the permission is granted, otherwise false.</returns>
-        public static bool IsGranted(this Permission permission, IEnumerable<Claim> claims)
+        public bool IsGranted(PermissionRequirement requirement, IEnumerable<Claim> claims)
         {
             if (claims == null || !claims.Any())
             {
@@ -23,7 +21,7 @@ namespace OrchardCore.Security
 
             var grantingNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            GetGrantingNamesInternal(permission, grantingNames);
+            GetGrantingNamesInternal(requirement.Permission, grantingNames);
 
             // SiteOwner permission grants them all
             grantingNames.Add(StandardPermissions.SiteOwner.Name);
@@ -32,7 +30,7 @@ namespace OrchardCore.Security
                 && grantingNames.Contains(claim.Value));
         }
 
-        private static void GetGrantingNamesInternal(this Permission permission, HashSet<string> stack)
+        private void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
         {
             // The given name is tested
             stack.Add(permission.Name);
