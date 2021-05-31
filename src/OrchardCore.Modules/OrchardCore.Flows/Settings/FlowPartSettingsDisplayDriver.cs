@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +13,7 @@ using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Settings
 {
-    public class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FlowPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IStringLocalizer S;
@@ -29,11 +28,6 @@ namespace OrchardCore.Flows.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(FlowPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<FlowPartSettingsViewModel>("FlowPartSettings_Edit", model =>
             {
                 model.FlowPartSettings = contentTypePartDefinition.GetSettings<FlowPartSettings>();
@@ -49,11 +43,6 @@ namespace OrchardCore.Flows.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(FlowPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new FlowPartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes);

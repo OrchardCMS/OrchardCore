@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
@@ -56,7 +57,16 @@ namespace OrchardCore.Modules
                     OriginalPathBase = httpContext.Request.PathBase
                 });
 
-                await shellScope.UsingAsync(scope => _next.Invoke(httpContext));
+                await shellScope.UsingAsync(async scope =>
+                {
+                    await _next.Invoke(httpContext);
+
+                    var feature = httpContext.Features.Get<IExceptionHandlerFeature>();
+                    if (feature?.Error != null)
+                    {
+                        await scope.HandleExceptionAsync(feature.Error);
+                    }
+                });
             }
         }
     }

@@ -4,7 +4,7 @@
     <div class="container">
         <div class="masthead-subheading">Welcome To Our Studio!</div>
         <div class="masthead-heading text-uppercase">{{ Model.ContentItem | display_text }}</div>
-        <a class="btn btn-primary btn-xl text-uppercase js-scroll-trigger" href="#services">Tell Me More</a>
+        <a class="btn btn-primary btn-xl text-uppercase" href="#services">Tell Me More</a>
     </div>
 </header>
 {% endzone %}
@@ -13,11 +13,9 @@
 <!-- Services -->
 <section class="page-section" id="services">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2 class="section-heading text-uppercase">Services</h2>
-                <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
-            </div>
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Services</h2>
+            <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
         </div>
         <div class="row text-center">
             {% for service in Model.ContentItem.Content.Services.ContentItems %}
@@ -39,26 +37,24 @@
 <!-- Portfolio Grid -->
 <section class="page-section bg-light" id="portfolio">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2 class="section-heading text-uppercase">Portfolio</h2>
-                <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
-            </div>
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Portfolio</h2>
+            <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
         </div>
         <div class="row">
             {% for project in Model.ContentItem.Content.Portfolio.ContentItems %}
-            <div class="col-md-4 col-sm-6 portfolio-item">
-                <div class="portfolio-link" data-toggle="modal" href="#portfolioModal{{ forloop.index }}">
-                    <div class="portfolio-hover">
-                        <div class="portfolio-hover-content">
-                            <i class="fas fa-plus fa-3x"></i>
+            <div class="col-lg-4 col-sm-6 mb-4">
+                <div class="portfolio-item">
+                    <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal{{ forloop.index }}">
+                        <div class="portfolio-hover">
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
                         </div>
+                        <img class="img-fluid" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: profile: 'medium', mode: 'stretch' }}" alt="{{ project.DisplayText }}" />
+                    </a>
+                    <div class="portfolio-caption">
+                        <div class="portfolio-caption-heading">{{ project.DisplayText }}</div>
+                        <div class="portfolio-caption-subheading text-muted">{{ project.Project.Category.Text }}</div>
                     </div>
-                    <img class="img-fluid" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: profile: 'medium', mode: 'stretch' }}" alt="{{ project.DisplayText }}">
-                </div>
-                <div class="portfolio-caption">
-                    <h4>{{ project.DisplayText }}</h4>
-                    <p class="text-muted">{{ project.Project.Category.Text }}</p>
                 </div>
             </div>
             {% endfor %}
@@ -71,43 +67,37 @@
 <!-- About -->
 <section class="page-section" id="about">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2 class="section-heading text-uppercase">About</h2>
-                <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
-            </div>
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">About</h2>
+            <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <ul class="timeline">
-                    {% for milestone in Model.ContentItem.Content.About.ContentItems %}
-                    <li class="{% cycle '', 'timeline-inverted' %}">
-                        <div class="timeline-image">
-                            <img class="rounded-circle img-fluid" src="{{ milestone.Milestone.Image.Paths.first | asset_url | resize_url: profile: 'extrasmall', mode: 'stretch' }}" alt="">
-                        </div>
-                        <div class="timeline-panel">
-                            <div class="timeline-heading">
-                                <h4>{{ milestone.Milestone.Date.Text }}</h4>
-                                <h4 class="subheading">{{ milestone.DisplayText }}</h4>
-                            </div>
-                            <div class="timeline-body">
-                                <p class="text-muted">{{ milestone.HtmlBodyPart.Html }}</p>
-                            </div>
-                        </div>
-                    </li>
-                    {% endfor %}
-                    <li class="timeline-inverted">
-                        <div class="timeline-image">
-                            <h4>
-                                Be Part
-                                <br>Of Our
-                                <br>Story!
-                            </h4>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        <ul class="timeline">
+            {% for milestone in Model.ContentItem.Content.About.ContentItems %}
+            <li class="{% cycle '', 'timeline-inverted' %}">
+                <div class="timeline-image">
+                    <img class="rounded-circle img-fluid" src="{{ milestone.Milestone.Image.Paths.first | asset_url | resize_url: profile: 'extrasmall', mode: 'stretch' }}" alt="">
+                </div>
+                <div class="timeline-panel">
+                    <div class="timeline-heading">
+                        <h4>{{ milestone.Milestone.Date.Text }}</h4>
+                        <h4 class="subheading">{{ milestone.DisplayText }}</h4>
+                    </div>
+                    <div class="timeline-body">
+                        <p class="text-muted">{{ milestone.HtmlBodyPart.Html }}</p>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+            <li class="timeline-inverted">
+                <div class="timeline-image">
+                    <h4>
+                        Be Part
+                        <br>Of Our
+                        <br>Story!
+                    </h4>
+                </div>
+            </li>
+        </ul>
     </div>
 </section>
 {% endif %}
@@ -116,42 +106,32 @@
 <!-- Team -->
 <section class="page-section bg-light" id="team">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2 class="section-heading text-uppercase">Our Amazing Team</h2>
-                <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
-            </div>
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Our Amazing Team</h2>
+            <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
         </div>
         <div class="row">
             {% for member in Model.ContentItem.Content.Team.ContentItems %}
-            <div class="col-sm-4">
+            <div class="col-lg-4">
                 <div class="team-member">
                     <img class="mx-auto rounded-circle" src="{{ member.TeamMember.Picture.Paths.first | asset_url | resize_url: profile: 'small', mode: 'stretch' }}" alt="">
                     <h4>{{ member.DisplayText }}</h4>
                     <p class="text-muted">{{ member.TeamMember.Occupation.Text }}</p>
-                    <ul class="list-inline social-buttons">
-                        {% if member.TeamMember.Twitter.Text.size > 0 %}
-                        <li class="list-inline-item">
-                            <a href="https://www.twitter.com/{{ member.TeamMember.Twitter.Text }}">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                        </li>
-                        {% endif %}
-                        {% if member.TeamMember.Facebook.Text.size > 0 %}
-                        <li class="list-inline-item">
-                            <a href="https://www.facebook.com/{{ member.TeamMember.Facebook.Text }}">
-                                <i class="fab fa-facebook"></i>
-                            </a>
-                        </li>
-                        {% endif %}
-                        {% if member.TeamMember.LinkedIn.Text.size > 0 %}
-                        <li class="list-inline-item">
-                            <a href="https://www.linkedin.com/in/{{ member.TeamMember.LinkedIn.Text }}">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
-                        </li>
-                        {% endif %}
-                    </ul>
+                    {% if member.TeamMember.Twitter.Text.size > 0 %}
+                    <a class="btn btn-dark btn-social mx-2" href="https://www.twitter.com/{{ member.TeamMember.Twitter.Text }}">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    {% endif %}
+                    {% if member.TeamMember.Facebook.Text.size > 0 %}
+                    <a class="btn btn-dark btn-social mx-2" href="https://www.facebook.com/{{ member.TeamMember.Facebook.Text }}">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    {% endif %}
+                    {% if member.TeamMember.LinkedIn.Text.size > 0 %}
+                    <a class="btn btn-dark btn-social mx-2" href="https://www.linkedin.com/in/{{ member.TeamMember.LinkedIn.Text }}">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -167,63 +147,56 @@
 
 {% if Model.ContentItem.Content.Clients.ContentItems.size > 0 %}
 <!-- Clients -->
-<section class="page-section py-5">
+<div class="py-5">
     <div class="container">
-        <div class="row">
+        <div class="row align-items-center">
             {% for client in Model.ContentItem.Content.Clients.ContentItems %}
-            <div class="col-md-3 col-sm-6">
+            <div class="col-md-3 col-sm-6 my-3">
                 <a href="{{ client.Client.Url.Text }}">
-                    <img class="img-fluid d-block mx-auto" src="{{ client.Client.Logo.Paths.first | asset_url }}" alt="">
+                    <img class="img-fluid img-brand d-block mx-auto" src="{{ client.Client.Logo.Paths.first | asset_url }}" alt="">
                 </a>
             </div>
             {% endfor %}
         </div>
     </div>
-</section>
+</div>
 {% endif %}
 
 <!-- Contact -->
 <section class="page-section" id="contact">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2 class="section-heading text-uppercase">Contact Us</h2>
-                <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
-            </div>
+        <div class="text-center">
+            <h2 class="section-heading text-uppercase">Contact Us</h2>
+            <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <form id="contactForm" name="sentMessage" novalidate>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input class="form-control" id="name" type="text" placeholder="Your Name *" required data-validation-required-message="Please enter your name.">
-                                <p class="help-block text-danger"></p>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" id="email" type="email" placeholder="Your Email *" required data-validation-required-message="Please enter your email address.">
-                                <p class="help-block text-danger"></p>
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" id="phone" type="tel" placeholder="Your Phone *" required data-validation-required-message="Please enter your phone number.">
-                                <p class="help-block text-danger"></p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <textarea class="form-control" id="message" placeholder="Your Message *" required data-validation-required-message="Please enter a message."></textarea>
-                                <p class="help-block text-danger"></p>
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
-                        <div class="col-lg-12 text-center">
-                            <div id="success"></div>
-                            <button id="sendMessageButton" class="btn btn-primary btn-xl text-uppercase" type="submit">Send Message</button>
-                        </div>
+        <form id="contactForm" name="sentMessage" novalidate="novalidate">
+            <div class="row align-items-stretch mb-5">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input class="form-control" id="name" type="text" placeholder="Your Name *" required="required" data-validation-required-message="Please enter your name." />
+                        <p class="help-block text-danger"></p>
                     </div>
-                </form>
+                    <div class="form-group">
+                        <input class="form-control" id="email" type="email" placeholder="Your Email *" required="required" data-validation-required-message="Please enter your email address." />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                    <div class="form-group mb-md-0">
+                        <input class="form-control" id="phone" type="tel" placeholder="Your Phone *" required="required" data-validation-required-message="Please enter your phone number." />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group form-group-textarea mb-md-0">
+                        <textarea class="form-control" id="message" placeholder="Your Message *" required="required" data-validation-required-message="Please enter a message."></textarea>
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
             </div>
-        </div>
+            <div class="text-center">
+                <div id="success"></div>
+                <button class="btn btn-primary btn-xl text-uppercase" id="sendMessageButton" type="submit">Send Message</button>
+            </div>
+        </form>
     </div>
 </section>
 
@@ -232,14 +205,10 @@
 <div class="portfolio-modal modal fade" id="portfolioModal{{ forloop.index }}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="close-modal" data-dismiss="modal">
-                <div class="lr">
-                    <div class="rl"></div>
-                </div>
-            </div>
+            <div class="close-modal" data-bs-dismiss="modal"><img src="/TheAgencyTheme/assets/img/close-icon.svg" alt="Close modal" /></div>
             <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 mx-auto">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
                         <div class="modal-body">
                             <!-- Project Details Go Here -->
                             <h2 class="text-uppercase">{{ project.DisplayText }}</h2>
@@ -253,8 +222,8 @@
                                 <li>Category: Illustration</li>
                             </ul>
                             {% endcomment %}
-                            <button class="btn btn-primary" data-dismiss="modal" type="button">
-                                <i class="fa fa-times"></i>
+                            <button class="btn btn-primary" data-bs-dismiss="modal" type="button">
+                                <i class="fa fa-times me-1"></i>
                                 Close Project
                             </button>
                         </div>

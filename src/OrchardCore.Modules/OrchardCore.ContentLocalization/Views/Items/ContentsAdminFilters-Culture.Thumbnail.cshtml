@@ -1,0 +1,13 @@
+@model ShapeViewModel<ContentOptionsViewModel>
+@{
+    var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "culture");
+}
+
+<h4 class="card-title">Culture</h4>
+<pre class="mb-3">@(@term != null ? @term.ToString() : "culture:...")</pre>
+<p>@T["Filters on a content items localization culture."]</p>
+<div class="d-block text-right">
+    <span>
+        <i class="fas fa-sm fa-minus text-primary" aria-hidden="true"></i>
+    </span>
+</div>

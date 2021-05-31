@@ -21,7 +21,7 @@
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
@@ -180,7 +180,7 @@
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },

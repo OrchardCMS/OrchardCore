@@ -1,0 +1,17 @@
+@model ShapeViewModel<UserIndexOptions>
+@{
+    var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "name");
+}
+
+<h4 class="card-title">Name</h4>
+
+<pre class="mb-3">@(@term != null ? "name:" + @term.ToString() : "name:...")</pre>
+<p>@T["Filters on the name of a user."]</p>
+<div class="d-block text-right">
+    <span>
+        <i class="fas fa-sm fa-check text-primary" aria-hidden="true"></i>
+    </span>
+    <span >
+        <i class="fas fa-sm fa-bars text-primary" aria-hidden="true"></i>
+    </span>
+</div>
