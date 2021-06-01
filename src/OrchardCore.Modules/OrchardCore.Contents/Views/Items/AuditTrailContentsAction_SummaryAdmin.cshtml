@@ -1,7 +1,3 @@
 @model ContentItemViewModel
-@using OrchardCore.Contents
-@inject IAuthorizationService AuthorizationService
-@inject IContentManager ContentManager
-
 
 <a asp-action="Index" asp-controller="Admin" asp-route-area="OrchardCore.AuditTrail" asp-route-correlationId="@Model.ContentItem.ContentItemId" class="dropdown-item btn-sm">@T["Audit Trail"]</a>

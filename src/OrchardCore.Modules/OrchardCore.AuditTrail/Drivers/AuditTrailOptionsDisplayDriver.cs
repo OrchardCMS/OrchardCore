@@ -20,8 +20,9 @@ namespace OrchardCore.AuditTrail.Drivers
                 View("AuditTrailAdminFilters_Thumbnail__Category", model).Location("Thumbnail", "Content:10"),
                 View("AuditTrailAdminFilters_Thumbnail__Event", model).Location("Thumbnail", "Content:10"),
                 View("AuditTrailAdminFilters_Thumbnail__Date", model).Location("Thumbnail", "Content:20"),
-                View("AuditTrailAdminFilters_Thumbnail__User", model).Location("Thumbnail", "Content:30"),
-                View("AuditTrailAdminFilters_Thumbnail__CorrelationId", model).Location("Thumbnail", "Content:40")
+                View("AuditTrailAdminFilters_Thumbnail__UserName", model).Location("Thumbnail", "Content:30"),
+                View("AuditTrailAdminFilters_Thumbnail__UserId", model).Location("Thumbnail", "Content:40"),
+                View("AuditTrailAdminFilters_Thumbnail__CorrelationId", model).Location("Thumbnail", "Content:50")
             );
         }
 

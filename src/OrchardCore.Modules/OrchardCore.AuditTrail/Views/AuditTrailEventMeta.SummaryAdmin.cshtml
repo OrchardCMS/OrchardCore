@@ -5,15 +5,6 @@
     var createdUtc = Model.AuditTrailEvent.CreatedUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
 }
 
-
-@* TODO move to content event*@
-@if (!String.IsNullOrEmpty(Model.AuditTrailEvent.Comment))
-{
-    @* TODO this needs to be sanitized, or we need to drop the weird htmlization of it and use a proper editor*@
-    @Html.Raw(Model.AuditTrailEvent.Comment)
-}
-
-
 <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: Model.AuditTrailEvent.CreatedUtc, Format: "g"))">
     <i class="fa fa-calendar text-secondary"></i> <time datetime="@createdUtc">@await DisplayAsync(await New.Timespan(Utc: Model.AuditTrailEvent.CreatedUtc))</time>
 </span>

@@ -1,7 +1,9 @@
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -41,6 +43,9 @@ namespace OrchardCore.AuditTrail
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Add ILookupNormalizer as Singleton because it is needed by Users
+            services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+
             services.AddScoped<IAuditTrailManager, AuditTrailManager>();
             services.AddScoped<IAuditTrailEventHandler, AuditTrailEventHandler>();
 

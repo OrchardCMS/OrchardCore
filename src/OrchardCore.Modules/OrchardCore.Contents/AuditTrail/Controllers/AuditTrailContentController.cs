@@ -56,20 +56,19 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             H = htmlLocalizer;
             _logger = logger;
         }
-
-        // TODO vertsion number is in the audit, not needed here.
-        public async Task<ActionResult> Display(int versionNumber, string auditTrailEventId)
+        public async Task<ActionResult> Display(string auditTrailEventId)
         {
-            var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
+            var auditTrailContentEvent = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
                 .Where(index => index.EventId == auditTrailEventId)
                 .FirstOrDefaultAsync())
-                ?.As<AuditTrailContentEvent>()
-                ?.ContentItem;
+                ?.As<AuditTrailContentEvent>();
 
-            if (contentItem == null)
+            if (auditTrailContentEvent == null || auditTrailContentEvent.ContentItem == null)
             {
                 return NotFound();
             }
+
+            var contentItem = auditTrailContentEvent.ContentItem;
 
             contentItem.Id = 0;
             contentItem.ContentItemVersionId = "";
@@ -91,7 +90,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 
             var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
-            model.Properties["VersionNumber"] = versionNumber;
+            model.Properties["VersionNumber"] = auditTrailContentEvent.VersionNumber;
 
             return View(model);
         }
@@ -125,12 +124,16 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 return Forbid();
             }
 
+            // TODO what we should probably do here is call BuildDisplay, and try catch it.
+            // to prevent restoring items from an invalid content type.
+
             var result = await _contentManager.ValidateAsync(contentItem);
             if (!result.Succeeded)
             {
                 _notifier.Warning(H["'{0}' was not restored, the version is not valid.", contentItem.DisplayText]);
                 foreach (var error in result.Errors)
                 {
+                    // TODO you can't localize an unknown error message.
                     _notifier.Warning(H[error.ErrorMessage]);
                 }
 
@@ -158,6 +161,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 _session.Save(latestVersion);
             }
 
+            // TODO check this, update is not being called, and validate is out of sequence.
             await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
             await _auditTrailContentHandlers.InvokeAsync((handler, context) => handler.RestoredAsync(context), context, _logger);

@@ -21,10 +21,10 @@ namespace OrchardCore.AuditTrail.Services
             var from = GetDateFromFilter(context.Filters, "From", "from");
             var to = GetDateFromFilter(context.Filters, "To", "to");
 
-            if (!String.IsNullOrWhiteSpace(userName))
-            {
-                context.Query.With<AuditTrailEventIndex>(index => index.UserName == userName);
-            }
+            // if (!String.IsNullOrWhiteSpace(userName))
+            // {
+            //     context.Query.With<AuditTrailEventIndex>(index => index.UserName == userName);
+            // }
 
             if (!String.IsNullOrWhiteSpace(category))
             {

@@ -37,6 +37,7 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IDisplayManager<AuditTrailEvent> _displayManager;
         private readonly IDisplayManager<AuditTrailIndexOptions> _auditTrailOptionsDisplayManager;
         private readonly IClock _clock;
+        private readonly ILocalClock _localClock;
         private readonly IStringLocalizer S;
         private readonly dynamic New;
 
@@ -51,6 +52,7 @@ namespace OrchardCore.AuditTrail.Controllers
             IDisplayManager<AuditTrailEvent> displayManager,
             IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager,
             IClock clock,
+            ILocalClock localClock,
             IStringLocalizer<AdminController> stringLocalizer)
         {
             _siteService = siteService;
@@ -64,6 +66,7 @@ namespace OrchardCore.AuditTrail.Controllers
             _displayManager = displayManager;
             _auditTrailOptionsDisplayManager = auditTrailOptionsDisplayManager;
             _clock = clock;
+            _localClock = localClock;
             S = stringLocalizer;
         }
 
@@ -114,34 +117,6 @@ namespace OrchardCore.AuditTrail.Controllers
                 .ListAsync();
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
-
-            // var siteSettings = await _siteService.GetSiteSettingsAsync();
-            // var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            // var filters = Filters.From(QueryHelpers.ParseQuery(Request.QueryString.Value), _updateModelAccessor.ModelUpdater);
-
-            // var searchResult = await _auditTrailManager.GetEventsAsync(pager.Page, pager.PageSize, filters, orderBy ?? AuditTrailOrderBy.DateDescending);
-
-            // var query = await _auditTrailAdminListQueryService.QueryAsync(AuditTrailIndexOptions options, IUpdateModel updater);
-
-
-            // var options = new AuditTrailIndexOptions();
-
-            // // Populate route values to maintain previous route data when generating page links
-            // options.FilterResult = queryFilterResult;
-            // options.FilterResult.MapTo(options);
-            // // The search text is provided back to the UI.
-            // options.SearchText = options.FilterResult.ToString();
-            // options.OriginalSearchText = options.SearchText;
-
-            // // Populate route values to maintain previous route data when generating page links.
-            // options.RouteValues.TryAdd("q", options.FilterResult.ToString());
-
-            // var routeData = new RouteData(options.RouteValues);
-
-            // if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
-            // {
-            //     searchResult.Events = Enumerable.Empty<AuditTrailEvent>();
-            // }
 
             // // TODO back to IShape
 
@@ -199,33 +174,31 @@ namespace OrchardCore.AuditTrail.Controllers
                 }
             }
 
-            // TODO move all of this to options.
-
             options.AuditTrailDates = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["Any date"], Value = String.Empty, Selected = options.Date == String.Empty },
-                new SelectListItem() { Text = S["Today"], Value = _clock.UtcNow.ToString("yyyy-MM-dd"), Selected = options.Date == _clock.UtcNow.ToString("yyyy-MM-dd") },
-                new SelectListItem() { Text = S["Yesterday"], Value = _clock.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"), Selected = options.Date == _clock.UtcNow.ToString("yyyy-MM-dd") }//,
-                // new SelectListItem() { Text = S["Last week"], Value = _clock.UtcNow.StartOfWeek(DayOfWeek.Monday).AddDays(-7).ToString("yyyy-MM-dd") + ".." + , Selected = options.Date == _clock.UtcNow.ToString("yyyy-MM-dd") }//,
-                // new SelectListItem() { Text = S["Yesterday"], Value = nameof(DateFilter.yesterday), Selected = (options.SelectedDate == DateFilter.yesterday) },
-                // new SelectListItem() { Text = S["Last week"], Value = nameof(DateFilter.lastweek), Selected = (options.SelectedDate == DateFilter.lastweek) },
-                // new SelectListItem() { Text = S["Last month"], Value = nameof(DateFilter.lastmonth), Selected = (options.SelectedDate == DateFilter.lastmonth) },
-                // new SelectListItem() { Text = S["This week"], Value = nameof(DateFilter.thisweek), Selected = (options.SelectedDate == DateFilter.thisweek) },
-                // new SelectListItem() { Text = S["This month"], Value = nameof(DateFilter.thismonth), Selected = (options.SelectedDate == DateFilter.thismonth) }
             };
 
-            // Last week
+            /*
+            Any date
+            Today
+            Yesterday
+            Last 7 Days
+            Last 30 Days
+            Last 90 Days
+            This hour
+            Last hour
 
-            var start = _clock.UtcNow.StartOfWeek(DayOfWeek.Monday).AddDays(-7);
-            var end = start.AddDays(7);
-            var dateSearchFilter = $"{start.ToString("yyyy-MM-dd")}..{end.ToString("yyyy-MM-dd")}";
-            options.AuditTrailDates.Add(new SelectListItem(S["Last week"], dateSearchFilter, options.Date == dateSearchFilter));
+            */
 
-            // This week
-            start = _clock.UtcNow.StartOfWeek(DayOfWeek.Monday);
-            end = start.AddDays(7);
-            dateSearchFilter = $"{start.ToString("yyyy-MM-dd")}..{end.ToString("yyyy-MM-dd")}";
-            options.AuditTrailDates.Add(new SelectListItem(S["This week"], dateSearchFilter, options.Date == dateSearchFilter));
+            var localNow = await _localClock.LocalNowAsync;
+            options.AuditTrailDates.Add(new SelectListItem(S["Last 24 hours"], localNow.AddHours(-24).ToString("yyyy-MM-dd")));
+            options.AuditTrailDates.Add(new SelectListItem(S["Last 48 hours"], localNow.AddHours(-48).ToString("yyyy-MM-dd")));
+            options.AuditTrailDates.Add(new SelectListItem(S["Last 7 days"], $"{localNow.AddHours(-24).AddDays(-7).ToString("yyyy-MM-dd")}..{localNow.ToString("yyyy-MM-dd")}"));
+            options.AuditTrailDates.Add(new SelectListItem(S["Last 30 days"], $"{localNow.AddHours(-24).AddDays(-30).ToString("yyyy-MM-dd")}..{localNow.ToString("yyyy-MM-dd")}"));
+            options.AuditTrailDates.Add(new SelectListItem(S["Last 90 days"], $"{localNow.AddHours(-24).AddDays(-90).ToString("yyyy-MM-dd")}..{localNow.ToString("yyyy-MM-dd")}"));
+            options.AuditTrailDates.Add(new SelectListItem(S["This hour"], $"{localNow.AddHours(-1).ToString("o")}..{localNow.ToString("o")}"));
+            options.AuditTrailDates.Add(new SelectListItem(S["Last hour"], $"{localNow.AddHours(-2).ToString("o")}..{localNow.AddHours(-1).ToString("o")}"));
 
             var items = new List<IShape>();
 

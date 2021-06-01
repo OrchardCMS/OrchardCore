@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Abstractions.Setup;
-using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Providers;
@@ -28,6 +28,7 @@ namespace OrchardCore.AuditTrail.Services
         private readonly YesSql.ISession _session;
         private readonly ISiteService _siteService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILookupNormalizer _keyNormalizer;
         private readonly IAuditTrailIdGenerator _auditTrailIdGenerator;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
         private readonly IEnumerable<IAuditTrailEventProvider> _auditTrailEventProviders;
@@ -39,6 +40,7 @@ namespace OrchardCore.AuditTrail.Services
             YesSql.ISession session,
             ISiteService siteService,
             IHttpContextAccessor httpContextAccessor,
+            ILookupNormalizer keyNormalizer,
             IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers,
             IEnumerable<IAuditTrailEventProvider> auditTrailEventProviders,
             IAuditTrailIdGenerator auditTrailIdGenerator,
@@ -49,6 +51,7 @@ namespace OrchardCore.AuditTrail.Services
             _session = session;
             _siteService = siteService;
             _httpContextAccessor = httpContextAccessor;
+            _keyNormalizer = keyNormalizer;
             _auditTrailEventHandlers = auditTrailEventHandlers;
             _auditTrailEventProviders = auditTrailEventProviders;
             _auditTrailIdGenerator = auditTrailIdGenerator;
@@ -77,6 +80,7 @@ namespace OrchardCore.AuditTrail.Services
                 context.Name,
                 context.Category,
                 context.CorrelationId,
+                context.UserId,
                 context.UserName,
                 context.Data);
 
@@ -88,12 +92,14 @@ namespace OrchardCore.AuditTrail.Services
                 Category = createContext.Category,
                 Name = createContext.Name,
                 CorrelationId = createContext.CorrelationId,
+                UserId = createContext.UserId,
                 UserName = createContext.UserName ?? "",
+                NormalizedUserName = String.IsNullOrEmpty(createContext.UserName) ? "" : _keyNormalizer.NormalizeName(createContext.UserName),
                 ClientIpAddress = String.IsNullOrEmpty(createContext.ClientIpAddress)
                     ? await GetClientIpAddressAsync()
                     : createContext.ClientIpAddress,
                 CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow,
-                Comment = createContext.Comment.NewlinesToHtml()
+                Comment = createContext.Comment
             };
 
             descriptor.BuildEvent(@event, createContext.Data);

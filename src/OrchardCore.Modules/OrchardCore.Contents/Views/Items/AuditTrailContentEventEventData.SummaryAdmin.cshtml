@@ -1,26 +1,72 @@
 @model AuditTrailContentEventViewModel
 @using OrchardCore.AuditTrail.ViewModels
+@using OrchardCore.ContentManagement
+@using OrchardCore.Contents.AuditTrail.Extensions
+@using OrchardCore.Contents.AuditTrail.Models
+@using OrchardCore.Contents.AuditTrail.Providers
+@inject IStringLocalizer<ViewContext> S
 
-@{
+@* TODO Remove *@
+@* @{
     var contentItem = Model.ContentItem;
     var versionNumber = Model.VersionNumber;
-}
+} *@
 
-<span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Content type"]">
+@* <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Content type"]">
     <i class="far fa-file-alt text-secondary"></i>@contentItem.ContentType
-</span>
+</span> *@
       
 
-@* TODO. 
-How useful is this version number? 
-it's quite hard to make sense of it, when looking at an item in the list
 
-Would it be better and less confusing, just to have an audit trail number
-i.e. Event number for Correlation ID
-
-To me that makes more sense.
-*@
-<span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Version Number"]">
+@* <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Version Number"]">
     <i class="fas fa-code-branch text-secondary mr-1"></i>@T["Version {0}", @Model.VersionNumber]
-</span>  
+</span>   *@
 
+
+@{
+    var contentEvent = Model.ContentEvent;
+    var contentItem = contentEvent.ContentItem;
+    var versionNumber = Model.VersionNumber;
+    var versionText = S["Version {0}", versionNumber];
+    var eventName = Model.Descriptor.LocalizedName.Value.ToLowerInvariant();
+    var editForLink = await Orchard.EditForLinkAsync(contentItem.DisplayText, contentItem);
+}
+
+@if (Model.AuditTrailEvent.Name == ContentAuditTrailEventProvider.Restored)
+{
+    <small>
+        @T["The {0} {1} was restored as {2}",
+        contentItem.ContentType,
+        editForLink,
+        Html.ActionLink(versionText, "Display", "AuditTrailContent",
+        new
+        {
+            area = "OrchardCore.Contents",
+            auditTrailEventId = Model.AuditTrailEvent.EventId
+        }, null)]
+    </small>
+}
+else if (Model.AuditTrailEvent.Name == ContentAuditTrailEventProvider.Removed)
+{
+    <small>
+        @T["The {0} {1} was {2}.",
+        contentItem.ContentType,
+        contentItem.DisplayText,
+        eventName]
+    </small>
+}
+else
+{
+    <small>
+        @T["{0} of the {1} {2} was {3}",
+        Html.ActionLink(versionText, "Display", "AuditTrailContent",
+        new
+        {
+            area = "OrchardCore.Contents",
+            auditTrailEventId = Model.AuditTrailEvent.EventId
+        }, null),
+        contentItem.ContentType,
+        editForLink,
+        eventName]
+    </small>
+}

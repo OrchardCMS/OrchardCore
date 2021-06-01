@@ -1,10 +1,13 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.ViewModels;
+using OrchardCore.Modules;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
@@ -13,6 +16,32 @@ namespace OrchardCore.AuditTrail.Services
 {
     public class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminListFilterProvider
     {
+
+        private static List<Func<string, DateTimeOffset, (bool IncludesTime, DateTime? Value)>> DateParsers = new List<Func<string, DateTimeOffset, (bool IncludesTime, DateTime? Value)>>()
+        {
+            (val, localNow) =>
+            {
+                // Try with a round trip ISO 8601.
+                if (DateTimeOffset.TryParseExact(val, "o", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
+                {
+                    return (true, dateTimeOffset.UtcDateTime);
+                }
+
+                return (true, null);
+            },
+            (val, localNow) =>
+            {
+                // Try with a date only from the ISO 8601 format.
+                if (DateTime.TryParseExact(val, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
+                {
+                    var dateTimeOffset = new DateTimeOffset(parsedDate.Year, parsedDate.Month, parsedDate.Day, localNow.Hour, localNow.Minute, localNow.Second, localNow.Offset);
+                    return (false, dateTimeOffset.UtcDateTime);
+                }
+
+                return (false, null);
+            }
+        };
+
         public void Build(QueryEngineBuilder<AuditTrailEvent> builder)
         {
             builder
@@ -86,28 +115,87 @@ namespace OrchardCore.AuditTrail.Services
                     })
                 )
                 .WithNamedTerm("date", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    .OneCondition<AuditTrailEvent>(async (val, query, ctx) =>
                     {
                         if (!String.IsNullOrEmpty(val))
                         {
+                            var context = (AuditTrailQueryContext)ctx;
+                            var localClock = context.ServiceProvider.GetRequiredService<ILocalClock>();
+
+                            var localNow = await localClock.LocalNowAsync;
+
                             DateTime? start = null;
                             DateTime? end = null;
                             var split = val.Split("..", 2);
-                            if (split.Length == 1 && DateTime.TryParse(val, out var date))
+                            if (split.Length == 1 )
                             {
-                                start = date.Date;
-                                end = date.Date.AddDays(1);
+                                foreach(var parser in DateParsers)
+                                {
+                                    var result = parser(val, localNow);
+                                    if (result.Value != null)
+                                    {
+                                        if (result.IncludesTime)
+                                        {
+                                            start = result.Value.GetValueOrDefault();
+                                        }
+                                        else
+                                        {
+                                            // When the result does not include a time component drop 24 hours from the start.
+                                            // I feel like I want this to be start of day, rather than 24 hours.
+                                            // lets wait till NZ changes day again and see.
+                                            start = result.Value.GetValueOrDefault().AddHours(-24);
+                                        }
+
+                                        // end = result.Value.GetValueOrDefault();
+
+                                        break;
+                                    }
+                                }
                             }
                             else if (split.Length == 2 && DateTime.TryParse(split[0], out var splitStart) && DateTime.TryParse(split[1], out var splitEnd))
                             {
-                                start = splitStart;
-                                // TODO if time component is zero add a day?
-                                end = splitEnd.Date;
+                                var splitLeft = split[0];
+                                var splitRight = split[1];
+                                foreach(var parser in DateParsers)
+                                {
+                                    var result = parser(splitLeft, localNow);
+                                    if (result.Value != null)
+                                    {
+                                        if (result.IncludesTime)
+                                        {
+                                            start = result.Value.GetValueOrDefault();
+                                        }
+                                        else
+                                        {
+                                            // When the result does not include a time component drop 24 hours from the start.
+                                            start = result.Value.GetValueOrDefault().AddHours(-24);
+                                        }
+
+                                        end = result.Value.GetValueOrDefault();
+
+                                        break;
+                                    }
+                                }
+
+                                foreach(var parser in DateParsers)
+                                {
+                                    var result = parser(splitRight, localNow);
+                                    if (result.Value != null)
+                                    {
+                                        end = result.Value.GetValueOrDefault();
+
+                                        break;
+                                    }
+                                }
                             }
 
                             if (start != null && end != null)
                             {
                                 query.With<AuditTrailEventIndex>(x => x.CreatedUtc >= start.GetValueOrDefault() && x.CreatedUtc < end.GetValueOrDefault());
+                            }
+                            else if (start != null)
+                            {
+                                query.With<AuditTrailEventIndex>(x => x.CreatedUtc >= start.GetValueOrDefault());
                             }
                         }
 
@@ -169,57 +257,44 @@ namespace OrchardCore.AuditTrail.Services
                     })
                     .AlwaysRun()
                 )
-                .WithDefaultTerm("name", builder => builder
+                .WithDefaultTerm("username", builder => builder
                     .ManyCondition<AuditTrailEvent>(
-                        ((val, query, ctx) =>
+                        (val, query, ctx) =>
                         {
-                            // TODO normalized.
-                            // var context = (AuditTrailQueryContext)ctx;
-                            // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-                            query.With<AuditTrailEventIndex>(x => x.UserName.Contains(val));
+                            var context = (AuditTrailQueryContext)ctx;
+                            var lookupNormalizer = context.ServiceProvider.GetRequiredService<ILookupNormalizer>();
+                            var normalizedUserName = lookupNormalizer.NormalizeName(val);
+                            query.With<AuditTrailEventIndex>(x => x.NormalizedUserName.Contains(normalizedUserName));
 
                             return new ValueTask<IQuery<AuditTrailEvent>>(query);
-                        }),
-                        ((val, query, ctx) =>
+                        },
+                        (val, query, ctx) =>
                         {
-                            // var context = (AuditTrailQueryContext)ctx;
-                            // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-                            query.With<AuditTrailEventIndex>(x => x.UserName.IsNotIn<AuditTrailEventIndex>(s => s.UserName, w => w.UserName.Contains(val)));
+                            var context = (AuditTrailQueryContext)ctx;
+                            var lookupNormalizer = context.ServiceProvider.GetRequiredService<ILookupNormalizer>();
+                            var normalizedUserName = lookupNormalizer.NormalizeName(val);
+                            query.With<AuditTrailEventIndex>(x => x.NormalizedUserName.IsNotIn<AuditTrailEventIndex>(s => s.NormalizedUserName, w => w.NormalizedUserName.Contains(normalizedUserName)));
 
                             return new ValueTask<IQuery<AuditTrailEvent>>(query);
-                        })
+                        }
+                    )
+                )
+                .WithNamedTerm("userid", builder => builder
+                    .ManyCondition<AuditTrailEvent>(
+                        (val, query) =>
+                        {
+                            query.With<AuditTrailEventIndex>(x => x.UserId.Contains(val));
+
+                            return query;
+                        },
+                        (val, query) =>
+                        {
+                            query.With<AuditTrailEventIndex>(x => x.UserId.IsNotIn<AuditTrailEventIndex>(s => s.UserId, w => w.UserId.Contains(val)));
+
+                            return query;
+                        }
                     )
                 );
-                // .WithNamedTerm("email", builder => builder
-                //     .ManyCondition<AuditTrailEvent>(
-                //         ((val, query, ctx) =>
-                //         {
-                //             // var context = (AuditTrailQueryContext)ctx;
-                //             // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-                //             // query.With<UserIndex>(x => x.NormalizedEmail.Contains(val));
-
-                //             return new ValueTask<IQuery<AuditTrailEvent>>(query);
-                //         }),
-                //         ((val, query, ctx) =>
-                //         {
-                //             // var context = (AuditTrailQueryContext)ctx;
-                //             // var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-                //             // query.With<UserIndex>(x => x.NormalizedEmail.IsNotIn<UserIndex>(s => s.NormalizedEmail, w => w.NormalizedEmail.Contains(val)));
-
-                //             return new ValueTask<IQuery<AuditTrailEvent>>(query);
-                //         })
-                //     )
-                // );
-
-        }
-    }
-
-    public static class DateTimeExtensions
-    {
-        public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
-        {
-            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
-            return dt.AddDays(-1 * diff).Date;
         }
     }
 }

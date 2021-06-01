@@ -2,7 +2,9 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
@@ -11,19 +13,31 @@ namespace OrchardCore.Contents.AuditTrail.Extensions
 {
     public static class ContentOrchardHelperExtensions
     {
-        public static async Task<HtmlString> EditForLinkAsync(this IOrchardHelper orchardHelper, string linkText, ContentItem contentItem)
+        public static async Task<IHtmlContent> EditForLinkAsync(this IOrchardHelper orchardHelper, string linkText, ContentItem contentItem)
         {
-            var urlHelperFactory = orchardHelper.HttpContext.RequestServices.GetRequiredService<IUrlHelperFactory>();
             var viewContextAccessor = orchardHelper.HttpContext.RequestServices.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
+            var helper = MakeHtmlHelper(viewContext, viewContext.ViewData);
             var contentManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<IContentManager>();
-            var htmlEncoder = orchardHelper.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
-
-            var urlHelper = urlHelperFactory.GetUrlHelper(viewContextAccessor.ViewContext);
             var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-            var action = urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
-            var link = htmlEncoder.Encode(linkText ?? "");
 
-            return new HtmlString($"<a href='{action}'>{link}</a>");
+            return helper.ActionLink(linkText, metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
         }
+
+
+        private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
+        {
+            var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
+
+            var contextable = newHelper as IViewContextAware;
+            if (contextable != null)
+            {
+                var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
+                contextable.Contextualize(newViewContext);
+            }
+
+            return newHelper;
+        }
+
     }
 }

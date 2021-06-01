@@ -8,12 +8,14 @@ namespace OrchardCore.AuditTrail.Services.Models
             string name,
             string category,
             string correlationId,
+            string userId,
             string userName,
             Dictionary<string, object> data)
         {
             Name = name;
             Category = category;
             CorrelationId = correlationId;
+            UserId = userId;
             UserName = userName;
             Data = data;
         }
@@ -21,6 +23,7 @@ namespace OrchardCore.AuditTrail.Services.Models
         public string Name { get; set; }
         public string Category { get; set; }
         public string CorrelationId { get; set; }
+        public string UserId { get; set; }
         public string UserName { get; set; }
         public Dictionary<string, object> Data { get; set; }
     }

@@ -17,7 +17,8 @@ namespace OrchardCore.AuditTrail.Indexes
                         Category = auditTrailEvent.Category,
                         Name = auditTrailEvent.Name,
                         CorrelationId = auditTrailEvent.CorrelationId,
-                        UserName = auditTrailEvent.UserName,
+                        UserId = auditTrailEvent.UserId,
+                        NormalizedUserName = auditTrailEvent.NormalizedUserName,
                         CreatedUtc = auditTrailEvent.CreatedUtc
                     };
                 });

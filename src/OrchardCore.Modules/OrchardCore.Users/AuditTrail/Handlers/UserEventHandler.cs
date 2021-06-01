@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -102,7 +103,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                 { "UserName", user.UserName }
             };
 
-            await _auditTrailManager.RecordEventAsync(new AuditTrailContext(name, "User", userId, userName, eventData));
+            await _auditTrailManager.RecordEventAsync(new AuditTrailContext(name, "User", userId, userId, userName, eventData));
         }
 
         private async Task RecordAuditTrailEventAsync(string name, IUser user)
@@ -123,6 +124,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                     name,
                     "User",
                     userId,
+                    userId == UserAuditTrailEventProvider.Created ? userId : _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier),
                     name == UserAuditTrailEventProvider.Created ? userName : _httpContextAccessor.HttpContext.User?.Identity?.Name,
                     data
                 ));

@@ -1,6 +1,7 @@
 @model AuditTrailListViewModel
 
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="audittrailui" asp-src="~/OrchardCore.AuditTrail/Styles/audittrailui.min.css" debug-src="~/OrchardCore.AuditTrail/Styles/audittrailui.css" at="Head" depends-on="admin"></style>
 
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />

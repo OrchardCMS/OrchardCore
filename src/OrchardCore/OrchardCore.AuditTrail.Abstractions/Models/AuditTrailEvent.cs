@@ -31,9 +31,19 @@ namespace OrchardCore.AuditTrail.Models
         public string CorrelationId { get; set; }
 
         /// <summary>
+        /// The user id of the user who caused the event to occur.
+        /// </summary>
+        public string UserId { get; set; }
+
+        /// <summary>
         /// The user name of the user who caused the event to occur.
         /// </summary>
         public string UserName { get; set; }
+
+        /// <summary>
+        /// The normalized user name of the user who caused the event to occur.
+        /// </summary>
+        public string NormalizedUserName { get; set; }
 
         /// <summary>
         /// The IP address of the user who caused the event to occur.

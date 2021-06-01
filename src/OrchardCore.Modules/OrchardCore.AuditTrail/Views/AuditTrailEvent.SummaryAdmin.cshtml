@@ -2,12 +2,6 @@
 <div class="row">
     <div class="col-lg col-12 title d-flex">
         <div class="summary d-flex flex-column flex-md-row">
-            @if (Model.Header != null)
-            {
-                <div class="header mr-1">
-                    @await DisplayAsync(Model.Header)
-                </div>
-            }
             @if (Model.EventTags != null)
             {
                 <div class="eventtags mr-1">

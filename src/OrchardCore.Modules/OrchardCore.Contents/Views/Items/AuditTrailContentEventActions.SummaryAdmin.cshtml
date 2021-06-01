@@ -6,8 +6,7 @@
     var versionNumber = Model.VersionNumber;
 }
 
-
-<a class="btn btn-sm btn-success" asp-action="Display" asp-controller="AuditTrailContent" asp-area="OrchardCore.Contents" asp-route-versionNumber="@Model.VersionNumber" asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId">@T["View Audit Item"]</a>
+<a class="btn btn-sm btn-success" asp-action="Display" asp-controller="AuditTrailContent" asp-area="OrchardCore.Contents" asp-route-versionNumber="@Model.VersionNumber" asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId">@T["View"]</a>
 
 @if (contentItem.ContentItemVersionId != Model.LatestVersionId && Model.AuditTrailEvent.Name == ContentAuditTrailEventProvider.Published)
 { 
