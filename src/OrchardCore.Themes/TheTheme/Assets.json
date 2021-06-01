@@ -1,7 +1,7 @@
 [
   {
     "generateSourceMaps": false,
-    "inputs": [ "wwwroot/scss/bootstrap-oc.scss" ],
+    "inputs": [ "Assets/scss/bootstrap-oc.scss" ],
     "output": "wwwroot/css/bootstrap-oc.css"
   }
 ]
