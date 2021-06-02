@@ -95,7 +95,9 @@ else
             }
 
             setTheme();
-
+            monaco.languages.html.liquidDefaults.modeConfiguration.documentFormattingEdits = true;
+            
+            //documentFormattingEdits
             var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Content)_editor'), settings);
             var textArea = document.getElementById('@Html.IdFor(x => x.Content)');
 

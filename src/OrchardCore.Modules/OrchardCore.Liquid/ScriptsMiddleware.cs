@@ -30,10 +30,11 @@ namespace OrchardCore.Liquid
                 var script = default(string);
                 if (Path.GetFileName(httpContext.Request.Path.Value) == "liquid-intellisense.js")
                 {
-                    var p = new FluidParser();
-                    var tags = string.Join(',', p.RegisteredTags.Keys.Select(x => $"'{x}'"));
+                    var templateOptions = httpContext.RequestServices.GetRequiredService<IOptions<TemplateOptions>>();
+
+                    var filters = string.Join(',', templateOptions.Value.Filters.Select(x => $"'{x.Key}'"));
                     
-                    script = $@"[{tags}].forEach(value=>{{if(!liquidTags.includes(value)){{ liquidTags.push(value);}}}});";
+                    script = $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});";
 
                     var bytes = Encoding.UTF8.GetBytes(script);
                     var cancellationToken = httpContext?.RequestAborted ?? CancellationToken.None;
