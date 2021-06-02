@@ -234,12 +234,19 @@ namespace OrchardCore.Environment.Shell.Scope
                 StartAsyncFlow();
                 try
                 {
-                    if (activateShell)
+                    try
                     {
-                        await ActivateShellInternalAsync();
-                    }
+                        if (activateShell)
+                        {
+                            await ActivateShellInternalAsync();
+                        }
 
-                    await execute(this);
+                        await execute(this);
+                    }
+                    finally
+                    {
+                        await TerminateShellInternalAsync();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -248,7 +255,6 @@ namespace OrchardCore.Environment.Shell.Scope
                 }
                 finally
                 {
-                    await TerminateShellInternalAsync();
                     await BeforeDisposeAsync();
                 }
             }

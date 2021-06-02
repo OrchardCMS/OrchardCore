@@ -30,6 +30,6 @@
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^19.0.0",
-    "rollup": "^2.47.0"
+    "rollup": "^2.50.5"
   }
 }
