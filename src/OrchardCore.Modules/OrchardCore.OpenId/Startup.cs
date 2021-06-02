@@ -163,10 +163,6 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.ClaimsIdentity.UserNameClaimType = Claims.Name;
-            });
             services.AddOpenIddict()
                 .AddServer(options =>
                 {

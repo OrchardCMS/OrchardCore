@@ -116,6 +116,10 @@ namespace OrchardCore.OpenId.Controllers
                     {
                         identity.AddClaim(new Claim(Claims.Subject, result.Principal.GetUserIdentifier()));
                     }
+                    if (string.IsNullOrEmpty(result.Principal.FindFirst(Claims.Name)?.Value))
+                    {
+                        identity.AddClaim(new Claim(Claims.Name, result.Principal.GetUserName()));
+                    }
 
                     principal.SetScopes(request.GetScopes());
                     principal.SetResources(await GetResourcesAsync(request.GetScopes()));
@@ -249,6 +253,10 @@ namespace OrchardCore.OpenId.Controllers
                     if (string.IsNullOrEmpty(User.FindFirst(Claims.Subject)?.Value))
                     {
                         identity.AddClaim(new Claim(Claims.Subject, User.GetUserIdentifier()));
+                    }
+                    if (string.IsNullOrEmpty(User.FindFirst(Claims.Name)?.Value))
+                    {
+                        identity.AddClaim(new Claim(Claims.Name, User.GetUserName()));
                     }
 
                     principal.SetScopes(request.GetScopes());
@@ -539,6 +547,10 @@ namespace OrchardCore.OpenId.Controllers
             {
                 identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
             }
+            if (string.IsNullOrEmpty(principal.FindFirst(Claims.Name)?.Value))
+            {
+                identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
+            }
 
             principal.SetScopes(request.GetScopes());
             principal.SetResources(await GetResourcesAsync(request.GetScopes()));
@@ -612,6 +624,10 @@ namespace OrchardCore.OpenId.Controllers
             if (string.IsNullOrEmpty(principal.FindFirst(Claims.Subject)?.Value))
             {
                 identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
+            }
+            if (string.IsNullOrEmpty(principal.FindFirst(Claims.Name)?.Value))
+            {
+                identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
             }
 
             foreach (var claim in principal.Claims)
