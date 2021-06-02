@@ -73,7 +73,7 @@ namespace OrchardCore.Tests.Security
         }
 
         [Fact]
-        public async Task IsCaseIsensitive()
+        public async Task IsCaseInsensitive()
         {
             // Arrange
             var required = new Permission("required");
