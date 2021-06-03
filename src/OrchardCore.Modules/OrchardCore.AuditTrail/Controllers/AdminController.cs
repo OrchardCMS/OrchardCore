@@ -176,29 +176,30 @@ namespace OrchardCore.AuditTrail.Controllers
 
             options.AuditTrailDates = new List<SelectListItem>()
             {
-                new SelectListItem() { Text = S["Any date"], Value = String.Empty, Selected = options.Date == String.Empty },
+                new SelectListItem(S["Any date"], String.Empty, options.Date == String.Empty),
             };
 
-            /*
-            Any date
-            Today
-            Yesterday
-            Last 7 Days
-            Last 30 Days
-            Last 90 Days
-            This hour
-            Last hour
-
-            */
-
             var localNow = await _localClock.LocalNowAsync;
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 24 hours"], localNow.AddHours(-24).ToString("yyyy-MM-dd")));
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 48 hours"], localNow.AddHours(-48).ToString("yyyy-MM-dd")));
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 7 days"], $"{localNow.AddHours(-24).AddDays(-7).ToString("yyyy-MM-dd")}..{localNow.ToString("yyyy-MM-dd")}"));
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 30 days"], $"{localNow.AddHours(-24).AddDays(-30).ToString("yyyy-MM-dd")}..{localNow.ToString("yyyy-MM-dd")}"));
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 90 days"], $"{localNow.AddHours(-24).AddDays(-90).ToString("yyyy-MM-dd")}..{localNow.ToString("yyyy-MM-dd")}"));
-            options.AuditTrailDates.Add(new SelectListItem(S["This hour"], $"{localNow.AddHours(-1).ToString("o")}..{localNow.ToString("o")}"));
-            options.AuditTrailDates.Add(new SelectListItem(S["Last hour"], $"{localNow.AddHours(-2).ToString("o")}..{localNow.AddHours(-1).ToString("o")}"));
+            var dateTimeValue = ">@now-1";
+            options.AuditTrailDates.Add(new SelectListItem(S["Last 24 hours"], dateTimeValue, options.Date == dateTimeValue));
+
+            dateTimeValue = "@now-2..@now-1";
+            options.AuditTrailDates.Add(new SelectListItem(S["Previous 48 hours"], dateTimeValue, options.Date == dateTimeValue));
+
+            dateTimeValue = ">@now-7";
+            options.AuditTrailDates.Add(new SelectListItem(S["Last 7 days"], dateTimeValue, options.Date == dateTimeValue));
+
+            dateTimeValue = $">{localNow.AddDays(-30).LocalDateTime.Date.ToString("o")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["Last 30 days"], dateTimeValue, options.Date == dateTimeValue));
+
+            dateTimeValue = $">{localNow.AddDays(-90).LocalDateTime.Date.ToString("o")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["Last 90 days"], dateTimeValue, options.Date == dateTimeValue));
+
+            dateTimeValue = $">{localNow.AddHours(-1).ToString("o")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["Last hour"], dateTimeValue, options.Date == dateTimeValue));
+
+            dateTimeValue = $"{localNow.AddHours(-2).ToString("o")}..{localNow.AddHours(-1).ToString("o")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["Previous hour"], dateTimeValue, options.Date == dateTimeValue));
 
             var items = new List<IShape>();
 

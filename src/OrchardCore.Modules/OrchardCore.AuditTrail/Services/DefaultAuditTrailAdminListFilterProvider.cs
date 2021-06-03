@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,36 +12,37 @@ using OrchardCore.Modules;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
+using Parlot.Fluent;
 
 namespace OrchardCore.AuditTrail.Services
 {
     public class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminListFilterProvider
     {
 
-        private static List<Func<string, DateTimeOffset, (bool IncludesTime, DateTime? Value)>> DateParsers = new List<Func<string, DateTimeOffset, (bool IncludesTime, DateTime? Value)>>()
-        {
-            (val, localNow) =>
-            {
-                // Try with a round trip ISO 8601.
-                if (DateTimeOffset.TryParseExact(val, "o", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
-                {
-                    return (true, dateTimeOffset.UtcDateTime);
-                }
+        // private static List<Func<string, DateTimeOffset, (bool IncludesTime, DateTime? Value)>> DateParsers = new List<Func<string, DateTimeOffset, (bool IncludesTime, DateTime? Value)>>()
+        // {
+        //     (val, localNow) =>
+        //     {
+        //         // Try with a round trip ISO 8601.
+        //         if (DateTimeOffset.TryParseExact(val, "o", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
+        //         {
+        //             return (true, dateTimeOffset.UtcDateTime);
+        //         }
 
-                return (true, null);
-            },
-            (val, localNow) =>
-            {
-                // Try with a date only from the ISO 8601 format.
-                if (DateTime.TryParseExact(val, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
-                {
-                    var dateTimeOffset = new DateTimeOffset(parsedDate.Year, parsedDate.Month, parsedDate.Day, localNow.Hour, localNow.Minute, localNow.Second, localNow.Offset);
-                    return (false, dateTimeOffset.UtcDateTime);
-                }
+        //         return (true, null);
+        //     },
+        //     (val, localNow) =>
+        //     {
+        //         // Try with a date only from the ISO 8601 format.
+        //         if (DateTime.TryParseExact(val, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
+        //         {
+        //             var dateTimeOffset = new DateTimeOffset(parsedDate.Year, parsedDate.Month, parsedDate.Day, localNow.Hour, localNow.Minute, localNow.Second, localNow.Offset);
+        //             return (false, dateTimeOffset.UtcDateTime);
+        //         }
 
-                return (false, null);
-            }
-        };
+        //         return (false, null);
+        //     }
+        // };
 
         public void Build(QueryEngineBuilder<AuditTrailEvent> builder)
         {
@@ -115,91 +117,25 @@ namespace OrchardCore.AuditTrail.Services
                     })
                 )
                 .WithNamedTerm("date", builder => builder
-                    .OneCondition<AuditTrailEvent>(async (val, query, ctx) =>
+                    .OneCondition<AuditTrailEvent>((val, query, ctx) =>
                     {
-                        if (!String.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(val) && DateTimeParser.Parser.TryParse(val, out var expression))
                         {
                             var context = (AuditTrailQueryContext)ctx;
-                            var localClock = context.ServiceProvider.GetRequiredService<ILocalClock>();
+                            var clock = context.ServiceProvider.GetRequiredService<IClock>();
+                            var utcNow = clock.UtcNow;
 
-                            var localNow = await localClock.LocalNowAsync;
+                            var param = Expression.Parameter(typeof(AuditTrailEventIndex));
+                            var field = Expression.Property(param, nameof(AuditTrailEventIndex.CreatedUtc));
+                            var expressionContext = new BuildExpressionContext(utcNow, param, field, typeof(Func<AuditTrailEventIndex, bool>));
 
-                            DateTime? start = null;
-                            DateTime? end = null;
-                            var split = val.Split("..", 2);
-                            if (split.Length == 1 )
-                            {
-                                foreach(var parser in DateParsers)
-                                {
-                                    var result = parser(val, localNow);
-                                    if (result.Value != null)
-                                    {
-                                        if (result.IncludesTime)
-                                        {
-                                            start = result.Value.GetValueOrDefault();
-                                        }
-                                        else
-                                        {
-                                            // When the result does not include a time component drop 24 hours from the start.
-                                            // I feel like I want this to be start of day, rather than 24 hours.
-                                            // lets wait till NZ changes day again and see.
-                                            start = result.Value.GetValueOrDefault().AddHours(-24);
-                                        }
+                            var builtLambda = expression.BuildExpression(expressionContext);
 
-                                        // end = result.Value.GetValueOrDefault();
-
-                                        break;
-                                    }
-                                }
-                            }
-                            else if (split.Length == 2 && DateTime.TryParse(split[0], out var splitStart) && DateTime.TryParse(split[1], out var splitEnd))
-                            {
-                                var splitLeft = split[0];
-                                var splitRight = split[1];
-                                foreach(var parser in DateParsers)
-                                {
-                                    var result = parser(splitLeft, localNow);
-                                    if (result.Value != null)
-                                    {
-                                        if (result.IncludesTime)
-                                        {
-                                            start = result.Value.GetValueOrDefault();
-                                        }
-                                        else
-                                        {
-                                            // When the result does not include a time component drop 24 hours from the start.
-                                            start = result.Value.GetValueOrDefault().AddHours(-24);
-                                        }
-
-                                        end = result.Value.GetValueOrDefault();
-
-                                        break;
-                                    }
-                                }
-
-                                foreach(var parser in DateParsers)
-                                {
-                                    var result = parser(splitRight, localNow);
-                                    if (result.Value != null)
-                                    {
-                                        end = result.Value.GetValueOrDefault();
-
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (start != null && end != null)
-                            {
-                                query.With<AuditTrailEventIndex>(x => x.CreatedUtc >= start.GetValueOrDefault() && x.CreatedUtc < end.GetValueOrDefault());
-                            }
-                            else if (start != null)
-                            {
-                                query.With<AuditTrailEventIndex>(x => x.CreatedUtc >= start.GetValueOrDefault());
-                            }
+                            var casted = (Expression<Func<AuditTrailEventIndex, bool>>)builtLambda;
+                            query.With<AuditTrailEventIndex>(casted);
                         }
 
-                        return query;
+                        return new ValueTask<IQuery<AuditTrailEvent>>(query);
                     })
                     .MapTo<AuditTrailIndexOptions>((val, model) =>
                     {
