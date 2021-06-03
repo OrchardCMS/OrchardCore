@@ -1,11 +1,28 @@
-// Global styling for this template
+// 
+// Global theme styling
+// 
+
+// Scroll padding for all scroll targets on page used with
+// native CSS smooth scrolling
+// 
+// https://caniuse.com/?search=scroll-padding
+
+html {
+    scroll-padding-top: 4.5rem;
+}
+
 body {
+    position: relative;
     overflow-x: hidden;
 }
 
+// Adjust the line height of paragraphs
+
 p {
-    line-height: 1.75;
+    line-height: $line-height-lg;
 }
+
+// Spacing and heading styling for page sections
 
 .page-section {
     padding: 6rem 0;
@@ -25,28 +42,11 @@ p {
     }
 }
 
+// Increase the padding on sections when screen size is greater
+// than the medium breakpoint (set by Bootstrap)
+
 @include media-breakpoint-up(md) {
     section {
         padding: 9rem 0;
     }
-}
-
-// Highlight color customization
-
-::-moz-selection {
-    background: $primary;
-    text-shadow: none;
-}
-
-::selection {
-    background: $primary;
-    text-shadow: none;
-}
-
-img::selection {
-    background: transparent;
-}
-
-img::-moz-selection {
-    background: transparent;
 }

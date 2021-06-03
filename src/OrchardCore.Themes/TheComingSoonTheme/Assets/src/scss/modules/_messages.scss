@@ -10,6 +10,6 @@
 
 @each $color, $value in $theme-colors {
     .message-#{$color} {
-      @include alert-variant(theme-color-level($color, $alert-bg-level), theme-color-level($color, $alert-border-level), theme-color-level($color, $alert-color-level));
+        @include alert-variant(shift-color($value, $alert-bg-scale), shift-color($value, $alert-border-scale), shift-color($value, $alert-color-scale));
     }
   }

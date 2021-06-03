@@ -1,11 +1,15 @@
-// Override Bootstrap color system
+//
+// Colors
+//
 
-$yellow: #fed136;
+// Override Bootstrap color variables
 
-// Override Bootstrap default state colors
+$yellow: #ffc800;
+
+// Override Bootstrap state colors variables
 
 $primary: $yellow;
 
-// Override Bootstrap yiq lightness value
+// Override Bootstrap contrast ratio
 
-$yiq-contrasted-threshold: 205;
+$min-contrast-ratio: 1.5;

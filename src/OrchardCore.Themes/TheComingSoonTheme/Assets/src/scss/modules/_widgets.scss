@@ -21,10 +21,12 @@
 .widget-align-justify {
     text-align: justify;
 }
+
 .widget-size-100{
     @include make-col-ready;
     @include make-col(12);
 }
+
 @each $wsize in (25, 33, 50, 66, 75) {
     .widget-size-#{$wsize} {
         @extend .widget-size-100;

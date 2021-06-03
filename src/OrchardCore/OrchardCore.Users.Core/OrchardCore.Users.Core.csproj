@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="YesSql.Abstractions" />
+    <PackageReference Include="YesSql.Filters.Query"/>
   </ItemGroup>
 
 </Project>

@@ -62,6 +62,7 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
             services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
+            services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
         }
 
