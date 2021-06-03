@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -41,6 +42,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUsersAdminListQueryService _usersAdminListQueryService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
+        private readonly ILogger _logger;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer H;
@@ -59,6 +61,7 @@ namespace OrchardCore.Users.Controllers
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
+            ILogger<AccountController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             IUpdateModelAccessor updateModelAccessor)
@@ -76,6 +79,7 @@ namespace OrchardCore.Users.Controllers
             _usersAdminListQueryService = usersAdminListQueryService;
             _updateModelAccessor = updateModelAccessor;
             _shapeFactory = shapeFactory;
+            _logger = logger;
 
             New = shapeFactory;
             H = htmlLocalizer;
@@ -537,7 +541,7 @@ namespace OrchardCore.Users.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    _notifier.Error(H[error.Description]);
+                    _logger.LogWarning(error.Description);
                 }
             }
 
