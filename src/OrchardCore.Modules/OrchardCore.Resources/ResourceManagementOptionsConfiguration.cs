@@ -414,9 +414,9 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("vuejs")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vue.min.js", "~/OrchardCore.Resources/Scripts/vue.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js", "https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js")
-                .SetCdnIntegrity("sha384-OZmxTjkv7EQo5XDMPAmIkkvywVeXw59YyYh6zq8UKfkbor13jS+5p8qMTBSA1q+F", "sha384-+jvb+jCJ37FkNjPyYLI3KJzQeD8pPFXUra3B/QJFqQ3txYrUPIP1eOfxK4h3cKZP")
-                .SetVersion("2.6.11");
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue@2.6.13/dist/vue.min.js", "https://cdn.jsdelivr.net/npm/vue@2.6.13/dist/vue.js")
+                .SetCdnIntegrity("sha384-FKv6l6TZWdxobLI7l++xJlStdFlvrH4pcVCcg5vXuPzzYbkfngg9FSfO4z0mEia0", "sha384-WM4gktk/CftuSZamhTstagcBmEMczUOuUu6OX/A6N5HihfDrHiDsPdvc/pqZznf+")
+                .SetVersion("2.6.13");
 
             manifest
                 .DefineScript("vue-multiselect")
