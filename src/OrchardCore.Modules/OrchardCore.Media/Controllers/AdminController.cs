@@ -59,7 +59,7 @@ namespace OrchardCore.Media.Controllers
             return View();
         }
 
-        public async Task<ActionResult<IAsyncEnumerable<IFileStoreEntry>>> GetFolders(string path)
+        public async Task<ActionResult<IEnumerable<IFileStoreEntry>>> GetFolders(string path)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
@@ -79,10 +79,10 @@ namespace OrchardCore.Media.Controllers
             var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
                 .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)e.Path));
 
-            return Ok(allowed);
+            return Ok(await allowed.ToListAsync());
         }
 
-        public async Task<ActionResult<IAsyncEnumerable<object>>> GetMediaItems(string path)
+        public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -104,7 +104,7 @@ namespace OrchardCore.Media.Controllers
                 .WhereAwait(async e => !e.IsDirectory && await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)e.Path))
                 .Select(e => CreateFileResult(e));
 
-            return Ok(allowed);
+            return Ok(await allowed.ToListAsync());
         }
 
         public async Task<ActionResult<object>> GetMediaItem(string path)
