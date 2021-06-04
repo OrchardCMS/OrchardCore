@@ -150,7 +150,7 @@ namespace OrchardCore.Localization.PortableObject
             return allLocalizedStrings;
         }
 
-        private string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
+        protected string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
         {
             var dictionary = _localizationManager.GetDictionary(culture);
 
