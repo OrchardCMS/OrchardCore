@@ -17,7 +17,6 @@ using OrchardCore.Setup.Services;
 
 namespace OrchardCore.AutoSetup
 {
-
     /// <summary>
     /// The auto setup middleware.
     /// </summary>
