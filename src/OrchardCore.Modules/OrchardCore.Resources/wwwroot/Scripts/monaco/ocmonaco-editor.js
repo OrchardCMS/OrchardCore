@@ -133,6 +133,22 @@ $document.ready(function () {
         document.addEventListener('widget-added', function (e) {
             document.querySelectorAll("[data-monaco-oc]").forEach(initMonacoEditor);
         }, false);
-    
+
+        // handle resizing when expanding a widget
+        $document.on('click', '.widget-editor-btn-toggle', function () {
+            window.requestAnimationFrame(()=>{
+                const widgetEditor = $(this).closest('.widget-editor');
+                if(!widgetEditor.hasClass("collapsed"))
+                {
+                    widgetEditor.find("[data-monaco-oc]").each((k, v) => {
+                        let monacoData = $(v).data("monaco");
+                        if(monacoData)
+                        {
+                            monacoData.updateHeight();
+                        }
+                    });
+                }
+            });
+        });
     });
 });
