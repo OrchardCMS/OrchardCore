@@ -4,7 +4,7 @@
     {% assign tagTerms = Model.Field | taxonomy_terms %}
     {% for tagTerm in tagTerms %}
         {% a display_for: tagTerm %}
-            <span class="badge badge-secondary">
+            <span class="badge bg-secondary">
                 <i class="fas fa-tag fa-xs fa-rotate-90 align-middle"></i>
                 <span class="align-middle"> {{ tagTerm }} </span> 
             </span>

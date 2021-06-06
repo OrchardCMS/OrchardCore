@@ -11,48 +11,48 @@ namespace OrchardCore.Users.Handlers
         /// Occurs before a user is created.
         /// </summary>
         /// <param name="context">The <see cref="UserCreateContext"/>.</param>
-        Task CreatingAsync(UserCreateContext context) => Task.CompletedTask;
+        Task CreatingAsync(UserCreateContext context);
 
         /// <summary>
         /// Occurs when a user is created.
         /// </summary>
         /// <param name="context">The <see cref="UserCreateContext"/>.</param>
-        Task CreatedAsync(UserCreateContext context) => Task.CompletedTask;
+        Task CreatedAsync(UserCreateContext context);
 
         /// <summary>
         /// Occurs before a user is deleted.
         /// </summary>
         /// <param name="context">The <see cref="UserDeleteContext"/>.</param>
-        Task DeletingAsync(UserDeleteContext context) => Task.CompletedTask;
+        Task DeletingAsync(UserDeleteContext context);
 
         /// <summary>
         /// Occurs when a user is deleted.
         /// </summary>
         /// <param name="context">The <see cref="UserDeleteContext"/>.</param>
-        Task DeletedAsync(UserDeleteContext context) => Task.CompletedTask;
+        Task DeletedAsync(UserDeleteContext context);
 
         /// <summary>
         /// Occurs before a user is updated.
         /// </summary>
         /// <param name="context">The <see cref="UserUpdateContext"/>.</param>
-        Task UpdatingAsync(UserUpdateContext context) => Task.CompletedTask;
+        Task UpdatingAsync(UserUpdateContext context);
 
         /// <summary>
         /// Occurs when a user is updated.
         /// </summary>
         /// <param name="context">The <see cref="UserUpdateContext"/>.</param>
-        Task UpdatedAsync(UserUpdateContext context) => Task.CompletedTask;
+        Task UpdatedAsync(UserUpdateContext context);
 
         /// <summary>
         /// Occurs when a user is disabled.
         /// </summary>
         /// <param name="context">The <see cref="UserContext"/>.</param>
-        Task DisabledAsync(UserContext context) => Task.CompletedTask;
+        Task DisabledAsync(UserContext context);
 
         /// <summary>
         /// Occurs when a user is enabled.
         /// </summary>
         /// <param name="context">The <see cref="UserContext"/>.</param>
-        Task EnabledAsync(UserContext context) => Task.CompletedTask;
+        Task EnabledAsync(UserContext context);
     }
 }

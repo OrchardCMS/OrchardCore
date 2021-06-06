@@ -2335,6 +2335,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "vlodkopits",
+      "name": "vlodkopits",
+      "avatar_url": "https://avatars.githubusercontent.com/u/14543503?v=4",
+      "profile": "https://github.com/vlodkopits",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
