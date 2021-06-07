@@ -18,20 +18,6 @@ namespace OrchardCore.AuditTrail.Services
         Task RecordEventAsync(AuditTrailContext context);
 
         /// <summary>
-        /// Gets a page of audit trail events.
-        /// </summary>
-        /// <param name="page">The page number to get events from.</param>
-        /// <param name="pageSize">The number of events to get.</param>
-        /// <param name="filters">An optional <see cref="Filters"/>.</param>
-        /// <param name="orderBy">an optional <see cref="AuditTrailOrderBy"/>.</param>
-        /// <returns>The <see cref="AuditTrailEventSearchResults"/>.</returns>
-        Task<AuditTrailEventSearchResults> GetEventsAsync(
-            int page,
-            int pageSize,
-            Filters filters = null,
-            AuditTrailOrderBy orderBy = AuditTrailOrderBy.DateDescending);
-
-        /// <summary>
         /// Gets a single audit trail event by ID.
         /// </summary>
         /// <param name="eventId">The event ID.</param>

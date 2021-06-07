@@ -5,8 +5,10 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Indexes;
+using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.Modules;
 using YesSql;
@@ -18,32 +20,12 @@ namespace OrchardCore.AuditTrail.Services
 {
     public class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminListFilterProvider
     {
+        private readonly IOptions<AuditTrailAdminListOptions> _options;
 
-        // private static List<Func<string, DateTimeOffset, (bool IncludesTime, DateTime? Value)>> DateParsers = new List<Func<string, DateTimeOffset, (bool IncludesTime, DateTime? Value)>>()
-        // {
-        //     (val, localNow) =>
-        //     {
-        //         // Try with a round trip ISO 8601.
-        //         if (DateTimeOffset.TryParseExact(val, "o", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
-        //         {
-        //             return (true, dateTimeOffset.UtcDateTime);
-        //         }
-
-        //         return (true, null);
-        //     },
-        //     (val, localNow) =>
-        //     {
-        //         // Try with a date only from the ISO 8601 format.
-        //         if (DateTime.TryParseExact(val, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
-        //         {
-        //             var dateTimeOffset = new DateTimeOffset(parsedDate.Year, parsedDate.Month, parsedDate.Day, localNow.Hour, localNow.Minute, localNow.Second, localNow.Offset);
-        //             return (false, dateTimeOffset.UtcDateTime);
-        //         }
-
-        //         return (false, null);
-        //     }
-        // };
-
+        public DefaultAuditTrailAdminListFilterProvider(IOptions<AuditTrailAdminListOptions> options)
+        {
+            _options = options;
+        }
         public void Build(QueryEngineBuilder<AuditTrailEvent> builder)
         {
             builder
@@ -151,40 +133,30 @@ namespace OrchardCore.AuditTrail.Services
                     })
                 )
                 .WithNamedTerm("sort", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    .OneCondition<AuditTrailEvent>((val, query, ctx) =>
                     {
-                        if (Enum.TryParse<AuditTrailSort>(val, true, out var auditTrailSort))
+                        var context = (AuditTrailQueryContext)ctx;
+                        var options = context.ServiceProvider.GetRequiredService<IOptions<AuditTrailAdminListOptions>>().Value;
+
+                        if (options.SortOptions.TryGetValue(val, out var sortOption))
                         {
-                            switch (auditTrailSort)
-                            {
-                                case AuditTrailSort.Timestamp:
-                                    query.With<AuditTrailEventIndex>().OrderByDescending(u => u.CreatedUtc);
-                                    break;
-                                case AuditTrailSort.Category:
-                                    query.With<AuditTrailEventIndex>().OrderBy(index => index.Category).ThenByDescending(index => index.CreatedUtc);
-                                    break;
-                                case AuditTrailSort.Event:
-                                    query.With<AuditTrailEventIndex>().OrderBy(index => index.Name).ThenByDescending(index => index.CreatedUtc);
-                                    break;
-                            };
-                        }
-                        else
-                        {
-                            query.With<AuditTrailEventIndex>().OrderByDescending(u => u.CreatedUtc);
+                            return sortOption.Query(val, query, ctx);
                         }
 
-                        return query;
+                        return options.DefaultSortOption.Query(val, query, ctx);
                     })
                     .MapTo<AuditTrailIndexOptions>((val, model) =>
                     {
-                        if (Enum.TryParse<AuditTrailSort>(val, true, out var sort))
+                        // TODO add a context property to the mapping func.
+                        if (_options.Value.SortOptions.TryGetValue(val, out var sortOption))
                         {
-                            model.Sort = sort;
+                            model.Sort = sortOption.Value;
                         }
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        if (model.Sort != AuditTrailSort.Timestamp)
+                        // TODO add a context property to the mapping func.
+                        if (model.Sort != _options.Value.DefaultSortOption.Value)
                         {
                             return (true, model.Sort.ToString());
                         }

@@ -1,13 +1,17 @@
 using System.Threading.Tasks;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.AuditTrail.Models;
+using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
-using YesSql;
 
 namespace OrchardCore.AuditTrail.Services
 {
     public interface IAuditTrailAdminListQueryService
     {
-        Task<IQuery<AuditTrailEvent>> QueryAsync(AuditTrailIndexOptions options, IUpdateModel updater);
+        /// <summary>
+        /// Queries a page of audit trail events.
+        /// </summary>
+        /// <param name="page">The page number to get events from.</param>
+        /// <param name="pageSize">The number of events to get.</param>
+        /// <param name="options">The filter options.</param>
+        Task<AuditTrailEventQueryResult> QueryAsync(int page, int pageSize, AuditTrailIndexOptions options);
     }
 }

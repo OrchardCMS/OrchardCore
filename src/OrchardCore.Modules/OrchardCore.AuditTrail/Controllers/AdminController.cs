@@ -77,9 +77,11 @@ namespace OrchardCore.AuditTrail.Controllers
                 return Forbid();
             }
 
-            var options = new AuditTrailIndexOptions();
+            var options = new AuditTrailIndexOptions
+            {
+                FilterResult = queryFilterResult
+            };
 
-            options.FilterResult = queryFilterResult;
 
             // This is used by Contents feature for routing so needs to be passed into the options.
             if (!String.IsNullOrEmpty(correlationId))
@@ -94,8 +96,11 @@ namespace OrchardCore.AuditTrail.Controllers
                 options.FilterResult.TryAddOrReplace(new CorrelationIdFilterNode(options.CorrelationId));
             }
 
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+
             // With the options populated we filter the query, allowing the filters to alter the options.
-            var query = await _auditTrailAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
+            var result = await _auditTrailAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options);
 
             // The search text is provided back to the UI.
             options.SearchText = options.FilterResult.ToString();
@@ -104,55 +109,36 @@ namespace OrchardCore.AuditTrail.Controllers
             // Populate route values to maintain previous route data when generating page links.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-            var routeData = new RouteData(options.RouteValues);
+            // TODO route data.
+            // var routeData = new RouteData(options.RouteValues);
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            // var count = await query.CountAsync();
 
-            var count = await query.CountAsync();
+            // var auditTrailEvents = await query
+            //     .Skip(pager.GetStartIndex())
+            //     .Take(pager.PageSize)
+            //     .ListAsync();
 
-            var auditTrailEvents = await query
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ListAsync();
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
-
-            // // TODO back to IShape
-
-            // dynamic pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
-            // {
-            //     pager.Page,
-            //     pager.PageSize,
-            //     TotalItemCount = searchResult.TotalCount
-            // }));
 // var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
+            {
+                pager.Page,
+                pager.PageSize,
+                TotalItemCount = result.TotalCount
+            }));
 
-
+/*
 
             var categories = _auditTrailManager.DescribeCategories().ToArray();
 
             options.Categories = categories
                 .GroupBy(category => category.Name)
                 .Select(categories => categories.First())
-                .Select(category =>
-                    new SelectListItem
-                    {
-                        Selected = category.Name == options.Category,
-                        Text = category.LocalizedName.Value,
-                        Value = category.Name
-                    })
+                .Select(category => new SelectListItem(category.LocalizedName.Value, category.Name, category.Name == options.Category))
                 .ToList();
 
-            options.Categories.Insert(0, new SelectListItem { Text = S["All categories"], Value = String.Empty, Selected = String.IsNullOrEmpty(options.Category) });
+            options.Categories.Insert(0, new SelectListItem(S["All categories"], String.Empty, String.IsNullOrEmpty(options.Category)));
 
-            options.AuditTrailSorts = new List<SelectListItem>()
-            {
-                new SelectListItem { Text = S["Timestamp"], Value = nameof(AuditTrailSort.Timestamp), Selected = options.Sort == AuditTrailSort.Timestamp },
-                new SelectListItem { Text = S["Category"], Value = nameof(AuditTrailSort.Category), Selected = options.Sort == AuditTrailSort.Category },
-                new SelectListItem { Text = S["Event"], Value = nameof(AuditTrailSort.Event), Selected = options.Sort == AuditTrailSort.Event },
-                new SelectListItem { Text = S["User"], Value = nameof(AuditTrailSort.User), Selected = options.Sort == AuditTrailSort.User }
-            };
 
             if (options.CorrelationIdFromRoute)
             {
@@ -162,14 +148,8 @@ namespace OrchardCore.AuditTrail.Controllers
                     var currentCategory = categories.FirstOrDefault(x => x.Name == firstEvent.Category);
                     if (currentCategory != null)
                     {
-
                         options.Events = currentCategory.Events.Select(category =>
-                            new SelectListItem
-                            {
-                                Selected = category.Name == options.Category,
-                                Text = category.LocalizedName.Value,
-                                Value = category.Name
-                            }).ToList();
+                            new SelectListItem(category.LocalizedName.Value, category.Name, category.Name == options.Category)).ToList();
                     }
                 }
             }
@@ -200,21 +180,21 @@ namespace OrchardCore.AuditTrail.Controllers
 
             dateTimeValue = $"{localNow.AddHours(-2).ToString("o")}..{localNow.AddHours(-1).ToString("o")}";
             options.AuditTrailDates.Add(new SelectListItem(S["Previous hour"], dateTimeValue, options.Date == dateTimeValue));
-
+*/
             var items = new List<IShape>();
 
-            foreach (var auditTrailEvent in auditTrailEvents)
+            foreach (var auditTrailEvent in result.Events)
             {
                 items.Add(
                     await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
                 );
             }
 
-            var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
+            var startIndex = (pager.Page - 1) * (pager.PageSize) + 1;
             options.StartIndex = startIndex;
             options.EndIndex = startIndex + items.Count - 1;
             options.EventsCount = items.Count;
-            options.TotalItemCount = pagerShape.TotalItemCount;
+            options.TotalItemCount = result.TotalCount;
 
             var header = await _auditTrailOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
 

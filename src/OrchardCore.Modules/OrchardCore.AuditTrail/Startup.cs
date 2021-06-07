@@ -13,6 +13,7 @@ using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Navigation;
 using OrchardCore.AuditTrail.Services;
+using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.BackgroundTasks;
@@ -94,6 +95,7 @@ namespace OrchardCore.AuditTrail
             });
 
             services.AddTransient<IAuditTrailAdminListFilterProvider, DefaultAuditTrailAdminListFilterProvider>();
+            services.AddTransient<IConfigureOptions<AuditTrailAdminListOptions>, AuditTrailAdminListConfiguration>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

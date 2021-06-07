@@ -24,14 +24,14 @@ namespace OrchardCore.AuditTrail.Services
 
     public abstract class Node
     {
-        public abstract Expression BuildExpression(BuildExpressionContext context);
+        public abstract Expression BuildExpression(in BuildExpressionContext context);
     }
 
     public abstract class OperatorNode : Node
     {
         public string Operator { get; set; }
 
-        public Expression BuildOperation(BuildExpressionContext context, ConstantExpression constant)
+        public Expression BuildOperation(in BuildExpressionContext context, ConstantExpression constant)
         {
             if (String.IsNullOrEmpty(Operator))
             {
@@ -58,7 +58,7 @@ namespace OrchardCore.AuditTrail.Services
 
         public DateTimeOffset DateTime { get; }
 
-        public override Expression BuildExpression(BuildExpressionContext context)
+        public override Expression BuildExpression(in BuildExpressionContext context)
             => BuildOperation(context, Expression.Constant(DateTime.UtcDateTime, typeof(DateTime)));
 
         public override string ToString()
@@ -77,7 +77,7 @@ namespace OrchardCore.AuditTrail.Services
 
         public long? Arithmetic { get; }
 
-        public override Expression BuildExpression(BuildExpressionContext context)
+        public override Expression BuildExpression(in BuildExpressionContext context)
             => BuildOperation(context, Expression.Constant(context.UtcNow.AddDays(Arithmetic.GetValueOrDefault()), typeof(DateTime)));
 
         public override string ToString()
@@ -94,7 +94,7 @@ namespace OrchardCore.AuditTrail.Services
             Node = node;
         }
 
-        public override Expression BuildExpression(BuildExpressionContext context)
+        public override Expression BuildExpression(in BuildExpressionContext context)
             => Expression.Lambda(context.Type, Node.BuildExpression(context), context.Parameter);
 
         public OperatorNode Node { get; }
@@ -113,7 +113,7 @@ namespace OrchardCore.AuditTrail.Services
         public OperatorNode Left { get; }
         public OperatorNode Right { get; }
 
-        public override Expression BuildExpression(BuildExpressionContext context)
+        public override Expression BuildExpression(in BuildExpressionContext context)
         {
             var left = Expression.GreaterThanOrEqual(context.Member, Left.BuildExpression(context));
             var right = Expression.LessThanOrEqual(context.Member, Right.BuildExpression(context));

@@ -27,11 +27,8 @@ namespace OrchardCore.AuditTrail.ViewModels
         /// Marks a <see cref="CorrelationId"/> as provided from the route, rather than a filter
         /// </summary>
         public bool CorrelationIdFromRoute { get; set; }
-
         public string Date { get; set; }
-        public DateTime? FromDate { get; set; }
-        public DateTime? ToDate { get; set; }
-        public AuditTrailSort Sort { get; set; }
+        public string Sort { get; set; }
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
         public int EventsCount { get; set; }
@@ -55,17 +52,7 @@ namespace OrchardCore.AuditTrail.ViewModels
         [BindNever]
         public List<SelectListItem> AuditTrailSorts { get; set; } = new List<SelectListItem>();
 
-        // TODO
         [BindNever]
-        public List<SelectListItem> AuditTrailDates { get; set; }   = new List<SelectListItem>();      
-
-    }
-
-    public enum AuditTrailSort
-    {
-        Timestamp,
-        Category,
-        Event,
-        User
+        public List<SelectListItem> AuditTrailDates { get; set; }   = new List<SelectListItem>();
     }
 }

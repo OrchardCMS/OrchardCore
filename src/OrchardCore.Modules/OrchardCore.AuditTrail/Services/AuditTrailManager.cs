@@ -108,57 +108,6 @@ namespace OrchardCore.AuditTrail.Services
             _session.Save(@event, AuditTrailEvent.Collection);
         }
 
-        public async Task<AuditTrailEventSearchResults> GetEventsAsync(
-            int page,
-            int pageSize,
-            Filters filters = null,
-            AuditTrailOrderBy orderBy = AuditTrailOrderBy.DateDescending)
-        {
-            var query = _session.Query<AuditTrailEvent>(collection: AuditTrailEvent.Collection);
-
-            if (filters != null)
-            {
-                var filterContext = new QueryFilterContext(query, filters);
-                _auditTrailEventHandlers.Invoke((handler, context) => handler.FilterAsync(context), filterContext, _logger);
-                query = filterContext.Query;
-            }
-
-            switch (orderBy)
-            {
-                case AuditTrailOrderBy.CategoryAscending:
-                    query.With<AuditTrailEventIndex>().OrderBy(index => index.Category).ThenByDescending(index => index.CreatedUtc);
-                    break;
-                case AuditTrailOrderBy.EventAscending:
-                    query.With<AuditTrailEventIndex>().OrderBy(index => index.Name).ThenByDescending(index => index.CreatedUtc);
-                    break;
-                case AuditTrailOrderBy.DateDescending:
-                    query.With<AuditTrailEventIndex>().OrderByDescending(index => index.Id);
-                    break;
-                default:
-                    break;
-            }
-
-            var totalCount = await query.CountAsync();
-
-            if (pageSize > 0)
-            {
-                if (page > 1)
-                {
-                    query = query.Skip((page - 1) * pageSize);
-                }
-
-                query = query.Take(pageSize);
-            }
-
-            var events = await query.ListAsync();
-
-            return new AuditTrailEventSearchResults
-            {
-                Events = events,
-                TotalCount = totalCount
-            };
-        }
-
         public Task<AuditTrailEvent> GetEventAsync(string eventId) =>
             _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
                 .Where(index => index.EventId == eventId)
