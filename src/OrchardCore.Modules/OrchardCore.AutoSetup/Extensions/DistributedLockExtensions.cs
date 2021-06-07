@@ -37,13 +37,13 @@ namespace OrchardCore.AutoSetup.Extensions
                 var lockTimeout = lockOptions?.LockTimeout ?? 0;
                 if (lockTimeout <= 0)
                 {
-                    lockTimeout = 30_000;
+                    lockTimeout = 60_000;
                 }
 
                 var lockExpiration = lockOptions?.LockExpiration ?? 0;
                 if (lockExpiration <= 0)
                 {
-                    lockExpiration = 30_000;
+                    lockExpiration = 60_000;
                 }
 
                 timeout = TimeSpan.FromMilliseconds(lockTimeout);
