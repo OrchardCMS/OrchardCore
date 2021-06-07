@@ -45,6 +45,11 @@ namespace OrchardCore.GitHub.Configuration
             return new AuthenticationTicket(context.Principal, context.Properties, Scheme.Name);
         }
 
+        /// <summary>
+        /// This code was copied from the aspnetcore repository . We should keep it in sync with it.
+        /// https://github.com/dotnet/aspnetcore/blob/fcd4ed7c46083cc408417763867637f232928f9b/src/Security/Authentication/OAuth/src/OAuthHandler.cs#L193
+        /// This can be removed or modified when the https://github.com/dotnet/aspnetcore/issues/33351 is resolved
+        /// </summary>
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(OAuthCodeExchangeContext context)
         {
             var tokenRequestParameters = new Dictionary<string, string>()
@@ -74,7 +79,7 @@ namespace OrchardCore.GitHub.Configuration
             {
                 var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
-
+                // This was added to support better error messages from the GitHub OAuth provider
                 if(payload.RootElement.TryGetProperty("error", out var error))
                 {
                     var output = new StringBuilder();
@@ -82,7 +87,7 @@ namespace OrchardCore.GitHub.Configuration
 
                     if(payload.RootElement.TryGetProperty("error_description", out var description))
                     {
-                        output.Append(" ");
+                        output.Append(' ');
                         output.Append(description);
                     }
                     return OAuthTokenResponse.Failed(new Exception(output.ToString()));
