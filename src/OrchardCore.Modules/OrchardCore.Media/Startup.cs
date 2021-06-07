@@ -32,6 +32,7 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
+using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
@@ -152,6 +153,7 @@ namespace OrchardCore.Media
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
+            services.AddScoped<IMediaFileTextProvider, PdfMediaFileTextProvider>();
 
             services.AddRecipeExecutionStep<MediaStep>();
 
