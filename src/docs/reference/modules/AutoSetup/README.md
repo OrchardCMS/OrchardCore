@@ -146,12 +146,12 @@ Make sure you set the Redis configuration string via an environment variable or 
 "OrchardCore__OrchardCore_Redis__Configuration": "192.168.99.100:6379,allowAdmin=true"
 ```
 
-Optional Distributed Lock Parameters
+Optional Distributed Lock Parameters.
 
 | Parameter | Description | Default Value |
 | --- | --- |
-| `LockTimeout` | The timeout in milliseconds to acquire a distributed auto setup lock. | 30 seconds |
-| `LockExpiration` | The expiration in milliseconds of the distributed setup lock. | 30 seconds |
+| `LockTimeout` | The timeout in milliseconds to acquire a distributed auto setup lock. | 60 seconds |
+| `LockExpiration` | The expiration in milliseconds of the distributed setup lock. | 60 seconds |
 
 Lock configuration parameters are optional and can be set via environment variables or a configuration file.
 
