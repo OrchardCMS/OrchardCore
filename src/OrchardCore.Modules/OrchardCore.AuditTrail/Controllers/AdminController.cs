@@ -32,7 +32,6 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IAuditTrailDisplayManager _auditTrailEventDisplayManager;
         private readonly IAuditTrailAdminListQueryService _auditTrailAdminListQueryService;
         private readonly IDisplayManager<AuditTrailEvent> _displayManager;
         private readonly IDisplayManager<AuditTrailIndexOptions> _auditTrailOptionsDisplayManager;
@@ -47,7 +46,6 @@ namespace OrchardCore.AuditTrail.Controllers
             IAuditTrailManager auditTrailManager,
             IUpdateModelAccessor updateModelAccessor,
             IAuthorizationService authorizationService,
-            IAuditTrailDisplayManager auditTrailEventDisplayManager,
             IAuditTrailAdminListQueryService auditTrailAdminListQueryService,
             IDisplayManager<AuditTrailEvent> displayManager,
             IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager,
@@ -61,7 +59,6 @@ namespace OrchardCore.AuditTrail.Controllers
             _auditTrailManager = auditTrailManager;
             _updateModelAccessor = updateModelAccessor;
             _authorizationService = authorizationService;
-            _auditTrailEventDisplayManager = auditTrailEventDisplayManager;
             _auditTrailAdminListQueryService = auditTrailAdminListQueryService;
             _displayManager = displayManager;
             _auditTrailOptionsDisplayManager = auditTrailOptionsDisplayManager;

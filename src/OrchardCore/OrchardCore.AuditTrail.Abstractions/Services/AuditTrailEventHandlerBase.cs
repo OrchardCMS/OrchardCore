@@ -11,6 +11,5 @@ namespace OrchardCore.AuditTrail.Services
 
         public virtual Task CreateAsync(AuditTrailCreateContext context) => Task.CompletedTask;
         public virtual Task AlterAsync(AuditTrailCreateContext context, AuditTrailEvent auditTrailEvent) => Task.CompletedTask;
-        public virtual Task FilterAsync(QueryFilterContext context) => Task.CompletedTask;
     }
 }

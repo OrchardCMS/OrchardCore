@@ -18,10 +18,5 @@ namespace OrchardCore.AuditTrail.Services
         /// Alters an Audit Trail event after it has been built and before saving it.
         /// </summary>
         Task AlterAsync(AuditTrailCreateContext context, AuditTrailEvent auditTrailEvent);
-
-        /// <summary>
-        /// Filters Audit Trail events based on the values of a query string.
-        /// </summary>
-        Task FilterAsync(QueryFilterContext context);
     }
 }

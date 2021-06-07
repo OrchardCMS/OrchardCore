@@ -40,6 +40,7 @@ namespace OrchardCore.Contents.AuditTrail
             services.AddScoped<IDataMigration, Migrations>();
             services.AddContentPart<AuditTrailPart>()
                 .UseDisplayDriver<AuditTrailPartDisplayDriver>();
+                
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
             services.AddScoped<IContentDisplayDriver, AuditTrailContentsDriver>();
 

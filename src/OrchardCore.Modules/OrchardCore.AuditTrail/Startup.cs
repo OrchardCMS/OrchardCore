@@ -48,17 +48,10 @@ namespace OrchardCore.AuditTrail
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
             services.AddScoped<IAuditTrailManager, AuditTrailManager>();
-            services.AddScoped<IAuditTrailEventHandler, AuditTrailEventHandler>();
 
-            // This has to go
-            services.AddScoped<IAuditTrailDisplayManager, AuditTrailtDisplayManager>();
-            services.AddScoped<IAuditTrailDisplayHandler, AuditTrailDisplayHandler>();
-
-            // and be replaced by this
             services
                 .AddScoped<IDisplayManager<AuditTrailEvent>, DisplayManager<AuditTrailEvent>>()
                 .AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailEventDisplayDriver>();
-
 
             services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
 
@@ -75,10 +68,10 @@ namespace OrchardCore.AuditTrail
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();
 
-            services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
+            services.AddScoped<IDisplayManager<AuditTrailIndexOptions>, DisplayManager<AuditTrailIndexOptions>>()
+                .AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
 
-            services.AddScoped<IDisplayManager<AuditTrailIndexOptions>, DisplayManager<AuditTrailIndexOptions>>();
-            services.AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
+            services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
 
             services.AddSingleton<IAuditTrailAdminListFilterParser>(sp =>
             {

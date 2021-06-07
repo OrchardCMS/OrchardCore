@@ -24,7 +24,6 @@ namespace OrchardCore.Contents.AuditTrail.Extensions
             return helper.ActionLink(linkText, metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
         }
 
-
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
         {
             var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
@@ -38,6 +37,5 @@ namespace OrchardCore.Contents.AuditTrail.Extensions
 
             return newHelper;
         }
-
     }
 }
