@@ -58,16 +58,22 @@ namespace OrchardCore.Users.AuditTrail.Handlers
         public Task EnabledAsync(UserContext context) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Enabled, context.User);
 
-        public Task CreatedAsync(UserContext context) =>
+        public Task CreatedAsync(UserCreateContext context) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Created, context.User);
 
-        public Task UpdatedAsync(UserContext context) =>
+        public Task UpdatedAsync(UserUpdateContext context) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Updated, context.User);
 
-        public Task DeletedAsync(UserContext context) =>
+        public Task DeletedAsync(UserDeleteContext context) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Deleted, context.User);
 
         #region Unused events
+
+        public Task CreatingAsync(UserCreateContext context) => Task.CompletedTask;
+
+        public Task UpdatingAsync(UserUpdateContext context) => Task.CompletedTask;
+
+        public Task DeletingAsync(UserDeleteContext context) => Task.CompletedTask;
 
         public Task RecoveringPasswordAsync(Action<string, string> reportError) => Task.CompletedTask;
 
@@ -75,8 +81,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
 
         public Task LoggingInAsync(string userName, Action<string, string> reportError) => Task.CompletedTask;
 
-        public Task RegistrationValidationAsync(Action<string, string> reportError) =>
-            Task.CompletedTask;
+        public Task RegistrationValidationAsync(Action<string, string> reportError) => Task.CompletedTask;
 
         #endregion
 

@@ -207,12 +207,12 @@ namespace OrchardCore.Users.Controllers
                         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                         if (user != null)
                         {
-                            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
+                            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
                             if (result.Succeeded)
                             {
                                 if (!await AddConfirmEmailError(user) && !AddUserEnabledError(user))
                                 {
-                                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
+                                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
 
                                     if (result.Succeeded)
                                     {
@@ -221,6 +221,12 @@ namespace OrchardCore.Users.Controllers
                                         return await LoggedInActionResult(user, returnUrl);
                                     }
                                 }
+                            }
+
+                            if (result.IsLockedOut)
+                            {
+                                ModelState.AddModelError(string.Empty, S["The account is locked out"]);
+                                return View();
                             }
                         }
 
