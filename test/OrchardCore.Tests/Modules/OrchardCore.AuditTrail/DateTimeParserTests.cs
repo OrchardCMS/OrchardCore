@@ -3,7 +3,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.AuditTrail
 {
-        public class DateTimeRangeTests
+    public class DateTimeRangeTests
     {
         [Theory]
         [InlineData("@now", "@now")]

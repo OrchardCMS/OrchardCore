@@ -1,26 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
-using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using OrchardCore.Routing;
-using YesSql;
-using YesSql.Services;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.AuditTrail.Controllers
@@ -35,8 +27,6 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IAuditTrailAdminListQueryService _auditTrailAdminListQueryService;
         private readonly IDisplayManager<AuditTrailEvent> _displayManager;
         private readonly IDisplayManager<AuditTrailIndexOptions> _auditTrailOptionsDisplayManager;
-        private readonly IClock _clock;
-        private readonly ILocalClock _localClock;
         private readonly IStringLocalizer S;
 
         public AdminController(
@@ -48,8 +38,6 @@ namespace OrchardCore.AuditTrail.Controllers
             IAuditTrailAdminListQueryService auditTrailAdminListQueryService,
             IDisplayManager<AuditTrailEvent> displayManager,
             IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager,
-            IClock clock,
-            ILocalClock localClock,
             IStringLocalizer<AdminController> stringLocalizer)
         {
             _siteService = siteService;
@@ -60,8 +48,6 @@ namespace OrchardCore.AuditTrail.Controllers
             _auditTrailAdminListQueryService = auditTrailAdminListQueryService;
             _displayManager = displayManager;
             _auditTrailOptionsDisplayManager = auditTrailOptionsDisplayManager;
-            _clock = clock;
-            _localClock = localClock;
             S = stringLocalizer;
         }
 
@@ -140,7 +126,7 @@ namespace OrchardCore.AuditTrail.Controllers
 
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.Filter")]
-         public async Task<ActionResult> IndexFilterPOST(AuditTrailIndexOptions options)
+        public async Task<ActionResult> IndexFilterPOST(AuditTrailIndexOptions options)
         {
             await _auditTrailOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
             // When the user has typed something into the search input no further evaluation of the form post is required.
@@ -174,7 +160,7 @@ namespace OrchardCore.AuditTrail.Controllers
 
             var shape = await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "DetailAdmin");
 
-            return View(new AuditTrailItemViewModel { Shape = shape});
+            return View(new AuditTrailItemViewModel { Shape = shape });
         }
     }
 }

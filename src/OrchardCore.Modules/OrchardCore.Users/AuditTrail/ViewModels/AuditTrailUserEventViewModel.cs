@@ -10,7 +10,6 @@ namespace OrchardCore.Users.AuditTrail.ViewModels
         public string UserName { get; set; }
         public string UserId { get; set; }
 
-
         [BindNever]
         public AuditTrailUserEvent UserEvent { get; set; }
 

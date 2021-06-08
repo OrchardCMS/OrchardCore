@@ -7,9 +7,6 @@ namespace OrchardCore.AuditTrail
 {
     public class Permissions : IPermissionProvider
     {
-        //public static readonly Permission ViewAuditTrail = new Permission(nameof(ViewAuditTrail), "View audit trail");
-        //public static readonly Permission ManageAuditTrailSettings = new Permission(nameof(ManageAuditTrailSettings), "Manage audit trail settings");
-
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
             new[]
             {

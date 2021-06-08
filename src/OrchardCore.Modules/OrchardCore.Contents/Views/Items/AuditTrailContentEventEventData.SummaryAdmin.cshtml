@@ -1,27 +1,7 @@
 @model AuditTrailContentEventViewModel
-@using OrchardCore.AuditTrail.ViewModels
-@using OrchardCore.ContentManagement
 @using OrchardCore.Contents.AuditTrail.Extensions
-@using OrchardCore.Contents.AuditTrail.Models
 @using OrchardCore.Contents.AuditTrail.Providers
 @inject IStringLocalizer<ViewContext> S
-
-@* TODO Remove *@
-@* @{
-    var contentItem = Model.ContentItem;
-    var versionNumber = Model.VersionNumber;
-} *@
-
-@* <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Content type"]">
-    <i class="far fa-file-alt text-secondary"></i>@contentItem.ContentType
-</span> *@
-      
-
-
-@* <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Version Number"]">
-    <i class="fas fa-code-branch text-secondary mr-1"></i>@T["Version {0}", @Model.VersionNumber]
-</span>   *@
-
 
 @{
     var contentEvent = Model.ContentEvent;

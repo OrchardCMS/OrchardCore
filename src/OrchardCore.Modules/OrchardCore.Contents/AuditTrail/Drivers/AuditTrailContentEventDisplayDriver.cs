@@ -82,21 +82,6 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             );
         }
 
-        // private async Task<DiffNode[]> BuildDiffNodesAsync(AuditTrailEvent auditTrailEvent, AuditTrailContentEvent contentEvent, AuditTrailContentEventDetailViewModel model)
-        // {
-        //     var contentItem = contentEvent.ContentItem;
-
-        //     var previousAuditTrailEvent = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
-        //         .Where(index =>
-        //             index.Category == "Content" &&
-        //             index.CreatedUtc <= auditTrailEvent.CreatedUtc &&
-        //             index.EventId != auditTrailEvent.EventId &&
-        //             index.CorrelationId == contentItem.ContentItemId)
-        //         .OrderByDescending(index => index.Id)
-        //         .FirstOrDefaultAsync();
-
-
-
         private static void BuildSummaryViewModel(AuditTrailContentEventViewModel m, AuditTrailEvent model, AuditTrailContentEvent contentEvent, AuditTrailEventDescriptor descriptor, string latestVersionId)
         {
             m.AuditTrailEvent = model;

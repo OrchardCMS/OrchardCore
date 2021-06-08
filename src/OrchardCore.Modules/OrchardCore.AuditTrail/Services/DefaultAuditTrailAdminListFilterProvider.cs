@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +12,6 @@ using OrchardCore.Modules;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
-using Parlot.Fluent;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -111,10 +108,7 @@ namespace OrchardCore.AuditTrail.Services
                             var field = Expression.Property(param, nameof(AuditTrailEventIndex.CreatedUtc));
                             var expressionContext = new BuildExpressionContext(utcNow, param, field, typeof(Func<AuditTrailEventIndex, bool>));
 
-                            var builtLambda = expression.BuildExpression(expressionContext);
-
-                            var casted = (Expression<Func<AuditTrailEventIndex, bool>>)builtLambda;
-                            query.With<AuditTrailEventIndex>(casted);
+                            query.With<AuditTrailEventIndex>((Expression<Func<AuditTrailEventIndex, bool>>)expression.BuildExpression(expressionContext));
                         }
 
                         return new ValueTask<IQuery<AuditTrailEvent>>(query);
