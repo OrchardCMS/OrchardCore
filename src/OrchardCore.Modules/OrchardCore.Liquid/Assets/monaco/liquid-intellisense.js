@@ -1,6 +1,4 @@
-/// <reference path="monaco.d.ts">
-
-const liquidTags = [
+var liquidTags = [
     'if',
     'else',
     'elseif',
@@ -28,8 +26,7 @@ const liquidTags = [
     'unless',
     'endunless'
 ];
-
-const liquidFilters = [
+var liquidFilters = [
     'abs',
     'append',
     'at_least',
@@ -78,30 +75,20 @@ const liquidFilters = [
     'url_decode',
     'url_encode',
     'where'
-]
-
-interface ILiquidContextInfo {
-    showFilters: boolean,
-    showTags: boolean,
-    includeEndTags: boolean,
-    inTag: boolean,
-    inObject: boolean
-}
-
-function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.Position, triggerCharacter: string): ILiquidContextInfo {
-    var inTag: boolean;
-    var inObject: boolean;
-    var showTags: boolean;
-    var showFilters: boolean;
-
-    var findStart = model.findPreviousMatch('\\{(%|\\{)', position, true, false, null, true);   
+];
+function getLiquidContextInfo(model, position, triggerCharacter) {
+    var inTag;
+    var inObject;
+    var showTags;
+    var showFilters;
+    var findStart = model.findPreviousMatch('\\{(%|\\{)', position, true, false, null, true);
     if (findStart && findStart.matches && !position.isBefore(findStart.range.getEndPosition())) {
         if (findStart.matches[1] == '%') {
             inTag = true;
-        } else if (findStart.matches[1] == '{') {
-            inObject = true
         }
-
+        else if (findStart.matches[1] == '{') {
+            inObject = true;
+        }
         var searchPattern = inTag ? '%}' : '}}';
         var findEnd = model.findNextMatch(searchPattern, position, false, false, null, true);
         var currentRange = findStart.range.plusRange(findEnd.range);
@@ -111,57 +98,54 @@ function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.
                 if (findTagName && currentRange.containsRange(findTagName.range) && findTagName.matches.length > 1) {
                     if (findTagName.matches[1] == 'assign') {
                         showFilters = true;
-                    } else {
+                    }
+                    else {
                         showTags = false;
                     }
-                } else {
+                }
+                else {
                     showTags = true;
                 }
-            } else {
+            }
+            else {
                 showFilters = true;
             }
         }
     }
-
     return {
-        showFilters,
-        showTags,
-        inTag,
-        inObject
-    } as ILiquidContextInfo;
+        showFilters: showFilters,
+        showTags: showTags,
+        inTag: inTag,
+        inObject: inObject
+    };
 }
-
-const completionItemProvider: monaco.languages.CompletionItemProvider = {
+var completionItemProvider = {
     triggerCharacters: [' ', '|'],
-    provideCompletionItems: (model: monaco.editor.ITextModel, position: monaco.Position, context: monaco.languages.CompletionContext, token: monaco.CancellationToken) => {
-        var items: string[] = [];
-
+    provideCompletionItems: function (model, position, context, token) {
+        var items = [];
         if (context.triggerCharacter == ' ') {
             if (model.getValueInRange(new monaco.Range(position.lineNumber, position.column - 3, position.lineNumber, position.column - 1)) != '{%') {
                 return null;
             }
         }
-
-        var liquidContext: ILiquidContextInfo = getLiquidContextInfo(model, position, context.triggerCharacter);
+        var liquidContext = getLiquidContextInfo(model, position, context.triggerCharacter);
         if (liquidContext.showFilters) {
             items = liquidFilters;
-        } else if (liquidContext.showTags) {
-            items = liquidTags.filter((value: string) => { return !value.startsWith('end') });
         }
-
-        const suggestions = items.map((value: string) => {
+        else if (liquidContext.showTags) {
+            items = liquidTags.filter(function (value) { return !value.startsWith('end'); });
+        }
+        var suggestions = items.map(function (value) {
             return {
                 label: value,
                 kind: monaco.languages.CompletionItemKind.Keyword,
                 insertText: value,
                 insertTextRules: monaco.languages.CompletionItemInsertTextRule.KeepWhitespace
-            } as monaco.languages.CompletionItem
+            };
         });
-
-        return { suggestions } as monaco.languages.ProviderResult<monaco.languages.CompletionList>;
+        return { suggestions: suggestions };
     }
 };
-
-function ConfigureLiquidIntellisense(monaco: any) {
+function ConfigureLiquidIntellisense(monaco) {
     monaco.languages.registerCompletionItemProvider('liquid', completionItemProvider);
 }

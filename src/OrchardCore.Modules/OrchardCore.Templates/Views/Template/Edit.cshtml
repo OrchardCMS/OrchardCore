@@ -62,7 +62,7 @@ else
         <div id="@Html.IdFor(x => x.Content)_editor" asp-for="Text" style="min-height: 600px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Content" class="content-preview-text" hidden>@Html.Raw(Model.Content)</textarea>
         <span asp-validation-for="Content"></span>
-        <span class="hint">@T["The body of the content item."]</span>
+        <span class="hint">@T["The Liquid template."]</span>
     </div>
 </form>
 
@@ -75,11 +75,7 @@ else
                 language: 'liquid'
             }
 
-            var p = window.LiquidExpressions;
-
             ConfigureLiquidIntellisense(monaco);
-
-            //monaco.languages.registerCompletionItemProvider('liquid', getLiquidCompletionItemProvider(monaco));
 
             var html = document.getElementsByTagName("html")[0];
             const mutationObserver = new MutationObserver(setTheme);
@@ -96,8 +92,7 @@ else
 
             setTheme();
             monaco.languages.html.liquidDefaults.modeConfiguration.documentFormattingEdits = true;
-            
-            //documentFormattingEdits
+
             var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Content)_editor'), settings);
             var textArea = document.getElementById('@Html.IdFor(x => x.Content)');
 
@@ -142,7 +137,7 @@ else
         function initializeTemplatePreview(element) {
 
             var antiforgerytoken = $("[name='__RequestVerificationToken']").val();
-            
+
             sendFormData = function (element) {
 
                 var formData = {

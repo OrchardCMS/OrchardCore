@@ -13,7 +13,7 @@ namespace OrchardCore.Liquid
 
             _manifest
                 .DefineScript("monaco-liquid-intellisense")
-                .SetUrl("~/OrchardCore.Liquid/monaco/liquid-intellisense.min.js", "~/OrchardCore.Liquid/monaco/liquid-intellisense.js")
+                .SetUrl("~/OrchardCore.Liquid/monaco/liquid-intellisense.js")
                 .SetDependencies("monaco")
                 .SetVersion("1.0.0");
 

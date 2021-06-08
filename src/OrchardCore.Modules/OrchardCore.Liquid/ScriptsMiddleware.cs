@@ -11,6 +11,7 @@ using OrchardCore.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Settings;
 using Fluid;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace OrchardCore.Liquid
 {
@@ -30,12 +31,22 @@ namespace OrchardCore.Liquid
                 var script = default(string);
                 if (Path.GetFileName(httpContext.Request.Path.Value) == "liquid-intellisense.js")
                 {
-                    var templateOptions = httpContext.RequestServices.GetRequiredService<IOptions<TemplateOptions>>();
+                    var cache = httpContext.RequestServices.GetRequiredService<IMemoryCache>();
+                    const string key = "OrchardCore.Liquid/Scripts/liquid-intellisense.js";
+                    if (!cache.TryGetValue(key, out script))
+                    {
 
-                    var filters = string.Join(',', templateOptions.Value.Filters.Select(x => $"'{x.Key}'"));
-                    
-                    script = $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});";
+                        var templateOptions = httpContext.RequestServices.GetRequiredService<IOptions<TemplateOptions>>();
+                        var liquidViewParser = httpContext.RequestServices.GetRequiredService<LiquidViewParser>();
 
+                        var filters = string.Join(',', templateOptions.Value.Filters.Select(x => $"'{x.Key}'"));
+                        var tags = string.Join(',', liquidViewParser.RegisteredTags.Select(x => $"'{x.Key}'"));
+
+                        script = $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});
+[{tags}].forEach(value=>{{if(!liquidTags.includes(value)){{ liquidTags.push(value);}}}});";
+
+                        cache.Set(key, script);
+                    }
                     var bytes = Encoding.UTF8.GetBytes(script);
                     var cancellationToken = httpContext?.RequestAborted ?? CancellationToken.None;
                     await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script), 0, bytes.Length, cancellationToken);

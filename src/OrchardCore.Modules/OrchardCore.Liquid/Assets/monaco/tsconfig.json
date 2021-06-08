@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "ES5",
     "skipLibCheck": true,
-    "sourceMap": true,
+    "removeComments": true,
+    "sourceMap": false,
     "lib": [
       "dom",
       "ES2015",
