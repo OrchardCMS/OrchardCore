@@ -38,7 +38,6 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IClock _clock;
         private readonly ILocalClock _localClock;
         private readonly IStringLocalizer S;
-        private readonly dynamic New;
 
         public AdminController(
             ISiteService siteService,
@@ -55,7 +54,6 @@ namespace OrchardCore.AuditTrail.Controllers
         {
             _siteService = siteService;
             _shapeFactory = shapeFactory;
-            New = shapeFactory;
             _auditTrailManager = auditTrailManager;
             _updateModelAccessor = updateModelAccessor;
             _authorizationService = authorizationService;
@@ -78,7 +76,6 @@ namespace OrchardCore.AuditTrail.Controllers
             {
                 FilterResult = queryFilterResult
             };
-
 
             // This is used by Contents feature for routing so needs to be passed into the options.
             if (!String.IsNullOrEmpty(correlationId))
@@ -106,17 +103,6 @@ namespace OrchardCore.AuditTrail.Controllers
             // Populate route values to maintain previous route data when generating page links.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-            // TODO route data.
-            // var routeData = new RouteData(options.RouteValues);
-
-            // var count = await query.CountAsync();
-
-            // var auditTrailEvents = await query
-            //     .Skip(pager.GetStartIndex())
-            //     .Take(pager.PageSize)
-            //     .ListAsync();
-
-// var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
             var pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
             {
                 pager.Page,
@@ -124,60 +110,6 @@ namespace OrchardCore.AuditTrail.Controllers
                 TotalItemCount = result.TotalCount
             }));
 
-/*
-
-            var categories = _auditTrailManager.DescribeCategories().ToArray();
-
-            options.Categories = categories
-                .GroupBy(category => category.Name)
-                .Select(categories => categories.First())
-                .Select(category => new SelectListItem(category.LocalizedName.Value, category.Name, category.Name == options.Category))
-                .ToList();
-
-            options.Categories.Insert(0, new SelectListItem(S["All categories"], String.Empty, String.IsNullOrEmpty(options.Category)));
-
-
-            if (options.CorrelationIdFromRoute)
-            {
-                var firstEvent = auditTrailEvents.FirstOrDefault();
-                if (firstEvent != null)
-                {
-                    var currentCategory = categories.FirstOrDefault(x => x.Name == firstEvent.Category);
-                    if (currentCategory != null)
-                    {
-                        options.Events = currentCategory.Events.Select(category =>
-                            new SelectListItem(category.LocalizedName.Value, category.Name, category.Name == options.Category)).ToList();
-                    }
-                }
-            }
-
-            options.AuditTrailDates = new List<SelectListItem>()
-            {
-                new SelectListItem(S["Any date"], String.Empty, options.Date == String.Empty),
-            };
-
-            var localNow = await _localClock.LocalNowAsync;
-            var dateTimeValue = ">@now-1";
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 24 hours"], dateTimeValue, options.Date == dateTimeValue));
-
-            dateTimeValue = "@now-2..@now-1";
-            options.AuditTrailDates.Add(new SelectListItem(S["Previous 48 hours"], dateTimeValue, options.Date == dateTimeValue));
-
-            dateTimeValue = ">@now-7";
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 7 days"], dateTimeValue, options.Date == dateTimeValue));
-
-            dateTimeValue = $">{localNow.AddDays(-30).LocalDateTime.Date.ToString("o")}";
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 30 days"], dateTimeValue, options.Date == dateTimeValue));
-
-            dateTimeValue = $">{localNow.AddDays(-90).LocalDateTime.Date.ToString("o")}";
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 90 days"], dateTimeValue, options.Date == dateTimeValue));
-
-            dateTimeValue = $">{localNow.AddHours(-1).ToString("o")}";
-            options.AuditTrailDates.Add(new SelectListItem(S["Last hour"], dateTimeValue, options.Date == dateTimeValue));
-
-            dateTimeValue = $"{localNow.AddHours(-2).ToString("o")}..{localNow.AddHours(-1).ToString("o")}";
-            options.AuditTrailDates.Add(new SelectListItem(S["Previous hour"], dateTimeValue, options.Date == dateTimeValue));
-*/
             var items = new List<IShape>();
 
             foreach (var auditTrailEvent in result.Events)

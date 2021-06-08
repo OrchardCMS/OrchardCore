@@ -19,15 +19,15 @@ namespace OrchardCore.AuditTrail.Services.Models
         /// <summary>
         /// Returns a default descriptor based on an event record in case the related provider is no longer registered.
         /// </summary>
-        public static AuditTrailEventDescriptor Default(AuditTrailEvent @event)
+        public static AuditTrailEventDescriptor Default(AuditTrailEvent auditTrailEvent)
         {
             return new AuditTrailEventDescriptor
             {
-                Name = @event.Name,
-                Category = @event.Category,
-                LocalizedName = new LocalizedString(@event.Name, @event.Name),
-                LocalizedCategory = new LocalizedString(@event.Category, @event.Category),
-                BuildEvent = (@event, data) => { }
+                Name = auditTrailEvent.Name,
+                Category = auditTrailEvent.Category,
+                LocalizedName = new LocalizedString(auditTrailEvent.Name, auditTrailEvent.Name),
+                LocalizedCategory = new LocalizedString(auditTrailEvent.Category, auditTrailEvent.Category),
+                BuildEvent = (auditTrailEvent, data) => { }
             };
         }
     }

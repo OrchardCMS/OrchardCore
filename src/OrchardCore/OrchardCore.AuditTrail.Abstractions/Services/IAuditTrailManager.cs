@@ -33,9 +33,9 @@ namespace OrchardCore.AuditTrail.Services
         /// <summary>
         /// Describes a single audit trail event.
         /// </summary>
-        /// <param name="event">The <see cref="AuditTrailEvent"/> to describe.</param>
+        /// <param name="auditTrailEvent">The <see cref="AuditTrailEvent"/> to describe.</param>
         /// <returns>The <see cref="AuditTrailEventDescriptor"/>.</returns>
-        AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event);
+        AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent auditTrailEvent);
 
         /// <summary>
         /// Describes all audit trail event categories.

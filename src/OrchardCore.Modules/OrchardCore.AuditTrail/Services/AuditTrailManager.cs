@@ -86,7 +86,7 @@ namespace OrchardCore.AuditTrail.Services
 
             await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), createContext, _logger);
 
-            var @event = new AuditTrailEvent
+            var auditTrailEvent = new AuditTrailEvent
             {
                 EventId = _auditTrailIdGenerator.GenerateUniqueId(),
                 Category = createContext.Category,
@@ -102,10 +102,10 @@ namespace OrchardCore.AuditTrail.Services
                 Comment = createContext.Comment
             };
 
-            descriptor.BuildEvent(@event, createContext.Data);
-            await _auditTrailEventHandlers.InvokeAsync((handler, context, @event) => handler.AlterAsync(context, @event), createContext, @event, _logger);
+            descriptor.BuildEvent(auditTrailEvent, createContext.Data);
+            await _auditTrailEventHandlers.InvokeAsync((handler, context, auditTrailEvent) => handler.AlterAsync(context, auditTrailEvent), createContext, auditTrailEvent, _logger);
 
-            _session.Save(@event, AuditTrailEvent.Collection);
+            _session.Save(auditTrailEvent, AuditTrailEvent.Collection);
         }
 
         public Task<AuditTrailEvent> GetEventAsync(string eventId) =>
@@ -122,18 +122,18 @@ namespace OrchardCore.AuditTrail.Services
                 .ListAsync();
 
             var deletedEvents = 0;
-            foreach (var @event in events)
+            foreach (var auditTrailEvent in events)
             {
-                _session.Delete(@event, collection: AuditTrailEvent.Collection);
+                _session.Delete(auditTrailEvent, collection: AuditTrailEvent.Collection);
                 deletedEvents++;
             }
 
             return deletedEvents;
         }
 
-        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent @event) =>
-            DescribeEvent(@event.Name, @event.Category)
-            ?? AuditTrailEventDescriptor.Default(@event);
+        public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent auditTrailEvent) =>
+            DescribeEvent(auditTrailEvent.Name, auditTrailEvent.Category)
+            ?? AuditTrailEventDescriptor.Default(auditTrailEvent);
 
         public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() =>
             DescribeProviders().Describe();
@@ -146,7 +146,7 @@ namespace OrchardCore.AuditTrail.Services
         private AuditTrailEventDescriptor DescribeEvent(string name, string categoryName) =>
             DescribeProviders(categoryName).Describe()
                 .FirstOrDefault(category => category.Name == categoryName)?.Events
-                .FirstOrDefault(@event => @event.Name == name);
+                .FirstOrDefault(auditTrailEvent => auditTrailEvent.Name == name);
 
         private DescribeContext DescribeProviders(string category = null)
         {

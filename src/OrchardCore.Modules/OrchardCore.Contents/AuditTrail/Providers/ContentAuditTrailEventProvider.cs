@@ -44,11 +44,11 @@ namespace OrchardCore.Contents.AuditTrail.Providers
                 .Event(Restored, S["Restored"], S["A content item was restored to a previous version."], BuildEvent, true);
         }
 
-        private static void BuildEvent(AuditTrailEvent @event, Dictionary<string, object> eventData)
+        private static void BuildEvent(AuditTrailEvent auditTrailEvent, Dictionary<string, object> eventData)
         {
-            @event.Put(new AuditTrailContentEvent
+            auditTrailEvent.Put(new AuditTrailContentEvent
             {
-                Name = @event.Name,
+                Name = auditTrailEvent.Name,
                 ContentItem = eventData.Get<ContentItem>("ContentItem"),
                 VersionNumber = eventData.Get<int>("VersionNumber"),
             });

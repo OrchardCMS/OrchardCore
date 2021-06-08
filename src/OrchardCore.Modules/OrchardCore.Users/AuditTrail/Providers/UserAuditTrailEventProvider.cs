@@ -49,11 +49,11 @@ namespace OrchardCore.Users.AuditTrail.Providers
                 .Event(Deleted, S["Deleted"], S["A user was deleted."], BuildEvent, true);
         }
 
-        private static void BuildEvent(AuditTrailEvent @event, Dictionary<string, object> eventData)
+        private static void BuildEvent(AuditTrailEvent auditTrailEvent, Dictionary<string, object> eventData)
         {
-            @event.Put(new AuditTrailUserEvent
+            auditTrailEvent.Put(new AuditTrailUserEvent
             {
-                Name = @event.Name,
+                Name = auditTrailEvent.Name,
                 UserName = eventData.Get<string>("UserName"),
                 UserId = eventData.Get<string>("UserId")
             });

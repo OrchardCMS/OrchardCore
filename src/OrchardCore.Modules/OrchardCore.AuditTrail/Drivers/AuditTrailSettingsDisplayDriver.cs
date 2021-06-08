@@ -50,20 +50,20 @@ namespace OrchardCore.AuditTrail.Drivers
                         Name = category.Name,
                         LocalizedName = category.LocalizedName,
                         Events = category.Events
-                            .Select(@event =>
+                            .Select(auditTrailEvent =>
                             {
-                                var settings = settingsGroups[@event.Category]
+                                var settings = settingsGroups[auditTrailEvent.Category]
                                     .FirstOrDefault()?.Events
-                                    .FirstOrDefault(settings => settings.Name == @event.Name);
+                                    .FirstOrDefault(settings => settings.Name == auditTrailEvent.Name);
 
                                 return new AuditTrailEventSettingsViewModel()
                                 {
-                                    Name = @event.Name,
-                                    Category = @event.Category,
-                                    LocalizedName = @event.LocalizedName,
-                                    Description = @event.Description,
-                                    IsEnabled = @event.IsMandatory || (settings?.IsEnabled ?? @event.IsEnabledByDefault),
-                                    IsMandatory = @event.IsMandatory
+                                    Name = auditTrailEvent.Name,
+                                    Category = auditTrailEvent.Category,
+                                    LocalizedName = auditTrailEvent.LocalizedName,
+                                    Description = auditTrailEvent.Description,
+                                    IsEnabled = auditTrailEvent.IsMandatory || (settings?.IsEnabled ?? auditTrailEvent.IsEnabledByDefault),
+                                    IsMandatory = auditTrailEvent.IsMandatory
                                 };
                             })
                         .ToArray()
