@@ -137,7 +137,7 @@
             updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
 
             // enable resize
-            $(this.resizeCanvas).resizable(resizableOptions)
+            $(this.resizeCanvas).resizableSafe(resizableOptions)
                 .on('mousedown', preventDefault);
 
             var _this = this;
@@ -207,7 +207,7 @@
                     this.destroyResizable = function () {
                         // clean html code
                         trumbowyg.$ed.find('canvas.resizable')
-                            .resizable('destroy')
+                            .resizableSafe('destroy')
                             .off('mousedown', preventDefault)
                             .removeClass('resizable');
 

@@ -174,7 +174,17 @@
                 tableDestroy: '刪除表格',
                 error: '錯誤'
             },
-            // jshint camelcase:true
+            es: {
+                table: 'Insertar tabla',
+                tableAddRow: 'Agregar fila',
+                tableAddRowAbove: 'Agregar fila arriba',
+                tableAddColumnLeft: 'Agregar columna a la izquierda',
+                tableAddColumn: 'Agregar columna a la derecha',
+                tableDeleteRow: 'Borrar fila',
+                tableDeleteColumn: 'Borrar columna',
+                tableDestroy: 'Borrar tabla',
+                error: 'Error'
+            }// jshint camelcase:true
         },
 
         plugins: {
