@@ -5,6 +5,8 @@ using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.OpenId.YesSql.Indexes;
 using YesSql;
 using YesSql.Sql;
+using OrchardCore.Environment.Shell.Scope;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.OpenId.YesSql.Migrations
 {
@@ -37,35 +39,35 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 collection: OpenIdApplicationCollection
             );
 
-            SchemaBuilder.CreateReduceIndexTable<OpenIdAppByLogoutUriIndex>(table => table
-                .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri))
-                .Column<int>(nameof(OpenIdAppByLogoutUriIndex.Count)),
+            SchemaBuilder.CreateMapIndexTable<OpenIdAppByLogoutUriIndex>(table => table
+                .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri)),
                 collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAppByLogoutUriIndex>(table => table
                 .CreateIndex("IDX_COL_OpenIdAppByLogoutUri_LogoutRedirectUri",
+                    "DocumentId",
                     nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri)),
                 collection: OpenIdApplicationCollection
             );
 
-            SchemaBuilder.CreateReduceIndexTable<OpenIdAppByRedirectUriIndex>(table => table
-                .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri))
-                .Column<int>(nameof(OpenIdAppByRedirectUriIndex.Count)),
+            SchemaBuilder.CreateMapIndexTable<OpenIdAppByRedirectUriIndex>(table => table
+                .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri)),
                 collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAppByRedirectUriIndex>(table => table
                 .CreateIndex("IDX_COL_OpenIdAppByRedirectUri_RedirectUri",
+                    "DocumentId",
                     nameof(OpenIdAppByRedirectUriIndex.RedirectUri)),
                 collection: OpenIdApplicationCollection
             );
 
-            SchemaBuilder.CreateReduceIndexTable<OpenIdAppByRoleNameIndex>(table => table
-                .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName))
-                .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)),
+            SchemaBuilder.CreateMapIndexTable<OpenIdAppByRoleNameIndex>(table => table
+                .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName)),
                 collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAppByRoleNameIndex>(table => table
                 .CreateIndex("IDX_COL_OpenIdAppByRoleName_RoleName",
+                    "DocumentId",
                     nameof(OpenIdAppByRoleNameIndex.RoleName)),
                 collection: OpenIdApplicationCollection
             );
@@ -163,7 +165,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 8;
+            return 9;
         }
 
         // This code can be removed in a later version.
@@ -187,16 +189,13 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             SchemaBuilder.DropReduceIndexTable<OpenIdApplicationByRoleNameIndex>(null);
 
             SchemaBuilder.CreateReduceIndexTable<OpenIdAppByLogoutUriIndex>(table => table
-                .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri))
-                .Column<int>(nameof(OpenIdAppByLogoutUriIndex.Count)));
+                .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri)));
 
             SchemaBuilder.CreateReduceIndexTable<OpenIdAppByRedirectUriIndex>(table => table
-                .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri))
-                .Column<int>(nameof(OpenIdAppByRedirectUriIndex.Count)));
+                .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri)));
 
             SchemaBuilder.CreateReduceIndexTable<OpenIdAppByRoleNameIndex>(table => table
-                .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName))
-                .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)));
+                .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName)));
 
             return 3;
         }
@@ -424,8 +423,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.CreateReduceIndexTable<OpenIdAppByLogoutUriIndex>(table => table
-                .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri))
-                .Column<int>(nameof(OpenIdAppByLogoutUriIndex.Count)),
+                .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri)),
                 collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAppByLogoutUriIndex>(table => table
@@ -435,8 +433,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.CreateReduceIndexTable<OpenIdAppByRedirectUriIndex>(table => table
-                .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri))
-                .Column<int>(nameof(OpenIdAppByRedirectUriIndex.Count)),
+                .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri)),
                 collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAppByRedirectUriIndex>(table => table
@@ -446,8 +443,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.CreateReduceIndexTable<OpenIdAppByRoleNameIndex>(table => table
-                .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName))
-                .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)),
+                .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName)),
                 collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdAppByRoleNameIndex>(table => table
@@ -520,6 +516,66 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             SchemaBuilder.DropReduceIndexTable<OpenIdScopeByResourceIndex>();
 
             return 8;
+        }
+        public int UpdateFrom8Async()
+        {
+            SchemaBuilder.AlterIndexTable<OpenIdAppByLogoutUriIndex>(table => table
+                .DropIndex("IDX_UserByRoleNameIndex_RoleName")
+            );
+            SchemaBuilder.DropReduceIndexTable<OpenIdAppByLogoutUriIndex>(collection: OpenIdApplicationCollection);
+
+            SchemaBuilder.CreateMapIndexTable<OpenIdAppByLogoutUriIndex>(table => table
+                .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri)),
+                collection: OpenIdApplicationCollection);
+            SchemaBuilder.AlterIndexTable<OpenIdAppByLogoutUriIndex>(table => table
+                .CreateIndex("IDX_COL_OpenIdAppByLogoutUri_LogoutRedirectUri",
+                    "DocumentId",
+                    nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri)),
+                collection: OpenIdApplicationCollection
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdAppByRedirectUriIndex>(table => table
+                .DropIndex("IDX_COL_OpenIdAppByRedirectUri_RedirectUri")
+            );
+            SchemaBuilder.DropReduceIndexTable<OpenIdAppByRedirectUriIndex>(collection: OpenIdApplicationCollection);
+
+            SchemaBuilder.CreateMapIndexTable<OpenIdAppByRedirectUriIndex>(table => table
+                            .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri)),
+                            collection: OpenIdApplicationCollection);
+
+            SchemaBuilder.AlterIndexTable<OpenIdAppByRedirectUriIndex>(table => table
+                .CreateIndex("IDX_COL_OpenIdAppByRedirectUri_RedirectUri",
+                    "DocumentId",
+                    nameof(OpenIdAppByRedirectUriIndex.RedirectUri)),
+                collection: OpenIdApplicationCollection
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdAppByRoleNameIndex>(table => table
+                .DropIndex("IDX_COL_OpenIdAppByRoleName_RoleName")
+            );
+            SchemaBuilder.DropReduceIndexTable<OpenIdAppByRoleNameIndex>(collection: OpenIdApplicationCollection);
+            SchemaBuilder.CreateMapIndexTable<OpenIdAppByRoleNameIndex>(table => table
+                .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName)),
+                collection: OpenIdApplicationCollection);
+
+            SchemaBuilder.AlterIndexTable<OpenIdAppByRoleNameIndex>(table => table
+                .CreateIndex("IDX_COL_OpenIdAppByRoleName_RoleName",
+                    "DocumentId",
+                    nameof(OpenIdAppByRoleNameIndex.RoleName)),
+                collection: OpenIdApplicationCollection
+            );
+
+            ShellScope.AddDeferredTask(async scope =>
+            {
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                foreach (var openIdApp in await session.Query<OpenIdApplication>(collection: OpenIdApplicationCollection).ListAsync())
+                {
+                    session.Save(openIdApp, collection: OpenIdApplicationCollection);
+                }
+                await session.SaveChangesAsync();
+            });
+
+            return 9;
         }
     }
 }

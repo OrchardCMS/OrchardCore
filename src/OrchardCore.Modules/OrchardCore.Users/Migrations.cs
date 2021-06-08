@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using YesSql;
@@ -11,7 +13,7 @@ namespace OrchardCore.Users
     public class Migrations : DataMigration
     {
         private readonly ISession _session;
-
+ 
         public Migrations(ISession session)
         {
             _session = session;
@@ -42,13 +44,13 @@ namespace OrchardCore.Users
                     "AccessFailedCount")
             );
 
-            SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
+            SchemaBuilder.CreateMapIndexTable<UserByRoleNameIndex>(table => table
                .Column<string>("RoleName")
-               .Column<int>("Count")
             );
 
             SchemaBuilder.AlterIndexTable<UserByRoleNameIndex>(table => table
-                .CreateIndex("IDX_UserByRoleNameIndex_RoleName",
+                .CreateIndex("IDX_UserByRoleNameIndex_DocumentId",
+                    "DocumentId",
                     "RoleName")
             );
 
@@ -76,7 +78,7 @@ namespace OrchardCore.Users
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 11;
+            return 12;
         }
 
         // This code can be removed in a later version.
@@ -212,6 +214,31 @@ namespace OrchardCore.Users
                 .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
 
             return 11;
-        }      
+        }
+        public int UpdateFrom11()
+        {
+            SchemaBuilder.AlterIndexTable<UserByRoleNameIndex>(table => table
+                .DropIndex("IDX_UserByRoleNameIndex_RoleName")
+            );
+            SchemaBuilder.DropReduceIndexTable<UserByRoleNameIndex>();
+            SchemaBuilder.CreateMapIndexTable<UserByRoleNameIndex>(table => table
+                .Column<string>("RoleName"));
+
+            SchemaBuilder.AlterIndexTable<UserByRoleNameIndex>(table => table
+                .CreateIndex("IDX_UserByRoleNameIndex_DocumentId",
+                    "DocumentId",
+                    "RoleName")
+            );
+            ShellScope.AddDeferredTask(async scope =>
+            {
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                foreach (var user in await session.Query<User>().ListAsync())
+                {
+                    session.Save(user);
+                }
+                await session.SaveChangesAsync();
+            });
+            return 12;
+        }
     }
 }

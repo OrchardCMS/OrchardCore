@@ -5,10 +5,9 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Users.Indexes
 {
-    public class UserByRoleNameIndex : ReduceIndex
+    public class UserByRoleNameIndex : MapIndex
     {
         public string RoleName { get; set; }
-        public int Count { get; set; }
     }
 
     public class UserByRoleNameIndexProvider : IndexProvider<User>
@@ -33,7 +32,6 @@ namespace OrchardCore.Users.Indexes
                             new UserByRoleNameIndex
                             {
                                 RoleName = NormalizeKey("Authenticated"),
-                                Count = 1
                             }
                         };
                     }
@@ -41,19 +39,7 @@ namespace OrchardCore.Users.Indexes
                     return user.RoleNames.Select(x => new UserByRoleNameIndex
                     {
                         RoleName = NormalizeKey(x),
-                        Count = 1
                     });
-                })
-                .Group(index => index.RoleName)
-                .Reduce(group => new UserByRoleNameIndex
-                {
-                    RoleName = group.Key,
-                    Count = group.Sum(x => x.Count)
-                })
-                .Delete((index, map) =>
-                {
-                    index.Count -= map.Sum(x => x.Count);
-                    return index.Count > 0 ? index : null;
                 });
         }
 
