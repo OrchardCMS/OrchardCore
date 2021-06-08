@@ -277,6 +277,20 @@
 .trumbowyg-giphy-modal .img-container img.tbw-loaded {
   opacity: 1;
 }
+[dir] .trumbowyg-highlight-form-group {
+  margin: 15px 10px;
+}
+.trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
+  width: 100%;
+  font-size: 14px;
+}
+[dir] .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
+  border: 1px solid #DEDEDE;
+  padding: 7px;
+}
+.trumbowyg-highlight-form-group .trumbowyg-highlight-form-control.code {
+  height: 200px;
+}
 @charset "UTF-8";
 .mathMlContainer {
   position: relative;
