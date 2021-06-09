@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NodaTime;
 using NodaTime.TimeZones;
@@ -44,6 +45,20 @@ namespace OrchardCore.Modules
             var dateTimeZone = GetDateTimeZone(timeZoneId);
 
             return CreateTimeZone(dateTimeZone);
+        }
+
+        public TimeZoneInfo GetTimeZoneInfo(string timeZoneId)
+        {
+            TimeZone tz;
+            if (String.IsNullOrEmpty(timeZoneId))
+            {
+                tz = (TimeZone)GetSystemTimeZone();
+            }
+            else
+            {
+                tz = (TimeZone)GetTimeZone(timeZoneId);
+            }
+            return TimeZoneInfo.CreateCustomTimeZone(tz.TimeZoneId, tz.WallOffset.ToTimeSpan(), tz.TimeZoneId, tz.TimeZoneId);
         }
 
         public ITimeZone GetSystemTimeZone()
