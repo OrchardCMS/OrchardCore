@@ -219,12 +219,6 @@
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"
   },
   {
-    "inputs": [
-      "Assets/trumbowyg/js/resizable-resolveconflict.js"
-    ],
-    "output": "wwwroot/Scripts/resizable-resolveconflict.js"
-  },
-  {
     "copy": true,
     "inputs": [
       "node_modules/vue/dist/vue.js"

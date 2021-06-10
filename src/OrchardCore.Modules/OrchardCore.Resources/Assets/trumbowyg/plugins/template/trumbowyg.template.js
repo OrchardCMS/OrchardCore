@@ -14,6 +14,9 @@
             de: {
                 template: 'Vorlage'
             },
+            et: {
+                template: 'Mall'
+            },
             fr: {
                 template: 'Patron'
             },

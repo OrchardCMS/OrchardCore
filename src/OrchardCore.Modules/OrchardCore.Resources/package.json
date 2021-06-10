@@ -15,7 +15,7 @@
     "js-cookie": "2.2.1",
     "monaco-editor": "^0.24.0",
     "sortablejs": "^1.13.0",
-    "trumbowyg": "2.23.0",
+    "trumbowyg": "2.24.0",
     "vue": "^2.6.14",
     "vue-multiselect": "^2.1.6",
     "vuedraggable": "^2.24.3"
