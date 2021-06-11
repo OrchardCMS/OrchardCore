@@ -42,7 +42,7 @@ namespace OrchardCore.Liquid
                         }
                     }
 
-                    var cacheControl = "public, max-age=2592000, s-max-age=31557600";
+                    var cacheControl = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
                     if (bytes == null)
                     {
                         var templateOptions = httpContext.RequestServices.GetRequiredService<IOptions<TemplateOptions>>();
