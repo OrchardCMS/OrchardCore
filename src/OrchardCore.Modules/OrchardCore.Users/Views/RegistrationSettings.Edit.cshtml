@@ -76,8 +76,9 @@
 *    Description                                                                           *
 * ---------------------------------------------------------------------------------------- *
 *    Use the loginProvider and externalClaims properties of the context variable to        *
-*    inspect who authenticated the user and with what claims. Set the userName property    *
-*    to the desired value                                                                  *
+*    inspect who authenticated the user and with what claims. If you do not set the        *
+*    context.userName property, a username will be generated.                              *
+*                                                                                          *
 ********************************************************************************************
 </pre>
 </div>
@@ -129,12 +130,16 @@
         if (!keepText) {
             editor.doc.setValue(
                 '/* Uncomment to map AzureAD\n' +
+                '// Uncomment to output the context variable in the logs\n' +
+                '// log("warning", JSON.stringify(context));\n' +
                 'switch (context.loginProvider) {\n' +
                 '    case "AzureAD":\n' +
-                '        context.userName = "azad" + Date.now().toString();\n' +
+                '        context.userName = "azad" + uuid();\n' +
                 '        break;\n' +
                 '    default:\n' +
-                '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
+                '        log("Warning", "Provider " + context.loginProvider + " was not handled");\n' +
+                '        // Uncomment to generate a username as a uuid\n' +
+                '        // context.userName "u" + uuid();\n' +
                 '        break;\n' +
                 '}\n' +
                 '*/\n'
