@@ -1,23 +1,26 @@
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Liquid;
-using OrchardCore.Entities;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Settings;
 using Fluid;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
+using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Liquid
 {
     public class ScriptsMiddleware
     {
         private readonly RequestDelegate _next;
+
+        byte[] bytes = null;
+        string etag;
 
         public ScriptsMiddleware(RequestDelegate next)
         {
@@ -28,33 +31,44 @@ namespace OrchardCore.Liquid
         {
             if (httpContext.Request.Path.StartsWithSegments("/OrchardCore.Liquid/Scripts", StringComparison.OrdinalIgnoreCase))
             {
-                var script = default(string);
                 if (Path.GetFileName(httpContext.Request.Path.Value) == "liquid-intellisense.js")
                 {
-                    var cache = httpContext.RequestServices.GetRequiredService<IMemoryCache>();
-                    const string key = "OrchardCore.Liquid/Scripts/liquid-intellisense.js";
-                    if (!cache.TryGetValue(key, out script))
+                    if (httpContext.Request.Headers.TryGetValue(HeaderNames.IfNoneMatch, out var v))
                     {
+                        if (v.Contains(etag))
+                        {
+                            httpContext.Response.StatusCode = StatusCodes.Status304NotModified;
+                            return;
+                        }
+                    }
 
+                    var cacheControl = "public, max-age=2592000, s-max-age=31557600";
+                    if (bytes == null)
+                    {
                         var templateOptions = httpContext.RequestServices.GetRequiredService<IOptions<TemplateOptions>>();
                         var liquidViewParser = httpContext.RequestServices.GetRequiredService<LiquidViewParser>();
+                        var shellConfiguration = httpContext.RequestServices.GetRequiredService<IShellConfiguration>();
+                        cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", cacheControl);
 
                         var filters = string.Join(',', templateOptions.Value.Filters.Select(x => $"'{x.Key}'"));
                         var tags = string.Join(',', liquidViewParser.RegisteredTags.Select(x => $"'{x.Key}'"));
 
-                        script = $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});
-[{tags}].forEach(value=>{{if(!liquidTags.includes(value)){{ liquidTags.push(value);}}}});";
+                        var script = $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});
+                                [{tags}].forEach(value=>{{if(!liquidTags.includes(value)){{ liquidTags.push(value);}}}});";
 
-                        cache.Set(key, script);
+                        etag = Guid.NewGuid().ToString("n");
+                        bytes = Encoding.UTF8.GetBytes(script);
                     }
-                    var bytes = Encoding.UTF8.GetBytes(script);
-                    var cancellationToken = httpContext?.RequestAborted ?? CancellationToken.None;
-                    await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script), 0, bytes.Length, cancellationToken);
+                   
+                    httpContext.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                    httpContext.Response.Headers[HeaderNames.ContentType] = "application/javascript";
+                    httpContext.Response.Headers[HeaderNames.ETag] = etag;
+                    await httpContext.Response.Body.WriteAsync(bytes, 0, bytes.Length, httpContext?.RequestAborted ?? CancellationToken.None);
                     return;
                 }
             }
-
             await _next.Invoke(httpContext);
         }
     }
 }
+
