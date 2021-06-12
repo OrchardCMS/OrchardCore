@@ -50,7 +50,7 @@ namespace OrchardCore.Scripting.JavaScript
                 return parser.ParseScript();
             });
 
-            var result = jsScope.Engine.Execute(parsedAst).GetCompletionValue()?.ToObject();
+            var result = jsScope.Engine.Evaluate(parsedAst)?.ToObject();
 
             return result;
         }
