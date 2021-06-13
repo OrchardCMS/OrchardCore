@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DynamicCache.Models;
 using OrchardCore.Environment.Cache;
 
@@ -14,19 +15,23 @@ namespace OrchardCore.DynamicCache.Services
 {
     public class DefaultDynamicCacheService : IDynamicCacheService
     {
+        private readonly PoolingJsonSerializer _serializer;
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
         private readonly IServiceProvider _serviceProvider;
         private readonly CacheOptions _cacheOptions;
 
         private readonly Dictionary<string, string> _localCache = new Dictionary<string, string>();
+        private ITagCache _tagcache;
 
         public DefaultDynamicCacheService(
+            ArrayPool<char> _arrayPool,
             ICacheContextManager cacheContextManager,
             IDynamicCache dynamicCache,
             IServiceProvider serviceProvider,
             IOptions<CacheOptions> options)
         {
+            _serializer = new PoolingJsonSerializer(_arrayPool);
             _cacheContextManager = cacheContextManager;
             _dynamicCache = dynamicCache;
             _serviceProvider = serviceProvider;
@@ -64,7 +69,7 @@ namespace OrchardCore.DynamicCache.Services
             var cacheKey = await GetCacheKey(context);
 
             _localCache[cacheKey] = value;
-            var esi = JsonConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
+            var esi = _serializer.Serialize(CacheContextModel.FromCacheContext(context));
 
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
@@ -97,8 +102,8 @@ namespace OrchardCore.DynamicCache.Services
             await _dynamicCache.SetAsync(cacheKey, bytes, options);
 
             // Lazy load to prevent cyclic dependency
-            var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
-            await tagCache.TagAsync(cacheKey, context.Tags.ToArray());
+            _tagcache ??= _serviceProvider.GetRequiredService<ITagCache>();
+            await _tagcache.TagAsync(cacheKey, context.Tags.ToArray());
         }
 
         private async Task<string> GetCacheKey(CacheContext context)
@@ -116,7 +121,7 @@ namespace OrchardCore.DynamicCache.Services
             return key;
         }
 
-        private string GetCacheContextCacheKey(string cacheKey)
+        private static string GetCacheContextCacheKey(string cacheKey)
         {
             return "cachecontext-" + cacheKey;
         }
@@ -146,7 +151,7 @@ namespace OrchardCore.DynamicCache.Services
                 return null;
             }
 
-            var esiModel = JsonConvert.DeserializeObject<CacheContextModel>(cachedValue);
+            var esiModel = _serializer.Deserialize<CacheContextModel>(cachedValue);
             return esiModel.ToCacheContext();
         }
     }

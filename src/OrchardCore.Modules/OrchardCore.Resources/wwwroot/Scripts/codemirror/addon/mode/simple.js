@@ -97,6 +97,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     if (val instanceof RegExp) {
       if (val.ignoreCase) flags = "i";
+      if (val.unicode) flags += "u";
       val = val.source;
     } else {
       val = String(val);
@@ -170,10 +171,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           if (token && token.apply) token = token(matches);
 
           if (matches.length > 2 && rule.token && typeof rule.token != "string") {
-            state.pending = [];
-
             for (var j = 2; j < matches.length; j++) {
-              if (matches[j]) state.pending.push({
+              if (matches[j]) (state.pending || (state.pending = [])).push({
                 text: matches[j],
                 token: rule.token[j - 1]
               });

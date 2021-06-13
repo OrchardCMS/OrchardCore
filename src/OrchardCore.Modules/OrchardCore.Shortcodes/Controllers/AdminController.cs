@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ using OrchardCore.Settings;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
+using Parlot;
 
 namespace OrchardCore.Shortcodes.Controllers
 {
@@ -68,7 +70,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -99,7 +101,7 @@ namespace OrchardCore.Shortcodes.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -128,13 +130,9 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (String.IsNullOrEmpty(model.Content))
+                else if (!IsValidShortcodeName(model.Name))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
-                }
-                else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
-                {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
                 else
                 {
@@ -144,6 +142,15 @@ namespace OrchardCore.Shortcodes.Controllers
                     {
                         ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
                     }
+                }
+
+                if (String.IsNullOrEmpty(model.Content))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
+                }
+                else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
                 }
             }
 
@@ -185,7 +192,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name });
+                return RedirectToAction(nameof(Create), new { name });
             }
 
             var template = shortcodeTemplatesDocument.ShortcodeTemplates[name];
@@ -224,13 +231,23 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (String.IsNullOrEmpty(model.Content))
+                else if (!IsValidShortcodeName(model.Name))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
+                }
+                else if (!String.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
+                    && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
+                }
+
+                if (String.IsNullOrEmpty(model.Content))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
                 }
                 else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
                 }
             }
 
@@ -249,7 +266,11 @@ namespace OrchardCore.Shortcodes.Controllers
 
                 await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
 
-                if (submit != "SaveAndContinue")
+                if (submit == "SaveAndContinue")
+                {
+                    return RedirectToAction(nameof(Edit), new { name = model.Name });
+                }
+                else
                 {
                     return RedirectToAction(nameof(Index));
                 }
@@ -310,7 +331,13 @@ namespace OrchardCore.Shortcodes.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
+        }
+
+        private static bool IsValidShortcodeName(string name)
+        {
+            var scanner = new Scanner(name);
+            return scanner.ReadIdentifier(out var result) && name.Length == result.Length;
         }
     }
 }

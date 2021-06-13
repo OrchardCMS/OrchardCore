@@ -170,8 +170,7 @@ The following JavaScript functions are available by default to any HTTP activity
 | `absoluteUrl` | Returns the absolute URL for the relative path argument. | `absoluteUrl(relativePath: String): String` |
 | `readBody` | Returns the raw HTTP request body. | `readBody(): String` |
 | `requestForm` | Returns the value(s) of the form field name passed in as an argument. | `requestForm(): String`<br/>`requestForm(name: String): String` or `Array` |
-| `queryStringAsJson` | Returns the entire query string as a JSON object. | `queryStringAsJson(): { "param1": [ "param1-value1", "param1-value2" ], "param2": [ "param2-value1", "param2-value2" ], ... }` |
-| `requestFormAsJson` | Returns the entire request form as a JSON object. | `requestFormAsJson(): { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
+| `deserializeRequestData` | Deserializes the request data automatically for requests that send JSON or form data. Returns the entire request data as a JSON object. Replaces deprecated queryStringAsJson and requestFormAsJson methods | `deserializeRequestData(): { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
 
 ### Liquid Expressions
 
@@ -414,17 +413,3 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Design.cshtml`
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
-
-## CREDITS
-
-### jsPlumb
-
-<https://github.com/jsplumb/jsplumb>  
-Copyright (c) 2010 - 2014 jsPlumb, <http://jsplumbtoolkit.com>  
-License: dual-licensed under both MIT and GPLv
-
-### NCrontab
-
-<https://github.com/atifaziz/NCrontab>  
-Copyright (C) Atif Aziz  
-License: Apache License 2.0

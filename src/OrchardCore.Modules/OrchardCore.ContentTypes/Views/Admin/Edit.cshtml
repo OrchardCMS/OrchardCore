@@ -53,7 +53,7 @@
                                 <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                             @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
-                            
+
                             @if (!string.IsNullOrEmpty(field.DisplayMode()))
                             {
                                 <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info"></i> @field.DisplayMode()</span>
@@ -97,6 +97,15 @@
                         else
                         {
                             <span class="hint dashed">@T["Contains the fields for the current type"]</span>
+                        }
+
+                        @if (!string.IsNullOrEmpty(part.DisplayMode()))
+                        {
+                            <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info"></i> @part.DisplayMode()</span>
+                        }
+                        @if (!string.IsNullOrEmpty(part.Editor()))
+                        {
+                            <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info"></i> @part.Editor()</span>
                         }
                     </div>
                     <input type="hidden" asp-for="OrderedPartNames" value="@part.Name" />

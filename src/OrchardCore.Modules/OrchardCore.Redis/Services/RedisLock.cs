@@ -26,7 +26,7 @@ namespace OrchardCore.Redis.Services
         {
             _redis = redis;
             _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
-            _prefix = shellSettings.Name + ':';
+            _prefix = redis.InstancePrefix + shellSettings.Name + ':';
             _logger = logger;
         }
 

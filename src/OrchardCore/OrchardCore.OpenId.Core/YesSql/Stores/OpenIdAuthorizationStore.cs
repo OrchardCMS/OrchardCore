@@ -23,6 +23,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         where TAuthorization : OpenIdAuthorization, new()
     {
         private readonly ISession _session;
+        private const string OpenIdCollection = OpenIdAuthorization.OpenIdCollection;
 
         public OpenIdAuthorizationStore(ISession session)
         {
@@ -34,7 +35,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TAuthorization>().CountAsync();
+            return await _session.Query<TAuthorization>(collection: OpenIdCollection).CountAsync();
         }
 
         /// <inheritdoc/>
@@ -51,8 +52,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization);
-            await _session.CommitAsync();
+            _session.Save(authorization, collection: OpenIdCollection);
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -65,8 +66,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Delete(authorization);
-            await _session.CommitAsync();
+            _session.Delete(authorization, collection: OpenIdCollection);
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -86,7 +87,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == client && index.Subject == subject).ToAsyncEnumerable();
+                index => index.ApplicationId == client && index.Subject == subject,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -111,7 +113,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == client && index.Subject == subject && index.Status == status).ToAsyncEnumerable();
+                index => index.ApplicationId == client && index.Subject == subject && index.Status == status,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -143,7 +146,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
                 index => index.ApplicationId == client && index.Subject == subject &&
-                         index.Status == status && index.Type == type).ToAsyncEnumerable();
+                         index.Status == status && index.Type == type, 
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -172,7 +176,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == identifier).ToAsyncEnumerable();
+                index => index.ApplicationId == identifier,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -186,7 +191,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.AuthorizationId == identifier).FirstOrDefaultAsync();
+                index => index.AuthorizationId == identifier,
+                collection: OpenIdCollection).FirstOrDefaultAsync();
         }
 
         /// <inheritdoc/>
@@ -199,7 +205,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return await _session.GetAsync<TAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
@@ -214,7 +220,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.Subject == subject).ToAsyncEnumerable();
+                index => index.Subject == subject,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -242,7 +249,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(authorization));
             }
 
-            return new ValueTask<DateTimeOffset?>(authorization.CreationDate);
+            if (authorization.CreationDate is null)
+            {
+                return new ValueTask<DateTimeOffset?>(result: null);
+            }
+
+            return new ValueTask<DateTimeOffset?>(DateTime.SpecifyKind(authorization.CreationDate.Value, DateTimeKind.Utc));
         }
 
         /// <inheritdoc/>
@@ -335,7 +347,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TAuthorization> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            var query = _session.Query<TAuthorization>();
+            var query = _session.Query<TAuthorization>(collection: OpenIdCollection);
 
             if (offset.HasValue)
             {
@@ -365,26 +377,27 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             IList<Exception> exceptions = null;
 
-            for (var offset = 0; offset < 100_000; offset = offset + 1_000)
+            for (var offset = 0; offset < 100_000; offset += 1_000)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var authorizations = await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                    authorization => authorization.CreationDate < threshold &&
+                    authorization => authorization.CreationDate < threshold.UtcDateTime &&
                                     (authorization.Status != OpenIddictConstants.Statuses.Valid ||
                                     (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
                                      authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
                                          token => token.AuthorizationId,
-                                         token => token.Id != 0)))).Skip(offset).Take(1_000).ListAsync();
+                                         token => token.Id != 0))),
+                    collection: OpenIdCollection).Skip(offset).Take(1_000).ListAsync();
 
                 foreach (var authorization in authorizations)
                 {
-                    _session.Delete(authorization);
+                    _session.Delete(authorization, collection: OpenIdCollection);
                 }
 
                 try
                 {
-                    await _session.CommitAsync();
+                    await _session.SaveChangesAsync();
                 }
                 catch (Exception exception)
                 {
@@ -431,7 +444,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(authorization));
             }
 
-            authorization.CreationDate = date;
+            authorization.CreationDate = date?.UtcDateTime;
 
             return default;
         }
@@ -526,11 +539,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization, checkConcurrency: true);
+            _session.Save(authorization, checkConcurrency: true, collection: OpenIdCollection);
 
             try
             {
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
             }
             catch (ConcurrencyException exception)
             {

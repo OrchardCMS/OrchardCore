@@ -22,7 +22,7 @@ namespace OrchardCore.Redis.Services
             ILogger<RedisTagCache> logger)
         {
             _redis = redis;
-            _prefix = shellSettings.Name + ":Tag:";
+            _prefix = redis.InstancePrefix + shellSettings.Name + ":Tag:";
             _tagRemovedEventHandlers = tagRemovedEventHandlers;
             _logger = logger;
         }

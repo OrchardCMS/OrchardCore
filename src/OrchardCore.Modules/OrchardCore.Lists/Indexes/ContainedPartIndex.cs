@@ -15,19 +15,20 @@ namespace OrchardCore.Lists.Indexes
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<ContainedPartIndex>()
+                .When(contentItem => contentItem.Has<ContainedPart>())
                 .Map(contentItem =>
                 {
                     var containedPart = contentItem.As<ContainedPart>();
-                    if (containedPart != null)
+                    if (containedPart == null)
                     {
-                        return new ContainedPartIndex
-                        {
-                            ListContentItemId = containedPart.ListContentItemId,
-                            Order = containedPart.Order
-                        };
+                        return null;
                     }
 
-                    return null;
+                    return new ContainedPartIndex
+                    {
+                        ListContentItemId = containedPart.ListContentItemId,
+                        Order = containedPart.Order
+                    };
                 });
         }
     }

@@ -16,8 +16,10 @@
     @import "modules/admin/_tabs.scss";
     @import "modules/admin/_login.scss";
     @import "modules/admin/_codemirror.scss";
+    @import "modules/admin/_trumbowyg.scss";
     @import "modules/admin/_switch.scss";
     @import "modules/admin/_jquery-ui.scss";
+    @import "modules/admin/_monaco.scss";
 
     @import "modules/theme/default/_bootswatch.scss";
 }
@@ -40,8 +42,10 @@
     @import "modules/admin/_tabs.scss";
     @import "modules/admin/_login.scss";
     @import "modules/admin/_codemirror.scss";
+    @import "modules/admin/_trumbowyg.scss";
     @import "modules/admin/_switch.scss";
     @import "modules/admin/_jquery-ui.scss";
+    @import "modules/admin/_monaco.scss";
 
     @import "modules/theme/darkmode/_bootswatch.scss";
-}
+} 

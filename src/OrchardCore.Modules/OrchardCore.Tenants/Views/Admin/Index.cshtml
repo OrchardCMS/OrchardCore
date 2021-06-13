@@ -15,29 +15,17 @@
     public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
-
-        var requestHost = Context.Request.Host;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
-
-        var port = requestHost.Port;
-
-        if (port.HasValue)
-        {
-            host += ":" + port;
-        }
-
-        var hostString = new HostString(host);
+        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
-
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        QueryString queryString;
-
-        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+        var queryString = QueryString.Empty;
+        if (!String.IsNullOrEmpty(shellSettingsEntry.Token))
         {
             queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
@@ -48,25 +36,16 @@
     public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
-
-        var requestHost = Context.Request.Host;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
-
-        var port = requestHost.Port;
-
-        if (port.HasValue)
-        {
-            host += ":" + port;
-        }
+        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
-
         if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        return $"{Context.Request.Scheme}://{host + pathString.Value}";
+        return $"{Context.Request.Scheme}://{hostString.Value + pathString.Value}";
     }
 }
 
@@ -75,14 +54,14 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
 
 <form asp-action="Index" method="post">
-    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
-    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
+    <input type="submit" name="submit.BulkAction" class="sr-only" />
     <input name="BulkAction" type="hidden" />
 
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-50 d-inline-flex has-search">                    
+                <div class="input-group input-group-sm w-50 d-inline-flex has-search">
                     <i class="fa fa-search form-control-feedback"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
@@ -184,17 +163,17 @@
                                 }
                                 @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                                 {
-                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" itemprop="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
+                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
                                 }
                                 @if (entry.ShellSettings.State == TenantState.Disabled)
                                 {
-                                    <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" itemprop="UnsafeUrl">@T["Enable"]</a>
+                                    <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" data-url-af="UnsafeUrl">@T["Enable"]</a>
                                 }
                                 @if (entry.ShellSettings.State == TenantState.Uninitialized)
                                 {
                                     <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
                                 }
-                                <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" itemprop="UnsafeUrl">@T["Reload"]</a>
+                                <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" data-url-af="UnsafeUrl">@T["Reload"]</a>
                             </div>
                         </div>
                     </div>

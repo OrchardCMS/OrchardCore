@@ -1,7 +1,12 @@
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Web;
 using Fluid;
+using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +29,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -37,6 +43,7 @@ using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using YesSql.Filters.Query;
 using YesSql.Indexes;
 
 namespace OrchardCore.Users
@@ -70,7 +77,6 @@ namespace OrchardCore.Users
                 pattern: userOptions.ChangePasswordUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
-
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
@@ -111,6 +117,18 @@ namespace OrchardCore.Users
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
+            routes.MapAreaControllerRoute(
+                name: "UsersEditPassword",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersUnlock",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Unlock/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Unlock) }
+            );
 
             builder.UseAuthorization();
         }
@@ -122,8 +140,6 @@ namespace OrchardCore.Users
                 var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
                 configuration.GetSection("OrchardCore_Users").Bind(userOptions);
             });
-
-            services.AddSecurity();
 
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
@@ -176,9 +192,11 @@ namespace OrchardCore.Users
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
-            services.AddIdGeneration();
+            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
+            services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
+
+            services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
 
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
@@ -192,10 +210,35 @@ namespace OrchardCore.Users
 
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
+            services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
 
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
+
+            services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
+
+            services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
+
+            services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
+            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
+
+            services.AddSingleton<IUsersAdminListFilterParser>(sp =>
+            {
+                var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
+                var builder = new QueryEngineBuilder<User>();
+                foreach (var provider in filterProviders)
+                {
+                    provider.Build(builder);
+                }
+
+                var parser = builder.Build();
+
+                return new DefaultUsersAdminListFilterParser(parser);
+            });
+
+            services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
+
         }
     }
 
@@ -204,13 +247,51 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
-            services.AddLiquidFilter<HasPermissionFilter>("has_permission");
-            services.AddLiquidFilter<HasClaimFilter>("has_claim");
-            services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
-            services.AddLiquidFilter<UserEmailFilter>("user_email");
-            services.AddLiquidFilter<UserIdFilter>("user_id");
-            services.AddLiquidFilter<UsersByIdFilter>("users_by_id");
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
+                o.Filters.AddFilter("user_id", UserFilters.UserId);
+
+                o.MemberAccessStrategy.Register<ClaimsPrincipal>();
+                o.MemberAccessStrategy.Register<ClaimsIdentity>();
+
+                o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
+                o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+                {
+                    var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
+                    if (user != null)
+                    {
+                        return name switch
+                        {
+                            nameof(ClaimsPrincipal.Identity) => new ObjectValue(user.Identity),
+                            _ => NilValue.Instance
+                        };
+                    }
+
+                    return NilValue.Instance;
+                });
+
+                o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
+                {
+                    return name switch
+                    {
+                        nameof(User.UserId) => new StringValue(user.UserId),
+                        nameof(User.UserName) => new StringValue(user.UserName),
+                        nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
+                        nameof(User.Email) => new StringValue(user.Email),
+                        nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
+                        nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
+                        nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x))),
+                        nameof(User.Properties) => new ObjectValue(user.Properties),
+                        _ => NilValue.Instance
+                    };
+                });
+            })
+           .AddLiquidFilter<UsersByIdFilter>("users_by_id")
+           .AddLiquidFilter<HasPermissionFilter>("has_permission")
+           .AddLiquidFilter<IsInRoleFilter>("is_in_role")
+           .AddLiquidFilter<UserEmailFilter>("user_email");
         }
     }
 
@@ -235,11 +316,6 @@ namespace OrchardCore.Users
         private const string ChangeEmailPath = "ChangeEmail";
         private const string ChangeEmailConfirmationPath = "ChangeEmailConfirmation";
 
-        static ChangeEmailStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ChangeEmailViewModel>();
-        }
-
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
@@ -259,6 +335,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
+            });
+
             services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
         }
@@ -285,11 +366,6 @@ namespace OrchardCore.Users
     {
         private const string RegisterPath = "Register";
 
-        static RegistrationStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ConfirmEmailViewModel>();
-        }
-
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
@@ -302,6 +378,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
+            });
+
             services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         }
@@ -330,11 +411,6 @@ namespace OrchardCore.Users
         private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
-
-        static ResetPasswordStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<LostPasswordViewModel>();
-        }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -366,6 +442,11 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<LostPasswordViewModel>();
+            });
+
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
         }

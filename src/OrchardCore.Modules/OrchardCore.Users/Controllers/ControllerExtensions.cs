@@ -73,7 +73,7 @@ namespace OrchardCore.Users.Controllers
 
                     if (user != null && controller.ModelState.IsValid)
                     {
-                        if (settings.UsersMustValidateEmail)
+                        if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
                         {
                             // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                             // Send an email with this link

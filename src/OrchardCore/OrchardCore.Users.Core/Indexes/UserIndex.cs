@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.Users.Models;
 using YesSql.Indexes;
 
@@ -10,6 +11,9 @@ namespace OrchardCore.Users.Indexes
         public string NormalizedUserName { get; set; }
         public string NormalizedEmail { get; set; }
         public bool IsEnabled { get; set; }
+        public bool IsLockoutEnabled { get; set; }
+        public DateTime? LockoutEndUtc { get; set; }
+        public int AccessFailedCount { get; set; }
     }
 
     public class UserIndexProvider : IndexProvider<User>
@@ -24,7 +28,10 @@ namespace OrchardCore.Users.Indexes
                         UserId = user.UserId,
                         NormalizedUserName = user.NormalizedUserName,
                         NormalizedEmail = user.NormalizedEmail,
-                        IsEnabled = user.IsEnabled
+                        IsEnabled = user.IsEnabled,
+                        IsLockoutEnabled = user.IsLockoutEnabled,
+                        LockoutEndUtc = user.LockoutEndUtc,
+                        AccessFailedCount = user.AccessFailedCount
                     };
                 });
         }

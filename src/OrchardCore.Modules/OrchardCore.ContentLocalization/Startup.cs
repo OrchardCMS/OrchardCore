@@ -36,12 +36,6 @@ namespace OrchardCore.ContentLocalization
         private readonly AdminOptions _adminOptions;
         private readonly IShellConfiguration _shellConfiguration;
 
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<LocalizationPartViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
-        }
-
         public Startup(IShellConfiguration shellConfiguration, IOptions<AdminOptions> adminOptions)
         {
             _shellConfiguration = shellConfiguration;
@@ -50,6 +44,14 @@ namespace OrchardCore.ContentLocalization
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
+                o.MemberAccessStrategy.Register<CultureInfo>();
+            })
+            .AddLiquidFilter<ContentLocalizationFilter>("localization_set")
+            .AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
+
             services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
 
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
@@ -60,10 +62,8 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
             services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
+            services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
-
-            services.AddLiquidFilter<ContentLocalizationFilter>("localization_set");
-            services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -32,7 +31,7 @@ namespace OrchardCore.Environment.Shell
 
             services.AddSingleton<IRunningShellTable, RunningShellTable>();
 
-            services.AddSingleton<IHostedService, DistributedShellHostedService>();
+            services.AddHostedService<DistributedShellHostedService>();
 
             return services;
         }
@@ -46,11 +45,7 @@ namespace OrchardCore.Environment.Shell
 
         public static IServiceCollection AddSetFeaturesDescriptor(this IServiceCollection services)
         {
-            services.AddSingleton<IShellDescriptorManager>(sp =>
-            {
-                var shellFeatures = sp.GetServices<ShellFeature>();
-                return new SetFeaturesShellDescriptorManager(shellFeatures);
-            });
+            services.AddSingleton<IShellDescriptorManager, SetFeaturesShellDescriptorManager>();
 
             return services;
         }

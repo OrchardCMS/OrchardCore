@@ -27,8 +27,8 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             var model = context.Step.ToObject<OpenIdClientSettingsStepModel>();
+            var settings = await _clientService.LoadSettingsAsync();
 
-            var settings = await _clientService.GetSettingsAsync();
             settings.Scopes = model.Scopes.Split(' ', ',');
             settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.CallbackPath = model.CallbackPath;

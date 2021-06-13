@@ -1,6 +1,7 @@
-
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.ViewModels;
@@ -15,6 +16,7 @@ namespace OrchardCore.Shortcodes.Services
         private readonly HtmlEncoder _htmlEncoder;
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
+        private readonly HashSet<string> _identifiers = new HashSet<string>();
 
         public TemplateShortcodeProvider(
             ShortcodeTemplatesManager shortcodeTemplatesManager,
@@ -34,6 +36,16 @@ namespace OrchardCore.Shortcodes.Services
                 return null;
             }
 
+            // Check if a shortcode template is recursively called.
+            if (_identifiers.Contains(identifier))
+            {
+                return null;
+            }
+            else
+            {
+                _identifiers.Add(identifier);
+            }
+
             var model = new ShortcodeViewModel
             {
                 Args = arguments,
@@ -41,13 +53,27 @@ namespace OrchardCore.Shortcodes.Services
                 Context = context
             };
 
-            return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
-                scope =>
-                {
-                    scope.SetValue("Content", model.Content);
-                    scope.SetValue("Args", model.Args);
-                    scope.SetValue("Context", model.Context);
-                });
+            var parameters = new Dictionary<string, FluidValue>
+            {
+                [identifier] = new StringValue(""),
+                ["Args"] = new ObjectValue(model.Args),
+                ["Content"] = new ObjectValue(new Content(model.Content)),
+                ["Context"] = new ObjectValue(model.Context)
+            };
+
+            var result = await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);
+
+            // Allow multiple serial calls of this shortcode template.
+            _identifiers.Remove(identifier);
+
+            return result;
+        }
+
+        internal class Content : LiquidContentAccessor
+        {
+            public readonly string _content;
+            public Content(string content) => _content = content;
+            public override string ToString() => _content;
         }
     }
 }

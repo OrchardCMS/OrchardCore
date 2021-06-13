@@ -36,7 +36,9 @@ namespace OrchardCore.Contents.Drivers
             var context = _httpContextAccessor.HttpContext;
             var results = new List<IDisplayResult>();
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem)).Location("Detail", "Content:before");
+            var contentsMetadataShape = Shape("ContentsMetadata",
+                new ContentItemViewModel(contentItem))
+                .Location("Detail", "Content:before");
 
             if (contentTypeDefinition != null)
             {
@@ -53,6 +55,19 @@ namespace OrchardCore.Contents.Drivers
                     {
                         ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
                     }
+
+                    var displayType = ctx.Shape.Metadata.DisplayType;
+
+                    if (!String.IsNullOrEmpty(displayType) && displayType != "Detail")
+                    {                        
+                        ctx.Shape.Metadata.Alternates.Add($"ContentsMetadata_{ctx.Shape.Metadata.DisplayType}");
+
+                        if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                        {
+                            ctx.Shape.Metadata.Alternates.Add($"{stereotype}_{displayType}__ContentsMetadata");
+                        }
+                    }
+
                 });
 
                 results.Add(contentsMetadataShape);

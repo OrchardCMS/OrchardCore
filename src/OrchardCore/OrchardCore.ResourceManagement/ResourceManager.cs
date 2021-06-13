@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ResourceManagement
@@ -14,7 +15,6 @@ namespace OrchardCore.ResourceManagement
     {
         private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new Dictionary<ResourceTypeName, RequireSettings>();
         private readonly Dictionary<string, ResourceRequiredContext[]> _builtResources;
-        private readonly IEnumerable<IResourceManifestProvider> _providers;
         private readonly IFileVersionProvider _fileVersionProvider;
         private ResourceManifest _dynamicManifest;
 
@@ -25,42 +25,20 @@ namespace OrchardCore.ResourceManagement
         private List<IHtmlContent> _styles;
         private HashSet<string> _localScripts;
         private HashSet<string> _localStyles;
-
-        private readonly IResourceManifestState _resourceManifestState;
         private readonly ResourceManagementOptions _options;
 
         public ResourceManager(
-            IEnumerable<IResourceManifestProvider> resourceProviders,
-            IResourceManifestState resourceManifestState,
             IOptions<ResourceManagementOptions> options,
             IFileVersionProvider fileVersionProvider)
         {
-            _resourceManifestState = resourceManifestState;
             _options = options.Value;
-            _providers = resourceProviders;
             _fileVersionProvider = fileVersionProvider;
 
             _builtResources = new Dictionary<string, ResourceRequiredContext[]>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public IEnumerable<ResourceManifest> ResourceManifests
-        {
-            get
-            {
-                if (_resourceManifestState.ResourceManifests == null)
-                {
-                    var builder = new ResourceManifestBuilder();
-                    foreach (var provider in _providers)
-                    {
-                        provider.BuildManifests(builder);
-                    }
-                    _resourceManifestState.ResourceManifests = builder.ResourceManifests;
-                }
-                return _resourceManifestState.ResourceManifests;
-            }
-        }
 
-        public ResourceManifest InlineManifest => _dynamicManifest ?? (_dynamicManifest = new ResourceManifest());
+        public ResourceManifest InlineManifest => _dynamicManifest ??= new ResourceManifest();
 
         public RequireSettings RegisterResource(string resourceType, string resourceName)
         {
@@ -181,7 +159,7 @@ namespace OrchardCore.ResourceManagement
             var name = settings.Name ?? "";
             var type = settings.Type;
 
-            var stream = ResourceManifests.SelectMany(x => x.GetResources(type));
+            var stream = _options.ResourceManifests.SelectMany(x => x.GetResources(type));
             var resource = FindMatchingResource(stream, settings, name);
 
             if (resource == null && _dynamicManifest != null)
@@ -259,7 +237,7 @@ namespace OrchardCore.ResourceManagement
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (int.TryParse(minimumVersion, out var major))
+                if (Int32.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major + 1, 0, 0);
                 }
@@ -287,7 +265,7 @@ namespace OrchardCore.ResourceManagement
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (int.TryParse(minimumVersion, out var major))
+                if (Int32.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major, 0, 0);
                 }
@@ -298,7 +276,7 @@ namespace OrchardCore.ResourceManagement
 
         private bool ResolveInlineDefinitions(string resourceType)
         {
-            bool anyWereDefined = false;
+            var anyWereDefined = false;
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
                 if (settings.InlineDefinition == null)
@@ -376,7 +354,7 @@ namespace OrchardCore.ResourceManagement
                 return requiredResources;
             }
 
-            var allResources = new OrderedDictionary();
+            var allResources = new ResourceDictionary();
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
                 var resource = FindResource(settings);
@@ -389,30 +367,45 @@ namespace OrchardCore.ResourceManagement
             }
 
             requiredResources = new ResourceRequiredContext[allResources.Count];
-            var i = 0;
+            int i, first = 0, byDependency = allResources.FirstCount, last = allResources.Count - allResources.LastCount;
             foreach (DictionaryEntry entry in allResources)
             {
-                requiredResources[i++] = new ResourceRequiredContext
+                var settings = (RequireSettings)entry.Value;
+                if (settings.Position == ResourcePosition.First)
                 {
+                    i = first++;
+                }
+                else if (settings.Position == ResourcePosition.Last)
+                {
+                    i = last++;
+                }
+                else
+                {
+                    i = byDependency++;
+                }
+
+                requiredResources[i] = new ResourceRequiredContext
+                {
+                    Settings = settings,
                     Resource = (ResourceDefinition)entry.Key,
-                    Settings = (RequireSettings)entry.Value,
                     FileVersionProvider = _fileVersionProvider
                 };
             }
 
-            _builtResources[resourceType] = requiredResources;
-            return requiredResources;
+            return _builtResources[resourceType] = requiredResources;
         }
 
         protected virtual void ExpandDependencies(
             ResourceDefinition resource,
             RequireSettings settings,
-            OrderedDictionary allResources)
+            ResourceDictionary allResources)
         {
             if (resource == null)
             {
                 return;
             }
+
+            allResources.AddExpandingResource(resource, settings);
 
             // Use any additional dependencies from the settings without mutating the resource that is held in a singleton collection.
             List<string> dependencies = null;
@@ -430,13 +423,23 @@ namespace OrchardCore.ResourceManagement
             }
 
             // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required
-            // location is Head, so too should Bar's location.
+            // location is Head, so too should Bar's location, similarly, if Foo is First positioned, Bar dependency should be too.
+            //
             // forge the effective require settings for this resource
             // (1) If a require exists for the resource, combine with it. Last settings in gets preference for its specified values.
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
-            settings = allResources.Contains(resource)
-                ? ((RequireSettings)allResources[resource]).Combine(settings)
-                : new RequireSettings(_options) { Type = resource.Type, Name = resource.Name }.Combine(settings);
+
+            var dependencySettings = (((RequireSettings)allResources[resource])
+                    ?.NewAndCombine(settings)
+                ?? new RequireSettings(_options)
+                {
+                    Name = resource.Name,
+                    Type = resource.Type,
+                    Position = resource.Position
+                }
+                    .Combine(settings))
+                    .CombinePosition(settings)
+                    ;
 
             if (dependencies != null)
             {
@@ -452,7 +455,7 @@ namespace OrchardCore.ResourceManagement
                     if (idx != -1)
                     {
                         name = d.Substring(0, idx);
-                        version = d.Substring(idx + 1);
+                        version = d[(idx + 1)..];
                     }
 
                     tempSettings.Type = resource.Type;
@@ -465,10 +468,12 @@ namespace OrchardCore.ResourceManagement
                         continue;
                     }
 
-                    ExpandDependencies(dependency, settings, allResources);
+                    ExpandDependencies(dependency, dependencySettings, allResources);
                 }
             }
-            allResources[resource] = settings;
+
+            settings.UpdatePositionFromDependency(dependencySettings);
+            allResources.AddExpandedResource(resource, dependencySettings);
         }
 
         public void RegisterLink(LinkEntry link)
@@ -537,7 +542,7 @@ namespace OrchardCore.ResourceManagement
             _metas[index] = meta;
         }
 
-        public void RenderMeta(IHtmlContentBuilder builder)
+        public void RenderMeta(TextWriter writer)
         {
             var first = true;
 
@@ -545,16 +550,16 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(meta.GetTag());
+                meta.GetTag().WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderHeadLink(IHtmlContentBuilder builder)
+        public void RenderHeadLink(TextWriter writer)
         {
             var first = true;
 
@@ -564,16 +569,16 @@ namespace OrchardCore.ResourceManagement
                 var link = registeredLinks[i];
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(link.GetTag());
+                link.GetTag().WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderStylesheet(IHtmlContentBuilder builder)
+        public void RenderStylesheet(TextWriter writer)
         {
             var first = true;
 
@@ -581,14 +586,19 @@ namespace OrchardCore.ResourceManagement
 
             foreach (var context in styleSheets)
             {
+                if (context.Settings.Location == ResourceLocation.Inline)
+                {
+                    continue;
+                }
+
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                context.WriteTo(writer, _options.ContentBasePath);
             }
 
             var registeredStyles = DoGetRegisteredStyles();
@@ -597,16 +607,16 @@ namespace OrchardCore.ResourceManagement
                 var context = registeredStyles[i];
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context);
+                context.WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderHeadScript(IHtmlContentBuilder builder)
+        public void RenderHeadScript(TextWriter writer)
         {
             var headScripts = DoGetRequiredResources("script");
 
@@ -621,12 +631,12 @@ namespace OrchardCore.ResourceManagement
 
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                context.WriteTo(writer, _options.ContentBasePath);
             }
 
             var registeredHeadScripts = DoGetRegisteredHeadScripts();
@@ -635,16 +645,16 @@ namespace OrchardCore.ResourceManagement
                 var context = registeredHeadScripts[i];
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context);
+                context.WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderFootScript(IHtmlContentBuilder builder)
+        public void RenderFootScript(TextWriter writer)
         {
             var footScripts = DoGetRequiredResources("script");
 
@@ -658,12 +668,12 @@ namespace OrchardCore.ResourceManagement
 
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                context.WriteTo(writer, _options.ContentBasePath);
             }
 
             var registeredFootScripts = DoGetRegisteredFootScripts();
@@ -672,19 +682,19 @@ namespace OrchardCore.ResourceManagement
                 var context = registeredFootScripts[i];
                 if (!first)
                 {
-                    builder.AppendHtml(System.Environment.NewLine);
+                    writer.Write(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context);
+                context.WriteTo(writer, NullHtmlEncoder.Default);
             }
         }
 
-        public void RenderLocalScript(RequireSettings settings, IHtmlContentBuilder builder)
+        public void RenderLocalScript(RequireSettings settings, TextWriter writer)
         {
             var localScripts = DoGetRequiredResources("script");
-            _localScripts ??= new HashSet<string>();
+            _localScripts ??= new HashSet<string>(localScripts.Length);
 
             var first = true;
 
@@ -695,20 +705,20 @@ namespace OrchardCore.ResourceManagement
                 {
                     if (!first)
                     {
-                        builder.AppendHtml(System.Environment.NewLine);
+                        writer.Write(System.Environment.NewLine);
                     }
 
                     first = false;
 
-                    builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                    context.WriteTo(writer, _options.ContentBasePath);
                 }
             }
         }
 
-        public void RenderLocalStyle(RequireSettings settings, IHtmlContentBuilder builder)
+        public void RenderLocalStyle(RequireSettings settings, TextWriter writer)
         {
             var localStyles = DoGetRequiredResources("stylesheet");
-            _localStyles ??= new HashSet<string>();
+            _localStyles ??= new HashSet<string>(localStyles.Length);
 
             var first = true;
 
@@ -719,12 +729,12 @@ namespace OrchardCore.ResourceManagement
                 {
                     if (!first)
                     {
-                        builder.AppendHtml(System.Environment.NewLine);
+                        writer.Write(System.Environment.NewLine);
                     }
 
                     first = false;
 
-                    builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                    context.WriteTo(writer, _options.ContentBasePath);
                 }
             }
         }
@@ -755,7 +765,7 @@ namespace OrchardCore.ResourceManagement
 
         private string GetResourceKey(string releasePath, string debugPath)
         {
-            if (_options.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
+            if (_options.DebugMode && !String.IsNullOrWhiteSpace(debugPath))
             {
                 return debugPath;
             }

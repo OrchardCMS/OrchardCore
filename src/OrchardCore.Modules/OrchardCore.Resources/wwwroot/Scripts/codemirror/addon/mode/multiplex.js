@@ -18,7 +18,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   CodeMirror.multiplexingMode = function (outer
   /*, others */
   ) {
-    // Others should be {open, close, mode [, delimStyle] [, innerStyle]} objects
+    // Others should be {open, close, mode [, delimStyle] [, innerStyle] [, parseDelimiters]} objects
     var others = Array.prototype.slice.call(arguments, 1);
 
     function indexOf(string, pattern, from, returnEnd) {
@@ -36,14 +36,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return {
           outer: CodeMirror.startState(outer),
           innerActive: null,
-          inner: null
+          inner: null,
+          startingInner: false
         };
       },
       copyState: function copyState(state) {
         return {
           outer: CodeMirror.copyState(outer, state.outer),
           innerActive: state.innerActive,
-          inner: state.innerActive && CodeMirror.copyState(state.innerActive.mode, state.inner)
+          inner: state.innerActive && CodeMirror.copyState(state.innerActive.mode, state.inner),
+          startingInner: state.startingInner
         };
       },
       token: function token(stream, state) {
@@ -57,6 +59,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
             if (found == stream.pos) {
               if (!other.parseDelimiters) stream.match(other.open);
+              state.startingInner = !!other.parseDelimiters;
               state.innerActive = other; // Get the outer indent, making sure to handle CodeMirror.Pass
 
               var outerIndent = 0;
@@ -86,7 +89,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             return this.token(stream, state);
           }
 
-          var found = curInner.close ? indexOf(oldContent, curInner.close, stream.pos, curInner.parseDelimiters) : -1;
+          var found = curInner.close && !state.startingInner ? indexOf(oldContent, curInner.close, stream.pos, curInner.parseDelimiters) : -1;
 
           if (found == stream.pos && !curInner.parseDelimiters) {
             stream.match(curInner.close);
@@ -96,7 +99,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
           if (found > -1) stream.string = oldContent.slice(0, found);
           var innerToken = curInner.mode.token(stream, state.inner);
-          if (found > -1) stream.string = oldContent;
+          if (found > -1) stream.string = oldContent;else if (stream.pos > stream.start) state.startingInner = false;
           if (found == stream.pos && curInner.parseDelimiters) state.innerActive = state.inner = null;
 
           if (curInner.innerStyle) {

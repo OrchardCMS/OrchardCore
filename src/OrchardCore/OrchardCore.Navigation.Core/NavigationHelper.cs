@@ -43,7 +43,7 @@ namespace OrchardCore.Navigation
                     await PopulateMenuLevelAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
                 }
 
-                parentShape.Add(menuItemShape, menuItem.Position);
+                await parentShape.AddAsync(menuItemShape, menuItem.Position);
             }
         }
 

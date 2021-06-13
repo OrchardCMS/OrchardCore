@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,7 +11,8 @@ namespace OrchardCore.Tests.Apis.Context
         {
             var tablePrefixGenerator = new TablePrefixGenerator();
             var prefixes = new HashSet<string>();
-            for(var i = 0; i < 200; i++)
+
+            for (var i = 0; i < 200; i++)
             {
                 var prefix = await tablePrefixGenerator.GeneratePrefixAsync();
                 Assert.DoesNotContain(prefix, prefixes);
