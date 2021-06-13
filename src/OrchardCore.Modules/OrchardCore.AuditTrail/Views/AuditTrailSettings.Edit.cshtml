@@ -66,8 +66,8 @@
         <div class="custom-control custom-checkbox">
             <input asp-for="ClientIpAddressAllowed" class="custom-control-input" type="checkbox" />
             <label asp-for="ClientIpAddressAllowed" class="custom-control-label">@T["Allow client IP address"]</label>
+            <span class="hint dashed">@T["Whether the client IP address is recorded."]</span>
         </div>
-        <span class="hint">@T["Whether the client IP address is recorded."]</span>
     </div>
 </section>
 

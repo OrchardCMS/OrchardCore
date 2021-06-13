@@ -11,19 +11,17 @@ using OrchardCore.Users.Handlers;
 
 namespace OrchardCore.Users.AuditTrail
 {
-    [RequireFeatures("OrchardCore.AuditTrail")]
+    [Feature("OrchardCore.Users.AuditTrail")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IAuditTrailEventProvider, UserAuditTrailEventProvider>();
 
-            // TODO register and resolve same instance.
+            services.AddScoped<UserEventHandler, UserEventHandler>()
+                .AddScoped<IUserEventHandler>(sp => sp.GetRequiredService<UserEventHandler>())
+                .AddScoped<ILoginFormEvent>(sp => sp.GetRequiredService<UserEventHandler>());
 
-            services.AddScoped<IUserEventHandler, UserEventHandler>();
-            services.AddScoped<ILoginFormEvent, UserEventHandler>();
-            services.AddScoped<IPasswordRecoveryFormEvents, UserEventHandler>();
-            services.AddScoped<IRegistrationFormEvents, UserEventHandler>();
             services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailUserEventDisplayDriver>();
         }
     }

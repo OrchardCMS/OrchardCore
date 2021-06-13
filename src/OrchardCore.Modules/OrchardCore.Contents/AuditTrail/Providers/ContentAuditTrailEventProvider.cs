@@ -22,10 +22,9 @@ namespace OrchardCore.Contents.AuditTrail.Providers
         public const string Cloned = nameof(Cloned);
         public const string Restored = nameof(Restored);
 
-        public ContentAuditTrailEventProvider(IStringLocalizer<ContentAuditTrailEventProvider> stringLocalizer)
-        {
-            S = stringLocalizer;
-        }
+        public ContentAuditTrailEventProvider(IStringLocalizer<ContentAuditTrailEventProvider> stringLocalizer) : base(stringLocalizer)
+        { }
+
 
         public override void Describe(DescribeContext context)
         {

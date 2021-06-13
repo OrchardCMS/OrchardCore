@@ -5,10 +5,10 @@ namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailAdminListOptions
     {
-        private Dictionary<string, AuditTrailAdminListOptionBuilder> _sortOptionBuilders { get; } = new Dictionary<string, AuditTrailAdminListOptionBuilder>();
+        private Dictionary<string, AuditTrailAdminListOptionBuilder> _sortOptionBuilders { get; set; } = new Dictionary<string, AuditTrailAdminListOptionBuilder>();
 
         private Dictionary<string, AuditTrailAdminListOption> _sortOptions;
-        public Dictionary<string, AuditTrailAdminListOption> SortOptions => _sortOptions ??= _sortOptionBuilders.ToDictionary(k => k.Key, v => v.Value.Build());
+        public IReadOnlyDictionary<string, AuditTrailAdminListOption> SortOptions => GetOrBuildSortOptions();
 
         private AuditTrailAdminListOption _defaultSortOption;
         public AuditTrailAdminListOption DefaultSortOption => _defaultSortOption ??= SortOptions.Values.FirstOrDefault(x => x.IsDefault);
@@ -19,6 +19,17 @@ namespace OrchardCore.AuditTrail.Services.Models
             _sortOptionBuilders[value] = builder;
 
             return builder;
+        }
+
+        private Dictionary<string, AuditTrailAdminListOption> GetOrBuildSortOptions()
+        {
+            if (_sortOptions == null)
+            {
+                _sortOptions = _sortOptionBuilders.ToDictionary(k => k.Key, v => v.Value.Build());
+                _sortOptionBuilders = null;
+            }
+
+            return _sortOptions;
         }
     }
 }

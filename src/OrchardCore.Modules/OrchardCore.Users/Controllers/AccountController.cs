@@ -203,8 +203,6 @@ namespace OrchardCore.Users.Controllers
                     if (ModelState.IsValid)
                     {
                         var user = await _userManager.FindByNameAsync(model.UserName) ?? await _userManager.FindByEmailAsync(model.UserName);
-                        // This doesn't count login failures towards account lockout
-                        // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                         if (user != null)
                         {
                             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
@@ -217,7 +215,7 @@ namespace OrchardCore.Users.Controllers
                                     if (result.Succeeded)
                                     {
                                         _logger.LogInformation(1, "User logged in.");
-                                        await _accountEvents.InvokeAsync((e, model) => e.LoggedInAsync(model.UserName), model, _logger);
+                                        await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
                                         return await LoggedInActionResult(user, returnUrl);
                                     }
                                 }
@@ -226,13 +224,18 @@ namespace OrchardCore.Users.Controllers
                             if (result.IsLockedOut)
                             {
                                 ModelState.AddModelError(string.Empty, S["The account is locked out"]);
+                                await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
                                 return View();
                             }
+
+                            // Login failed with a known user.
+                            await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
                         }
 
                         ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                     }
 
+                    // Login failed unknown user.
                     await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
                 }
             }

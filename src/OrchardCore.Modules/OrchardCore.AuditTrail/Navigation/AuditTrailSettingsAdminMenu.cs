@@ -25,7 +25,7 @@ namespace OrchardCore.AuditTrail.Navigation
             builder
                  .Add(S["Configuration"], configuration => configuration
                      .Add(S["Settings"], settings => settings
-                        .Add(S["Audit Trail"], S["Audit Trail"], settings => settings
+                        .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), settings => settings
                         .AddClass("audittrail").Id("audittrail")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AuditTrailSettingsGroup.Id })
                             .Permission(AuditTrailPermissions.ManageAuditTrailSettings)

@@ -16,15 +16,27 @@ namespace OrchardCore.Users.Events
         Task LoggingInAsync(string userName, Action<string, string> reportError);
 
         /// <summary>
-        /// Occurs when the user login has failed.
+        /// Occurs when the user login has failed and the user was not found.
         /// </summary>
         /// <param name="userName">The username.</param>
         Task LoggingInFailedAsync(string userName);
 
         /// <summary>
+        /// Occurs when the user login has failed and the user is known.
+        /// </summary>
+        /// <param name="user">The <see cref="IUser"/>.</param>
+        Task LoggingInFailedAsync(IUser user);
+
+        /// <summary>
+        /// Occurs when a user is locked out.
+        /// </summary>
+        /// <param name="user">The <see cref="IUser"/>.</param>
+        Task IsLockedOutAsync(IUser user);
+
+        /// <summary>
         /// Occurs when the user is logged in.
         /// </summary>
-        /// <param name="userName">The username.</param>
-        Task LoggedInAsync(string userName);
+        /// <param name="user">The <see cref="IUser"/>.</param>
+        Task LoggedInAsync(IUser user);
     }
 }
