@@ -82,7 +82,7 @@ namespace OrchardCore.Users
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 11;
+            return 12;
         }
 
         // This code can be removed in a later version.
