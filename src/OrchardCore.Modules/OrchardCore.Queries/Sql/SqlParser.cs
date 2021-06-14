@@ -83,9 +83,25 @@ namespace OrchardCore.Queries.Sql
 
             var statementsBuilder = new StringBuilder();
 
-            foreach (var selectStatement in statementList.ChildNodes)
+            foreach (var unionStatementList in statementList.ChildNodes)
             {
-                statementsBuilder.Append(EvaluateSelectStatement(selectStatement)).Append(';');
+                foreach (var unionStatement in unionStatementList.ChildNodes)
+                {
+                    var selectStatement = unionStatement.ChildNodes[0];
+                    var unionClauseOpt = unionStatement.ChildNodes[1];
+                    statementsBuilder.Append(EvaluateSelectStatement(selectStatement));
+
+                    for (var i = 0; i < unionClauseOpt.ChildNodes.Count; i++)
+                    {
+                        if (i == 0)
+                        {
+                            statementsBuilder.Append(" ");
+                        }
+                        var term = unionClauseOpt.ChildNodes[i].Term;
+                        statementsBuilder.Append(term).Append(" ");
+                    }
+                }
+                statementsBuilder.Append(';');
             }
 
             return statementsBuilder.ToString();
