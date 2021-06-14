@@ -50,6 +50,7 @@ namespace OrchardCore.Contents.AuditTrail.Providers
                 Name = auditTrailEvent.Name,
                 ContentItem = eventData.Get<ContentItem>("ContentItem"),
                 VersionNumber = eventData.Get<int>("VersionNumber"),
+                Comment = eventData.Get<string>("Comment")
             });
         }
     }

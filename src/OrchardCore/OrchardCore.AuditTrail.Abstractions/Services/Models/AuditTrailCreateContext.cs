@@ -16,6 +16,5 @@ namespace OrchardCore.AuditTrail.Services.Models
 
         public string ClientIpAddress { get; set; }
         public DateTime? CreatedUtc { get; set; }
-        public string Comment { get; set; } = String.Empty;
     }
 }

@@ -32,7 +32,7 @@ namespace OrchardCore.Contents.AuditTrail.Services
                 return Task.CompletedTask;
             }
 
-            context.Comment = auditTrailPart.Comment;
+            context.Data["Comment"] = auditTrailPart.Comment;
 
             return Task.CompletedTask;
         }

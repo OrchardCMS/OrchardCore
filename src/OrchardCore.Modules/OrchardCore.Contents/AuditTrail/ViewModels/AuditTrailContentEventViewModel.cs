@@ -12,6 +12,7 @@ namespace OrchardCore.Contents.AuditTrail.ViewModels
         public ContentItem ContentItem { get; set; }
         public int VersionNumber { get; set; }
         public string LatestVersionId { get; set; }
+        public string Comment { get; set; }
 
         [BindNever]
         public AuditTrailEventDescriptor Descriptor { get; set; }

@@ -27,8 +27,6 @@ namespace OrchardCore.AuditTrail.Drivers
                     .Location("SummaryAdmin", "EventMeta:10"),
                 Initialize<AuditTrailEventViewModel>("AuditTrailEventActions_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
                     .Location("SummaryAdmin", "Actions:10"),
-                Initialize<AuditTrailEventViewModel>("AuditTrailEventContent_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                    .Location("SummaryAdmin", "Content:10"),
                 Initialize<AuditTrailEventViewModel>("AuditTrailEventDetail_DetailAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
                     .Location("DetailAdmin", "Content:before")
             );

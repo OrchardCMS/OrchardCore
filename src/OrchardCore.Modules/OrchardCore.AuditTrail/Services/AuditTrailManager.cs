@@ -98,8 +98,7 @@ namespace OrchardCore.AuditTrail.Services
                 ClientIpAddress = String.IsNullOrEmpty(createContext.ClientIpAddress)
                     ? await GetClientIpAddressAsync()
                     : createContext.ClientIpAddress,
-                CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow,
-                Comment = createContext.Comment
+                CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow
             };
 
             descriptor.BuildEvent(auditTrailEvent, createContext.Data);
