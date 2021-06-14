@@ -46,7 +46,7 @@ namespace OrchardCore.Users
                     "LockoutEndUtc",
                     "AccessFailedCount"
                     )
-            );            
+            );
 
             SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
                .Column<string>("RoleName")
@@ -175,7 +175,7 @@ namespace OrchardCore.Users
                 {
                     await session.SaveChangesAsync();
                 }
-            });            
+            });
 
             return 8;
         }
@@ -208,7 +208,7 @@ namespace OrchardCore.Users
 
             return 9;
         }
-        
+
         // This code can be removed in a later version.
         public int UpdateFrom9()
         {
@@ -219,7 +219,7 @@ namespace OrchardCore.Users
 
             return 10;
         }
-        
+
         public int UpdateFrom10()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
@@ -232,7 +232,7 @@ namespace OrchardCore.Users
                 .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
 
             return 11;
-        }      
+        }
 
         public int UpdateFrom11()
         {
@@ -243,7 +243,7 @@ namespace OrchardCore.Users
                     "LockoutEndUtc",
                     "AccessFailedCount"
                     )
-            );   
+            );
 
             return 12;
         }
