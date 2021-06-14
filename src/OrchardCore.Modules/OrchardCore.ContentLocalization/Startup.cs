@@ -46,8 +46,7 @@ namespace OrchardCore.ContentLocalization
                 o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
                 o.MemberAccessStrategy.Register<CultureInfo>();
             })
-            .AddLiquidFilter<ContentLocalizationFilter>("localization_set")
-            .AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
+            .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
 
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
