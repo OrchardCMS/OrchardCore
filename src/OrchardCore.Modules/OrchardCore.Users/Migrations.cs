@@ -20,6 +20,9 @@ namespace OrchardCore.Users
                 .Column<string>("NormalizedUserName") // TODO These should have defaults. on SQL Server they will fall at 255. Exceptions are currently thrown if you go over that.
                 .Column<string>("NormalizedEmail")
                 .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
+                .Column<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false))
+                .Column<DateTime?>("LockoutEndUtc", c => c.Nullable())
+                .Column<int>("AccessFailedCount", c => c.NotNull().WithDefault(0))
                 .Column<string>("UserId")
             );
 
