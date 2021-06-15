@@ -146,6 +146,23 @@ var completionItemProvider = {
         return { suggestions: suggestions };
     }
 };
-function ConfigureLiquidIntellisense(monaco) {
+function ConfigureLiquidIntellisense(monaco, suggestHtml) {
+    if (suggestHtml === void 0) { suggestHtml = true; }
+    if (suggestHtml) {
+        var modeConfiguration = {
+            completionItems: true,
+            colors: true,
+            foldingRanges: true,
+            selectionRanges: true,
+            diagnostics: false,
+            documentFormattingEdits: false,
+            documentRangeFormattingEdits: false
+        };
+        var options = {
+            format: monaco.languages.html.htmlDefaults.options.format,
+            suggest: { html5: true }
+        };
+        monaco.languages.html.registerHTMLLanguageService('liquid', options, modeConfiguration);
+    }
     monaco.languages.registerCompletionItemProvider('liquid', completionItemProvider);
 }

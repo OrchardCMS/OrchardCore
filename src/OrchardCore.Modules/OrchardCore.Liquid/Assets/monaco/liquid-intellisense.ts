@@ -93,7 +93,7 @@ function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.
     var showTags: boolean;
     var showFilters: boolean;
 
-    var findStart = model.findPreviousMatch('\\{(%|\\{)', position, true, false, null, true);   
+    var findStart = model.findPreviousMatch('\\{(%|\\{)', position, true, false, null, true);
     if (findStart && findStart.matches && !position.isBefore(findStart.range.getEndPosition())) {
         if (findStart.matches[1] == '%') {
             inTag = true;
@@ -161,6 +161,23 @@ const completionItemProvider: monaco.languages.CompletionItemProvider = {
     }
 };
 
-function ConfigureLiquidIntellisense(monaco: any) {
+function ConfigureLiquidIntellisense(monaco: any, suggestHtml: boolean = true) {
+    if (suggestHtml) {
+        var modeConfiguration: monaco.languages.html.ModeConfiguration = {
+            completionItems: true,
+            colors: true,
+            foldingRanges: true,
+            selectionRanges: true,
+            diagnostics: false,
+            documentFormattingEdits: false,
+            documentRangeFormattingEdits: false
+        };
+        var options: monaco.languages.html.Options = {
+            format: monaco.languages.html.htmlDefaults.options.format,
+            suggest: { html5: true }
+        }
+        monaco.languages.html.registerHTMLLanguageService('liquid', options, modeConfiguration);
+    }
+
     monaco.languages.registerCompletionItemProvider('liquid', completionItemProvider);
 }
