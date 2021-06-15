@@ -21815,6 +21815,9 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
 [dir]:root[data-theme=default] .CodeMirror-focused .CodeMirror-activeline-background {
   background: rgba(100, 100, 100, 0.1) !important;
 }
+:root[data-theme=default] .trumbowyg {
+  font-size: 16px;
+}
 :root[data-theme=default] .trumbowyg-fullscreen {
   z-index: 1040;
 }
@@ -45254,6 +45257,9 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
 }
 [dir]:root[data-theme=darkmode] .CodeMirror-focused .CodeMirror-activeline-background {
   background: rgba(100, 100, 100, 0.1) !important;
+}
+:root[data-theme=darkmode] .trumbowyg {
+  font-size: 16px;
 }
 :root[data-theme=darkmode] .trumbowyg-fullscreen {
   z-index: 1040;
