@@ -25,6 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     }
                 });
 
+                services.AddScoped<IPermissionGrantingService, DefaultPermissionGrantingService>();
                 services.AddScoped<IAuthorizationHandler, PermissionHandler>();
             });
 

@@ -26,6 +26,9 @@
             da: {
                 mention: 'Nævn'
             },
+            et: {
+                mention: 'Maini'
+            },
             fr: {
                 mention: 'Mentionner'
             },

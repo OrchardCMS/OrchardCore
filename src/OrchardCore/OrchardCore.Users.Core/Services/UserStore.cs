@@ -23,6 +23,7 @@ namespace OrchardCore.Users.Services
         IUserEmailStore<IUser>,
         IUserSecurityStampStore<IUser>,
         IUserLoginStore<IUser>,
+        IUserLockoutStore<IUser>,
         IUserAuthenticationTokenStore<IUser>
     {
         private const string TokenProtector = "OrchardCore.UserStore.Token";
@@ -693,5 +694,101 @@ namespace OrchardCore.Users.Services
                                                                 ut.Name == name);
         }
         #endregion
+
+        #region IUserLockoutStore<IUser>
+
+        public Task<int> GetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).AccessFailedCount);
+        }
+
+        public Task<bool> GetLockoutEnabledAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).IsLockoutEnabled);
+        }
+
+        public Task<DateTimeOffset?> GetLockoutEndDateAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (((User)user).LockoutEndUtc.HasValue)
+            {
+                return Task.FromResult<DateTimeOffset?>(((User)user).LockoutEndUtc.Value.ToUniversalTime());
+            }
+            else
+            {
+                return Task.FromResult<DateTimeOffset?>(null);
+            }
+        }
+
+        public Task<int> IncrementAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).AccessFailedCount++;
+
+            return Task.FromResult(((User)user).AccessFailedCount);
+        }
+
+        public Task ResetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).AccessFailedCount = 0;
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetLockoutEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).IsLockoutEnabled = enabled;
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetLockoutEndDateAsync(IUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (lockoutEnd.HasValue)
+            {
+                ((User)user).LockoutEndUtc = lockoutEnd.Value.UtcDateTime;
+            }
+            else
+            {
+                ((User)user).LockoutEndUtc = null;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        #endregion IUserLockoutStore<IUser>
     }
 }
