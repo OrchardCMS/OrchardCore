@@ -22,7 +22,7 @@
             <th>@T["Timestamp"]</th>
             <td>@await DisplayAsync(await New.DateTime(Utc: Model.AuditTrailEvent.CreatedUtc, Format: "g"))</td>
         </tr>
-        <tr>
+        <tr class="border-bottom">
             <th>@T["Client IP Address"]</th>
             <td>@Model.AuditTrailEvent.ClientIpAddress</td>
         </tr>

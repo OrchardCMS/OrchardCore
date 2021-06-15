@@ -69,7 +69,7 @@ namespace OrchardCore.AuditTrail.Services
                 TotalCount = totalCount
             };
 
-            options.AuditTrailSorts = _options.SortOptions.Values.Where(x => x.SelectListItem != null).Select(opt => opt.SelectListItem(opt, options)).ToList();
+            options.AuditTrailSorts = _options.SortOptions.Values.Where(x => x.SelectListItem != null).Select(opt => opt.SelectListItem(_serviceProvider, opt, options)).ToList();
 
             var categories = _auditTrailManager.DescribeCategories().ToArray();
 

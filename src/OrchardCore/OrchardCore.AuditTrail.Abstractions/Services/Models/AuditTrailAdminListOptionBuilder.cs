@@ -13,7 +13,7 @@ namespace OrchardCore.AuditTrail.Services.Models
         private readonly string _value;
         private bool _default;
         private Func<string, IQuery<AuditTrailEvent>, QueryExecutionContext<AuditTrailEvent>, ValueTask<IQuery<AuditTrailEvent>>> _query;
-        private Func<AuditTrailAdminListOption, AuditTrailIndexOptions, SelectListItem> _selectListItem;
+        private Func<IServiceProvider, AuditTrailAdminListOption, AuditTrailIndexOptions, SelectListItem> _selectListItem;
 
         public AuditTrailAdminListOptionBuilder(string value)
         {
@@ -45,7 +45,7 @@ namespace OrchardCore.AuditTrail.Services.Models
         /// Optionally adss a select list item to the option
         /// </summary>
 
-        public AuditTrailAdminListOptionBuilder WithSelectListItem(Func<AuditTrailAdminListOption, AuditTrailIndexOptions, SelectListItem> selectListItem)
+        public AuditTrailAdminListOptionBuilder WithSelectListItem(Func<IServiceProvider, AuditTrailAdminListOption, AuditTrailIndexOptions, SelectListItem> selectListItem)
         {
             _selectListItem = selectListItem;
 
