@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
@@ -138,8 +137,6 @@ namespace OrchardCore.Users
                     user.UserId = user.UserName;
                     session.Save(user);
                 }
-
-                await session.SaveChangesAsync();
             });
 
             return 6;
@@ -166,11 +163,6 @@ namespace OrchardCore.Users
                     user.UserName = user.UserName.Replace('@', '+');
                     user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
                     session.Save(user);
-                }
-
-                if (users.Any())
-                {
-                    await session.SaveChangesAsync();
                 }
             });
 
