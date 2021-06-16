@@ -22,7 +22,7 @@
     <a asp-action="EditPassword" asp-route-id="@user.UserId" class="btn btn-secondary btn-sm">@T["Edit Password"]</a>
     if (isLockedOut)
     {
-        <a asp-action="Unlock" asp-route-id="@user.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Unlock user"]" data-message="@T["Are you sure you want to unlock this user?"]">@T["Unlock"]</a>
+        <a asp-action="Unlock" asp-route-id="@user.UserId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Unlock user"]" data-message="@T["Are you sure you want to unlock this user?"]">@T["Unlock"]</a>
     }
 }
 
