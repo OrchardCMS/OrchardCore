@@ -155,8 +155,8 @@ function ConfigureLiquidIntellisense(monaco, suggestHtml) {
             foldingRanges: true,
             selectionRanges: true,
             diagnostics: false,
-            documentFormattingEdits: false,
-            documentRangeFormattingEdits: false
+            documentFormattingEdits: true,
+            documentRangeFormattingEdits: true
         };
         var options = {
             format: monaco.languages.html.htmlDefaults.options.format,

@@ -19,7 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\monaco\liquid-intellisense.js" />
+    <None Include="wwwroot\monaco\liquid-intellisense.js">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
