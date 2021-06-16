@@ -24,9 +24,16 @@
     "output": "wwwroot/js/TheAdmin-header.js"
   },
   {
+    "generateSourceMaps": false,
+    "inputs": [
+      "node_modules/material-design-icons/iconfont/material-icons.css"
+    ],
+    "output": "wwwroot/fonts/material-design-icons/material-icons.css"
+  },
+  {
     "copy": true,
     "inputs": [
-      "node_modules/material-design-icons/iconfont/*"
+      "node_modules/material-design-icons/iconfont/MaterialIcons-Regular*"
     ],
     "output": "wwwroot/fonts/material-design-icons/@"
   }
