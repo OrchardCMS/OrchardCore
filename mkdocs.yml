@@ -10,11 +10,13 @@ theme:
   palette:    
     - media: "(prefers-color-scheme: light)"
       scheme: default
+      primary: teal
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
+      primary: teal
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
