@@ -22,6 +22,15 @@
                     '2.0': 'Ekstra stor'
                 }
             },
+            et: {
+                lineheight: 'Reavahe',
+                lineheights: {
+                    '0.9': 'Väike',
+                    'normal': 'Tavaline',
+                    '1.5': 'Suur',
+                    '2.0': 'Väga suur'
+                }
+            },
             fr: {
                 lineheight: 'Hauteur de ligne',
                 lineheights: {

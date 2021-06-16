@@ -90,6 +90,7 @@ nav:
         - Customize encoding settings: docs/guides/encoding-settings/README.md
         - Understanding Content Definitions Stores: docs/guides/content-definitions/README.md 
         - Change password configuration: docs/guides/password-configuration/README.md 
+        - Change lockout configuration: docs/guides/lockout-configuration/README.md 
         - Azure AD integration: docs/guides/azuread-integration/README.md 
         - Create a Liquid Widget: docs/guides/create-liquid-widget/README.md 
     - Key Topics: 

@@ -1,12 +1,16 @@
-// Core variables and mixins
+// 
+// Styles
+// 
+
+// Import variables from src/scss/variables
 @import "./variables";
 
 // Import Bootstrap
 @import "bootstrap/scss/bootstrap.scss";
 
-// Global CSS
+// Load global styling
 @import "./global";
 
-// Sections
+// Load section styling
 @import "./sections/masthead";
 @import "./sections/social";

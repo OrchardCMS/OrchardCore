@@ -53,7 +53,13 @@ namespace OrchardCore.Users.Services
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
-            if (result.IsNotAllowed)
+
+            if (result.IsLockedOut)
+            {
+                reportError(string.Empty, S["The user is locked out."]);
+                return null;
+            }
+            else if (result.IsNotAllowed)
             {
                 reportError(string.Empty, S["The specified user is not allowed to sign in."]);
                 return null;

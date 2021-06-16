@@ -43,6 +43,7 @@ using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using YesSql.Filters.Query;
 using YesSql.Indexes;
 
 namespace OrchardCore.Users
@@ -76,7 +77,6 @@ namespace OrchardCore.Users
                 pattern: userOptions.ChangePasswordUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
-
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
@@ -116,6 +116,18 @@ namespace OrchardCore.Users
                 areaName: "OrchardCore.Users",
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersEditPassword",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersUnlock",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Unlock/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Unlock) }
             );
 
             builder.UseAuthorization();
@@ -207,10 +219,26 @@ namespace OrchardCore.Users
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
 
             services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
-            services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
 
             services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
             services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
+
+            services.AddSingleton<IUsersAdminListFilterParser>(sp =>
+            {
+                var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
+                var builder = new QueryEngineBuilder<User>();
+                foreach (var provider in filterProviders)
+                {
+                    provider.Build(builder);
+                }
+
+                var parser = builder.Build();
+
+                return new DefaultUsersAdminListFilterParser(parser);
+            });
+
+            services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
+
         }
     }
 

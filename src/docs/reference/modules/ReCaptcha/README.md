@@ -30,3 +30,7 @@ If you have a requirement to display the captcha in a specific language, you can
 ## Extending the module
 If you have requirements that you have to protect against robots using another method than IP address,
 you can create your own implementation of the IDetectRobots interface and it will join the robot detectors.
+
+## Using with a form post with Content-Type = "application/json" from a javascript framework
+
+The ReCaptcha api uses the data-callback attribute to return the token generated when validating the ReCaptcha widget. This allows to post that token from an Angular, Vue.js form post. If you want to validate the ReCaptcha from the Workflow task you will need to pass the token in the header of your request as "g-recaptcha-response".

@@ -368,7 +368,7 @@ You can access the `TagNames` property directly with the following accessor:
 
     ``` liquid
     {% for tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames %}
-        <span class="badge badge-secondary">
+        <span class="badge bg-secondary">
             <i class="fas fa-tag fa-xs fa-rotate-90 align-middle"></i>
             <span class="align-middle"> {{ tagName }} </span> 
         </span>

@@ -23,16 +23,16 @@
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.0",
-    "@babel/preset-env": "^7.14.1",
-    "@babel/preset-flow": "7.13.13",
+    "@babel/core": "^7.14.5",
+    "@babel/preset-env": "^7.14.5",
+    "@babel/preset-flow": "7.14.5",
     "all-contributors-cli": "^6.20.0",
     "es6-promise": "4.2.8",
     "glob": "^7.1.7",
     "graceful-fs": "4.2.6",
-    "gulp": "4.0.2",
+    "gulp": "^4.0.2",
     "gulp-babel": "8.0.0",
-    "gulp-cli": "2.3.0",
+    "gulp-cli": "^2.3.0",
     "gulp-concat": "2.6.1",
     "gulp-dart-sass": "1.0.2",
     "gulp-debug": "4.0.0",
@@ -46,16 +46,16 @@
     "gulp-postcss": "^9.0.0",
     "gulp-print": "5.0.2",
     "gulp-rename": "2.0.0",
-    "gulp-sourcemaps": "3.0.0",
+    "gulp-sourcemaps": "^3.0.0",
     "gulp-terser": "2.0.1",
     "gulp-typescript": "5.0.1",
     "gulp-util": "3.0.8",
     "merge-stream": "2.0.0",
     "npm-run-all": "^4.1.5",
     "path-posix": "1.0.0",
-    "postcss": "8.2.14",
+    "postcss": "8.3.3",
     "postcss-rtl": "^1.7.3",
-    "rtlcss": "3.1.2",
-    "typescript": "^4.2.4"
+    "rtlcss": "3.2.0",
+    "typescript": "^4.3.2"
   }
 }
