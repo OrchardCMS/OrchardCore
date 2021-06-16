@@ -26,15 +26,16 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "node_modules/material-design-icons/iconfont/material-icons.css"
+      "node_modules/material-icons/iconfont/material-icons.scss"
     ],
-    "output": "wwwroot/fonts/material-design-icons/material-icons.css"
+    "output": "wwwroot/fonts/material-icons/material-icons.css"
   },
   {
     "copy": true,
     "inputs": [
-      "node_modules/material-design-icons/iconfont/MaterialIcons-Regular*"
+      "node_modules/material-icons/iconfont/*.woff",
+      "node_modules/material-icons/iconfont/*.woff2"
     ],
-    "output": "wwwroot/fonts/material-design-icons/@"
+    "output": "wwwroot/fonts/material-icons/@"
   }
 ]
