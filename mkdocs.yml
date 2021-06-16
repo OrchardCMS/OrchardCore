@@ -3,7 +3,7 @@ theme:
   name: material  
   custom_dir: src/docs/theme
   logo: docs/assets/images/orchard-logo.png
-  favicon: docs/assets/images/favicon-blue.png
+  favicon: docs/assets/images/favicon.png
   features:
     - navigation.instant
     - navigation.tabs
