@@ -73,9 +73,9 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 return new BlobFile(path, properties.Value.ContentLength, properties.Value.LastModified);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot get file info with path '{path}'.");
+                throw new FileStoreException($"Cannot get file info with path '{path}'.", ex);
             }
         }
 
@@ -97,9 +97,9 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 return null;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot get directory info with path '{path}'.");
+                throw new FileStoreException($"Cannot get directory info with path '{path}'.", ex);
             }
         }
 
@@ -116,9 +116,9 @@ namespace OrchardCore.FileStorage.AzureBlob
                     return GetDirectoryContentByHierarchyAsync(path);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot get directory content with path '{path}'.");
+                throw new FileStoreException($"Cannot get directory content with path '{path}'.", ex);
             }
         }
 
@@ -218,9 +218,13 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 return true;
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot create directory '{path}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot create directory '{path}'.", ex);
             }
         }
 
@@ -232,9 +236,9 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 return await blob.DeleteIfExistsAsync();
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot delete file '{path}'.");
+                throw new FileStoreException($"Cannot delete file '{path}'.", ex);
             }
         }
 
@@ -261,9 +265,13 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 return blobsWereDeleted;
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot delete directory '{path}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot delete directory '{path}'.", ex);
             }
         }
 
@@ -274,9 +282,9 @@ namespace OrchardCore.FileStorage.AzureBlob
                 await CopyFileAsync(oldPath, newPath);
                 await TryDeleteFileAsync(oldPath);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.");
+                throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.", ex);
             }
         }
 
@@ -319,9 +327,13 @@ namespace OrchardCore.FileStorage.AzureBlob
                     throw new FileStoreException($"Error while copying file '{srcPath}'; copy operation failed with status {properties.Value.CopyStatus} and description {properties.Value.CopyStatusDescription}.");
                 }
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot copy file '{srcPath}' to '{dstPath}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot copy file '{srcPath}' to '{dstPath}'.", ex);
             }
         }
 
@@ -338,9 +350,13 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 return (await blob.DownloadAsync()).Value.Content;
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot get file stream of the file '{path}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot get file stream of the file '{path}'.", ex);
             }
         }
 
@@ -373,9 +389,13 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 return path;
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot create file '{path}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot create file '{path}'.", ex);
             }
         }
 

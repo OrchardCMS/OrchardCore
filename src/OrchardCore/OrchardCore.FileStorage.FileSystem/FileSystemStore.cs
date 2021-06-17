@@ -31,9 +31,9 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return Task.FromResult<IFileStoreEntry>(null);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot get file info with path '{path}'.");
+                throw new FileStoreException($"Cannot get file info with path '{path}'.", ex);
             }
         }
 
@@ -52,9 +52,9 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return Task.FromResult<IFileStoreEntry>(null);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot get directory info with path '{path}'.");
+                throw new FileStoreException($"Cannot get directory info with path '{path}'.", ex);
             }
         }
 
@@ -96,9 +96,9 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return results.ToAsyncEnumerable();
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot get directory content with path '{path}'.");
+                throw new FileStoreException($"Cannot get directory content with path '{path}'.", ex);
             }
         }
 
@@ -122,9 +122,13 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return Task.FromResult(true);
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot create directory '{path}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot create directory '{path}'.", ex);
             }
         }
 
@@ -143,9 +147,9 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return Task.FromResult(true);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot delete file '{path}'.");
+                throw new FileStoreException($"Cannot delete file '{path}'.", ex);
             }
         }
 
@@ -164,9 +168,9 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return Task.FromResult(true);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new FileStoreException($"Cannot delete directory '{path}'.");
+                throw new FileStoreException($"Cannot delete directory '{path}'.", ex);
             }
         }
 
@@ -192,9 +196,13 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return Task.CompletedTask;
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.", ex);
             }
         }
 
@@ -220,9 +228,13 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return Task.CompletedTask;
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot copy file '{srcPath}' to '{dstPath}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot copy file '{srcPath}' to '{dstPath}'.", ex);
             }
         }
 
@@ -241,9 +253,13 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return Task.FromResult<Stream>(stream);
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot get file stream of the file '{path}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot get file stream of the file '{path}'.", ex);
             }
         }
 
@@ -261,9 +277,13 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return Task.FromResult<Stream>(stream);
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot get file stream of the file '{fileStoreEntry.Path}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot get file stream of the file '{fileStoreEntry.Path}'.", ex);
             }           
         }
 
@@ -295,9 +315,13 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return path;
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot create file '{path}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot create file '{path}'.", ex);
             }
         }
 
@@ -324,9 +348,13 @@ namespace OrchardCore.FileStorage.FileSystem
 
                 return physicalPath;
             }
-            catch
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Cannot resolve physical path with the path '{path}'.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot resolve physical path with the path '{path}'.", ex);
             }
         }
     }
