@@ -9,13 +9,13 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {
-    public class ContentCulturePickerSettingsDriver : SectionDisplayDriver<ISite, ContentCulturePickerSettings>
+    public class ContentRequestCultureProviderSettingsDriver : SectionDisplayDriver<ISite, ContentRequestCultureProviderSettings>
     {
-        public const string GroupId = "ContentCulturePicker";
+        public const string GroupId = "ContentRequestCultureProvider";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ContentCulturePickerSettingsDriver(
+        public ContentRequestCultureProviderSettingsDriver(
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
@@ -23,7 +23,7 @@ namespace OrchardCore.ContentLocalization.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentCulturePickerSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ContentRequestCultureProviderSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -32,14 +32,13 @@ namespace OrchardCore.ContentLocalization.Drivers
                 return null;
             }
 
-            return Initialize<ContentCulturePickerSettings>("ContentCulturePickerSettings_Edit", model =>
+            return Initialize<ContentRequestCultureProviderSettings>("ContentRequestCultureProviderSettings_Edit", model =>
             {
                 model.SetCookie = settings.SetCookie;
-                model.RedirectToHomepage = settings.RedirectToHomepage;
             }).Location("Content:5").OnGroup(GroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentCulturePickerSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ContentRequestCultureProviderSettings section, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
