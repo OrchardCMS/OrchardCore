@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.Extensions.Localization;
 
@@ -30,7 +31,9 @@ namespace OrchardCore.Localization.DataAnnotations
             foreach (var metadata in context.ValidationMetadata.ValidatorMetadata)
             {
                 var attribute = metadata as ValidationAttribute;
-                var argument = context.Key.Name;
+                var displayName = context.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Name;
+                // Use DisplayName if present
+                var argument = displayName ?? context.Key.Name;
                 var errorMessageString = attribute != null && attribute.ErrorMessage == null && attribute.ErrorMessageResourceName == null
                     ? attribute.FormatErrorMessage(argument)
                     : attribute.ErrorMessage;
