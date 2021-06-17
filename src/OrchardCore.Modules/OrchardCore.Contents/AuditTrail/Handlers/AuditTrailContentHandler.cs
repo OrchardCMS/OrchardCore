@@ -9,6 +9,7 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Providers;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Entities;
@@ -87,21 +88,19 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 .QueryIndex<ContentItemIndex>(index => index.ContentItemId == content.ContentItem.ContentItemId)
                 .CountAsync();
 
-            var eventData = new Dictionary<string, object>
-            {
-                { "ContentItem", content.ContentItem },
-                { "VersionNumber", versionNumber }
-            };
-
             await _auditTrailManager.RecordEventAsync(
-                new AuditTrailContext
+                new AuditTrailContext<AuditTrailContentEvent>
                 (
                     name,
                     "Content",
                     content.ContentItem.ContentItemId,
                     _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier),
                     _httpContextAccessor.GetCurrentUserName(),
-                    eventData
+                    new AuditTrailContentEvent
+                    {
+                        ContentItem = content.ContentItem,
+                        VersionNumber = versionNumber
+                    }
                 ));
         }
     }

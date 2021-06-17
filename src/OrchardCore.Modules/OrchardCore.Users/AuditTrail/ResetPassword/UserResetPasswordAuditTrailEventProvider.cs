@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Providers;
 using OrchardCore.AuditTrail.Services.Models;
-using OrchardCore.Users.AuditTrail.Providers;
 
 namespace OrchardCore.Users.AuditTrail.ResetPassword
 {
@@ -21,8 +20,8 @@ namespace OrchardCore.Users.AuditTrail.ResetPassword
             }
 
             context.For("User", S["User"])
-                .Event(PasswordReset, S["Password reset"], S["A user successfully reset the password."], UserAuditTrailEventProviderHelper.BuildEvent, true)
-                .Event(PasswordRecovered, S["Password recovered"], S["A user successfully recovered the password."], UserAuditTrailEventProviderHelper.BuildEvent, true);
+                .Event(PasswordReset, S["Password reset"], S["A user successfully reset the password."], true)
+                .Event(PasswordRecovered, S["Password recovered"], S["A user successfully recovered the password."], true);
         }
     }
 }

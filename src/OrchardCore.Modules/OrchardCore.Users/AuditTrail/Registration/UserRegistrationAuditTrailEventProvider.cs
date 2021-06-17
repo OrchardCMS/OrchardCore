@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Providers;
 using OrchardCore.AuditTrail.Services.Models;
-using OrchardCore.Users.AuditTrail.Providers;
 
 namespace OrchardCore.Users.AuditTrail.Registration
 {
@@ -20,7 +19,7 @@ namespace OrchardCore.Users.AuditTrail.Registration
             }
 
             context.For("User", S["User"])
-                .Event(Registered, S["Registered"], S["A user was successfully registered."], UserAuditTrailEventProviderHelper.BuildEvent, true);
+                .Event(Registered, S["Registered"], S["A user was successfully registered."], true);
         }
     }
 }

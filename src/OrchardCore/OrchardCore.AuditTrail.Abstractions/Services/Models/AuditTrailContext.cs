@@ -1,23 +1,19 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.AuditTrail.Services.Models
 {
-    public class AuditTrailContext
+    public abstract class AuditTrailContext
     {
         public AuditTrailContext(
             string name,
             string category,
             string correlationId,
             string userId,
-            string userName,
-            Dictionary<string, object> data)
+            string userName)
         {
             Name = name;
             Category = category;
             CorrelationId = correlationId;
             UserId = userId;
             UserName = userName;
-            Data = data;
         }
 
         public string Name { get; set; }
@@ -25,6 +21,22 @@ namespace OrchardCore.AuditTrail.Services.Models
         public string CorrelationId { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
-        public Dictionary<string, object> Data { get; set; }
+    }
+
+    public class AuditTrailContext<TEvent> : AuditTrailContext where TEvent : class, new()
+    {
+        public AuditTrailContext(
+            string name,
+            string category,
+            string correlationId,
+            string userId,
+            string userName,
+            TEvent auditTrailEventItem)
+            : base(name, category, correlationId, userId, userName)
+        {
+            AuditTrailEventItem = auditTrailEventItem;
+        }
+
+        public TEvent AuditTrailEventItem { get; }
     }
 }

@@ -24,7 +24,6 @@ namespace OrchardCore.AuditTrail.Services.Models
             string name,
             LocalizedString localizedName,
             LocalizedString description,
-            Action<AuditTrailEvent, Dictionary<string, object>> buildEvent,
             bool enableByDefault = false,
             bool isMandatory = false)
         {
@@ -37,7 +36,6 @@ namespace OrchardCore.AuditTrail.Services.Models
                     LocalizedName = localizedName,
                     LocalizedCategory = LocalizedName,
                     Description = description,
-                    BuildEvent = buildEvent,
                     IsEnabledByDefault = enableByDefault,
                     IsMandatory = isMandatory
                 });

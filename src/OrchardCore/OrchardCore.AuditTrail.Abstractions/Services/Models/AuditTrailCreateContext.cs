@@ -1,9 +1,22 @@
 using System;
-using System.Collections.Generic;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {
-    public class AuditTrailCreateContext : AuditTrailContext
+    public abstract class AuditTrailCreateContext : AuditTrailContext
+    {
+        public AuditTrailCreateContext(
+            string name,
+            string category,
+            string correlationId,
+            string userId,
+            string userName)
+            : base(name, category, correlationId, userId, userName) { }
+
+        public string ClientIpAddress { get; set; }
+        public DateTime? CreatedUtc { get; set; }
+    }
+
+    public class AuditTrailCreateContext<TEvent> : AuditTrailCreateContext where TEvent : class, new()
     {
         public AuditTrailCreateContext(
             string name,
@@ -11,10 +24,12 @@ namespace OrchardCore.AuditTrail.Services.Models
             string correlationId,
             string userId,
             string userName,
-            Dictionary<string, object> data)
-            : base(name, category, correlationId, userId, userName, data) { }
+            TEvent auditTrailEventItem)
+        : base(name, category, correlationId, userId, userName)
+        {
+            AuditTrailEventItem = auditTrailEventItem;
+        }
 
-        public string ClientIpAddress { get; set; }
-        public DateTime? CreatedUtc { get; set; }
+        public TEvent AuditTrailEventItem { get; set; }
     }
 }

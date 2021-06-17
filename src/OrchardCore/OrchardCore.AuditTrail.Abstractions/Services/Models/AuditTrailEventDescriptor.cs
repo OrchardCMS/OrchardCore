@@ -12,7 +12,6 @@ namespace OrchardCore.AuditTrail.Services.Models
         public LocalizedString LocalizedName { get; set; }
         public LocalizedString LocalizedCategory { get; set; }
         public LocalizedString Description { get; set; }
-        public Action<AuditTrailEvent, Dictionary<string, object>> BuildEvent { get; set; }
         public bool IsEnabledByDefault { get; set; }
         public bool IsMandatory { get; set; }
 
@@ -26,8 +25,7 @@ namespace OrchardCore.AuditTrail.Services.Models
                 Name = auditTrailEvent.Name,
                 Category = auditTrailEvent.Category,
                 LocalizedName = new LocalizedString(auditTrailEvent.Name, auditTrailEvent.Name),
-                LocalizedCategory = new LocalizedString(auditTrailEvent.Category, auditTrailEvent.Category),
-                BuildEvent = (auditTrailEvent, data) => { }
+                LocalizedCategory = new LocalizedString(auditTrailEvent.Category, auditTrailEvent.Category)
             };
         }
     }

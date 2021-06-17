@@ -14,8 +14,8 @@ namespace OrchardCore.AuditTrail.Services
         /// <summary>
         /// Records an audit trail event.
         /// </summary>
-        /// <param name="context">The <see cref="AuditTrailContext"/> used to create a new event.</param>
-        Task RecordEventAsync(AuditTrailContext context);
+        /// <param name="context">The <see cref="AuditTrailContext{TEvent}"/> used to create a new event.</param>
+        Task RecordEventAsync<TEvent>(AuditTrailContext<TEvent> context) where TEvent : class, new();
 
         /// <summary>
         /// Gets a single audit trail event by ID.

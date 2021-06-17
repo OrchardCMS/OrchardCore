@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Providers;
 using OrchardCore.Users.Events;
 
@@ -39,21 +40,20 @@ namespace OrchardCore.Users.AuditTrail.Registration
             _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
 
             var userId = await _userManager.GetUserIdAsync(user);
-            var data = new Dictionary<string, object>
-            {
-                { "UserId", userId },
-                { "UserName", userName }
-            };
 
             await _auditTrailManager.RecordEventAsync(
-                new AuditTrailContext
+                new AuditTrailContext<AuditTrailUserEvent>
                 (
                     name,
                     "User",
                     userId,
                     userId,
                     userName,
-                    data
+                    new AuditTrailUserEvent
+                    {
+                        UserId = userId,
+                        UserName = userName
+                    }
                 ));
         }
     }

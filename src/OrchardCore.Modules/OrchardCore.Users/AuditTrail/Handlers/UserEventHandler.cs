@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Modules;
+using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Providers;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
@@ -66,6 +67,8 @@ namespace OrchardCore.Users.AuditTrail.Handlers
         #region Unused login events
 
         public Task LoggingInAsync(string userName, Action<string, string> reportError) => Task.CompletedTask;
+
+        // TODO implement
         public Task LoggingInFailedAsync(string userName) => Task.CompletedTask;
 
         #endregion
@@ -76,11 +79,6 @@ namespace OrchardCore.Users.AuditTrail.Handlers
             _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
 
             var userId = await _userManager.GetUserIdAsync(user);
-            var data = new Dictionary<string, object>
-            {
-                { "UserId", userId },
-                { "UserName", userName }
-            };
 
             if (String.IsNullOrEmpty(userIdActual))
             {
@@ -93,14 +91,18 @@ namespace OrchardCore.Users.AuditTrail.Handlers
             }
 
             await _auditTrailManager.RecordEventAsync(
-                new AuditTrailContext
+                new AuditTrailContext<AuditTrailUserEvent>
                 (
                     name: name,
                     category: "User",
                     correlationId: userId,
                     userId: userIdActual,
                     userName: userNameActual,
-                    data: data
+                    new AuditTrailUserEvent
+                    {
+                        UserId = userId,
+                        UserName = userName
+                    }
                 ));
         }
     }

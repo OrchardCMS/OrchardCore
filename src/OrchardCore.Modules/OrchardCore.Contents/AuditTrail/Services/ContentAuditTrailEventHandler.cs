@@ -1,6 +1,4 @@
 using System.Threading.Tasks;
-using GraphQL;
-using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
@@ -20,19 +18,16 @@ namespace OrchardCore.Contents.AuditTrail.Services
                 return Task.CompletedTask;
             }
 
-            var content = context.Data.Get<ContentItem>("ContentItem");
-            if (content == null)
+            if (context is AuditTrailCreateContext<AuditTrailContentEvent> contentEvent)
             {
-                return Task.CompletedTask;
-            }
+                var auditTrailPart = contentEvent.AuditTrailEventItem.ContentItem.As<AuditTrailPart>();
+                if (auditTrailPart == null)
+                {
+                    return Task.CompletedTask;
+                }
 
-            var auditTrailPart = content.ContentItem.As<AuditTrailPart>();
-            if (auditTrailPart == null)
-            {
-                return Task.CompletedTask;
+                contentEvent.AuditTrailEventItem.Comment = auditTrailPart.Comment;
             }
-
-            context.Data["Comment"] = auditTrailPart.Comment;
 
             return Task.CompletedTask;
         }

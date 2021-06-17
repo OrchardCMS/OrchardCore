@@ -59,7 +59,7 @@ namespace OrchardCore.AuditTrail.Services
             _logger = logger;
         }
 
-        public async Task RecordEventAsync(AuditTrailContext context)
+        public async Task RecordEventAsync<TEvent>(AuditTrailContext<TEvent> context) where TEvent : class, new()
         {
             if (_shellSettings.State == TenantState.Initializing && String.IsNullOrEmpty(context.UserName))
             {
@@ -76,13 +76,14 @@ namespace OrchardCore.AuditTrail.Services
                 return;
             }
 
-            var createContext = new AuditTrailCreateContext(
+            var createContext = new AuditTrailCreateContext<TEvent>(
                 context.Name,
                 context.Category,
                 context.CorrelationId,
                 context.UserId,
                 context.UserName,
-                context.Data);
+                context.AuditTrailEventItem
+            );
 
             await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.CreateAsync(context), createContext, _logger);
 
@@ -101,12 +102,12 @@ namespace OrchardCore.AuditTrail.Services
                 CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow
             };
 
-            descriptor.BuildEvent(auditTrailEvent, createContext.Data);
+            auditTrailEvent.Put(createContext.AuditTrailEventItem);
+
             await _auditTrailEventHandlers.InvokeAsync((handler, context, auditTrailEvent) => handler.AlterAsync(context, auditTrailEvent), createContext, auditTrailEvent, _logger);
 
             _session.Save(auditTrailEvent, AuditTrailEvent.Collection);
         }
-
         public Task<AuditTrailEvent> GetEventAsync(string eventId) =>
             _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
                 .Where(index => index.EventId == eventId)

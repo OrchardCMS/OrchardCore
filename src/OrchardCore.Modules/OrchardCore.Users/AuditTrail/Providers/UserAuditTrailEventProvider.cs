@@ -29,14 +29,14 @@ namespace OrchardCore.Users.AuditTrail.Providers
             }
 
             context.For("User", S["User"])
-                .Event(LoggedIn, S["Logged in"], S["A user was successfully logged in."], UserAuditTrailEventProviderHelper.BuildEvent, true)
-                .Event(LogInFailed, S["Login failed"], S["An attempt to login failed."], UserAuditTrailEventProviderHelper.BuildEvent, true)
-                .Event(LogInIsLockedOut, S["Login account locked"], S["An attempt to login failed because the user is locked out."], UserAuditTrailEventProviderHelper.BuildEvent, true)
-                .Event(Enabled, S["Enabled"], S["A user was enabled."], UserAuditTrailEventProviderHelper.BuildEvent, true)
-                .Event(Disabled, S["Disabled"], S["A user was disabled."], UserAuditTrailEventProviderHelper.BuildEvent, true)
-                .Event(Created, S["Created"], S["A user was created."], UserAuditTrailEventProviderHelper.BuildEvent, true)
-                .Event(Updated, S["Updated"], S["A user was updated."], UserAuditTrailEventProviderHelper.BuildEvent, true)
-                .Event(Deleted, S["Deleted"], S["A user was deleted."], UserAuditTrailEventProviderHelper.BuildEvent, true);
+                .Event(LoggedIn, S["Logged in"], S["A user was successfully logged in."], true)
+                .Event(LogInFailed, S["Login failed"], S["An attempt to login failed."], true)
+                .Event(LogInIsLockedOut, S["Login account locked"], S["An attempt to login failed because the user is locked out."], true)
+                .Event(Enabled, S["Enabled"], S["A user was enabled."], true)
+                .Event(Disabled, S["Disabled"], S["A user was disabled."], true)
+                .Event(Created, S["Created"], S["A user was created."], true)
+                .Event(Updated, S["Updated"], S["A user was updated."], true)
+                .Event(Deleted, S["Deleted"], S["A user was deleted."], true);
         }
     }
 }

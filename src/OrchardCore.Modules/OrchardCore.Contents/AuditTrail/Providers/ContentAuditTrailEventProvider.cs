@@ -34,24 +34,13 @@ namespace OrchardCore.Contents.AuditTrail.Providers
             }
 
             context.For("Content", S["Content"])
-                .Event(Created, S["Created"], S["A content item was created."], BuildEvent, true)
-                .Event(Saved, S["Saved"], S["A content item was saved."], BuildEvent, true)
-                .Event(Published, S["Published"], S["A content item was published."], BuildEvent, true)
-                .Event(Unpublished, S["Unpublished"], S["A content item was unpublished."], BuildEvent, true)
-                .Event(Removed, S["Removed"], S["A content item was deleted."], BuildEvent, true)
-                .Event(Cloned, S["Cloned"], S["A content item was cloned."], BuildEvent, true)
-                .Event(Restored, S["Restored"], S["A content item was restored to a previous version."], BuildEvent, true);
-        }
-
-        private static void BuildEvent(AuditTrailEvent auditTrailEvent, Dictionary<string, object> eventData)
-        {
-            auditTrailEvent.Put(new AuditTrailContentEvent
-            {
-                Name = auditTrailEvent.Name,
-                ContentItem = eventData.Get<ContentItem>("ContentItem"),
-                VersionNumber = eventData.Get<int>("VersionNumber"),
-                Comment = eventData.Get<string>("Comment")
-            });
+                .Event(Created, S["Created"], S["A content item was created."], true)
+                .Event(Saved, S["Saved"], S["A content item was saved."], true)
+                .Event(Published, S["Published"], S["A content item was published."], true)
+                .Event(Unpublished, S["Unpublished"], S["A content item was unpublished."], true)
+                .Event(Removed, S["Removed"], S["A content item was deleted."], true)
+                .Event(Cloned, S["Cloned"], S["A content item was cloned."], true)
+                .Event(Restored, S["Restored"], S["A content item was restored to a previous version."], true);
         }
     }
 }
