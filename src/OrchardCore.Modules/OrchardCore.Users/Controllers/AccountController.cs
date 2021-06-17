@@ -543,7 +543,7 @@ namespace OrchardCore.Users.Controllers
                 model.Email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
             }
 
-            if (model.NoUsername)
+            if (model.NoUsername && String.IsNullOrWhiteSpace(model.UserName))
             {
                 model.UserName = await GenerateUsername(info);
             }
