@@ -731,7 +731,7 @@ namespace OrchardCore.Users.Controllers
 
         private async Task<string> GenerateUsername(ExternalLoginInfo info)
         {
-            var ret = String.Concat("u" + IdGenerator.GenerateId());
+            var ret = String.Concat("u", IdGenerator.GenerateId());
             var externalClaims = info?.Principal.GetSerializableClaims();
             var userNames = new Dictionary<Type, string>();
 
