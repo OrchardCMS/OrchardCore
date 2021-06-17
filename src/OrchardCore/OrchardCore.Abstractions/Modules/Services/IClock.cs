@@ -33,8 +33,6 @@ namespace OrchardCore.Modules
         /// </summary>
         ITimeZone GetSystemTimeZone();
 
-        TimeZoneInfo GetTimeZoneInfo(string timeZoneId);
-
         /// <summary>
         /// Converts a <see cref="DateTimeOffset" /> to the specified <see cref="ITimeZone" /> instance.
         /// </summary>
