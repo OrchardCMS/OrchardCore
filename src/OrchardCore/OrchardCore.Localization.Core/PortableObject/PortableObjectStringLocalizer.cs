@@ -208,7 +208,17 @@ namespace OrchardCore.Localization.PortableObject
                         // Extract translation from data annotations attributes
                         if (context == LocalizedDataAnnotationsMvcOptionsContext)
                         {
+                            // Extract translation with context
                             key = CultureDictionaryRecord.GetKey(name, DataAnnotationsDefaultErrorMessagesContext);
+                            translation = dictionary[key];
+
+                            if (translation != null)
+                            {
+                                return translation;
+                            }
+
+                            // Extract translation without context
+                            key = CultureDictionaryRecord.GetKey(name, null);
                             translation = dictionary[key];
 
                             if (translation != null)
