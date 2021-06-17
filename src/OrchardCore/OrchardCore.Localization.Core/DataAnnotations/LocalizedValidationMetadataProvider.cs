@@ -30,25 +30,36 @@ namespace OrchardCore.Localization.DataAnnotations
         {
             foreach (var metadata in context.ValidationMetadata.ValidatorMetadata)
             {
-                var attribute = metadata as ValidationAttribute;
-                var displayName = context.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Name;
-                // Use DisplayName if present
-                var argument = displayName ?? context.Key.Name;
-                var errorMessageString = attribute != null && attribute.ErrorMessage == null && attribute.ErrorMessageResourceName == null
-                    ? attribute.FormatErrorMessage(argument)
-                    : attribute.ErrorMessage;
-
-                // Localize the error message without params
-                var localizedString = _stringLocalizer[errorMessageString];
-
-                if (localizedString == errorMessageString)
+                if (metadata is ValidationAttribute attribute)
                 {
-                    // Localize the error message with params
-                    errorMessageString = errorMessageString.Replace(argument, "{0}");
-                    localizedString = _stringLocalizer[errorMessageString, argument];
-                }
+                    var displayName = context.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Name;
+                    // Use DisplayName if present
+                    var argument = displayName ?? context.Key.Name;
+                    var errorMessageString = attribute.ErrorMessage == null && attribute.ErrorMessageResourceName == null
+                        ? attribute.FormatErrorMessage(argument)
+                        : attribute.ErrorMessage;
 
-                attribute.ErrorMessage = localizedString;
+                    // Localize the parameterized error message
+                    var localizedString = _stringLocalizer[errorMessageString];
+
+                    if (localizedString == errorMessageString)
+                    {
+                        // If we get here, we don't have a translation for the parameterized error message,
+                        // so try to look up a translation for the unparameterized error message.
+                        //
+                        // ASP.NET Core's DataAnnotations will handle parameterizing the error message
+                        // and localizing the argument if it is a display name,
+                        // so all we need to do here is localize the unparameterized error message.
+                        //
+                        // See https://github.com/aspnet/Mvc/blob/04ce6cae44fb0cb11470c21769d41e3f8088e8aa/src/Microsoft.AspNetCore.Mvc.DataAnnotations/ValidationAttributeAdapterOfTAttribute.cs#L82
+                        // and https://github.com/aspnet/Mvc/blob/master/src/Microsoft.AspNetCore.Mvc.DataAnnotations/DataAnnotationsMetadataProvider.cs#L151
+                        //
+                        var unparameterizedErrorMessage = errorMessageString.Replace(argument, "{0}");
+                        localizedString = _stringLocalizer[unparameterizedErrorMessage];
+                    }
+
+                    attribute.ErrorMessage = localizedString;
+                }
             }
         }
     }
