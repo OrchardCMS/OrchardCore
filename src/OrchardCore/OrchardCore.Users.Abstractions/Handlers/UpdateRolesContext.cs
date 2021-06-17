@@ -45,6 +45,6 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets the roles to be removed from the user roles.
         /// </summary>
-        public List<string> RolesToRemove { get; set; } = new List<string>();
+        public List<string> RolesToRemove { get; } = new List<string>();
     }
 }
