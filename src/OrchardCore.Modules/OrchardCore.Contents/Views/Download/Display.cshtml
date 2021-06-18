@@ -15,7 +15,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["View As JSON {0}", Html.Raw(typeDisplayName)])</h1></zone>
 
-<form asp-action="Download" asp-route-contentItemId="@contentItem.ContentItemId" method="post" enctype="multipart/form-data">
+<form asp-action="Download" asp-route-contentItemId="@contentItem.ContentItemId" method="post" enctype="multipart/form-data" class="no-multisubmit">
     <div class="form-group">
         <div class="d-flex flex-row-reverse">
             <div class="btn">
