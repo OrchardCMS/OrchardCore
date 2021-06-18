@@ -4,7 +4,7 @@
     var culture = CultureInfo.CurrentUICulture;
 }
 
-<script asp-name="templatepreview-edit" at="Foot"></script>
+@await DisplayAsync(await New.ShortcodeModal())
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Template"])</h1></zone>
 
