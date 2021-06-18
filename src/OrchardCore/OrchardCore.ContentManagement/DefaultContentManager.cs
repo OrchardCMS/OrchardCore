@@ -438,6 +438,11 @@ namespace OrchardCore.ContentManagement
                 contentItem.Published = false;
             }
 
+            if (options.IsPublished)
+            {
+                contentItem.Published = true;
+            }
+
             // Build a context with the initialized instance to create
             var context = new CreateContentContext(contentItem);
 
@@ -451,7 +456,6 @@ namespace OrchardCore.ContentManagement
 
             if (options.IsPublished)
             {
-                contentItem.Published = true;
                 var publishContext = new PublishContentContext(contentItem, null);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
