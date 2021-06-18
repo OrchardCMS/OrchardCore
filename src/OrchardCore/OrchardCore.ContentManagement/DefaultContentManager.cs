@@ -234,14 +234,14 @@ namespace OrchardCore.ContentManagement
                     else
                     {
                         // Save the previous version
-                        _session.Save(contentItem, checkConcurrency: true);
+                        _session.Save(contentItem);
 
                         contentItem = await BuildNewVersionAsync(contentItem);
                     }
                 }
 
                 // Save the new version
-                _session.Save(contentItem, checkConcurrency: true);
+                _session.Save(contentItem);
             }
 
             return contentItem;
@@ -292,7 +292,7 @@ namespace OrchardCore.ContentManagement
 
             await Handlers.InvokeAsync((handler, context) => handler.DraftSavingAsync(context), context, _logger);
 
-            _session.Save(contentItem, checkConcurrency: true);
+            _session.Save(contentItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.DraftSavedAsync(context), context, _logger);
         }
@@ -324,12 +324,12 @@ namespace OrchardCore.ContentManagement
 
             if (previous != null)
             {
-                _session.Save(previous, checkConcurrency: true);
+                _session.Save(previous);
                 previous.Published = false;
             }
 
             contentItem.Published = true;
-            _session.Save(contentItem, checkConcurrency: true);
+            _session.Save(contentItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), context, _logger);
         }
@@ -372,7 +372,7 @@ namespace OrchardCore.ContentManagement
 
             publishedItem.Published = false;
             publishedItem.ModifiedUtc = _clock.UtcNow;
-            _session.Save(publishedItem, checkConcurrency: true);
+            _session.Save(publishedItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.UnpublishedAsync(context), context, _logger);
         }
@@ -395,7 +395,7 @@ namespace OrchardCore.ContentManagement
 
                 if (latestVersion != null)
                 {
-                    _session.Save(latestVersion, checkConcurrency: true);
+                    _session.Save(latestVersion);
                 }
             }
 
@@ -449,7 +449,7 @@ namespace OrchardCore.ContentManagement
             // invoke handlers to add information to persistent stores
             await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
-            _session.Save(contentItem, checkConcurrency: true);
+            _session.Save(contentItem);
             _contentManagerSession.Store(contentItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
@@ -612,7 +612,7 @@ namespace OrchardCore.ContentManagement
 
             await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
 
-            _session.Save(contentItem, checkConcurrency: true);
+            _session.Save(contentItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
         }
@@ -666,7 +666,7 @@ namespace OrchardCore.ContentManagement
             {
                 version.Published = false;
                 version.Latest = false;
-                _session.Save(version, checkConcurrency: true);
+                _session.Save(version);
             }
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
@@ -686,14 +686,14 @@ namespace OrchardCore.ContentManagement
             await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
 
             contentItem.Latest = false;
-            _session.Save(contentItem, checkConcurrency: true);
+            _session.Save(contentItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
 
             if (publishedItem != null)
             {
                 publishedItem.Latest = true;
-                _session.Save(publishedItem, checkConcurrency: true);
+                _session.Save(publishedItem);
             }
         }
 
@@ -709,7 +709,7 @@ namespace OrchardCore.ContentManagement
 
             await Handlers.InvokeAsync((handler, context) => handler.CloningAsync(context), context, _logger);
 
-            _session.Save(context.CloneContentItem, checkConcurrency: true);
+            _session.Save(context.CloneContentItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.ClonedAsync(context), context, _logger);
 
@@ -760,7 +760,7 @@ namespace OrchardCore.ContentManagement
 
             // The content item should be placed in the session store so that further calls
             // to ContentManager.Get by a scoped index provider will resolve the imported item correctly.
-            _session.Save(contentItem, checkConcurrency: true);
+            _session.Save(contentItem);
             _contentManagerSession.Store(contentItem);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
@@ -918,7 +918,7 @@ namespace OrchardCore.ContentManagement
                 await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
 
                 latestVersion.Latest = false;
-                _session.Save(latestVersion, checkConcurrency: true);
+                _session.Save(latestVersion);
 
                 await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
             }
@@ -945,7 +945,7 @@ namespace OrchardCore.ContentManagement
                 await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
 
                 publishedVersion.Published = false;
-                _session.Save(publishedVersion, checkConcurrency: true);
+                _session.Save(publishedVersion);
 
                 await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
             }
@@ -976,7 +976,7 @@ namespace OrchardCore.ContentManagement
                 {
                     version.Published = false;
                     version.Latest = false;
-                    _session.Save(version, checkConcurrency: true);
+                    _session.Save(version);
                 }
 
                 await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), removeContext, _logger);
