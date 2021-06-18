@@ -234,14 +234,14 @@ namespace OrchardCore.ContentManagement
                     else
                     {
                         // Save the previous version
-                        _session.Save(contentItem);
+                        _session.Save(contentItem, checkConcurrency: true);
 
                         contentItem = await BuildNewVersionAsync(contentItem);
                     }
                 }
 
                 // Save the new version
-                _session.Save(contentItem);
+                _session.Save(contentItem, checkConcurrency: true);
             }
 
             return contentItem;
@@ -292,7 +292,7 @@ namespace OrchardCore.ContentManagement
 
             await Handlers.InvokeAsync((handler, context) => handler.DraftSavingAsync(context), context, _logger);
 
-            _session.Save(contentItem);
+            _session.Save(contentItem, checkConcurrency: true);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.DraftSavedAsync(context), context, _logger);
         }
@@ -324,12 +324,12 @@ namespace OrchardCore.ContentManagement
 
             if (previous != null)
             {
-                _session.Save(previous);
+                _session.Save(previous, checkConcurrency: true);
                 previous.Published = false;
             }
 
             contentItem.Published = true;
-            _session.Save(contentItem);
+            _session.Save(contentItem, checkConcurrency: true);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), context, _logger);
         }
@@ -372,7 +372,7 @@ namespace OrchardCore.ContentManagement
 
             publishedItem.Published = false;
             publishedItem.ModifiedUtc = _clock.UtcNow;
-            _session.Save(publishedItem);
+            _session.Save(publishedItem, checkConcurrency: true);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.UnpublishedAsync(context), context, _logger);
         }
