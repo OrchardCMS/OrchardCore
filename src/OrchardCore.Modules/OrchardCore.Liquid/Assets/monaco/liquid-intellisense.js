@@ -120,11 +120,12 @@ function getLiquidContextInfo(model, position, triggerCharacter) {
     };
 }
 var completionItemProvider = {
-    triggerCharacters: [' ', '|'],
+    triggerCharacters: [' '],
     provideCompletionItems: function (model, position, context, token) {
         var items = [];
         if (context.triggerCharacter == ' ') {
-            if (model.getValueInRange(new monaco.Range(position.lineNumber, position.column - 3, position.lineNumber, position.column - 1)) != '{%') {
+            var startTrigger = model.getValueInRange(new monaco.Range(position.lineNumber, position.column - 3, position.lineNumber, position.column - 1));
+            if (startTrigger != '{%' && !startTrigger.endsWith('|')) {
                 return null;
             }
         }

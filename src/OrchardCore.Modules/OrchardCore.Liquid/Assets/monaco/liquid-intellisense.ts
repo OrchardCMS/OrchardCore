@@ -131,12 +131,13 @@ function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.
 }
 
 const completionItemProvider: monaco.languages.CompletionItemProvider = {
-    triggerCharacters: [' ', '|'],
+    triggerCharacters: [' '],
     provideCompletionItems: (model: monaco.editor.ITextModel, position: monaco.Position, context: monaco.languages.CompletionContext, token: monaco.CancellationToken) => {
         var items: string[] = [];
 
         if (context.triggerCharacter == ' ') {
-            if (model.getValueInRange(new monaco.Range(position.lineNumber, position.column - 3, position.lineNumber, position.column - 1)) != '{%') {
+            var startTrigger = model.getValueInRange(new monaco.Range(position.lineNumber, position.column - 3, position.lineNumber, position.column - 1));
+            if (startTrigger != '{%' && !startTrigger.endsWith('|')) {
                 return null;
             }
         }
