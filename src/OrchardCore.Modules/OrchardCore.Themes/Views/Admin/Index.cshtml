@@ -40,7 +40,7 @@ else
                         {
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                    <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                         <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
                                     </form>
                                 </div>
@@ -48,13 +48,13 @@ else
                                     <div class="float-right">
                                         @if (themeEntry.Enabled)
                                         {
-                                            <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                            <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                                 <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
                                             </form>
                                         }
                                         else
                                         {
-                                            <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                            <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                                 <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
                                             </form>
                                         }

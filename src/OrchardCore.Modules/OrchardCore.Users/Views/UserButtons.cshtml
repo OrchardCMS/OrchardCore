@@ -28,7 +28,7 @@
 
 @if (!user.EmailConfirmed && Site.As<RegistrationSettings>().UsersMustValidateEmail && hasManageUser)
 {
-    <form method="post" class="d-inline-block">
+    <form method="post" class="d-inline-block" class="no-multisubmit">
         <input name="id" type="hidden" value="@user.UserId" />
         <button asp-action="SendVerificationEmail" asp-controller="Registration" class="btn btn-info btn-sm">@T["Send verification email"]</button>
     </form>

@@ -4,7 +4,7 @@
     ViewLayout = "Layout__Login";
 }
 
-<form asp-controller="Account" asp-action="RegisterExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+<form asp-controller="Account" asp-action="RegisterExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <h4>@T["Create a new account."]</h4>
     <p class="text-info">
         @T["You've successfully authenticated with <strong>{0}</strong>. Please fill the form below and click the Register button to complete the registration.", ViewData["LoginProvider"]]
