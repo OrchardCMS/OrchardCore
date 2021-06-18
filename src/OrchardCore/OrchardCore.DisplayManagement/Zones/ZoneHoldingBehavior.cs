@@ -230,7 +230,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 _parent.Properties[_potentialZoneName] = _zone;
             }
 
-            return await _zone.AddAsync(item, position);
+            return _zone = await _zone.AddAsync(item, position);
         }
     }
 }
