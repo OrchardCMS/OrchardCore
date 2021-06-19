@@ -454,7 +454,7 @@ namespace OrchardCore.ContentManagement
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
 
-            if (options.IsPublished)
+            if (contentItem.Published)
             {
                 var publishContext = new PublishContentContext(contentItem, null);
 
