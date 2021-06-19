@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using Nest;
 
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elastic.Services;
@@ -153,10 +154,8 @@ namespace OrchardCore.Search.Elastic
             foreach (var entry in documentIndex.Entries)
             {
                 if (entries.ContainsKey(entry.Name)
-                    || entry.Name.Contains("Content.ContentItem.FullText")
-                    || entry.Name.Contains("Analyzed")
-                    || entry.Name.Contains("Sanitize")
-                    || entry.Name.Contains("Normalized"))
+                    || entry.Name.Contains(IndexingConstants.FullTextKey)
+                    || Array.Exists(IndexingConstants.IgnoredFields, x => entry.Name.Contains(x)))
                 {
                         continue;
                 }
