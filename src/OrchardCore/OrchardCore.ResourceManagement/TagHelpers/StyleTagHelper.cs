@@ -11,6 +11,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     [HtmlTargetElement("style", Attributes = AtAttributeName)]
     public class StyleTagHelper : TagHelper
     {
+        private static readonly char[] splitSeparators = { ',', ' ' };
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
         private const string AtAttributeName = "at";
@@ -91,7 +92,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(DependsOn.Split(splitSeparators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (At == ResourceLocation.Inline)
@@ -154,7 +155,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // This allows additions to the pre registered style dependencies.
                 if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(DependsOn.Split(splitSeparators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 var childContent = await output.GetChildContentAsync();

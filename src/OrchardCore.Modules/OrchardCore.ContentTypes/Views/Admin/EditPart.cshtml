@@ -14,14 +14,6 @@
 <form asp-action="EditPart">
     @Html.ValidationSummary()
 
-    <div class="form-group">
-        <div class="w-sm-75 w-md-50 w-lg-25">
-            <label asp-for="Name">@T["Technical Name"]</label>
-            <input asp-for="Name" class="form-control" readonly />
-        </div>
-        <span class="hint">@T["Technical name of the part."]</span>
-    </div>
-
     @if (Model.Editor.Shortcuts != null)
     {
         <div class="form-group">

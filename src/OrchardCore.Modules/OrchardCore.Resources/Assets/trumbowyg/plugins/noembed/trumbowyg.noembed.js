@@ -30,6 +30,10 @@
             da: {
                 noembedError: 'Fejl'
             },
+            et: {
+                noembed: 'Noembed',
+                noembedError: 'Viga'
+            },
             fr: {
                 noembedError: 'Erreur'
             },

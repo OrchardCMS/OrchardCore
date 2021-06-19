@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -11,6 +12,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Contents.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Handlers
@@ -62,12 +64,10 @@ namespace OrchardCore.Contents.Handlers
 
                     if (bodyAspect != null && bodyAspect.Body != null)
                     {
-                        using (var sw = new StringWriter())
-                        {
-                            // Don't encode the body
-                            bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
-                            fullTextAspect.Segments.Add(sw.ToString());
-                        }
+                        using var sw = new ZStringWriter();
+                        // Don't encode the body
+                        bodyAspect.Body.WriteTo(sw, NullHtmlEncoder.Default);
+                        fullTextAspect.Segments.Add(sw.ToString());
                     }
                 }
 

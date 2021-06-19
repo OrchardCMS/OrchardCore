@@ -1,8 +1,8 @@
-using System.IO;
 using System.Text.Encodings.Web;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Pooling;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.GraphQL.Options;
@@ -48,17 +48,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     var displayHelper = serviceProvider.GetRequiredService<IDisplayHelper>();
                     var htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
-                    using (var sb = StringBuilderPool.GetInstance())
-                    {
-                        using (var sw = new StringWriter(sb.Builder))
-                        {
-                            var htmlContent = await displayHelper.ShapeExecuteAsync(model);
-                            htmlContent.WriteTo(sw, htmlEncoder);
-
-                            await sw.FlushAsync();
-                            return sw.ToString();
-                        }
-                    }
+                    using var sw = new ZStringWriter();
+                    var htmlContent = await displayHelper.ShapeExecuteAsync(model);
+                    htmlContent.WriteTo(sw, htmlEncoder);
+                    return sw.ToString();
                 });
 
             Interface<ContentItemInterface>();

@@ -19,7 +19,7 @@ namespace OrchardCore.Lists.Liquid
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
-            string listContentItemId = null;
+            string listContentItemId;
 
             if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
             {

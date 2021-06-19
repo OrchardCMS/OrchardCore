@@ -1,0 +1,57 @@
+doctype html
+html(lang='en')
+
+    head
+
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+        meta(name='description', content='')
+        meta(name='author', content='')
+
+        title Clean Blog - Start Bootstrap Theme
+
+        link(rel='icon', type='image/x-icon', href='assets/favicon.ico')
+
+        include includes/css.pug
+
+    body
+
+        include includes/navbar.pug
+
+        // Page Header
+        header.masthead(style="background-image: url('assets/img/contact-bg.jpg')")
+            .container.position-relative.px-4.px-lg-5
+                .row.gx-4.gx-lg-5.justify-content-center
+                    .col-md-10.col-lg-8.col-xl-7
+                        .page-heading
+                            h1 Contact Me
+                            span.subheading Have questions? I have answers.
+
+        // Main Content
+        main.mb-4
+            .container.px-4.px-lg-5
+                .row.gx-4.gx-lg-5.justify-content-center
+                    .col-md-10.col-lg-8.col-xl-7
+                        p
+                            | Want to get in touch? Fill out the form below to send me a message and I will get back to you as soon as possible!
+
+                        .my-5
+                            form
+                                .form-floating
+                                    input#inputName.form-control(type='text' placeholder='Enter your name...')
+                                    label(for='inputName') Name
+                                .form-floating
+                                    input#inputEmail.form-control(type='email' placeholder='Enter your email...')
+                                    label(for='inputEmail') Email address
+                                .form-floating
+                                    input#inputPhone.form-control(type='tel' placeholder='Enter your phone number...')
+                                    label(for='inputPhone') Phone Number
+                                .form-floating
+                                    textarea#inputMessage.form-control(placeholder='Enter your message here...', style='height: 12rem;')
+                                    label(for='inputMessage') Message
+                                br
+                                button.btn.btn-primary.text-uppercase(type='submit') Send
+
+        include includes/footer.pug
+
+        include includes/scripts.pug

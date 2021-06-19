@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -15,21 +16,33 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var services = ((LiquidTemplateContext)context).Services;
+            var services = ((LiquidTemplateContext) context).Services;
             var layoutAccessor = services.GetRequiredService<ILayoutAccessor>();
 
             string position = null;
             string name = null;
 
-            foreach (var argument in argumentsList)
+            for (var i = 0; i < argumentsList.Count; i++)
             {
+                var argument = argumentsList[i];
+                // check common case
+                if (String.IsNullOrEmpty(argument.Name) && argument.Expression is LiteralExpression literalExpression)
+                {
+                    name = literalExpression.Value.ToStringValue();
+                    continue;
+                }
+
                 switch (argument.Name)
                 {
-                    case "position": position = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "position":
+                        position = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
 
                     case null:
                     case "name":
-                    case "": name ??= (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "":
+                        name ??= (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
                 }
             }
 

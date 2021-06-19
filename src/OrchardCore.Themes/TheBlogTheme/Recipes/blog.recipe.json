@@ -1154,15 +1154,15 @@
       "Files": [
         {
           "TargetPath": "about-bg.jpg",
-          "SourcePath": "../wwwroot/img/about-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/about-bg.jpg"
         },
         {
           "TargetPath": "home-bg.jpg",
-          "SourcePath": "../wwwroot/img/home-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/home-bg.jpg"
         },
         {
           "TargetPath": "post-bg.jpg",
-          "SourcePath": "../wwwroot/img/post-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/post-bg.jpg"
         }
       ]
     },
@@ -1175,6 +1175,7 @@
             "ConditionId":"[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
                 "Name": "BooleanCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"
@@ -1189,6 +1190,7 @@
             "ConditionId": "[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
                 "Name": "HomepageCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"

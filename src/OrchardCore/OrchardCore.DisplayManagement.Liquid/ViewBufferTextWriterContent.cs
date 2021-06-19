@@ -18,13 +18,15 @@ namespace OrchardCore.DisplayManagement.Liquid
         private StringBuilder _builder;
         private StringBuilderPool _pooledBuilder;
         private List<StringBuilderPool> _previousPooledBuilders;
+        private readonly bool _releaseOnWrite;
 
         public override Encoding Encoding => Encoding.UTF8;
 
-        public ViewBufferTextWriterContent()
+        public ViewBufferTextWriterContent(bool releaseOnWrite = true)
         {
             _pooledBuilder = StringBuilderPool.GetInstance();
             _builder = _pooledBuilder.Builder;
+            _releaseOnWrite = releaseOnWrite;
         }
 
         protected override void Dispose(bool disposing)
@@ -195,6 +197,20 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
         }
 
+        public override void Write(StringBuilder value)
+        {
+            if (value != null)
+            {
+                foreach (var chunk in value.GetChunks())
+                {
+                    if (!chunk.IsEmpty)
+                    {
+                        Write(chunk.Span);
+                    }
+                }
+            }
+        }
+
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
             if (_builder == null)
@@ -224,7 +240,10 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             }
 
-            ReleasePooledBuffer();
+            if (_releaseOnWrite)
+            {
+                ReleasePooledBuffer();
+            }
         }
 
         public override Task FlushAsync()
