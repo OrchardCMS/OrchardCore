@@ -10,8 +10,10 @@
     var hasEditor = activity.HasEditor;
     var activityType = isEvent ? "Event" : "Task";
     var activityTypeClass = isEvent ? "fa-bolt" : "fa-caret-right";
+    var xPosition = activityRecord.X <= 0 ? 0 : activityRecord.X;
+    var yPosition = activityRecord.Y <= 0 ? 0 : activityRecord.Y;
 }
-<div class="activity @cssClass" style="left:@(activityRecord.X)px; top:@(activityRecord.Y)px;" id="@($"activity-{Model.WorkflowTypeId}-{activityRecord.ActivityId}")" data-activity-id="@activityRecord.ActivityId" data-activity-start="@isStart.ToString().ToLower()" data-activity-type="@activityType" data-activity-has-editor="@hasEditor.ToString().ToLower()" data-placement="bottom">
+<div class="activity @cssClass" style="left:@(xPosition)px; top:@(yPosition)px;" id="@($"activity-{Model.WorkflowTypeId}-{activityRecord.ActivityId}")" data-activity-id="@activityRecord.ActivityId" data-activity-start="@isStart.ToString().ToLower()" data-activity-type="@activityType" data-activity-has-editor="@hasEditor.ToString().ToLower()" data-placement="bottom">
     @await DisplayAsync(Model.Content)
     @if (isEvent)
     {

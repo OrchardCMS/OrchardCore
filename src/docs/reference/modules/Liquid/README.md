@@ -121,7 +121,58 @@ Output
 ```text
 Bonjour!
 ```
+
 ## Html Filters
+
+### `absolute_url`
+
+Creates the full absolute URL for the given relative virtual path.
+
+Input
+
+```liquid
+{{ '~/some-page' | absolute_url }}
+```
+
+Output if there is no URL prefix for the current tenant:
+
+```text
+https://example.com/some-page
+```
+
+Output if there is a URL prefix for the current tenant:
+
+```text
+https://example.com/url-prefix/some-page
+```
+
+If the input URL starts with a tilde then the output URL's base will always be the current tenant's root URL, including the tenant prefix if one is configured. E.g. `~/` will always point to the homepage of the tenant, regardless of configuration.
+
+The HTTP request scheme (e.g. "https") and port number are added too.
+
+### `href`
+
+Creates a content URL for a relative virtual path. Recommended for generating URLs in every case you want to refer to a relative path.
+
+Input
+
+```liquid
+{{ '~/some-page' | href }}
+```
+
+Output if there is no URL prefix for the current tenant:
+
+```text
+/some-page
+```
+
+Output if there is an URL prefix for the current tenant:
+
+```text
+/url-prefix/some-page
+```
+
+If the input URL starts with a tilde then the output URL will always be relative to the current tenant's root URL, including the tenant prefix if one is configured. E.g. `~/` will always point to the homepage of the tenant, regardless of configuration.
 
 ### `html_class`
 
@@ -184,6 +235,14 @@ Sanitizes some HTML content.
   <span class="text-primary">{{ Content }}</span>
 {% endcapture %}
 {{ output | sanitize_html | raw }}
+```
+
+### `shortcode`
+
+Renders Shortcodes. Should be combined with the `raw` filter.
+
+```liquid
+{{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
 ```
 
 ## Json Filters

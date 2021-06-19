@@ -34,21 +34,42 @@ namespace OrchardCore.Benchmark
             _liquidFilterDelegateResolver = new LiquidFilterDelegateResolver<ShapeRenderFilter>();
         }
 
-        // 21st Feb 2021
+        // Summary 19th May 2021: dotnet run -c Release --filter *FluidShapeRenderBenchmark* --framework netcoreapp3.1 --job short
 
-        // BenchmarkDotNet=v0.12.1, OS=macOS Catalina 10.15.7 (19H15) [Darwin 19.6.0]
-        // Intel Core i7-6700K CPU 4.00GHz (Skylake), 1 CPU, 8 logical and 4 physical cores
-        // .NET Core SDK=5.0.103
-        //   [Host]     : .NET Core 3.1.8 (CoreCLR 4.700.20.41105, CoreFX 4.700.20.41903), X64 RyuJIT
-        //   DefaultJob : .NET Core 3.1.8 (CoreCLR 4.700.20.41105, CoreFX 4.700.20.41903), X64 RyuJIT
+        //BenchmarkDotNet=v0.13.0, OS=Windows 10.0.19043.985 (21H1/May2021Update)
+        //Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
+        //.NET SDK= 6.0.100-preview.3.21202.5
+        //  [Host]   : .NET Core 3.1.15 (CoreCLR 4.700.21.21202, CoreFX 4.700.21.21402), X64 RyuJIT
+        //  ShortRun : .NET Core 3.1.15 (CoreCLR 4.700.21.21202, CoreFX 4.700.21.21402), X64 RyuJIT
+
+        //Job=ShortRun IterationCount = 3  LaunchCount=1
+        //WarmupCount=3
+
+        //|                       Method |     Mean |    Error |    StdDev | Ratio | RatioSD |  Gen 0 |  Gen 1 | Gen 2 | Allocated |
+        //|----------------------------- |---------:|---------:|----------:|------:|--------:|-------:|-------:|------:|----------:|
+        //|   OriginalShapeRenderDynamic | 6.211 us | 5.331 us | 0.2922 us |  1.00 |    0.00 | 1.1292 | 0.0153 |     - |      9 KB |
+        //| ShapeRenderWithAmbientValues | 5.441 us | 3.280 us | 0.1798 us |  0.88 |    0.04 | 1.0910 | 0.0229 |     - |      9 KB |
+        //|            ShapeRenderStatic | 4.498 us | 3.363 us | 0.1844 us |  0.72 |    0.02 | 1.0757 | 0.0229 |     - |      9 KB |
+        //|      ShapeRenderWithResolver | 4.442 us | 5.901 us | 0.3235 us |  0.71 |    0.03 | 1.0834 | 0.0229 |     - |      9 KB |
 
 
-        // |                       Method |     Mean |     Error |    StdDev | Ratio | RatioSD |  Gen 0 | Gen 1 | Gen 2 | Allocated |
-        // |----------------------------- |---------:|----------:|----------:|------:|--------:|-------:|------:|------:|----------:|
-        // |   OriginalShapeRenderDynamic | 3.798 us | 0.0663 us | 0.1108 us |  1.00 |    0.00 | 2.2888 |     - |     - |   9.37 KB |
-        // | ShapeRenderWithAmbientValues | 3.156 us | 0.0278 us | 0.0232 us |  0.82 |    0.03 | 2.2240 |     - |     - |   9.09 KB |
-        // |            ShapeRenderStatic | 3.180 us | 0.0253 us | 0.0224 us |  0.83 |    0.03 | 2.1935 |     - |     - |   8.96 KB |
-        // |      ShapeRenderWithResolver | 3.164 us | 0.0206 us | 0.0161 us |  0.83 |    0.03 | 2.1973 |     - |     - |   8.98 KB |
+        // Summary 19th May 2021: dotnet run -c Release --filter *FluidShapeRenderBenchmark* --framework net5.0 --job short
+
+        //BenchmarkDotNet=v0.13.0, OS=Windows 10.0.19043.985 (21H1/May2021Update)
+        //Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
+        //.NET SDK= 6.0.100-preview.3.21202.5
+        //  [Host]   : .NET 5.0.6 (5.0.621.22011), X64 RyuJIT
+        //  ShortRun : .NET 5.0.6 (5.0.621.22011), X64 RyuJIT
+
+        //Job=ShortRun IterationCount = 3  LaunchCount=1
+        //WarmupCount=3
+
+        //|                       Method |     Mean |     Error |    StdDev | Ratio | RatioSD |  Gen 0 |  Gen 1 | Gen 2 | Allocated |
+        //|----------------------------- |---------:|----------:|----------:|------:|--------:|-------:|-------:|------:|----------:|
+        //|   OriginalShapeRenderDynamic | 5.391 us | 4.1445 us | 0.2272 us |  1.00 |    0.00 | 1.1444 | 0.0153 |     - |      9 KB |
+        //| ShapeRenderWithAmbientValues | 4.954 us | 2.2463 us | 0.1231 us |  0.92 |    0.02 | 1.0986 |      - |     - |      9 KB |
+        //|            ShapeRenderStatic | 3.999 us | 2.2435 us | 0.1230 us |  0.74 |    0.03 | 1.0834 | 0.0153 |     - |      9 KB |
+        //|      ShapeRenderWithResolver | 3.701 us | 0.2977 us | 0.0163 us |  0.69 |    0.03 | 1.0910 | 0.0229 |     - |      9 KB |
 
         [Benchmark(Baseline = true)]
         public async Task OriginalShapeRenderDynamic()

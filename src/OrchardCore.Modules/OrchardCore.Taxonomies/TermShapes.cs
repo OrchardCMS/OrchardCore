@@ -8,6 +8,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Taxonomies.Models;
+using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies
 {
@@ -19,9 +20,9 @@ namespace OrchardCore.Taxonomies
             builder.Describe("TermPart")
                 .OnDisplaying(context =>
                 {
-                    var shape = context.Shape;
+                    var viewModel = context.Shape as TermPartViewModel;
 
-                    var contentType = shape.GetProperty<ContentItem>("ContentItem")?.ContentType;
+                    var contentType = viewModel?.ContentItem?.ContentType;
                     var displayTypes = new[] { "", "_" + context.Shape.Metadata.DisplayType };
 
                     // [ShapeType]_[DisplayType], e.g. TermPart.Summary, TermPart.Detail

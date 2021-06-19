@@ -98,8 +98,6 @@ namespace OrchardCore.Users.Controllers
                 var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
                 if (schemes.Count() == 1)
                 {
-                    var provider = schemes.First().Name;
-
                     var dataProtector = _dataProtectionProvider.CreateProtector(nameof(DefaultExternalLogin))
                                             .ToTimeLimitedDataProtector();
 
@@ -209,12 +207,12 @@ namespace OrchardCore.Users.Controllers
                         // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                         if (user != null)
                         {
-                            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
+                            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
                             if (result.Succeeded)
                             {
                                 if (!await AddConfirmEmailError(user) && !AddUserEnabledError(user))
                                 {
-                                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: false);
+                                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
 
                                     if (result.Succeeded)
                                     {
@@ -223,6 +221,12 @@ namespace OrchardCore.Users.Controllers
                                         return await LoggedInActionResult(user, returnUrl);
                                     }
                                 }
+                            }
+
+                            if (result.IsLockedOut)
+                            {
+                                ModelState.AddModelError(string.Empty, S["The account is locked out"]);
+                                return View();
                             }
                         }
 
@@ -262,7 +266,8 @@ namespace OrchardCore.Users.Controllers
                 var user = await _userService.GetAuthenticatedUserAsync(User);
                 if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    if (Url.IsLocalUrl(returnUrl)) {
+                    if (Url.IsLocalUrl(returnUrl))
+                    {
                         _notifier.Success(H["Your password has been changed successfully."]);
                         return Redirect(returnUrl);
                     }
@@ -336,47 +341,20 @@ namespace OrchardCore.Users.Controllers
             var userRoles = await _userManager.GetRolesAsync(user);
             var context = new UpdateRolesContext(user, info.LoginProvider, claims, userRoles);
 
-            string[] rolesToAdd = new string[0];
-            string[] rolesToRemove = new string[0];
-
-            var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
-            if (loginSettings.UseScriptToSyncRoles)
+            foreach (var item in _externalLoginHandlers)
             {
                 try
                 {
-                    var jsonSerializerSettings = new JsonSerializerSettings()
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    };
-                    var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JsonConvert.SerializeObject(context, jsonSerializerSettings)};\nsyncRoles(context);\nreturn context;";
-                    dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
-                    rolesToAdd = (evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()).ToArray();
-                    rolesToRemove = (evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()).ToArray();
+                    await item.UpdateRoles(context);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error Syncing Roles From External Provider {0}", info.LoginProvider);
+                    _logger.LogError(ex, "{externalLoginHandler} - IExternalLoginHandler.UpdateRoles threw an exception", item.GetType());
                 }
-            }
-            else
-            {
-                foreach (var item in _externalLoginHandlers)
-                {
-                    try
-                    {
-                        await item.UpdateRoles(context);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "{externalLoginHandler} - IExternalLoginHandler.UpdateRoles threw an exception", item.GetType());
-                    }
-                }
-                rolesToAdd = context.RolesToAdd;
-                rolesToRemove = context.RolesToRemove;
             }
 
-            await _userManager.AddToRolesAsync(user, rolesToAdd.Distinct());
-            await _userManager.RemoveFromRolesAsync(user, rolesToRemove.Distinct());
+            await _userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
+            await _userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
 
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
@@ -560,13 +538,12 @@ namespace OrchardCore.Users.Controllers
 
             ModelState.Clear();
 
-            if (model.NoEmail)
+            if (model.NoEmail && String.IsNullOrWhiteSpace(model.Email))
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
-                model.Email = email;
+                model.Email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
             }
 
-            if (model.NoUsername)
+            if (model.NoUsername && String.IsNullOrWhiteSpace(model.UserName))
             {
                 model.UserName = await GenerateUsername(info);
             }
@@ -754,61 +731,34 @@ namespace OrchardCore.Users.Controllers
 
         private async Task<string> GenerateUsername(ExternalLoginInfo info)
         {
-            var now = new TimeSpan(_clock.UtcNow.Ticks) - new TimeSpan(DateTime.UnixEpoch.Ticks);
-            var ret = string.Concat("u" + Convert.ToInt32(now.TotalSeconds).ToString());
+            var ret = String.Concat("u", IdGenerator.GenerateId());
+            var externalClaims = info?.Principal.GetSerializableClaims();
+            var userNames = new Dictionary<Type, string>();
 
-            var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
-
-            var externalClaims = info == null ? null : info.Principal.GetSerializableClaims();
-
-            if (registrationSettings.UseScriptToGenerateUsername)
+            foreach (var item in _externalLoginHandlers)
             {
-                var context = new { userName = string.Empty, loginProvider = info?.LoginProvider, externalClaims };
-                var jsonSerializerSettings = new JsonSerializerSettings()
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                };
-                var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JsonConvert.SerializeObject(context, jsonSerializerSettings)};\ngenerateUsername(context);\nreturn context;";
                 try
                 {
-                    dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
-                    if (evaluationResult?.userName == null)
-                        throw new Exception("GenerateUsernameScript did not return a username");
-                    return evaluationResult.userName;
+                    var userName = await item.GenerateUserName(info.LoginProvider, externalClaims.ToArray());
+                    if (!String.IsNullOrWhiteSpace(userName))
+                    {
+                        // set the return value to the username generated by the first IExternalLoginHandler
+                        if (userNames.Count == 0)
+                        {
+                            ret = userName;
+                        }
+                        userNames.Add(item.GetType(), userName);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error evaluating GenerateUsernameScript({context})", context);
+                    _logger.LogError(ex, "{externalLoginHandler} - IExternalLoginHandler.GenerateUserName threw an exception", item.GetType());
                 }
             }
-            else
+            if (userNames.Count > 1)
             {
-                var userNames = new Dictionary<Type, string>();
-                foreach (var item in _externalLoginHandlers)
-                {
-                    try
-                    {
-                        var userName = await item.GenerateUserName(info.LoginProvider, externalClaims.ToArray());
-                        if (!string.IsNullOrWhiteSpace(userName))
-                        {
-                            if (userNames.Count == 0)
-                            {
-                                ret = userName;
-                            }
-                            userNames.Add(item.GetType(), userName);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "{externalLoginHandler} - IExternalLoginHandler.GenerateUserName threw an exception", item.GetType());
-                    }
-                }
-                if (userNames.Count > 1)
-                {
-                    _logger.LogWarning("More than one IExternalLoginHandler generated username. Used first one registered, {externalLoginHandler}", userNames.FirstOrDefault().Key);
-                }
+                _logger.LogWarning("More than one IExternalLoginHandler generated username. Used first one registered, {externalLoginHandler}", userNames.FirstOrDefault().Key);
             }
-
             return ret;
         }
     }

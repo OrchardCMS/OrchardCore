@@ -461,8 +461,8 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             await _workflowTypeStore.SaveAsync(workflowType);
-            await _session.SaveChangesAsync();
             _notifier.Success(H["Workflow has been saved."]);
+
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 

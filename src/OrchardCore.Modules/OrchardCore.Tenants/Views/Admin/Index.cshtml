@@ -53,7 +53,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
 
-<form asp-action="Index" method="post">
+<form asp-action="Index" method="post" class="no-multisubmit">
     <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
     <input type="submit" name="submit.BulkAction" class="sr-only" />
     <input name="BulkAction" type="hidden" />
@@ -163,17 +163,17 @@
                                 }
                                 @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                                 {
-                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" itemprop="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
+                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
                                 }
                                 @if (entry.ShellSettings.State == TenantState.Disabled)
                                 {
-                                    <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" itemprop="UnsafeUrl">@T["Enable"]</a>
+                                    <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" data-url-af="UnsafeUrl">@T["Enable"]</a>
                                 }
                                 @if (entry.ShellSettings.State == TenantState.Uninitialized)
                                 {
                                     <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
                                 }
-                                <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" itemprop="UnsafeUrl">@T["Reload"]</a>
+                                <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" data-url-af="UnsafeUrl">@T["Reload"]</a>
                             </div>
                         </div>
                     </div>

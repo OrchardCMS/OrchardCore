@@ -45,7 +45,7 @@ The auto-setup module allows to automatically install the application/tenants on
 
 | Parameter | Description |
 | --- | --- |
-| `ShellName` | The technical shell/tenant name. It can not be empty and must contain characters only. Use "Default" for the default tenant. |
+| `ShellName` | The technical shell / tenant name. It can not be empty and must contain characters only. Use "Default" for the default tenant. |
 | `SiteName` | The name of the site. |
 | `AdminUsername` | The tenant username of the super user. |
 | `AdminEmail` | The email of the tenant super user. |
@@ -53,20 +53,20 @@ The auto-setup module allows to automatically install the application/tenants on
 | `DatabaseProvider` | The database provider. |
 | `DatabaseConnectionString` | The connection string. |
 | `DatabaseTablePrefix` | The database table prefix. Can be used to install a tenant on the same database. |
-| `RecipeName` | The tenant installation Recipe Name. |
+| `RecipeName` | The tenant installation Recipe name. |
 | `RequestUrlHost` | The tenant host url. |
 | `RequestUrlPrefix` | The tenant url prefix. |
 
 !!! note
-    Tenants array must contain root tenant with `ShellName` equals to `Default`.  
+    Tenants array must contain the root tenant with `ShellName` equals to `Default`.  
     Each tenant will be installed on demand (on the first tenant request).  
-    If AutoSetupPath is provided, it must be used to trigger the installation for each tenant e.g:  
-    `/autosetup` - trigger installation of Root Tenant  
-    `/mytenant/autosetup` - auto-install mytenant
+    If AutoSetupPath is provided, it must be used to trigger the installation for each tenant e.g:
+    `/autosetup` - trigger installation of the Root tenant.
+    `/mytenant/autosetup` - auto-install mytenant.
 
 ### Environment Variables
 
-Since JSON configuration contains admin-sensitive information, it is recommended to use Environment Variables instead.
+Since JSON configuration contains admin-sensitive information, it is recommended to use environment variables instead.
 
 ```
 "OrchardCore__OrchardCore_AutoSetup__AutoSetupPath": ""
@@ -125,3 +125,37 @@ To enable the Auto Setup feature, it is necessary to add it in the Web project's
 This feature is enabled by default in the default project included in the source code, but
 is not with the application templates to prevent any unexpected behavior when a custom project
 is created.
+
+## Using Distributed Lock For Auto Setup
+
+If multiple OrchardCore instances sharing the same database are launched, you might need a distributed lock for an atomic auto setup.
+![Use case](./assets/lock-use-case.png)
+You should enable the Redis Lock feature in the startup file.
+
+```csharp
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services
+            .AddOrchardCms()
+            .AddSetupFeatures("OrchardCore.Redis.Lock", "OrchardCore.AutoSetup");
+    }
+```
+Make sure you set the Redis configuration string via an environment variable or a configuration file.
+
+```
+"OrchardCore__OrchardCore_Redis__Configuration": "192.168.99.100:6379,allowAdmin=true"
+```
+
+Optional Distributed Lock Parameters.
+
+| Parameter | Description | Default Value |
+| --- | --- |
+| `LockTimeout` | The timeout in milliseconds to acquire a distributed auto setup lock. | 60 seconds |
+| `LockExpiration` | The expiration in milliseconds of the distributed setup lock. | 60 seconds |
+
+Lock configuration parameters are optional and can be set via environment variables or a configuration file.
+
+```
+"OrchardCore__OrchardCore_AutoSetup__LockOptions__LockTimeout": "10000"
+"OrchardCore__OrchardCore_AutoSetup__LockOptions__LockExpiration": "10000"
+```

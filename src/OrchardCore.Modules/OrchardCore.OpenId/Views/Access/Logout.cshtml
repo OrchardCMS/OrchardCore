@@ -11,7 +11,7 @@
 
     <p class="lead text-left">@T["Are you sure you want to log out?"]</p>
 
-    <form asp-controller="Access" asp-action="Logout" method="post">
+    <form asp-controller="Access" asp-action="Logout" method="post" class="no-multisubmit">
         @* Flow the request parameters so they can be received by the Accept/Reject actions: *@
         @foreach (var parameter in Context.Request.HasFormContentType ?
           (IEnumerable<KeyValuePair<string, StringValues>>) Context.Request.Form : Context.Request.Query)

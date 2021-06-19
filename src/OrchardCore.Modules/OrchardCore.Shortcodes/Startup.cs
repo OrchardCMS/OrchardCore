@@ -36,13 +36,19 @@ namespace OrchardCore.Shortcodes
 
                 o.MemberAccessStrategy.Register<Context, object>((obj, name) => obj[name]);
 
-                // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
-                o.ValueConverters.Add(o => o is Context c ? new ObjectValue(c) : null);
+                o.ValueConverters.Add(x =>
+                {
+                    return x switch
+                    {
+                        // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
+                        Context c => new ObjectValue(c),
+                        // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
+                        Sc.Arguments a => new ObjectValue(a),
+                        _ => null
+                    };
+                });
 
                 o.MemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.NamedOrDefault(name));
-
-                // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
-                o.ValueConverters.Add(o => o is Sc.Arguments a ? new ObjectValue(a) : null);
             });
 
             services.AddScoped<IShortcodeService, ShortcodeService>();
