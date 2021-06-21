@@ -20,7 +20,7 @@ using YesSql;
 namespace OrchardCore.Contents.AuditTrail.Handlers
 {
     [RequireFeatures("OrchardCore.AuditTrail")]
-    public class AuditTrailContentHandler : ContentHandlerBase, IAuditTrailContentHandler
+    public class AuditTrailContentHandler : ContentHandlerBase
     {
         private readonly YesSql.ISession _session;
         private readonly ISiteService _siteService;
@@ -59,14 +59,14 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         public override Task ClonedAsync(CloneContentContext context)
             => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Cloned, context.ContentItem);
 
-        public Task RestoringAsync(RestoreContentContext context)
+        public override Task RestoringAsync(RestoreContentContext context)
         {
             _restoring.Add(context.ContentItem.ContentItemId);
 
             return Task.CompletedTask;
         }
 
-        public Task RestoredAsync(RestoreContentContext context)
+        public override Task RestoredAsync(RestoreContentContext context)
             => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, context.ContentItem);
 
         private async Task RecordAuditTrailEventAsync(string name, IContent content)

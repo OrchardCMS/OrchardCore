@@ -1,7 +1,4 @@
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
-
-namespace OrchardCore.AuditTrail.Services.Models
+namespace OrchardCore.ContentManagement.Handlers
 {
     public class RestoreContentContext : ContentContextBase
     {

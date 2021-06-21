@@ -628,6 +628,51 @@ namespace OrchardCore.ContentManagement
             return validateContext.ContentValidateResult;
         }
 
+        public async Task<ContentValidateResult> RestoreAsync(ContentItem contentItem)
+        {
+            var validateContext = new ValidateContentContext(contentItem);
+
+            await Handlers.InvokeAsync((handler, context) => handler.ValidatingAsync(context), validateContext, _logger);
+
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.ValidatedAsync(context), validateContext, _logger);
+
+            if (!validateContext.ContentValidateResult.Succeeded)
+            {
+                await _session.CancelAsync();
+                return validateContext.ContentValidateResult;
+            }
+
+            // So that a new record will be created.
+            contentItem.Id = 0;
+
+            // So that a new version id will be generated.
+            contentItem.ContentItemVersionId = "";
+
+            contentItem.Latest = contentItem.Published = false;
+
+            var latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
+                .Where(index => index.ContentItemId == contentItem.ContentItemId && index.Latest)
+                .FirstOrDefaultAsync();
+
+            // Remove an existing draft but keep an existing published version.
+            if (latestVersion != null)
+            {
+                latestVersion.Latest = false;
+                _session.Save(latestVersion);
+            }
+
+            var context = new RestoreContentContext(contentItem);
+
+            await Handlers.InvokeAsync((handler, context) => handler.RestoringAsync(context), context, _logger);
+
+            // The Update handlers are not called here, but it may become necesary.
+            await CreateAsync(contentItem, VersionOptions.Draft);
+
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.RestoredAsync(context), context, _logger);
+
+            return validateContext.ContentValidateResult;
+        }        
+
         public async Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)
         {
             var context = new ContentItemAspectContext

@@ -50,9 +50,7 @@ namespace OrchardCore.Contents.AuditTrail
 
             services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailContentEventDisplayDriver>();
 
-            services.AddScoped<AuditTrailContentHandler>();
-            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AuditTrailContentHandler>());
-            services.AddScoped<IAuditTrailContentHandler>(sp => sp.GetRequiredService<AuditTrailContentHandler>());
+            services.AddScoped<IContentHandler, AuditTrailContentHandler>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
