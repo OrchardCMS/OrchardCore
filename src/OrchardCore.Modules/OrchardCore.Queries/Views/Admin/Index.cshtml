@@ -7,7 +7,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Queries"])</h1></zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
-<form asp-action="Index" method="post">
+<form asp-action="Index" method="post" class="no-multisubmit">
     <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="sr-only" />

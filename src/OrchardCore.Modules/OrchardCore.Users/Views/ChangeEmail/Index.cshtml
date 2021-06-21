@@ -5,7 +5,7 @@
 }
 
 <h2>@T["Change Email"]</h2>
-<form asp-controller="ChangeEmail" asp-action="Index" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+<form asp-controller="ChangeEmail" asp-action="Index" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
         <label asp-for="Email" class="col-md-3 control-label">@T["Email"]</label>

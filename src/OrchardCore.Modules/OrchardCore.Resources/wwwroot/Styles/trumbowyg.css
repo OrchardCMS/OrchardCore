@@ -4,7 +4,7 @@
 */
 
 /**
- * Trumbowyg v2.23.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.24.0 - A lightweight WYSIWYG editor
  * Default stylesheet for Trumbowyg editor
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -233,6 +233,7 @@
 .trumbowyg-button-pane.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active),
 .trumbowyg-button-pane button.trumbowyg-disable, .trumbowyg-disabled .trumbowyg-button-pane button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
   opacity: 0.2;
+  pointer-events: none;
 }
 [dir] .trumbowyg-button-pane.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active), [dir] .trumbowyg-button-pane button.trumbowyg-disable, [dir] .trumbowyg-disabled .trumbowyg-button-pane button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
   cursor: default;

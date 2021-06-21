@@ -53,7 +53,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
 
-<form asp-action="Index" method="post">
+<form asp-action="Index" method="post" class="no-multisubmit">
     <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
     <input type="submit" name="submit.BulkAction" class="sr-only" />
     <input name="BulkAction" type="hidden" />
