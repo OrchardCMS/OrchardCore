@@ -71,7 +71,7 @@ namespace OrchardCore.AuditTrail.Services
 
             options.AuditTrailSorts = _options.SortOptions.Values.Where(x => x.SelectListItem != null).Select(opt => opt.SelectListItem(_serviceProvider, opt, options)).ToList();
 
-            var categories = _auditTrailManager.DescribeCategories().ToArray();
+            var categories = _auditTrailManager.DescribeCategories();
 
             options.Categories = categories
                 .GroupBy(category => category.Name)

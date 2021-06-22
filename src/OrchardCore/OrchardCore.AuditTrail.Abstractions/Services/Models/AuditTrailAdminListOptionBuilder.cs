@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using YesSql;
@@ -42,15 +43,18 @@ namespace OrchardCore.AuditTrail.Services.Models
         }
 
         /// <summary>
-        /// Optionally adss a select list item to the option
+        /// Optionally adds a select list item to the option
         /// </summary>
-
-        public AuditTrailAdminListOptionBuilder WithSelectListItem(Func<IServiceProvider, AuditTrailAdminListOption, AuditTrailIndexOptions, SelectListItem> selectListItem)
+        public AuditTrailAdminListOptionBuilder WithSelectListItem<TLocalizer>(Func<IStringLocalizer, AuditTrailAdminListOption, AuditTrailIndexOptions, SelectListItem> selectListItem) where TLocalizer : class
         {
-            _selectListItem = selectListItem;
+            _selectListItem = (sp, opt, model) =>
+            {
+                var stringLocalizer = (IStringLocalizer)sp.GetService(typeof(IStringLocalizer<>).MakeGenericType(typeof(TLocalizer)));
+                return selectListItem(stringLocalizer, opt, model);
+            };;
 
             return this;
-        }
+        }        
 
         /// <summary>
         /// Sets this query option as the default which will be applied when no option has been selected.
@@ -68,5 +72,5 @@ namespace OrchardCore.AuditTrail.Services.Models
 
             return option;
         }
-    }
+    }  
 }
