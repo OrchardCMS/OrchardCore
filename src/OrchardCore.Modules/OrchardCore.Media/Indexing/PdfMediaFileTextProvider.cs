@@ -8,7 +8,7 @@ namespace OrchardCore.Media.Indexing
     {
         public bool CanHandle(string path)
         {
-            return path.EndsWith(".pdf");
+            return path.EndsWith(".pdf", System.StringComparison.OrdinalIgnoreCase);
         }
 
         public string GetText(string path, Stream fileStream)
