@@ -501,6 +501,8 @@ To set up indexing for Media do the following:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bDxL2LPJPzk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Credits
 
 To index PDF files the [PdfPig library](https://github.com/UglyToad/PdfPig/) is used.
