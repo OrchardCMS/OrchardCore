@@ -3,13 +3,25 @@ theme:
   name: material  
   custom_dir: src/docs/theme
   logo: docs/assets/images/orchard-logo.png
-  favicon: docs/assets/images/favicon-blue.png
+  favicon: docs/assets/images/favicon.png
   features:
     - navigation.instant
     - navigation.tabs
-  palette:
-    primary: blue
-    accent: light blue
+  palette:    
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: green
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: green
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
   static_templates:
     - 404.html
     

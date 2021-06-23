@@ -20,7 +20,7 @@
     <h1>@T["CORS Settings"]</h1>
 </zone>
 <div class="alert alert-info">@T["CORS stands for Cross-Origin Resource Sharing. More information can be found here:"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/cors">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></div>
-<form id="corsForm" asp-action="Index" method="post">
+<form id="corsForm" asp-action="Index" method="post" class="no-multisubmit">
     <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
     <div id="corsAdmin">
         <div v-if="!selectedPolicy">

@@ -40,6 +40,9 @@
             da: {
                 insertAudio: 'Indsæt lyd'
             },
+            et: {
+                insertAudio: 'Lisa helifail'
+            },
             fr: {
                 insertAudio: 'Insérer un son'
             },
