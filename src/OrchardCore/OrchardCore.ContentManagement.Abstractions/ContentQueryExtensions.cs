@@ -16,8 +16,14 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         public static async Task<ContentItem> FirstOrDefaultAsync(this IQuery<ContentItem> query, IContentManager contentManager)
         {
-            ContentItem contentItem = await query.FirstOrDefaultAsync();
-            return contentItem != null ? await contentManager.LoadAsync(contentItem) : null;
+            var contentItem = await query.FirstOrDefaultAsync();
+            
+            if (contentItem == null)
+            {
+                return null;
+            }
+            
+            return await contentManager.LoadAsync(contentItem);
         }
 
         /// <summary>
