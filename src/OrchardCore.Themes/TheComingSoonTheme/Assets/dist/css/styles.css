@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
-* Start Bootstrap - Coming Soon v6.0.0 (https://startbootstrap.com/theme/coming-soon)
+* Start Bootstrap - Coming Soon v6.0.2 (https://startbootstrap.com/theme/coming-soon)
 * Copyright 2013-2021 Start Bootstrap
 * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-coming-soon/blob/master/LICENSE)
 */
@@ -10912,15 +10912,16 @@ video.bg-video {
 }
 .masthead .masthead-content .input-group-newsletter input {
   height: auto;
+  width: 100%;
   font-size: 1rem;
   padding: 1rem;
 }
 .masthead .masthead-content .input-group-newsletter button {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  padding: 1rem;
+  padding: calc(1rem + 2px);
 }
 
 @media (min-width: 992px) {

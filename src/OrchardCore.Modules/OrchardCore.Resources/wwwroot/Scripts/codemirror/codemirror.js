@@ -9061,6 +9061,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return lines;
       }
 
+      if (lineSep === '') {
+        return lines.join('');
+      }
+
       return lines.join(lineSep || this.lineSeparator());
     },
     getLine: function getLine(line) {
@@ -14665,6 +14669,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.61.1";
+  CodeMirror.version = "5.62.0";
   return CodeMirror;
 });
