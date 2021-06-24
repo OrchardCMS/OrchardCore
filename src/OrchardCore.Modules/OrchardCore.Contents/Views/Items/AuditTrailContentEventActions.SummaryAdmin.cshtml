@@ -1,6 +1,5 @@
 @model AuditTrailContentEventViewModel
-@using OrchardCore.AuditTrail.ViewModels
-@using OrchardCore.Contents.AuditTrail.Providers 
+@using OrchardCore.Contents.AuditTrail.Services 
 @{
     var contentItem = Model.ContentItem;
     var versionNumber = Model.VersionNumber;
@@ -8,7 +7,7 @@
 
 <a class="btn btn-sm btn-success" asp-action="Display" asp-controller="AuditTrailContent" asp-area="OrchardCore.Contents" asp-route-versionNumber="@Model.VersionNumber" asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId">@T["View"]</a>
 
-@if (contentItem.ContentItemVersionId != Model.LatestVersionId && Model.AuditTrailEvent.Name == ContentAuditTrailEventProvider.Published)
+@if (contentItem.ContentItemVersionId != Model.LatestVersionId && Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Published)
 { 
     <a class="btn btn-sm btn-secondary"
         asp-route-area="OrchardCore.Contents"
@@ -23,7 +22,7 @@
         @T["Restore"]
     </a>
 }
-@if (contentItem.ContentItemVersionId != Model.LatestVersionId && Model.AuditTrailEvent.Name == ContentAuditTrailEventProvider.Removed)
+@if (contentItem.ContentItemVersionId != Model.LatestVersionId && Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Removed)
 { 
     <a class="btn btn-sm btn-secondary"
         asp-route-area="OrchardCore.Contents"

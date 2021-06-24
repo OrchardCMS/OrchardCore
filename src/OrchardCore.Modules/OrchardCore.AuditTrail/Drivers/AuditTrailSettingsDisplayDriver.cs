@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -17,15 +18,18 @@ namespace OrchardCore.AuditTrail.Drivers
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IServiceProvider _serviceProvider;
 
         public AuditTrailSettingsDisplayDriver(
             IAuditTrailManager auditTrailManager,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IServiceProvider serviceProvider)
         {
             _auditTrailManager = auditTrailManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+            _serviceProvider = serviceProvider;
         }
 
         public override async Task<IDisplayResult> EditAsync(AuditTrailSettings settings, BuildEditorContext context)
@@ -48,8 +52,8 @@ namespace OrchardCore.AuditTrail.Drivers
                     .Select(category => new AuditTrailCategorySettingsViewModel()
                     {
                         Name = category.Name,
-                        LocalizedName = category.LocalizedName,
-                        Events = category.Events
+                        LocalizedName = category.LocalizedName(_serviceProvider),
+                        Events = category.Events.Values
                             .Select(auditTrailEvent =>
                             {
                                 var settings = settingsGroups[auditTrailEvent.Category]
@@ -60,8 +64,8 @@ namespace OrchardCore.AuditTrail.Drivers
                                 {
                                     Name = auditTrailEvent.Name,
                                     Category = auditTrailEvent.Category,
-                                    LocalizedName = auditTrailEvent.LocalizedName,
-                                    Description = auditTrailEvent.Description,
+                                    LocalizedName = auditTrailEvent.LocalizedName(_serviceProvider),
+                                    Description = auditTrailEvent.Description(_serviceProvider),
                                     IsEnabled = auditTrailEvent.IsMandatory || (settings?.IsEnabled ?? auditTrailEvent.IsEnabledByDefault),
                                     IsMandatory = auditTrailEvent.IsMandatory
                                 };

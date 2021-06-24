@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Users.AuditTrail.Models;
-using OrchardCore.Users.AuditTrail.Providers;
+using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.AuditTrail.Registration
@@ -26,7 +26,7 @@ namespace OrchardCore.Users.AuditTrail.Registration
         }
 
         public Task RegisteredAsync(IUser user) =>
-            RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Registered, user);
+            RecordAuditTrailEventAsync(UserRegistrationAuditTrailEventConfiguration.Registered, user);
 
         #region Unused events
 

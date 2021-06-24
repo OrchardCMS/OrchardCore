@@ -4,11 +4,11 @@
     <tbody>
         <tr>
             <th class="border-top-0 w-25">@T["Category"]</th>
-            <td class="border-top-0">@Model.Descriptor.LocalizedCategory</td>
+            <td class="border-top-0">@Model.Descriptor.LocalizedCategory(Context.RequestServices)</td>
         </tr>
         <tr>
             <th>@T["Event"]</th>
-            <td>@Model.Descriptor.LocalizedName</td>
+            <td>@Model.Descriptor.LocalizedName(Context.RequestServices)</td>
         </tr>
         <tr>
             <th>@T["User Name"]</th>

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Models;
 
@@ -7,26 +6,32 @@ namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailEventDescriptor
     {
-        public string Name { get; set; }
-        public string Category { get; set; }
-        public LocalizedString LocalizedName { get; set; }
-        public LocalizedString LocalizedCategory { get; set; }
-        public LocalizedString Description { get; set; }
-        public bool IsEnabledByDefault { get; set; }
-        public bool IsMandatory { get; set; }
-
-        /// <summary>
-        /// Returns a default descriptor based on an event record in case the related provider is no longer registered.
-        /// </summary>
-        public static AuditTrailEventDescriptor Default(AuditTrailEvent auditTrailEvent)
+        public AuditTrailEventDescriptor(string name, string category, Func<IServiceProvider, LocalizedString> localizedName, Func<IServiceProvider, LocalizedString> localizedCategory, Func<IServiceProvider, LocalizedString> description, bool isEnabledByDefault = false, bool isMandatory = false)
         {
-            return new AuditTrailEventDescriptor
-            {
-                Name = auditTrailEvent.Name,
-                Category = auditTrailEvent.Category,
-                LocalizedName = new LocalizedString(auditTrailEvent.Name, auditTrailEvent.Name),
-                LocalizedCategory = new LocalizedString(auditTrailEvent.Category, auditTrailEvent.Category)
-            };
+            Name = name;
+            Category = category;
+            LocalizedName = localizedName;
+            LocalizedCategory = localizedCategory;
+            Description = description;
+            IsEnabledByDefault = isEnabledByDefault;
+            IsMandatory = isMandatory;
         }
+
+        public string Name { get; }
+        public string Category { get; }
+        public Func<IServiceProvider, LocalizedString> LocalizedName { get; }
+        public Func<IServiceProvider, LocalizedString> LocalizedCategory { get; }
+        public Func<IServiceProvider, LocalizedString> Description { get; }
+        public bool IsEnabledByDefault { get; }
+        public bool IsMandatory { get; }
+
+        public static AuditTrailEventDescriptor Default(AuditTrailEvent auditTrailEvent)
+            => new AuditTrailEventDescriptor(
+                    auditTrailEvent.Name,
+                    auditTrailEvent.Category,
+                    (sp) => new LocalizedString(auditTrailEvent.Name, auditTrailEvent.Name),
+                    (sp) => new LocalizedString(auditTrailEvent.Category, auditTrailEvent.Category),
+                    (sp) => new LocalizedString(auditTrailEvent.Name, auditTrailEvent.Name)
+                );
     }
 }

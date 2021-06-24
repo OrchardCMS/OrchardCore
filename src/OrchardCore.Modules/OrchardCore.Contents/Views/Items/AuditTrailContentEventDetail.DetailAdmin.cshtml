@@ -1,6 +1,5 @@
 @model AuditTrailContentEventDetailViewModel
-@using OrchardCore.AuditTrail.ViewModels
-@using OrchardCore.Contents.AuditTrail.Providers
+@using OrchardCore.Contents.AuditTrail.Services
 
 @{
     var contentEvent = Model.ContentEvent;
@@ -25,7 +24,7 @@
         </tr>
         <tr>
             <th>@T["Display text"]</th>
-            @if (Model.AuditTrailEvent.Name == ContentAuditTrailEventProvider.Removed)
+            @if (Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Removed)
             {
                 <td>@contentItem.DisplayText</td>
             }
@@ -45,8 +44,7 @@
                 <td>
                     <a asp-route-area="OrchardCore.Contents"
                         asp-action="Display"
-                        asp-controller="Content"
-                        asp-route-versionNumber="@versionNumber"
+                        asp-controller="AuditTrailContent"
                         asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId">
                         @T["Version {0}", versionNumber]
                     </a>

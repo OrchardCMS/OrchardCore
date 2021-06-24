@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.AuditTrail.Providers;
+using Microsoft.Extensions.Options;
+using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Modules;
 using OrchardCore.Users.Events;
 
@@ -11,7 +12,7 @@ namespace OrchardCore.Users.AuditTrail.ResetPassword
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPasswordRecoveryFormEvents, UserResetPasswordEventHandler>();
-            services.AddScoped<IAuditTrailEventProvider, UserResetPasswordAuditTrailEventProvider>();
+            services.AddTransient<IConfigureOptions<AuditTrailOptions>, UserResetPasswordAuditTrailEventConfiguration>();
         }
     }
 }

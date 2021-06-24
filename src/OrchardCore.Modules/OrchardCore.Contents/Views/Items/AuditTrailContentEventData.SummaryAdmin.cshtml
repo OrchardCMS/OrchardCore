@@ -1,6 +1,6 @@
 @model AuditTrailContentEventViewModel
 @using OrchardCore.Contents.AuditTrail.Extensions
-@using OrchardCore.Contents.AuditTrail.Providers
+@using OrchardCore.Contents.AuditTrail.Services
 @inject IStringLocalizer<ViewContext> S
 
 @{
@@ -8,11 +8,11 @@
     var contentItem = contentEvent.ContentItem;
     var versionNumber = Model.VersionNumber;
     var versionText = S["Version {0}", versionNumber];
-    var eventName = Model.Descriptor.LocalizedName.Value.ToLowerInvariant();
+    var eventName = Model.Descriptor.LocalizedName(Context.RequestServices).Value.ToLowerInvariant();
     var editForLink = await Orchard.EditForLinkAsync(contentItem.DisplayText, contentItem);
 }
 
-@if (Model.AuditTrailEvent.Name == ContentAuditTrailEventProvider.Restored)
+@if (Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Restored)
 {
     <small>
         @T["The {0} {1} was restored as {2}",
@@ -26,7 +26,7 @@
         }, null)]
     </small>
 }
-else if (Model.AuditTrailEvent.Name == ContentAuditTrailEventProvider.Removed)
+else if (Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Removed)
 {
     <small>
         @T["The {0} {1} was {2}.",

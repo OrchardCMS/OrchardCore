@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,12 +26,11 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         public static AuditTrailAdminListOptionBuilder ForSort(this AuditTrailAdminListOptions options, string value)
         {
-            if (options.SortOptionBuilders.ContainsKey(value))
+            if (!options.SortOptionBuilders.TryGetValue(value, out var builder))
             {
-                throw new InvalidOperationException($"Sort '{value}' already registered");
+                builder = new AuditTrailAdminListOptionBuilder(value);
+                options.SortOptionBuilders[value] = builder;
             }
-            var builder = new AuditTrailAdminListOptionBuilder(value);
-            options.SortOptionBuilders[value] = builder;
 
             return builder;
         }

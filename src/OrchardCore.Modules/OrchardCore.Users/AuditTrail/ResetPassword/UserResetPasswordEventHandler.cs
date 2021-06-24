@@ -24,10 +24,10 @@ namespace OrchardCore.Users.AuditTrail.ResetPassword
         }
 
         public Task PasswordRecoveredAsync(PasswordRecoveryContext context)
-            => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventProvider.PasswordRecovered, context.User);
+            => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventConfiguration.PasswordRecovered, context.User);
 
         public Task PasswordResetAsync(PasswordRecoveryContext context)
-            => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventProvider.PasswordReset, context.User);
+            => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventConfiguration.PasswordReset, context.User);
 
         #region Unused events
 

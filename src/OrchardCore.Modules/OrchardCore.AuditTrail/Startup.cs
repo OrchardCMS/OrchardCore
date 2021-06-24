@@ -90,6 +90,8 @@ namespace OrchardCore.AuditTrail
 
             services.AddTransient<IAuditTrailAdminListFilterProvider, DefaultAuditTrailAdminListFilterProvider>();
 
+            services.AddOptions<AuditTrailOptions>();
+
             services.Configure<AuditTrailAdminListOptions>(options =>
             {
                 options.ForSort("time-desc")
@@ -136,9 +138,6 @@ namespace OrchardCore.AuditTrail
 
                 options.ForSort("user-desc-time-asc")
                     .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.NormalizedUserName).ThenBy(i => i.CreatedUtc));
-
-                options.ForSort("user-desc-time-desc")
-                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.NormalizedUserName).ThenByDescending(i => i.CreatedUtc));
             });
         }
 

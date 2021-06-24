@@ -10,7 +10,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.AuditTrail.Models;
-using OrchardCore.Contents.AuditTrail.Providers;
+using OrchardCore.Contents.AuditTrail.Services;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -42,22 +42,22 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         }
 
         public override Task DraftSavedAsync(SaveDraftContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Saved, context.ContentItem);
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Saved, context.ContentItem);
 
         public override Task CreatedAsync(CreateContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Created, context.ContentItem);
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Created, context.ContentItem);
 
         public override Task PublishedAsync(PublishContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Published, context.ContentItem);
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Published, context.ContentItem);
 
         public override Task UnpublishedAsync(PublishContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Unpublished, context.ContentItem);
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Unpublished, context.ContentItem);
 
         public override Task RemovedAsync(RemoveContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Removed, context.ContentItem);
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Removed, context.ContentItem);
 
         public override Task ClonedAsync(CloneContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Cloned, context.ContentItem);
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Cloned, context.ContentItem);
 
         public override Task RestoringAsync(RestoreContentContext context)
         {
@@ -67,11 +67,11 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         }
 
         public override Task RestoredAsync(RestoreContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Restored, context.ContentItem);
+            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Restored, context.ContentItem);
 
         private async Task RecordAuditTrailEventAsync(string name, IContent content)
         {
-            if (name != ContentAuditTrailEventProvider.Restored && _restoring.Contains(content.ContentItem.ContentItemId))
+            if (name != ContentAuditTrailEventConfiguration.Restored && _restoring.Contains(content.ContentItem.ContentItemId))
             {
                 return;
             }

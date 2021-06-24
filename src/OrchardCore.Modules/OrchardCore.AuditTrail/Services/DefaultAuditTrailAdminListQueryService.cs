@@ -76,7 +76,7 @@ namespace OrchardCore.AuditTrail.Services
             options.Categories = categories
                 .GroupBy(category => category.Name)
                 .Select(categories => categories.First())
-                .Select(category => new SelectListItem(category.LocalizedName.Value, category.Name, category.Name == options.Category))
+                .Select(category => new SelectListItem(category.LocalizedName(_serviceProvider), category.Name, category.Name == options.Category))
                 .ToList();
 
             options.Categories.Insert(0, new SelectListItem(S["All categories"], String.Empty, String.IsNullOrEmpty(options.Category)));
@@ -89,8 +89,8 @@ namespace OrchardCore.AuditTrail.Services
                     var currentCategory = categories.FirstOrDefault(x => x.Name == firstEvent.Category);
                     if (currentCategory != null)
                     {
-                        options.Events = currentCategory.Events.Select(category =>
-                            new SelectListItem(category.LocalizedName.Value, category.Name, category.Name == options.Category)).ToList();
+                        options.Events = currentCategory.Events.Values.Select(category =>
+                            new SelectListItem(category.LocalizedName(_serviceProvider), category.Name, category.Name == options.Category)).ToList();
                     }
                 }
             }

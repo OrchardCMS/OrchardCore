@@ -53,6 +53,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             H = htmlLocalizer;
             _logger = logger;
         }
+
         public async Task<ActionResult> Display(string auditTrailEventId)
         {
             var auditTrailContentEvent = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
@@ -124,7 +125,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 
                 return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
             }
-            
+
             _notifier.Success(H["'{0}' has been restored.", contentItem.DisplayText]);
 
             return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });

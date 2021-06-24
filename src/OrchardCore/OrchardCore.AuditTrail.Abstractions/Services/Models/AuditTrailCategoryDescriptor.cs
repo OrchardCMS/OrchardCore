@@ -1,21 +1,28 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailCategoryDescriptor
     {
-        public string Name { get; set; }
-        public LocalizedString LocalizedName { get; set; }
-        public IEnumerable<AuditTrailEventDescriptor> Events { get; set; } = Enumerable.Empty<AuditTrailEventDescriptor>();
-
-        public static AuditTrailCategoryDescriptor Default(string name)
+        public AuditTrailCategoryDescriptor(string name, Func<IServiceProvider, LocalizedString> localizedName, IReadOnlyDictionary<string, AuditTrailEventDescriptor> events)
         {
-            return new AuditTrailCategoryDescriptor
-            {
-                Name = name,
-            };
+            Name = name;
+            LocalizedName = localizedName;
+            Events = events;
         }
+
+        public string Name { get; }
+        public Func<IServiceProvider, LocalizedString> LocalizedName { get; }
+        public IReadOnlyDictionary<string, AuditTrailEventDescriptor> Events { get; }
+
+        private static IReadOnlyDictionary<string, AuditTrailEventDescriptor> _empty = new Dictionary<string, AuditTrailEventDescriptor>();
+        public static AuditTrailCategoryDescriptor Default(string name)
+            => new AuditTrailCategoryDescriptor(
+                    name,
+                    (sp) => new LocalizedString(name, name),
+                    _empty
+                );
     }
 }

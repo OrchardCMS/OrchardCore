@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
-using OrchardCore.AuditTrail.Providers;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.Entities;
@@ -27,11 +27,11 @@ namespace OrchardCore.AuditTrail.Services
         private readonly IClock _clock;
         private readonly YesSql.ISession _session;
         private readonly ISiteService _siteService;
+        private readonly AuditTrailOptions _auditTrailOptions;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly IAuditTrailIdGenerator _auditTrailIdGenerator;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
-        private readonly IEnumerable<IAuditTrailEventProvider> _auditTrailEventProviders;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
@@ -39,10 +39,10 @@ namespace OrchardCore.AuditTrail.Services
             IClock clock,
             YesSql.ISession session,
             ISiteService siteService,
+            IOptions<AuditTrailOptions> auditTrailOptions,
             IHttpContextAccessor httpContextAccessor,
             ILookupNormalizer keyNormalizer,
             IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers,
-            IEnumerable<IAuditTrailEventProvider> auditTrailEventProviders,
             IAuditTrailIdGenerator auditTrailIdGenerator,
             ShellSettings shellSettings,
             ILogger<AuditTrailManager> logger)
@@ -50,10 +50,10 @@ namespace OrchardCore.AuditTrail.Services
             _clock = clock;
             _session = session;
             _siteService = siteService;
+            _auditTrailOptions = auditTrailOptions.Value;
             _httpContextAccessor = httpContextAccessor;
             _keyNormalizer = keyNormalizer;
             _auditTrailEventHandlers = auditTrailEventHandlers;
-            _auditTrailEventProviders = auditTrailEventProviders;
             _auditTrailIdGenerator = auditTrailIdGenerator;
             _shellSettings = shellSettings;
             _logger = logger;
@@ -135,24 +135,25 @@ namespace OrchardCore.AuditTrail.Services
             DescribeEvent(auditTrailEvent.Name, auditTrailEvent.Category)
             ?? AuditTrailEventDescriptor.Default(auditTrailEvent);
 
-        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() =>
-            DescribeProviders().Describe();
+        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories()
+            => _auditTrailOptions.CategoryDescriptors.Values;
 
-        public AuditTrailCategoryDescriptor DescribeCategory(string name) =>
-            DescribeProviders(name).Describe()
-                .FirstOrDefault(category => category.Name == name)
-                ?? AuditTrailCategoryDescriptor.Default(name);
-
-        private AuditTrailEventDescriptor DescribeEvent(string name, string categoryName) =>
-            DescribeProviders(categoryName).Describe()
-                .FirstOrDefault(category => category.Name == categoryName)?.Events
-                .FirstOrDefault(auditTrailEvent => auditTrailEvent.Name == name);
-
-        private DescribeContext DescribeProviders(string category = null)
+        public AuditTrailCategoryDescriptor DescribeCategory(string name)
         {
-            var context = new DescribeContext() { Category = category };
-            _auditTrailEventProviders.Invoke((provider, context) => provider.Describe(context), context, _logger);
-            return context;
+            if (_auditTrailOptions.CategoryDescriptors.TryGetValue(name, out var category))
+            {
+                return category;
+            }
+
+            return AuditTrailCategoryDescriptor.Default(name);
+        }
+
+        private AuditTrailEventDescriptor DescribeEvent(string name, string categoryName)
+        {
+            var category = DescribeCategory(categoryName);
+            category.Events.TryGetValue(name, out var descriptor);
+
+            return descriptor;
         }
 
         private async Task<string> GetClientIpAddressAsync()
