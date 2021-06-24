@@ -1,8 +1,10 @@
 @model AuditTrailIndexOptions
 @using OrchardCore.Localization
 @inject IDisplayManager<AuditTrailIndexOptions> DisplayManager
+@inject OrchardCore.AuditTrail.Services.IAuditTrailManager AuditTrailManager
 @{
     var syntaxThumbnail = await DisplayManager.BuildDisplayAsync(Model, null, "Thumbnail");
+    var categories = AuditTrailManager.DescribeCategories();
 }
 
 <div class="input-group input-group-sm w-50 d-inline-flex has-filter">
@@ -13,8 +15,10 @@
         </button>
         <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-right</text>}"
             aria-labelledby="filter-dropdown">
-            <a class="dropdown-item" href="?q=status:Enabled">@T["Only enabled users"]</a> @* TODO *@
-            <a class="dropdown-item" href="?q=status:Published">@T["Only disabled users"]</a>
+            @foreach(var category in categories)
+            {
+                <a class="dropdown-item" href="?q=category:@category.Name">@category.LocalizedName(Context.RequestServices)</a>
+            }
             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalAuditTrailIndexOptionsFilterSyntax">@T["Filter syntax"]</a>
         </div>
     </div>
