@@ -18,8 +18,14 @@ namespace OrchardCore.ContentManagement
         public static async Task<ContentItem> FirstOrDefaultAsync<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
             where TIndex : class, IIndex
         {
-            ContentItem contentItem = await query.FirstOrDefaultAsync();
-            return contentItem != null ? await contentManager.LoadAsync(contentItem) : null;
+            var contentItem = await query.FirstOrDefaultAsync();
+
+            if (contentItem == null)
+            {
+                return null;
+            }
+
+            return await contentManager.LoadAsync(contentItem);
         }
 
         /// <summary>
