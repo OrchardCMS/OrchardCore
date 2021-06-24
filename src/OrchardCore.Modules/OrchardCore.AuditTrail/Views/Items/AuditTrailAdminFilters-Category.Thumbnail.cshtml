@@ -3,7 +3,7 @@
     var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "category");
 }
 
-<h4 class="card-title">Category</h4>
+<h4 class="card-title">@T["Category"]</h4>
 
 <pre class="mb-3">@(@term != null ? "category:" + @term.ToString() : "category:...")</pre>
 <p>@T["Filters on the audit trail category."]</p>

@@ -18,7 +18,7 @@ namespace OrchardCore.AuditTrail.Services
     {
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly ILocalClock _localClock;
-        private readonly AuditTrailAdminListOptions _options;
+        private readonly AuditTrailAdminListOptions _adminListOptions;
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
         private readonly IStringLocalizer S;
@@ -27,7 +27,7 @@ namespace OrchardCore.AuditTrail.Services
         public DefaultAuditTrailAdminListQueryService(
             IAuditTrailManager auditTrailManager,
             ILocalClock localClock,
-            IOptions<AuditTrailAdminListOptions> options,
+            IOptions<AuditTrailAdminListOptions> adminListOptions,
             ISession session,
             IServiceProvider serviceProvider,
             IStringLocalizer<DefaultAuditTrailAdminListQueryService> stringLocalizer,
@@ -35,7 +35,7 @@ namespace OrchardCore.AuditTrail.Services
         {
             _auditTrailManager = auditTrailManager;
             _localClock = localClock;
-            _options = options.Value;
+            _adminListOptions = adminListOptions.Value;
             _session = session;
             _serviceProvider = serviceProvider;
             S = stringLocalizer;
@@ -69,13 +69,11 @@ namespace OrchardCore.AuditTrail.Services
                 TotalCount = totalCount
             };
 
-            options.AuditTrailSorts = _options.SortOptions.Values.Where(x => x.SelectListItem != null).Select(opt => opt.SelectListItem(_serviceProvider, opt, options)).ToList();
+            options.AuditTrailSorts = _adminListOptions.SortOptions.Values.Where(x => x.SelectListItem != null).Select(opt => opt.SelectListItem(_serviceProvider, opt, options)).ToList();
 
             var categories = _auditTrailManager.DescribeCategories();
 
             options.Categories = categories
-                .GroupBy(category => category.Name)
-                .Select(categories => categories.First())
                 .Select(category => new SelectListItem(category.LocalizedName(_serviceProvider), category.Name, category.Name == options.Category))
                 .ToList();
 

@@ -3,9 +3,9 @@
     var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "date");
 }
 
-<h4 class="card-title">Date</h4>
+<h4 class="card-title">@T["Date"]</h4>
 <pre class="mb-3">@(@term != null ? @term.ToString() : "date:...")</pre>
-<p>@T["Filters by a date."]</p>
+<p>@T["Filters by a date."]</p> @* TODO range syntax *@
 <div class="d-block text-right">
     <span>
         <i class="fas fa-sm fa-minus text-primary" aria-hidden="true"></i>
