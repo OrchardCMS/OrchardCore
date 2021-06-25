@@ -24,12 +24,12 @@ namespace OrchardCore.Themes.TheAdmin
                 .SetVersion("1.0.0");
 
             _manifest
-                .DefineScript("the-admin-head")
+                .DefineScript("admin-head")
                 .SetUrl("~/TheAdmin/js/TheAdmin-header.min.js", "~/TheAdmin/js/TheAdmin-header.js")
                 .SetVersion("1.0.0");
 
             _manifest
-                .DefineStyle("the-admin")
+                .DefineStyle("admin")
                 .SetUrl("~/TheAdmin/css/TheAdmin.min.css", "~/TheAdmin/css/TheAdmin.css")
                 .SetVersion("1.0.0");
         }
