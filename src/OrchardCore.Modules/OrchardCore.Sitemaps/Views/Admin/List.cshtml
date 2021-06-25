@@ -12,7 +12,7 @@
 }
 
 @* the form is necessary to generate the antiforgery token*@
-<form asp-action="List" method="post">
+<form asp-action="List" method="post" class="no-multisubmit">
     <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="sr-only" />

@@ -21,7 +21,7 @@
         headers: {},                    // Additional headers
         xhrFields: {},                  // Additional fields
         urlPropertyName: 'file',        // How to get url from the json response (for instance 'url' for {url: ....})
-        statusPropertyName: 'success',  // How to get status from the json response 
+        statusPropertyName: 'success',  // How to get status from the json response
         success: undefined,             // Success callback: function (data, trumbowyg, $modal, values) {}
         error: undefined,               // Error callback: function () {}
         imageWidthModalEdit: false      // Add ability to edit image width
@@ -67,6 +67,11 @@
                 upload: 'Hochladen',
                 file: 'Datei',
                 uploadError: 'Fehler'
+            },
+            et: {
+                upload: 'Lae üles',
+                file: 'Fail',
+                uploadError: 'Viga'
             },
             fr: {
                 upload: 'Envoi',
@@ -152,6 +157,9 @@
                                 };
                             }
 
+                            // Prevent multiple submissions while uploading
+                            var isUploading = false;
+
                             var $modal = trumbowyg.openModalInsert(
                                 // Title
                                 trumbowyg.lang.upload,
@@ -161,6 +169,11 @@
 
                                 // Callback
                                 function (values) {
+                                    if (isUploading) {
+                                        return;
+                                    }
+                                    isUploading = true;
+
                                     var data = new FormData();
                                     data.append(trumbowyg.o.plugins.upload.fileFieldName, file);
 
@@ -211,7 +224,7 @@
                                                     trumbowyg.execCmd('insertImage', url, false, true);
                                                     var $img = $('img[src="' + url + '"]:not([alt])', trumbowyg.$box);
                                                     $img.attr('alt', values.alt);
-                                                    if (trumbowyg.o.imageWidthModalEdit && parseInt(values.width) > 0) {
+                                                    if (trumbowyg.o.plugins.upload.imageWidthModalEdit && parseInt(values.width) > 0) {
                                                         $img.attr({
                                                             width: values.width
                                                         });
@@ -228,6 +241,8 @@
                                                     trumbowyg.$c.trigger('tbwuploaderror', [trumbowyg, data]);
                                                 }
                                             }
+
+                                            isUploading = false;
                                         },
 
                                         error: trumbowyg.o.plugins.upload.error || function () {
@@ -236,6 +251,8 @@
                                                 trumbowyg.lang.uploadError
                                             );
                                             trumbowyg.$c.trigger('tbwuploaderror', [trumbowyg]);
+
+                                            isUploading = false;
                                         }
                                     });
                                 }

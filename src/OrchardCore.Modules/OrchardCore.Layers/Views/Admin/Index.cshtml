@@ -14,7 +14,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Widgets and Layers"])</h1></zone>
 
-<form id="undo-form" asp-action="UpdatePosition" method="post">
+<form id="undo-form" asp-action="UpdatePosition" method="post" class="no-multisubmit">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
