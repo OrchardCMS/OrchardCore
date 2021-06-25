@@ -52,13 +52,13 @@
     </div>
 </div>
 
-<div class="form-group">
+<div class="form-group" id="body">
     <label asp-for="Body">@T["Body"]</label>
     <textarea asp-for="Body" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The body of the email message. With Liquid support."]</span>
 </div>
 
-<div class="form-group">
+<div class="form-group" id="body-text">
     <label asp-for="Body">@T["Body Plain Text"]</label>
     <textarea asp-for="BodyText" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The plain text body of the email message. With Liquid support."]</span>
@@ -79,13 +79,54 @@ $(function () {
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
+    });
 
     var textBodyEditor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.BodyText)'), {
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
+    });
+
+    var chkIsBodyHtml = $('#@Html.IdFor(x => x.IsBodyHtml)');
+    var chkIsBodyText = $('#@Html.IdFor(x => x.IsBodyText)');
+    var body = $('#body');
+    var bodyText = $('#body-text');
+
+    if(chkIsBodyHtml.is(':checked')) {
+        body.show();
+        body.find('input').attr('required', true);
+    } else {
+        body.hide();
+        body.find('input').attr('required', false);
+    }
+
+    if(chkIsBodyText.is(':checked')) {
+        bodyText.show();
+        bodyText.find('input').attr('required', true);
+    } else {
+        bodyText.hide();
+        bodyText.find('input').attr('required', false);
+    }
+
+    chkIsBodyHtml.on('click', function() {
+        if($(this).is(':checked')) {
+            body.show();
+            body.find('input').attr('required', true);
+        } else {
+            body.hide();
+            body.find('input').attr('required', false);
+        }
+    });
+
+    chkIsBodyText.on('click', function() {
+        if($(this).is(':checked')) {
+            bodyText.show();
+            bodyText.find('input').attr('required', true);
+        } else {
+            bodyText.hide();
+            bodyText.find('input').attr('required', false);
+        }
+    });
 });
 </script>
