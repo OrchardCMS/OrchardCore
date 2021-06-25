@@ -51,7 +51,7 @@ namespace OrchardCore.Email
         public string Body { get; set; }
 
         /// <summary>
-        /// Gets or sets the message content as plain-text.
+        /// Gets or sets the message content as plain text.
         /// </summary>
         public string BodyText { get; set; }
 
@@ -61,7 +61,7 @@ namespace OrchardCore.Email
         public bool IsBodyHtml { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the message body is plain-text.
+        /// Gets or sets whether the message body is plain text.
         /// </summary>
         public bool IsBodyText { get; set; }
 
