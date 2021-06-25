@@ -19,7 +19,7 @@ namespace OrchardCore.Themes.TheAdmin
                 .SetVersion("0.7.2");
 
             _manifest
-                .DefineScript("the-admin")
+                .DefineScript("admin")
                 .SetUrl("~/TheAdmin/js/TheAdmin.min.js", "~/TheAdmin/js/TheAdmin.js")
                 .SetVersion("1.0.0");
 
