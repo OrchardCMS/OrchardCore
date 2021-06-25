@@ -4,11 +4,9 @@ using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.AuditTrail.Services
 {
-    [RequireFeatures("OrchardCore.AuditTrail")]
     public class ContentAuditTrailEventHandler : AuditTrailEventHandlerBase
     {
         public override Task CreateAsync(AuditTrailCreateContext context)

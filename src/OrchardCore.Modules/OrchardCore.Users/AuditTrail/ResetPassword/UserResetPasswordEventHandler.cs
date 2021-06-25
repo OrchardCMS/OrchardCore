@@ -47,7 +47,7 @@ namespace OrchardCore.Users.AuditTrail.ResetPassword
                 new AuditTrailContext<AuditTrailUserEvent>
                 (
                     name,
-                    "User",
+                    UserResetPasswordAuditTrailEventConfiguration.User,
                     userId,
                     userId,
                     userName,

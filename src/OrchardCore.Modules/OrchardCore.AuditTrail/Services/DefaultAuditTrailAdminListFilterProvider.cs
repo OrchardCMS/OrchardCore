@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,7 @@ using OrchardCore.Modules;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
+using Parlot;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -96,12 +98,21 @@ namespace OrchardCore.AuditTrail.Services
                     })
                 )
                 .WithNamedTerm("date", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query, ctx) =>
+                    .OneCondition<AuditTrailEvent>(async (val, query, ctx) =>
                     {
-                        if (!string.IsNullOrEmpty(val) && DateTimeParser.Parser.TryParse(val, out var expression))
+                        if (String.IsNullOrEmpty(val))
                         {
-                            var context = (AuditTrailQueryContext)ctx;
-                            var clock = context.ServiceProvider.GetRequiredService<IClock>();
+                            return query;
+                        }
+
+                        var context = (AuditTrailQueryContext)ctx;
+                        var clock = context.ServiceProvider.GetRequiredService<IClock>();
+                        var localClock = context.ServiceProvider.GetRequiredService<ILocalClock>();
+                        var userTimeZone = await localClock.GetLocalTimeZoneAsync();
+                        var parseContext = new DateTimeParseContext(CultureInfo.CurrentUICulture, clock, userTimeZone, new Scanner(val));
+
+                        if (DateTimeParser.Parser.TryParse(parseContext, out var expression, out var parseError))
+                        {
                             var utcNow = clock.UtcNow;
 
                             var param = Expression.Parameter(typeof(AuditTrailEventIndex));
@@ -111,7 +122,7 @@ namespace OrchardCore.AuditTrail.Services
                             query.With<AuditTrailEventIndex>((Expression<Func<AuditTrailEventIndex, bool>>)expression.BuildExpression(expressionContext));
                         }
 
-                        return new ValueTask<IQuery<AuditTrailEvent>>(query);
+                        return query;
                     })
                     .MapTo<AuditTrailIndexOptions>((val, model) =>
                     {
@@ -152,7 +163,7 @@ namespace OrchardCore.AuditTrail.Services
                         // TODO add a context property to the mapping func.
                         if (model.Sort != _options.Value.DefaultSortOption.Value)
                         {
-                            return (true, model.Sort.ToString());
+                            return (true, model.Sort);
                         }
 
                         return (false, String.Empty);

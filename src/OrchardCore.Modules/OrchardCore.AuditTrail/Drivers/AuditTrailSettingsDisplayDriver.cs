@@ -34,8 +34,7 @@ namespace OrchardCore.AuditTrail.Drivers
 
         public override async Task<IDisplayResult> EditAsync(AuditTrailSettings settings, BuildEditorContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
             {
                 return null;
             }
@@ -81,8 +80,7 @@ namespace OrchardCore.AuditTrail.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(AuditTrailSettings settings, BuildEditorContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
             {
                 return null;
             }
@@ -96,12 +94,10 @@ namespace OrchardCore.AuditTrail.Drivers
                     .Select(categorySettings => new AuditTrailCategorySettings()
                     {
                         Name = categorySettings.Name,
-                        LocalizedName = categorySettings.LocalizedName,
                         Events = categorySettings.Events
                             .Select(settings => new AuditTrailEventSettings()
                             {
                                 Name = settings.Name,
-                                LocalizedName = settings.LocalizedName,
                                 Category = settings.Category,
                                 IsEnabled = settings.IsEnabled
                             })

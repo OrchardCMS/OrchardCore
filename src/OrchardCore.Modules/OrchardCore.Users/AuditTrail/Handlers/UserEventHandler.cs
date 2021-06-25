@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
-using OrchardCore.Modules;
 using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
@@ -14,7 +13,6 @@ using OrchardCore.Users.Handlers;
 
 namespace OrchardCore.Users.AuditTrail.Handlers
 {
-    [RequireFeatures("OrchardCore.AuditTrail")]
     public class UserEventHandler : ILoginFormEvent, IUserEventHandler
     {
         private readonly IAuditTrailManager _auditTrailManager;
@@ -34,9 +32,25 @@ namespace OrchardCore.Users.AuditTrail.Handlers
 
         public Task LoggedInAsync(IUser user)
             => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.LoggedIn, user);
+
         public Task LoggingInFailedAsync(IUser user)
             => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.LogInFailed, user);
 
+        public Task LoggingInFailedAsync(string userName)
+            => _auditTrailManager.RecordEventAsync(
+                    new AuditTrailContext<AuditTrailUserEvent>
+                    (
+                        name: UserAuditTrailEventConfiguration.LogInFailed,
+                        category: UserAuditTrailEventConfiguration.User,
+                        correlationId: String.Empty,
+                        userId: String.Empty,
+                        userName: userName,
+                        new AuditTrailUserEvent
+                        {
+                            UserId = String.Empty,
+                            UserName = userName
+                        }
+                    ));
         public Task IsLockedOutAsync(IUser user)
             => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.LogInFailed, user);
 
@@ -67,9 +81,6 @@ namespace OrchardCore.Users.AuditTrail.Handlers
 
         public Task LoggingInAsync(string userName, Action<string, string> reportError) => Task.CompletedTask;
 
-        // TODO implement
-        public Task LoggingInFailedAsync(string userName) => Task.CompletedTask;
-
         #endregion
 
         private async Task RecordAuditTrailEventAsync(string name, IUser user, string userIdActual = "", string userNameActual = "")
@@ -93,7 +104,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                 new AuditTrailContext<AuditTrailUserEvent>
                 (
                     name: name,
-                    category: "User",
+                    category: UserAuditTrailEventConfiguration.User,
                     correlationId: userId,
                     userId: userIdActual,
                     userName: userNameActual,

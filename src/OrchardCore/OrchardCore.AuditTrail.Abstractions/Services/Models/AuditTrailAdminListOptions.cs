@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,15 +25,20 @@ namespace OrchardCore.AuditTrail.Services.Models
 
     public static class AuditTrailAdminListOptionsExtensions
     {
-        public static AuditTrailAdminListOptionBuilder ForSort(this AuditTrailAdminListOptions options, string value)
+        public static AuditTrailAdminListOptions ForSort(this AuditTrailAdminListOptions options, string value, Action<AuditTrailAdminListOptionBuilder> builder)
         {
-            if (!options.SortOptionBuilders.TryGetValue(value, out var builder))
+            if (builder == null)
             {
-                builder = new AuditTrailAdminListOptionBuilder(value);
-                options.SortOptionBuilders[value] = builder;
+                throw new ArgumentNullException(nameof(builder));
             }
+            if (!options.SortOptionBuilders.TryGetValue(value, out var auditTrailAdminListOptionBuilder))
+            {
+                auditTrailAdminListOptionBuilder = new AuditTrailAdminListOptionBuilder(value);
+                options.SortOptionBuilders[value] = auditTrailAdminListOptionBuilder;
+            }
+            builder(auditTrailAdminListOptionBuilder);
 
-            return builder;
+            return options;
         }
 
         public static bool RemoveSort(this AuditTrailAdminListOptions options, string value)

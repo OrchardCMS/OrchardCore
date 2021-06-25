@@ -13,13 +13,11 @@ using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Services;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Entities;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Contents.AuditTrail.Handlers
 {
-    [RequireFeatures("OrchardCore.AuditTrail")]
     public class AuditTrailContentHandler : ContentHandlerBase
     {
         private readonly YesSql.ISession _session;
@@ -92,7 +90,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 new AuditTrailContext<AuditTrailContentEvent>
                 (
                     name,
-                    "Content",
+                    ContentAuditTrailEventConfiguration.Content,
                     content.ContentItem.ContentItemId,
                     _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier),
                     _httpContextAccessor.GetCurrentUserName(),

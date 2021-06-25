@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Users.AuditTrail.Models;
-using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.AuditTrail.Registration
@@ -45,7 +43,7 @@ namespace OrchardCore.Users.AuditTrail.Registration
                 new AuditTrailContext<AuditTrailUserEvent>
                 (
                     name,
-                    "User",
+                    UserRegistrationAuditTrailEventConfiguration.User,
                     userId,
                     userId,
                     userName,

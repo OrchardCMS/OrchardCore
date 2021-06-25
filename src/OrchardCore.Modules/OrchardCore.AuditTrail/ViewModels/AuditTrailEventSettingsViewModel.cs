@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.AuditTrail.ViewModels
@@ -6,9 +7,13 @@ namespace OrchardCore.AuditTrail.ViewModels
     {
         public string Name { get; set; }
         public string Category { get; set; }
-        public LocalizedString LocalizedName { get; set; }
-        public LocalizedString Description { get; set; }
         public bool IsEnabled { get; set; }
         public bool IsMandatory { get; set; }
+
+        [BindNever]
+        public LocalizedString LocalizedName { get; set; }
+
+        [BindNever]
+        public LocalizedString Description { get; set; }
     }
 }

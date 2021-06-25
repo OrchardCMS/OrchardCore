@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -94,6 +95,7 @@ namespace OrchardCore.AuditTrail.Services
             }
 
             var localNow = await _localClock.LocalNowAsync;
+            var startOfWeek = CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek;
             options.AuditTrailDates = new List<SelectListItem>()
             {
                 new SelectListItem(S["Any date"], String.Empty, options.Date == String.Empty),
@@ -105,14 +107,22 @@ namespace OrchardCore.AuditTrail.Services
             dateTimeValue = "@now-2..@now-1";
             options.AuditTrailDates.Add(new SelectListItem(S["Previous 48 hours"], dateTimeValue, options.Date == dateTimeValue));
 
-            dateTimeValue = ">@now-7";
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 7 days"], dateTimeValue, options.Date == dateTimeValue));
+            dateTimeValue = $">{localNow.StartOfWeek(CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek).LocalDateTime.ToString("yyyy-MM-dd")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["This week"], dateTimeValue, options.Date == dateTimeValue));
 
-            dateTimeValue = $">{localNow.AddDays(-30).LocalDateTime.Date.ToString("o")}";
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 30 days"], dateTimeValue, options.Date == dateTimeValue));
+            var start = localNow.StartOfWeek(CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek).AddDays(-7).LocalDateTime;
+            var end = start.AddDays(7);
+            dateTimeValue = $"{start.ToString("yyyy-MM-dd")}..{end.ToString("yyyy-MM-dd")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["Last week"], dateTimeValue, options.Date == dateTimeValue));
 
-            dateTimeValue = $">{localNow.AddDays(-90).LocalDateTime.Date.ToString("o")}";
-            options.AuditTrailDates.Add(new SelectListItem(S["Last 90 days"], dateTimeValue, options.Date == dateTimeValue));
+            start = new DateTime(localNow.LocalDateTime.Year, localNow.LocalDateTime.Month, 1);
+            dateTimeValue = $">{start.ToString("yyyy-MM-dd")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["This month"], dateTimeValue, options.Date == dateTimeValue));
+
+            start = new DateTime(localNow.LocalDateTime.Year, localNow.LocalDateTime.Month, 1).AddMonths(-1);
+            end = start.AddMonths(1);
+            dateTimeValue = $"{start.ToString("yyyy-MM-dd")}..{end.ToString("yyyy-MM-dd")}";
+            options.AuditTrailDates.Add(new SelectListItem(S["Last month"], dateTimeValue, options.Date == dateTimeValue));
 
             dateTimeValue = $">{localNow.AddHours(-1).ToString("o")}";
             options.AuditTrailDates.Add(new SelectListItem(S["Last hour"], dateTimeValue, options.Date == dateTimeValue));
@@ -121,6 +131,15 @@ namespace OrchardCore.AuditTrail.Services
             options.AuditTrailDates.Add(new SelectListItem(S["Previous hour"], dateTimeValue, options.Date == dateTimeValue));
 
             return result;
+        }
+    }
+
+    public static class DateTimeExtensions
+    {
+        public static DateTimeOffset StartOfWeek(this DateTimeOffset dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.AddDays(-1 * diff).Date;
         }
     }
 }
