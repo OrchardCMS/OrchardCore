@@ -14,6 +14,7 @@ Other formats:
 
 - [AI](assets/logo/color/orchard-core-logo-color.ai)
 - [PDF](assets/logo/color/orchard-core-logo-color.pdf)
+- [PNG, high-resolution](assets/logo/color/orchard-core-logo-color-high-resolution.png)
 - [SVG](assets/logo/color/orchard-core-logo-color.svg)
 
 # Dark Logo
@@ -24,6 +25,7 @@ Other formats:
 
 - [AI](assets/logo/dark/orchard-core-logo-dark.ai)
 - [PDF](assets/logo/dark/orchard-core-logo-dark.pdf)
+- [PNG, high-resolution](assets/logo/dark/orchard-core-logo-dark-high-resolution.png)
 - [SVG](assets/logo/dark/orchard-core-logo-dark.svg)
 
 # Light Logo
@@ -36,6 +38,7 @@ Other formats:
 
 - [AI](assets/logo/light/orchard-core-logo-light.ai)
 - [PDF](assets/logo/light/orchard-core-logo-light.pdf)
+- [PNG, high-resolution](assets/logo/light/orchard-core-logo-light-high-resolution.png)
 - [SVG](assets/logo/light/orchard-core-logo-light.svg)
 
 # Fonts
