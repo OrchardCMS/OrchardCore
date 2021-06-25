@@ -1,6 +1,13 @@
 {
   "steps": [
     {
+      "name": "Feature",
+      "enable": [
+        "OrchardCore.Html",
+        "OrchardCore.Title"
+      ]
+    },
+    {
       "name": "ContentDefinition",
       "ContentTypes": [
         {

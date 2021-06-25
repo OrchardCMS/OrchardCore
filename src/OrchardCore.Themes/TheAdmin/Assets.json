@@ -5,7 +5,7 @@
     "inputs": [
       "Assets/scss/admin.scss"
     ],
-    "output": "wwwroot/Styles/TheAdmin.css"
+    "output": "wwwroot/css/TheAdmin.css"
   },
   {
     "generateSourceMaps": false,
@@ -14,13 +14,28 @@
       "node_modules/bootstrap/dist/js/bootstrap.js",
       "Assets/js/*.js"
     ],
-    "output": "wwwroot/Scripts/TheAdmin.js"
+    "output": "wwwroot/js/TheAdmin.js"
   },
   {
     "generateSourceMaps": false,
     "inputs": [
       "Assets/js/header/userPreferencesLoader.js"
     ],
-    "output": "wwwroot/Scripts/TheAdmin-header.js"
+    "output": "wwwroot/js/TheAdmin-header.js"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "node_modules/material-icons/iconfont/material-icons.scss"
+    ],
+    "output": "wwwroot/fonts/material-icons/material-icons.css"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/material-icons/iconfont/*.woff",
+      "node_modules/material-icons/iconfont/*.woff2"
+    ],
+    "output": "wwwroot/fonts/material-icons/@"
   }
 ]

@@ -20,7 +20,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Template"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
+<form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" class="no-multisubmit">
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3 text-right">
             <div class="btn-group">
