@@ -3,7 +3,7 @@
     var culture = Model != null ? CultureInfo.GetCultureInfo(Model) : CultureInfo.InvariantCulture;
 }
 <tr>
-    <form name="delete-culture" asp-action="DeleteCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+    <form name="delete-culture" asp-action="DeleteCulture" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
         <td class="align-middle">@culture.Name</td>
         <td class="align-middle">
             @if (!String.IsNullOrEmpty(culture.DisplayName))

@@ -1,10 +1,11 @@
+@using Microsoft.AspNetCore.Mvc.ModelBinding
 @model OrchardCore.Users.ViewModels.RegisterExternalLoginViewModel
 
 @{
     ViewLayout = "Layout__Login";
 }
 
-<form asp-controller="Account" asp-action="RegisterExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+<form asp-controller="Account" asp-action="RegisterExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <h4>@T["Create a new account."]</h4>
     <p class="text-info">
         @T["You've successfully authenticated with <strong>{0}</strong>. Please fill the form below and click the Register button to complete the registration.", ViewData["LoginProvider"]]
@@ -12,7 +13,7 @@
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>
 
-    @if (!Model.NoUsername)
+    @if (!Model.NoUsername || String.IsNullOrWhiteSpace(Model.UserName) || ViewData.ModelState.GetFieldValidationState("UserName") == ModelValidationState.Invalid)
     {
         <div class="form-group">
             <label asp-for="UserName" class="col-md-3 control-label">@T["Username"]</label>
@@ -23,12 +24,12 @@
         </div>
     }
 
-    @if (!(Model.NoEmail && String.IsNullOrWhiteSpace(Model.Email)))
+    @if (!Model.NoEmail || String.IsNullOrWhiteSpace(Model.Email) || ViewData.ModelState.GetFieldValidationState("Email") == ModelValidationState.Invalid)
     {
         <div class="form-group">
             <label asp-for="Email" class="col-md-3 control-label">@T["Email"]</label>
             <div class="col-md-9">
-                <input asp-for="Email" class="form-control" asp-is-disabled="@Model.NoEmail" />
+                <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
         </div>

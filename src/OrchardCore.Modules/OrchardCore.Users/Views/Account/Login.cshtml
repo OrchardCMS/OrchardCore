@@ -22,7 +22,7 @@
     @if (!disableLocalLogin)
     {
         <div class="col-md-6 @(loginProviders.Count == 0 ? "offset-md-3" : String.Empty)">
-            <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form">
+            <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form no-multisubmit">
                 <h4>@T["Log in"]</h4>
                 <hr />
                 <div asp-validation-summary="All" class="text-danger"></div>
@@ -69,7 +69,7 @@
             <section>
                 <h4>@T["Use another service to log in"]</h4>
                 <hr />
-                <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
                     <div>
                         <p>
                             @foreach (var provider in loginProviders)

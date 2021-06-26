@@ -17,7 +17,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Lucene Query"])</h1></zone>
 
-<form asp-action="Query" method="post">
+<form asp-action="Query" method="post" class="no-multisubmit">
     <div asp-validation-summary="All"></div>
     <div class="form-group">
         <label asp-for="IndexName">@T["Index"]</label>
