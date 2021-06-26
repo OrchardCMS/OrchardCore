@@ -51,8 +51,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             RegisteredTags["a"] = ArgumentsList.AndSkip(TagEnd).And(Parsers.ZeroOrOne(AnyTagsList.AndSkip(CreateTag("enda")))).Then<Statement>(x => new ParserBlockStatement<List<FilterArgument>>(x.Item1, x.Item2, DefaultAnchorTag.WriteToAsync));
             RegisterParserBlock("form", ArgumentsList, (list, statements, writer, encoder, context) => FluidTagHelper.WriteToAsync("form", list, statements, writer, encoder, context));
-            RegisterParserBlock("scriptblock", ArgumentsList, (list, statements, writer, encoder, context) => FluidTagHelper.WriteToAsync("scriptblock", list, statements, writer, encoder, context));
-            RegisterParserBlock("styleblock", ArgumentsList, (list, statements, writer, encoder, context) => FluidTagHelper.WriteToAsync("styleblock", list, statements, writer, encoder, context));
 
             // Dynamic caching
             RegisterParserBlock("cache", ArgumentsList, CacheTag.WriteToAsync);

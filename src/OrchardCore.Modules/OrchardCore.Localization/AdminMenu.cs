@@ -30,11 +30,14 @@ namespace OrchardCore.Localization
                 builder
                     .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, localization => localization
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
-                            .AddClass("cultures").Id("cultures")
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
-                                .Permission(Permissions.ManageCultures)
-                                .LocalNav()
+                            .Add(S["Localization"], localization => localization
+                                .AddClass("localization").Id("localization")
+                                .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
+                                    .AddClass("cultures").Id("cultures")
+                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
+                                    .Permission(Permissions.ManageCultures)
+                                    .LocalNav()
+                                )
                             )
                         )
                     );

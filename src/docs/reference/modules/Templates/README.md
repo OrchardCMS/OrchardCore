@@ -114,7 +114,7 @@ This template is called when a Content Part shape type is rendered in a specific
 
 This template is called when a content part type is rendered for a given content type, with or without a given display type.
 
-#### Content with Part Name Examples
+#### Content with Part Type Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -127,7 +127,7 @@ This template is called when a content part type is rendered for a given content
 
 This template is called when a content part name is rendered for a given content type, with or without a given display type.
 
-#### Content with Part Type Examples
+#### Content with Part name Examples
 
 | Template | Filename|
 | --------- | ------------ |
@@ -138,12 +138,12 @@ This template is called when a content part name is rendered for a given content
 
 This template is called when a shape type is rendered in a given content part type for a given content type, with or without a given display type.
 
-#### Content with Part Name and Shape Examples
+#### Content with Part Type and Shape Examples
 
 | Template | Filename|
 | --------- | ------------ |
-| `Blog__ListPart__ListPartFeed` | `Blog__ListPart__ListPartFeed.cshtml` |
-| `Blog_Summary__ListPart__ListPartFeed` | `Blog__ListPart__ListPartFeed.Summary.cshtml` |
+| `Blog__ListPart__ListPartFeed` | `Blog-ListPart-ListPartFeed.cshtml` |
+| `Blog_Summary__ListPart__ListPartFeed` | `Blog-ListPart-ListPartFeed.Summary.cshtml` |
 
 ### `[ContentType]_[DisplayType]__[PartName]__[ShapeType]`
 
@@ -156,10 +156,234 @@ This template is called when a shape type is rendered in a given content part na
 | `LandingPage__Services__CustomShape` | `LandingPage-Services-CustomShape.cshtml` |
 | `LandingPage_Summary__Services__CustomShape` | `LandingPage-Services-CustomShape.Summary.cshtml` |
 
-### Widget parts
+### Content Parts Display Mode
 
-All the previous alternates can be used by replacing `[ContentType]` with `Widget` whenever a content type has the stereotype `Widget`. This also applies
-to any stereotype other than `Content`.
+Content parts that supports different display modes, also provides following display mode alternates.
+
+### `[ShapeType]_[DisplayType]__[DisplayMode]_Display`
+
+This template is called when a content part is rendered for a given content part type, with given display mode, with a display type.
+
+#### Display mode with Shape type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `TitlePart_Summary__CustomMode_Display` | `TitlePart-CustomMode.Display.Summary.cshtml` |
+
+
+### `[ContentType]_Display__[PartType]__[DisplayMode]`
+
+This template is called when a content part is rendered for a given content type, with given display mode, without a display type.
+
+#### Display mode with Part type without Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `LandingPage_Display__TitlePart__CustomMode` | `LandingPage-TitlePart-CustomMode.Display.cshtml` |
+
+### `[ContentType]_[DisplayType]__[PartType]__[DisplayMode]_Display`
+
+This template is called when a content part is rendered for a given content type, with given display mode, with a display type.
+
+#### Display mode with Part type with Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `LandingPage_Summary__TitlePart__CustomMode_Display` | `LandingPage-TitlePart-CustomMode.Display.Summary.cshtml` |
+
+### `[ContentType]_Display__[PartName]__[DisplayMode]`
+
+This template is called when a content part name is rendered for a given content type, for given display mode, without a given display type.
+
+#### Display mode with Part name without Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `LandingPage_Display__Services__CustomMode` | `LandingPage-Services-CustomMode.Display.cshtml` |
+
+### `[ContentType]_[DisplayType]__[PartName]__[DisplayMode]_Display`
+
+This template is called when a content part name is rendered for a given content type, for given display mode, with a given display type.
+
+#### Display mode with Part name with Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `LandingPage_Summary__Services__CustomMode_Display` | `LandingPage-Services-CustomMode.Display.Summary.cshtml` |
+
+### `[ContentType]_Display__[PartType]__[ShapeType]__[DisplayMode]`
+
+This template is called when a shape type is rendered in a given content part type for a given content type, for given display mode without a given display type.
+
+#### Display mode with Part Type and Shape without Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Blog_Display__ListPart__ListPartFeed__CustomMode` | `Blog-ListPart-ListPartFeed-CustomMode.Display.cshtml` |
+
+
+### `[ContentType]_[DisplayType]__[PartType]__[ShapeType]__[DisplayMode]_Display`
+
+This template is called when a shape type is rendered in a given content part type for a given content type, for given display mode with a given display type.
+
+#### Display mode with Part Type and Shape with Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Blog_Summary__ListPart__ListPartFeed__CustomMode_Display` | `Blog-ListPart-ListPartFeed-CustomMode.Display.Summary.cshtml` |
+
+### `[ContentType]_Display__[PartName]__[ShapeType]__[DisplayMode]`
+
+This template is called when a shape type is rendered in a given content part name for a given content type, without a given display type.
+
+#### Display mode with Part Name and Custom Shape without Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Blog_Display__Services__ListPartFeed__CustomMode` | `Blog-Services-ListPartFeed-CustomMode.Display.cshtml` |
+
+### `[ContentType]_[DisplayType]__[PartName]__[ShapeType]__[DisplayMode]_Display`
+
+This template is called when a shape type is rendered in a given content part name for a given content type, with a given display type.
+
+#### Display mode with Part Name and Custom Shape with Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Blog_Summary__Services__ListPartFeed__CustomMode_Display` | `Blog-Services-ListPartFeed-CustomMode.Display.Summary.cshtml` |
+
+
+
+### Widget parts / Stereotype parts
+
+Content Part attached to Content type of the stereotype (e.g. `Widget`, `Menu`) also has following alternates. This applies to any stereotype other than `Content`.
+
+### `[Stereotype]_[DisplayType]__[PartType]`
+
+This template is called when a content part is rendered for a given stereo type, with or without a given display type.
+
+#### Stereotype with Part Name Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget__HtmlBodyPart` | `Widget-HtmlBodyPart.cshtml` |
+| `Widget_Summary__HtmlBodyPart` | `Widget-HtmlBodyPart.Summary.cshtml` 
+
+### `[Stereotype]_[DisplayType]__[PartType]__[PartName]`
+
+This template is called when a content part is a re-usable named part and rendered for a given stereotype, with or without a given display type.
+
+#### Stereotype with Part Type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget__ServicePart__Services` | `Widget-ServicePart-Services.cshtml` |
+| `Widget_Summary__ServicePart__Services` | `Widget-ServicePart-Services.Summary.cshtml` |
+
+### `[Stereotype]_[DisplayType]__[PartType]__[ShapeType]`
+
+This template is called when a custom shape type is rendered  for a given stereotype type, with or without a given display type.
+
+#### Stereotype with Part Name and Shape Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget__ListPart__ListPartFeed` | `Widget-ListPart-ListPartFeed.cshtml` |
+| `Widget_Summary__ListPart__ListPartFeed` | `Widget-ListPart-ListPartFeed.Summary.cshtml` |
+
+### `[Stereotype]_[DisplayType]__[PartType]__[PartName]__[ShapeType]`
+
+This template is called for re-usable named content part with  custom shape type and rendered for a given stereotype type, with or without a given display type.
+
+#### Stereotype with Part Name and Custom Shape Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget__ServicePart__Services__CustomShape` | `Widget-ServicePart-Services-CustomShape.cshtml` |
+| `Widget_Summary__ServicePart__Services__CustomShape` | `Widget-ServicePart-Services-CustomShape.Summary.cshtml` |
+
+Following alternates are available to Content parts that supports different display modes and are attached to content type of stereotype.
+
+### `[Stereotype]_Display__[PartType]__[DisplayMode]`
+
+This template is called when a content part is rendered for a given stereo type, with given display mode, without a display type.
+
+#### Display mode with Part type without Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget_Display__TitlePart__CustomMode` | `Widget-TitlePart-CustomMode.Display.cshtml` |
+
+
+### `[Stereotype]_[DisplayType]__[PartType]__[DisplayMode]_Display`
+
+This template is called when a content part is rendered for a given stereo type, with given display mode, with a display type.
+
+#### Display mode with Stereotype with Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget_Summary__TitlePart__CustomMode_Display` | `Widget-TitlePart-CustomMode.Display.Summary.cshtml` |
+
+### `[Stereotype]_Display__[PartType]__[PartName]__[DisplayMode]`
+
+This template is called when a content part name is rendered for a given stereotype, for given display mode, without a given display type.
+
+#### Display mode with Part name without Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget_Display__ServicePart__Services__CustomMode` | `Widget-ServicePart-Services-CustomMode.Display.cshtml` |
+
+### `[Stereotype]_[DisplayType]__[PartType]__[PartName]__[DisplayMode]_Display`
+
+This template is called when a content part name is rendered for a given stereotype, for given display mode, with a given display type.
+
+#### Display mode with Part name with Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget_Summary__ServicePart__Services__CustomMode_Display` | `Widget-ServicePart-Services-CustomMode.Display.Summary.cshtml` |
+
+### `[Stereotype]_Display__[PartType]__[ShapeType]__[DisplayMode]`
+
+This template is called when a shape type is rendered in a given content part type for a given stereotype, for given display mode without a given display type.
+
+#### Display mode with Part Type and Shape without Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget_Display__ListPart__ListPartFeed__CustomMode` | `Widget-ListPart-ListPartFeed-CustomMode.Display.cshtml` |
+
+### `[Stereotype]_[DisplayType]__[PartType]__[ShapeType]__[DisplayMode]_Display`
+
+This template is called when a shape type is rendered in a given content part type for a given stereotype, for given display mode with a given display type.
+
+#### Display mode with Part Type and Shape with Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget_Summary__ListPart__ListPartFeed__CustomMode_Display` | `Widget-ListPart-ListPartFeed-CustomMode.Display.Summary.cshtml` |
+
+### `[Stereotype]_Display__[PartType]__[PartName]__[ShapeType]__[DisplayMode]`
+
+This template is called when a shape type is rendered in a given content part name for a given stereotype, without a given display type.
+
+#### Display mode with Part Name and Custom Shape without Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget_Display__ListPart__Services__ListPartFeed__CustomMode` | `Widget-ListPart-Services-ListPartFeed-CustomMode.Display.cshtml` |
+
+### `[Stereotype]_[DisplayType]__[PartType]__[PartName]__[ShapeType]__[DisplayMode]_Display`
+
+This template is called when a shape type is rendered in a given content part name for a given stereotype, with a given display type.
+
+#### Display mode with Part Name and Custom Shape with Display type Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Widget_Summary__ListPart__Services__ListPartFeed__CustomMode_Display` | `Widget-ListPart-Services-ListPartFeed-CustomMode.Display.Summary.cshtml` |
 
 ## Content Field templates
 

@@ -41,7 +41,6 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddIdGeneration();
 
             services.Configure<SitemapsOptions>(options =>
             {
@@ -58,13 +57,13 @@ namespace OrchardCore.Sitemaps
                 }
             });
 
+            services.AddSingleton<SitemapEntries>();
+            services.AddSingleton<ISitemapManager, SitemapManager>();
             services.AddSingleton<IShellRouteValuesAddressScheme, SitemapValuesAddressScheme>();
             services.AddSingleton<SitemapRouteTransformer>();
-            services.AddSingleton<SitemapEntries>();
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ISitemapManager, SitemapManager>();
             services.AddScoped<ISitemapHelperService, SitemapHelperService>();
             services.AddScoped<IDisplayManager<SitemapSource>, DisplayManager<SitemapSource>>();
             services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();

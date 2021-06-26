@@ -52,7 +52,6 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 {
                     return;
                 }
-                var descriptors = new List<RequiredAttributeDescriptor>();
 
                 PassOptionalWhitespace();
 

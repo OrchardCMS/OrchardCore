@@ -208,5 +208,16 @@ namespace OrchardCore.Tests.OrchardCore.Queries
             Assert.True(result);
             Assert.Equal(expectedSql, FormatSql(rawQuery));
         }
+
+        [Theory]
+        [InlineData("select a from b union select c from d", "SELECT [a] FROM [tp_b] UNION SELECT [c] FROM [tp_d];")]
+        [InlineData("select a from b union all select c from d", "SELECT [a] FROM [tp_b] UNION ALL SELECT [c] FROM [tp_d];")]
+        [InlineData("select a from b union all select c from d union select e from f", "SELECT [a] FROM [tp_b] UNION ALL SELECT [c] FROM [tp_d] UNION SELECT [e] FROM [tp_f];")]
+        public void ShouldParseUnionClause(string sql, string expectedSql)
+        {
+            var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+            Assert.True(result);
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+        }
     }
 }

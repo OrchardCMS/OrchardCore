@@ -76,164 +76,6 @@
       }
     },
     {
-      "name": "content",
-      "data": [
-        {
-          "ContentItemId": "[js: variables('comingSoonContentItemId')]",
-          "ContentType": "ComingSoon",
-          "DisplayText": "Coming Soon",
-          "Latest": true,
-          "Published": true,
-          "ModifiedUtc": "[js: variables('now')]",
-          "PublishedUtc": "[js: variables('now')]",
-          "CreatedUtc": "[js: variables('now')]",
-          "Owner": "[js: parameters('AdminUserId')]",
-          "Author": "[js: parameters('AdminUsername')]",
-          "ComingSoon": {},
-          "AutoroutePart": {
-            "Path": null,
-            "SetHomepage": true
-          },
-          "TitlePart": {
-            "Title": "Coming Soon"
-          },
-          "HtmlBodyPart": {
-            "Html": "\r\n<div class=\"input-group input-group-newsletter\">\r\n                <input class=\"form-control\" aria-describedby=\"basic-addon\" aria-label=\"Enter email...\" type=\"email\" placeholder=\"Enter email...\">\r\n                <div class=\"input-group-append\">\r\n                  <button class=\"btn btn-secondary\" type=\"button\">Notify Me!</button>\r\n                </div>\r\n              </div>"
-          },
-          "SocialIcons": {
-            "ContentItems": [
-              {
-                "Id": 0,
-                "ContentItemId": "4gjxgam51tfyf5vhj02zhvqecb",
-                "ContentItemVersionId": null,
-                "ContentType": "SocialIcon",
-                "DisplayText": "Twitter",
-                "Latest": false,
-                "Published": false,
-                "Owner": null,
-                "Author": "admin",
-                "SocialIcon": {
-                  "IconClass": {
-                    "Text": "fab fa-twitter"
-                  },
-                  "Url": {
-                    "Text": "https://twitter.com"
-                  }
-                }
-              },
-              {
-                "Id": 0,
-                "ContentItemId": "4e73aztdqsycs0ygegr02rjkx1",
-                "ContentItemVersionId": null,
-                "ContentType": "SocialIcon",
-                "DisplayText": "Facebook",
-                "Latest": false,
-                "Published": false,
-                "Owner": null,
-                "Author": "admin",
-                "SocialIcon": {
-                  "IconClass": {
-                    "Text": "fab fa-facebook"
-                  },
-                  "Url": {
-                    "Text": "https://facebook.com"
-                  }
-                }
-              },
-              {
-                "Id": 0,
-                "ContentItemId": "4kn15ap88bg611z3ynjvewxpdz",
-                "ContentItemVersionId": null,
-                "ContentType": "SocialIcon",
-                "DisplayText": "Instagram",
-                "Latest": false,
-                "Published": false,
-                "Owner": null,
-                "Author": "admin",
-                "SocialIcon": {
-                  "IconClass": {
-                    "Text": "fab fa-instagram"
-                  },
-                  "Url": {
-                    "Text": "https://instagram.com"
-                  }
-                }
-              }
-            ]
-          },
-          "FlowPart": {
-            "Widgets": [
-              {
-                "Id": 0,
-                "ContentItemId": "4ywpx1bab0e2t7n33zxhejwv5r",
-                "ContentItemVersionId": null,
-                "ContentType": "ValidationSummary",
-                "DisplayText": null,
-                "Latest": false,
-                "Published": false,
-                "Owner": null,
-                "Author": "admin",
-                "ValidationSummaryPart": {},
-                "FlowMetadata": {
-                  "Alignment": 3,
-                  "Size": 100
-                }
-              },
-              {
-                "Id": 0,
-                "ContentItemId": "4b9w1xee8bwr0tjnn455wn9fwb",
-                "ContentItemVersionId": null,
-                "ContentType": "Register",
-                "DisplayText": null,
-                "Latest": false,
-                "Published": false,
-                "Owner": null,
-                "Author": "admin",
-                "Register": {
-                  "Placeholder": {
-                    "Text": "enter your email...."
-                  },
-                  "Button": {
-                    "Text": "NOTIFY ME!"
-                  },
-                  "InputFieldName": {
-                    "Text": "Email"
-                  }
-                },
-                "HtmlBodyPart": {
-                  "Html": "[js: '<p class=\"mb-5\">We&#39;re working hard to finish the development of this site. Our target launch date is ' +  variables('readyDate') + '! Sign up for updates using the form below!</p>']"
-                },
-                "FlowMetadata": {
-                  "Alignment": 3,
-                  "Size": 100
-                }
-              },
-              {
-                "Id": 0,
-                "ContentItemId": "4tnv3pbfg0wpn7r9vv9tmfg6nm",
-                "ContentItemVersionId": null,
-                "ContentType": "ReCaptcha",
-                "DisplayText": null,
-                "Latest": false,
-                "Published": false,
-                "Owner": null,
-                "Author": "admin",
-                "ReCaptchaPart": {},
-                "FlowMetadata": {
-                  "Alignment": 3,
-                  "Size": 100
-                }
-              }
-            ]
-          },
-          "FormPart": {
-            "Action": "[js: getUrlPrefix('/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId'))))]",
-            "Method": "POST"
-          }
-        }
-      ]
-    },
-    {
       "name": "ContentDefinition",
       "ContentTypes": [
         {
@@ -245,7 +87,7 @@
               "Draftable": true,
               "Versionable": true,
               "Listable": true,
-              "Securable":  true
+              "Securable": true
             }
           },
           "ContentTypePartDefinitionRecords": [
@@ -464,6 +306,164 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "[js: variables('comingSoonContentItemId')]",
+          "ContentType": "ComingSoon",
+          "DisplayText": "Coming Soon",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "[js: variables('now')]",
+          "PublishedUtc": "[js: variables('now')]",
+          "CreatedUtc": "[js: variables('now')]",
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "ComingSoon": {},
+          "AutoroutePart": {
+            "Path": null,
+            "SetHomepage": true
+          },
+          "TitlePart": {
+            "Title": "Coming Soon"
+          },
+          "HtmlBodyPart": {
+            "Html": "\r\n<div class=\"input-group input-group-newsletter\">\r\n                <input class=\"form-control\" aria-describedby=\"submit-button\" aria-label=\"Enter email address...\" type=\"email\" placeholder=\"Enter email address...\">\r\n                <button class=\"btn btn-primary\" id=\"submit-button\" type=\"button\">Notify Me!</button>\r\n                </div>"
+          },
+          "SocialIcons": {
+            "ContentItems": [
+              {
+                "Id": 0,
+                "ContentItemId": "4gjxgam51tfyf5vhj02zhvqecb",
+                "ContentItemVersionId": null,
+                "ContentType": "SocialIcon",
+                "DisplayText": "Twitter",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "admin",
+                "SocialIcon": {
+                  "IconClass": {
+                    "Text": "fab fa-twitter"
+                  },
+                  "Url": {
+                    "Text": "https://twitter.com"
+                  }
+                }
+              },
+              {
+                "Id": 0,
+                "ContentItemId": "4e73aztdqsycs0ygegr02rjkx1",
+                "ContentItemVersionId": null,
+                "ContentType": "SocialIcon",
+                "DisplayText": "Facebook",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "admin",
+                "SocialIcon": {
+                  "IconClass": {
+                    "Text": "fab fa-facebook-f"
+                  },
+                  "Url": {
+                    "Text": "https://facebook.com"
+                  }
+                }
+              },
+              {
+                "Id": 0,
+                "ContentItemId": "4kn15ap88bg611z3ynjvewxpdz",
+                "ContentItemVersionId": null,
+                "ContentType": "SocialIcon",
+                "DisplayText": "Instagram",
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "admin",
+                "SocialIcon": {
+                  "IconClass": {
+                    "Text": "fab fa-instagram"
+                  },
+                  "Url": {
+                    "Text": "https://instagram.com"
+                  }
+                }
+              }
+            ]
+          },
+          "FlowPart": {
+            "Widgets": [
+              {
+                "Id": 0,
+                "ContentItemId": "4ywpx1bab0e2t7n33zxhejwv5r",
+                "ContentItemVersionId": null,
+                "ContentType": "ValidationSummary",
+                "DisplayText": null,
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "admin",
+                "ValidationSummaryPart": {},
+                "FlowMetadata": {
+                  "Alignment": 3,
+                  "Size": 100
+                }
+              },
+              {
+                "Id": 0,
+                "ContentItemId": "4b9w1xee8bwr0tjnn455wn9fwb",
+                "ContentItemVersionId": null,
+                "ContentType": "Register",
+                "DisplayText": null,
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "admin",
+                "Register": {
+                  "Placeholder": {
+                    "Text": "Enter email address..."
+                  },
+                  "Button": {
+                    "Text": "Notify Me!"
+                  },
+                  "InputFieldName": {
+                    "Text": "Email"
+                  }
+                },
+                "HtmlBodyPart": {
+                  "Html": "[js: '<p class=\"mb-5\">We&#39;re working hard to finish the development of this site. Our target launch date is ' +  variables('readyDate') + '! Sign up below to receive updates and to be notified when we launch!</p>']"
+                },
+                "FlowMetadata": {
+                  "Alignment": 3,
+                  "Size": 100
+                }
+              },
+              {
+                "Id": 0,
+                "ContentItemId": "4tnv3pbfg0wpn7r9vv9tmfg6nm",
+                "ContentItemVersionId": null,
+                "ContentType": "ReCaptcha",
+                "DisplayText": null,
+                "Latest": false,
+                "Published": false,
+                "Owner": null,
+                "Author": "admin",
+                "ReCaptchaPart": {},
+                "FlowMetadata": {
+                  "Alignment": 3,
+                  "Size": 100
+                }
+              }
+            ]
+          },
+          "FormPart": {
+            "Action": "[js: getUrlPrefix('/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId'))))]",
+            "Method": "POST"
+          }
         }
       ]
     },
