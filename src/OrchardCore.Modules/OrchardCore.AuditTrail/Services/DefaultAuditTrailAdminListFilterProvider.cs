@@ -154,7 +154,7 @@ namespace OrchardCore.AuditTrail.Services
                     .MapTo<AuditTrailIndexOptions>((val, model) =>
                     {
                         // TODO add a context property to the mapping func.
-                        if (_options.Value.SortOptions.TryGetValue(val, out var sortOption))
+                        if (!String.IsNullOrEmpty(val) && _options.Value.SortOptions.TryGetValue(val, out var sortOption))
                         {
                             model.Sort = sortOption.Value;
                         }

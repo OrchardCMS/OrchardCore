@@ -21,3 +21,7 @@
     <script at="Foot" asp-name="diffviewer" depends-on="prismjson" asp-src="~/OrchardCore.AuditTrail/Scripts/diffviewer.js"></script>
     <div id="diffapp" data-split="@T["Split"]" data-unified="@T["Unified"]" data-old="@Model.Previous" data-new="@Model.Current" data-old-time="@oldTime" data-old-text="@oldText" data-new-time="@newTime" data-new-text="@newText"></div>
 }
+else
+{
+    <p class="alert alert-info">@T["No previous content item available to diff against"]</p>
+}
