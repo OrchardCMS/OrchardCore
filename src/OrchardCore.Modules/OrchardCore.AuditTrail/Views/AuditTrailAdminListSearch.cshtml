@@ -70,27 +70,65 @@
                                         @*NB The operators and examples are not localizable.*@
                                         <li>
                                             <span class="hint">OR</span>
-                                            <span class="hint dashed">@T["The default operator when whitespace is found, e.g."]&nbsp text:foo bar -> text:foo OR bar</span>
+                                            <span class="hint dashed">@T["The default operator when whitespace is found, e.g. {0}", "text:foo bar -> text:foo OR bar"]</span>
                                         </li>
                                         <li>
                                             <span class="hint">AND</span>
-                                            <span class="hint dashed">@T["Combines, e.g."]&nbsp text:foo AND bar</span>
+                                            <span class="hint dashed">@T["Combines, e.g. {0}", "text:foo AND bar"]</span>
                                         </li>
                                         <li>
                                             <span class="hint">NOT</span>
-                                            <span class="hint dashed">@T["Negates, e.g."]&nbsp text:foo NOT bar</span>
+                                            <span class="hint dashed">@T["Negates, e.g. {0}", "text:foo NOT bar"]</span>
                                         </li>
                                         <li>
                                             <span class="hint">( ... )</span>
-                                            <span class="hint">@T["Groups operators, e.g."]&nbsp text:((foo OR bar) NOT baz)</span>
+                                            <span class="hint">@T["Groups operators, e.g. {0}", "text:((foo OR bar) NOT baz)"]</span>
                                         </li>
                                         <li>
                                             <span class="hint">" ... "</span>
-                                            <span class="hint">@T["Escape operators, e.g."]&nbsp text:"foo bar"</span>
+                                            <span class="hint">@T["Escape operators, e.g. {0}", "text:\"foo bar\""]</span>
                                         </li>                                        
                                     </ul>
                                 </li>
                             </ul>
+                            <h4>@T["Date range syntax"]</h4>
+                            <p>
+                                <small class="d-block">@T["You can search for dates that are greater or less than another date, or fall within a date range."]</small>
+                                <small class="d-block">@T["Dates should use the {0} operator or ISO 8601 date time format.", "@now"]</small>
+                                <small class="d-block">@T["Dates without a ISO 8601 UTC or time component will be parsed to the users timezone"]</small>
+                            </p>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    @T["Filter"]
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    @T["Example"]
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">>@@now-1</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@T["Matches dates greater than the current date minus one. {0} is also suported", "@today"]</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@@now-20..@@now</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@T["{0} Matches dates between twenty days old and the current date", "date:>@now-1"]</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@@2020-01-01..@@2020-02-01</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@T["{0} Matches dates from the start of the month until the start of the next month", "@2020-01-01..@2020-01-01"]</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">>@@2020-01-01T09:21:03.4472810+07:00</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@T["{0} Matches dates greater than a specified UTC offset and time", ">@@2020-01-01T09:21:03.4472810+07:00"]</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card">

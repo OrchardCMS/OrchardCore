@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
@@ -93,7 +92,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                     ContentAuditTrailEventConfiguration.Content,
                     content.ContentItem.ContentItemId,
                     _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier),
-                    _httpContextAccessor.GetCurrentUserName(),
+                    _httpContextAccessor.HttpContext.User?.Identity?.Name,
                     new AuditTrailContentEvent
                     {
                         ContentItem = content.ContentItem,

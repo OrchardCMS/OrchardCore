@@ -25,6 +25,7 @@ namespace OrchardCore.AuditTrail.Services
         {
             _options = options;
         }
+
         public void Build(QueryEngineBuilder<AuditTrailEvent> builder)
         {
             builder

@@ -17,6 +17,7 @@ namespace OrchardCore.AuditTrail.Services
 {
     public class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryService
     {
+        private const string DateFormat = "yyyy-MM-dd";
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly ILocalClock _localClock;
         private readonly AuditTrailAdminListOptions _adminListOptions;
@@ -107,28 +108,30 @@ namespace OrchardCore.AuditTrail.Services
             dateTimeValue = "@now-2..@now-1";
             options.AuditTrailDates.Add(new SelectListItem(S["Previous 48 hours"], dateTimeValue, options.Date == dateTimeValue));
 
-            dateTimeValue = $">{localNow.StartOfWeek(CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek).LocalDateTime.ToString("yyyy-MM-dd")}";
+            dateTimeValue = $">{localNow.StartOfWeek(CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek).LocalDateTime.ToString(DateFormat)}";
             options.AuditTrailDates.Add(new SelectListItem(S["This week"], dateTimeValue, options.Date == dateTimeValue));
 
             var start = localNow.StartOfWeek(CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek).AddDays(-7).LocalDateTime;
             var end = start.AddDays(7);
-            dateTimeValue = $"{start.ToString("yyyy-MM-dd")}..{end.ToString("yyyy-MM-dd")}";
+            dateTimeValue = $"{start.ToString(DateFormat)}..{end.ToString(DateFormat)}";
             options.AuditTrailDates.Add(new SelectListItem(S["Last week"], dateTimeValue, options.Date == dateTimeValue));
 
             start = new DateTime(localNow.LocalDateTime.Year, localNow.LocalDateTime.Month, 1);
-            dateTimeValue = $">{start.ToString("yyyy-MM-dd")}";
+            dateTimeValue = $">{start.ToString(DateFormat)}";
             options.AuditTrailDates.Add(new SelectListItem(S["This month"], dateTimeValue, options.Date == dateTimeValue));
 
             start = new DateTime(localNow.LocalDateTime.Year, localNow.LocalDateTime.Month, 1).AddMonths(-1);
             end = start.AddMonths(1);
-            dateTimeValue = $"{start.ToString("yyyy-MM-dd")}..{end.ToString("yyyy-MM-dd")}";
+            dateTimeValue = $"{start.ToString(DateFormat)}..{end.ToString(DateFormat)}";
             options.AuditTrailDates.Add(new SelectListItem(S["Last month"], dateTimeValue, options.Date == dateTimeValue));
+            options.AuditTrailDates.Add(new SelectListItem(S["Custom date range"], dateTimeValue, options.Date == dateTimeValue));
 
             dateTimeValue = $">{localNow.AddHours(-1).ToString("o")}";
             options.AuditTrailDates.Add(new SelectListItem(S["Last hour"], dateTimeValue, options.Date == dateTimeValue));
 
             dateTimeValue = $"{localNow.AddHours(-2).ToString("o")}..{localNow.AddHours(-1).ToString("o")}";
             options.AuditTrailDates.Add(new SelectListItem(S["Previous hour"], dateTimeValue, options.Date == dateTimeValue));
+            options.AuditTrailDates.Add(new SelectListItem(S["Custom time range"], dateTimeValue, options.Date == dateTimeValue));
 
             return result;
         }

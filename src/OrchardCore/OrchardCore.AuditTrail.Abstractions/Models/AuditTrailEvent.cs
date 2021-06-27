@@ -54,10 +54,5 @@ namespace OrchardCore.AuditTrail.Models
         /// The date and time when the event occurred.
         /// </summary>
         public DateTime CreatedUtc { get; set; }
-
-        // /// <summary>
-        // /// The comment of the event.
-        // /// </summary>
-        // public string Comment { get; set; }
     }
 }

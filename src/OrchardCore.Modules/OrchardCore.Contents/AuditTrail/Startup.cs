@@ -59,14 +59,14 @@ namespace OrchardCore.Contents.AuditTrail
             routes.MapAreaControllerRoute(
                name: "DisplayAuditTrailContent",
                areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/{auditTrailEventId}",
+               pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Display/{auditTrailEventId}",
                defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Display) }
            );
 
             routes.MapAreaControllerRoute(
                name: "RestoreAuditTrailContent",
                areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/{auditTrailEventId}",
+               pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Restore/{auditTrailEventId}",
                defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Restore) }
            );
         }

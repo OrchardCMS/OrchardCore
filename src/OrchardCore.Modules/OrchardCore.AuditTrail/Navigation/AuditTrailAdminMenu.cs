@@ -24,7 +24,7 @@ namespace OrchardCore.AuditTrail.Navigation
 
             builder
                 .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
-                .AddClass("audittrail").Id("audittrail")
+                    .AddClass("audittrail").Id("audittrail")
                     .Action(nameof(AdminController.Index), "Admin", new { area = "OrchardCore.AuditTrail", correlationId = "" })
                     .Permission(AuditTrailPermissions.ViewAuditTrail)
                     .LocalNav());

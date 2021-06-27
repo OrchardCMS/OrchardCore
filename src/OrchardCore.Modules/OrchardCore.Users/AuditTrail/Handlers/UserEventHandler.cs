@@ -51,6 +51,7 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                             UserName = userName
                         }
                     ));
+
         public Task IsLockedOutAsync(IUser user)
             => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.LogInFailed, user);
 
