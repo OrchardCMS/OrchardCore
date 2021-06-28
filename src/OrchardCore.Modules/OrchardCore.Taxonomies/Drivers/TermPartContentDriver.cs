@@ -50,9 +50,8 @@ namespace OrchardCore.Taxonomies.Drivers
                     var pager = await GetPagerAsync(context.Updater, siteSettings.PageSize);
                     m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                     m.ContentItem = part.ContentItem;
-                    m.ContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(part, enableOrdering, pager)).ToArray();
+                    m.ContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(part, pager, enableOrdering, true)).ToArray();
                     m.Pager = await context.New.PagerSlim(pager);
-
                 })
                 .Location("Detail", "Content:5"));
             }

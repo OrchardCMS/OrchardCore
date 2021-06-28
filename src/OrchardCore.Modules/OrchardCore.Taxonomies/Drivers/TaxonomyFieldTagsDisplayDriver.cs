@@ -14,14 +14,14 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Models;
-using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
+using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
-    {      
+    {
         private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -65,10 +65,10 @@ namespace OrchardCore.Taxonomies.Drivers
                     var termEntries = new List<TermEntry>();
                     TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
                     var tagTermEntries = termEntries.Select(te => new TagTermEntry
-                    { 
-                        ContentItemId = te.ContentItemId, 
-                        Selected = te.Selected, 
-                        DisplayText = te.Term.DisplayText, 
+                    {
+                        ContentItemId = te.ContentItemId,
+                        Selected = te.Selected,
+                        DisplayText = te.Term.DisplayText,
                         IsLeaf = te.IsLeaf
                     });
 
@@ -90,7 +90,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
-     
+
                 field.TermContentItemIds = model.TermContentItemIds == null
                     ? Array.Empty<string>() : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
@@ -122,7 +122,6 @@ namespace OrchardCore.Taxonomies.Drivers
                 if (taxonomy.As<TaxonomyPart>().EnableOrdering)
                 {
                     await _taxonomyService.SyncTaxonomyFieldProperties(field);
-                    await _taxonomyService.EnsureUniqueOrderValues(field);
                 }
             }
 

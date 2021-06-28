@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
@@ -45,13 +46,17 @@ namespace OrchardCore.Taxonomies
             SchemaBuilder.CreateMapIndexTable<TaxonomyIndex>(table => table
                 .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
-                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
-                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<string>("TermContentItemId", column => column.WithLength(26))
-                .Column<int>("Order", column => column.WithDefault(0))
+                .Column<string>("ContentType", c => c.WithLength(ContentItemIndex.MaxContentTypeSize))
+                .Column<string>("ContentPart", c => c.WithLength(ContentItemIndex.MaxContentPartSize))
+                .Column<string>("ContentField", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
+                .Column<string>("TermContentItemId", c => c.WithLength(26))
                 .Column<bool>("Published", c => c.WithDefault(true))
                 .Column<bool>("Latest", c => c.WithDefault(false))
+                .Column<int>("Order", c => c.WithDefault(0))
+
+                .Column<DateTime>("CreatedUtc", c => c.Nullable())
+                .Column<string>("ContainedContentItemId", c => c.WithLength(26))
+                .Column<string>("JsonPath", c => c.Unlimited())
             );
 
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
@@ -177,6 +182,11 @@ namespace OrchardCore.Taxonomies
             SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
                 .CreateIndex("IDX_TaxonomyIndex_Order", "Order")
             );
+
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table.AddColumn<string>("CreatedUtc", c => c.Nullable()));
+
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table.AddColumn<string>("ContainedContentItemId", c => c.WithLength(26)));
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table.AddColumn<string>("JsonPath", c => c.Unlimited()));
 
             return 6;
         }

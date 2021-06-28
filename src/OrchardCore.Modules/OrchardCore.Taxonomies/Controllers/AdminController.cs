@@ -130,7 +130,7 @@ namespace OrchardCore.Taxonomies.Controllers
             else
             {
                 // Look for the target taxonomy item in the hierarchy
-                var parentTaxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+                var parentTaxonomyItem = _taxonomyService.FindTermObject(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
                 // Couldn't find targeted taxonomy item
                 if (parentTaxonomyItem == null)
@@ -168,7 +168,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            JObject taxonomyItem = _taxonomyService.FindTermObject(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item
             if (taxonomyItem == null)
@@ -216,7 +216,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            JObject taxonomyItem = _taxonomyService.FindTermObject(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item
             if (taxonomyItem == null)
@@ -229,6 +229,7 @@ namespace OrchardCore.Taxonomies.Controllers
             // Create a new item to take into account the current type definition.
             var contentItem = await _contentManager.NewAsync(existing.ContentType);
 
+            contentItem.ContentItemId = existing.ContentItemId;
             contentItem.Merge(existing);            
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
@@ -284,7 +285,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy
-            var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            var taxonomyItem = _taxonomyService.FindTermObject(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item
             if (taxonomyItem == null)
@@ -321,7 +322,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            JObject taxonomyItem = _taxonomyService.FindTermObject(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             if (taxonomyItem == null)
             {
@@ -343,7 +344,7 @@ namespace OrchardCore.Taxonomies.Controllers
             var termPart = contentItem.As<TermPart>();
             model.TaxonomyContentItemId = termPart.TaxonomyContentItemId;
             model.ContentItem = termPart.ContentItem;
-            model.ContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(termPart, enableOrdering, pager)).ToArray();
+            model.ContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(termPart, pager, enableOrdering, false)).ToArray();
             model.Pager = await New.PagerSlim(pager);
 
             return View(model);
@@ -364,7 +365,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return Forbid();
             }
 
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            JObject taxonomyItem = _taxonomyService.FindTermObject(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             if (taxonomyItem == null)
             {
@@ -379,7 +380,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var pager = new PagerSlim(pagerSlimParameters, pageSize);
 
-            var categorizedContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(termPart, true, pager)).ToList();
+            var categorizedContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(termPart, pager, true, false)).ToList();
 
             // Find the lower and higher bounds of the affected area (between the old and new position of the moved item)
             var lowerIndex = Math.Min(newIndex, oldIndex);
@@ -400,36 +401,6 @@ namespace OrchardCore.Taxonomies.Controllers
             await _taxonomyService.SaveCategorizedItemsOrder(categorizedContentItems, taxonomyItemId, lowerOrderValue);
 
             return Ok();
-        }
-
-        private JObject FindTaxonomyItem(JObject contentItem, string taxonomyItemId)
-        {
-            if (contentItem["ContentItemId"]?.Value<string>() == taxonomyItemId)
-            {
-                return contentItem;
-            }
-
-            if (contentItem.GetValue("Terms") == null)
-            {
-                return null;
-            }
-
-            var taxonomyItems = (JArray)contentItem["Terms"];
-
-            JObject result;
-
-            foreach (JObject taxonomyItem in taxonomyItems)
-            {
-                // Search in inner taxonomy items
-                result = FindTaxonomyItem(taxonomyItem, taxonomyItemId);
-
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
-            return null;
         }
     }
 }

@@ -25,7 +25,7 @@
         @foreach (var contentItem in Model.ContentItems)
         {
             var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, "SummaryAdmin");
-            contentItemSummary.Selectors.Add(await New.TaxonomyPart_Sortable());
+            await contentItemSummary.Selectors.AddAsync(await New.TaxonomyPart_Sortable());
             <li class="list-group-item">
                 @await DisplayAsync(contentItemSummary)
             </li>

@@ -91,6 +91,7 @@ namespace OrchardCore.Taxonomies
             services.AddContentPart<TermPart>();
             services.AddScoped<IContentHandler, TermPartContentHandler>();
             services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
+            services.AddScoped<IContentHandler, TaxonomyfieldContentHandler>();
 
         }
 

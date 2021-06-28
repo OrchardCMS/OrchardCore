@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Navigation;
@@ -11,7 +12,15 @@ namespace OrchardCore.Taxonomies.Services
 {
     public interface ITaxonomyService
     {
-        Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, bool enableOrdering, PagerSlim pager);
+        Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, PagerSlim pager, bool enableOrdering, bool published);
+
+        ContentItem FindTerm(ContentItem taxonomy, string termContentItemId);
+
+        JObject FindTermObject(JObject contentItem, string taxonomyItemId);
+
+        bool FindTermHierarchy(ContentItem taxonomy, string termContentItemId, List<ContentItem> terms);
+
+        List<ContentItem> FindTermSiblings(ContentItem taxonomy, string termContentItemId);
 
         Task InitializeCategorizedItemsOrderAsync(string TaxonomyContentItemId);
 
@@ -24,5 +33,6 @@ namespace OrchardCore.Taxonomies.Services
         int GetTaxonomyTermOrder(ContentItem categorizedItem, string termContentItemId);
 
         (TaxonomyField field, ContentPartFieldDefinition fieldDefinition) GetTaxonomyField(ContentItem categorizedItem, string taxonomyContentItemId = null, string termContentItemId = null);
+
     }
 }

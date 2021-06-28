@@ -99,7 +99,6 @@ namespace OrchardCore.Taxonomies.Drivers
                 if (taxonomy.As<TaxonomyPart>().EnableOrdering)
                 {
                     await _taxonomyService.SyncTaxonomyFieldProperties(field);
-                    await _taxonomyService.EnsureUniqueOrderValues(field);
                 }
             }
 

@@ -35,62 +35,23 @@ namespace OrchardCore.Taxonomies.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, bool enableOrdering, PagerSlim pager)
+        public async Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, PagerSlim pager, bool enableOrdering, bool published)
         {
-            IEnumerable<ContentItem> containedItems;
-            
-            IQuery<ContentItem> query = null;
+            IEnumerable<ContentItem> categorizedItems;
+
+            IQueryIndex<TaxonomyIndex> query = _session.QueryIndex<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId);
+
             if (pager.Before != null)
             {
                 if (enableOrdering)
                 {
                     var beforeValue = int.Parse(pager.Before);
-                    query = _session.Query<ContentItem>()
-                        .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId && x.Order > beforeValue)
-                        .OrderBy(x => x.Order)
-                        .Take(pager.PageSize + 1);
+                    query = query.Where(x => x.Order > beforeValue);
                 }
                 else
                 {
                     var beforeValue = new DateTime(long.Parse(pager.Before));
-                    query = _session.Query<ContentItem>()
-                        .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
-                        .With<ContentItemIndex>(x => x.Published && x.CreatedUtc > beforeValue)
-                        .OrderBy(x => x.CreatedUtc)
-                        .Take(pager.PageSize + 1);
-                }
-
-                containedItems = await query.ListAsync();
-
-                if (containedItems.Count() == 0)
-                {
-                    return containedItems;
-                }
-
-                containedItems = containedItems.Reverse();
-
-                // There is always an After as we clicked on Before
-                pager.Before = null;
-                if (enableOrdering)
-                {
-                    pager.After = GetTaxonomyTermOrder(containedItems.Last(), termPart.ContentItem.ContentItemId).ToString();
-                }
-                else
-                {
-                    pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
-                }
-
-                if (containedItems.Count() == pager.PageSize + 1)
-                {
-                    containedItems = containedItems.Skip(1);
-                    if (enableOrdering)
-                    {
-                        pager.Before = GetTaxonomyTermOrder(containedItems.First(), termPart.ContentItem.ContentItemId).ToString();
-                    }
-                    else
-                    {
-                        pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
-                    }
+                    query = query = query.Where(x => x.CreatedUtc > beforeValue);
                 }
             }
             else if (pager.After != null)
@@ -98,95 +59,216 @@ namespace OrchardCore.Taxonomies.Services
                 if (enableOrdering)
                 {
                     var afterValue = int.Parse(pager.After);
-                    query = _session.Query<ContentItem>()
-                        .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId && x.Order < afterValue)
-                        .OrderByDescending(x => x.Order)
-                        .Take(pager.PageSize + 1);
+                    query = query = query.Where(x => x.Order < afterValue);
                 }
                 else
                 {
                     var afterValue = new DateTime(long.Parse(pager.After));
-                    query = _session.Query<ContentItem>()
-                        .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
-                        .With<ContentItemIndex>(x => x.Published && x.CreatedUtc < afterValue)
-                        .OrderByDescending(x => x.CreatedUtc)
-                        .Take(pager.PageSize + 1);
+                    query = query = query.Where(x => x.CreatedUtc < afterValue);
                 }
-                containedItems = await query.ListAsync();
+            }
 
-                if (containedItems.Count() == 0)
-                {
-                    return containedItems;
-                }
-
-                // There is always a Before page as we clicked on After
+            if (pager.Before != null)
+            {
                 if (enableOrdering)
                 {
-                    pager.Before = GetTaxonomyTermOrder(containedItems.First(), termPart.ContentItem.ContentItemId).ToString();
+                    query = query.OrderBy(x => x.Order);
                 }
                 else
                 {
-                    pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
-                }
-                pager.After = null;
-
-                if (containedItems.Count() == pager.PageSize + 1)
-                {
-                    containedItems = containedItems.Take(pager.PageSize);
-                    if (enableOrdering)
-                    {
-                        pager.After = GetTaxonomyTermOrder(containedItems.Last(), termPart.ContentItem.ContentItemId).ToString();
-                    }
-                    else
-                    {
-                        pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
-                    }
+                    query = query.OrderBy(x => x.CreatedUtc);
                 }
             }
             else
             {
                 if (enableOrdering)
                 {
-                    query = _session.Query<ContentItem>()
-                        .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
-                        .OrderByDescending(x => x.Order)
-                        .Take(pager.PageSize + 1);
+                    query = query.OrderByDescending(x => x.Order);
                 }
                 else
                 {
-                    query = _session.Query<ContentItem>()
-                        .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
-                        .With<ContentItemIndex>(x => x.Published)
-                        .OrderByDescending(x => x.CreatedUtc)
-                        .Take(pager.PageSize + 1);
+                    query.OrderByDescending(x => x.CreatedUtc);
                 }
+            }
 
-                containedItems = await query.ListAsync();
+            if (published)
+            {
+                query = query.Where(x => x.Published);
+            }
+            else
+            {
+                query = query.Where(x => x.Latest);
+            }
 
-                if (containedItems.Count() == 0)
-                {
-                    return containedItems;
-                }
+            query = query.Take(pager.PageSize + 1);
 
+            categorizedItems = await GetCategorizedItemsAsync(query);
+
+            if (categorizedItems.Count() == 0)
+            {
+                return categorizedItems;
+            }
+
+            if (pager.Before != null)
+            {
+                categorizedItems = categorizedItems.Reverse();
+
+                // There is always an After as we clicked on Before
                 pager.Before = null;
-                pager.After = null;
 
-                if (containedItems.Count() == pager.PageSize + 1)
+                pager.After = enableOrdering ?
+                    GetTaxonomyTermOrder(categorizedItems.Last(), termPart.ContentItem.ContentItemId).ToString() :
+                    categorizedItems.Last().CreatedUtc.Value.Ticks.ToString();
+
+                if (categorizedItems.Count() == pager.PageSize + 1)
                 {
-                    containedItems = containedItems.Take(pager.PageSize);
+                    categorizedItems = categorizedItems.Skip(1);
                     if (enableOrdering)
                     {
-                        pager.After = GetTaxonomyTermOrder(containedItems.Last(), termPart.ContentItem.ContentItemId).ToString();
+                        pager.Before = GetTaxonomyTermOrder(categorizedItems.First(), termPart.ContentItem.ContentItemId).ToString();
                     }
                     else
                     {
-                        pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
+                        pager.Before = categorizedItems.First().CreatedUtc.Value.Ticks.ToString();
+                    }
+                }
+            }
+            else if (pager.After != null)
+            {
+                // There is always a Before page as we clicked on After
+                if (enableOrdering)
+                {
+                    pager.Before = GetTaxonomyTermOrder(categorizedItems.First(), termPart.ContentItem.ContentItemId).ToString();
+                }
+                else
+                {
+                    pager.Before = categorizedItems.First().CreatedUtc.Value.Ticks.ToString();
+                }
+                pager.After = null;
+
+                if (categorizedItems.Count() == pager.PageSize + 1)
+                {
+                    categorizedItems = categorizedItems.Take(pager.PageSize);
+                    if (enableOrdering)
+                    {
+                        pager.After = GetTaxonomyTermOrder(categorizedItems.Last(), termPart.ContentItem.ContentItemId).ToString();
+                    }
+                    else
+                    {
+                        pager.After = categorizedItems.Last().CreatedUtc.Value.Ticks.ToString();
+                    }
+                }
+            }
+            else
+            {
+                pager.Before = null;
+                pager.After = null;
+
+                if (categorizedItems.Count() == pager.PageSize + 1)
+                {
+                    if (pager.PageSize > 0)
+                    {
+                        categorizedItems = categorizedItems.Take(pager.PageSize);
+                    }
+                    if (enableOrdering)
+                    {
+                        pager.After = GetTaxonomyTermOrder(categorizedItems.Last(), termPart.ContentItem.ContentItemId).ToString();
+                    }
+                    else
+                    {
+                        pager.After = categorizedItems.Last().CreatedUtc.Value.Ticks.ToString();
                     }
                 }
             }
 
-            return (await _contentManager.LoadAsync(containedItems));
+            return categorizedItems;
         }
+
+        // Get all the content and contained content items
+        private async Task<IEnumerable<ContentItem>> GetCategorizedItemsAsync(IQueryIndex<TaxonomyIndex> query)
+        {
+            var taxonomyIndexes = await query.ListAsync();
+
+            // Get all the "containers" of the categorized content items
+            var ids = taxonomyIndexes.Select(x => x.ContentItemId);
+            var items = await _contentManager.GetAsync(ids, latest: true);
+
+            List<ContentItem> containedItems = new List<ContentItem>();
+            foreach (var taxonomyIndex in taxonomyIndexes)
+            {
+                var categorizedItem = items.FirstOrDefault(x => x.ContentItemId == taxonomyIndex.ContentItemId);
+
+                // It represents a contained content item
+                if (!string.IsNullOrEmpty(taxonomyIndex.JsonPath))
+                {
+                    var latest = categorizedItem.Latest;
+                    var published = categorizedItem.Published;
+
+                    // Get the Term from the Taxonomy
+                    var root = categorizedItem.Content as JObject;
+                    categorizedItem = root.SelectToken(taxonomyIndex.JsonPath)?.ToObject<ContentItem>();
+
+                    // When Ordering content items, we will need to know this is a "Term" content item
+                    categorizedItem.Weld<TermPart>();
+                    categorizedItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyIndex.ContentItemId);
+
+                    // For when Ordering, for aesthetic reasons
+                    categorizedItem.Latest = latest;
+                    categorizedItem.Published = published;
+                }
+
+                // add the container or contained/term content item to the list
+                containedItems.Add(categorizedItem);
+            }
+
+            return containedItems;
+        }
+
+        public ContentItem FindTerm(ContentItem taxonomy, string termContentItemId)
+        {
+            return FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
+        }
+
+        public JObject FindTermObject(JObject contentItem, string taxonomyItemId)
+        {
+            if (contentItem["ContentItemId"]?.Value<string>() == taxonomyItemId)
+            {
+                return contentItem;
+            }
+
+            if (contentItem.GetValue("Terms") == null)
+            {
+                return null;
+            }
+
+            var taxonomyItems = (JArray)contentItem["Terms"];
+
+            JObject result;
+
+            foreach (JObject taxonomyItem in taxonomyItems)
+            {
+                // Search in inner taxonomy items
+                result = FindTermObject(taxonomyItem, taxonomyItemId);
+
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
+        public bool FindTermHierarchy(ContentItem taxonomy, string termContentItemId, List<ContentItem> terms)
+        {
+            return FindTermHierarchy(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId, terms);
+        }
+
+        public List<ContentItem> FindTermSiblings(ContentItem taxonomy, string termContentItemId)
+        {
+            return FindTermSiblings(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
+        }
+
 
         // Given a content item, this method returs the taxonomy field for a specific taxonomy and/or the one that includes (categorizes) the content item in a specific taxonomy term.
         public (TaxonomyField field, ContentPartFieldDefinition fieldDefinition) GetTaxonomyField(ContentItem categorizedItem, string taxonomyContentItemId = null, string termContentItemId = null)
@@ -321,12 +403,12 @@ namespace OrchardCore.Taxonomies.Services
 
             foreach (var term in taxonomy.As<TaxonomyPart>().Terms)
             {
-                var categorizedItems = await _session.Query<ContentItem>()
-                    .With<TaxonomyIndex>(t => t.TermContentItemId == term.ContentItemId)
+                var query = _session.QueryIndex<TaxonomyIndex>(
+                    t => t.TermContentItemId == term.ContentItemId)
                     .OrderByDescending(t => t.Order)
-                    .With<ContentItemIndex>(c => c.Published || c.Latest)
-                    .ThenByDescending(c => c.CreatedUtc)
-                    .ListAsync();
+                    .ThenByDescending(t => t.CreatedUtc);
+
+                var categorizedItems = await GetCategorizedItemsAsync(query);
 
                 await SaveCategorizedItemsOrder(categorizedItems, term.ContentItemId, 1);
             }
@@ -340,21 +422,17 @@ namespace OrchardCore.Taxonomies.Services
             foreach (var term in field.TermContentItemOrder)
             {
                 // Look for antother content item
-                var itemWithSameTermAndOrder = await _session.Query<ContentItem>()
-                    // categorized with the same term and having the same order value
-                    .With<TaxonomyIndex>(t => t.TermContentItemId == term.Key && t.Order == term.Value && t.ContentItemId != field.ContentItem.ContentItemId)
-                    // that is published but is not the same version of the same content item id
-                    .With<ContentItemIndex>(c => c.Published)
+                // categorized with the same term and having the same order value
+                var itemWithSameTermAndOrder = await _session.QueryIndex<TaxonomyIndex>(t => t.TermContentItemId == term.Key && t.Order == term.Value && t.ContentItemId != field.ContentItem.ContentItemId)
                     .ListAsync();
 
                 if (itemWithSameTermAndOrder.Count() > 0)
                 {
-                    var categorizedItems = await _session.Query<ContentItem>()
-                        .With<TaxonomyIndex>(t => t.TermContentItemId == term.Key && t.Order >= term.Value)
+                    var query = _session.QueryIndex<TaxonomyIndex>(t => t.TermContentItemId == term.Key && t.Order >= term.Value)
                         .OrderByDescending(t => t.Order)
-                        .With<ContentItemIndex>(c => c.Published)
-                        .ThenByDescending(c => c.CreatedUtc)
-                        .ListAsync();
+                        .ThenByDescending(c => c.CreatedUtc);
+
+                    var categorizedItems = await GetCategorizedItemsAsync(query);
 
                     await SaveCategorizedItemsOrder(categorizedItems, term.Key, term.Value + 1); // the +1 creates a gap on the order sequence, for the item we are currently updating
                 }
@@ -390,9 +468,13 @@ namespace OrchardCore.Taxonomies.Services
         {
             var orderValue = lowerOrderValue;
 
+            // Because _session.Save doesn't guarantee that data was saved when the method returns, the next data read might read old data.
+            // We need to save all the changes to taxonomy ietms all at once, in the end.
+            var taxonomies = new List<ContentItem>();
+
             foreach (var categorizedItem in categorizedItems.Reverse())
             {
-                RegisterCategorizedItemOrder(categorizedItem, termContentItemId, orderValue);
+                await RegisterCategorizedItemOrder(categorizedItem, termContentItemId, orderValue, taxonomies);
 
                 // If this published item also has a draft version, make sure that both versions appear at the same position for this term (when the draft is also categorized with it).
                 if (categorizedItem.HasDraft())
@@ -400,11 +482,16 @@ namespace OrchardCore.Taxonomies.Services
                     var draftCategorizedItem = await _contentManager.GetAsync(categorizedItem.ContentItemId, VersionOptions.Draft);
                     if (draftCategorizedItem != null)
                     {
-                        RegisterCategorizedItemOrder(draftCategorizedItem, termContentItemId, orderValue);
+                        await RegisterCategorizedItemOrder(draftCategorizedItem, termContentItemId, orderValue, taxonomies);
                     }
                 }
 
                 ++orderValue;
+            }
+
+            foreach (var taxonomy in taxonomies)
+            {
+                _session.Save(taxonomy);
             }
 
             return;
@@ -416,8 +503,9 @@ namespace OrchardCore.Taxonomies.Services
             return field.TermContentItemOrder[termContentItemId];
         }
 
-        private void RegisterCategorizedItemOrder(ContentItem categorizedItem, string termContentItemId, int orderValue)
+        private async Task RegisterCategorizedItemOrder(ContentItem categorizedItem, string termContentItemId, int orderValue, List<ContentItem> taxonomies)
         {
+            // Find the Field that categorizes this item with the term
             (var field, var fieldDefinition) = GetTaxonomyField(categorizedItem: categorizedItem, termContentItemId: termContentItemId);
 
             if (field != null)
@@ -428,11 +516,33 @@ namespace OrchardCore.Taxonomies.Services
                 {
                     field.TermContentItemOrder[termContentItemId] = orderValue;
 
-                    var jPart = (JObject)categorizedItem.Content[fieldDefinition.PartDefinition.Name];
+                    JObject jPart = categorizedItem.Content[fieldDefinition.PartDefinition.Name];
                     jPart[fieldDefinition.Name] = JObject.FromObject(field);
                     categorizedItem.Content[fieldDefinition.PartDefinition.Name] = jPart;
 
-                    _session.Save(categorizedItem);
+                    // If categorizedItem is a Term himself, we mut modify it inside the Taxonomy it belongs to
+                    var termPart = categorizedItem.As<TermPart>();
+                    if (termPart != null)
+                    {
+                        var taxonomy = taxonomies.FirstOrDefault(t => t.ContentItemId == termPart.TaxonomyContentItemId);
+                        if (taxonomy == null)
+                        {
+                            taxonomy = await _contentManager.GetAsync(termPart.TaxonomyContentItemId);
+                            taxonomies.Add(taxonomy);
+                        }
+
+                        var taxonomyItem = FindTermObject(taxonomy.As<TaxonomyPart>().Content, categorizedItem.ContentItemId);
+
+                        taxonomyItem.Merge(categorizedItem.Content, new JsonMergeSettings
+                        {
+                            MergeArrayHandling = MergeArrayHandling.Replace,
+                            MergeNullValueHandling = MergeNullValueHandling.Merge
+                        });
+                    }
+                    else
+                    {
+                        _session.Save(categorizedItem);
+                    }
                 }
             }
         }
