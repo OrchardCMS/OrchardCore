@@ -48,23 +48,22 @@ namespace OrchardCore.ReCaptcha
                 return;
             }
 
-            dynamic layout = await _layoutAccessor.GetLayoutAsync();
-
-            var afterLoginZone = layout.Zones["AfterLogin"];
+            var layout = await _layoutAccessor.GetLayoutAsync();
 
             if (_reCaptchaService.IsThisARobot())
             {
-                afterLoginZone.Add(await _shapeFactory.New.ReCaptcha());
+                var afterLoginZone = layout.Zones["AfterLogin"];
+                await afterLoginZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
             }
 
-            var afterForgotPassword = layout.Zones["AfterForgotPassword"];
-            afterForgotPassword.Add(await _shapeFactory.New.ReCaptcha());
+            var afterForgotPasswordZone = layout.Zones["AfterForgotPassword"];
+            await afterForgotPasswordZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
 
-            var afterRegister = layout.Zones["AfterRegister"];
-            afterRegister.Add(await _shapeFactory.New.ReCaptcha());
+            var afterRegisterZone = layout.Zones["AfterRegister"];
+            await afterRegisterZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
 
-            var afterResetPassword = layout.Zones["AfterResetPassword"];
-            afterResetPassword.Add(await _shapeFactory.New.ReCaptcha());
+            var afterResetPasswordZone = layout.Zones["AfterResetPassword"];
+            await afterResetPasswordZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
 
             await next();
         }

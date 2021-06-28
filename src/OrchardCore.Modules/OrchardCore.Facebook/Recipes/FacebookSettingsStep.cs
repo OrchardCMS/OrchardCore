@@ -7,15 +7,15 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Facebook.Recipes
 {
     /// <summary>
-    /// This recipe step sets general OpenID Connect Client settings.
+    /// This recipe step sets general Facebook Login settings.
     /// </summary>
     public class FacebookSettingsStep : IRecipeStepHandler
     {
-        private readonly IFacebookService _loginService;
+        private readonly IFacebookService _facebookService;
 
         public FacebookSettingsStep(IFacebookService loginService)
         {
-            _loginService = loginService;
+            _facebookService = loginService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -27,7 +27,7 @@ namespace OrchardCore.Facebook.Recipes
 
             var model = context.Step.ToObject<FacebookCoreSettingsStepModel>();
 
-            var settings = await _loginService.GetSettingsAsync();
+            var settings = await _facebookService.GetSettingsAsync();
             settings.AppId = model.AppId;
             settings.AppSecret = model.AppSecret;
             settings.SdkJs = model.SdkJs ?? "sdk.js";
@@ -35,7 +35,7 @@ namespace OrchardCore.Facebook.Recipes
             settings.FBInitParams = model.FBInitParams;
             settings.Version = model.Version ?? "3.2";
 
-            await _loginService.UpdateSettingsAsync(settings);
+            await _facebookService.UpdateSettingsAsync(settings);
         }
     }
 

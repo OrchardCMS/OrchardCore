@@ -1,9 +1,7 @@
 <div class="{{ Model.Classes | join: ' ' }}">
     {{ Model.ContentItem.Content.HtmlBodyPart.Html | raw }}
-    <div class="input-group input-group-newsletter mb-1">
-        <input name="{{ Model.ContentItem.Content.Register.InputFieldName.Text }}" class="form-control" aria-describedby="basic-addon" aria-label="{{ Model.ContentItem.Content.Register.Placeholder.Text }}" type="email" placeholder="{{ Model.ContentItem.Content.Register.Placeholder.Text }}"/>
-        <div class="input-group-append">
-            <button class="btn btn-secondary" type="submit">{{ Model.ContentItem.Content.Register.Button.Text }}</button>
-        </div>
+    <div class="input-group input-group-newsletter">
+        <input name="{{ Model.ContentItem.Content.Register.InputFieldName.Text }}" class="form-control" aria-describedby="submit-button" aria-label="{{ Model.ContentItem.Content.Register.Placeholder.Text }}" type="email" placeholder="{{ Model.ContentItem.Content.Register.Placeholder.Text }}"/>
+        <button class="btn btn-primary" id="submit-button" type="button">{{ Model.ContentItem.Content.Register.Button.Text }}</button>
     </div>
 </div>

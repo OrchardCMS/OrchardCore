@@ -16,26 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\node_modules\**" />
-    <EmbeddedResource Remove="wwwroot\node_modules\**" />
-    <None Remove="wwwroot\node_modules\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="**\*.less;**\*.scss;" />
-    <EmbeddedResource Remove="wwwroot\about.html" />
-    <EmbeddedResource Remove="wwwroot\contact.html" />
-    <EmbeddedResource Remove="wwwroot\gulpfile.js" />
-    <EmbeddedResource Remove="wwwroot\index.html" />
-    <EmbeddedResource Remove="wwwroot\package-lock.json" />
-    <EmbeddedResource Remove="wwwroot\package.json" />
-    <EmbeddedResource Remove="wwwroot\post.html" />
   </ItemGroup>
 
 </Project>

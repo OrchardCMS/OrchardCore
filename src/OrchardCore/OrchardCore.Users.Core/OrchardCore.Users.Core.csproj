@@ -15,13 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
     <ProjectReference Include="..\OrchardCore.DisplayManagement.Abstractions\OrchardCore.DisplayManagement.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="YesSql.Abstractions" />
+    <PackageReference Include="YesSql.Filters.Query"/>
   </ItemGroup>
 
 </Project>

@@ -516,8 +516,10 @@ namespace OrchardCore.Tests.ResourceManagement
             resourceManager.RegisterMeta(new MetaEntry { Name = "description", Content = "Some content" });
             resourceManager.RegisterMeta(new MetaEntry { HttpEquiv = "refresh", Content = "3;url=https://www.orchardcore.net/" });
 
+            using var sw = new StringWriter();
+            resourceManager.RenderMeta(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderMeta(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var metas = document
@@ -541,8 +543,10 @@ namespace OrchardCore.Tests.ResourceManagement
             resourceManager.RegisterLink(new LinkEntry { Rel = "icon", Href = "/favicon.ico" });
             resourceManager.RegisterLink(new LinkEntry { Rel = "alternate", Type = "application/pdf", Href = "/pdf" });
 
+            using var sw = new StringWriter();
+            resourceManager.RenderHeadLink(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderHeadLink(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var links = document
@@ -580,8 +584,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customStyle = ".my-class { prop: value; }";
             resourceManager.RegisterStyle(new HtmlString($"<style>{customStyle}</style>"));
 
+            using var sw = new StringWriter();
+            resourceManager.RenderStylesheet(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderStylesheet(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var links = document
@@ -633,8 +639,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customScript = "doSomeAction();";
             resourceManager.RegisterHeadScript(new HtmlString($"<script>{customScript}</script>"));
 
+            using var sw = new StringWriter();
+            resourceManager.RenderHeadScript(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderHeadScript(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -683,8 +691,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customScript = "doSomeAction();";
             resourceManager.RegisterFootScript(new HtmlString($"<script>{customScript}</script>"));
 
+            using var sw = new StringWriter();
+            resourceManager.RenderFootScript(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderFootScript(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -709,6 +719,74 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Fact]
+        public async Task RenderHeadAndFootScriptWithSameDependency()
+        {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineScript("required")
+                .SetUrl("required.js")
+                .SetDependencies("dependency");
+
+            manifest.DefineScript("dependency")
+                .SetUrl("dependency.js");
+
+            manifest.DefineScript("required-at-foot")
+                .SetUrl("required-at-foot.js")
+                .SetDependencies("dependency");
+
+            manifest.DefineScript("not-required")
+                .SetUrl("not-required.js");
+
+            options.ResourceManifests.Add(manifest);
+
+            var resourceManager = new ResourceManager
+            (
+                new OptionsWrapper<ResourceManagementOptions>(options),
+                StubFileVersionProvider.Instance
+            );
+
+            // Require resource.
+            resourceManager.RegisterResource("script", "required").AtHead();
+
+            // Register custom script.
+            var customScript = "doSomeAction();";
+            resourceManager.RegisterHeadScript(new HtmlString($"<script>{customScript}</script>"));
+
+            // Require resource at Foot with same dependency at Head
+            resourceManager.RegisterResource("script", "required-at-foot").AtFoot();
+
+            using var sw1 = new StringWriter();
+            resourceManager.RenderHeadScript(sw1);
+            var htmlBuilder = new HtmlContentBuilder();
+            htmlBuilder.AppendHtml(sw1.ToString());
+
+            var document = await ParseHtmlAsync(htmlBuilder);
+            var headScripts = document
+                .QuerySelectorAll<IHtmlScriptElement>("script");
+
+            using var sw2 = new StringWriter();
+            resourceManager.RenderFootScript(sw2);
+            htmlBuilder = new HtmlContentBuilder();
+            htmlBuilder.AppendHtml(sw2.ToString());
+
+            document = await ParseHtmlAsync(htmlBuilder);
+            var footScripts = document
+                .QuerySelectorAll<IHtmlScriptElement>("script");
+
+            // Should render 4 scripts in total, 3 at head and 1 at foot.
+            Assert.Equal(4, headScripts.Count() + footScripts.Count());
+
+            //Check head script positions.
+            Assert.Contains("dependency.js", headScripts.ElementAt(0).Source);
+            Assert.Contains("required.js", headScripts.ElementAt(1).Source);
+            Assert.Contains(customScript, headScripts.ElementAt(2).Text);
+
+            //Check foot script positions.
+            Assert.Contains("required-at-foot.js", footScripts.ElementAt(0).Source);
+        }
+
+        [Fact]
         public async Task RenderLocalScript()
         {
             var options = new ResourceManagementOptions();
@@ -728,8 +806,11 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var requireSetting = resourceManager.RegisterResource("script", "required");
 
+            using var sw = new StringWriter();
+            resourceManager.RenderLocalScript(requireSetting, sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderLocalScript(requireSetting, htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
+
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -765,8 +846,10 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var requireSetting = resourceManager.RegisterResource("stylesheet", "required").AtLocation(ResourceLocation.Inline);
 
+            using var sw = new StringWriter();
+            resourceManager.RenderLocalStyle(requireSetting, sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderLocalStyle(requireSetting, htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document

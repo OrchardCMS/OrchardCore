@@ -4,9 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.Entities;
@@ -22,18 +20,15 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly ISiteService _siteService;
         private readonly ILocalizationService _locationService;
         private readonly IContentCulturePickerService _culturePickerService;
-        private readonly CulturePickerOptions _culturePickerOptions;
 
         public ContentCulturePickerController(
             ISiteService siteService,
             ILocalizationService locationService,
-            IContentCulturePickerService culturePickerService,
-            IOptions<CulturePickerOptions> culturePickerOptions)
+            IContentCulturePickerService culturePickerService)
         {
             _siteService = siteService;
             _locationService = locationService;
             _culturePickerService = culturePickerService;
-            _culturePickerOptions = culturePickerOptions.Value;
         }
 
         [HttpGet]
@@ -54,16 +49,9 @@ namespace OrchardCore.ContentLocalization.Controllers
             if (supportedCultures.Any(t => t == targetCulture))
             {
                 var settings = (await _siteService.GetSiteSettingsAsync()).As<ContentCulturePickerSettings>();
-
                 if (settings.SetCookie)
                 {
-                    // Set the cookie to handle redirecting to a custom controller
-                    Response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
-                    Response.Cookies.Append(
-                        CookieRequestCultureProvider.DefaultCookieName,
-                        CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
-                        new CookieOptions { Expires = DateTime.UtcNow.AddDays(_culturePickerOptions.CookieLifeTime) }
-                    );
+                    _culturePickerService.SetContentCulturePickerCookie(targetCulture);
                 }
 
                 // Redirect the user to the Content with the same localizationSet as the ContentItem of the current url

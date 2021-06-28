@@ -9,7 +9,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Manage Workflows"])</h1></zone>
 
-<form asp-action="Index" id="workflows-types-form" method="post">
+<form asp-action="Index" id="workflows-types-form" method="post" class="no-multisubmit">
     <input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
     <input type="submit" name="submit.BulkAction" class="sr-only" />
     <input asp-for="Options.BulkAction" type="hidden" />

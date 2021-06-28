@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Google.Analytics;
+using OrchardCore.Google.Analytics.Deployment;
 using OrchardCore.Google.Analytics.Drivers;
 using OrchardCore.Google.Analytics.Recipes;
+using OrchardCore.Google.Analytics.Services;
 using OrchardCore.Google.Authentication.Configuration;
 using OrchardCore.Google.Authentication.Drivers;
 using OrchardCore.Google.Authentication.Recipes;
@@ -48,13 +51,26 @@ namespace OrchardCore.Google
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions.GoogleAnalytics>();
+            services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
             services.AddRecipeExecutionStep<GoogleAnalyticsSettingsStep>();
+
             services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
             services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(GoogleAnalyticsFilter));
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<DeploymentStep>, GoogleAnalyticsDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, GoogleAnalyticsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<GoogleAnalyticsDeploymentStep>>();
         }
     }
 }

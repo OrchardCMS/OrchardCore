@@ -164,7 +164,7 @@ namespace OrchardCore.Workflows.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowTypeIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -204,7 +204,7 @@ namespace OrchardCore.Workflows.Controllers
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
@@ -281,10 +281,10 @@ namespace OrchardCore.Workflows.Controllers
             await _workflowTypeStore.SaveAsync(workflowType);
 
             return isNew
-                ? RedirectToAction("Edit", new { workflowType.Id })
+                ? RedirectToAction(nameof(Edit), new { workflowType.Id })
                 : Url.IsLocalUrl(viewModel.ReturnUrl)
                    ? (IActionResult)Redirect(viewModel.ReturnUrl)
-                   : RedirectToAction("Index");
+                   : RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Duplicate(int id, string returnUrl = null)
@@ -341,7 +341,7 @@ namespace OrchardCore.Workflows.Controllers
 
             await _workflowTypeStore.SaveAsync(workflowType);
 
-            return RedirectToAction("Edit", new { workflowType.Id });
+            return RedirectToAction(nameof(Edit), new { workflowType.Id });
         }
 
         public async Task<IActionResult> Edit(int id, string localId)
@@ -461,8 +461,8 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             await _workflowTypeStore.SaveAsync(workflowType);
-            await _session.CommitAsync();
             _notifier.Success(H["Workflow has been saved."]);
+
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 
@@ -484,7 +484,7 @@ namespace OrchardCore.Workflows.Controllers
             await _workflowTypeStore.DeleteAsync(workflowType);
             _notifier.Success(H["Workflow {0} deleted", workflowType.Name]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowTypeId, string localId, string displayType)

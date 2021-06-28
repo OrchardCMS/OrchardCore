@@ -128,8 +128,7 @@ namespace OrchardCore.DisplayManagement.Notify
             {
                 foreach (var messageEntry in _existingEntries)
                 {
-                    // Also retrieve the actual zone in case it was only a temporary empty zone created on demand.
-                    zone = await zone.AddAsync(await _shapeFactory.CreateAsync("Message", Arguments.From(messageEntry)));
+                    await zone.AddAsync(await _shapeFactory.CreateAsync("Message", Arguments.From(messageEntry)));
                 }
             }
 

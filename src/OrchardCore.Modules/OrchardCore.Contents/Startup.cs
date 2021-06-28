@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -42,6 +44,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
+using YesSql.Filters.Query;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
@@ -163,7 +166,6 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentHandleProvider, ContentItemIdHandleProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
-            services.AddIdGeneration();
             services.AddScoped<IDataMigration, Migrations>();
 
             // Common Part
@@ -196,13 +198,28 @@ namespace OrchardCore.Contents
                 }
             });
 
-            services.AddScoped<IContentsAdminListFilter, DefaultContentsAdminListFilter>();
             services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
 
             services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
 
             services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
+
+            services.AddSingleton<IContentsAdminListFilterParser>(sp =>
+            {
+                var filterProviders = sp.GetServices<IContentsAdminListFilterProvider>();
+                var builder = new QueryEngineBuilder<ContentItem>();
+                foreach (var provider in filterProviders)
+                {
+                    provider.Build(builder);
+                }
+
+                var parser = builder.Build();
+
+                return new DefaultContentsAdminListFilterParser(parser);
+            });
+
+            services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

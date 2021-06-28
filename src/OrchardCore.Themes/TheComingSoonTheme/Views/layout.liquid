@@ -6,40 +6,31 @@
     <title>{{ "PageTitle" | shape_new | shape_stringify }}</title> 
     {% resources type: "Meta" %}
     {% link type:"image/x-icon", rel:"shortcut icon", href:"~/TheComingSoonTheme/favicon.ico" %}
-
-    <!-- Bootstrap core CSS -->
-    {% style name:"thecomingsoontheme-vendor-bootstrap", version:"4" %}
+    <!-- Font Awesome icons (free version)-->
+    {% style name:"font-awesome", version:"5" %}
+    <!-- Google fonts-->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&amp;display=swap" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    {% style name:"coming-soon", version:"6" %}  
     {% style name:"thecomingsoontheme-bootstrap-oc", version:"1" %}
-
-    <!-- Custom fonts for this template -->
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
-    {% style name:"thecomingsoontheme-vendor-font-awesome", version:"5" %}
-
-    <!-- Custom styles for this template -->
-    <link href="{{ "~/TheComingSoonTheme/css/coming-soon.min.css" | href }}" rel="stylesheet">
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
     {% resources type: "HeadScript" %}
     {% render_section "HeadMeta", required:false %}
   </head>
-  <body dir={{ Culture.Dir }}>
-    <div class="overlay"></div>
-    <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
-      <source src="{{ "~/TheComingSoonTheme/mp4/bg.mp4" | href }}" type="video/mp4">
+  <body dir="{{ Culture.Dir }}">
+    <video class="bg-video" playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
+      <source src="{{ "~/TheComingSoonTheme/assets/mp4/bg.mp4" | href }}" type="video/mp4">
     </video>
-
     {% render_section "Header", required: false %}
     {% render_section "Content" %}
     {% render_section "Footer", required: false %}
-
-    <!-- Bootstrap core JavaScript -->    
-    {% script name:"thecomingsoontheme-vendor-jquery", at:"Foot" %}    
-    {% script name:"thecomingsoontheme-vendor-bootstrap-bundle", at:"Foot" %}
-
-    <!-- Custom scripts for this template -->
+    <!-- Bootstrap core JS-->        
+    {% script name:"thecomingsoontheme-bootstrap-bundle", at:"Foot" %}
+    <!-- Core theme JS -->
     {% script name:"coming-soon", at:"Foot" %}  
-
     {% resources type: "FootScript" %}
   </body>
 </html>

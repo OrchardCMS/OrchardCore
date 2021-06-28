@@ -56,15 +56,16 @@ namespace OrchardCore.ContentLocalization
                         i.Culture == invariantCulture)
                     .FirstOrDefaultAsync();
         }
-        public async Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet)
+
+        public Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet)
         {
-            return await _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == localizationSet).ListAsync();
+            return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == localizationSet).ListAsync();
         }
 
-        public async Task<IEnumerable<ContentItem>> GetItemsForSetsAsync(IEnumerable<string> localizationSets, string culture)
+        public Task<IEnumerable<ContentItem>> GetItemsForSetsAsync(IEnumerable<string> localizationSets, string culture)
         {
             var invariantCulture = culture.ToLowerInvariant();
-            return await _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets) && i.Culture == invariantCulture).ListAsync();
+            return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets) && i.Culture == invariantCulture).ListAsync();
         }
 
         public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)

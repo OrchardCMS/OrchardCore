@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
+using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -21,6 +22,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using TimeZoneConverter;
@@ -45,17 +47,26 @@ namespace OrchardCore.DisplayManagement.Liquid
             var liquidViewParser = services.GetRequiredService<LiquidViewParser>();
             var path = Path.ChangeExtension(page.ViewContext.ExecutingFilePath, ViewExtension);
             var templateOptions = services.GetRequiredService<IOptions<TemplateOptions>>().Value;
-            var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
 
+            var isDevelopment = services.GetRequiredService<IHostEnvironment>().IsDevelopment();
             var template = await ParseAsync(liquidViewParser, path, templateOptions.FileProvider, Cache, isDevelopment);
             var context = new LiquidTemplateContext(services, templateOptions);
-
             var htmlEncoder = services.GetRequiredService<HtmlEncoder>();
 
             try
             {
+                // Defer the buffer disposing so that a template can be rendered twice.
+                var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
+                ShellScope.Current.RegisterBeforeDispose(scope => content.Dispose());
+
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
-                await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
+                await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
+
+                // Use ViewBufferTextWriter.Write(object) from ASP.NET directly since it will use a special code path
+                // for IHtmlContent. This prevent the TextWriter methods from copying the content from our buffer
+                // if we did content.WriteTo(page.Output)
+
+                page.Output.Write(content);
             }
             finally
             {
@@ -109,6 +120,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     nameof(Shape.Attributes) => shape.Attributes,
                     nameof(Shape.Metadata) => shape.Metadata,
                     nameof(Shape.Items) => shape.Items,
+                    nameof(Shape.Properties) => shape.Properties,
                     _ => null
                 };
 
@@ -259,7 +271,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     context.TimeZone = timeZoneInfo;
                 }
 
-                // Configure Fluid with the local date and time 
+                // Configure Fluid with the local date and time
                 var now = await localClock.LocalNowAsync;
 
                 context.Now = () => now;
@@ -280,7 +292,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 contextable.Contextualize(viewContext);
             }
 
-            context.SetValue("ViewLocalizer", viewLocalizer);
+            context.SetValue("ViewLocalizer", new ObjectValue(viewLocalizer));
 
             if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
             {

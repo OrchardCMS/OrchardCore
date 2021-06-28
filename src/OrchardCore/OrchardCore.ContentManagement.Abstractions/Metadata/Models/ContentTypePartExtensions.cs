@@ -11,7 +11,14 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
             if (String.IsNullOrEmpty(displayName))
             {
-                displayName = typePart.PartDefinition.DisplayName();
+                // ContentType creates a same named ContentPart. As DisplayName is not stored in ContentPart,
+                // fetching it from the parent ContentType
+                if (typePart.PartDefinition.Name == typePart.ContentTypeDefinition.Name)
+                {
+                    displayName = typePart.ContentTypeDefinition.DisplayName;
+                }
+                else
+                    displayName = typePart.PartDefinition.DisplayName();
             }
 
             return displayName;

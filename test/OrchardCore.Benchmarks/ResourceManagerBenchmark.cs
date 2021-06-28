@@ -1,6 +1,6 @@
+using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
-using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Benchmark.Support;
@@ -52,8 +52,8 @@ namespace OrchardCore.Benchmark
 
             manager.RegisterResource("stylesheet", "some1").UseVersion("1.0.0").ShouldAppendVersion(true);
             manager.RegisterResource("stylesheet", "some2").UseVersion("1.0.0").ShouldAppendVersion(true);
-
-            manager.RenderStylesheet(new HtmlContentBuilder());
+            using var sw = new StringWriter();
+            manager.RenderStylesheet(sw);
         }
     }
 }
