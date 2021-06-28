@@ -12,10 +12,13 @@
     var taxonomyItem = Model.ContentItem;
     var updater = ModelUpdaterAccessor.ModelUpdater;
 
-    <script asp-src="~/OrchardCore.Taxonomies/Scripts/ci-term-ordering.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/ci-term-ordering.js" asp-name="ci-term-ordering" at="Foot" depends-on="sortable, jQuery"></script>
+    if (Model.EnableOrdering)
+    {
+        <script asp-src="~/OrchardCore.Taxonomies/Scripts/ci-term-ordering.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/ci-term-ordering.js" asp-name="ci-term-ordering" at="Foot" depends-on="sortable, jQuery"></script>
+    }
 }
 
-<h1>@RenderTitleSegments(T["Order contained items for {0}", taxonomyItem.DisplayText])</h1>
+<h1>@RenderTitleSegments(T["List categorized items for {0}", taxonomyItem.DisplayText])</h1>
 
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
 
@@ -25,7 +28,10 @@
         @foreach (var contentItem in Model.ContentItems)
         {
             var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, "SummaryAdmin");
-            await contentItemSummary.Selectors.AddAsync(await New.TaxonomyPart_Sortable());
+            if (Model.EnableOrdering)
+            {
+                await contentItemSummary.Selectors.AddAsync(await New.TaxonomyPart_Sortable());
+            }
             <li class="list-group-item">
                 @await DisplayAsync(contentItemSummary)
             </li>
@@ -34,15 +40,11 @@
 
     @await DisplayAsync(Model.Pager)
 
-    <div id="ordering-url" class="d-none" data-url="@Url.Action("OrderCategorizedContentItemsPost", "Admin", new { area = "OrchardCore.Taxonomies" })" />
+    <div id="ordering-url" class="d-none" data-url="@Url.Action("ListCategorizedContentItemsPost", "Admin", new { area = "OrchardCore.Taxonomies" })" />
     <div id="taxonomy-id" class="d-none" data-id="@Model.TaxonomyContentItemId" />
     <div id="term-id" class="d-none" data-id="@Model.TermContentItemId" />
     <div id="pager-before" class="d-none" data-before="@Context.Request.Query["Before"]" />
     <div id="pager-after" class="d-none" data-after="@Context.Request.Query["After"]" />
     <div id="pager-pagesize" class="d-none" data-pagesize="@Model.Pager.PageSize" />
     <div id="update-order-error-message" class="d-none" data-message="@T["There was an error when updating the order of the items."]" />
-
-    <input type="hidden" name="TaxonomyContentItemId" value="@Model.TaxonomyContentItemId" />
-    <input type="hidden" name="TaxonomyItemId" value="@Model.TermContentItemId" />
-
 </form>

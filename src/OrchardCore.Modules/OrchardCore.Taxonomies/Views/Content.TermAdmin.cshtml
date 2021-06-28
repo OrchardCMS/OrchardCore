@@ -13,6 +13,14 @@
     <div class="menu-item menu-item-title list-group-item">
         <div class="properties">
             <div class="related">
+                <a asp-action="ListCategorizedContentItems"
+                   asp-controller="Admin"
+                   asp-route-area="OrchardCore.Taxonomies"
+                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                   asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
+                   class="btn btn-secondary btn-sm">
+                    @T["List Items"]
+                </a>
                 <a asp-action="Edit"
                    asp-controller="Admin"
                    asp-route-area="OrchardCore.Taxonomies"
@@ -39,17 +47,6 @@
                    class="btn btn-danger btn-sm">
                     @T["Delete"]
                 </a>
-                @if (Model.TaxonomyPart.EnableOrdering)
-                {
-                <a asp-action="OrderCategorizedContentItems"
-                   asp-controller="Admin"
-                   asp-route-area="OrchardCore.Taxonomies"
-                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-                   asp-route-taxonomyItemId="@Model.ContentItem.ContentItemId"
-                   class="btn btn-secondary btn-sm">
-                    @T["Order Items"]
-                </a>
-                }
             </div>
 
             <span>@contentItem</span>

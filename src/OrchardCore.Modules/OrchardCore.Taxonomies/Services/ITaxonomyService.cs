@@ -14,25 +14,14 @@ namespace OrchardCore.Taxonomies.Services
     {
         Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, PagerSlim pager, bool enableOrdering, bool published);
 
-        ContentItem FindTerm(ContentItem taxonomy, string termContentItemId);
-
-        JObject FindTermObject(JObject contentItem, string taxonomyItemId);
-
-        bool FindTermHierarchy(ContentItem taxonomy, string termContentItemId, List<ContentItem> terms);
-
-        List<ContentItem> FindTermSiblings(ContentItem taxonomy, string termContentItemId);
+        JObject FindTaxonomyItem(JObject contentItem, string taxonomyItemId);
 
         Task InitializeCategorizedItemsOrderAsync(string TaxonomyContentItemId);
 
-        Task EnsureUniqueOrderValues(TaxonomyField field);
-
-        Task SyncTaxonomyFieldProperties(TaxonomyField field);
-
-        Task SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string taxonomyContentItemId, int topOrderValue);
-
         int GetTaxonomyTermOrder(ContentItem categorizedItem, string termContentItemId);
 
-        (TaxonomyField field, ContentPartFieldDefinition fieldDefinition) GetTaxonomyField(ContentItem categorizedItem, string taxonomyContentItemId = null, string termContentItemId = null);
+        void RegisterCategorizedItemOrder(ContentItem categorizedItem, string termContentItemId, int orderValue);
 
+        Task SyncTaxonomyFieldProperties(TaxonomyField field);
     }
 }

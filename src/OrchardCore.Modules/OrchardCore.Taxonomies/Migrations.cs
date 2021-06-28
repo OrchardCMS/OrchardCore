@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
@@ -6,17 +9,20 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Settings;
+using YesSql;
 using YesSql.Sql;
 
 namespace OrchardCore.Taxonomies
 {
     public class Migrations : DataMigration
     {
+        private readonly ISession _session;
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(IContentDefinitionManager contentDefinitionManager, ISession session)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _session = session;
         }
 
         public int Create()
@@ -46,17 +52,14 @@ namespace OrchardCore.Taxonomies
             SchemaBuilder.CreateMapIndexTable<TaxonomyIndex>(table => table
                 .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<string>("ContentType", c => c.WithLength(ContentItemIndex.MaxContentTypeSize))
-                .Column<string>("ContentPart", c => c.WithLength(ContentItemIndex.MaxContentPartSize))
-                .Column<string>("ContentField", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<string>("TermContentItemId", c => c.WithLength(26))
+                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
+                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
+                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
+                .Column<string>("TermContentItemId", column => column.WithLength(26))
                 .Column<bool>("Published", c => c.WithDefault(true))
                 .Column<bool>("Latest", c => c.WithDefault(false))
+                .Column<DateTime>("CreatedUtc")
                 .Column<int>("Order", c => c.WithDefault(0))
-
-                .Column<DateTime>("CreatedUtc", c => c.Nullable())
-                .Column<string>("ContainedContentItemId", c => c.WithLength(26))
-                .Column<string>("JsonPath", c => c.Unlimited())
             );
 
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
@@ -65,6 +68,8 @@ namespace OrchardCore.Taxonomies
                     "TaxonomyContentItemId",
                     "ContentItemId",
                     "TermContentItemId",
+                    "CreatedUtc",
+                    "Order",
                     "Published",
                     "Latest")
             );
@@ -75,12 +80,10 @@ namespace OrchardCore.Taxonomies
                     "ContentType",
                     "ContentPart",
                     "ContentField",
+                    "CreatedUtc",
+                    "Order",
                     "Published",
                     "Latest")
-            );
-
-            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
-                .CreateIndex("IDX_TaxonomyIndex_Order", "Order")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -173,20 +176,68 @@ namespace OrchardCore.Taxonomies
             return 5;
         }
 
-        public int UpdateFrom5()
+        public async Task<int> UpdateFrom5()
         {
+            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+                .AddColumn<DateTime>("CreatedUtc")
+            );
+
             SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
                 .AddColumn<int>("Order", column => column.WithDefault(0))
             );
 
-            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
-                .CreateIndex("IDX_TaxonomyIndex_Order", "Order")
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .DropIndex("IDX_TaxonomyIndex_DocumentId")
+            );
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .CreateIndex("IDX_TaxonomyIndex_DocumentId",
+                    "DocumentId",
+                    "TaxonomyContentItemId",
+                    "ContentItemId",
+                    "TermContentItemId",
+                    "CreatedUtc",
+                    "Order",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table.AddColumn<string>("CreatedUtc", c => c.Nullable()));
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .DropIndex("IDX_TaxonomyIndex_DocumentId_ContentType")
+            );
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .CreateIndex("IDX_TaxonomyIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "CreatedUtc",
+                    "Order",
+                    "Published",
+                    "Latest")
+            );
 
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table.AddColumn<string>("ContainedContentItemId", c => c.WithLength(26)));
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table.AddColumn<string>("JsonPath", c => c.Unlimited()));
+            // Save all content item versions, to update the new CreatedUtc entry in the TaxonomyIndex
+            // This step doesn't need to be executed for a brand new site
+            var lastDocumentId = 0;
+
+            for (; ; )
+            {
+                var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
+
+                if (!contentItemVersions.Any())
+                {
+                    // No more content item versions to process
+                    break;
+                }
+
+                foreach (var contentItemVersion in contentItemVersions)
+                {
+                    _session.Save(contentItemVersion);
+                    lastDocumentId = contentItemVersion.Id;
+                }
+
+                await _session.SaveChangesAsync();
+            }
 
             return 6;
         }

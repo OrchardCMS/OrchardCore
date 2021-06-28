@@ -389,27 +389,27 @@ You can access the `TagNames` property directly with the following accessor:
 !!! note
     If the display text property of the term is updated any content items will need to be republished to reflect this change.
 
+## Taxonomies Contents List Filters
+
+Provides taxonomy filters in the admin contents list
+
 ## Manual Ordering of Categorized Content Items
 
-For each taxonomy item, you can enable drag&drop ordering of content items categorized with its terms.  This option is disabled by default.
+For each taxonomy item, you can enable drag&drop ordering of content items categorized with its terms. This option is disabled by default.
 
 #### To enable ordering:
 
 1. Edit the taxonomy content item.
 2. Select “Enable Ordering”.
-3. On “Ordering Page Size”, define the size for the pages of content items that you want to see on the ordering interface. This value does not affect the frontend.
-4. Save (publish) the taxonomy.
+3. Save (publish) the taxonomy.
 
 #### To modify the order of categorized content items for a term:
 
 1. Edit the taxonomy content item.
-2. Click “Order Items”, to the right of the `Term` whose categorized content items you want to order.
-3. Drag&Drop the categorized content items to the desired positions (grabbing them by the handler icon). There is no need to save. It is not possible to move one item from one page to another, so you might need to increase the “Ordering Page Size” for the term’s taxonomy.
+2. Click “List Items”, to the right of the `Term` whose categorized content items you want to order.
+3. Drag&Drop the categorized content items to the desired positions (grabbing them by the handler icon). There is no need to save.
 
-By default, adding a term to a content item will make it appear at the first position after publishing.
-
-Only the published version of the content item can be moved, but if the item has a draft categorized with the same `Term`, the new position will also be applied to the draft.
-
+Classifying a content item with a term will make the content item appear at the first position, on the term's list of categorized content items. Cloned and imported content items will also appear at the top.
 
 ## Videos
 

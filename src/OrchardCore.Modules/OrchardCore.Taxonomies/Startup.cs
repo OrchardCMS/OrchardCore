@@ -77,8 +77,6 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
 
-            services.AddScoped<ITaxonomyService, TaxonomyService>();
-
             // Taxonomy Tags Display Mode and Editor.
             services.AddContentField<TaxonomyField>()
                 .UseDisplayDriver<TaxonomyFieldTagsDisplayDriver>(d => String.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
@@ -92,6 +90,9 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IContentHandler, TermPartContentHandler>();
             services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
             services.AddScoped<IContentHandler, TaxonomyfieldContentHandler>();
+
+            // Service
+            services.AddScoped<ITaxonomyService, TaxonomyService>();
 
         }
 
@@ -121,11 +122,11 @@ namespace OrchardCore.Taxonomies
             );
 
             routes.MapAreaControllerRoute(
-                name: "Taxonomies.OrderCategorizedContentItems",
+                name: "Taxonomies.ListCategorizedContentItems",
                 areaName: "OrchardCore.Taxonomies",
-                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/OrderCategorizedContentItems/{taxonomyContentItemId}/{taxonomyItemId}",
-                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.OrderCategorizedContentItems) }
-            );
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/ListCategorizedContentItems/{taxonomyContentItemId}/{taxonomyItemId}",
+                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.ListCategorizedContentItems) }
+);
         }
     }
 

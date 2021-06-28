@@ -47,26 +47,20 @@ namespace OrchardCore.Taxonomies.Drivers
                 {
                     var enableOrdering = (await _contentManager.GetAsync(part.TaxonomyContentItemId, VersionOptions.Latest)).As<TaxonomyPart>().EnableOrdering;
                     var siteSettings = await _siteService.GetSiteSettingsAsync();
-                    var pager = await GetPagerAsync(context.Updater, siteSettings.PageSize);
+                    var pagerParameters = new PagerSlimParameters();
+                    await context.Updater.TryUpdateModelAsync(pagerParameters);
+                    var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
                     m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                     m.ContentItem = part.ContentItem;
+                    //m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();
                     m.ContentItems = (await _taxonomyService.QueryCategorizedItemsAsync(part, pager, enableOrdering, true)).ToArray();
                     m.Pager = await context.New.PagerSlim(pager);
+                    m.EnableOrdering = enableOrdering;
                 })
                 .Location("Detail", "Content:5"));
             }
 
             return Task.FromResult<IDisplayResult>(null);
-        }
-
-        private static async Task<PagerSlim> GetPagerAsync(IUpdateModel updater, int pageSize)
-        {
-            var pagerParameters = new PagerSlimParameters();
-            await updater.TryUpdateModelAsync(pagerParameters);
-
-            var pager = new PagerSlim(pagerParameters, pageSize);
-
-            return pager;
         }
     }
 }

@@ -14,25 +14,21 @@ using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
-        private readonly ISession _session;
-        private readonly ITaxonomyService _taxonomyService;
         private readonly IStringLocalizer S;
+        private readonly ITaxonomyService _taxonomyService;
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,
-            ISession session,
-            ITaxonomyService taxonomyService,
-            IStringLocalizer<TaxonomyFieldDisplayDriver> localizer)
+            IStringLocalizer<TaxonomyFieldDisplayDriver> localizer,
+            ITaxonomyService taxonomyService)
         {
             _contentManager = contentManager;
-            _session = session;
             _taxonomyService = taxonomyService;
             S = localizer;
         }
@@ -95,7 +91,6 @@ namespace OrchardCore.Taxonomies.Drivers
                 }
 
                 var taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
-
                 if (taxonomy.As<TaxonomyPart>().EnableOrdering)
                 {
                     await _taxonomyService.SyncTaxonomyFieldProperties(field);
