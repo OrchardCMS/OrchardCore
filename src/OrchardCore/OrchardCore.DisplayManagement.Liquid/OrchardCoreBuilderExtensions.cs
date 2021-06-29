@@ -103,7 +103,7 @@ namespace Microsoft.Extensions.DependencyInjection
                                 nameof(HttpRequest.Method) => new StringValue(request.Method),
                                 nameof(HttpRequest.RouteValues) => new ObjectValue(new RouteValueDictionaryWrapper(request.RouteValues)),
 
-                                // Escaped string of each uri component for use in a URI or an HTTP header.
+                                // Provides correct escaping to reconstruct a request or redirect URI.
                                 "UriHost" => new StringValue(request.Host.ToUriComponent(), encode: false),
                                 "UriPath" => new StringValue(request.Path.ToUriComponent(), encode: false),
                                 "UriPathBase" => new StringValue(request.PathBase.ToUriComponent(), encode: false),
