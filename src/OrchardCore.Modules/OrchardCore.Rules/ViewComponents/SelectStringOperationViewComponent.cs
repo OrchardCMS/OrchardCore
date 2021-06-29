@@ -11,10 +11,12 @@ namespace OrchardCore.Rules.ViewComponents
     public class SelectStringOperationViewComponent : ViewComponent
     {
         private readonly ConditionOperatorOptions _options;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SelectStringOperationViewComponent(IOptions<ConditionOperatorOptions> options)
+        public SelectStringOperationViewComponent(IOptions<ConditionOperatorOptions> options, IServiceProvider serviceProvider)
         {
             _options = options.Value;
+            _serviceProvider = serviceProvider;
         }
 
         public IViewComponentResult Invoke(string selectedOperation, string htmlName)
@@ -24,7 +26,7 @@ namespace OrchardCore.Rules.ViewComponents
             var items = stringOperators
                 .Select(x => 
                     new SelectListItem(
-                        x.DisplayText, 
+                        x.DisplayText(_serviceProvider), 
                         x.Operator.Name, 
                         String.Equals(x.Factory.Name, selectedOperation, StringComparison.OrdinalIgnoreCase))
                 ).ToList();
