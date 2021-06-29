@@ -1,80 +1,63 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules.Services
 {
     public class ConditionOperatorConfigureOptions : IConfigureOptions<ConditionOperatorOptions>
     {
-        private readonly IStringLocalizer S;
-
-        public ConditionOperatorConfigureOptions(IStringLocalizer<ConditionOperatorOptions> stringLocalizer)
-        {
-            S = stringLocalizer;
-        }
-
         public void Configure(ConditionOperatorOptions options)
         {
             options.Operators.AddRange(new List<ConditionOperatorOption>
             {
-                new ConditionOperatorOption
-                {
-                    DisplayText = S["Equals"],
-                    Operator = typeof(StringEqualsOperator),
-                    Comparer = new StringEqualsOperatorComparer(),
-                    Factory = new ConditionOperatorFactory<StringEqualsOperator>()
-                },
-                new ConditionOperatorOption
-                {
-                    DisplayText = S["Does not equal"],
-                    Operator = typeof(StringNotEqualsOperator),
-                    Comparer = new StringNotEqualsOperatorComparer(),
-                    Factory = new ConditionOperatorFactory<StringNotEqualsOperator>()
-                },                
-                new ConditionOperatorOption
-                {
-                    DisplayText = S["Starts with"],
-                    Operator = typeof(StringStartsWithOperator),
-                    Comparer = new StringStartsWithOperatorComparer(),
-                    Factory = new ConditionOperatorFactory<StringStartsWithOperator>()
-                },           
-                new ConditionOperatorOption
-                {
-                    DisplayText = S["Does not start with"],
-                    Operator = typeof(StringNotStartsWithOperator),
-                    Comparer = new StringNotStartsWithOperatorComparer(),
-                    Factory = new ConditionOperatorFactory<StringNotStartsWithOperator>()
-                },
-                new ConditionOperatorOption
-                {
-                    DisplayText = S["Ends with"],
-                    Operator = typeof(StringEndsWithOperator),
-                    Comparer = new StringEndsWithOperatorComparer(),
-                    Factory = new ConditionOperatorFactory<StringEndsWithOperator>()
-                },
-                new ConditionOperatorOption
-                {
-                    DisplayText = S["Does not end with"],
-                    Operator = typeof(StringNotEndsWithOperator),
-                    Comparer = new StringNotEndsWithOperatorComparer(),
-                    Factory = new ConditionOperatorFactory<StringNotEndsWithOperator>()
-                },                
-                new ConditionOperatorOption
-                {
-                    DisplayText = S["Contains"],
-                    Operator = typeof(StringContainsOperator),
-                    Comparer = new StringContainsOperatorComparer(),
-                    Factory = new ConditionOperatorFactory<StringContainsOperator>()
-                },
-                new ConditionOperatorOption
-                {
-                    DisplayText = S["Does not contain"],
-                    Operator = typeof(StringNotContainsOperator),
-                    Comparer = new StringNotContainsOperatorComparer(),
-                    Factory = new ConditionOperatorFactory<StringNotContainsOperator>()
-                }                
+                new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
+                    (S) => S["Equals"],
+                    new StringEqualsOperatorComparer(),
+                    typeof(StringEqualsOperator),
+                    new ConditionOperatorFactory<StringEqualsOperator>()
+                ),
+                new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
+                    (S) => S["Does not equal"],
+                    new StringNotEqualsOperatorComparer(),
+                    typeof(StringNotEqualsOperator),
+                    new ConditionOperatorFactory<StringNotEqualsOperator>()
+                ),                
+                new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
+                    (S) => S["Starts with"],
+                    new StringStartsWithOperatorComparer(),
+                    typeof(StringStartsWithOperator),
+                    new ConditionOperatorFactory<StringStartsWithOperator>()
+                ),           
+                new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
+                    (S) => S["Does not start with"],
+                    new StringNotStartsWithOperatorComparer(),
+                    typeof(StringNotStartsWithOperator),
+                    new ConditionOperatorFactory<StringNotStartsWithOperator>()
+                ),
+                new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
+                    (S) => S["Ends with"],
+                    new StringEndsWithOperatorComparer(),
+                    typeof(StringEndsWithOperator),
+                    new ConditionOperatorFactory<StringEndsWithOperator>()
+                ),
+                new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
+                    (S) => S["Does not end with"],
+                    new StringNotEndsWithOperatorComparer(),
+                    typeof(StringNotEndsWithOperator),
+                    new ConditionOperatorFactory<StringNotEndsWithOperator>()
+                ),                
+                new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
+                    (S) => S["Contains"],
+                    new StringContainsOperatorComparer(),
+                    typeof(StringContainsOperator),
+                    new ConditionOperatorFactory<StringContainsOperator>()
+                ),
+                new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
+                    (S) => S["Does not contain"],
+                    new StringNotContainsOperatorComparer(),
+                    typeof(StringNotContainsOperator),
+                    new ConditionOperatorFactory<StringNotContainsOperator>()
+                )                
             });
         }
     }
