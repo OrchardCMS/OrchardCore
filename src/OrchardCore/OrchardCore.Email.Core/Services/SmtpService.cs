@@ -136,9 +136,10 @@ namespace OrchardCore.Email.Services
             {
                 body.HtmlBody = message.Body;
             }
-            else
+            
+            if (message.IsBodyText)
             {
-                body.TextBody = message.Body;
+                body.TextBody = message.BodyText;
             }
 
             foreach (var attachment in message.Attachments)
