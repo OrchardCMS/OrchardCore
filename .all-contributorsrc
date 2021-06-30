@@ -2344,15 +2344,6 @@
       "contributions": [
         "translation"
       ]
-    },
-    {
-      "login": "user",
-      "name": "Ilya Solovyov",
-      "avatar_url": "https://avatars.githubusercontent.com/u/14959?v=4",
-      "profile": "https://github.com/user",
-      "contributions": [
-        "code"
-      ]
     }
   ],
   "skipCi": true
