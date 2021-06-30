@@ -1,0 +1,52 @@
+@model AuditTrailContentEventViewModel
+@using OrchardCore.Contents.AuditTrail.Extensions
+@using OrchardCore.Contents.AuditTrail.Services
+@inject IStringLocalizer<ViewContext> S
+
+@{
+    var contentEvent = Model.ContentEvent;
+    var contentItem = contentEvent.ContentItem;
+    var versionNumber = Model.VersionNumber;
+    var versionText = S["Version {0}", versionNumber];
+    var eventName = Model.Descriptor.LocalizedName(Context.RequestServices).Value.ToLowerInvariant();
+    var editForLink = await Orchard.EditForLinkAsync(contentItem.DisplayText, contentItem);
+}
+
+@if (Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Restored)
+{
+    <small>
+        @T["The {0} {1} was restored as {2}",
+        contentItem.ContentType,
+        editForLink,
+        Html.ActionLink(versionText, "Display", "AuditTrailContent",
+        new
+        {
+            area = "OrchardCore.Contents",
+            auditTrailEventId = Model.AuditTrailEvent.EventId
+        }, null)]
+    </small>
+}
+else if (Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Removed)
+{
+    <small>
+        @T["The {0} {1} was {2}.",
+        contentItem.ContentType,
+        contentItem.DisplayText,
+        eventName]
+    </small>
+}
+else
+{
+    <small>
+        @T["{0} of the {1} {2} was {3}",
+        Html.ActionLink(versionText, "Display", "AuditTrailContent",
+        new
+        {
+            area = "OrchardCore.Contents",
+            auditTrailEventId = Model.AuditTrailEvent.EventId
+        }, null),
+        contentItem.ContentType,
+        editForLink,
+        eventName]
+    </small>
+}
