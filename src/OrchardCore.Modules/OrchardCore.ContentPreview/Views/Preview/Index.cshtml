@@ -1,5 +1,5 @@
 @{
-    Layout = "../_Layout.cshtml";
+    Layout = "_Layout";
     var previewId = ViewContext.RouteData.Values["id"];
 }
 
@@ -9,11 +9,11 @@
 
 <resources type="Header" />
 
-<iframe id="iframe" style="display:none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
+<iframe id="iframe" title="iframe" style="display:none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
     Your browser doesn't support iframes
 </iframe>
 
-<iframe id="iframe2" style="display:none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
+<iframe id="iframe2" title="iframe2" style="display:none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
     Your browser doesn't support iframes
 </iframe>
 
@@ -42,6 +42,9 @@
     var iframe2 = document.getElementById('iframe2');
     var previewEventTimer = null;
     var previewRenderTimer = null;
+    var previewRendering;
+    var previewRenderData;
+    var scrollTop = 0;
 
     $(function () {
         $(window).on('storage', function (ev) {
@@ -94,10 +97,6 @@
         }
     }
 
-    var previewRendering;
-    var previewRenderData;
-    var scrollTop = 0;
-
     function renderPreview(value) {
 
         if (previewRendering) {
@@ -125,11 +124,6 @@
                         // So, better to update the scroll position on the related 'onload' event.
                         // Then, we use 2 frames to cancel the flicker that this deferring causes.
 
-                        scrollTop = $(iframe.contentWindow).scrollTop();
-                        iframe2.style.display = 'block';
-                        $(iframe2.contentWindow).scrollTop(scrollTop);
-
-                        iframe.style.display = 'none';
                         iframe.contentWindow.document.open();
                         iframe.contentWindow.document.write(data);
                         iframe.contentWindow.document.close();
