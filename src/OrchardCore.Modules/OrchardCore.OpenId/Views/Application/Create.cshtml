@@ -9,7 +9,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create a new application"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" class="no-multisubmit">
     <div class="form-group" asp-validation-class-for="ClientId">
         <label asp-for="ClientId">@T["Client Id"]</label>
         <input asp-for="ClientId" class="form-control" autofocus />

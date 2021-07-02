@@ -38,6 +38,7 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
@@ -202,6 +203,7 @@ namespace OrchardCore.Users
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
             services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
+            services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();

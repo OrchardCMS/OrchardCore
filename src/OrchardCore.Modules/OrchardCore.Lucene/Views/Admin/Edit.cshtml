@@ -8,7 +8,7 @@ else
     <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Index"])</h1></zone>
 }
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="no-multisubmit">
     <input asp-for="IsCreate" type="hidden" />
     <div class="form-group" asp-validation-class-for="IndexName">
         <label asp-for="IndexName">@T["Index Name"]</label>

@@ -15,7 +15,9 @@ namespace OrchardCore.Email.Workflows.Drivers
             model.ReplyToExpression = activity.ReplyTo.Expression;
             model.SubjectExpression = activity.Subject.Expression;
             model.Body = activity.Body.Expression;
+            model.BodyText = activity.BodyText.Expression;
             model.IsBodyHtml = activity.IsBodyHtml;
+            model.IsBodyText = activity.IsBodyText;
         }
 
         protected override void UpdateActivity(EmailTaskViewModel model, EmailTask activity)
@@ -27,6 +29,8 @@ namespace OrchardCore.Email.Workflows.Drivers
             activity.Subject = new WorkflowExpression<string>(model.SubjectExpression);
             activity.Body = new WorkflowExpression<string>(model.Body);
             activity.IsBodyHtml = model.IsBodyHtml;
+            activity.BodyText = new WorkflowExpression<string>(model.BodyText);
+            activity.IsBodyText = model.IsBodyText;
         }
     }
 }
