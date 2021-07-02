@@ -30,25 +30,27 @@ namespace OrchardCore.Localization.DataAnnotations
         {
             foreach (var metadata in context.ValidationMetadata.ValidatorMetadata)
             {
-                var attribute = metadata as ValidationAttribute;
-                var displayName = context.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Name;
-                // Use DisplayName if present
-                var argument = displayName ?? context.Key.Name;
-                var errorMessageString = attribute != null && attribute.ErrorMessage == null && attribute.ErrorMessageResourceName == null
-                    ? attribute.FormatErrorMessage(argument)
-                    : attribute.ErrorMessage;
-
-                // Localize the error message without params
-                var localizedString = _stringLocalizer[errorMessageString];
-
-                if (localizedString == errorMessageString)
+                if (metadata is ValidationAttribute attribute)
                 {
-                    // Localize the error message with params
-                    errorMessageString = errorMessageString.Replace(argument, "{0}");
-                    localizedString = _stringLocalizer[errorMessageString, argument];
-                }
+                    var displayName = context.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Name;
+                    // Use DisplayName if present
+                    var argument = displayName ?? context.Key.Name;
+                    var errorMessageString = attribute.ErrorMessage == null && attribute.ErrorMessageResourceName == null
+                        ? attribute.FormatErrorMessage(argument)
+                        : attribute.ErrorMessage;
 
-                attribute.ErrorMessage = localizedString;
+                    // Localize the parameterized error message
+                    var localizedString = _stringLocalizer[errorMessageString];
+
+                    if (localizedString == errorMessageString)
+                    {
+                        // Localize the unparameterized error message
+                        var unparameterizedErrorMessage = errorMessageString.Replace(argument, "{0}");
+                        localizedString = _stringLocalizer[unparameterizedErrorMessage];
+                    }
+
+                    attribute.ErrorMessage = localizedString;
+                }
             }
         }
     }

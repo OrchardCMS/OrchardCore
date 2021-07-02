@@ -100,6 +100,7 @@ namespace OrchardCore.Mvc
 
             // Adding localization
             builder.AddViewLocalization();
+            builder.AddDataAnnotationsLocalization();
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
