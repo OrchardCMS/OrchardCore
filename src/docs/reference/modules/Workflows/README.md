@@ -182,7 +182,7 @@ The following Liquid tags, properties and filters are available by default to an
 | `Workflow.Input` | Property | Returns the Input dictionary. | `{{ Workflow.Input["ContentItem"] }}` |
 | `Workflow.Output` | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
 | `Workflow.Properties` | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
-| `signal_url` | Filter | Returns workflow trigger URL .You can use the JavaScript method `input("Signal")` to check which signal is triggered . | `{{ 'Approved' \| signal_url }}` |
+| `signal_url` | Filter | Returns the workflow trigger URL. You can use the `input("Signal")` JavaScript method to check which signal is triggered. | `{{ 'Approved' \| signal_url }}` |
 
 Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you can also use dot notation, e.g.:
 
