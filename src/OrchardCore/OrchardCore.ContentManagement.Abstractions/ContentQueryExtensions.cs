@@ -15,7 +15,16 @@ namespace OrchardCore.ContentManagement
         /// but after having invoked the load events on it by using the <see cref="IContentManager"/>.
         /// </summary>
         public static async Task<ContentItem> FirstOrDefaultAsync(this IQuery<ContentItem> query, IContentManager contentManager)
-            => await contentManager.LoadAsync(await query.FirstOrDefaultAsync());
+        {
+            var contentItem = await query.FirstOrDefaultAsync();
+            
+            if (contentItem == null)
+            {
+                return null;
+            }
+            
+            return await contentManager.LoadAsync(contentItem);
+        }
 
         /// <summary>
         /// Executes this <see cref="IQuery{ContentItem}"/> to return all matching <see cref="ContentItem"/>s

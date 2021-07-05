@@ -15,17 +15,17 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
     <!-- Bootstrap CSS -->
-    <style media="all" asp-name="the-admin" version="1"></style>
+    <style media="all" asp-name="admin" version="1"></style>
     <style asp-name="material-icons" version="0.7.2"></style>
 
     <script asp-name="font-awesome" at="Head" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Head" version="5"></script>
     <script asp-name="js-cookie" at="Foot" version="2"></script>
-    <script asp-name="the-admin" version="1" depends-on="jQuery" at="Foot"></script>
+    <script asp-name="admin" version="1" at="Foot"></script>
     <resources type="Header" />
 
     <!-- This script can't wait till the footer -->
-    <script asp-name="the-admin-head" version="1"></script>
+    <script asp-name="admin-head" version="1"></script>
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body class="preload">

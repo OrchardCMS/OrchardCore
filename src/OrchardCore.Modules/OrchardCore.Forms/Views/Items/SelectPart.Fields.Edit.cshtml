@@ -4,12 +4,39 @@
 <script asp-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.js" asp-name="selectOptionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
 <style asp-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.min.css" debug-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.css"></style>
 
-<script at="Foot">
-    initializeSelectOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
+<script type="text/x-template" id="select-options-row" asp-name="select-options-row" at="Foot">
+    <tr>
+        <td>
+            <input type="text" class="form-control" v-model="optionText" placeholder="@T["Enter the text"]" />
+        </td>
+        <td>
+            <input type="text" class="form-control courier" v-model="optionValue" placeholder="@T["Enter a value"]" />
+        </td>
+        <td class="text-center align-middle">
+            <div class="custom-control custom-checkbox ml-2">
+                <input type="checkbox" class="custom-control-input"
+                        :id=" partId + '_' + option.key + '_id'"
+                        :name = " partId + '_name' "
+                        v-bind:value="optionCheck"
+                        v-model="IsSelected"
+                        >
+                <label :for=" partId + '_' + option.key + '_id'" class="custom-control-label" title="@T["Set as default"]" >
+                    <span class="sr-only"></span>
+                </label>
+            </div>
+        </td>
+        <td class="text-center">
+            <a v-on:click.prevent.stop="remove" href="#" title="@T["Remove element from list"]" class="btn">
+                <i class="fas fa-times"></i>
+            </a>
+        </td>
+        <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt"></i></div></td>
+    </tr>
 </script>
 
-<script type="text/x-template" id="select-options-table">
-    <table class="table table-bordered table-sm select-options-table">
+<script type="text/x-template" id="select-options-table" asp-name="select-options-table" at="Foot">
+
+    <table class="table table-bordered table-sm select-options-table" >
         <thead class="thead-light">
             <tr>
                 <th scope="col">@T["Option Text"]</th>
@@ -17,73 +44,89 @@
                 <th scope="col" colspan="3">@T["Default?"]</th>
             </tr>
         </thead>
-        <draggable v-model="data.options" :tag="'tbody'">
-            <tr v-for="(option, index) in data.options" :key="index">
-                <td>
-                    <input type="text" class="form-control" v-model="option.text" placeholder="@T["Enter the text"]" />
-                </td>
-                <td>
-                    <input type="text" class="form-control courier" v-model="option.value" placeholder="@T["Enter a value"]" />
-                </td>
-                <td class="text-center align-middle">
-                    <div class="custom-control custom-radio ml-2">
-                        <input type="radio" class="custom-control-input" :id="'customRadio_' + index" name="@Html.NameFor(m => m.DefaultValue)" v-bind:value="option.value" v-model="data.default" v-on:click="uncheck(index)">
-                        <label class="custom-control-label" title="@T["Set as default"]" v-bind:for="'customRadio_' + index"></label>
-                    </div>
-                </td>                
-                <td class="text-center">
-                    <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
-                        <i class="fas fa-times"></i>
-                    </a>
-                </td>
-                <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt"></i></div></td>
-            </tr>
+        <draggable v-model="data.options" :tag="'tbody'" v-on:end="onDragEnd">
+            <select-options-row v-for="option in data.options"
+                :key="option.key"
+                :option="option"
+                :defaultValue="data.defaultValue"
+                v-on="$listeners"
+             ></select-options-row>
         </draggable>
         <tfoot>
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
                     <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small"></i> @T["Add an option"]</a>
-                    <input class="form-control content-preview-text" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getOptionsFormattedList()" />
                 </td>
             </tr>
         </tfoot>
     </table>
 </script>
 
-<script type="text/x-template" id="select-options-modal">
-    <div class="modal fade @Html.IdFor(m => m)-ModalBody text-left" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@T["Edit Data"]</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="select-options-textarea">@T["Options"]</label>
-                        <textarea id="select-options-textarea" name="select-options-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.options)" v-on:input="data.options = JSON.parse($event.target.value)"></textarea>
-                        <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { text: 'First option', value: 'option1' }, { text: 'Second option', value: 'option2' } ]"]</span>
+<script type="text/x-template" id="select-options-modal" asp-name="select-options-modal" at="Foot">
+    <div>
+        <transition v-on:enter="showStart" v-on:after-enter="showEnd" v-on:leave="showEnd" v-on:after-leave="showStart"  >
+            <div class="modal fade text-left" role="dialog" aria-hidden="true" ref="modal" v-if="showModal" v-on:click.self="$emit('modal-cancel')" >
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">@T["Edit Data"]</h5>
+                            <button type="button" class="close" aria-label="Close" v-on:click="closeModal(false)">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="select-options-textarea">@T["Options"]</label>
+                                <textarea id="select-options-textarea" name="select-options-textarea" rows="8" class="form-control"
+                                :class="{ 'is-invalid': !isValid }"
+                                v-model="optionsFormattedList"></textarea>
+                                <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { text: 'First option', value: 'option1' }, { text: 'Second option', value: 'option2' } ]"]</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="options-default-value">@T["Default value"]</label>
+                                <input id="options-default-value" name="options-default-value" class="form-control" type="text" v-model="defaultValue" />
+                                <span class="hint">@T["(Optional) The value to assign to the select field."]</span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary btn-submit"
+                            :disabled="!isValid"
+                            v-on:click="closeModal(true)">@T["OK"]</button>
+                            <button type="button" class="btn btn-secondary" v-on:click="closeModal(false)">@T["Cancel"]</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="options-default-value">@T["Default value"]</label>
-                        <input id="options-default-value" name="options-default-value" class="form-control" type="text" v-model="data.default" />
-                        <span class="hint">@T["(Optional) The value to assign to the select field."]</span>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">@T["OK"]</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
                 </div>
             </div>
-        </div>
+        </transition>
+        <div class="modal-backdrop fade" ref="backdrop" v-if="showModal"></div>
     </div>
 </script>
 
 <div id="@Html.IdFor(m => m)" class="form-group">
     <label asp-for="Options">@T["Options"]</label>
-    <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
-    <select-options-table :data="sharedState"></select-options-table>
-    <select-options-modal :data="sharedState" v-on:reload-data="reloadData()"></select-options-modal>
+    <a href="#" v-on:click.prevent.stop="showModal = true" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
+    <select-options-table :data="state"
+                          :mode="'single'"
+                          v-on:reorder-option="reorderOption"
+                          v-on:add-option="addOption"
+                          v-on:remove-option="removeOption"
+                          v-on:set-default="setDefaultValue">
+    </select-options-table>
+    <select-options-modal :data="state"
+                          :valid-options="validOptions"
+                          :show-modal="showModal"
+                          v-on:modal-cancel="cancelChanges"
+                          v-on:modal-save="updateChanges">
+    </select-options-modal>
+    <input id="@Html.IdFor(m => m.DefaultValue)" name="@Html.NameFor(m => m.DefaultValue)" type="hidden" v-model="state.defaultValue">
+    <input id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="stringify" />
 </div>
+
+
+<script at="Foot">
+window.addEventListener('load', function () {
+    if($('#' + '@Html.IdFor(m => m)').length > 0){
+        initializeSelectOptionsEditor('@Html.IdFor(m => m)', @Html.Raw(Model.Options), '@Model.DefaultValue');
+    }
+})
+</script>

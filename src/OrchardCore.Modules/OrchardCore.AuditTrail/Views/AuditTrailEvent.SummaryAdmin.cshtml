@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-lg col-12 title d-flex">
+        <div class="summary d-flex flex-column flex-md-row">
+            @if (Model.EventTags != null)
+            {
+                <div class="eventtags mr-1">
+                    @await DisplayAsync(Model.EventTags)
+                </div>
+            }            
+            @if (Model.EventMeta != null)
+            {
+                <div class="eventmeta mr-1">
+                    @await DisplayAsync(Model.EventMeta)
+                </div>
+            }
+            @if (Model.EventData != null)
+            {
+                <div class="eventdata mr-1">
+                    @await DisplayAsync(Model.EventData)
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-lg-auto col-12 d-flex justify-content-end">
+        <div class="actions">
+            @if (Model.Actions != null)
+            {
+                @await DisplayAsync(Model.Actions)
+            }
+            @if (Model.ActionsMenu != null)
+            {
+                <div class="btn-group" title="@T["Actions"]">
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span>@T["Actions"]</span>
+                    </button>
+                    <div class="actions-menu dropdown-menu dropdown-menu-right">
+                        @await DisplayAsync(Model.ActionsMenu)
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (Model.Content != null)
+{
+    <div class="row">
+        <div class="col primary">
+            @await DisplayAsync(Model.Content)
+        </div>
+    </div>
+}

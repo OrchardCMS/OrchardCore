@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentManagement.Display
@@ -27,7 +26,6 @@ namespace OrchardCore.ContentManagement.Display
     {
         private readonly IEnumerable<IContentHandler> _contentHandlers;
         private readonly IEnumerable<IContentDisplayHandler> _handlers;
-        private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
@@ -36,7 +34,6 @@ namespace OrchardCore.ContentManagement.Display
         public ContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
             IEnumerable<IContentHandler> contentHandlers,
-            IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
             IEnumerable<IShapePlacementProvider> placementProviders,
@@ -46,7 +43,6 @@ namespace OrchardCore.ContentManagement.Display
         {
             _handlers = handlers;
             _contentHandlers = contentHandlers;
-            _shapeTableManager = shapeTableManager;
             _contentDefinitionManager = contentDefinitionManager;
             _shapeFactory = shapeFactory;
             _layoutAccessor = layoutAccessor;
