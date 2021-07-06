@@ -1,0 +1,156 @@
+@model AuditTrailIndexOptions
+@using OrchardCore.Localization
+@inject IDisplayManager<AuditTrailIndexOptions> DisplayManager
+@inject OrchardCore.AuditTrail.Services.IAuditTrailManager AuditTrailManager
+@{
+    var syntaxThumbnail = await DisplayManager.BuildDisplayAsync(Model, null, "Thumbnail");
+    var categories = AuditTrailManager.DescribeCategories();
+}
+
+<div class="input-group input-group-sm w-50 d-inline-flex has-filter">
+    <div class="input-group-prepend">
+        <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button"
+            data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-filter" title="@T["Filters"]"></i>
+        </button>
+        <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-right</text>}"
+            aria-labelledby="filter-dropdown">
+            @foreach(var category in categories)
+            {
+                <a class="dropdown-item" href="?q=category:@category.Name">@category.LocalizedName(Context.RequestServices)</a>
+            }
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalAuditTrailIndexOptionsFilterSyntax">@T["Filter syntax"]</a>
+        </div>
+    </div>
+    <input asp-for="OriginalSearchText" type="hidden"></input>
+
+    <label asp-for="SearchText" class="sr-only">@T["Search"]</label>
+    <i class="fa fa-search form-control-feedback"></i>
+    <input asp-for="SearchText" class="form-control" placeholder="@T["Search"]" inputmode="search" type="search"
+        autofocus />
+</div>
+
+
+<zone name="Footer">
+    <div class="modal fade" id="modalAuditTrailIndexOptionsFilterSyntax" tabindex="-1" role="dialog"
+        aria-labelledby="audittrail-filters-syntax-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="audittrail-filters-syntax-title">@T["Available Filters"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 card-columns">
+                            @await DisplayAsync(syntaxThumbnail)
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h4>@T["Filter syntax"]</h4>
+                            <ul class="fa-ul">
+                                <li>
+                                    <span class="fa-li"><i class="fas fa-sm fa-check text-primary" aria-hidden="true"></i></span>
+                                    <span class="hint">@T["Default"]</span>
+                                    <span class="hint dashed">@T["may be entered with or without the term name"]</span>
+                                </li>
+                                <li>
+                                    <span class="fa-li"><i class="fas fa-sm fa-minus text-primary" aria-hidden="true"></i></span>
+                                    <span class="hint">@T["Single"]</span>
+                                    <span class="hint dashed">@T["A single value can be entered"]</span>
+                                </li>
+                                <li>
+                                    <span class="fa-li"><i class="fas fa-sm fa-bars text-primary" aria-hidden="true"></i></span>
+                                    <span class="hint">@T["Multiple"]</span>
+                                    <span class="hint dashed">@T["Logical operators and groups are supported"]
+                                    <ul class="list-unstyled">
+                                        @*NB The operators and examples are not localizable.*@
+                                        <li>
+                                            <span class="hint">OR</span>
+                                            <span class="hint dashed">@T["The default operator when whitespace is found, e.g. {0}", "text:foo bar -> text:foo OR bar"]</span>
+                                        </li>
+                                        <li>
+                                            <span class="hint">AND</span>
+                                            <span class="hint dashed">@T["Combines, e.g. {0}", "text:foo AND bar"]</span>
+                                        </li>
+                                        <li>
+                                            <span class="hint">NOT</span>
+                                            <span class="hint dashed">@T["Negates, e.g. {0}", "text:foo NOT bar"]</span>
+                                        </li>
+                                        <li>
+                                            <span class="hint">( ... )</span>
+                                            <span class="hint">@T["Groups operators, e.g. {0}", "text:((foo OR bar) NOT baz)"]</span>
+                                        </li>
+                                        <li>
+                                            <span class="hint">" ... "</span>
+                                            <span class="hint">@T["Escape operators, e.g. {0}", "text:\"foo bar\""]</span>
+                                        </li>                                        
+                                    </ul>
+                                </li>
+                            </ul>
+                            <h4>@T["Date range syntax"]</h4>
+                            <p>
+                                <small class="d-block">@T["You can search for dates that are greater or less than another date, or fall within a date range."]</small>
+                                <small class="d-block">@T["Dates should use the {0} operator or ISO 8601 date time format.", "@now"]</small>
+                                <small class="d-block">@T["Dates without a ISO 8601 UTC or time component will be parsed to the users timezone"]</small>
+                            </p>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    @T["Filter"]
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    @T["Example"]
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">>@@now-1</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@T["Matches dates greater than the current date minus one. {0} is also suported", "@today"]</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@@now-20..@@now</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@T["{0} Matches dates between twenty days old and the current date", "date:>@now-1"]</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@@2020-01-01..@@2020-02-01</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@T["{0} Matches dates from the start of the month until the start of the next month", "@2020-01-01..@2020-01-01"]</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">>@@2020-01-01T09:21:03.4472810+07:00</span>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <span class="hint">@T["{0} Matches dates greater than a specified UTC offset and time", ">@@2020-01-01T09:21:03.4472810+07:00"]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>@T["Current filter"]</h4>
+                            @if (!String.IsNullOrEmpty(Model.FilterResult.ToString()))
+                            {
+                                <pre>@Model.FilterResult.ToString()</pre>
+                                <pre class="d-inline">@Model.FilterResult.ToNormalizedString()</pre>
+                                <span class="hint dashed">@T["including all implied groups and operators"]</span>
+                            }
+                            else
+                            {
+                                <p class="alert alert-info mt-3 mb-0">@T["No current filter applied"]</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</zone>

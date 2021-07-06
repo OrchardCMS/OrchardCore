@@ -15,6 +15,7 @@
     "install:orchardcore.themes": "cd src/OrchardCore.Modules/OrchardCore.Themes && npm install",
     "install:orchardcore.shortcodes": "cd src/OrchardCore.Modules/OrchardCore.Shortcodes && npm install",
     "install:orchardcore.workflows": "cd src/OrchardCore.Modules/OrchardCore.Workflows && npm install",
+    "install:orchardcore.audittrail": "cd src/OrchardCore.Modules/OrchardCore.AuditTrail && npm install",
     "install:orchardcore.theadmin": "cd src/OrchardCore.Themes/TheAdmin && npm install",
     "install:orchardcore.theagencytheme": "cd src/OrchardCore.Themes/TheAgencyTheme && npm install",
     "install:orchardcore.theblogtheme": "cd src/OrchardCore.Themes/TheBlogTheme && npm install",
@@ -56,6 +57,6 @@
     "postcss": "8.3.5",
     "postcss-rtl": "^1.7.3",
     "rtlcss": "3.2.1",
-    "typescript": "^4.3.4"
+    "typescript": "^4.3.5"
   }
 }

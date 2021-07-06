@@ -12,7 +12,7 @@ namespace OrchardCore.Mvc.Utilities
         /// <param name="controller"></param>
         /// <returns>The proper actionresult based upon if the user is authenticated</returns>
         public static ActionResult ChallengeOrForbid(this Controller controller)
-            => controller.User.Identity.IsAuthenticated ? (ActionResult)controller.Forbid() : (ActionResult)controller.Challenge();
+            => controller.User?.Identity?.IsAuthenticated ?? false ? (ActionResult)controller.Forbid() : controller.Challenge();
 
         /// <summary>
         /// Returns the proper actionresult for unauthorized or unauthenticated users
@@ -25,6 +25,6 @@ namespace OrchardCore.Mvc.Utilities
         /// <param name="authenticationSchemes">The authentication schemes to challenge.</param>
         /// <returns>The proper actionresult based upon if the user is authenticated</returns>
         public static ActionResult ChallengeOrForbid(this Controller controller, params string[] authenticationSchemes)
-            => controller.User.Identity.IsAuthenticated ? (ActionResult)controller.Forbid(authenticationSchemes) : (ActionResult)controller.Challenge(authenticationSchemes);
+            => controller.User?.Identity?.IsAuthenticated ?? false ? (ActionResult)controller.Forbid(authenticationSchemes) : controller.Challenge(authenticationSchemes);
     }
 }
