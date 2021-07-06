@@ -133,7 +133,13 @@ namespace OrchardCore.Contents.Controllers
                 // Allows non creatable types to be created by another admin page.
                 if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Creatable || options.CanCreateSelectedContentType)
                 {
-                    creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                    var contentItem = await _contentManager.NewAsync(contentTypeDefinition.Name);
+                    contentItem.Owner = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                    if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
+                    {
+                        creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                    }
                 }
 
                 options.CreatableTypes = creatableList;
