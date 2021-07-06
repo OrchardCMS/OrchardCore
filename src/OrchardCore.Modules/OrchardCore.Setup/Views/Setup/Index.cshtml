@@ -103,7 +103,7 @@
         <div class="mb-3 col-md-4" asp-validation-class-for="SiteName">
             <div>
                 <label asp-for="SiteName">@T["What is the name of your site?"]</label>
-                <input asp-for="SiteName" class="form-select" autofocus required />
+                <input asp-for="SiteName" class="form-control" autofocus required />
                 <span asp-validation-for="SiteName" class="text-danger">@T["The site name is required."]</span>
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
@@ -199,42 +199,38 @@
         <div class="row">
             <div class="mb-3 col-md-6" asp-validation-class-for="UserName">
                 <label asp-for="UserName">@T["User name"]</label>
-                <input asp-for="UserName" class="form-select" required />
+                <input asp-for="UserName" class="form-control" required />
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
             <div class="mb-3 col-md-6" asp-validation-class-for="Email">
                 <label for="Email">@T["Email"]</label>
-                <input asp-for="Email" class="form-select" type="email" required />
+                <input asp-for="Email" class="form-control" type="email" required />
                 <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
             </div>
         </div>
         <div class="row">
-            <div class="mb-3 col-md-6" asp-validation-class-for="Password">
+            <div class="form-group col-md-6" asp-validation-class-for="Password">
                 <label asp-for="Password">@T["Password"]</label>
                 <div class="input-group">
-                    <input asp-for="Password" class="form-select" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-content="@passwordTooltip" required pattern="@passwordRegex" />
-                    <div class="input-group-append">
-                        <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
-                    </div>
+                    <input asp-for="Password" class="form-control" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-content="@passwordTooltip" required pattern="@passwordRegex" />
+                    <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <div id="passwordStrength"></div>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
-            <div class="mb-3 col-md-6" asp-validation-class-for="PasswordConfirmation">
+            <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
                 <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
                 <div class="input-group">
-                    <input asp-for="PasswordConfirmation" class="form-select" title="@passwordTooltip" required pattern="@passwordRegex" />
-                    <div class="input-group-append">
-                        <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePasswordConfirmation"><i class="icon fa fa-eye"></i></button>
-                    </div>
+                    <input asp-for="PasswordConfirmation" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
+                    <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePasswordConfirmation"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
             </div>
         </div>
     </fieldset>
     <div class="row">
-        <div class="mb-3 col-md-4">
+        <div class="mb-3 mt-3 col-md-4">
             <input type="hidden" asp-for="Secret" value="@Model.Secret" />
             <button class="btn btn-primary" type="submit" id="SubmitButton">@T["Finish Setup"]</button>
         </div>
