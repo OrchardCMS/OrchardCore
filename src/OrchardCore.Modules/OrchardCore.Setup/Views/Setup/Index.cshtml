@@ -183,10 +183,8 @@
             <div class="mb-3 col-md-12">
                 <label asp-for="ConnectionString">@T["Connection string"]</label>
                 <div class="input-group mb-2 mb-sm-0">
-                    <input asp-for="ConnectionString" class="form-select pwd" type="password" required />
-                    <div class="input-group-append" title="@T["Show/hide connection string"]">
-                        <button type="button" id="toggleConnectionString" class="btn btn-secondary" tabindex="-1" aria-hidden="true"><i class="icon fa fa-eye"></i></button>
-                    </div>
+                    <input asp-for="ConnectionString" class="form-control pwd" type="password" required />
+                    <button type="button" id="toggleConnectionString" class="btn btn-secondary" tabindex="-1" aria-hidden="true" title="@T["Show/hide connection string"]"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
                 <span id="connectionStringHint" class="text-muted form-text small"></span>
