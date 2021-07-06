@@ -185,6 +185,7 @@ nav:
             - Custom Settings: docs/reference/modules/CustomSettings/README.md
             - Placement: docs/reference/core/Placement/README.md
             - Data: docs/reference/core/Data/README.md
+            - Data Migrations: docs/reference/modules/Migrations/README.md 
             - Dynamic Cache: docs/reference/modules/DynamicCache/README.md
             - Email: docs/reference/modules/Email/README.md
             - GraphQL: docs/reference/modules/Apis.GraphQL/README.md
