@@ -11,6 +11,11 @@ using OrchardCore.Google.Analytics.Deployment;
 using OrchardCore.Google.Analytics.Drivers;
 using OrchardCore.Google.Analytics.Recipes;
 using OrchardCore.Google.Analytics.Services;
+using OrchardCore.Google.TagManager;
+using OrchardCore.Google.TagManager.Deployment;
+using OrchardCore.Google.TagManager.Drivers;
+using OrchardCore.Google.TagManager.Recipes;
+using OrchardCore.Google.TagManager.Services;
 using OrchardCore.Google.Authentication.Configuration;
 using OrchardCore.Google.Authentication.Drivers;
 using OrchardCore.Google.Authentication.Recipes;
@@ -63,6 +68,24 @@ namespace OrchardCore.Google
         }
     }
 
+    [Feature(GoogleConstants.Features.GoogleTagManager)]
+    public class GoogleTagManagerStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IPermissionProvider, Permissions.GoogleTagManager>();
+            services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
+            services.AddRecipeExecutionStep<GoogleTagManagerSettingsStep>();
+
+            services.AddScoped<IDisplayDriver<ISite>, GoogleTagManagerSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, GoogleTagManagerAdminMenu>();
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(GoogleTagManagerFilter));
+            });
+        }
+    }
+
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase
     {
@@ -71,6 +94,10 @@ namespace OrchardCore.Google
             services.AddScoped<IDisplayDriver<DeploymentStep>, GoogleAnalyticsDeploymentStepDriver>();
             services.AddTransient<IDeploymentSource, GoogleAnalyticsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<GoogleAnalyticsDeploymentStep>>();
+
+            services.AddScoped<IDisplayDriver<DeploymentStep>, GoogleTagManagerDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, GoogleTagManagerDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<GoogleTagManagerDeploymentStep>>();
         }
     }
 }
