@@ -11,6 +11,7 @@
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <PreserveCompilationReferences>true</PreserveCompilationReferences>
+    <UserSecretsId>3d0ddb2b-6694-44de-99b9-2085feec2408</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

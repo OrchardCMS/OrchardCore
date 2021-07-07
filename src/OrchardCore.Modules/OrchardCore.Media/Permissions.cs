@@ -6,11 +6,11 @@ using OrchardCore.Security.Permissions;
 namespace OrchardCore.Media
 {
     public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media");
+    {        
         public static readonly Permission ManageMediaFolder = new Permission("ManageMediaFolder", "Manage All Media Folders");
         public static readonly Permission ManageOthersMedia = new Permission("ManageOthersMediaContent", "Manage Media For Others", new[] { ManageMediaFolder });
-        public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMediaContent", "Manage Own Media" , new[] { ManageOthersMedia });        
+        public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMediaContent", "Manage Own Media" , new[] { ManageOthersMedia });
+        public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media", new[] { ManageOwnMedia });
         public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder", new[] { ManageMediaFolder});        
         public static readonly Permission ManageMediaProfiles = new Permission("ManageMediaProfiles", "Manage Media Profiles");
         public static readonly Permission ViewMediaOptions = new Permission("ViewMediaOptions", "View Media Options");        
@@ -36,12 +36,8 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] {
-                        ManageMedia,
+                    Permissions = new[] {                        
                         ManageMediaFolder,
-                        ManageOthersMedia,
-                        ManageOwnMedia,
-                        ManageAttachedMediaFieldsFolder,
                         ManageMediaProfiles,
                         ViewMediaOptions }
                 },
