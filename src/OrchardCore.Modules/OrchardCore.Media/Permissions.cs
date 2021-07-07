@@ -8,7 +8,7 @@ namespace OrchardCore.Media
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media");
-        public static readonly Permission ManageMediaFolder = new Permission("ManageMediaFolder", "Manage All Media Folder");
+        public static readonly Permission ManageMediaFolder = new Permission("ManageMediaFolder", "Manage All Media Folders");
         public static readonly Permission ManageOthersMedia = new Permission("ManageOthersMediaContent", "Manage Media For Others", new[] { ManageMediaFolder });
         public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMediaContent", "Manage Own Media" , new[] { ManageOthersMedia });        
         public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder", new[] { ManageMediaFolder});        
