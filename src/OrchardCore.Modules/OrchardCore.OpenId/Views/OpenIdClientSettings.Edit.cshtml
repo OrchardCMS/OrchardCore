@@ -208,11 +208,11 @@
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-parameters">
     <div class="row mb-3">
         <div class="col-12 col-lg-6">
-            <label asp-for="Parameters">@T["Parameters"]</label>
+            <label asp-for="Parameters">@T["Advanced Parameters"]</label>
             <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
             <parameters-table :data="sharedState"></parameters-table>
             <parameters-modal :data="sharedState" v-on:reload-data="reloadData()"></parameters-modal>
-            <div class="hint">@T["Optional parameters that can be sent with the authorize request."]</div>
+            <div class="hint">@T["Advanced parameters that can be sent with the authorize request."]</div>
         </div>
     </div>
 </div>
