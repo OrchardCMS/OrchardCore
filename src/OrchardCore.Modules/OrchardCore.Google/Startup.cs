@@ -14,7 +14,6 @@ using OrchardCore.Google.Analytics.Recipes;
 using OrchardCore.Google.Analytics.Services;
 using OrchardCore.Google.TagManager;
 using OrchardCore.Google.TagManager.Drivers;
-using OrchardCore.Google.TagManager.Recipes;
 using OrchardCore.Google.TagManager.Services;
 using OrchardCore.Google.Authentication.Configuration;
 using OrchardCore.Google.Authentication.Drivers;
@@ -77,7 +76,6 @@ namespace OrchardCore.Google
         {
             services.AddScoped<IPermissionProvider, Permissions.GoogleTagManager>();
             services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
-            services.AddRecipeExecutionStep<GoogleTagManagerSettingsStep>();
 
             services.AddScoped<IDisplayDriver<ISite>, GoogleTagManagerSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleTagManagerAdminMenu>();

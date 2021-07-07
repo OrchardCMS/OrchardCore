@@ -55,6 +55,7 @@ namespace OrchardCore.Google.TagManager.Drivers
                     settings.ContainerID = model.ContainerID;
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }
