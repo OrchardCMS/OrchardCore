@@ -33,7 +33,7 @@ namespace OrchardCore.Google.Analytics.Drivers
 
             return Initialize<GoogleAnalyticsSettingsViewModel>("GoogleAnalyticsSettings_Edit", model =>
             {
-                model.TrackingID = settings.TrackingID;
+                model.SettingEntries = settings.SettingEntries;
             }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAnalytics);
         }
 
@@ -52,10 +52,9 @@ namespace OrchardCore.Google.Analytics.Drivers
 
                 if (context.Updater.ModelState.IsValid)
                 {
-                    settings.TrackingID = model.TrackingID;
+                    settings.SettingEntries = model.SettingEntries;
                 }
             }
-
             return await EditAsync(settings, context);
         }
     }
