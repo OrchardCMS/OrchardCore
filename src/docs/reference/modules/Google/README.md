@@ -14,7 +14,7 @@ Copy the Tracking ID from the Admin->Tracking Info->Tracking Code link.
 
 ## Google Tag Manager
 
-Enable Google Tag Manager Feature to integrate tracking on the front end site.
+Enable Google Tag Manager Feature to integrate on the front end site.
 
 Navigate to [Google Tag Manager](https://tagmanager.google.com/) portal and create a Tag Manager account.
 
