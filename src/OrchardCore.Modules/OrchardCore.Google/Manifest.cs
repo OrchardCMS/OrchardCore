@@ -27,5 +27,6 @@ using OrchardCore.Modules.Manifest;
     Id = GoogleConstants.Features.GoogleTagManager,
     Name = "Google Tag Manager",
     Category = "Google",
-    Description = "Integrate Google Tag Manager"
+    Description = "Integrate Google Tag Manager",
+    Dependencies = new[] { GoogleConstants.Features.GoogleAnalytics }
 )]
