@@ -366,15 +366,31 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationStartup : StartupBase
     {
-        private const string RegisterPath = "Register";
+        private const string RegisterPath = nameof(RegistrationController.Register);
+        private const string ConfirmEmailSent = nameof(RegistrationController.ConfirmEmailSent);
+        private const string RegistrationPending = nameof(RegistrationController.RegistrationPending);
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
-                name: "Register",
+                name: RegisterPath,
                 areaName: "OrchardCore.Users",
                 pattern: RegisterPath,
-                defaults: new { controller = "Registration", action = "Register" }
+                defaults: new { controller = "Registration", action = RegisterPath }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: ConfirmEmailSent,
+                areaName: "OrchardCore.Users",
+                pattern: ConfirmEmailSent,
+                defaults: new { controller = "Registration", action = ConfirmEmailSent }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: RegistrationPending,
+                areaName: "OrchardCore.Users",
+                pattern: RegistrationPending,
+                defaults: new { controller = "Registration", action = RegistrationPending }
             );
         }
 
