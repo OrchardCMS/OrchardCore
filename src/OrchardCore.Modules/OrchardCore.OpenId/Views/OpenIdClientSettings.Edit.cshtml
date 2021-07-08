@@ -4,6 +4,14 @@
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
+
+<script asp-src="~/OrchardCore.OpenId/Scripts/parametersEditor.min.js" debug-src="~/OrchardCore.OpenId/Scripts/parametersEditor.js" asp-name="parametersEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
+<style asp-src="~/OrchardCore.OpenId/Styles/parametersEditor.min.css" debug-src="~/OrchardCore.OpenId/Styles/parametersEditor.css"></style>
+
+<script at="Foot">
+    initializeParametersEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Parameters), document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
+</script>
+
 <div class="form-group" asp-validation-class-for="DisplayName">
     <label>@T["Display Name"]</label>
     <input asp-for="DisplayName" class="form-control" />
@@ -134,6 +142,79 @@
     <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="off" />
     <span asp-validation-for="ClientSecret"></span>
     <span class="hint">@T["set client secret."]</span>
+</div>
+
+<script type="text/x-template" id="parameters-table">
+    <table class="table table-bordered table-sm options-table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@T["Parameter Name"]</th>
+                <th scope="col" colspan="3">@T["Value"]</th>
+            </tr>
+        </thead>
+        <draggable v-model="data.parameters" :tag="'tbody'">
+            <tr v-for="(parameter, index) in data.parameters" :key="index">
+                <td>
+                    <input type="text" class="form-control" v-model="parameter.name" placeholder="Enter a parameter" />
+                </td>
+                <td>
+                    <input type="text" class="form-control courrier" v-model="parameter.value" placeholder="Enter a value" />
+                </td>
+                <td class="text-center">
+                    <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove parameter from list"]" class="btn">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </td>
+                <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt"></i></div></td>
+            </tr>
+        </draggable>
+        <tfoot>
+            <tr>
+                <td class="col-sm-12 text-center" colspan="5">
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small"></i> @T["Add a parameter"]</a>
+                    <input class="form-control" id="@Html.IdFor(m => m.Parameters)" name="@Html.NameFor(m => m.Parameters)" type="hidden" v-bind:value="getParametersFormattedList()" />
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</script>
+
+<script type="text/x-template" id="parameters-modal">
+    <div class="modal fade @Html.IdFor(m => m)-ModalBody text-left" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@T["Edit Data"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="parameters-textarea">@T["Parameters"]</label>
+                        <textarea id="parameters-textarea" name="parameters-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.parameters)" v-on:input="data.parameters = JSON.parse($event.target.value)"></textarea>
+                        <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First parameter', value: 'parameter1' }, { name: 'Second parameter', value: 'parameter2' } ]"]</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">@T["OK"]</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-parameters">
+    <div class="row mb-3">
+        <div class="col-12 col-lg-6">
+            <label asp-for="Parameters">@T["Advanced Parameters"]</label>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
+            <parameters-table :data="sharedState"></parameters-table>
+            <parameters-modal :data="sharedState" v-on:reload-data="reloadData()"></parameters-modal>
+            <div class="hint">@T["Advanced parameters that can be sent with the authorize request."]</div>
+        </div>
+    </div>
 </div>
 
 <script at="Foot">

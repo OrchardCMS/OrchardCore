@@ -40,7 +40,7 @@ namespace OrchardCore.Google.Analytics
 
                     if (settings.SettingEntries.Length > 0)
                     {
-                        var sb = new StringBuilder($"<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.SettingEntries.First().MeasurementId}\"></script>\n<script>\nwindow.dataLayer = window.dataLayer || [];\nfunction gtag() {{ dataLayer.push(arguments); }}\ngtag('js', new Date());\n");
+                        var sb = new StringBuilder($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());\n");
 
                         foreach(SettingEntry config in settings.SettingEntries)
                         {
@@ -50,7 +50,7 @@ namespace OrchardCore.Google.Analytics
                             }
                         }
 
-                        sb.Append("</script>");
+                        sb.Append("</script>\n<!-- End Global site tag (gtag.js) - Google Analytics -->");
                         _scriptsCache = new HtmlString(sb.ToString());
                     }
                 }

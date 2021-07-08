@@ -55,6 +55,7 @@ namespace OrchardCore.Google.Analytics.Drivers
                     settings.SettingEntries = model.SettingEntries;
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

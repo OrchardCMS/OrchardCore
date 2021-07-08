@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
@@ -37,15 +36,11 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleAnalytics)]
     public class GoogleAnalyticsAdminMenu : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
         private readonly IStringLocalizer S;
 
-        public GoogleAnalyticsAdminMenu(
-            IStringLocalizer<GoogleAnalyticsAdminMenu> localizer,
-            ShellDescriptor shellDescriptor)
+        public GoogleAnalyticsAdminMenu(IStringLocalizer<GoogleAnalyticsAdminMenu> localizer)
         {
             S = localizer;
-            _shellDescriptor = shellDescriptor;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
@@ -69,15 +64,11 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleTagManager)]
     public class GoogleTagManagerAdminMenu : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
         private readonly IStringLocalizer S;
 
-        public GoogleTagManagerAdminMenu(
-            IStringLocalizer<GoogleTagManagerAdminMenu> localizer,
-            ShellDescriptor shellDescriptor)
+        public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> localizer)
         {
             S = localizer;
-            _shellDescriptor = shellDescriptor;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
