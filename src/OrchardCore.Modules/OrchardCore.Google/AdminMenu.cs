@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
@@ -39,8 +38,7 @@ namespace OrchardCore.Google
     {
         private readonly IStringLocalizer S;
 
-        public GoogleAnalyticsAdminMenu(
-            IStringLocalizer<GoogleAnalyticsAdminMenu> localizer)
+        public GoogleAnalyticsAdminMenu(IStringLocalizer<GoogleAnalyticsAdminMenu> localizer)
         {
             S = localizer;
         }
@@ -68,8 +66,7 @@ namespace OrchardCore.Google
     {
         private readonly IStringLocalizer S;
 
-        public GoogleTagManagerAdminMenu(
-            IStringLocalizer<GoogleTagManagerAdminMenu> localizer)
+        public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> localizer)
         {
             S = localizer;
         }
