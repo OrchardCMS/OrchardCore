@@ -9,8 +9,7 @@ namespace OrchardCore.Google.TagManager.Services
     {
         private readonly ISiteService _siteService;
 
-        public GoogleTagManagerService(
-            ISiteService siteService)
+        public GoogleTagManagerService(ISiteService siteService)
         {
             _siteService = siteService;
         }
