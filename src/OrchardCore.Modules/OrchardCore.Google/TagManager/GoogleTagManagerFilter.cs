@@ -5,20 +5,20 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.Admin;
 using OrchardCore.Entities;
-using OrchardCore.Google.Analytics.Settings;
+using OrchardCore.Google.TagManager.Settings;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Google.Analytics
+namespace OrchardCore.Google.TagManager
 {
-    public class GoogleAnalyticsFilter : IAsyncResultFilter
+    public class GoogleTagManagerFilter : IAsyncResultFilter
     {
         private readonly IResourceManager _resourceManager;
         private readonly ISiteService _siteService;
 
         private HtmlString _scriptsCache;
 
-        public GoogleAnalyticsFilter(
+        public GoogleTagManagerFilter(
             IResourceManager resourceManager,
             ISiteService siteService)
         {
@@ -34,11 +34,11 @@ namespace OrchardCore.Google.Analytics
             {
                 if (_scriptsCache == null)
                 {
-                    var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleAnalyticsSettings>();
+                    var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleTagManagerSettings>();
 
-                    if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
+                    if (!string.IsNullOrWhiteSpace(settings?.ContainerID))
                     {
-                        _scriptsCache = new HtmlString($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '{settings.TrackingID}')</script>\n<!-- End Global site tag (gtag.js) - Google Analytics -->");
+                        _scriptsCache = new HtmlString("<!-- Google Tag Manager -->\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\n  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\n  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n  })(window,document,'script','dataLayer','" + settings.ContainerID + "');</script>\n<!-- End Google Tag Manager -->");
                     }
                 }
 

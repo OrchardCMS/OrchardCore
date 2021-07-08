@@ -4,18 +4,18 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Google.Analytics.Settings;
-using OrchardCore.Google.Analytics.ViewModels;
+using OrchardCore.Google.TagManager.Settings;
+using OrchardCore.Google.TagManager.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Google.Analytics.Drivers
+namespace OrchardCore.Google.TagManager.Drivers
 {
-    public class GoogleAnalyticsSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleAnalyticsSettings>
+    public class GoogleTagManagerSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleTagManagerSettings>
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public GoogleAnalyticsSettingsDisplayDriver(
+        public GoogleTagManagerSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -23,36 +23,36 @@ namespace OrchardCore.Google.Analytics.Drivers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override async Task<IDisplayResult> EditAsync(GoogleAnalyticsSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(GoogleTagManagerSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
             {
                 return null;
             }
 
-            return Initialize<GoogleAnalyticsSettingsViewModel>("GoogleAnalyticsSettings_Edit", model =>
+            return Initialize<GoogleTagManagerSettingsViewModel>("GoogleTagManagerSettings_Edit", model =>
             {
-                model.TrackingID = settings.TrackingID;
-            }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAnalytics);
+                model.ContainerID = settings.ContainerID;
+            }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleTagManager);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GoogleAnalyticsSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(GoogleTagManagerSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == GoogleConstants.Features.GoogleAnalytics)
+            if (context.GroupId == GoogleConstants.Features.GoogleTagManager)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
                 {
                     return null;
                 }
 
-                var model = new GoogleAnalyticsSettingsViewModel();
+                var model = new GoogleTagManagerSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 if (context.Updater.ModelState.IsValid)
                 {
-                    settings.TrackingID = model.TrackingID;
+                    settings.ContainerID = model.ContainerID;
                 }
             }
 
