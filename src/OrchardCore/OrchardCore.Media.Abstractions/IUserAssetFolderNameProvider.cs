@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Media.Services
+namespace OrchardCore.Media
 {
     public interface IUserAssetFolderNameProvider
     {

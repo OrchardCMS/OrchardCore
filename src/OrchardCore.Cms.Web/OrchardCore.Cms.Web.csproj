@@ -10,7 +10,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <PreserveCompilationReferences>true</PreserveCompilationReferences>    
+    <PreserveCompilationReferences>true</PreserveCompilationReferences>
   </PropertyGroup>
 
   <ItemGroup>
