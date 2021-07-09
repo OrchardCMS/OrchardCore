@@ -40,7 +40,8 @@ namespace OrchardCore.Google.Analytics
 
                     if (settings.SettingEntries.Length > 0)
                     {
-                        var sb = new StringBuilder($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());\n");
+                        var defaultMeasurementId = settings.SettingEntries.Where(x => x.IsDefault == true);
+                        var sb = new StringBuilder($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={defaultMeasurementId}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());\n");
 
                         foreach(SettingEntry config in settings.SettingEntries)
                         {
