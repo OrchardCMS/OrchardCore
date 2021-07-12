@@ -63,11 +63,14 @@
 
         <div class="row">
             <div class="col">
-                <input type="text" v-model="selectedSetting" class="form-control col" />
+                <input type="text" v-model="selectedSetting" class="form-control col" placeholder="@T["G-XXXXXXX or UA-XXXXXX-X"]" />
             </div>
             <div class="col">
-                <a v-on:click="add()" href="javascript:void(0)" class="btn btn-success"><i class="fas fa-plus small"></i> @T["Add setting"]</a>
+                <a v-on:click="add()" href="javascript:void(0)" class="btn btn-success"><i class="fas fa-plus small"></i> @T["Add ID"]</a>
             </div>
+        </div>
+        <div>
+            <span class="hint">@T["Tracking ID's are still supported."]</span>
         </div>
 
         <input class="form-control" id="@Html.IdFor(m => m.SettingEntries)" name="@Html.NameFor(m => m.SettingEntries)" type="hidden" v-bind:value="getSupportedCultures()" />
@@ -76,7 +79,6 @@
 </script>
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
-
     <div class="row">
         <div class="col">
             <label>@T["Define which Measurement Id's are supported by the site."]</label>
