@@ -22,3 +22,11 @@ using OrchardCore.Modules.Manifest;
     Category = "Google",
     Description = "Integrate Google Analytics gtagjs"
 )]
+
+[assembly: Feature(
+    Id = GoogleConstants.Features.GoogleTagManager,
+    Name = "Google Tag Manager",
+    Category = "Google",
+    Description = "Integrate Google Tag Manager",
+    Dependencies = new[] { GoogleConstants.Features.GoogleAnalytics }
+)]

@@ -24,6 +24,7 @@ namespace OrchardCore.Users.Workflows.Drivers
             model.SendConfirmationEmail = activity.SendConfirmationEmail;
             model.ConfirmationEmailSubject = activity.ConfirmationEmailSubject.Expression;
             model.ConfirmationEmailTemplate = activity.ConfirmationEmailTemplate.Expression;
+            model.RequireModeration = activity.RequireModeration;
         }
 
         public async override Task<IDisplayResult> UpdateAsync(RegisterUserTask model, IUpdateModel updater)
@@ -32,6 +33,7 @@ namespace OrchardCore.Users.Workflows.Drivers
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
                 model.SendConfirmationEmail = viewModel.SendConfirmationEmail;
+                model.RequireModeration = viewModel.RequireModeration;
                 model.ConfirmationEmailSubject = new WorkflowExpression<string>(viewModel.ConfirmationEmailSubject);
                 model.ConfirmationEmailTemplate = new WorkflowExpression<string>(viewModel.ConfirmationEmailTemplate);
 

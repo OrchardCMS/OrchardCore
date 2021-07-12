@@ -7,5 +7,7 @@ namespace OrchardCore.Users.Workflows.ViewModels
         public string ConfirmationEmailSubject { get; set; }
 
         public string ConfirmationEmailTemplate { get; set; }
+
+        public bool RequireModeration { get; set; }
     }
 }
