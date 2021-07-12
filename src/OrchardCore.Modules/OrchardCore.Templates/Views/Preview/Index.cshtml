@@ -1,30 +1,22 @@
 @{
-    Layout = null;
+    Layout = "_Layout";
     Title.AddSegment(T["Template Preview"]);
 }
 
-<style asp-name="bootstrap"></style>
-<script asp-name="bootstrap" at="Foot"></script>
 <script asp-name="js-cookie" at="Foot"></script>
 
-<resources type="Header" />
-
-<iframe id="iframe" style="display:none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
+<iframe id="iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
     Your browser doesn't support iframes
 </iframe>
 
-<iframe id="iframe2" style="display:none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden;z-index:999990;">
-    Your browser doesn't support iframes
-</iframe>
-
-<div id="notConnectedWarning" class="alert alert-info alert-dismissible fade show collapse" role="alert" style="position:fixed; height:60px; top:10px;right:40px; display:none; z-index:999999;">
+<div id="notConnectedWarning" class="alert alert-info alert-dismissible fade show collapse" role="alert" style="position:fixed; height:60px; top:10px; right:40px; display:none; z-index:999999;">
     <button type="button" id="close-warning" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
         <span aria-hidden="true">&times;</span>
     </button>
     <span>@T["Preview Disconnected"] </span>
 </div>
 
-<div id="serverErrorWarning" class="alert alert-warning alert-dismissible fade show" role="alert" style="position:fixed; top:10px;right:40px; display:none; z-index:999999;">
+<div id="serverErrorWarning" class="alert alert-warning alert-dismissible fade show" role="alert" style="position:fixed; top:10px; right:40px; display:none; z-index:999999;">
     <button type="button" id="close-server-warning" class="close" aria-label="Close" style="position: relative; padding: 0 0 0 1rem; margin-top: -0.2rem;">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -43,9 +35,11 @@
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
     var contentPreviewUrl = $(document.getElementById('contentPreviewUrl')).data('value');
     var iframe = document.getElementById('iframe');
-    var iframe2 = document.getElementById('iframe2');
     var previewEventTimer = null;
     var previewRenderTimer = null;
+    var previewRendering;
+    var previewRenderData;
+    var initialized;
 
     $(function () {
         $(window).on('storage', function (ev) {
@@ -84,33 +78,25 @@
     });
 
     iframe.onload = function () {
-        if (previewRendering) {
-            this.style.display = 'block';
-            $(this.contentWindow).scrollTop(scrollTop);
-
-            if (iframe2 && iframe2.contentWindow) {
-                iframe2.style.display = 'none';
-                iframe2.contentWindow.document.open();
-                iframe2.contentWindow.document.write(previewRenderData);
-                iframe2.contentWindow.document.close();
+        // The iframe may not be well setup after the first loading and then on the first editor update
+        // we may lose the scrolling position. A workaround is to refrech the page once after or to add
+        // here a delay that really block the thread before exiting. Here, we just rewrite the document.
+        if (!initialized) {
+            if (this.contentWindow) {
+                iframe.contentWindow.document.open();
+                iframe.contentWindow.document.write(previewRenderData);
+                iframe.contentWindow.document.close();
             }
-            previewRendering = false;
+            initialized = true;
         }
+        previewRendering = false;
 
         if (this.contentWindow && this.contentWindow.location.pathname != indexPreviewUrl) {
             contentPreviewUrl = this.contentWindow.location.pathname;
-            if (iframe2 && iframe2.contentWindow) {
-                iframe2.contentWindow.location = this.contentWindow.location;
-            }
         }
     }
 
-    var previewRendering;
-    var previewRenderData;
-    var scrollTop = 0;
-
     function renderPreview(value) {
-
         if (previewRendering) {
             // Defer the last rendering
             clearTimeout(previewRenderTimer);
@@ -121,7 +107,6 @@
         clearTimeout(previewRenderTimer);
 
         try {
-
             var formData = JSON.parse(value);
             if (!formData) {
                 previewRendering = false;
@@ -131,17 +116,7 @@
 
             $.post(renderPreviewUrl, formData)
                 .done(function (data) {
-                    if (iframe && iframe.contentWindow && iframe2 && iframe2.contentWindow) {
-
-                        // A full writing of the frame document causes the iframe to be re-loaded.
-                        // So, better to update the scroll position on the related 'onload' event.
-                        // Then, we use 2 frames to cancel the flicker that this deferring causes.
-
-                        scrollTop = $(iframe.contentWindow).scrollTop();
-                        iframe2.style.display = 'block';
-                        $(iframe2.contentWindow).scrollTop(scrollTop);
-
-                        iframe.style.display = 'none';
+                    if (iframe && iframe.contentWindow) {
                         iframe.contentWindow.document.open();
                         iframe.contentWindow.document.write(data);
                         iframe.contentWindow.document.close();
