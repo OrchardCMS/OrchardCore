@@ -13,14 +13,19 @@
     ]
   },
   "windows": {
-    "command": "cmd",
-    "args": [
-      "/C"
-    ]
+    "options": {
+      "shell": {
+        "executable": "cmd.exe",
+        "args": [
+          "/C"
+        ]
+      }
+    }
   },
   "tasks": [
     {
       "label": "Dotnet Restore",
+      "type": "shell",
       "command": "dotnet",
       "args": [
         "restore"
@@ -28,6 +33,7 @@
     },
     {
       "label": "Dotnet Restore Force",
+      "type": "shell",
       "command": "dotnet",
       "args": [
         "restore",
@@ -36,6 +42,7 @@
     },
     {
       "label": "Dotnet clean (debug)",
+      "type": "shell",
       "command": "dotnet",
       "args": [
         "clean",
@@ -45,6 +52,7 @@
     },
     {
       "label": "Dotnet clean (release)",
+      "type": "shell",
       "command": "dotnet",
       "args": [
         "clean",
@@ -54,6 +62,7 @@
     },
     {
       "label": "Web App: Dotnet Build Debug - net5.0",
+      "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
@@ -67,6 +76,7 @@
     },
     {
       "label": "Web App: Dotnet Rebuild Debug - net5.0",
+      "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
@@ -81,6 +91,7 @@
     },
     {
       "label": "Web App: Dotnet Build Release - net5.0",
+      "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
