@@ -56,7 +56,7 @@
     "path-posix": "1.0.0",
     "postcss": "8.3.5",
     "postcss-rtl": "^1.7.3",
-    "rtlcss": "3.2.1",
+    "rtlcss": "3.3.0",
     "typescript": "^4.3.5"
   }
 }
