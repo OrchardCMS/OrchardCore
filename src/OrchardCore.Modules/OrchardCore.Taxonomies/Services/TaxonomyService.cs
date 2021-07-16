@@ -38,16 +38,6 @@ namespace OrchardCore.Taxonomies.Services
 
         public async Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, PagerSlim pager, bool enableOrdering, bool published)
         {
-            var items = await _session.Query<ContentItem>()
-                .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId && x.Published == true)
-                .OrderByDescending(x => x.CreatedUtc)
-                .ListAsync();
-
-            foreach (var item in items)
-            {
-                Debug.WriteLine($"> {item.CreatedUtc.Value.Ticks.ToString()}");
-            }
-
             // Prepare the query
             var query = _session.Query<ContentItem>()
                 .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId);
