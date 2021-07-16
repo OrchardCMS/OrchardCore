@@ -1,9 +1,8 @@
-using System.Text.Encodings.Web;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -20,6 +19,11 @@ namespace OrchardCore.Contents.AuditTrail.Extensions
             var helper = MakeHtmlHelper(viewContext, viewContext.ViewData);
             var contentManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<IContentManager>();
             var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+
+            if (String.IsNullOrEmpty(linkText))
+            {
+                linkText = contentItem.ContentType;
+            }
 
             return helper.ActionLink(linkText, metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
         }
