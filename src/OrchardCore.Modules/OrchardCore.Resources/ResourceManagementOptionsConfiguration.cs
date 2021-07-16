@@ -18,7 +18,7 @@ namespace OrchardCore.Resources
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
         private const string codeMirrorVersion = "5.62.0";
-        private const string monacoEditorVersion = "0.26.0";
+        private const string monacoEditorVersion = "0.25.2";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
