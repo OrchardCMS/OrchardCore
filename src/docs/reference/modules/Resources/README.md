@@ -70,8 +70,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | trumbowyg             | Script | 2.24.0        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.25.2        | -              |
-| monaco                | Script | 0.25.2        | monaco-loader  |
+| monaco-loader         | Script | 0.26.0        | -              |
+| monaco                | Script | 0.26.0        | monaco-loader  |
 
 ### Registering a Resource Manifest
 
