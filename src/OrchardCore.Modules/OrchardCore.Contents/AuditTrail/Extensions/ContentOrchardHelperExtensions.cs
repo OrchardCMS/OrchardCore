@@ -12,16 +12,15 @@ namespace OrchardCore.Contents.AuditTrail.Extensions
 {
     public static class ContentOrchardHelperExtensions
     {
-        public static async Task<IHtmlContent> EditForLinkAsync(this IOrchardHelper orchardHelper, string displayText, ContentItem contentItem)
+        public static async Task<IHtmlContent> EditForLinkAsync(this IOrchardHelper orchardHelper, string linkText, ContentItem contentItem)
         {
             var viewContextAccessor = orchardHelper.HttpContext.RequestServices.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
             var helper = MakeHtmlHelper(viewContext, viewContext.ViewData);
             var contentManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<IContentManager>();
             var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-            var linkText = displayText;
 
-            if(String.IsNullOrEmpty(linkText))
+            if (String.IsNullOrEmpty(linkText))
             {
                 linkText = contentItem.ContentType;
             }
