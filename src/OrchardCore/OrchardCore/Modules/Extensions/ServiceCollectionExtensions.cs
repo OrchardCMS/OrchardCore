@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
@@ -270,8 +271,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Remove the related host singletons as they are not tenant aware.
                 var descriptorsToRemove = collection
                     .Where(sd => sd is ClonedSingletonDescriptor &&
-                        (sd.ServiceType == typeof(IActionDescriptorCollectionProvider)/* ||
-                        sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)*/))
+                        (sd.ServiceType == typeof(IActionDescriptorCollectionProvider) ||
+                        sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)))
                     .ToArray();
 
                 foreach (var descriptor in descriptorsToRemove)
@@ -279,8 +280,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     collection.Remove(descriptor);
                 }
 
-                // TODO: Configure ApiExplorer at the tenant level.
-                // collection.AddEndpointsApiExplorer();
+#if NET6_0_OR_GREATER
+                // Configure ApiExplorer at the tenant level.
+                collection.AddEndpointsApiExplorer();
+#endif
             },
             order: Int32.MinValue + 100);
         }
@@ -363,7 +366,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (options.SameSite == SameSiteMode.None)
             {
-                if (string.IsNullOrEmpty(userAgent))
+                if (String.IsNullOrEmpty(userAgent))
                 {
                     return;
                 }
