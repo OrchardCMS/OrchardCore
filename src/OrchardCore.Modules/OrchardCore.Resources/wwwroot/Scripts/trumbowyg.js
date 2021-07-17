@@ -6,7 +6,7 @@
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**
- * Trumbowyg v2.25.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.25.1 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -1165,7 +1165,7 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
           return false;
         }
 
-        if (t.range.startContainer.parentNode && t.range.startContainer.parentNode === this) {
+        if (t.range && t.range.startContainer.parentNode === this) {
           resetRange = true;
         }
 
