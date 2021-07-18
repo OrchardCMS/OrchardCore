@@ -27,9 +27,7 @@ namespace OrchardCore.Queries.Controllers
         [Route("{name}")]
         public async Task<IActionResult> Query(
             string name,
-            string parameters,
-            bool? withTotal
-            )
+            string parameters)
         {
             var query = await _queryManager.GetQueryAsync(name);
 
@@ -49,24 +47,8 @@ namespace OrchardCore.Queries.Controllers
                 JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                 : new Dictionary<string, object>();
 
-            try
-            {
-                var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
-                if (withTotal ?? false && result is LuceneQueryResults)
-                {
-                    return new ObjectResult(result);
-                }
-                else
-                {
-                    return new ObjectResult(result.Items);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                return new ObjectResult(ex.Message);
-            }
-
-
+            var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
+            return new ObjectResult(result);
         }
     }
 }
