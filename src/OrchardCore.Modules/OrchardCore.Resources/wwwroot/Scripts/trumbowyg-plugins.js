@@ -28,13 +28,12 @@
     plugins: {
       allowTagsFromPaste: {
         init: function init(trumbowyg) {
-          // Force disable remove format pasted
-          trumbowyg.o.removeformatPasted = false;
-
           if (!trumbowyg.o.plugins.allowTagsFromPaste) {
             return;
-          }
+          } // Force disable remove format pasted
 
+
+          trumbowyg.o.removeformatPasted = false;
           var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
           var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
 
@@ -58,6 +57,39 @@
     }
   });
 })(jQuery);
+!function (e) {
+  "use strict";
+
+  var a = {
+    allowedTags: [],
+    removableTags: ["a", "abbr", "address", "b", "bdi", "bdo", "blockquote", "br", "cite", "code", "del", "dfn", "details", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "mark", "meter", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "summary", "sup", "time", "u", "var", "wbr", "img", "map", "area", "canvas", "figcaption", "figure", "picture", "audio", "source", "track", "video", "ul", "ol", "li", "dl", "dt", "dd", "table", "caption", "th", "tr", "td", "thead", "tbody", "tfoot", "col", "colgroup", "style", "div", "p", "form", "input", "textarea", "button", "select", "optgroup", "option", "label", "fieldset", "legend", "datalist", "keygen", "output", "iframe", "link", "nav", "header", "hgroup", "footer", "main", "section", "article", "aside", "dialog", "script", "noscript", "embed", "object", "param"]
+  };
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(t) {
+          if (t.o.plugins.allowTagsFromPaste) {
+            t.o.removeformatPasted = !1;
+            var o = t.o.plugins.allowTagsFromPaste.allowedTags || a.allowedTags,
+                r = t.o.plugins.allowTagsFromPaste.removableTags || a.removableTags;
+
+            if (0 !== o.length) {
+              var s = e(r).not(o).get();
+              t.pasteHandlers.push(function () {
+                setTimeout(function () {
+                  var a = t.$ed.html();
+                  e.each(s, function (e, t) {
+                    a = a.replace(new RegExp("<\\/?" + t + "(\\s[^>]*)?>", "gi"), "");
+                  }), t.$ed.html(a);
+                }, 0);
+              });
+            }
+          }
+        }
+      }
+    }
+  });
+}(jQuery);
 /* ===========================================================
  * trumbowyg.base64.js v1.0
  * Base64 plugin for Trumbowyg
@@ -94,6 +126,12 @@
         file: 'Fil',
         errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
         errInvalidImage: 'Ugyldig billedfil.'
+      },
+      et: {
+        base64: 'Pilt base64 formaadis',
+        file: 'Fail',
+        errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
+        errInvalidImage: 'Vigane pildifail.'
       },
       fr: {
         base64: 'Image en base64',
@@ -203,234 +241,133 @@
     }
   });
 })(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-(function ($) {
-  'use strict';
+!function (e) {
+  "use strict";
 
-  function checkValidTags(snippet) {
-    var theString = snippet; // Replace uppercase element names with lowercase
+  var a = function a() {
+    return "undefined" != typeof FileReader;
+  };
 
-    theString = theString.replace(/<[^> ]*/g, function (match) {
-      return match.toLowerCase();
-    }); // Replace uppercase attribute names with lowercase
-
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ [^=]+=/g, function (match2) {
-        return match2.toLowerCase();
-      });
-      return match;
-    }); // Put quotes around unquoted attributes
-
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
-      return match;
-    });
-    return theString;
-  }
-
-  function cleanIt(html) {
-    // first make sure all tags and attributes are made valid
-    html = checkValidTags(html); // Replace opening bold tags with strong
-
-    html = html.replace(/<b(\s+|>)/g, '<strong$1'); // Replace closing bold tags with closing strong
-
-    html = html.replace(/<\/b(\s+|>)/g, '</strong$1'); // Replace italic tags with em
-
-    html = html.replace(/<i(\s+|>)/g, '<em$1'); // Replace closing italic tags with closing em
-
-    html = html.replace(/<\/i(\s+|>)/g, '</em$1'); // strip out comments -cgCraft
-
-    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, ''); // strip out &nbsp; -cgCraft
-
-    html = html.replace(/&nbsp;/gi, ' '); // strip out extra spaces -cgCraft
-
-    html = html.replace(/ <\//gi, '</'); // Remove multiple spaces
-
-    html.replace(/\s+/g, ' '); // strip &nbsp; -cgCraft
-
-    html = html.replace(/^\s*|\s*$/g, ''); // Strip out unaccepted attributes
-
-    html = html.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
-        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
-          return match2;
-        }
-
-        return '';
-      });
-      return match;
-    }); // Final clean out for MS Word crud
-
-    html = html.replace(/<\?xml[^>]*>/g, '');
-    html = html.replace(/<[^ >]+:[^>]*>/g, '');
-    html = html.replace(/<\/[^ >]+:[^>]*>/g, ''); // remove unwanted tags
-
-    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
-    return html;
-  } // clean editor
-  // this will clean the inserted contents
-  // it does a compare, before and after paste to determine the
-  // pasted contents
-
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            setTimeout(function () {
-              try {
-                trumbowyg.saveRange();
-                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                    pastedData = clipboardData.getData('Text'),
-                    node = trumbowyg.doc.getSelection().focusNode,
-                    range = trumbowyg.doc.createRange(),
-                    cleanedPaste = cleanIt(pastedData.trim()),
-                    newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
-
-                if (trumbowyg.$ed.html() === '') {
-                  // simply append if there is no content in editor
-                  trumbowyg.$ed[0].appendChild(newNode);
-                } else {
-                  // insert pasted content behind last focused node
-                  range.setStartAfter(node);
-                  range.setEndAfter(node);
-                  trumbowyg.doc.getSelection().removeAllRanges();
-                  trumbowyg.doc.getSelection().addRange(range);
-                  trumbowyg.range.insertNode(newNode);
-                } // now set cursor right after pasted content
-
-
-                range = trumbowyg.doc.createRange();
-                range.setStartAfter(newNode);
-                range.setEndAfter(newNode);
-                trumbowyg.doc.getSelection().removeAllRanges();
-                trumbowyg.doc.getSelection().addRange(range); // prevent defaults
-
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault(); // save new node as focused node
-
-                trumbowyg.saveRange();
-                trumbowyg.syncCode();
-              } catch (c) {}
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.emoji.js v0.1
- * Emoji picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Nicolas Pion
- *          Twitter : @nicolas_pion
- */
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    emojiList: ['&#x2049', '&#x2122', '&#x2139', '&#x2194', '&#x2195', '&#x2196', '&#x2197', '&#x2198', '&#x2199', '&#x2328', '&#x2600', '&#x2601', '&#x2602', '&#x2603', '&#x2604', '&#x2611', '&#x2614', '&#x2615', '&#x2618', '&#x2620', '&#x2622', '&#x2623', '&#x2626', '&#x2638', '&#x2639', '&#x2640', '&#x2642', '&#x2648', '&#x2649', '&#x2650', '&#x2651', '&#x2652', '&#x2653', '&#x2660', '&#x2663', '&#x2665', '&#x2666', '&#x2668', '&#x2692', '&#x2693', '&#x2694', '&#x2695', '&#x2696', '&#x2697', '&#x2699', '&#x2702', '&#x2705', '&#x2708', '&#x2709', '&#x2712', '&#x2714', '&#x2716', '&#x2721', '&#x2728', '&#x2733', '&#x2734', '&#x2744', '&#x2747', '&#x2753', '&#x2754', '&#x2755', '&#x2757', '&#x2763', '&#x2764', '&#x2795', '&#x2796', '&#x2797', '&#x2934', '&#x2935', '&#x3030', '&#x3297', '&#x3299', '&#x1F9E1', '&#x1F49B', '&#x1F49A', '&#x1F499', '&#x1F49C', '&#x1F5A4', '&#x1F90E', '&#x1F90D', '&#x1F494', '&#x1F495', '&#x1F49E', '&#x1F493', '&#x1F497', '&#x1F496', '&#x1F498', '&#x1F49D', '&#x1F49F', '&#x262E', '&#x271D', '&#x262A', '&#x1F549', '&#x1F52F', '&#x1F54E', '&#x262F', '&#x1F6D0', '&#x26CE', '&#x264A', '&#x264B', '&#x264C', '&#x264D', '&#x264E', '&#x264F', '&#x1F194', '&#x269B', '&#x1F251', '&#x1F4F4', '&#x1F4F3', '&#x1F236', '&#x1F21A', '&#x1F238', '&#x1F23A', '&#x1F237', '&#x1F19A', '&#x1F4AE', '&#x1F250', '&#x1F234', '&#x1F235', '&#x1F239', '&#x1F232', '&#x1F170', '&#x1F171', '&#x1F18E', '&#x1F191', '&#x1F17E', '&#x1F198', '&#x274C', '&#x2B55', '&#x1F6D1', '&#x26D4', '&#x1F4DB', '&#x1F6AB', '&#x1F4AF', '&#x1F4A2', '&#x1F6B7', '&#x1F6AF', '&#x1F6B3', '&#x1F6B1', '&#x1F51E', '&#x1F4F5', '&#x1F6AD', '&#x203C', '&#x1F505', '&#x1F506', '&#x303D', '&#x26A0', '&#x1F6B8', '&#x1F531', '&#x269C', '&#x1F530', '&#x267B', '&#x1F22F', '&#x1F4B9', '&#x274E', '&#x1F310', '&#x1F4A0', '&#x24C2', '&#x1F300', '&#x1F4A4', '&#x1F3E7', '&#x1F6BE', '&#x267F', '&#x1F17F', '&#x1F233', '&#x1F202', '&#x1F6C2', '&#x1F6C3', '&#x1F6C4', '&#x1F6C5', '&#x1F6B9', '&#x1F6BA', '&#x1F6BC', '&#x1F6BB', '&#x1F6AE', '&#x1F3A6', '&#x1F4F6', '&#x1F201', '&#x1F523', '&#x1F524', '&#x1F521', '&#x1F520', '&#x1F196', '&#x1F197', '&#x1F199', '&#x1F192', '&#x1F195', '&#x1F193', '&#x0030', '&#x0031', '&#x0032', '&#x0033', '&#x0034', '&#x0035', '&#x0036', '&#x0037', '&#x0038', '&#x0039', '&#x1F51F', '&#x1F522', '&#x0023', '&#x002A', '&#x23CF', '&#x25B6', '&#x23F8', '&#x23EF', '&#x23F9', '&#x23FA', '&#x23ED', '&#x23EE', '&#x23E9', '&#x23EA', '&#x23EB', '&#x23EC', '&#x25C0', '&#x1F53C', '&#x1F53D', '&#x27A1', '&#x2B05', '&#x2B06', '&#x2B07', '&#x21AA', '&#x21A9', '&#x1F500', '&#x1F501', '&#x1F502', '&#x1F504', '&#x1F503', '&#x1F3B5', '&#x1F3B6', '&#x267E', '&#x1F4B2', '&#x1F4B1', '&#x00A9', '&#x00AE', '&#x27B0', '&#x27BF', '&#x1F51A', '&#x1F519', '&#x1F51B', '&#x1F51D', '&#x1F51C', '&#x1F518', '&#x26AA', '&#x26AB', '&#x1F534', '&#x1F535', '&#x1F7E4', '&#x1F7E3', '&#x1F7E2', '&#x1F7E1', '&#x1F7E0', '&#x1F53A', '&#x1F53B', '&#x1F538', '&#x1F539', '&#x1F536', '&#x1F537', '&#x1F533', '&#x1F532', '&#x25AA', '&#x25AB', '&#x25FE', '&#x25FD', '&#x25FC', '&#x25FB', '&#x2B1B', '&#x2B1C', '&#x1F7E7', '&#x1F7E6', '&#x1F7E5', '&#x1F7EB', '&#x1F7EA', '&#x1F7E9', '&#x1F7E8', '&#x1F508', '&#x1F507', '&#x1F509', '&#x1F50A', '&#x1F514', '&#x1F515', '&#x1F4E3', '&#x1F4E2', '&#x1F5E8', '&#x1F441', '&#x1F4AC', '&#x1F4AD', '&#x1F5EF', '&#x1F0CF', '&#x1F3B4', '&#x1F004', '&#x1F550', '&#x1F551', '&#x1F552', '&#x1F553', '&#x1F554', '&#x1F555', '&#x1F556', '&#x1F557', '&#x1F558', '&#x1F559', '&#x1F55A', '&#x1F55B', '&#x1F55C', '&#x1F55D', '&#x1F55E', '&#x1F55F', '&#x1F560', '&#x1F561', '&#x1F562', '&#x1F563', '&#x1F564', '&#x1F565', '&#x1F566', '&#x1F567', '&#x26BD', '&#x1F3C0', '&#x1F3C8', '&#x26BE', '&#x1F94E', '&#x1F3BE', '&#x1F3D0', '&#x1F3C9', '&#x1F94F', '&#x1F3B1', '&#x1F3D3', '&#x1F3F8', '&#x1F3D2', '&#x1F3D1', '&#x1F94D', '&#x1F3CF', '&#x1F945', '&#x26F3', '&#x1F3F9', '&#x1F3A3', '&#x1F94A', '&#x1F94B', '&#x1F3BD', '&#x1F6F9', '&#x1F6F7', '&#x1FA82', '&#x26F8', '&#x1F94C', '&#x1F3BF', '&#x26F7', '&#x1F3C2', '&#x1F3CB', '&#x1F93C', '&#x1F938', '&#x26F9', '&#x1F93A', '&#x1F93E', '&#x1F3CC', '&#x1F3C7', '&#x1F9D8', '&#x1F3C4', '&#x1F3CA', '&#x1F93D', '&#x1F6A3', '&#x1F9D7', '&#x1F6B5', '&#x1F6B4', '&#x1F3C6', '&#x1F947', '&#x1F948', '&#x1F949', '&#x1F3C5', '&#x1F396', '&#x1F3F5', '&#x1F397', '&#x1F3AB', '&#x1F39F', '&#x1F3AA', '&#x1F939', '&#x1F3AD', '&#x1F3A8', '&#x1F3AC', '&#x1F3A4', '&#x1F3A7', '&#x1F3BC', '&#x1F3B9', '&#x1F941', '&#x1F3B7', '&#x1F3BA', '&#x1FA95', '&#x1F3B8', '&#x1F3BB', '&#x1F3B2', '&#x265F', '&#x1F3AF', '&#x1FA81', '&#x1FA80', '&#x1F3B3', '&#x1F3AE', '&#x1F3B0', '&#x1F9E9', '&#x231A', '&#x1F4F1', '&#x1F4F2', '&#x1F4BB', '&#x1F5A5', '&#x1F5A8', '&#x1F5B1', '&#x1F5B2', '&#x1F579', '&#x1F5DC', '&#x1F4BD', '&#x1F4BE', '&#x1F4BF', '&#x1F4C0', '&#x1F4FC', '&#x1F4F7', '&#x1F4F8', '&#x1F4F9', '&#x1F3A5', '&#x1F4FD', '&#x1F39E', '&#x1F4DE', '&#x260E', '&#x1F4DF', '&#x1F4E0', '&#x1F4FA', '&#x1F4FB', '&#x1F399', '&#x1F39A', '&#x1F39B', '&#x1F9ED', '&#x23F1', '&#x23F2', '&#x23F0', '&#x1F570', '&#x231B', '&#x23F3', '&#x1F4E1', '&#x1F50B', '&#x1F50C', '&#x1F4A1', '&#x1F526', '&#x1F56F', '&#x1F9EF', '&#x1F6E2', '&#x1F4B8', '&#x1F4B5', '&#x1F4B4', '&#x1F4B6', '&#x1F4B7', '&#x1F4B0', '&#x1F4B3', '&#x1F48E', '&#x1F9F0', '&#x1F527', '&#x1F528', '&#x1F6E0', '&#x26CF', '&#x1F529', '&#x1F9F1', '&#x26D3', '&#x1F9F2', '&#x1F52B', '&#x1F4A3', '&#x1F9E8', '&#x1FA93', '&#x1FA92', '&#x1F52A', '&#x1F5E1', '&#x1F6E1', '&#x1F6AC', '&#x26B0', '&#x26B1', '&#x1F3FA', '&#x1FA94', '&#x1F52E', '&#x1F4FF', '&#x1F9FF', '&#x1F488', '&#x1F52D', '&#x1F52C', '&#x1F573', '&#x1F9AF', '&#x1FA7A', '&#x1FA79', '&#x1F48A', '&#x1F489', '&#x1FA78', '&#x1F9EC', '&#x1F9A0', '&#x1F9EB', '&#x1F9EA', '&#x1F321', '&#x1FA91', '&#x1F9F9', '&#x1F9FA', '&#x1F9FB', '&#x1F6BD', '&#x1F6B0', '&#x1F6BF', '&#x1F6C1', '&#x1F6C0', '&#x1F9FC', '&#x1F9FD', '&#x1F9F4', '&#x1F6CE', '&#x1F511', '&#x1F5DD', '&#x1F6AA', '&#x1F6CB', '&#x1F6CF', '&#x1F6CC', '&#x1F9F8', '&#x1F5BC', '&#x1F6CD', '&#x1F6D2', '&#x1F381', '&#x1F388', '&#x1F38F', '&#x1F380', '&#x1F38A', '&#x1F389', '&#x1F38E', '&#x1F3EE', '&#x1F390', '&#x1F9E7', '&#x1F4E9', '&#x1F4E8', '&#x1F4E7', '&#x1F48C', '&#x1F4E5', '&#x1F4E4', '&#x1F4E6', '&#x1F3F7', '&#x1F4EA', '&#x1F4EB', '&#x1F4EC', '&#x1F4ED', '&#x1F4EE', '&#x1F4EF', '&#x1F4DC', '&#x1F4C3', '&#x1F4C4', '&#x1F4D1', '&#x1F9FE', '&#x1F4CA', '&#x1F4C8', '&#x1F4C9', '&#x1F5D2', '&#x1F5D3', '&#x1F4C6', '&#x1F4C5', '&#x1F5D1', '&#x1F4C7', '&#x1F5C3', '&#x1F5F3', '&#x1F5C4', '&#x1F4CB', '&#x1F4C1', '&#x1F4C2', '&#x1F5C2', '&#x1F5DE', '&#x1F4F0', '&#x1F4D3', '&#x1F4D4', '&#x1F4D2', '&#x1F4D5', '&#x1F4D7', '&#x1F4D8', '&#x1F4D9', '&#x1F4DA', '&#x1F4D6', '&#x1F516', '&#x1F9F7', '&#x1F517', '&#x1F4CE', '&#x1F587', '&#x1F4D0', '&#x1F4CF', '&#x1F9EE', '&#x1F4CC', '&#x1F4CD', '&#x1F58A', '&#x1F58B', '&#x1F58C', '&#x1F58D', '&#x1F4DD', '&#x270F', '&#x1F50D', '&#x1F50E', '&#x1F50F', '&#x1F510', '&#x1F512', '&#x1F513', '&#x1F436', '&#x1F431', '&#x1F42D', '&#x1F439', '&#x1F430', '&#x1F98A', '&#x1F43B', '&#x1F43C', '&#x1F428', '&#x1F42F', '&#x1F981', '&#x1F42E', '&#x1F437', '&#x1F43D', '&#x1F438', '&#x1F435', '&#x1F648', '&#x1F649', '&#x1F64A', '&#x1F412', '&#x1F414', '&#x1F427', '&#x1F426', '&#x1F424', '&#x1F423', '&#x1F425', '&#x1F986', '&#x1F985', '&#x1F989', '&#x1F987', '&#x1F43A', '&#x1F417', '&#x1F434', '&#x1F984', '&#x1F41D', '&#x1F41B', '&#x1F98B', '&#x1F40C', '&#x1F41A', '&#x1F41E', '&#x1F41C', '&#x1F99F', '&#x1F997', '&#x1F577', '&#x1F578', '&#x1F982', '&#x1F422', '&#x1F40D', '&#x1F98E', '&#x1F996', '&#x1F995', '&#x1F419', '&#x1F991', '&#x1F990', '&#x1F99E', '&#x1F9AA', '&#x1F980', '&#x1F421', '&#x1F420', '&#x1F41F', '&#x1F42C', '&#x1F433', '&#x1F40B', '&#x1F988', '&#x1F40A', '&#x1F405', '&#x1F406', '&#x1F993', '&#x1F98D', '&#x1F9A7', '&#x1F418', '&#x1F99B', '&#x1F98F', '&#x1F42A', '&#x1F42B', '&#x1F992', '&#x1F998', '&#x1F403', '&#x1F402', '&#x1F404', '&#x1F40E', '&#x1F416', '&#x1F40F', '&#x1F999', '&#x1F411', '&#x1F410', '&#x1F98C', '&#x1F415', '&#x1F9AE', '&#x1F429', '&#x1F408', '&#x1F413', '&#x1F983', '&#x1F99A', '&#x1F99C', '&#x1F9A2', '&#x1F9A9', '&#x1F54A', '&#x1F407', '&#x1F9A5', '&#x1F9A6', '&#x1F9A8', '&#x1F99D', '&#x1F9A1', '&#x1F401', '&#x1F400', '&#x1F43F', '&#x1F994', '&#x1F43E', '&#x1F409', '&#x1F432', '&#x1F335', '&#x1F384', '&#x1F332', '&#x1F333', '&#x1F334', '&#x1F331', '&#x1F33F', '&#x1F340', '&#x1F38D', '&#x1F38B', '&#x1F343', '&#x1F342', '&#x1F341', '&#x1F344', '&#x1F33E', '&#x1F490', '&#x1F337', '&#x1F339', '&#x1F940', '&#x1F33A', '&#x1F338', '&#x1F33C', '&#x1F33B', '&#x1F31E', '&#x1F31D', '&#x1F31B', '&#x1F31C', '&#x1F31A', '&#x1F315', '&#x1F316', '&#x1F317', '&#x1F318', '&#x1F311', '&#x1F312', '&#x1F313', '&#x1F314', '&#x1F319', '&#x1F30E', '&#x1F30D', '&#x1F30F', '&#x1FA90', '&#x1F4AB', '&#x2B50', '&#x1F31F', '&#x26A1', '&#x1F4A5', '&#x1F525', '&#x1F32A', '&#x1F308', '&#x1F324', '&#x26C5', '&#x1F325', '&#x1F326', '&#x1F327', '&#x26C8', '&#x1F329', '&#x1F328', '&#x26C4', '&#x1F32C', '&#x1F4A8', '&#x1F4A7', '&#x1F4A6', '&#x1F30A', '&#x1F32B', '&#x1F34F', '&#x1F34E', '&#x1F350', '&#x1F34A', '&#x1F34B', '&#x1F34C', '&#x1F349', '&#x1F347', '&#x1F353', '&#x1F348', '&#x1F352', '&#x1F351', '&#x1F96D', '&#x1F34D', '&#x1F965', '&#x1F95D', '&#x1F345', '&#x1F346', '&#x1F951', '&#x1F966', '&#x1F96C', '&#x1F952', '&#x1F336', '&#x1F33D', '&#x1F955', '&#x1F9C5', '&#x1F9C4', '&#x1F954', '&#x1F360', '&#x1F950', '&#x1F96F', '&#x1F35E', '&#x1F956', '&#x1F968', '&#x1F9C0', '&#x1F95A', '&#x1F373', '&#x1F95E', '&#x1F9C7', '&#x1F953', '&#x1F969', '&#x1F357', '&#x1F356', '&#x1F32D', '&#x1F354', '&#x1F35F', '&#x1F355', '&#x1F96A', '&#x1F9C6', '&#x1F959', '&#x1F32E', '&#x1F32F', '&#x1F957', '&#x1F958', '&#x1F96B', '&#x1F35D', '&#x1F35C', '&#x1F372', '&#x1F35B', '&#x1F363', '&#x1F371', '&#x1F95F', '&#x1F364', '&#x1F359', '&#x1F35A', '&#x1F358', '&#x1F365', '&#x1F960', '&#x1F96E', '&#x1F362', '&#x1F361', '&#x1F367', '&#x1F368', '&#x1F366', '&#x1F967', '&#x1F9C1', '&#x1F370', '&#x1F382', '&#x1F36E', '&#x1F36D', '&#x1F36C', '&#x1F36B', '&#x1F37F', '&#x1F369', '&#x1F36A', '&#x1F330', '&#x1F95C', '&#x1F36F', '&#x1F9C8', '&#x1F95B', '&#x1F37C', '&#x1F375', '&#x1F9C9', '&#x1F964', '&#x1F9C3', '&#x1F9CA', '&#x1F376', '&#x1F37A', '&#x1F37B', '&#x1F942', '&#x1F377', '&#x1F943', '&#x1F378', '&#x1F379', '&#x1F37E', '&#x1F944', '&#x1F374', '&#x1F37D', '&#x1F963', '&#x1F961', '&#x1F962', '&#x1F9C2', '&#x1F600', '&#x1F603', '&#x1F604', '&#x1F601', '&#x1F606', '&#x1F605', '&#x1F602', '&#x1F923', '&#x263A', '&#x1F60A', '&#x1F607', '&#x1F642', '&#x1F643', '&#x1F609', '&#x1F60C', '&#x1F60D', '&#x1F970', '&#x1F618', '&#x1F617', '&#x1F619', '&#x1F61A', '&#x1F60B', '&#x1F61B', '&#x1F61D', '&#x1F61C', '&#x1F92A', '&#x1F928', '&#x1F9D0', '&#x1F913', '&#x1F60E', '&#x1F929', '&#x1F973', '&#x1F60F', '&#x1F612', '&#x1F61E', '&#x1F614', '&#x1F61F', '&#x1F615', '&#x1F641', '&#x1F623', '&#x1F616', '&#x1F62B', '&#x1F629', '&#x1F97A', '&#x1F622', '&#x1F62D', '&#x1F624', '&#x1F620', '&#x1F621', '&#x1F92C', '&#x1F92F', '&#x1F633', '&#x1F975', '&#x1F976', '&#x1F631', '&#x1F628', '&#x1F630', '&#x1F625', '&#x1F613', '&#x1F917', '&#x1F914', '&#x1F92D', '&#x1F971', '&#x1F92B', '&#x1F925', '&#x1F636', '&#x1F610', '&#x1F611', '&#x1F62C', '&#x1F644', '&#x1F62F', '&#x1F626', '&#x1F627', '&#x1F62E', '&#x1F632', '&#x1F634', '&#x1F924', '&#x1F62A', '&#x1F635', '&#x1F910', '&#x1F974', '&#x1F922', '&#x1F92E', '&#x1F927', '&#x1F637', '&#x1F912', '&#x1F915', '&#x1F911', '&#x1F920', '&#x1F608', '&#x1F47F', '&#x1F479', '&#x1F47A', '&#x1F921', '&#x1F4A9', '&#x1F47B', '&#x1F480', '&#x1F47D', '&#x1F47E', '&#x1F916', '&#x1F383', '&#x1F63A', '&#x1F638', '&#x1F639', '&#x1F63B', '&#x1F63C', '&#x1F63D', '&#x1F640', '&#x1F63F', '&#x1F63E', '&#x1F932', '&#x1F450', '&#x1F64C', '&#x1F44F', '&#x1F91D', '&#x1F44D', '&#x1F44E', '&#x1F44A', '&#x270A', '&#x1F91B', '&#x1F91C', '&#x1F91E', '&#x270C', '&#x1F91F', '&#x1F918', '&#x1F44C', '&#x1F90F', '&#x1F448', '&#x1F449', '&#x1F446', '&#x1F447', '&#x261D', '&#x270B', '&#x1F91A', '&#x1F590', '&#x1F596', '&#x1F44B', '&#x1F919', '&#x1F4AA', '&#x1F9BE', '&#x1F595', '&#x270D', '&#x1F64F', '&#x1F9B6', '&#x1F9B5', '&#x1F9BF', '&#x1F484', '&#x1F48B', '&#x1F444', '&#x1F9B7', '&#x1F9B4', '&#x1F445', '&#x1F442', '&#x1F9BB', '&#x1F443', '&#x1F463', '&#x1F440', '&#x1F9E0', '&#x1F5E3', '&#x1F464', '&#x1F465', '&#x1F476', '&#x1F467', '&#x1F9D2', '&#x1F466', '&#x1F469', '&#x1F9D1', '&#x1F468', '&#x1F471', '&#x1F9D4', '&#x1F475', '&#x1F9D3', '&#x1F474', '&#x1F472', '&#x1F473', '&#x1F9D5', '&#x1F46E', '&#x1F477', '&#x1F482', '&#x1F575', '&#x1F470', '&#x1F935', '&#x1F478', '&#x1F934', '&#x1F9B8', '&#x1F9B9', '&#x1F936', '&#x1F385', '&#x1F9D9', '&#x1F9DD', '&#x1F9DB', '&#x1F9DF', '&#x1F9DE', '&#x1F9DC', '&#x1F9DA', '&#x1F47C', '&#x1F930', '&#x1F931', '&#x1F647', '&#x1F481', '&#x1F645', '&#x1F646', '&#x1F64B', '&#x1F9CF', '&#x1F926', '&#x1F937', '&#x1F64E', '&#x1F64D', '&#x1F487', '&#x1F486', '&#x1F9D6', '&#x1F485', '&#x1F933', '&#x1F483', '&#x1F57A', '&#x1F46F', '&#x1F574', '&#x1F6B6', '&#x1F3C3', '&#x1F9CD', '&#x1F9CE', '&#x1F46B', '&#x1F46D', '&#x1F46C', '&#x1F491', '&#x1F48F', '&#x1F46A', '&#x1F9F6', '&#x1F9F5', '&#x1F9E5', '&#x1F97C', '&#x1F9BA', '&#x1F45A', '&#x1F455', '&#x1F456', '&#x1FA73', '&#x1F454', '&#x1F457', '&#x1F459', '&#x1FA71', '&#x1F458', '&#x1F97B', '&#x1F97F', '&#x1F460', '&#x1F461', '&#x1F462', '&#x1FA70', '&#x1F45E', '&#x1F45F', '&#x1F97E', '&#x1FA72', '&#x1F9E6', '&#x1F9E4', '&#x1F9E3', '&#x1F3A9', '&#x1F9E2', '&#x1F452', '&#x1F393', '&#x26D1', '&#x1F451', '&#x1F48D', '&#x1F45D', '&#x1F45B', '&#x1F45C', '&#x1F4BC', '&#x1F392', '&#x1F9F3', '&#x1F453', '&#x1F576', '&#x1F97D', '&#x1F93F', '&#x1F302', '&#x1F9B1', '&#x1F9B0', '&#x1F9B3', '&#x1F9B2', '&#x1F697', '&#x1F695', '&#x1F699', '&#x1F68C', '&#x1F68E', '&#x1F3CE', '&#x1F693', '&#x1F691', '&#x1F692', '&#x1F690', '&#x1F69A', '&#x1F69B', '&#x1F69C', '&#x1F6FA', '&#x1F6F5', '&#x1F3CD', '&#x1F6F4', '&#x1F6B2', '&#x1F9BC', '&#x1F9BD', '&#x1F6A8', '&#x1F694', '&#x1F68D', '&#x1F698', '&#x1F696', '&#x1F6A1', '&#x1F6A0', '&#x1F69F', '&#x1F683', '&#x1F68B', '&#x1F69E', '&#x1F69D', '&#x1F684', '&#x1F685', '&#x1F688', '&#x1F682', '&#x1F686', '&#x1F687', '&#x1F68A', '&#x1F689', '&#x1F6EB', '&#x1F6EC', '&#x1F6E9', '&#x1F4BA', '&#x1F6F0', '&#x1F680', '&#x1F6F8', '&#x1F681', '&#x1F6F6', '&#x26F5', '&#x1F6A4', '&#x1F6E5', '&#x1F6F3', '&#x26F4', '&#x1F6A2', '&#x26FD', '&#x1F6A7', '&#x1F6A6', '&#x1F6A5', '&#x1F68F', '&#x1F5FA', '&#x1F5FF', '&#x1F5FD', '&#x1F5FC', '&#x1F3F0', '&#x1F3EF', '&#x1F3DF', '&#x1F3A1', '&#x1F3A2', '&#x1F3A0', '&#x26F2', '&#x26F1', '&#x1F3D6', '&#x1F3DD', '&#x1F3DC', '&#x1F30B', '&#x26F0', '&#x1F3D4', '&#x1F5FB', '&#x1F3D5', '&#x26FA', '&#x1F3E0', '&#x1F3E1', '&#x1F3D8', '&#x1F3DA', '&#x1F3D7', '&#x1F3ED', '&#x1F3E2', '&#x1F3EC', '&#x1F3E3', '&#x1F3E4', '&#x1F3E5', '&#x1F3E6', '&#x1F3E8', '&#x1F3EA', '&#x1F3EB', '&#x1F3E9', '&#x1F492', '&#x1F3DB', '&#x26EA', '&#x1F54C', '&#x1F6D5', '&#x1F54D', '&#x1F54B', '&#x26E9', '&#x1F6E4', '&#x1F6E3', '&#x1F5FE', '&#x1F391', '&#x1F3DE', '&#x1F305', '&#x1F304', '&#x1F320', '&#x1F387', '&#x1F386', '&#x1F307', '&#x1F306', '&#x1F3D9', '&#x1F303', '&#x1F30C', '&#x1F309', '&#x1F301', '&#x1F1FF', '&#x1F1FE', '&#x1F1FD', '&#x1F1FC', '&#x1F1FB', '&#x1F1FA', '&#x1F1F9', '&#x1F1F8', '&#x1F1F7', '&#x1F1F6', '&#x1F1F5', '&#x1F1F4', '&#x1F1F3', '&#x1F1F2', '&#x1F1F1', '&#x1F1F0', '&#x1F1EF', '&#x1F1EE', '&#x1F1ED', '&#x1F1EC', '&#x1F1EB', '&#x1F1EA', '&#x1F1E9', '&#x1F1E8', '&#x1F1E7', '&#x1F1E6', '&#x1F3F3', '&#x1F3F4', '&#x1F3C1', '&#x1F6A9', '&#x1F38C', '&#x1F3FB', '&#x1F3FC', '&#x1F3FD', '&#x1F3FE', '&#x1F3FF']
-  }; // Add all emoji in a dropdown
-
-  $.extend(true, $.trumbowyg, {
+  e.extend(!0, e.trumbowyg, {
     langs: {
-      // jshint camelcase:false
       en: {
-        emoji: 'Add an emoji'
+        base64: "Image as base64",
+        file: "File",
+        errFileReaderNotSupported: "FileReader is not supported by your browser.",
+        errInvalidImage: "Invalid image file."
+      },
+      cs: {
+        base64: "Vložit obrázek",
+        file: "Soubor"
       },
       da: {
-        emoji: 'Tilføj et humørikon'
+        base64: "Billede som base64",
+        file: "Fil",
+        errFileReaderNotSupported: "FileReader er ikke understøttet af din browser.",
+        errInvalidImage: "Ugyldig billedfil."
       },
-      de: {
-        emoji: 'Emoticon einfügen'
+      et: {
+        base64: "Pilt base64 formaadis",
+        file: "Fail",
+        errFileReaderNotSupported: "Teie veebilehitseja ei toeta FileReader funktsiooni.",
+        errInvalidImage: "Vigane pildifail."
       },
       fr: {
-        emoji: 'Ajouter un emoji'
+        base64: "Image en base64",
+        file: "Fichier"
       },
       hu: {
-        emoji: 'Emoji beszúrás'
+        base64: "Kép beszúrás inline",
+        file: "Fájl",
+        errFileReaderNotSupported: "Ez a böngésző nem támogatja a FileReader funkciót.",
+        errInvalidImage: "Érvénytelen képfájl."
       },
       ja: {
-        emoji: '絵文字の挿入'
+        base64: "画像 (Base64形式)",
+        file: "ファイル",
+        errFileReaderNotSupported: "あなたのブラウザーはFileReaderをサポートしていません",
+        errInvalidImage: "画像形式が正しくありません"
       },
       ko: {
-        emoji: '이모지 넣기'
+        base64: "그림 넣기(base64)",
+        file: "파일",
+        errFileReaderNotSupported: "FileReader가 현재 브라우저를 지원하지 않습니다.",
+        errInvalidImage: "유효하지 않은 파일"
+      },
+      nl: {
+        base64: "Afbeelding inline",
+        file: "Bestand",
+        errFileReaderNotSupported: "Uw browser ondersteunt deze functionaliteit niet.",
+        errInvalidImage: "De gekozen afbeelding is ongeldig."
+      },
+      pt_br: {
+        base64: "Imagem em base64",
+        file: "Arquivo",
+        errFileReaderNotSupported: "FileReader não é suportado pelo seu navegador.",
+        errInvalidImage: "Arquivo de imagem inválido."
       },
       ru: {
-        emoji: 'Вставить emoji'
+        base64: "Изображение как код в base64",
+        file: "Файл",
+        errFileReaderNotSupported: "FileReader не поддерживается вашим браузером.",
+        errInvalidImage: "Недопустимый файл изображения."
       },
       tr: {
-        emoji: 'Emoji ekle'
+        base64: "Base64 olarak resim",
+        file: "Dosya",
+        errFileReaderNotSupported: "FileReader tarayıcınız tarafından desteklenmiyor.",
+        errInvalidImage: "Geçersiz resim dosyası."
       },
       zh_cn: {
-        emoji: '添加表情'
+        base64: "图片（Base64编码）",
+        file: "文件"
+      },
+      zh_tw: {
+        base64: "圖片(base64編碼)",
+        file: "檔案",
+        errFileReaderNotSupported: "你的瀏覽器不支援FileReader",
+        errInvalidImage: "不正確的檔案格式"
       }
     },
-    // jshint camelcase:true
     plugins: {
-      emoji: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.emoji = trumbowyg.o.plugins.emoji || defaultOptions;
-          var emojiBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
+      base64: {
+        shouldInit: a,
+        init: function init(r) {
+          var i = {
+            isSupported: a,
+            fn: function fn() {
+              var a;
+              r.saveRange();
+              var i = r.openModalInsert(r.lang.base64, {
+                file: {
+                  type: "file",
+                  required: !0,
+                  attributes: {
+                    accept: "image/*"
+                  }
+                },
+                alt: {
+                  label: "description",
+                  value: r.getRangeText()
+                }
+              }, function (l) {
+                var t = new FileReader();
+                t.onloadend = function (a) {
+                  var n;
+                  n = a.target.result, /^data:image\/[a-z]?/i.test(n) ? (r.execCmd("insertImage", t.result, !1, !0), e(['img[src="', t.result, '"]:not([alt])'].join(""), r.$box).attr("alt", l.alt), r.closeModal()) : r.addErrorOnModalField(e("input[type=file]", i), r.lang.errInvalidImage);
+                }, t.readAsDataURL(a);
+              });
+              e("input[type=file]").on("change", function (e) {
+                a = e.target.files[0];
+              });
+            }
           };
-          trumbowyg.addBtnDef('emoji', emojiBtnDef);
+          r.addBtnDef("base64", i);
         }
       }
     }
   });
-
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.emoji.emojiList, function (i, emoji) {
-      if ($.isArray(emoji)) {
-        // Custom emoji behaviour
-        var emojiCode = emoji[0],
-            emojiUrl = emoji[1],
-            emojiHtml = '<img src="' + emojiUrl + '" alt="' + emojiCode + '">',
-            customEmojiBtnName = 'emoji-' + emojiCode.replace(/:/g, ''),
-            customEmojiBtnDef = {
-          hasIcon: false,
-          text: emojiHtml,
-          fn: function fn() {
-            trumbowyg.execCmd('insertImage', emojiUrl, false, true);
-            return true;
-          }
-        };
-        trumbowyg.addBtnDef(customEmojiBtnName, customEmojiBtnDef);
-        dropdown.push(customEmojiBtnName);
-      } else {
-        // Default behaviour
-        var btn = emoji.replace(/:/g, ''),
-            defaultEmojiBtnName = 'emoji-' + btn,
-            defaultEmojiBtnDef = {
-          text: emoji,
-          fn: function fn() {
-            var encodedEmoji = String.fromCodePoint(emoji.replace('&#', '0'));
-            trumbowyg.execCmd('insertText', encodedEmoji);
-            return true;
-          }
-        };
-        trumbowyg.addBtnDef(defaultEmojiBtnName, defaultEmojiBtnDef);
-        dropdown.push(defaultEmojiBtnName);
-      }
-    });
-    return dropdown;
-  }
-})(jQuery);
+}(jQuery);
 /* ===========================================================
  * trumbowyg.colors.js v1.2
  * Colors picker plugin for Trumbowyg
@@ -463,6 +400,12 @@
       de: {
         foreColor: 'Textfarbe',
         backColor: 'Hintergrundfarbe'
+      },
+      et: {
+        foreColor: 'Teksti värv',
+        backColor: 'Taustavärv',
+        foreColorRemove: 'Eemalda teksti värv',
+        backColorRemove: 'Eemalda taustavärv'
       },
       fr: {
         foreColor: 'Couleur du texte',
@@ -504,7 +447,9 @@
       },
       tr: {
         foreColor: 'Yazı rengi',
-        backColor: 'Arkaplan rengi'
+        backColor: 'Arka plan rengi',
+        foreColorRemove: 'Yazı rengini kaldır',
+        backColorRemove: 'Arka plan rengini kaldır'
       },
       zh_cn: {
         foreColor: '文字颜色',
@@ -527,7 +472,7 @@
     } else if (rgb === 'rgba(0, 0, 0, 0)') {
       return 'transparent';
     } else {
-      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
+      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
       return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
     }
   }
@@ -671,6 +616,544 @@
     return dropdown;
   }
 })(jQuery);
+!function (o) {
+  "use strict";
+
+  function r(o) {
+    return ("0" + parseInt(o).toString(16)).slice(-2);
+  }
+
+  function e(o) {
+    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o ? "transparent" : r((o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/))[1]) + r(o[2]) + r(o[3]);
+  }
+
+  o.extend(!0, o.trumbowyg, {
+    langs: {
+      en: {
+        foreColor: "Text color",
+        backColor: "Background color",
+        foreColorRemove: "Remove text color",
+        backColorRemove: "Remove background color"
+      },
+      cs: {
+        foreColor: "Barva textu",
+        backColor: "Barva pozadí"
+      },
+      da: {
+        foreColor: "Tekstfarve",
+        backColor: "Baggrundsfarve"
+      },
+      de: {
+        foreColor: "Textfarbe",
+        backColor: "Hintergrundfarbe"
+      },
+      et: {
+        foreColor: "Teksti värv",
+        backColor: "Taustavärv",
+        foreColorRemove: "Eemalda teksti värv",
+        backColorRemove: "Eemalda taustavärv"
+      },
+      fr: {
+        foreColor: "Couleur du texte",
+        backColor: "Couleur de fond",
+        foreColorRemove: "Supprimer la couleur du texte",
+        backColorRemove: "Supprimer la couleur de fond"
+      },
+      hu: {
+        foreColor: "Betű szín",
+        backColor: "Háttér szín",
+        foreColorRemove: "Betű szín eltávolítása",
+        backColorRemove: "Háttér szín eltávolítása"
+      },
+      ja: {
+        foreColor: "文字色",
+        backColor: "背景色"
+      },
+      ko: {
+        foreColor: "글자색",
+        backColor: "배경색",
+        foreColorRemove: "글자색 지우기",
+        backColorRemove: "배경색 지우기"
+      },
+      nl: {
+        foreColor: "Tekstkleur",
+        backColor: "Achtergrondkleur"
+      },
+      pt_br: {
+        foreColor: "Cor de fonte",
+        backColor: "Cor de fundo"
+      },
+      ru: {
+        foreColor: "Цвет текста",
+        backColor: "Цвет выделения текста"
+      },
+      sk: {
+        foreColor: "Farba textu",
+        backColor: "Farba pozadia"
+      },
+      tr: {
+        foreColor: "Yazı rengi",
+        backColor: "Arka plan rengi",
+        foreColorRemove: "Yazı rengini kaldır",
+        backColorRemove: "Arka plan rengini kaldır"
+      },
+      zh_cn: {
+        foreColor: "文字颜色",
+        backColor: "背景颜色"
+      },
+      zh_tw: {
+        foreColor: "文字顏色",
+        backColor: "背景顏色"
+      }
+    }
+  });
+  var l = {
+    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
+    foreColorList: null,
+    backColorList: null,
+    allowCustomForeColor: !0,
+    allowCustomBackColor: !0,
+    displayAsList: !1
+  };
+
+  function a(r, e) {
+    var l = [],
+        a = e.o.plugins.colors,
+        t = a[r + "List"] || a.colorList;
+    o.each(t, function (o, t) {
+      var c = r + t,
+          f = {
+        fn: r,
+        forceCss: !0,
+        hasIcon: !1,
+        text: e.lang["#" + t] || "#" + t,
+        param: "#" + t,
+        style: "background-color: #" + t + ";"
+      };
+      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
+    });
+    var c = r + "Remove",
+        f = {
+      fn: "removeFormat",
+      hasIcon: !1,
+      param: r,
+      style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
+    };
+
+    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
+      var d = r + "Free",
+          n = {
+        fn: function fn() {
+          e.openModalInsert(e.lang[r], {
+            color: {
+              label: r,
+              forceCss: !0,
+              type: "color",
+              value: "#FFFFFF"
+            }
+          }, function (o) {
+            return e.execCmd(r, o.color), !0;
+          });
+        },
+        hasIcon: !1,
+        text: "#",
+        style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
+      };
+      e.addBtnDef(d, n), l.push(d);
+    }
+
+    return l;
+  }
+
+  o.extend(!0, o.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(o) {
+          o.o.plugins.colors = o.o.plugins.colors || l;
+          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
+              e = {
+            dropdown: a("foreColor", o),
+            dropdownClass: r
+          },
+              t = {
+            dropdown: a("backColor", o),
+            dropdownClass: r
+          };
+          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
+        },
+        tagHandler: function tagHandler(o, r) {
+          var l,
+              a = [];
+          if (!o.style) return a;
+
+          if ("" !== o.style.backgroundColor) {
+            var t = e(o.style.backgroundColor);
+            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
+          }
+
+          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.emoji.js v0.1
+ * Emoji picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Nicolas Pion
+ *          Twitter : @nicolas_pion
+ */
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    emojiList: ['&#x2049', '&#x2122', '&#x2139', '&#x2194', '&#x2195', '&#x2196', '&#x2197', '&#x2198', '&#x2199', '&#x2328', '&#x2600', '&#x2601', '&#x2602', '&#x2603', '&#x2604', '&#x2611', '&#x2614', '&#x2615', '&#x2618', '&#x2620', '&#x2622', '&#x2623', '&#x2626', '&#x2638', '&#x2639', '&#x2640', '&#x2642', '&#x2648', '&#x2649', '&#x2650', '&#x2651', '&#x2652', '&#x2653', '&#x2660', '&#x2663', '&#x2665', '&#x2666', '&#x2668', '&#x2692', '&#x2693', '&#x2694', '&#x2695', '&#x2696', '&#x2697', '&#x2699', '&#x2702', '&#x2705', '&#x2708', '&#x2709', '&#x2712', '&#x2714', '&#x2716', '&#x2721', '&#x2728', '&#x2733', '&#x2734', '&#x2744', '&#x2747', '&#x2753', '&#x2754', '&#x2755', '&#x2757', '&#x2763', '&#x2764', '&#x2795', '&#x2796', '&#x2797', '&#x2934', '&#x2935', '&#x3030', '&#x3297', '&#x3299', '&#x1F9E1', '&#x1F49B', '&#x1F49A', '&#x1F499', '&#x1F49C', '&#x1F5A4', '&#x1F90E', '&#x1F90D', '&#x1F494', '&#x1F495', '&#x1F49E', '&#x1F493', '&#x1F497', '&#x1F496', '&#x1F498', '&#x1F49D', '&#x1F49F', '&#x262E', '&#x271D', '&#x262A', '&#x1F549', '&#x1F52F', '&#x1F54E', '&#x262F', '&#x1F6D0', '&#x26CE', '&#x264A', '&#x264B', '&#x264C', '&#x264D', '&#x264E', '&#x264F', '&#x1F194', '&#x269B', '&#x1F251', '&#x1F4F4', '&#x1F4F3', '&#x1F236', '&#x1F21A', '&#x1F238', '&#x1F23A', '&#x1F237', '&#x1F19A', '&#x1F4AE', '&#x1F250', '&#x1F234', '&#x1F235', '&#x1F239', '&#x1F232', '&#x1F170', '&#x1F171', '&#x1F18E', '&#x1F191', '&#x1F17E', '&#x1F198', '&#x274C', '&#x2B55', '&#x1F6D1', '&#x26D4', '&#x1F4DB', '&#x1F6AB', '&#x1F4AF', '&#x1F4A2', '&#x1F6B7', '&#x1F6AF', '&#x1F6B3', '&#x1F6B1', '&#x1F51E', '&#x1F4F5', '&#x1F6AD', '&#x203C', '&#x1F505', '&#x1F506', '&#x303D', '&#x26A0', '&#x1F6B8', '&#x1F531', '&#x269C', '&#x1F530', '&#x267B', '&#x1F22F', '&#x1F4B9', '&#x274E', '&#x1F310', '&#x1F4A0', '&#x24C2', '&#x1F300', '&#x1F4A4', '&#x1F3E7', '&#x1F6BE', '&#x267F', '&#x1F17F', '&#x1F233', '&#x1F202', '&#x1F6C2', '&#x1F6C3', '&#x1F6C4', '&#x1F6C5', '&#x1F6B9', '&#x1F6BA', '&#x1F6BC', '&#x1F6BB', '&#x1F6AE', '&#x1F3A6', '&#x1F4F6', '&#x1F201', '&#x1F523', '&#x1F524', '&#x1F521', '&#x1F520', '&#x1F196', '&#x1F197', '&#x1F199', '&#x1F192', '&#x1F195', '&#x1F193', '&#x0030', '&#x0031', '&#x0032', '&#x0033', '&#x0034', '&#x0035', '&#x0036', '&#x0037', '&#x0038', '&#x0039', '&#x1F51F', '&#x1F522', '&#x0023', '&#x002A', '&#x23CF', '&#x25B6', '&#x23F8', '&#x23EF', '&#x23F9', '&#x23FA', '&#x23ED', '&#x23EE', '&#x23E9', '&#x23EA', '&#x23EB', '&#x23EC', '&#x25C0', '&#x1F53C', '&#x1F53D', '&#x27A1', '&#x2B05', '&#x2B06', '&#x2B07', '&#x21AA', '&#x21A9', '&#x1F500', '&#x1F501', '&#x1F502', '&#x1F504', '&#x1F503', '&#x1F3B5', '&#x1F3B6', '&#x267E', '&#x1F4B2', '&#x1F4B1', '&#x00A9', '&#x00AE', '&#x27B0', '&#x27BF', '&#x1F51A', '&#x1F519', '&#x1F51B', '&#x1F51D', '&#x1F51C', '&#x1F518', '&#x26AA', '&#x26AB', '&#x1F534', '&#x1F535', '&#x1F7E4', '&#x1F7E3', '&#x1F7E2', '&#x1F7E1', '&#x1F7E0', '&#x1F53A', '&#x1F53B', '&#x1F538', '&#x1F539', '&#x1F536', '&#x1F537', '&#x1F533', '&#x1F532', '&#x25AA', '&#x25AB', '&#x25FE', '&#x25FD', '&#x25FC', '&#x25FB', '&#x2B1B', '&#x2B1C', '&#x1F7E7', '&#x1F7E6', '&#x1F7E5', '&#x1F7EB', '&#x1F7EA', '&#x1F7E9', '&#x1F7E8', '&#x1F508', '&#x1F507', '&#x1F509', '&#x1F50A', '&#x1F514', '&#x1F515', '&#x1F4E3', '&#x1F4E2', '&#x1F5E8', '&#x1F441', '&#x1F4AC', '&#x1F4AD', '&#x1F5EF', '&#x1F0CF', '&#x1F3B4', '&#x1F004', '&#x1F550', '&#x1F551', '&#x1F552', '&#x1F553', '&#x1F554', '&#x1F555', '&#x1F556', '&#x1F557', '&#x1F558', '&#x1F559', '&#x1F55A', '&#x1F55B', '&#x1F55C', '&#x1F55D', '&#x1F55E', '&#x1F55F', '&#x1F560', '&#x1F561', '&#x1F562', '&#x1F563', '&#x1F564', '&#x1F565', '&#x1F566', '&#x1F567', '&#x26BD', '&#x1F3C0', '&#x1F3C8', '&#x26BE', '&#x1F94E', '&#x1F3BE', '&#x1F3D0', '&#x1F3C9', '&#x1F94F', '&#x1F3B1', '&#x1F3D3', '&#x1F3F8', '&#x1F3D2', '&#x1F3D1', '&#x1F94D', '&#x1F3CF', '&#x1F945', '&#x26F3', '&#x1F3F9', '&#x1F3A3', '&#x1F94A', '&#x1F94B', '&#x1F3BD', '&#x1F6F9', '&#x1F6F7', '&#x1FA82', '&#x26F8', '&#x1F94C', '&#x1F3BF', '&#x26F7', '&#x1F3C2', '&#x1F3CB', '&#x1F93C', '&#x1F938', '&#x26F9', '&#x1F93A', '&#x1F93E', '&#x1F3CC', '&#x1F3C7', '&#x1F9D8', '&#x1F3C4', '&#x1F3CA', '&#x1F93D', '&#x1F6A3', '&#x1F9D7', '&#x1F6B5', '&#x1F6B4', '&#x1F3C6', '&#x1F947', '&#x1F948', '&#x1F949', '&#x1F3C5', '&#x1F396', '&#x1F3F5', '&#x1F397', '&#x1F3AB', '&#x1F39F', '&#x1F3AA', '&#x1F939', '&#x1F3AD', '&#x1F3A8', '&#x1F3AC', '&#x1F3A4', '&#x1F3A7', '&#x1F3BC', '&#x1F3B9', '&#x1F941', '&#x1F3B7', '&#x1F3BA', '&#x1FA95', '&#x1F3B8', '&#x1F3BB', '&#x1F3B2', '&#x265F', '&#x1F3AF', '&#x1FA81', '&#x1FA80', '&#x1F3B3', '&#x1F3AE', '&#x1F3B0', '&#x1F9E9', '&#x231A', '&#x1F4F1', '&#x1F4F2', '&#x1F4BB', '&#x1F5A5', '&#x1F5A8', '&#x1F5B1', '&#x1F5B2', '&#x1F579', '&#x1F5DC', '&#x1F4BD', '&#x1F4BE', '&#x1F4BF', '&#x1F4C0', '&#x1F4FC', '&#x1F4F7', '&#x1F4F8', '&#x1F4F9', '&#x1F3A5', '&#x1F4FD', '&#x1F39E', '&#x1F4DE', '&#x260E', '&#x1F4DF', '&#x1F4E0', '&#x1F4FA', '&#x1F4FB', '&#x1F399', '&#x1F39A', '&#x1F39B', '&#x1F9ED', '&#x23F1', '&#x23F2', '&#x23F0', '&#x1F570', '&#x231B', '&#x23F3', '&#x1F4E1', '&#x1F50B', '&#x1F50C', '&#x1F4A1', '&#x1F526', '&#x1F56F', '&#x1F9EF', '&#x1F6E2', '&#x1F4B8', '&#x1F4B5', '&#x1F4B4', '&#x1F4B6', '&#x1F4B7', '&#x1F4B0', '&#x1F4B3', '&#x1F48E', '&#x1F9F0', '&#x1F527', '&#x1F528', '&#x1F6E0', '&#x26CF', '&#x1F529', '&#x1F9F1', '&#x26D3', '&#x1F9F2', '&#x1F52B', '&#x1F4A3', '&#x1F9E8', '&#x1FA93', '&#x1FA92', '&#x1F52A', '&#x1F5E1', '&#x1F6E1', '&#x1F6AC', '&#x26B0', '&#x26B1', '&#x1F3FA', '&#x1FA94', '&#x1F52E', '&#x1F4FF', '&#x1F9FF', '&#x1F488', '&#x1F52D', '&#x1F52C', '&#x1F573', '&#x1F9AF', '&#x1FA7A', '&#x1FA79', '&#x1F48A', '&#x1F489', '&#x1FA78', '&#x1F9EC', '&#x1F9A0', '&#x1F9EB', '&#x1F9EA', '&#x1F321', '&#x1FA91', '&#x1F9F9', '&#x1F9FA', '&#x1F9FB', '&#x1F6BD', '&#x1F6B0', '&#x1F6BF', '&#x1F6C1', '&#x1F6C0', '&#x1F9FC', '&#x1F9FD', '&#x1F9F4', '&#x1F6CE', '&#x1F511', '&#x1F5DD', '&#x1F6AA', '&#x1F6CB', '&#x1F6CF', '&#x1F6CC', '&#x1F9F8', '&#x1F5BC', '&#x1F6CD', '&#x1F6D2', '&#x1F381', '&#x1F388', '&#x1F38F', '&#x1F380', '&#x1F38A', '&#x1F389', '&#x1F38E', '&#x1F3EE', '&#x1F390', '&#x1F9E7', '&#x1F4E9', '&#x1F4E8', '&#x1F4E7', '&#x1F48C', '&#x1F4E5', '&#x1F4E4', '&#x1F4E6', '&#x1F3F7', '&#x1F4EA', '&#x1F4EB', '&#x1F4EC', '&#x1F4ED', '&#x1F4EE', '&#x1F4EF', '&#x1F4DC', '&#x1F4C3', '&#x1F4C4', '&#x1F4D1', '&#x1F9FE', '&#x1F4CA', '&#x1F4C8', '&#x1F4C9', '&#x1F5D2', '&#x1F5D3', '&#x1F4C6', '&#x1F4C5', '&#x1F5D1', '&#x1F4C7', '&#x1F5C3', '&#x1F5F3', '&#x1F5C4', '&#x1F4CB', '&#x1F4C1', '&#x1F4C2', '&#x1F5C2', '&#x1F5DE', '&#x1F4F0', '&#x1F4D3', '&#x1F4D4', '&#x1F4D2', '&#x1F4D5', '&#x1F4D7', '&#x1F4D8', '&#x1F4D9', '&#x1F4DA', '&#x1F4D6', '&#x1F516', '&#x1F9F7', '&#x1F517', '&#x1F4CE', '&#x1F587', '&#x1F4D0', '&#x1F4CF', '&#x1F9EE', '&#x1F4CC', '&#x1F4CD', '&#x1F58A', '&#x1F58B', '&#x1F58C', '&#x1F58D', '&#x1F4DD', '&#x270F', '&#x1F50D', '&#x1F50E', '&#x1F50F', '&#x1F510', '&#x1F512', '&#x1F513', '&#x1F436', '&#x1F431', '&#x1F42D', '&#x1F439', '&#x1F430', '&#x1F98A', '&#x1F43B', '&#x1F43C', '&#x1F428', '&#x1F42F', '&#x1F981', '&#x1F42E', '&#x1F437', '&#x1F43D', '&#x1F438', '&#x1F435', '&#x1F648', '&#x1F649', '&#x1F64A', '&#x1F412', '&#x1F414', '&#x1F427', '&#x1F426', '&#x1F424', '&#x1F423', '&#x1F425', '&#x1F986', '&#x1F985', '&#x1F989', '&#x1F987', '&#x1F43A', '&#x1F417', '&#x1F434', '&#x1F984', '&#x1F41D', '&#x1F41B', '&#x1F98B', '&#x1F40C', '&#x1F41A', '&#x1F41E', '&#x1F41C', '&#x1F99F', '&#x1F997', '&#x1F577', '&#x1F578', '&#x1F982', '&#x1F422', '&#x1F40D', '&#x1F98E', '&#x1F996', '&#x1F995', '&#x1F419', '&#x1F991', '&#x1F990', '&#x1F99E', '&#x1F9AA', '&#x1F980', '&#x1F421', '&#x1F420', '&#x1F41F', '&#x1F42C', '&#x1F433', '&#x1F40B', '&#x1F988', '&#x1F40A', '&#x1F405', '&#x1F406', '&#x1F993', '&#x1F98D', '&#x1F9A7', '&#x1F418', '&#x1F99B', '&#x1F98F', '&#x1F42A', '&#x1F42B', '&#x1F992', '&#x1F998', '&#x1F403', '&#x1F402', '&#x1F404', '&#x1F40E', '&#x1F416', '&#x1F40F', '&#x1F999', '&#x1F411', '&#x1F410', '&#x1F98C', '&#x1F415', '&#x1F9AE', '&#x1F429', '&#x1F408', '&#x1F413', '&#x1F983', '&#x1F99A', '&#x1F99C', '&#x1F9A2', '&#x1F9A9', '&#x1F54A', '&#x1F407', '&#x1F9A5', '&#x1F9A6', '&#x1F9A8', '&#x1F99D', '&#x1F9A1', '&#x1F401', '&#x1F400', '&#x1F43F', '&#x1F994', '&#x1F43E', '&#x1F409', '&#x1F432', '&#x1F335', '&#x1F384', '&#x1F332', '&#x1F333', '&#x1F334', '&#x1F331', '&#x1F33F', '&#x1F340', '&#x1F38D', '&#x1F38B', '&#x1F343', '&#x1F342', '&#x1F341', '&#x1F344', '&#x1F33E', '&#x1F490', '&#x1F337', '&#x1F339', '&#x1F940', '&#x1F33A', '&#x1F338', '&#x1F33C', '&#x1F33B', '&#x1F31E', '&#x1F31D', '&#x1F31B', '&#x1F31C', '&#x1F31A', '&#x1F315', '&#x1F316', '&#x1F317', '&#x1F318', '&#x1F311', '&#x1F312', '&#x1F313', '&#x1F314', '&#x1F319', '&#x1F30E', '&#x1F30D', '&#x1F30F', '&#x1FA90', '&#x1F4AB', '&#x2B50', '&#x1F31F', '&#x26A1', '&#x1F4A5', '&#x1F525', '&#x1F32A', '&#x1F308', '&#x1F324', '&#x26C5', '&#x1F325', '&#x1F326', '&#x1F327', '&#x26C8', '&#x1F329', '&#x1F328', '&#x26C4', '&#x1F32C', '&#x1F4A8', '&#x1F4A7', '&#x1F4A6', '&#x1F30A', '&#x1F32B', '&#x1F34F', '&#x1F34E', '&#x1F350', '&#x1F34A', '&#x1F34B', '&#x1F34C', '&#x1F349', '&#x1F347', '&#x1F353', '&#x1F348', '&#x1F352', '&#x1F351', '&#x1F96D', '&#x1F34D', '&#x1F965', '&#x1F95D', '&#x1F345', '&#x1F346', '&#x1F951', '&#x1F966', '&#x1F96C', '&#x1F952', '&#x1F336', '&#x1F33D', '&#x1F955', '&#x1F9C5', '&#x1F9C4', '&#x1F954', '&#x1F360', '&#x1F950', '&#x1F96F', '&#x1F35E', '&#x1F956', '&#x1F968', '&#x1F9C0', '&#x1F95A', '&#x1F373', '&#x1F95E', '&#x1F9C7', '&#x1F953', '&#x1F969', '&#x1F357', '&#x1F356', '&#x1F32D', '&#x1F354', '&#x1F35F', '&#x1F355', '&#x1F96A', '&#x1F9C6', '&#x1F959', '&#x1F32E', '&#x1F32F', '&#x1F957', '&#x1F958', '&#x1F96B', '&#x1F35D', '&#x1F35C', '&#x1F372', '&#x1F35B', '&#x1F363', '&#x1F371', '&#x1F95F', '&#x1F364', '&#x1F359', '&#x1F35A', '&#x1F358', '&#x1F365', '&#x1F960', '&#x1F96E', '&#x1F362', '&#x1F361', '&#x1F367', '&#x1F368', '&#x1F366', '&#x1F967', '&#x1F9C1', '&#x1F370', '&#x1F382', '&#x1F36E', '&#x1F36D', '&#x1F36C', '&#x1F36B', '&#x1F37F', '&#x1F369', '&#x1F36A', '&#x1F330', '&#x1F95C', '&#x1F36F', '&#x1F9C8', '&#x1F95B', '&#x1F37C', '&#x1F375', '&#x1F9C9', '&#x1F964', '&#x1F9C3', '&#x1F9CA', '&#x1F376', '&#x1F37A', '&#x1F37B', '&#x1F942', '&#x1F377', '&#x1F943', '&#x1F378', '&#x1F379', '&#x1F37E', '&#x1F944', '&#x1F374', '&#x1F37D', '&#x1F963', '&#x1F961', '&#x1F962', '&#x1F9C2', '&#x1F600', '&#x1F603', '&#x1F604', '&#x1F601', '&#x1F606', '&#x1F605', '&#x1F602', '&#x1F923', '&#x263A', '&#x1F60A', '&#x1F607', '&#x1F642', '&#x1F643', '&#x1F609', '&#x1F60C', '&#x1F60D', '&#x1F970', '&#x1F618', '&#x1F617', '&#x1F619', '&#x1F61A', '&#x1F60B', '&#x1F61B', '&#x1F61D', '&#x1F61C', '&#x1F92A', '&#x1F928', '&#x1F9D0', '&#x1F913', '&#x1F60E', '&#x1F929', '&#x1F973', '&#x1F60F', '&#x1F612', '&#x1F61E', '&#x1F614', '&#x1F61F', '&#x1F615', '&#x1F641', '&#x1F623', '&#x1F616', '&#x1F62B', '&#x1F629', '&#x1F97A', '&#x1F622', '&#x1F62D', '&#x1F624', '&#x1F620', '&#x1F621', '&#x1F92C', '&#x1F92F', '&#x1F633', '&#x1F975', '&#x1F976', '&#x1F631', '&#x1F628', '&#x1F630', '&#x1F625', '&#x1F613', '&#x1F917', '&#x1F914', '&#x1F92D', '&#x1F971', '&#x1F92B', '&#x1F925', '&#x1F636', '&#x1F610', '&#x1F611', '&#x1F62C', '&#x1F644', '&#x1F62F', '&#x1F626', '&#x1F627', '&#x1F62E', '&#x1F632', '&#x1F634', '&#x1F924', '&#x1F62A', '&#x1F635', '&#x1F910', '&#x1F974', '&#x1F922', '&#x1F92E', '&#x1F927', '&#x1F637', '&#x1F912', '&#x1F915', '&#x1F911', '&#x1F920', '&#x1F608', '&#x1F47F', '&#x1F479', '&#x1F47A', '&#x1F921', '&#x1F4A9', '&#x1F47B', '&#x1F480', '&#x1F47D', '&#x1F47E', '&#x1F916', '&#x1F383', '&#x1F63A', '&#x1F638', '&#x1F639', '&#x1F63B', '&#x1F63C', '&#x1F63D', '&#x1F640', '&#x1F63F', '&#x1F63E', '&#x1F932', '&#x1F450', '&#x1F64C', '&#x1F44F', '&#x1F91D', '&#x1F44D', '&#x1F44E', '&#x1F44A', '&#x270A', '&#x1F91B', '&#x1F91C', '&#x1F91E', '&#x270C', '&#x1F91F', '&#x1F918', '&#x1F44C', '&#x1F90F', '&#x1F448', '&#x1F449', '&#x1F446', '&#x1F447', '&#x261D', '&#x270B', '&#x1F91A', '&#x1F590', '&#x1F596', '&#x1F44B', '&#x1F919', '&#x1F4AA', '&#x1F9BE', '&#x1F595', '&#x270D', '&#x1F64F', '&#x1F9B6', '&#x1F9B5', '&#x1F9BF', '&#x1F484', '&#x1F48B', '&#x1F444', '&#x1F9B7', '&#x1F9B4', '&#x1F445', '&#x1F442', '&#x1F9BB', '&#x1F443', '&#x1F463', '&#x1F440', '&#x1F9E0', '&#x1F5E3', '&#x1F464', '&#x1F465', '&#x1F476', '&#x1F467', '&#x1F9D2', '&#x1F466', '&#x1F469', '&#x1F9D1', '&#x1F468', '&#x1F471', '&#x1F9D4', '&#x1F475', '&#x1F9D3', '&#x1F474', '&#x1F472', '&#x1F473', '&#x1F9D5', '&#x1F46E', '&#x1F477', '&#x1F482', '&#x1F575', '&#x1F470', '&#x1F935', '&#x1F478', '&#x1F934', '&#x1F9B8', '&#x1F9B9', '&#x1F936', '&#x1F385', '&#x1F9D9', '&#x1F9DD', '&#x1F9DB', '&#x1F9DF', '&#x1F9DE', '&#x1F9DC', '&#x1F9DA', '&#x1F47C', '&#x1F930', '&#x1F931', '&#x1F647', '&#x1F481', '&#x1F645', '&#x1F646', '&#x1F64B', '&#x1F9CF', '&#x1F926', '&#x1F937', '&#x1F64E', '&#x1F64D', '&#x1F487', '&#x1F486', '&#x1F9D6', '&#x1F485', '&#x1F933', '&#x1F483', '&#x1F57A', '&#x1F46F', '&#x1F574', '&#x1F6B6', '&#x1F3C3', '&#x1F9CD', '&#x1F9CE', '&#x1F46B', '&#x1F46D', '&#x1F46C', '&#x1F491', '&#x1F48F', '&#x1F46A', '&#x1F9F6', '&#x1F9F5', '&#x1F9E5', '&#x1F97C', '&#x1F9BA', '&#x1F45A', '&#x1F455', '&#x1F456', '&#x1FA73', '&#x1F454', '&#x1F457', '&#x1F459', '&#x1FA71', '&#x1F458', '&#x1F97B', '&#x1F97F', '&#x1F460', '&#x1F461', '&#x1F462', '&#x1FA70', '&#x1F45E', '&#x1F45F', '&#x1F97E', '&#x1FA72', '&#x1F9E6', '&#x1F9E4', '&#x1F9E3', '&#x1F3A9', '&#x1F9E2', '&#x1F452', '&#x1F393', '&#x26D1', '&#x1F451', '&#x1F48D', '&#x1F45D', '&#x1F45B', '&#x1F45C', '&#x1F4BC', '&#x1F392', '&#x1F9F3', '&#x1F453', '&#x1F576', '&#x1F97D', '&#x1F93F', '&#x1F302', '&#x1F9B1', '&#x1F9B0', '&#x1F9B3', '&#x1F9B2', '&#x1F697', '&#x1F695', '&#x1F699', '&#x1F68C', '&#x1F68E', '&#x1F3CE', '&#x1F693', '&#x1F691', '&#x1F692', '&#x1F690', '&#x1F69A', '&#x1F69B', '&#x1F69C', '&#x1F6FA', '&#x1F6F5', '&#x1F3CD', '&#x1F6F4', '&#x1F6B2', '&#x1F9BC', '&#x1F9BD', '&#x1F6A8', '&#x1F694', '&#x1F68D', '&#x1F698', '&#x1F696', '&#x1F6A1', '&#x1F6A0', '&#x1F69F', '&#x1F683', '&#x1F68B', '&#x1F69E', '&#x1F69D', '&#x1F684', '&#x1F685', '&#x1F688', '&#x1F682', '&#x1F686', '&#x1F687', '&#x1F68A', '&#x1F689', '&#x1F6EB', '&#x1F6EC', '&#x1F6E9', '&#x1F4BA', '&#x1F6F0', '&#x1F680', '&#x1F6F8', '&#x1F681', '&#x1F6F6', '&#x26F5', '&#x1F6A4', '&#x1F6E5', '&#x1F6F3', '&#x26F4', '&#x1F6A2', '&#x26FD', '&#x1F6A7', '&#x1F6A6', '&#x1F6A5', '&#x1F68F', '&#x1F5FA', '&#x1F5FF', '&#x1F5FD', '&#x1F5FC', '&#x1F3F0', '&#x1F3EF', '&#x1F3DF', '&#x1F3A1', '&#x1F3A2', '&#x1F3A0', '&#x26F2', '&#x26F1', '&#x1F3D6', '&#x1F3DD', '&#x1F3DC', '&#x1F30B', '&#x26F0', '&#x1F3D4', '&#x1F5FB', '&#x1F3D5', '&#x26FA', '&#x1F3E0', '&#x1F3E1', '&#x1F3D8', '&#x1F3DA', '&#x1F3D7', '&#x1F3ED', '&#x1F3E2', '&#x1F3EC', '&#x1F3E3', '&#x1F3E4', '&#x1F3E5', '&#x1F3E6', '&#x1F3E8', '&#x1F3EA', '&#x1F3EB', '&#x1F3E9', '&#x1F492', '&#x1F3DB', '&#x26EA', '&#x1F54C', '&#x1F6D5', '&#x1F54D', '&#x1F54B', '&#x26E9', '&#x1F6E4', '&#x1F6E3', '&#x1F5FE', '&#x1F391', '&#x1F3DE', '&#x1F305', '&#x1F304', '&#x1F320', '&#x1F387', '&#x1F386', '&#x1F307', '&#x1F306', '&#x1F3D9', '&#x1F303', '&#x1F30C', '&#x1F309', '&#x1F301', '&#x1F1FF', '&#x1F1FE', '&#x1F1FD', '&#x1F1FC', '&#x1F1FB', '&#x1F1FA', '&#x1F1F9', '&#x1F1F8', '&#x1F1F7', '&#x1F1F6', '&#x1F1F5', '&#x1F1F4', '&#x1F1F3', '&#x1F1F2', '&#x1F1F1', '&#x1F1F0', '&#x1F1EF', '&#x1F1EE', '&#x1F1ED', '&#x1F1EC', '&#x1F1EB', '&#x1F1EA', '&#x1F1E9', '&#x1F1E8', '&#x1F1E7', '&#x1F1E6', '&#x1F3F3', '&#x1F3F4', '&#x1F3C1', '&#x1F6A9', '&#x1F38C', '&#x1F3FB', '&#x1F3FC', '&#x1F3FD', '&#x1F3FE', '&#x1F3FF']
+  }; // Add all emoji in a dropdown
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        emoji: 'Add an emoji'
+      },
+      da: {
+        emoji: 'Tilføj et humørikon'
+      },
+      de: {
+        emoji: 'Emoticon einfügen'
+      },
+      et: {
+        emoji: 'Lisa emotikon'
+      },
+      fr: {
+        emoji: 'Ajouter un emoji'
+      },
+      hu: {
+        emoji: 'Emoji beszúrás'
+      },
+      ja: {
+        emoji: '絵文字の挿入'
+      },
+      ko: {
+        emoji: '이모지 넣기'
+      },
+      ru: {
+        emoji: 'Вставить emoji'
+      },
+      tr: {
+        emoji: 'Emoji ekle'
+      },
+      zh_cn: {
+        emoji: '添加表情'
+      }
+    },
+    // jshint camelcase:true
+    plugins: {
+      emoji: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.emoji = trumbowyg.o.plugins.emoji || defaultOptions;
+          var emojiBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('emoji', emojiBtnDef);
+        }
+      }
+    }
+  });
+
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.emoji.emojiList, function (i, emoji) {
+      if ($.isArray(emoji)) {
+        // Custom emoji behaviour
+        var emojiCode = emoji[0],
+            emojiUrl = emoji[1],
+            emojiHtml = '<img src="' + emojiUrl + '" alt="' + emojiCode + '">',
+            customEmojiBtnName = 'emoji-' + emojiCode.replace(/:/g, ''),
+            customEmojiBtnDef = {
+          hasIcon: false,
+          text: emojiHtml,
+          fn: function fn() {
+            trumbowyg.execCmd('insertImage', emojiUrl, false, true);
+            return true;
+          }
+        };
+        trumbowyg.addBtnDef(customEmojiBtnName, customEmojiBtnDef);
+        dropdown.push(customEmojiBtnName);
+      } else {
+        // Default behaviour
+        var btn = emoji.replace(/:/g, ''),
+            defaultEmojiBtnName = 'emoji-' + btn,
+            defaultEmojiBtnDef = {
+          text: emoji,
+          fn: function fn() {
+            var encodedEmoji = String.fromCodePoint(emoji.replace('&#', '0'));
+            trumbowyg.execCmd('insertText', encodedEmoji);
+            return true;
+          }
+        };
+        trumbowyg.addBtnDef(defaultEmojiBtnName, defaultEmojiBtnDef);
+        dropdown.push(defaultEmojiBtnName);
+      }
+    });
+    return dropdown;
+  }
+})(jQuery);
+!function (x) {
+  "use strict";
+
+  var F = {
+    emojiList: ["&#x2049", "&#x2122", "&#x2139", "&#x2194", "&#x2195", "&#x2196", "&#x2197", "&#x2198", "&#x2199", "&#x2328", "&#x2600", "&#x2601", "&#x2602", "&#x2603", "&#x2604", "&#x2611", "&#x2614", "&#x2615", "&#x2618", "&#x2620", "&#x2622", "&#x2623", "&#x2626", "&#x2638", "&#x2639", "&#x2640", "&#x2642", "&#x2648", "&#x2649", "&#x2650", "&#x2651", "&#x2652", "&#x2653", "&#x2660", "&#x2663", "&#x2665", "&#x2666", "&#x2668", "&#x2692", "&#x2693", "&#x2694", "&#x2695", "&#x2696", "&#x2697", "&#x2699", "&#x2702", "&#x2705", "&#x2708", "&#x2709", "&#x2712", "&#x2714", "&#x2716", "&#x2721", "&#x2728", "&#x2733", "&#x2734", "&#x2744", "&#x2747", "&#x2753", "&#x2754", "&#x2755", "&#x2757", "&#x2763", "&#x2764", "&#x2795", "&#x2796", "&#x2797", "&#x2934", "&#x2935", "&#x3030", "&#x3297", "&#x3299", "&#x1F9E1", "&#x1F49B", "&#x1F49A", "&#x1F499", "&#x1F49C", "&#x1F5A4", "&#x1F90E", "&#x1F90D", "&#x1F494", "&#x1F495", "&#x1F49E", "&#x1F493", "&#x1F497", "&#x1F496", "&#x1F498", "&#x1F49D", "&#x1F49F", "&#x262E", "&#x271D", "&#x262A", "&#x1F549", "&#x1F52F", "&#x1F54E", "&#x262F", "&#x1F6D0", "&#x26CE", "&#x264A", "&#x264B", "&#x264C", "&#x264D", "&#x264E", "&#x264F", "&#x1F194", "&#x269B", "&#x1F251", "&#x1F4F4", "&#x1F4F3", "&#x1F236", "&#x1F21A", "&#x1F238", "&#x1F23A", "&#x1F237", "&#x1F19A", "&#x1F4AE", "&#x1F250", "&#x1F234", "&#x1F235", "&#x1F239", "&#x1F232", "&#x1F170", "&#x1F171", "&#x1F18E", "&#x1F191", "&#x1F17E", "&#x1F198", "&#x274C", "&#x2B55", "&#x1F6D1", "&#x26D4", "&#x1F4DB", "&#x1F6AB", "&#x1F4AF", "&#x1F4A2", "&#x1F6B7", "&#x1F6AF", "&#x1F6B3", "&#x1F6B1", "&#x1F51E", "&#x1F4F5", "&#x1F6AD", "&#x203C", "&#x1F505", "&#x1F506", "&#x303D", "&#x26A0", "&#x1F6B8", "&#x1F531", "&#x269C", "&#x1F530", "&#x267B", "&#x1F22F", "&#x1F4B9", "&#x274E", "&#x1F310", "&#x1F4A0", "&#x24C2", "&#x1F300", "&#x1F4A4", "&#x1F3E7", "&#x1F6BE", "&#x267F", "&#x1F17F", "&#x1F233", "&#x1F202", "&#x1F6C2", "&#x1F6C3", "&#x1F6C4", "&#x1F6C5", "&#x1F6B9", "&#x1F6BA", "&#x1F6BC", "&#x1F6BB", "&#x1F6AE", "&#x1F3A6", "&#x1F4F6", "&#x1F201", "&#x1F523", "&#x1F524", "&#x1F521", "&#x1F520", "&#x1F196", "&#x1F197", "&#x1F199", "&#x1F192", "&#x1F195", "&#x1F193", "&#x0030", "&#x0031", "&#x0032", "&#x0033", "&#x0034", "&#x0035", "&#x0036", "&#x0037", "&#x0038", "&#x0039", "&#x1F51F", "&#x1F522", "&#x0023", "&#x002A", "&#x23CF", "&#x25B6", "&#x23F8", "&#x23EF", "&#x23F9", "&#x23FA", "&#x23ED", "&#x23EE", "&#x23E9", "&#x23EA", "&#x23EB", "&#x23EC", "&#x25C0", "&#x1F53C", "&#x1F53D", "&#x27A1", "&#x2B05", "&#x2B06", "&#x2B07", "&#x21AA", "&#x21A9", "&#x1F500", "&#x1F501", "&#x1F502", "&#x1F504", "&#x1F503", "&#x1F3B5", "&#x1F3B6", "&#x267E", "&#x1F4B2", "&#x1F4B1", "&#x00A9", "&#x00AE", "&#x27B0", "&#x27BF", "&#x1F51A", "&#x1F519", "&#x1F51B", "&#x1F51D", "&#x1F51C", "&#x1F518", "&#x26AA", "&#x26AB", "&#x1F534", "&#x1F535", "&#x1F7E4", "&#x1F7E3", "&#x1F7E2", "&#x1F7E1", "&#x1F7E0", "&#x1F53A", "&#x1F53B", "&#x1F538", "&#x1F539", "&#x1F536", "&#x1F537", "&#x1F533", "&#x1F532", "&#x25AA", "&#x25AB", "&#x25FE", "&#x25FD", "&#x25FC", "&#x25FB", "&#x2B1B", "&#x2B1C", "&#x1F7E7", "&#x1F7E6", "&#x1F7E5", "&#x1F7EB", "&#x1F7EA", "&#x1F7E9", "&#x1F7E8", "&#x1F508", "&#x1F507", "&#x1F509", "&#x1F50A", "&#x1F514", "&#x1F515", "&#x1F4E3", "&#x1F4E2", "&#x1F5E8", "&#x1F441", "&#x1F4AC", "&#x1F4AD", "&#x1F5EF", "&#x1F0CF", "&#x1F3B4", "&#x1F004", "&#x1F550", "&#x1F551", "&#x1F552", "&#x1F553", "&#x1F554", "&#x1F555", "&#x1F556", "&#x1F557", "&#x1F558", "&#x1F559", "&#x1F55A", "&#x1F55B", "&#x1F55C", "&#x1F55D", "&#x1F55E", "&#x1F55F", "&#x1F560", "&#x1F561", "&#x1F562", "&#x1F563", "&#x1F564", "&#x1F565", "&#x1F566", "&#x1F567", "&#x26BD", "&#x1F3C0", "&#x1F3C8", "&#x26BE", "&#x1F94E", "&#x1F3BE", "&#x1F3D0", "&#x1F3C9", "&#x1F94F", "&#x1F3B1", "&#x1F3D3", "&#x1F3F8", "&#x1F3D2", "&#x1F3D1", "&#x1F94D", "&#x1F3CF", "&#x1F945", "&#x26F3", "&#x1F3F9", "&#x1F3A3", "&#x1F94A", "&#x1F94B", "&#x1F3BD", "&#x1F6F9", "&#x1F6F7", "&#x1FA82", "&#x26F8", "&#x1F94C", "&#x1F3BF", "&#x26F7", "&#x1F3C2", "&#x1F3CB", "&#x1F93C", "&#x1F938", "&#x26F9", "&#x1F93A", "&#x1F93E", "&#x1F3CC", "&#x1F3C7", "&#x1F9D8", "&#x1F3C4", "&#x1F3CA", "&#x1F93D", "&#x1F6A3", "&#x1F9D7", "&#x1F6B5", "&#x1F6B4", "&#x1F3C6", "&#x1F947", "&#x1F948", "&#x1F949", "&#x1F3C5", "&#x1F396", "&#x1F3F5", "&#x1F397", "&#x1F3AB", "&#x1F39F", "&#x1F3AA", "&#x1F939", "&#x1F3AD", "&#x1F3A8", "&#x1F3AC", "&#x1F3A4", "&#x1F3A7", "&#x1F3BC", "&#x1F3B9", "&#x1F941", "&#x1F3B7", "&#x1F3BA", "&#x1FA95", "&#x1F3B8", "&#x1F3BB", "&#x1F3B2", "&#x265F", "&#x1F3AF", "&#x1FA81", "&#x1FA80", "&#x1F3B3", "&#x1F3AE", "&#x1F3B0", "&#x1F9E9", "&#x231A", "&#x1F4F1", "&#x1F4F2", "&#x1F4BB", "&#x1F5A5", "&#x1F5A8", "&#x1F5B1", "&#x1F5B2", "&#x1F579", "&#x1F5DC", "&#x1F4BD", "&#x1F4BE", "&#x1F4BF", "&#x1F4C0", "&#x1F4FC", "&#x1F4F7", "&#x1F4F8", "&#x1F4F9", "&#x1F3A5", "&#x1F4FD", "&#x1F39E", "&#x1F4DE", "&#x260E", "&#x1F4DF", "&#x1F4E0", "&#x1F4FA", "&#x1F4FB", "&#x1F399", "&#x1F39A", "&#x1F39B", "&#x1F9ED", "&#x23F1", "&#x23F2", "&#x23F0", "&#x1F570", "&#x231B", "&#x23F3", "&#x1F4E1", "&#x1F50B", "&#x1F50C", "&#x1F4A1", "&#x1F526", "&#x1F56F", "&#x1F9EF", "&#x1F6E2", "&#x1F4B8", "&#x1F4B5", "&#x1F4B4", "&#x1F4B6", "&#x1F4B7", "&#x1F4B0", "&#x1F4B3", "&#x1F48E", "&#x1F9F0", "&#x1F527", "&#x1F528", "&#x1F6E0", "&#x26CF", "&#x1F529", "&#x1F9F1", "&#x26D3", "&#x1F9F2", "&#x1F52B", "&#x1F4A3", "&#x1F9E8", "&#x1FA93", "&#x1FA92", "&#x1F52A", "&#x1F5E1", "&#x1F6E1", "&#x1F6AC", "&#x26B0", "&#x26B1", "&#x1F3FA", "&#x1FA94", "&#x1F52E", "&#x1F4FF", "&#x1F9FF", "&#x1F488", "&#x1F52D", "&#x1F52C", "&#x1F573", "&#x1F9AF", "&#x1FA7A", "&#x1FA79", "&#x1F48A", "&#x1F489", "&#x1FA78", "&#x1F9EC", "&#x1F9A0", "&#x1F9EB", "&#x1F9EA", "&#x1F321", "&#x1FA91", "&#x1F9F9", "&#x1F9FA", "&#x1F9FB", "&#x1F6BD", "&#x1F6B0", "&#x1F6BF", "&#x1F6C1", "&#x1F6C0", "&#x1F9FC", "&#x1F9FD", "&#x1F9F4", "&#x1F6CE", "&#x1F511", "&#x1F5DD", "&#x1F6AA", "&#x1F6CB", "&#x1F6CF", "&#x1F6CC", "&#x1F9F8", "&#x1F5BC", "&#x1F6CD", "&#x1F6D2", "&#x1F381", "&#x1F388", "&#x1F38F", "&#x1F380", "&#x1F38A", "&#x1F389", "&#x1F38E", "&#x1F3EE", "&#x1F390", "&#x1F9E7", "&#x1F4E9", "&#x1F4E8", "&#x1F4E7", "&#x1F48C", "&#x1F4E5", "&#x1F4E4", "&#x1F4E6", "&#x1F3F7", "&#x1F4EA", "&#x1F4EB", "&#x1F4EC", "&#x1F4ED", "&#x1F4EE", "&#x1F4EF", "&#x1F4DC", "&#x1F4C3", "&#x1F4C4", "&#x1F4D1", "&#x1F9FE", "&#x1F4CA", "&#x1F4C8", "&#x1F4C9", "&#x1F5D2", "&#x1F5D3", "&#x1F4C6", "&#x1F4C5", "&#x1F5D1", "&#x1F4C7", "&#x1F5C3", "&#x1F5F3", "&#x1F5C4", "&#x1F4CB", "&#x1F4C1", "&#x1F4C2", "&#x1F5C2", "&#x1F5DE", "&#x1F4F0", "&#x1F4D3", "&#x1F4D4", "&#x1F4D2", "&#x1F4D5", "&#x1F4D7", "&#x1F4D8", "&#x1F4D9", "&#x1F4DA", "&#x1F4D6", "&#x1F516", "&#x1F9F7", "&#x1F517", "&#x1F4CE", "&#x1F587", "&#x1F4D0", "&#x1F4CF", "&#x1F9EE", "&#x1F4CC", "&#x1F4CD", "&#x1F58A", "&#x1F58B", "&#x1F58C", "&#x1F58D", "&#x1F4DD", "&#x270F", "&#x1F50D", "&#x1F50E", "&#x1F50F", "&#x1F510", "&#x1F512", "&#x1F513", "&#x1F436", "&#x1F431", "&#x1F42D", "&#x1F439", "&#x1F430", "&#x1F98A", "&#x1F43B", "&#x1F43C", "&#x1F428", "&#x1F42F", "&#x1F981", "&#x1F42E", "&#x1F437", "&#x1F43D", "&#x1F438", "&#x1F435", "&#x1F648", "&#x1F649", "&#x1F64A", "&#x1F412", "&#x1F414", "&#x1F427", "&#x1F426", "&#x1F424", "&#x1F423", "&#x1F425", "&#x1F986", "&#x1F985", "&#x1F989", "&#x1F987", "&#x1F43A", "&#x1F417", "&#x1F434", "&#x1F984", "&#x1F41D", "&#x1F41B", "&#x1F98B", "&#x1F40C", "&#x1F41A", "&#x1F41E", "&#x1F41C", "&#x1F99F", "&#x1F997", "&#x1F577", "&#x1F578", "&#x1F982", "&#x1F422", "&#x1F40D", "&#x1F98E", "&#x1F996", "&#x1F995", "&#x1F419", "&#x1F991", "&#x1F990", "&#x1F99E", "&#x1F9AA", "&#x1F980", "&#x1F421", "&#x1F420", "&#x1F41F", "&#x1F42C", "&#x1F433", "&#x1F40B", "&#x1F988", "&#x1F40A", "&#x1F405", "&#x1F406", "&#x1F993", "&#x1F98D", "&#x1F9A7", "&#x1F418", "&#x1F99B", "&#x1F98F", "&#x1F42A", "&#x1F42B", "&#x1F992", "&#x1F998", "&#x1F403", "&#x1F402", "&#x1F404", "&#x1F40E", "&#x1F416", "&#x1F40F", "&#x1F999", "&#x1F411", "&#x1F410", "&#x1F98C", "&#x1F415", "&#x1F9AE", "&#x1F429", "&#x1F408", "&#x1F413", "&#x1F983", "&#x1F99A", "&#x1F99C", "&#x1F9A2", "&#x1F9A9", "&#x1F54A", "&#x1F407", "&#x1F9A5", "&#x1F9A6", "&#x1F9A8", "&#x1F99D", "&#x1F9A1", "&#x1F401", "&#x1F400", "&#x1F43F", "&#x1F994", "&#x1F43E", "&#x1F409", "&#x1F432", "&#x1F335", "&#x1F384", "&#x1F332", "&#x1F333", "&#x1F334", "&#x1F331", "&#x1F33F", "&#x1F340", "&#x1F38D", "&#x1F38B", "&#x1F343", "&#x1F342", "&#x1F341", "&#x1F344", "&#x1F33E", "&#x1F490", "&#x1F337", "&#x1F339", "&#x1F940", "&#x1F33A", "&#x1F338", "&#x1F33C", "&#x1F33B", "&#x1F31E", "&#x1F31D", "&#x1F31B", "&#x1F31C", "&#x1F31A", "&#x1F315", "&#x1F316", "&#x1F317", "&#x1F318", "&#x1F311", "&#x1F312", "&#x1F313", "&#x1F314", "&#x1F319", "&#x1F30E", "&#x1F30D", "&#x1F30F", "&#x1FA90", "&#x1F4AB", "&#x2B50", "&#x1F31F", "&#x26A1", "&#x1F4A5", "&#x1F525", "&#x1F32A", "&#x1F308", "&#x1F324", "&#x26C5", "&#x1F325", "&#x1F326", "&#x1F327", "&#x26C8", "&#x1F329", "&#x1F328", "&#x26C4", "&#x1F32C", "&#x1F4A8", "&#x1F4A7", "&#x1F4A6", "&#x1F30A", "&#x1F32B", "&#x1F34F", "&#x1F34E", "&#x1F350", "&#x1F34A", "&#x1F34B", "&#x1F34C", "&#x1F349", "&#x1F347", "&#x1F353", "&#x1F348", "&#x1F352", "&#x1F351", "&#x1F96D", "&#x1F34D", "&#x1F965", "&#x1F95D", "&#x1F345", "&#x1F346", "&#x1F951", "&#x1F966", "&#x1F96C", "&#x1F952", "&#x1F336", "&#x1F33D", "&#x1F955", "&#x1F9C5", "&#x1F9C4", "&#x1F954", "&#x1F360", "&#x1F950", "&#x1F96F", "&#x1F35E", "&#x1F956", "&#x1F968", "&#x1F9C0", "&#x1F95A", "&#x1F373", "&#x1F95E", "&#x1F9C7", "&#x1F953", "&#x1F969", "&#x1F357", "&#x1F356", "&#x1F32D", "&#x1F354", "&#x1F35F", "&#x1F355", "&#x1F96A", "&#x1F9C6", "&#x1F959", "&#x1F32E", "&#x1F32F", "&#x1F957", "&#x1F958", "&#x1F96B", "&#x1F35D", "&#x1F35C", "&#x1F372", "&#x1F35B", "&#x1F363", "&#x1F371", "&#x1F95F", "&#x1F364", "&#x1F359", "&#x1F35A", "&#x1F358", "&#x1F365", "&#x1F960", "&#x1F96E", "&#x1F362", "&#x1F361", "&#x1F367", "&#x1F368", "&#x1F366", "&#x1F967", "&#x1F9C1", "&#x1F370", "&#x1F382", "&#x1F36E", "&#x1F36D", "&#x1F36C", "&#x1F36B", "&#x1F37F", "&#x1F369", "&#x1F36A", "&#x1F330", "&#x1F95C", "&#x1F36F", "&#x1F9C8", "&#x1F95B", "&#x1F37C", "&#x1F375", "&#x1F9C9", "&#x1F964", "&#x1F9C3", "&#x1F9CA", "&#x1F376", "&#x1F37A", "&#x1F37B", "&#x1F942", "&#x1F377", "&#x1F943", "&#x1F378", "&#x1F379", "&#x1F37E", "&#x1F944", "&#x1F374", "&#x1F37D", "&#x1F963", "&#x1F961", "&#x1F962", "&#x1F9C2", "&#x1F600", "&#x1F603", "&#x1F604", "&#x1F601", "&#x1F606", "&#x1F605", "&#x1F602", "&#x1F923", "&#x263A", "&#x1F60A", "&#x1F607", "&#x1F642", "&#x1F643", "&#x1F609", "&#x1F60C", "&#x1F60D", "&#x1F970", "&#x1F618", "&#x1F617", "&#x1F619", "&#x1F61A", "&#x1F60B", "&#x1F61B", "&#x1F61D", "&#x1F61C", "&#x1F92A", "&#x1F928", "&#x1F9D0", "&#x1F913", "&#x1F60E", "&#x1F929", "&#x1F973", "&#x1F60F", "&#x1F612", "&#x1F61E", "&#x1F614", "&#x1F61F", "&#x1F615", "&#x1F641", "&#x1F623", "&#x1F616", "&#x1F62B", "&#x1F629", "&#x1F97A", "&#x1F622", "&#x1F62D", "&#x1F624", "&#x1F620", "&#x1F621", "&#x1F92C", "&#x1F92F", "&#x1F633", "&#x1F975", "&#x1F976", "&#x1F631", "&#x1F628", "&#x1F630", "&#x1F625", "&#x1F613", "&#x1F917", "&#x1F914", "&#x1F92D", "&#x1F971", "&#x1F92B", "&#x1F925", "&#x1F636", "&#x1F610", "&#x1F611", "&#x1F62C", "&#x1F644", "&#x1F62F", "&#x1F626", "&#x1F627", "&#x1F62E", "&#x1F632", "&#x1F634", "&#x1F924", "&#x1F62A", "&#x1F635", "&#x1F910", "&#x1F974", "&#x1F922", "&#x1F92E", "&#x1F927", "&#x1F637", "&#x1F912", "&#x1F915", "&#x1F911", "&#x1F920", "&#x1F608", "&#x1F47F", "&#x1F479", "&#x1F47A", "&#x1F921", "&#x1F4A9", "&#x1F47B", "&#x1F480", "&#x1F47D", "&#x1F47E", "&#x1F916", "&#x1F383", "&#x1F63A", "&#x1F638", "&#x1F639", "&#x1F63B", "&#x1F63C", "&#x1F63D", "&#x1F640", "&#x1F63F", "&#x1F63E", "&#x1F932", "&#x1F450", "&#x1F64C", "&#x1F44F", "&#x1F91D", "&#x1F44D", "&#x1F44E", "&#x1F44A", "&#x270A", "&#x1F91B", "&#x1F91C", "&#x1F91E", "&#x270C", "&#x1F91F", "&#x1F918", "&#x1F44C", "&#x1F90F", "&#x1F448", "&#x1F449", "&#x1F446", "&#x1F447", "&#x261D", "&#x270B", "&#x1F91A", "&#x1F590", "&#x1F596", "&#x1F44B", "&#x1F919", "&#x1F4AA", "&#x1F9BE", "&#x1F595", "&#x270D", "&#x1F64F", "&#x1F9B6", "&#x1F9B5", "&#x1F9BF", "&#x1F484", "&#x1F48B", "&#x1F444", "&#x1F9B7", "&#x1F9B4", "&#x1F445", "&#x1F442", "&#x1F9BB", "&#x1F443", "&#x1F463", "&#x1F440", "&#x1F9E0", "&#x1F5E3", "&#x1F464", "&#x1F465", "&#x1F476", "&#x1F467", "&#x1F9D2", "&#x1F466", "&#x1F469", "&#x1F9D1", "&#x1F468", "&#x1F471", "&#x1F9D4", "&#x1F475", "&#x1F9D3", "&#x1F474", "&#x1F472", "&#x1F473", "&#x1F9D5", "&#x1F46E", "&#x1F477", "&#x1F482", "&#x1F575", "&#x1F470", "&#x1F935", "&#x1F478", "&#x1F934", "&#x1F9B8", "&#x1F9B9", "&#x1F936", "&#x1F385", "&#x1F9D9", "&#x1F9DD", "&#x1F9DB", "&#x1F9DF", "&#x1F9DE", "&#x1F9DC", "&#x1F9DA", "&#x1F47C", "&#x1F930", "&#x1F931", "&#x1F647", "&#x1F481", "&#x1F645", "&#x1F646", "&#x1F64B", "&#x1F9CF", "&#x1F926", "&#x1F937", "&#x1F64E", "&#x1F64D", "&#x1F487", "&#x1F486", "&#x1F9D6", "&#x1F485", "&#x1F933", "&#x1F483", "&#x1F57A", "&#x1F46F", "&#x1F574", "&#x1F6B6", "&#x1F3C3", "&#x1F9CD", "&#x1F9CE", "&#x1F46B", "&#x1F46D", "&#x1F46C", "&#x1F491", "&#x1F48F", "&#x1F46A", "&#x1F9F6", "&#x1F9F5", "&#x1F9E5", "&#x1F97C", "&#x1F9BA", "&#x1F45A", "&#x1F455", "&#x1F456", "&#x1FA73", "&#x1F454", "&#x1F457", "&#x1F459", "&#x1FA71", "&#x1F458", "&#x1F97B", "&#x1F97F", "&#x1F460", "&#x1F461", "&#x1F462", "&#x1FA70", "&#x1F45E", "&#x1F45F", "&#x1F97E", "&#x1FA72", "&#x1F9E6", "&#x1F9E4", "&#x1F9E3", "&#x1F3A9", "&#x1F9E2", "&#x1F452", "&#x1F393", "&#x26D1", "&#x1F451", "&#x1F48D", "&#x1F45D", "&#x1F45B", "&#x1F45C", "&#x1F4BC", "&#x1F392", "&#x1F9F3", "&#x1F453", "&#x1F576", "&#x1F97D", "&#x1F93F", "&#x1F302", "&#x1F9B1", "&#x1F9B0", "&#x1F9B3", "&#x1F9B2", "&#x1F697", "&#x1F695", "&#x1F699", "&#x1F68C", "&#x1F68E", "&#x1F3CE", "&#x1F693", "&#x1F691", "&#x1F692", "&#x1F690", "&#x1F69A", "&#x1F69B", "&#x1F69C", "&#x1F6FA", "&#x1F6F5", "&#x1F3CD", "&#x1F6F4", "&#x1F6B2", "&#x1F9BC", "&#x1F9BD", "&#x1F6A8", "&#x1F694", "&#x1F68D", "&#x1F698", "&#x1F696", "&#x1F6A1", "&#x1F6A0", "&#x1F69F", "&#x1F683", "&#x1F68B", "&#x1F69E", "&#x1F69D", "&#x1F684", "&#x1F685", "&#x1F688", "&#x1F682", "&#x1F686", "&#x1F687", "&#x1F68A", "&#x1F689", "&#x1F6EB", "&#x1F6EC", "&#x1F6E9", "&#x1F4BA", "&#x1F6F0", "&#x1F680", "&#x1F6F8", "&#x1F681", "&#x1F6F6", "&#x26F5", "&#x1F6A4", "&#x1F6E5", "&#x1F6F3", "&#x26F4", "&#x1F6A2", "&#x26FD", "&#x1F6A7", "&#x1F6A6", "&#x1F6A5", "&#x1F68F", "&#x1F5FA", "&#x1F5FF", "&#x1F5FD", "&#x1F5FC", "&#x1F3F0", "&#x1F3EF", "&#x1F3DF", "&#x1F3A1", "&#x1F3A2", "&#x1F3A0", "&#x26F2", "&#x26F1", "&#x1F3D6", "&#x1F3DD", "&#x1F3DC", "&#x1F30B", "&#x26F0", "&#x1F3D4", "&#x1F5FB", "&#x1F3D5", "&#x26FA", "&#x1F3E0", "&#x1F3E1", "&#x1F3D8", "&#x1F3DA", "&#x1F3D7", "&#x1F3ED", "&#x1F3E2", "&#x1F3EC", "&#x1F3E3", "&#x1F3E4", "&#x1F3E5", "&#x1F3E6", "&#x1F3E8", "&#x1F3EA", "&#x1F3EB", "&#x1F3E9", "&#x1F492", "&#x1F3DB", "&#x26EA", "&#x1F54C", "&#x1F6D5", "&#x1F54D", "&#x1F54B", "&#x26E9", "&#x1F6E4", "&#x1F6E3", "&#x1F5FE", "&#x1F391", "&#x1F3DE", "&#x1F305", "&#x1F304", "&#x1F320", "&#x1F387", "&#x1F386", "&#x1F307", "&#x1F306", "&#x1F3D9", "&#x1F303", "&#x1F30C", "&#x1F309", "&#x1F301", "&#x1F1FF", "&#x1F1FE", "&#x1F1FD", "&#x1F1FC", "&#x1F1FB", "&#x1F1FA", "&#x1F1F9", "&#x1F1F8", "&#x1F1F7", "&#x1F1F6", "&#x1F1F5", "&#x1F1F4", "&#x1F1F3", "&#x1F1F2", "&#x1F1F1", "&#x1F1F0", "&#x1F1EF", "&#x1F1EE", "&#x1F1ED", "&#x1F1EC", "&#x1F1EB", "&#x1F1EA", "&#x1F1E9", "&#x1F1E8", "&#x1F1E7", "&#x1F1E6", "&#x1F3F3", "&#x1F3F4", "&#x1F3C1", "&#x1F6A9", "&#x1F38C", "&#x1F3FB", "&#x1F3FC", "&#x1F3FD", "&#x1F3FE", "&#x1F3FF"]
+  };
+
+  function A(F) {
+    var A = [];
+    return x.each(F.o.plugins.emoji.emojiList, function (E, B) {
+      if (x.isArray(B)) {
+        var C = B[0],
+            D = B[1],
+            e = '<img src="' + D + '" alt="' + C + '">',
+            i = "emoji-" + C.replace(/:/g, ""),
+            o = {
+          hasIcon: !1,
+          text: e,
+          fn: function fn() {
+            return F.execCmd("insertImage", D, !1, !0), !0;
+          }
+        };
+        F.addBtnDef(i, o), A.push(i);
+      } else {
+        var n = "emoji-" + B.replace(/:/g, ""),
+            t = {
+          text: B,
+          fn: function fn() {
+            var x = String.fromCodePoint(B.replace("&#", "0"));
+            return F.execCmd("insertText", x), !0;
+          }
+        };
+        F.addBtnDef(n, t), A.push(n);
+      }
+    }), A;
+  }
+
+  x.extend(!0, x.trumbowyg, {
+    langs: {
+      en: {
+        emoji: "Add an emoji"
+      },
+      da: {
+        emoji: "Tilføj et humørikon"
+      },
+      de: {
+        emoji: "Emoticon einfügen"
+      },
+      et: {
+        emoji: "Lisa emotikon"
+      },
+      fr: {
+        emoji: "Ajouter un emoji"
+      },
+      hu: {
+        emoji: "Emoji beszúrás"
+      },
+      ja: {
+        emoji: "絵文字の挿入"
+      },
+      ko: {
+        emoji: "이모지 넣기"
+      },
+      ru: {
+        emoji: "Вставить emoji"
+      },
+      tr: {
+        emoji: "Emoji ekle"
+      },
+      zh_cn: {
+        emoji: "添加表情"
+      }
+    },
+    plugins: {
+      emoji: {
+        init: function init(x) {
+          x.o.plugins.emoji = x.o.plugins.emoji || F;
+          var E = {
+            dropdown: A(x)
+          };
+          x.addBtnDef("emoji", E);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+(function ($) {
+  'use strict';
+
+  function checkValidTags(snippet) {
+    var theString = snippet; // Replace uppercase element names with lowercase
+
+    theString = theString.replace(/<[^> ]*/g, function (match) {
+      return match.toLowerCase();
+    }); // Replace uppercase attribute names with lowercase
+
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ [^=]+=/g, function (match2) {
+        return match2.toLowerCase();
+      });
+      return match;
+    }); // Put quotes around unquoted attributes
+
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
+      return match;
+    });
+    return theString;
+  }
+
+  function cleanIt(html) {
+    // first make sure all tags and attributes are made valid
+    html = checkValidTags(html); // Replace opening bold tags with strong
+
+    html = html.replace(/<b(\s+|>)/g, '<strong$1'); // Replace closing bold tags with closing strong
+
+    html = html.replace(/<\/b(\s+|>)/g, '</strong$1'); // Replace italic tags with em
+
+    html = html.replace(/<i(\s+|>)/g, '<em$1'); // Replace closing italic tags with closing em
+
+    html = html.replace(/<\/i(\s+|>)/g, '</em$1'); // strip out comments -cgCraft
+
+    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, ''); // strip out &nbsp; -cgCraft
+
+    html = html.replace(/&nbsp;/gi, ' '); // strip out extra spaces -cgCraft
+
+    html = html.replace(/ <\//gi, '</'); // Remove multiple spaces
+
+    html.replace(/\s+/g, ' '); // strip &nbsp; -cgCraft
+
+    html = html.replace(/^\s*|\s*$/g, ''); // Strip out unaccepted attributes
+
+    html = html.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
+        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
+          return match2;
+        }
+
+        return '';
+      });
+      return match;
+    }); // Final clean out for MS Word crud
+
+    html = html.replace(/<\?xml[^>]*>/g, '');
+    html = html.replace(/<[^ >]+:[^>]*>/g, '');
+    html = html.replace(/<\/[^ >]+:[^>]*>/g, ''); // remove unwanted tags
+
+    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
+    return html;
+  } // clean editor
+  // this will clean the inserted contents
+  // it does a compare, before and after paste to determine the
+  // pasted contents
+
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            setTimeout(function () {
+              try {
+                trumbowyg.saveRange();
+                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                    pastedData = clipboardData.getData('Text'),
+                    node = trumbowyg.doc.getSelection().focusNode,
+                    range = trumbowyg.doc.createRange(),
+                    cleanedPaste = cleanIt(pastedData.trim()),
+                    newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
+
+                if (trumbowyg.$ed.html() === '') {
+                  // simply append if there is no content in editor
+                  trumbowyg.$ed[0].appendChild(newNode);
+                } else {
+                  // insert pasted content behind last focused node
+                  range.setStartAfter(node);
+                  range.setEndAfter(node);
+                  trumbowyg.doc.getSelection().removeAllRanges();
+                  trumbowyg.doc.getSelection().addRange(range);
+                  trumbowyg.range.insertNode(newNode);
+                } // now set cursor right after pasted content
+
+
+                range = trumbowyg.doc.createRange();
+                range.setStartAfter(newNode);
+                range.setEndAfter(newNode);
+                trumbowyg.doc.getSelection().removeAllRanges();
+                trumbowyg.doc.getSelection().addRange(range); // prevent defaults
+
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault(); // save new node as focused node
+
+                trumbowyg.saveRange();
+                trumbowyg.syncCode();
+                trumbowyg.$c.trigger('tbwchange');
+              } catch (c) {}
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(t) {
+          t.pasteHandlers.push(function (r) {
+            setTimeout(function () {
+              try {
+                t.saveRange();
+                var a = (r.originalEvent || r).clipboardData.getData("Text"),
+                    n = t.doc.getSelection().focusNode,
+                    c = t.doc.createRange(),
+                    g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
+                  return e.toLowerCase();
+                }).replace(/<[^>]*>/g, function (e) {
+                  return e.replace(/ [^=]+=/g, function (e) {
+                    return e.toLowerCase();
+                  });
+                }).replace(/<[^>]*>/g, function (e) {
+                  return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
+                })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
+                  return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
+                    return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
+                  });
+                })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
+                    o = e(g)[0] || t.doc.createTextNode(g);
+                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
+              } catch (e) {}
+
+              var l;
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -680,11 +1163,17 @@
       en: {
         fontFamily: 'Font'
       },
+      es: {
+        fontFamily: 'Fuente'
+      },
       da: {
         fontFamily: 'Skrifttype'
       },
       de: {
         fontFamily: 'Schriftart'
+      },
+      et: {
+        fontFamily: 'Font'
       },
       fr: {
         fontFamily: 'Police'
@@ -702,7 +1191,7 @@
         fontFamily: 'Fonte'
       },
       tr: {
-        fontFamily: 'Yazı Tipi'
+        fontFamily: 'Yazı tipi'
       },
       zh_tw: {
         fontFamily: '字體'
@@ -783,6 +1272,119 @@
     return dropdown;
   }
 })(jQuery);
+!function (a) {
+  "use strict";
+
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        fontFamily: "Font"
+      },
+      es: {
+        fontFamily: "Fuente"
+      },
+      da: {
+        fontFamily: "Skrifttype"
+      },
+      de: {
+        fontFamily: "Schriftart"
+      },
+      et: {
+        fontFamily: "Font"
+      },
+      fr: {
+        fontFamily: "Police"
+      },
+      hu: {
+        fontFamily: "Betűtípus"
+      },
+      ko: {
+        fontFamily: "글꼴"
+      },
+      nl: {
+        fontFamily: "Lettertype"
+      },
+      pt_br: {
+        fontFamily: "Fonte"
+      },
+      tr: {
+        fontFamily: "Yazı tipi"
+      },
+      zh_tw: {
+        fontFamily: "字體"
+      }
+    }
+  });
+  var n = {
+    fontList: [{
+      name: "Arial",
+      family: "Arial, Helvetica, sans-serif"
+    }, {
+      name: "Arial Black",
+      family: "Arial Black, Gadget, sans-serif"
+    }, {
+      name: "Comic Sans",
+      family: "Comic Sans MS, Textile, cursive, sans-serif"
+    }, {
+      name: "Courier New",
+      family: "Courier New, Courier, monospace"
+    }, {
+      name: "Georgia",
+      family: "Georgia, serif"
+    }, {
+      name: "Impact",
+      family: "Impact, Charcoal, sans-serif"
+    }, {
+      name: "Lucida Console",
+      family: "Lucida Console, Monaco, monospace"
+    }, {
+      name: "Lucida Sans",
+      family: "Lucida Sans Uncide, Lucida Grande, sans-serif"
+    }, {
+      name: "Palatino",
+      family: "Palatino Linotype, Book Antiqua, Palatino, serif"
+    }, {
+      name: "Tahoma",
+      family: "Tahoma, Geneva, sans-serif"
+    }, {
+      name: "Times New Roman",
+      family: "Times New Roman, Times, serif"
+    }, {
+      name: "Trebuchet",
+      family: "Trebuchet MS, Helvetica, sans-serif"
+    }, {
+      name: "Verdana",
+      family: "Verdana, Geneva, sans-serif"
+    }]
+  };
+
+  function i(n) {
+    var i = [];
+    return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
+      n.addBtnDef("fontfamily_" + a, {
+        title: '<span style="font-family: ' + e.family + ';">' + e.name + "</span>",
+        hasIcon: !1,
+        fn: function fn() {
+          n.execCmd("fontName", e.family, !0);
+        }
+      }), i.push("fontfamily_" + a);
+    }), i;
+  }
+
+  a.extend(!0, a.trumbowyg, {
+    plugins: {
+      fontfamily: {
+        init: function init(e) {
+          e.o.plugins.fontfamily = a.extend({}, n, e.o.plugins.fontfamily || {}), e.addBtnDef("fontfamily", {
+            dropdown: i(e),
+            hasIcon: !1,
+            text: e.lang.fontFamily
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -845,6 +1447,22 @@
         fontCustomSize: {
           title: 'Tamaño de Fuente Customizada',
           label: 'Tamaño de Fuente',
+          value: '48px'
+        }
+      },
+      et: {
+        fontsize: 'Teksti suurus',
+        fontsizes: {
+          'x-small': 'Väga väike',
+          'small': 'Väike',
+          'medium': 'Tavaline',
+          'large': 'Suur',
+          'x-large': 'Väga suur',
+          'custom': 'Määra ise'
+        },
+        fontCustomSize: {
+          title: 'Kohandatud teksti suurus',
+          label: 'Teksti suurus',
           value: '48px'
         }
       },
@@ -940,14 +1558,19 @@
         }
       },
       tr: {
-        fontsize: 'Yazı Boyutu',
+        fontsize: 'Yazı boyutu',
         fontsizes: {
-          'x-small': 'Çok Küçük',
+          'x-small': 'Çok küçük',
           'small': 'Küçük',
           'medium': 'Normal',
           'large': 'Büyük',
-          'x-large': 'Çok Büyük',
-          'custom': 'Görenek'
+          'x-large': 'Çok büyük',
+          'custom': 'Özel'
+        },
+        fontCustomSize: {
+          title: 'Özel Yazı Boyutu',
+          label: 'Yazı Boyutu',
+          value: '48px'
         }
       },
       zh_tw: {
@@ -1004,6 +1627,8 @@
 
     $(trumbowyg.range.startContainer.parentElement).find('span[style=""]').contents().unwrap();
     trumbowyg.restoreRange();
+    trumbowyg.syncCode();
+    trumbowyg.$c.trigger('tbwchange');
   }
 
   function buildDropdown(trumbowyg) {
@@ -1043,6 +1668,272 @@
     return dropdown;
   }
 })(jQuery);
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        fontsize: "Font size",
+        fontsizes: {
+          "x-small": "Extra small",
+          small: "Small",
+          medium: "Regular",
+          large: "Large",
+          "x-large": "Extra large",
+          custom: "Custom"
+        },
+        fontCustomSize: {
+          title: "Custom Font Size",
+          label: "Font Size",
+          value: "48px"
+        }
+      },
+      da: {
+        fontsize: "Skriftstørrelse",
+        fontsizes: {
+          "x-small": "Ekstra lille",
+          small: "Lille",
+          medium: "Normal",
+          large: "Stor",
+          "x-large": "Ekstra stor",
+          custom: "Brugerdefineret"
+        }
+      },
+      de: {
+        fontsize: "Schriftgröße",
+        fontsizes: {
+          "x-small": "Sehr klein",
+          small: "Klein",
+          medium: "Normal",
+          large: "Groß",
+          "x-large": "Sehr groß",
+          custom: "Benutzerdefiniert"
+        },
+        fontCustomSize: {
+          title: "Benutzerdefinierte Schriftgröße",
+          label: "Schriftgröße",
+          value: "48px"
+        }
+      },
+      es: {
+        fontsize: "Tamaño de Fuente",
+        fontsizes: {
+          "x-small": "Extra pequeña",
+          small: "Pegueña",
+          medium: "Regular",
+          large: "Grande",
+          "x-large": "Extra Grande",
+          custom: "Customizada"
+        },
+        fontCustomSize: {
+          title: "Tamaño de Fuente Customizada",
+          label: "Tamaño de Fuente",
+          value: "48px"
+        }
+      },
+      et: {
+        fontsize: "Teksti suurus",
+        fontsizes: {
+          "x-small": "Väga väike",
+          small: "Väike",
+          medium: "Tavaline",
+          large: "Suur",
+          "x-large": "Väga suur",
+          custom: "Määra ise"
+        },
+        fontCustomSize: {
+          title: "Kohandatud teksti suurus",
+          label: "Teksti suurus",
+          value: "48px"
+        }
+      },
+      fr: {
+        fontsize: "Taille de la police",
+        fontsizes: {
+          "x-small": "Très petit",
+          small: "Petit",
+          medium: "Normal",
+          large: "Grand",
+          "x-large": "Très grand",
+          custom: "Taille personnalisée"
+        },
+        fontCustomSize: {
+          title: "Taille de police personnalisée",
+          label: "Taille de la police",
+          value: "48px"
+        }
+      },
+      hu: {
+        fontsize: "Betű méret",
+        fontsizes: {
+          "x-small": "Extra kicsi",
+          small: "Kicsi",
+          medium: "Normális",
+          large: "Nagy",
+          "x-large": "Extra nagy",
+          custom: "Egyedi"
+        },
+        fontCustomSize: {
+          title: "Egyedi betű méret",
+          label: "Betű méret",
+          value: "48px"
+        }
+      },
+      it: {
+        fontsize: "Dimensioni del testo",
+        fontsizes: {
+          "x-small": "Molto piccolo",
+          small: "piccolo",
+          regular: "normale",
+          large: "grande",
+          "x-large": "Molto grande",
+          custom: "Personalizzato"
+        },
+        fontCustomSize: {
+          title: "Dimensioni del testo personalizzato",
+          label: "Dimensioni del testo",
+          value: "48px"
+        }
+      },
+      ko: {
+        fontsize: "글꼴 크기",
+        fontsizes: {
+          "x-small": "아주 작게",
+          small: "작게",
+          medium: "보통",
+          large: "크게",
+          "x-large": "아주 크게",
+          custom: "사용자 지정"
+        },
+        fontCustomSize: {
+          title: "사용자 지정 글꼴 크기",
+          label: "글꼴 크기",
+          value: "48px"
+        }
+      },
+      nl: {
+        fontsize: "Lettergrootte",
+        fontsizes: {
+          "x-small": "Extra klein",
+          small: "Klein",
+          medium: "Normaal",
+          large: "Groot",
+          "x-large": "Extra groot",
+          custom: "Tilpasset"
+        }
+      },
+      pt_br: {
+        fontsize: "Tamanho da fonte",
+        fontsizes: {
+          "x-small": "Extra pequeno",
+          small: "Pequeno",
+          regular: "Médio",
+          large: "Grande",
+          "x-large": "Extra grande",
+          custom: "Personalizado"
+        },
+        fontCustomSize: {
+          title: "Tamanho de Fonte Personalizado",
+          label: "Tamanho de Fonte",
+          value: "48px"
+        }
+      },
+      tr: {
+        fontsize: "Yazı boyutu",
+        fontsizes: {
+          "x-small": "Çok küçük",
+          small: "Küçük",
+          medium: "Normal",
+          large: "Büyük",
+          "x-large": "Çok büyük",
+          custom: "Özel"
+        },
+        fontCustomSize: {
+          title: "Özel Yazı Boyutu",
+          label: "Yazı Boyutu",
+          value: "48px"
+        }
+      },
+      zh_tw: {
+        fontsize: "字體大小",
+        fontsizes: {
+          "x-small": "最小",
+          small: "小",
+          medium: "中",
+          large: "大",
+          "x-large": "最大",
+          custom: "自訂大小"
+        },
+        fontCustomSize: {
+          title: "自訂義字體大小",
+          label: "字體大小",
+          value: "48px"
+        }
+      }
+    }
+  });
+  var t = {
+    sizeList: ["x-small", "small", "medium", "large", "x-large"],
+    allowCustomSize: !0
+  };
+
+  function l(t, l) {
+    t.$ed.focus(), t.saveRange(), t.execCmd("fontSize", "1"), t.$ed.find('font[size="1"]').replaceWith(function () {
+      return e("<span/>", {
+        css: {
+          "font-size": l
+        },
+        html: this.innerHTML
+      });
+    }), e(t.range.startContainer.parentElement).find('span[style=""]').contents().unwrap(), t.restoreRange(), t.syncCode(), t.$c.trigger("tbwchange");
+  }
+
+  function a(t) {
+    var a = [];
+
+    if (e.each(t.o.plugins.fontsize.sizeList, function (e, s) {
+      t.addBtnDef("fontsize_" + s, {
+        text: '<span style="font-size: ' + s + ';">' + (t.lang.fontsizes[s] || s) + "</span>",
+        hasIcon: !1,
+        fn: function fn() {
+          l(t, s);
+        }
+      }), a.push("fontsize_" + s);
+    }), t.o.plugins.fontsize.allowCustomSize) {
+      var s = "fontsize_custom",
+          o = {
+        fn: function fn() {
+          t.openModalInsert(t.lang.fontCustomSize.title, {
+            size: {
+              label: t.lang.fontCustomSize.label,
+              value: t.lang.fontCustomSize.value
+            }
+          }, function (e) {
+            return l(t, e.size), !0;
+          });
+        },
+        text: '<span style="font-size: medium;">' + t.lang.fontsizes.custom + "</span>",
+        hasIcon: !1
+      };
+      t.addBtnDef(s, o), a.push(s);
+    }
+
+    return a;
+  }
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      fontsize: {
+        init: function init(l) {
+          l.o.plugins.fontsize = e.extend({}, t, l.o.plugins.fontsize || {}), l.addBtnDef("fontsize", {
+            dropdown: a(l)
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -1052,16 +1943,23 @@
       en: {
         giphy: 'Insert GIF'
       },
+      et: {
+        giphy: 'Sisesta GIF'
+      },
       fr: {
         giphy: 'Insérer un GIF'
       },
       hu: {
         giphy: 'GIF beszúrás'
+      },
+      tr: {
+        giphy: 'GIF ekle'
       } // jshint camelcase:true
 
     }
   });
-  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>';
+  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>'; // jshint ignore:line
+
   var CANCEL_EVENT = 'tbwcancel'; // Throttle helper
 
   function trumbowygThrottle(callback, delay) {
@@ -1208,6 +2106,136 @@
     }
   });
 })(jQuery);
+!function (i) {
+  "use strict";
+
+  i.extend(!0, i.trumbowyg, {
+    langs: {
+      en: {
+        giphy: "Insert GIF"
+      },
+      et: {
+        giphy: "Sisesta GIF"
+      },
+      fr: {
+        giphy: "Insérer un GIF"
+      },
+      hu: {
+        giphy: "GIF beszúrás"
+      },
+      tr: {
+        giphy: "GIF ekle"
+      }
+    }
+  });
+  var e = "tbwcancel";
+
+  function n(e, n, t, l) {
+    var o = (n.width() - 20) / 3,
+        a = e.data.filter(function (i) {
+      return "" !== i.images.downsized.url;
+    }).map(function (i) {
+      var e = i.images.downsized,
+          n = e.height / e.width;
+      return '<div class="img-container"><img src=' + e.url + ' width="' + o + '" height="' + n * o + '" loading="lazy" onload="this.classList.add(\'tbw-loaded\')"/></div>';
+    }).join("");
+
+    if (!0 === l) {
+      if (0 === a.length) {
+        if (i("." + t.o.prefix + "giphy-no-result", n).length > 0) return;
+        a = '<img class="' + t.o.prefix + 'giphy-no-result" src="' + t.o.plugins.giphy.noResultGifUrl + '"/>';
+      }
+
+      n.empty();
+    }
+
+    n.append(a), i("img", n).on("click", function () {
+      t.restoreRange(), t.execCmd("insertImage", i(this).attr("src"), !1, !0), i("img", n).off(), t.closeModal();
+    });
+  }
+
+  var t = {
+    rating: "g",
+    apiKey: null,
+    throttleDelay: 300,
+    noResultGifUrl: "https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif"
+  };
+  i.extend(!0, i.trumbowyg, {
+    plugins: {
+      giphy: {
+        init: function init(l) {
+          l.o.plugins.giphy = i.extend({}, t, l.o.plugins.giphy || {}), l.addBtnDef("giphy", {
+            fn: function fn() {
+              if (null === l.o.plugins.giphy.apiKey) throw new Error("You must set a Giphy API Key");
+              var t = "https://api.giphy.com/v1/gifs/search?api_key=" + l.o.plugins.giphy.apiKey + "&rating=" + l.o.plugins.giphy.rating,
+                  o = t.replace("/search", "/trending"),
+                  a = {
+                abort: function abort() {}
+              },
+                  c = l.o.prefix,
+                  r = '<input name="" class="' + c + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">' + ('<button class="' + c + 'giphy-close" title="' + l.lang.close + '"><svg><use xlink:href="' + l.svgPath + "#" + c + 'close"/></svg></button>') + ('<div class="' + c + 'powered-by-giphy"><span>Powered by</span><svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg></div>') + '<div class="' + c + 'giphy-modal-scroll"><div class="' + c + 'giphy-modal"></div></div>';
+              l.openModal(null, r, !1).one(e, function () {
+                try {
+                  a.abort();
+                } catch (i) {}
+
+                l.closeModal();
+              });
+
+              var s = i("." + c + "giphy-search"),
+                  p = i("." + c + "giphy-close"),
+                  g = i("." + c + "giphy-modal"),
+                  u = function u() {
+                navigator.onLine || i("." + c + "giphy-offline", g).length || (g.empty(), g.append('<p class="' + c + 'giphy-offline">You are offline</p>'));
+              };
+
+              i.ajax({
+                url: o,
+                dataType: "json",
+                success: function success(i) {
+                  n(i, g, l, !0);
+                },
+                error: u
+              });
+              var h,
+                  d,
+                  y,
+                  f,
+                  v = (h = function h() {
+                var e = s.val();
+
+                if (0 !== e.length) {
+                  try {
+                    a.abort();
+                  } catch (i) {}
+
+                  a = i.ajax({
+                    url: t + "&q=" + encodeURIComponent(e),
+                    dataType: "json",
+                    success: function success(i) {
+                      n(i, g, l, !0);
+                    },
+                    error: u
+                  });
+                }
+              }, d = l.o.plugins.giphy.throttleDelay, function () {
+                var i = this,
+                    e = +new Date(),
+                    n = arguments;
+                y && e < y + d ? (clearTimeout(f), f = setTimeout(function () {
+                  y = e, h.apply(i, n);
+                }, d)) : (y = e, h.apply(i, n));
+              });
+              s.on("input", v), s.focus(), p.one("click", function () {
+                g.trigger(e);
+              });
+            }
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
 /*/* ===========================================================
  * trumbowyg.history.js v1.0
  * history plugin for Trumbowyg
@@ -1237,6 +2265,12 @@
         history: {
           redo: 'Wiederholen',
           undo: 'Rückgängig'
+        }
+      },
+      et: {
+        history: {
+          redo: 'Võta tagasi',
+          undo: 'Tee uuesti'
         }
       },
       fr: {
@@ -1420,6 +2454,431 @@
     }
   });
 })(jQuery);
+!function (o) {
+  "use strict";
+
+  o.extend(!0, o.trumbowyg, {
+    langs: {
+      en: {
+        history: {
+          redo: "Redo",
+          undo: "Undo"
+        }
+      },
+      da: {
+        history: {
+          redo: "Annuller fortryd",
+          undo: "Fortryd"
+        }
+      },
+      de: {
+        history: {
+          redo: "Wiederholen",
+          undo: "Rückgängig"
+        }
+      },
+      et: {
+        history: {
+          redo: "Võta tagasi",
+          undo: "Tee uuesti"
+        }
+      },
+      fr: {
+        history: {
+          redo: "Annuler",
+          undo: "Rétablir"
+        }
+      },
+      hu: {
+        history: {
+          redo: "Visszállít",
+          undo: "Visszavon"
+        }
+      },
+      ko: {
+        history: {
+          redo: "다시 실행",
+          undo: "되돌리기"
+        }
+      },
+      pt_br: {
+        history: {
+          redo: "Refazer",
+          undo: "Desfazer"
+        }
+      },
+      zh_tw: {
+        history: {
+          redo: "重做",
+          undo: "復原"
+        }
+      }
+    },
+    plugins: {
+      history: {
+        init: function init(i) {
+          i.o.plugins.history = o.extend(!0, {
+            _stack: [],
+            _index: -1,
+            _focusEl: void 0
+          }, i.o.plugins.history || {});
+
+          var t = {
+            title: i.lang.history.redo,
+            ico: "redo",
+            key: "Y",
+            fn: function fn() {
+              if (i.o.plugins.history._index < i.o.plugins.history._stack.length - 1) {
+                i.o.plugins.history._index += 1;
+                var o = i.o.plugins.history._index,
+                    t = i.o.plugins.history._stack[o];
+                i.execCmd("html", t), i.o.plugins.history._stack[o] = i.$ed.html(), d(), e();
+              }
+            }
+          },
+              n = {
+            title: i.lang.history.undo,
+            ico: "undo",
+            key: "Z",
+            fn: function fn() {
+              if (i.o.plugins.history._index > 0) {
+                i.o.plugins.history._index -= 1;
+                var o = i.o.plugins.history._index,
+                    t = i.o.plugins.history._stack[o];
+                i.execCmd("html", t), i.o.plugins.history._stack[o] = i.$ed.html(), d(), e();
+              }
+            }
+          },
+              e = function e() {
+            var o = i.o.plugins.history._index,
+                t = i.o.plugins.history._stack.length,
+                n = 0 !== t && o !== t - 1;
+            s("historyUndo", o > 0), s("historyRedo", n);
+          },
+              s = function s(o, t) {
+            var n = i.$box.find(".trumbowyg-" + o + "-button");
+            t ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
+          },
+              r = function r(o, i) {
+            if (o === i) return !0;
+            if (null == o || null == i) return !1;
+            if (o.length !== i.length) return !1;
+
+            for (var t = 0; t < o.length; t += 1) {
+              if (o[t] !== i[t]) return !1;
+            }
+
+            return !0;
+          },
+              d = function d() {
+            var o = i.doc.getSelection().focusNode,
+                t = i.doc.createRange();
+            o.childNodes.length > 0 && (t.setStartAfter(o.childNodes[o.childNodes.length - 1]), t.setEndAfter(o.childNodes[o.childNodes.length - 1]), i.doc.getSelection().removeAllRanges(), i.doc.getSelection().addRange(t));
+          };
+
+          i.$c.on("tbwinit tbwchange", function () {
+            var t,
+                n,
+                s = i.o.plugins.history._index,
+                d = i.o.plugins.history._stack,
+                l = d.slice(-1)[0] || "<p></p>",
+                u = d[s],
+                h = i.$ed.html(),
+                c = i.doc.getSelection().focusNode,
+                a = "",
+                g = i.o.plugins.history._focusEl;
+            t = o("<div>" + l + "</div>").find("*").map(function () {
+              return this.localName;
+            }), n = o("<div>" + h + "</div>").find("*").map(function () {
+              return this.localName;
+            }), c && (i.o.plugins.history._focusEl = c, a = c.outerHTML || c.textContent), h !== u && (a.slice(-1).match(/\s/) || !r(t, n) || i.o.plugins.history._index <= 0 || c !== g ? (i.o.plugins.history._index += 1, i.o.plugins.history._stack = d.slice(0, i.o.plugins.history._index), i.o.plugins.history._stack.push(h)) : i.o.plugins.history._stack[s] = h, e());
+          }), i.addBtnDef("historyRedo", t), i.addBtnDef("historyUndo", n);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.indent.js v1.0
+ * Indent or Outdent plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Fabacks
+ *          Website : https://github.com/Fabacks
+ */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        indent: 'Indent',
+        outdent: 'Outdent'
+      },
+      et: {
+        indent: 'Taande suurendamine',
+        outdent: 'Taande vähendamine'
+      },
+      fr: {
+        indent: 'Augmenter le retrait',
+        outdent: 'Diminuer le retrait'
+      }
+    }
+  }); // Adds the extra button definition
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      paragraph: {
+        init: function init(trumbowyg) {
+          var indentBtnDef = {
+            fn: 'indent',
+            title: trumbowyg.lang.indent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported('indent');
+            },
+            ico: 'indent'
+          };
+          var outdentBtnDef = {
+            fn: 'outdent',
+            title: trumbowyg.lang.outdent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported('outdent');
+            },
+            ico: 'outdent'
+          };
+          trumbowyg.addBtnDef('indent', indentBtnDef);
+          trumbowyg.addBtnDef('outdent', outdentBtnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (n) {
+  "use strict";
+
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        indent: "Indent",
+        outdent: "Outdent"
+      },
+      et: {
+        indent: "Taande suurendamine",
+        outdent: "Taande vähendamine"
+      },
+      fr: {
+        indent: "Augmenter le retrait",
+        outdent: "Diminuer le retrait"
+      }
+    }
+  }), n.extend(!0, n.trumbowyg, {
+    plugins: {
+      paragraph: {
+        init: function init(n) {
+          var t = {
+            fn: "indent",
+            title: n.lang.indent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported("indent");
+            },
+            ico: "indent"
+          },
+              e = {
+            fn: "outdent",
+            title: n.lang.outdent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported("outdent");
+            },
+            ico: "outdent"
+          };
+          n.addBtnDef("indent", t), n.addBtnDef("outdent", e);
+        }
+      }
+    }
+  });
+}(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+(function ($) {
+  'use strict';
+
+  var insertAudioOptions = {
+    src: {
+      label: 'URL',
+      required: true
+    },
+    autoplay: {
+      label: 'AutoPlay',
+      required: false,
+      type: 'checkbox'
+    },
+    muted: {
+      label: 'Muted',
+      required: false,
+      type: 'checkbox'
+    },
+    preload: {
+      label: 'preload options',
+      required: false
+    }
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        insertAudio: 'Insert Audio'
+      },
+      da: {
+        insertAudio: 'Indsæt lyd'
+      },
+      et: {
+        insertAudio: 'Lisa helifail'
+      },
+      fr: {
+        insertAudio: 'Insérer un son'
+      },
+      hu: {
+        insertAudio: 'Audio beszúrás'
+      },
+      ja: {
+        insertAudio: '音声の挿入'
+      },
+      ko: {
+        insertAudio: '소리 넣기'
+      },
+      pt_br: {
+        insertAudio: 'Inserir áudio'
+      },
+      ru: {
+        insertAudio: 'Вставить аудио'
+      },
+      tr: {
+        insertAudio: 'Ses Ekle'
+      } // jshint camelcase:true
+
+    },
+    plugins: {
+      insertAudio: {
+        init: function init(trumbowyg) {
+          var btnDef = {
+            fn: function fn() {
+              var insertAudioCallback = function insertAudioCallback(v) {
+                // controls should always be show otherwise the audio will
+                // be invisible defeating the point of a wysiwyg
+                var html = '<audio controls';
+
+                if (v.src) {
+                  html += ' src=\'' + v.src + '\'';
+                }
+
+                if (v.autoplay) {
+                  html += ' autoplay';
+                }
+
+                if (v.muted) {
+                  html += ' muted';
+                }
+
+                if (v.preload) {
+                  html += ' preload=\'' + v + '\'';
+                }
+
+                html += '></audio>';
+                var node = $(html)[0];
+                trumbowyg.range.deleteContents();
+                trumbowyg.range.insertNode(node);
+                return true;
+              };
+
+              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
+            }
+          };
+          trumbowyg.addBtnDef('insertAudio', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  var r = {
+    src: {
+      label: "URL",
+      required: !0
+    },
+    autoplay: {
+      label: "AutoPlay",
+      required: !1,
+      type: "checkbox"
+    },
+    muted: {
+      label: "Muted",
+      required: !1,
+      type: "checkbox"
+    },
+    preload: {
+      label: "preload options",
+      required: !1
+    }
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        insertAudio: "Insert Audio"
+      },
+      da: {
+        insertAudio: "Indsæt lyd"
+      },
+      et: {
+        insertAudio: "Lisa helifail"
+      },
+      fr: {
+        insertAudio: "Insérer un son"
+      },
+      hu: {
+        insertAudio: "Audio beszúrás"
+      },
+      ja: {
+        insertAudio: "音声の挿入"
+      },
+      ko: {
+        insertAudio: "소리 넣기"
+      },
+      pt_br: {
+        insertAudio: "Inserir áudio"
+      },
+      ru: {
+        insertAudio: "Вставить аудио"
+      },
+      tr: {
+        insertAudio: "Ses Ekle"
+      }
+    },
+    plugins: {
+      insertAudio: {
+        init: function init(i) {
+          var t = {
+            fn: function fn() {
+              i.openModalInsert(i.lang.insertAudio, r, function (r) {
+                var t = "<audio controls";
+                r.src && (t += " src='" + r.src + "'"), r.autoplay && (t += " autoplay"), r.muted && (t += " muted"), r.preload && (t += " preload='" + r + "'");
+                var n = e(t += "></audio>")[0];
+                return i.range.deleteContents(), i.range.insertNode(n), !0;
+              });
+            }
+          };
+          i.addBtnDef("insertAudio", t);
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -1442,6 +2901,15 @@
           'normal': 'Normal',
           '1.5': 'Stor',
           '2.0': 'Ekstra stor'
+        }
+      },
+      et: {
+        lineheight: 'Reavahe',
+        lineheights: {
+          '0.9': 'Väike',
+          'normal': 'Tavaline',
+          '1.5': 'Suur',
+          '2.0': 'Väga suur'
         }
       },
       fr: {
@@ -1581,110 +3049,150 @@
     return parentEl;
   }
 })(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Adam Hess (AdamHess)
- */
-(function ($) {
-  'use strict';
+!function (e) {
+  "use strict";
 
-  var insertAudioOptions = {
-    src: {
-      label: 'URL',
-      required: true
-    },
-    autoplay: {
-      label: 'AutoPlay',
-      required: false,
-      type: 'checkbox'
-    },
-    muted: {
-      label: 'Muted',
-      required: false,
-      type: 'checkbox'
-    },
-    preload: {
-      label: 'preload options',
-      required: false
-    }
-  };
-  $.extend(true, $.trumbowyg, {
+  e.extend(!0, e.trumbowyg, {
     langs: {
-      // jshint camelcase:false
       en: {
-        insertAudio: 'Insert Audio'
+        lineheight: "Line height",
+        lineheights: {
+          .9: "Small",
+          normal: "Regular",
+          1.5: "Large",
+          "2.0": "Extra large"
+        }
       },
       da: {
-        insertAudio: 'Indsæt lyd'
+        lineheight: "Linjehøjde",
+        lineheights: {
+          .9: "Lille",
+          normal: "Normal",
+          1.5: "Stor",
+          "2.0": "Ekstra stor"
+        }
+      },
+      et: {
+        lineheight: "Reavahe",
+        lineheights: {
+          .9: "Väike",
+          normal: "Tavaline",
+          1.5: "Suur",
+          "2.0": "Väga suur"
+        }
       },
       fr: {
-        insertAudio: 'Insérer un son'
+        lineheight: "Hauteur de ligne",
+        lineheights: {
+          .9: "Petite",
+          normal: "Normale",
+          1.5: "Grande",
+          "2.0": "Très grande"
+        }
       },
       hu: {
-        insertAudio: 'Audio beszúrás'
+        lineheight: "Line height",
+        lineheights: {
+          .9: "Small",
+          normal: "Regular",
+          1.5: "Large",
+          "2.0": "Extra large"
+        }
       },
-      ja: {
-        insertAudio: '音声の挿入'
+      it: {
+        lineheight: "Altezza linea",
+        lineheights: {
+          .9: "Bassa",
+          normal: "Normale",
+          1.5: "Alta",
+          "2.0": "Molto alta"
+        }
       },
       ko: {
-        insertAudio: '소리 넣기'
+        lineheight: "줄 간격",
+        lineheights: {
+          .9: "좁게",
+          normal: "보통",
+          1.5: "넓게",
+          "2.0": "아주 넓게"
+        }
+      },
+      nl: {
+        lineheight: "Regelhoogte",
+        lineheights: {
+          .9: "Klein",
+          normal: "Normaal",
+          1.5: "Groot",
+          "2.0": "Extra groot"
+        }
       },
       pt_br: {
-        insertAudio: 'Inserir áudio'
-      },
-      ru: {
-        insertAudio: 'Вставить аудио'
+        lineheight: "Altura de linha",
+        lineheights: {
+          .9: "Pequena",
+          normal: "Regular",
+          1.5: "Grande",
+          "2.0": "Extra grande"
+        }
       },
       tr: {
-        insertAudio: 'Ses Ekle'
-      } // jshint camelcase:true
-
-    },
-    plugins: {
-      insertAudio: {
-        init: function init(trumbowyg) {
-          var btnDef = {
-            fn: function fn() {
-              var insertAudioCallback = function insertAudioCallback(v) {
-                // controls should always be show otherwise the audio will
-                // be invisible defeating the point of a wysiwyg
-                var html = '<audio controls';
-
-                if (v.src) {
-                  html += ' src=\'' + v.src + '\'';
-                }
-
-                if (v.autoplay) {
-                  html += ' autoplay';
-                }
-
-                if (v.muted) {
-                  html += ' muted';
-                }
-
-                if (v.preload) {
-                  html += ' preload=\'' + v + '\'';
-                }
-
-                html += '></audio>';
-                var node = $(html)[0];
-                trumbowyg.range.deleteContents();
-                trumbowyg.range.insertNode(node);
-                return true;
-              };
-
-              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
-            }
-          };
-          trumbowyg.addBtnDef('insertAudio', btnDef);
+        lineheight: "Satır yüksekliği",
+        lineheights: {
+          .9: "Küçük",
+          normal: "Normal",
+          1.5: "Büyük",
+          "2.0": "Çok Büyük"
+        }
+      },
+      zh_tw: {
+        lineheight: "文字間距",
+        lineheights: {
+          .9: "小",
+          normal: "正常",
+          1.5: "大",
+          "2.0": "特大"
         }
       }
     }
   });
-})(jQuery);
+  var n = {
+    sizeList: ["0.9", "normal", "1.5", "2.0"]
+  };
+
+  function i(n) {
+    var i = [];
+    return e.each(n.o.plugins.lineheight.sizeList, function (t, l) {
+      n.addBtnDef("lineheight_" + l, {
+        text: n.lang.lineheights[l] || l,
+        hasIcon: !1,
+        fn: function fn() {
+          if (n.saveRange(), "" !== n.getRangeText().replace(/\s/g, "")) try {
+            var i = function () {
+              var e,
+                  n = null;
+              window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (n = e.getRangeAt(0).commonAncestorContainer).nodeType && (n = n.parentNode) : (e = document.selection) && "Control" !== e.type && (n = e.createRange().parentElement());
+              return n;
+            }();
+
+            e(i).css("lineHeight", l);
+          } catch (e) {}
+        }
+      }), i.push("lineheight_" + l);
+    }), i;
+  }
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      lineheight: {
+        init: function init(t) {
+          t.o.plugins.lineheight = e.extend({}, n, t.o.plugins.lineheight || {}), t.addBtnDef("lineheight", {
+            dropdown: i(t)
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
 /* ===========================================================
  * trumbowyg.mathMl.js v1.0
  * MathML plugin for Trumbowyg
@@ -1709,6 +3217,11 @@
         mathml: 'Indsæt formler',
         formulas: 'Formler',
         inline: 'Inline'
+      },
+      et: {
+        mathml: 'Sisesta valem',
+        formulas: 'Valemid',
+        inline: 'Teksti sees'
       },
       fr: {
         mathml: 'Inserer une formule',
@@ -1806,6 +3319,100 @@
     }
   });
 })(jQuery);
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        mathml: "Insert Formulas",
+        formulas: "Formulas",
+        inline: "Inline"
+      },
+      da: {
+        mathml: "Indsæt formler",
+        formulas: "Formler",
+        inline: "Inline"
+      },
+      et: {
+        mathml: "Sisesta valem",
+        formulas: "Valemid",
+        inline: "Teksti sees"
+      },
+      fr: {
+        mathml: "Inserer une formule",
+        formulas: "Formule",
+        inline: "En ligne"
+      },
+      hu: {
+        mathml: "Formulák beszúrás",
+        formulas: "Formulák",
+        inline: "Inline"
+      },
+      ko: {
+        mathml: "수식 넣기",
+        formulas: "수식",
+        inline: "글 안에 넣기"
+      },
+      pt_br: {
+        mathml: "Inserir fórmulas",
+        formulas: "Fórmulas",
+        inline: "Em linha"
+      },
+      tr: {
+        mathml: "Formül Ekle",
+        formulas: "Formüller",
+        inline: "Satır içi"
+      },
+      zh_tw: {
+        mathml: "插入方程式",
+        formulas: "方程式",
+        inline: "內嵌"
+      }
+    },
+    plugins: {
+      mathml: {
+        init: function init(l) {
+          var n = {
+            fn: function fn() {
+              l.saveRange();
+
+              var n = {
+                formulas: {
+                  label: l.lang.formulas,
+                  required: !0,
+                  value: ""
+                },
+                inline: {
+                  label: l.lang.inline,
+                  attributes: {
+                    checked: !0
+                  },
+                  type: "checkbox",
+                  required: !1
+                }
+              },
+                  a = function a(t) {
+                var r = t.inline ? "$" : "$$";
+                if (l.currentMathNode) e(l.currentMathNode).html(r + " " + t.formulas + " " + r).attr("formulas", t.formulas).attr("inline", t.inline ? "true" : "false");else {
+                  var i = '<span class="mathMlContainer" contenteditable="false" formulas="' + t.formulas + '" inline="' + (t.inline ? "true" : "false") + '" >' + r + " " + t.formulas + " " + r + "</span>",
+                      m = e(i)[0];
+                  m.onclick = function () {
+                    l.currentMathNode = this, n.formulas.value = e(this).attr("formulas"), "true" === e(this).attr("inline") ? n.inline.attributes.checked = !0 : delete n.inline.attributes.checked, l.openModalInsert(l.lang.mathml, n, a);
+                  }, l.range.deleteContents(), l.range.insertNode(m);
+                }
+                return l.currentMathNode = !1, MathJax.Hub.Queue(["Typeset", MathJax.Hub]), !0;
+              };
+
+              n.formulas.value = l.getRangeText(), n.inline.attributes.checked = !0, l.openModalInsert(l.lang.mathml, n, a);
+            }
+          };
+          l.addBtnDef("mathml", n);
+        }
+      }
+    }
+  });
+}(jQuery);
 /* ===========================================================
  * trumbowyg.mention.js v0.1
  * Mention plugin for Trumbowyg
@@ -1831,6 +3438,9 @@
       },
       da: {
         mention: 'Nævn'
+      },
+      et: {
+        mention: 'Maini'
       },
       fr: {
         mention: 'Mentionner'
@@ -1918,6 +3528,80 @@
     return '@' + item.login + ' ';
   }
 })(jQuery);
+!function (n) {
+  "use strict";
+
+  var t = {
+    source: [],
+    formatDropdownItem: function formatDropdownItem(n) {
+      return n.login;
+    },
+    formatResult: function formatResult(n) {
+      return "@" + n.login + " ";
+    }
+  };
+
+  function o(t, o) {
+    var e = [];
+    return n.each(t, function (n, t) {
+      var i = "mention-" + n,
+          r = {
+        hasIcon: !1,
+        text: o.o.plugins.mention.formatDropdownItem(t),
+        fn: function fn() {
+          return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
+        }
+      };
+      o.addBtnDef(i, r), e.push(i);
+    }), e;
+  }
+
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        mention: "Mention"
+      },
+      da: {
+        mention: "Nævn"
+      },
+      et: {
+        mention: "Maini"
+      },
+      fr: {
+        mention: "Mentionner"
+      },
+      hu: {
+        mention: "Említ"
+      },
+      ko: {
+        mention: "언급"
+      },
+      pt_br: {
+        mention: "Menção"
+      },
+      ru: {
+        mention: "Упомянуть"
+      },
+      tr: {
+        mention: "Bahset"
+      },
+      zh_tw: {
+        mention: "標記"
+      }
+    },
+    plugins: {
+      mention: {
+        init: function init(e) {
+          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
+          var i = {
+            dropdown: o(e.o.plugins.mention.source, e)
+          };
+          e.addBtnDef("mention", i);
+        }
+      }
+    }
+  });
+}(jQuery);
 /* ===========================================================
  * trumbowyg.noembed.js v1.0
  * noEmbed plugin for Trumbowyg
@@ -1947,6 +3631,10 @@
       },
       da: {
         noembedError: 'Fejl'
+      },
+      et: {
+        noembed: 'Noembed',
+        noembedError: 'Viga'
       },
       fr: {
         noembedError: 'Erreur'
@@ -2025,6 +3713,172 @@
     }
   });
 })(jQuery);
+!function (e) {
+  "use strict";
+
+  var r = {
+    proxy: "https://noembed.com/embed?nowrap=on",
+    urlFiled: "url",
+    data: [],
+    success: void 0,
+    error: void 0
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        noembed: "Noembed",
+        noembedError: "Error"
+      },
+      cs: {
+        noembedError: "Chyba"
+      },
+      da: {
+        noembedError: "Fejl"
+      },
+      et: {
+        noembed: "Noembed",
+        noembedError: "Viga"
+      },
+      fr: {
+        noembedError: "Erreur"
+      },
+      hu: {
+        noembed: "Noembed",
+        noembedError: "Hiba"
+      },
+      ja: {
+        noembedError: "エラー"
+      },
+      ko: {
+        noembed: "oEmbed 넣기",
+        noembedError: "에러"
+      },
+      pt_br: {
+        noembed: "Incorporar",
+        noembedError: "Erro"
+      },
+      ru: {
+        noembedError: "Ошибка"
+      },
+      sk: {
+        noembedError: "Chyba"
+      },
+      tr: {
+        noembedError: "Hata"
+      },
+      zh_tw: {
+        noembed: "插入影片",
+        noembedError: "錯誤"
+      }
+    },
+    plugins: {
+      noembed: {
+        init: function init(o) {
+          o.o.plugins.noembed = e.extend(!0, {}, r, o.o.plugins.noembed || {});
+          var n = {
+            fn: function fn() {
+              var r = o.openModalInsert(o.lang.noembed, {
+                url: {
+                  label: "URL",
+                  required: !0
+                }
+              }, function (n) {
+                e.ajax({
+                  url: o.o.plugins.noembed.proxy,
+                  type: "GET",
+                  data: n,
+                  cache: !1,
+                  dataType: "json",
+                  success: o.o.plugins.noembed.success || function (n) {
+                    n.html ? (o.execCmd("insertHTML", n.html), setTimeout(function () {
+                      o.closeModal();
+                    }, 250)) : o.addErrorOnModalField(e("input[type=text]", r), n.error);
+                  },
+                  error: o.o.plugins.noembed.error || function () {
+                    o.addErrorOnModalField(e("input[type=text]", r), o.lang.noembedError);
+                  }
+                });
+              });
+            }
+          };
+          o.addBtnDef("noembed", n);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
+                  mustPreventDefault = false,
+                  reader;
+
+              for (var i = items.length - 1; i >= 0; i -= 1) {
+                if (items[i].type.match(/^image\//)) {
+                  reader = new FileReader();
+                  /* jshint -W083 */
+
+                  reader.onloadend = function (event) {
+                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
+                  };
+                  /* jshint +W083 */
+
+
+                  reader.readAsDataURL(items[i].getAsFile());
+                  mustPreventDefault = true;
+                }
+              }
+
+              if (mustPreventDefault) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+              }
+            } catch (c) {}
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(e) {
+          e.pasteHandlers.push(function (t) {
+            try {
+              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) {
+                n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
+                  e.execCmd("insertImage", t.target.result, !1, !0);
+                }, a.readAsDataURL(n[r].getAsFile()), i = !0);
+              }
+
+              i && (t.stopPropagation(), t.preventDefault());
+            } catch (e) {}
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
 /* ===========================================================
  * trumbowyg.pasteembed.js v1.0
  * Url paste to iframe with noembed. Plugin for Trumbowyg
@@ -2117,76 +3971,58 @@
     }
   });
 })(jQuery);
-/* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-(function ($) {
-  'use strict';
+!function (t) {
+  "use strict";
 
-  $.extend(true, $.trumbowyg, {
+  var e = {
+    enabled: !0,
+    endpoints: ["https://noembed.com/embed?nowrap=on", "https://api.maxmade.nl/url2iframe/embed"]
+  };
+  t.extend(!0, t.trumbowyg, {
     plugins: {
-      pasteImage: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+      pasteEmbed: {
+        init: function init(n) {
+          n.o.plugins.pasteEmbed = t.extend(!0, {}, e, n.o.plugins.pasteEmbed || {}), n.o.plugins.pasteEmbed.enabled && n.pasteHandlers.push(function (e) {
             try {
-              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
-                  mustPreventDefault = false,
-                  reader;
+              var a = (e.originalEvent || e).clipboardData.getData("Text"),
+                  r = n.o.plugins.pasteEmbed.endpoints,
+                  s = null;
 
-              for (var i = items.length - 1; i >= 0; i -= 1) {
-                if (items[i].type.match(/^image\//)) {
-                  reader = new FileReader();
-                  /* jshint -W083 */
-
-                  reader.onloadend = function (event) {
-                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
-                  };
-                  /* jshint +W083 */
-
-
-                  reader.readAsDataURL(items[i].getAsFile());
-                  mustPreventDefault = true;
-                }
+              if (a.startsWith("http")) {
+                e.stopPropagation(), e.preventDefault();
+                var i = {
+                  url: a.trim()
+                },
+                    o = "",
+                    p = 0;
+                s && s.transport && s.transport.abort(), s = t.ajax({
+                  crossOrigin: !0,
+                  url: r[p],
+                  type: "GET",
+                  data: i,
+                  cache: !1,
+                  dataType: "jsonp",
+                  success: function success(t) {
+                    t.html ? (p = 0, o = t.html) : p += 1;
+                  },
+                  error: function error() {
+                    p += 1;
+                  },
+                  complete: function complete() {
+                    0 === o.length && p < r.length - 1 && (this.url = r[p], this.data = i, t.ajax(this)), p === r.length - 1 && (o = t("<a>", {
+                      href: a,
+                      text: a
+                    }).prop("outerHTML")), o.length > 0 && (p = 0, n.execCmd("insertHTML", o));
+                  }
+                });
               }
-
-              if (mustPreventDefault) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-              }
-            } catch (c) {}
+            } catch (t) {}
           });
         }
       }
     }
   });
-})(jQuery);
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-(function (factory, define, require, module) {
-  'use strict';
-
-  if (typeof define === 'function' && define.amd) {
-    // AMD
-    define(['jquery'], factory);
-  } else if (_typeof(module) === 'object' && _typeof(module.exports) === 'object') {
-    // CommonJS
-    module.exports = factory(require('jquery'));
-  } else {
-    // Global jQuery
-    factory(jQuery);
-  }
-})(function ($) {
-  'use strict'; // rename to avoid conflict with jquery-resizable
-
-  $.fn.uiresizable = $.fn.resizable;
-  delete $.fn.resizable;
-});
+}(jQuery);
 ;
 
 (function ($) {
@@ -2202,7 +4038,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     e.preventDefault();
   }
 
-  var ResizeWithCanvas = function ResizeWithCanvas() {
+  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
     // variable to create canvas and save img in resize mode
     this.resizeCanvas = document.createElement('canvas'); // to allow canvas to get focus
 
@@ -2216,8 +4052,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     };
 
     this.pressBackspaceOrDelete = function (obj) {
-      $(obj.resizeCanvas).replaceWith('');
+      $(obj.resizeCanvas).remove();
       obj.resizeImg = null;
+
+      if (trumbowyg !== null) {
+        trumbowyg.syncCode(); // notify changes
+
+        trumbowyg.$c.trigger('tbwchange');
+      }
     }; // PRIVATE FUNCTION
 
 
@@ -2230,15 +4072,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       var BB = canvas.getBoundingClientRect();
       offsetX = BB.left;
       offsetY = BB.top;
-    };
-
-    var drawRect = function drawRect(shapeData, ctx) {
-      // Inner
-      ctx.beginPath();
-      ctx.fillStyle = 'rgb(255, 255, 255)';
-      ctx.rect(shapeData.points.x, shapeData.points.y, shapeData.points.width, shapeData.points.height);
-      ctx.fill();
-      ctx.stroke();
     };
 
     var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
@@ -2295,12 +4128,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     this.reset = function () {
       if (this.resizeImg === null) {
         return;
-      }
+      } // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
 
-      this.resizeImg.width = this.resizeCanvas.clientWidth - 10;
-      this.resizeImg.height = this.resizeCanvas.clientHeight - 10; // clear style of image to avoid issue on resize because this attribute have priority over width and height attribute
 
-      this.resizeImg.removeAttribute('style');
+      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
       $(this.resizeCanvas).replaceWith($(this.resizeImg)); // reset canvas style
 
       this.resizeCanvas.removeAttribute('style');
@@ -2325,7 +4156,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       $(this.resizeImg).replaceWith($(this.resizeCanvas));
       updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height); // enable resize
 
-      $(this.resizeCanvas).resizable(resizableOptions).on('mousedown', preventDefault);
+      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
 
       var _this = this;
 
@@ -2355,7 +4186,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           // BACKSPACE or DELETE
           _this.pressBackspaceOrDelete(_this);
         }
-      }).on('focus', preventDefault);
+      }).on('focus', preventDefault).on('blur', function () {
+        _this.reset(); // save changes
+
+
+        if (trumbowyg !== null) {
+          trumbowyg.syncCode(); // notify changes
+
+          trumbowyg.$c.trigger('tbwchange');
+        }
+      });
       this.resizeCanvas.focus();
       return true;
     }; // update the canvas after the resizing
@@ -2370,22 +4210,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       this.resizeCanvas.height = this.resizeCanvas.clientHeight;
       updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
     };
-  }; // object to interact with canvas
-
-
-  var resizeWithCanvas = new ResizeWithCanvas();
-
-  function destroyResizable(trumbowyg) {
-    // clean html code
-    trumbowyg.$ed.find('canvas.resizable').resizable('destroy').off('mousedown', preventDefault).removeClass('resizable');
-    resizeWithCanvas.reset();
-    trumbowyg.syncCode();
-  }
+  };
 
   $.extend(true, $.trumbowyg, {
     plugins: {
       resizimg: {
+        destroyResizable: function destroyResizable() {},
         init: function init(trumbowyg) {
+          var destroyResizable = this.destroyResizable; // object to interact with canvas
+
+          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
+
+          this.destroyResizable = function () {
+            // clean html code
+            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
+            resizeWithCanvas.reset();
+            trumbowyg.syncCode();
+          };
+
           trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
             resizable: {
               resizeWidth: false,
@@ -2440,7 +4282,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               }
 
               preventDefault(e);
-              resizeWithCanvas.reset(); // save changes
+              resizeWithCanvas.reset(); //sync
+
+              trumbowyg.syncCode(); // notify changes
 
               trumbowyg.$c.trigger('tbwchange');
             });
@@ -2454,21 +4298,144 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }); // Destroy
 
           trumbowyg.$c.on('tbwblur', function () {
-            // if I have already focused the canvas avoid destroy
+            // when canvas is created the tbwblur is called
+            // this code avoid to destroy the canvas that allow the image resizing
             if (resizeWithCanvas.isFocusedNow()) {
               resizeWithCanvas.blurNow();
             } else {
-              destroyResizable(trumbowyg);
+              destroyResizable();
             }
           });
         },
-        destroy: function destroy(trumbowyg) {
-          destroyResizable(trumbowyg);
+        destroy: function destroy() {
+          this.destroyResizable();
         }
       }
     }
   });
 })(jQuery);
+!function (e) {
+  "use strict";
+
+  var i = {
+    minSize: 32,
+    step: 4
+  };
+
+  function t(e) {
+    e.stopPropagation(), e.preventDefault();
+  }
+
+  var s = function s(i) {
+    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
+      e.reset();
+    }, this.pressBackspaceOrDelete = function (t) {
+      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+    };
+
+    var s,
+        n,
+        r = !1,
+        a = !1,
+        o = function o(e) {
+      var i = e.getBoundingClientRect();
+      s = i.left, n = i.top;
+    },
+        h = function h(e, i, t, s, n) {
+      return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
+    };
+
+    this.init = function () {
+      var i = this;
+      e(window).on("scroll resize", function () {
+        i.reCalcOffset();
+      });
+    }, this.reCalcOffset = function () {
+      o(this.resizeCanvas);
+    }, this.canvasId = function () {
+      return this.resizeCanvas.id;
+    }, this.isActive = function () {
+      return null !== this.resizeImg;
+    }, this.isFocusedNow = function () {
+      return r;
+    }, this.blurNow = function () {
+      r = !1;
+    }, this.reset = function () {
+      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
+    }, this.setup = function (o, c) {
+      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
+      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
+      var u = this;
+      return e(this.resizeCanvas).on("mousemove", function (e) {
+        var i = Math.round(e.clientX - s),
+            t = Math.round(e.clientY - n),
+            r = a;
+        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
+      }).on("keydown", function (e) {
+        if (u.isActive()) {
+          var i = e.keyCode;
+          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
+        }
+      }).on("focus", t).on("blur", function () {
+        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+      }), this.resizeCanvas.focus(), !0;
+    }, this.refresh = function () {
+      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
+    };
+  };
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      resizimg: {
+        destroyResizable: function destroyResizable() {},
+        init: function init(n) {
+          var r = this.destroyResizable,
+              a = new s(n);
+
+          function o() {
+            n.$ed.find("img").off("click").on("click", function (e) {
+              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
+            });
+          }
+
+          this.destroyResizable = function () {
+            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
+          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: !1,
+              onDragStart: function onDragStart(e, i) {
+                var t = n.o.plugins.resizimg,
+                    s = e.pageX - i.offset().left,
+                    r = e.pageY - i.offset().top;
+                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
+              },
+              onDrag: function onDrag(e, i, t, s) {
+                var r = n.o.plugins.resizimg;
+                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
+              },
+              onDragEnd: function onDragEnd() {
+                a.refresh(), n.syncCode();
+              }
+            }
+          }), n.$c.on("tbwinit", function () {
+            o(), n.$ed.on("click", function (i) {
+              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
+            }), n.$ed.on("scroll", function () {
+              a.reCalcOffset();
+            });
+          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
+            a.reCalcOffset();
+          }), n.$c.on("tbwblur", function () {
+            a.isFocusedNow() ? a.blurNow() : r();
+          });
+        },
+        destroy: function destroy() {
+          this.destroyResizable();
+        }
+      }
+    }
+  });
+}(jQuery);
 /* ===========================================================
  * trumbowyg.preformatted.js v1.0
  * Preformatted plugin for Trumbowyg
@@ -2487,6 +4454,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       },
       da: {
         preformatted: 'Præformateret <pre>'
+      },
+      et: {
+        preformatted: 'Eelvormindatud tekst <pre>'
       },
       fr: {
         preformatted: 'Exemple de code <pre>'
@@ -2616,77 +4586,89 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
   }
 })(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-(function ($) {
-  'use strict';
+!function (e) {
+  "use strict";
 
-  var defaultOptions = {
-    symbolList: [// currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null, // legal signs
-    '00A9', '00AE', '2122', null, // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null, //maths
-    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
-  };
-  $.extend(true, $.trumbowyg, {
+  e.extend(!0, e.trumbowyg, {
     langs: {
       en: {
-        specialChars: 'Special characters'
+        preformatted: "Code sample <pre>"
+      },
+      da: {
+        preformatted: "Præformateret <pre>"
+      },
+      et: {
+        preformatted: "Eelvormindatud tekst <pre>"
       },
       fr: {
-        specialChars: 'Caractères spéciaux'
+        preformatted: "Exemple de code <pre>"
       },
       hu: {
-        specialChars: 'Speciális karakterek'
+        preformatted: "Kód minta <pre>"
+      },
+      it: {
+        preformatted: "Codice <pre>"
+      },
+      ja: {
+        preformatted: "コードサンプル <pre>"
       },
       ko: {
-        specialChars: '특수문자'
+        preformatted: "코드 예제 <pre>"
+      },
+      pt_br: {
+        preformatted: "Exemple de código <pre>"
+      },
+      ru: {
+        preformatted: "Пример кода <pre>"
+      },
+      tr: {
+        preformatted: "Kod örneği <pre>"
+      },
+      zh_cn: {
+        preformatted: "代码示例 <pre>"
+      },
+      zh_tw: {
+        preformatted: "代碼範例 <pre>"
       }
     },
     plugins: {
-      specialchars: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
-          var specialCharsBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
+      preformatted: {
+        init: function init(t) {
+          var r = {
+            fn: function fn() {
+              t.saveRange();
+              var r,
+                  n,
+                  o = t.getRangeText();
+              if ("" !== o.replace(/\s/g, "")) try {
+                var a = function () {
+                  var e,
+                      t = null;
+                  window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (t = e.getRangeAt(0).commonAncestorContainer).nodeType && (t = t.parentNode) : (e = document.selection) && "Control" !== e.type && (t = e.createRange().parentElement());
+                  return t;
+                }().tagName.toLowerCase();
+
+                if ("code" === a || "pre" === a) return function () {
+                  var t = null;
+                  if (document.selection) t = document.selection.createRange().parentElement();else {
+                    var r = window.getSelection();
+                    r.rangeCount > 0 && (t = r.getRangeAt(0).startContainer.parentNode);
+                  }
+                  var n = e(t).contents().closest("pre").length,
+                      o = e(t).contents().closest("code").length;
+                  n && o ? e(t).contents().unwrap("code").unwrap("pre") : n ? e(t).contents().unwrap("pre") : o && e(t).contents().unwrap("code");
+                }();
+                t.execCmd("insertHTML", "<pre><code>" + (r = o, (n = document.createElement("DIV")).innerHTML = r, (n.textContent || n.innerText || "") + "</code></pre>"));
+              } catch (e) {}
+            },
+            tag: "pre"
           };
-          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+          t.addBtnDef("preformatted", r);
         }
       }
     }
   });
-
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
-      if (symbol === null) {
-        symbol = '&nbsp';
-      } else {
-        symbol = '&#x' + symbol;
-      }
-
-      var btn = symbol.replace(/:/g, ''),
-          defaultSymbolBtnName = 'symbol-' + btn,
-          defaultSymbolBtnDef = {
-        text: symbol,
-        hasIcon: false,
-        fn: function fn() {
-          var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-          trumbowyg.execCmd('insertText', encodedSymbol);
-          return true;
-        }
-      };
-      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
-      dropdown.push(defaultSymbolBtnName);
-    });
-    return dropdown;
-  }
-})(jQuery);
+}(jQuery);
 /* ===========================================================
  * trumbowyg.table.custom.js v2.0
  * Table plugin for Trumbowyg
@@ -2745,6 +4727,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         tableDeleteColumn: 'Spalte löschen',
         tableDestroy: 'Tabelle löschen',
         error: 'Error'
+      },
+      et: {
+        table: 'Sisesta tabel',
+        tableAddRow: 'Lisa rida',
+        tableAddRowAbove: 'Lisa rida üles',
+        tableAddColumnLeft: 'Lisa tulp vasakule',
+        tableAddColumn: 'Lisa tulp paremale',
+        tableDeleteRow: 'Kustuta rida',
+        tableDeleteColumn: 'Kustuta tulp',
+        tableDestroy: 'Kustuta tabel',
+        error: 'Viga'
       },
       fr: {
         table: 'Insérer un tableau',
@@ -2831,9 +4824,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       tr: {
         table: 'Tablo ekle',
         tableAddRow: 'Satır ekle',
-        tableAddRowAbove: 'Satır ekle',
-        tableAddColumnLeft: 'Kolon ekle',
-        tableAddColumn: 'Kolon ekle',
+        tableAddRowAbove: 'Yukarıya satır ekle',
+        tableAddColumnLeft: 'Sola sütun ekle',
+        tableAddColumn: 'Sağa sütun ekle',
+        tableDeleteRow: 'Satırı sil',
+        tableDeleteColumn: 'Sütunu sil',
+        tableDestroy: 'Tabloyu sil',
         error: 'Hata'
       },
       zh_tw: {
@@ -2846,6 +4842,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         tableDeleteColumn: '刪除列',
         tableDestroy: '刪除表格',
         error: '錯誤'
+      },
+      es: {
+        table: 'Insertar tabla',
+        tableAddRow: 'Agregar fila',
+        tableAddRowAbove: 'Agregar fila arriba',
+        tableAddColumnLeft: 'Agregar columna a la izquierda',
+        tableAddColumn: 'Agregar columna a la derecha',
+        tableDeleteRow: 'Borrar fila',
+        tableDeleteColumn: 'Borrar columna',
+        tableDestroy: 'Borrar tabla',
+        error: 'Error'
       } // jshint camelcase:true
 
     },
@@ -3088,6 +5095,354 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
   });
 })(jQuery);
+!function (e) {
+  "use strict";
+
+  var t = {
+    rows: 8,
+    columns: 8,
+    styler: "table"
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        table: "Insert table",
+        tableAddRow: "Add row",
+        tableAddRowAbove: "Add row above",
+        tableAddColumnLeft: "Add column to the left",
+        tableAddColumn: "Add column to the right",
+        tableDeleteRow: "Delete row",
+        tableDeleteColumn: "Delete column",
+        tableDestroy: "Delete table",
+        error: "Error"
+      },
+      cs: {
+        table: "Vytvořit příkaz Table",
+        tableAddRow: "Přidat řádek",
+        tableAddRowAbove: "Přidat řádek",
+        tableAddColumnLeft: "Přidat sloupec",
+        tableAddColumn: "Přidat sloupec",
+        error: "Chyba"
+      },
+      da: {
+        table: "Indsæt tabel",
+        tableAddRow: "Tilføj række",
+        tableAddRowAbove: "Tilføj række",
+        tableAddColumnLeft: "Tilføj kolonne",
+        tableAddColumn: "Tilføj kolonne",
+        tableDeleteRow: "Slet række",
+        tableDeleteColumn: "Slet kolonne",
+        tableDestroy: "Slet tabel",
+        error: "Fejl"
+      },
+      de: {
+        table: "Tabelle einfügen",
+        tableAddRow: "Zeile hinzufügen",
+        tableAddRowAbove: "Zeile hinzufügen",
+        tableAddColumnLeft: "Spalte hinzufügen",
+        tableAddColumn: "Spalte hinzufügen",
+        tableDeleteRow: "Zeile löschen",
+        tableDeleteColumn: "Spalte löschen",
+        tableDestroy: "Tabelle löschen",
+        error: "Error"
+      },
+      et: {
+        table: "Sisesta tabel",
+        tableAddRow: "Lisa rida",
+        tableAddRowAbove: "Lisa rida üles",
+        tableAddColumnLeft: "Lisa tulp vasakule",
+        tableAddColumn: "Lisa tulp paremale",
+        tableDeleteRow: "Kustuta rida",
+        tableDeleteColumn: "Kustuta tulp",
+        tableDestroy: "Kustuta tabel",
+        error: "Viga"
+      },
+      fr: {
+        table: "Insérer un tableau",
+        tableAddRow: "Ajouter des lignes",
+        tableAddRowAbove: "Ajouter des lignes",
+        tableAddColumnLeft: "Ajouter des colonnes",
+        tableAddColumn: "Ajouter des colonnes",
+        tableDeleteRow: "Effacer la ligne",
+        tableDeleteColumn: "Effacer la colonne",
+        tableDestroy: "Effacer le tableau",
+        error: "Erreur"
+      },
+      hu: {
+        table: "Táblázat beszúrás",
+        tableAddRow: "Sor hozzáadás",
+        tableAddRowAbove: "Sor beszúrás fönt",
+        tableAddColumnLeft: "Sor beszúrás balra",
+        tableAddColumn: "Sor beszúrás jobbra",
+        tableDeleteRow: "Sor törlés",
+        tableDeleteColumn: "Oszlop törlés",
+        tableDestroy: "Táblázat törlés",
+        error: "Hiba"
+      },
+      id: {
+        table: "Sisipkan tabel",
+        tableAddRow: "Sisipkan baris",
+        tableAddRowAbove: "Sisipkan baris",
+        tableAddColumnLeft: "Sisipkan kolom",
+        tableAddColumn: "Sisipkan kolom",
+        tableDeleteRow: "Hapus baris",
+        tableDeleteColumn: "Hapus kolom",
+        tableDestroy: "Hapus tabel",
+        error: "Galat"
+      },
+      ja: {
+        table: "表の挿入",
+        tableAddRow: "行の追加",
+        tableAddRowAbove: "行の追加",
+        tableAddColumnLeft: "列の追加",
+        tableAddColumn: "列の追加",
+        error: "エラー"
+      },
+      ko: {
+        table: "표 넣기",
+        tableAddRow: "줄 추가",
+        tableAddRowAbove: "줄 추가",
+        tableAddColumnLeft: "칸 추가",
+        tableAddColumn: "칸 추가",
+        tableDeleteRow: "줄 삭제",
+        tableDeleteColumn: "칸 삭제",
+        tableDestroy: "표 지우기",
+        error: "에러"
+      },
+      pt_br: {
+        table: "Inserir tabela",
+        tableAddRow: "Adicionar linha",
+        tableAddRowAbove: "Adicionar linha",
+        tableAddColumnLeft: "Adicionar coluna",
+        tableAddColumn: "Adicionar coluna",
+        tableDeleteRow: "Deletar linha",
+        tableDeleteColumn: "Deletar coluna",
+        tableDestroy: "Deletar tabela",
+        error: "Erro"
+      },
+      ru: {
+        table: "Вставить таблицу",
+        tableAddRow: "Добавить строку",
+        tableAddRowAbove: "Добавить строку",
+        tableAddColumnLeft: "Добавить столбец",
+        tableAddColumn: "Добавить столбец",
+        tableDeleteRow: "Удалить строку",
+        tableDeleteColumn: "Удалить столбец",
+        tableDestroy: "Удалить таблицу",
+        error: "Ошибка"
+      },
+      sk: {
+        table: "Vytvoriť tabuľky",
+        tableAddRow: "Pridať riadok",
+        tableAddRowAbove: "Pridať riadok",
+        tableAddColumnLeft: "Pridať stĺpec",
+        tableAddColumn: "Pridať stĺpec",
+        error: "Chyba"
+      },
+      tr: {
+        table: "Tablo ekle",
+        tableAddRow: "Satır ekle",
+        tableAddRowAbove: "Yukarıya satır ekle",
+        tableAddColumnLeft: "Sola sütun ekle",
+        tableAddColumn: "Sağa sütun ekle",
+        tableDeleteRow: "Satırı sil",
+        tableDeleteColumn: "Sütunu sil",
+        tableDestroy: "Tabloyu sil",
+        error: "Hata"
+      },
+      zh_tw: {
+        table: "插入表格",
+        tableAddRow: "加入行",
+        tableAddRowAbove: "加入行",
+        tableAddColumnLeft: "加入列",
+        tableAddColumn: "加入列",
+        tableDeleteRow: "刪除行",
+        tableDeleteColumn: "刪除列",
+        tableDestroy: "刪除表格",
+        error: "錯誤"
+      },
+      es: {
+        table: "Insertar tabla",
+        tableAddRow: "Agregar fila",
+        tableAddRowAbove: "Agregar fila arriba",
+        tableAddColumnLeft: "Agregar columna a la izquierda",
+        tableAddColumn: "Agregar columna a la derecha",
+        tableDeleteRow: "Borrar fila",
+        tableDeleteColumn: "Borrar columna",
+        tableDestroy: "Borrar tabla",
+        error: "Error"
+      }
+    },
+    plugins: {
+      table: {
+        init: function init(l) {
+          l.o.plugins.table = e.extend(!0, {}, t, l.o.plugins.table || {});
+
+          var a = {
+            fn: function fn() {
+              l.saveRange();
+              var t = "table",
+                  a = l.o.prefix + "dropdown",
+                  n = {
+                "class": a + "-" + "table " + a + " " + l.o.prefix + "fixed-top"
+              };
+              n["data-" + a] = t;
+              var b = e("<div/>", n);
+              if (0 === l.$box.find("." + a + "-" + t).length ? l.$box.append(b.hide()) : b = l.$box.find("." + a + "-" + t), b.html(""), l.$box.find("." + l.o.prefix + "table-button").hasClass(l.o.prefix + "active-button")) b.append(l.buildSubBtn("tableAddRowAbove")), b.append(l.buildSubBtn("tableAddRow")), b.append(l.buildSubBtn("tableAddColumnLeft")), b.append(l.buildSubBtn("tableAddColumn")), b.append(l.buildSubBtn("tableDeleteRow")), b.append(l.buildSubBtn("tableDeleteColumn")), b.append(l.buildSubBtn("tableDestroy"));else {
+                var r = e("<table/>");
+                e("<tbody/>").appendTo(r);
+
+                for (var i = 0; i < l.o.plugins.table.rows; i += 1) {
+                  for (var s = e("<tr/>").appendTo(r), u = 0; u < l.o.plugins.table.columns; u += 1) {
+                    e("<td/>").appendTo(s);
+                  }
+                }
+
+                r.find("td").on("mouseover", o), r.find("td").on("mousedown", d), b.append(r), b.append(e('<div class="trumbowyg-table-size">1x1</div>'));
+              }
+              l.dropdown(t);
+            }
+          },
+              o = function o(t) {
+            var l = e(t.target).closest("table"),
+                a = this.cellIndex,
+                o = this.parentNode.rowIndex;
+            l.find("td").removeClass("active");
+
+            for (var d = 0; d <= o; d += 1) {
+              for (var n = 0; n <= a; n += 1) {
+                l.find("tr:nth-of-type(" + (d + 1) + ")").find("td:nth-of-type(" + (n + 1) + ")").addClass("active");
+              }
+            }
+
+            l.next(".trumbowyg-table-size").html(a + 1 + "x" + (o + 1));
+          },
+              d = function d() {
+            l.saveRange();
+            var t = e("<table/>");
+            e("<tbody/>").appendTo(t), l.o.plugins.table.styler && t.attr("class", l.o.plugins.table.styler);
+
+            for (var a = this.cellIndex, o = this.parentNode.rowIndex, d = 0; d <= o; d += 1) {
+              for (var n = e("<tr></tr>").appendTo(t), b = 0; b <= a; b += 1) {
+                e("<td/>").appendTo(n);
+              }
+            }
+
+            l.range.deleteContents(), l.range.insertNode(t[0]), l.$c.trigger("tbwchange");
+          },
+              n = {
+            title: l.lang.tableAddRow,
+            text: l.lang.tableAddRow,
+            ico: "row-below",
+            fn: function fn() {
+              l.saveRange();
+              var t = l.doc.getSelection().focusNode,
+                  a = e(t).closest("tr"),
+                  o = e(t).closest("table");
+
+              if (o.length > 0) {
+                for (var d = e("<tr/>"), n = 0; n < o.find("tr")[0].childElementCount; n += 1) {
+                  e("<td/>").appendTo(d);
+                }
+
+                a.after(d);
+              }
+
+              l.syncCode();
+            }
+          },
+              b = {
+            title: l.lang.tableAddRowAbove,
+            text: l.lang.tableAddRowAbove,
+            ico: "row-above",
+            fn: function fn() {
+              l.saveRange();
+              var t = l.doc.getSelection().focusNode,
+                  a = e(t).closest("tr"),
+                  o = e(t).closest("table");
+
+              if (o.length > 0) {
+                for (var d = e("<tr/>"), n = 0; n < o.find("tr")[0].childElementCount; n += 1) {
+                  e("<td/>").appendTo(d);
+                }
+
+                a.before(d);
+              }
+
+              l.syncCode();
+            }
+          },
+              r = {
+            title: l.lang.tableAddColumn,
+            text: l.lang.tableAddColumn,
+            ico: "col-right",
+            fn: function fn() {
+              l.saveRange();
+              var t = l.doc.getSelection().focusNode,
+                  a = e(t).closest("td"),
+                  o = e(t).closest("table"),
+                  d = a.index();
+              o.length > 0 && e(o).find("tr").each(function () {
+                e(e(this).children()[d]).after("<td></td>");
+              }), l.syncCode();
+            }
+          },
+              i = {
+            title: l.lang.tableAddColumnLeft,
+            text: l.lang.tableAddColumnLeft,
+            ico: "col-left",
+            fn: function fn() {
+              l.saveRange();
+              var t = l.doc.getSelection().focusNode,
+                  a = e(t).closest("td"),
+                  o = e(t).closest("table"),
+                  d = a.index();
+              o.length > 0 && e(o).find("tr").each(function () {
+                e(e(this).children()[d]).before("<td></td>");
+              }), l.syncCode();
+            }
+          },
+              s = {
+            title: l.lang.tableDestroy,
+            text: l.lang.tableDestroy,
+            ico: "table-delete",
+            fn: function fn() {
+              l.saveRange();
+              var t = l.doc.getSelection().focusNode;
+              e(t).closest("table").remove(), l.syncCode();
+            }
+          },
+              u = {
+            title: l.lang.tableDeleteRow,
+            text: l.lang.tableDeleteRow,
+            ico: "row-delete",
+            fn: function fn() {
+              l.saveRange();
+              var t = l.doc.getSelection().focusNode;
+              e(t).closest("tr").remove(), l.syncCode();
+            }
+          },
+              f = {
+            title: l.lang.tableDeleteColumn,
+            text: l.lang.tableDeleteColumn,
+            ico: "col-delete",
+            fn: function fn() {
+              l.saveRange();
+              var t = l.doc.getSelection().focusNode,
+                  a = e(t).closest("table"),
+                  o = e(t).closest("td").index();
+              e(a).find("tr").each(function () {
+                e(this).find("td:eq(" + o + ")").remove();
+              }), l.syncCode();
+            }
+          };
+
+          l.addBtnDef("table", a), l.addBtnDef("tableAddRowAbove", b), l.addBtnDef("tableAddRow", n), l.addBtnDef("tableAddColumnLeft", i), l.addBtnDef("tableAddColumn", r), l.addBtnDef("tableDeleteRow", u), l.addBtnDef("tableDeleteColumn", f), l.addBtnDef("tableDestroy", s);
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict'; // Adds the language variables
 
@@ -3102,6 +5457,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       },
       de: {
         template: 'Vorlage'
+      },
+      et: {
+        template: 'Mall'
       },
       fr: {
         template: 'Patron'
@@ -3167,6 +5525,210 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     return templates;
   }
 })(jQuery);
+!function (t) {
+  "use strict";
+
+  function e(e) {
+    var a = e.o.plugins.templates,
+        l = [];
+    return t.each(a, function (t, a) {
+      e.addBtnDef("template_" + t, {
+        fn: function fn() {
+          e.html(a.html);
+        },
+        hasIcon: !1,
+        title: a.name
+      }), l.push("template_" + t);
+    }), l;
+  }
+
+  t.extend(!0, t.trumbowyg, {
+    langs: {
+      en: {
+        template: "Template"
+      },
+      da: {
+        template: "Skabelon"
+      },
+      de: {
+        template: "Vorlage"
+      },
+      et: {
+        template: "Mall"
+      },
+      fr: {
+        template: "Patron"
+      },
+      hu: {
+        template: "Sablon"
+      },
+      ja: {
+        template: "テンプレート"
+      },
+      ko: {
+        template: "서식"
+      },
+      nl: {
+        template: "Sjabloon"
+      },
+      pt_br: {
+        template: "Modelo"
+      },
+      ru: {
+        template: "Шаблон"
+      },
+      tr: {
+        template: "Şablon"
+      },
+      zh_tw: {
+        template: "模板"
+      }
+    }
+  }), t.extend(!0, t.trumbowyg, {
+    plugins: {
+      template: {
+        shouldInit: function shouldInit(t) {
+          return t.o.plugins.hasOwnProperty("templates");
+        },
+        init: function init(t) {
+          t.addBtnDef("template", {
+            dropdown: e(t),
+            hasIcon: !1,
+            text: t.lang.template
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    symbolList: [// currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null, // legal signs
+    '00A9', '00AE', '2122', null, // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null, //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: 'Special characters'
+      },
+      et: {
+        specialChars: 'Erimärgid'
+      },
+      fr: {
+        specialChars: 'Caractères spéciaux'
+      },
+      hu: {
+        specialChars: 'Speciális karakterek'
+      },
+      ko: {
+        specialChars: '특수문자'
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+        }
+      }
+    }
+  });
+
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+
+      var btn = symbol.replace(/:/g, ''),
+          defaultSymbolBtnName = 'symbol-' + btn,
+          defaultSymbolBtnDef = {
+        text: symbol,
+        hasIcon: false,
+        fn: function fn() {
+          var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+          trumbowyg.execCmd('insertText', encodedSymbol);
+          return true;
+        }
+      };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
+    });
+    return dropdown;
+  }
+})(jQuery);
+!function (a) {
+  "use strict";
+
+  var s = {
+    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
+  };
+
+  function e(s) {
+    var e = [];
+    return a.each(s.o.plugins.specialchars.symbolList, function (a, r) {
+      var n = "symbol-" + (r = null === r ? "&nbsp" : "&#x" + r).replace(/:/g, ""),
+          i = {
+        text: r,
+        hasIcon: !1,
+        fn: function fn() {
+          var a = String.fromCodePoint(parseInt(r.replace("&#", "0")));
+          return s.execCmd("insertText", a), !0;
+        }
+      };
+      s.addBtnDef(n, i), e.push(n);
+    }), e;
+  }
+
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: "Special characters"
+      },
+      et: {
+        specialChars: "Erimärgid"
+      },
+      fr: {
+        specialChars: "Caractères spéciaux"
+      },
+      hu: {
+        specialChars: "Speciális karakterek"
+      },
+      ko: {
+        specialChars: "특수문자"
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(a) {
+          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
+          var r = {
+            dropdown: e(a)
+          };
+          a.addBtnDef("specialChars", r);
+        }
+      }
+    }
+  });
+}(jQuery);
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /* ===========================================================
@@ -3196,7 +5758,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     urlPropertyName: 'file',
     // How to get url from the json response (for instance 'url' for {url: ....})
     statusPropertyName: 'success',
-    // How to get status from the json response 
+    // How to get status from the json response
     success: undefined,
     // Success callback: function (data, trumbowyg, $modal, values) {}
     error: undefined,
@@ -3245,6 +5807,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         upload: 'Hochladen',
         file: 'Datei',
         uploadError: 'Fehler'
+      },
+      et: {
+        upload: 'Lae üles',
+        file: 'Fail',
+        uploadError: 'Viga'
       },
       fr: {
         upload: 'Envoi',
@@ -3325,12 +5892,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                 fields.width = {
                   value: ''
                 };
-              }
+              } // Prevent multiple submissions while uploading
 
+
+              var isUploading = false;
               var $modal = trumbowyg.openModalInsert( // Title
               trumbowyg.lang.upload, // Fields
               fields, // Callback
               function (values) {
+                if (isUploading) {
+                  return;
+                }
+
+                isUploading = true;
                 var data = new FormData();
                 data.append(trumbowyg.o.plugins.upload.fileFieldName, file);
                 trumbowyg.o.plugins.upload.data.map(function (cur) {
@@ -3373,7 +5947,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                         var $img = $('img[src="' + url + '"]:not([alt])', trumbowyg.$box);
                         $img.attr('alt', values.alt);
 
-                        if (trumbowyg.o.imageWidthModalEdit && parseInt(values.width) > 0) {
+                        if (trumbowyg.o.plugins.upload.imageWidthModalEdit && parseInt(values.width) > 0) {
                           $img.attr({
                             width: values.width
                           });
@@ -3388,10 +5962,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                         trumbowyg.$c.trigger('tbwuploaderror', [trumbowyg, data]);
                       }
                     }
+
+                    isUploading = false;
                   },
                   error: trumbowyg.o.plugins.upload.error || function () {
                     trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.uploadError);
                     trumbowyg.$c.trigger('tbwuploaderror', [trumbowyg]);
+                    isUploading = false;
                   }
                 });
               });
@@ -3434,3 +6011,209 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
   }
 })(jQuery);
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+!function (r) {
+  "use strict";
+
+  var a = {
+    serverPath: "",
+    fileFieldName: "fileToUpload",
+    data: [],
+    headers: {},
+    xhrFields: {},
+    urlPropertyName: "file",
+    statusPropertyName: "success",
+    success: void 0,
+    error: void 0,
+    imageWidthModalEdit: !1
+  };
+
+  function e(r, a) {
+    var o = a.shift(),
+        l = a;
+
+    if (null !== r) {
+      if (0 === l.length) return r[o];
+      if ("object" == _typeof(r)) return e(r[o], l);
+    }
+
+    return r;
+  }
+
+  !function () {
+    if (!r.trumbowyg.addedXhrProgressEvent) {
+      var a = r.ajaxSettings.xhr;
+      r.ajaxSetup({
+        xhr: function xhr() {
+          var r = this,
+              e = a();
+          return e && "object" == _typeof(e.upload) && void 0 !== r.progressUpload && e.upload.addEventListener("progress", function (a) {
+            r.progressUpload(a);
+          }, !1), e;
+        }
+      }), r.trumbowyg.addedXhrProgressEvent = !0;
+    }
+  }(), r.extend(!0, r.trumbowyg, {
+    langs: {
+      en: {
+        upload: "Upload",
+        file: "File",
+        uploadError: "Error"
+      },
+      cs: {
+        upload: "Nahrát obrázek",
+        file: "Soubor",
+        uploadError: "Chyba"
+      },
+      da: {
+        upload: "Upload",
+        file: "Fil",
+        uploadError: "Fejl"
+      },
+      de: {
+        upload: "Hochladen",
+        file: "Datei",
+        uploadError: "Fehler"
+      },
+      et: {
+        upload: "Lae üles",
+        file: "Fail",
+        uploadError: "Viga"
+      },
+      fr: {
+        upload: "Envoi",
+        file: "Fichier",
+        uploadError: "Erreur"
+      },
+      hu: {
+        upload: "Feltöltés",
+        file: "Fájl",
+        uploadError: "Hiba"
+      },
+      ja: {
+        upload: "アップロード",
+        file: "ファイル",
+        uploadError: "エラー"
+      },
+      ko: {
+        upload: "그림 올리기",
+        file: "파일",
+        uploadError: "에러"
+      },
+      pt_br: {
+        upload: "Enviar do local",
+        file: "Arquivo",
+        uploadError: "Erro"
+      },
+      ru: {
+        upload: "Загрузка",
+        file: "Файл",
+        uploadError: "Ошибка"
+      },
+      sk: {
+        upload: "Nahrať",
+        file: "Súbor",
+        uploadError: "Chyba"
+      },
+      tr: {
+        upload: "Yükle",
+        file: "Dosya",
+        uploadError: "Hata"
+      },
+      zh_cn: {
+        upload: "上传",
+        file: "文件",
+        uploadError: "错误"
+      },
+      zh_tw: {
+        upload: "上傳",
+        file: "文件",
+        uploadError: "錯誤"
+      }
+    },
+    plugins: {
+      upload: {
+        init: function init(o) {
+          o.o.plugins.upload = r.extend(!0, {}, a, o.o.plugins.upload || {});
+          var l = {
+            fn: function fn() {
+              o.saveRange();
+              var a,
+                  l = o.o.prefix,
+                  t = {
+                file: {
+                  type: "file",
+                  required: !0,
+                  attributes: {
+                    accept: "image/*"
+                  }
+                },
+                alt: {
+                  label: "description",
+                  value: o.getRangeText()
+                }
+              };
+              o.o.plugins.upload.imageWidthModalEdit && (t.width = {
+                value: ""
+              });
+              var d = !1,
+                  i = o.openModalInsert(o.lang.upload, t, function (t) {
+                if (!d) {
+                  d = !0;
+                  var u = new FormData();
+                  u.append(o.o.plugins.upload.fileFieldName, a), o.o.plugins.upload.data.map(function (r) {
+                    u.append(r.name, r.value);
+                  }), r.map(t, function (r, a) {
+                    "file" !== a && u.append(a, r);
+                  }), 0 === r("." + l + "progress", i).length && r("." + l + "modal-title", i).after(r("<div/>", {
+                    "class": l + "progress"
+                  }).append(r("<div/>", {
+                    "class": l + "progress-bar"
+                  }))), r.ajax({
+                    url: o.o.plugins.upload.serverPath,
+                    headers: o.o.plugins.upload.headers,
+                    xhrFields: o.o.plugins.upload.xhrFields,
+                    type: "POST",
+                    data: u,
+                    cache: !1,
+                    dataType: "json",
+                    processData: !1,
+                    contentType: !1,
+                    progressUpload: function progressUpload(a) {
+                      r("." + l + "progress-bar").css("width", Math.round(100 * a.loaded / a.total) + "%");
+                    },
+                    success: function success(a) {
+                      if (o.o.plugins.upload.success) o.o.plugins.upload.success(a, o, i, t);else if (e(a, o.o.plugins.upload.statusPropertyName.split("."))) {
+                        var l = e(a, o.o.plugins.upload.urlPropertyName.split("."));
+                        o.execCmd("insertImage", l, !1, !0);
+                        var u = r('img[src="' + l + '"]:not([alt])', o.$box);
+                        u.attr("alt", t.alt), o.o.plugins.upload.imageWidthModalEdit && parseInt(t.width) > 0 && u.attr({
+                          width: t.width
+                        }), setTimeout(function () {
+                          o.closeModal();
+                        }, 250), o.$c.trigger("tbwuploadsuccess", [o, a, l]);
+                      } else o.addErrorOnModalField(r("input[type=file]", i), o.lang[a.message]), o.$c.trigger("tbwuploaderror", [o, a]);
+                      d = !1;
+                    },
+                    error: o.o.plugins.upload.error || function () {
+                      o.addErrorOnModalField(r("input[type=file]", i), o.lang.uploadError), o.$c.trigger("tbwuploaderror", [o]), d = !1;
+                    }
+                  });
+                }
+              });
+              r("input[type=file]").on("change", function (r) {
+                try {
+                  a = r.target.files[0];
+                } catch (e) {
+                  a = r.target.value;
+                }
+              });
+            }
+          };
+          o.addBtnDef("upload", l);
+        }
+      }
+    }
+  });
+}(jQuery);

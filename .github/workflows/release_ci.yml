@@ -5,8 +5,9 @@ on:
       - '**/*.md'
       - 'mkdocs.yml'
       - 'src/docs/**/*'
-    branches:
-      - 'dev'
+    tags: 
+      - 'v*.*.*'
+
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -55,10 +56,15 @@ jobs:
         path: |
           test/Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
-    - name: Deploy preview nuget packages
+    - name: Build version number
+      run: |
+        arrTag=(${GITHUB_REF//\// })
+        VERSION="${arrTag[2]}"
+        VERSION="${VERSION//v}"
+    - name: Deploy release NuGet packages
       if: matrix.os == 'ubuntu-latest'
       run: |
-        dotnet pack -c Release --no-restore --no-build
+        dotnet pack -c Release --no-restore --no-build -p:Version=$VERSION
         dotnet nuget push './src/**/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
     - name: Login to DockerHub
       if: matrix.os == 'ubuntu-latest'
@@ -66,20 +72,26 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: Deploy preview docker image for linux
+    - name: Deploy release docker image for linux
       if: matrix.os == 'ubuntu-latest'
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
-        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
-        docker push orchardproject/orchardcore-cms-linux:dev
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest .
+        # docker push orchardproject/orchardcore-cms-linux:latest 
+        # docker push "orchardproject/orchardcore-cms-linux:$VERSION"
     - name: Deploy preview docker image for windows
       if: matrix.os == 'windows-latest'
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
-        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-        docker push orchardproject/orchardcore-cms-windows:dev
+        # docker push orchardproject/orchardcore-cms-windows:latest 
+        # docker push "orchardproject/orchardcore-cms-windows:$VERSION"
+
+# TODO: 
+# use NuGet
+# enable docker push commands

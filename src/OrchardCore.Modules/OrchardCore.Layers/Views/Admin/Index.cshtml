@@ -14,7 +14,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Widgets and Layers"])</h1></zone>
 
-<form id="undo-form" asp-action="UpdatePosition" method="post">
+<form id="undo-form" asp-action="UpdatePosition" method="post" class="no-multisubmit">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -73,23 +73,25 @@
                             </div>
                             @if (Model.Layers.Any())
                             {
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        @T["Add Widget"]
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        @foreach (var type in widgetContentTypes)
-                                        {
-                                            var contentItem = await ContentManager.NewAsync(type.Name);
-                                            var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
-                                            createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
-                                            createRoute["LayerMetadata.Zone"] = zone;
-                                            createRoute["LayerMetadata.Position"] = maxPosition + 1;
-                                            <a class="dropdown-item add-list-widget btn-sm"
-                                               data-widget-type="@type.Name"
-                                               data-zone="@zone"
-                                               href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
-                                        }
+                                <div class="btn-dropdown-wrapper w-100">
+                                    <div class="btn-group btn-dropdown">
+                                        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            @T["Add Widget"]
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            @foreach (var type in widgetContentTypes)
+                                            {
+                                                var contentItem = await ContentManager.NewAsync(type.Name);
+                                                var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
+                                                createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
+                                                createRoute["LayerMetadata.Zone"] = zone;
+                                                createRoute["LayerMetadata.Position"] = maxPosition + 1;
+                                                <a class="dropdown-item add-list-widget btn-sm"
+                                                data-widget-type="@type.Name"
+                                                data-zone="@zone"
+                                                href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             }

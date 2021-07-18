@@ -8,120 +8,98 @@ Bootstrap customization for The Blog theme
 By Orchard Core Team
  */
 .flow {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 0;
   display: flex;
   flex-wrap: wrap;
-  margin-right: -15px;
-  margin-left: -15px;
+  margin-top: calc(var(--bs-gutter-y) * -1);
+  margin-right: calc(var(--bs-gutter-x) * -.5);
+  margin-left: calc(var(--bs-gutter-x) * -.5);
 }
 
 .message {
   position: relative;
-  padding: 0.75rem 1.25rem;
+  padding: 1rem 1rem;
   margin-bottom: 1rem;
   border: 1px solid transparent;
-  border-radius: 0.25rem;
 }
 
 .message-primary {
-  color: #004554;
+  color: #005061;
   background-color: #cce7ec;
-  border-color: #b8dde5;
-}
-.message-primary hr {
-  border-top-color: #a5d4de;
+  border-color: #b3dae3;
 }
 .message-primary .alert-link {
-  color: #001b21;
+  color: #00404e;
 }
 
 .message-secondary {
-  color: #464a4e;
-  background-color: #e7e8ea;
-  border-color: #dddfe2;
-}
-.message-secondary hr {
-  border-top-color: #cfd2d6;
+  color: #41464b;
+  background-color: #e2e3e5;
+  border-color: #d3d6d8;
 }
 .message-secondary .alert-link {
-  color: #2e3133;
+  color: #34383c;
 }
 
 .message-success {
-  color: #155724;
-  background-color: #d4edda;
-  border-color: #c3e6cb;
-}
-.message-success hr {
-  border-top-color: #b1dfbb;
+  color: #0f5132;
+  background-color: #d1e7dd;
+  border-color: #badbcc;
 }
 .message-success .alert-link {
-  color: #0b2e13;
+  color: #0c4128;
 }
 
 .message-info {
-  color: #0c5460;
-  background-color: #d1ecf1;
-  border-color: #bee5eb;
-}
-.message-info hr {
-  border-top-color: #abdde5;
+  color: #087990;
+  background-color: #cff4fc;
+  border-color: #b6effb;
 }
 .message-info .alert-link {
-  color: #062c33;
+  color: #066173;
 }
 
 .message-warning {
-  color: #856404;
+  color: #997404;
   background-color: #fff3cd;
-  border-color: #ffeeba;
-}
-.message-warning hr {
-  border-top-color: #ffe8a1;
+  border-color: #ffecb5;
 }
 .message-warning .alert-link {
-  color: #533f03;
+  color: #7a5d03;
 }
 
 .message-danger {
-  color: #721c24;
+  color: #842029;
   background-color: #f8d7da;
-  border-color: #f5c6cb;
-}
-.message-danger hr {
-  border-top-color: #f1b0b7;
+  border-color: #f5c2c7;
 }
 .message-danger .alert-link {
-  color: #491217;
+  color: #6a1a21;
 }
 
 .message-light {
-  color: #818182;
+  color: #959596;
   background-color: #fefefe;
   border-color: #fdfdfe;
 }
-.message-light hr {
-  border-top-color: #ececf6;
-}
 .message-light .alert-link {
-  color: #686868;
+  color: #777778;
 }
 
 .message-dark {
-  color: #1b1e21;
-  background-color: #d6d8d9;
-  border-color: #c6c8ca;
-}
-.message-dark hr {
-  border-top-color: #b9bbbe;
+  color: #141619;
+  background-color: #d3d3d4;
+  border-color: #bcbebf;
 }
 .message-dark .alert-link {
-  color: #040505;
+  color: #101214;
 }
 
 .widget-container {
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: var(--bs-gutter-x, 0.75rem);
+  padding-left: var(--bs-gutter-x, 0.75rem);
   margin-right: auto;
   margin-left: auto;
 }
@@ -147,81 +125,83 @@ By Orchard Core Team
 }
 
 .widget-size-100, .widget-size-75, .widget .widget-size-75, .widget-size-66, .widget .widget-size-66, .widget-size-50, .widget .widget-size-50, .widget-size-33, .widget .widget-size-33, .widget-size-25, .widget .widget-size-25 {
-  position: relative;
+  flex-shrink: 0;
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-  flex: 0 0 100%;
   max-width: 100%;
+  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * .5);
+  margin-top: var(--bs-gutter-y);
+  flex: 0 0 auto;
+  width: 100%;
 }
 
 @media (min-width: 576px) {
   .widget-size-25, .widget .widget-size-25 {
-    flex: 0 0 25%;
-    max-width: 25%;
+    flex: 0 0 auto;
+    width: 25%;
   }
 }
 
 @media (min-width: 768px) {
   .widget .widget-size-25 {
-    flex: 0 0 25%;
-    max-width: 25%;
+    flex: 0 0 auto;
+    width: 25%;
   }
 }
 
 @media (min-width: 576px) {
   .widget-size-33, .widget .widget-size-33 {
-    flex: 0 0 33.3333333333%;
-    max-width: 33.3333333333%;
+    flex: 0 0 auto;
+    width: 33.33333333%;
   }
 }
 
 @media (min-width: 768px) {
   .widget .widget-size-33 {
-    flex: 0 0 33.3333333333%;
-    max-width: 33.3333333333%;
+    flex: 0 0 auto;
+    width: 33.33333333%;
   }
 }
 
 @media (min-width: 576px) {
   .widget-size-50, .widget .widget-size-50 {
-    flex: 0 0 50%;
-    max-width: 50%;
+    flex: 0 0 auto;
+    width: 50%;
   }
 }
 
 @media (min-width: 768px) {
   .widget .widget-size-50 {
-    flex: 0 0 50%;
-    max-width: 50%;
+    flex: 0 0 auto;
+    width: 50%;
   }
 }
 
 @media (min-width: 576px) {
   .widget-size-66, .widget .widget-size-66 {
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%;
+    flex: 0 0 auto;
+    width: 66.66666667%;
   }
 }
 
 @media (min-width: 768px) {
   .widget .widget-size-66 {
-    flex: 0 0 66.6666666667%;
-    max-width: 66.6666666667%;
+    flex: 0 0 auto;
+    width: 66.66666667%;
   }
 }
 
 @media (min-width: 576px) {
   .widget-size-75, .widget .widget-size-75 {
-    flex: 0 0 75%;
-    max-width: 75%;
+    flex: 0 0 auto;
+    width: 75%;
   }
 }
 
 @media (min-width: 768px) {
   .widget .widget-size-75 {
-    flex: 0 0 75%;
-    max-width: 75%;
+    flex: 0 0 auto;
+    width: 75%;
   }
 }
 
@@ -229,22 +209,20 @@ ul.pager {
   display: flex;
   padding-left: 0;
   list-style: none;
-  border-radius: 0.25rem;
 }
 
 ul.pager li a {
   position: relative;
   display: block;
-  padding: 0.5rem 0.75rem;
+  padding: 0.375rem 0.75rem;
   margin-left: -1px;
-  line-height: 1.25;
-  color: #0085A1;
+  color: #212529;
   background-color: #fff;
   border: 1px solid #dee2e6;
 }
 ul.pager li a:hover {
   z-index: 2;
-  color: #004655;
+  color: #0085A1;
   text-decoration: none;
   background-color: #e9ecef;
   border-color: #dee2e6;
@@ -252,17 +230,15 @@ ul.pager li a:hover {
 ul.pager li a:focus {
   z-index: 2;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 133, 161, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(0, 133, 161, 0.25);
 }
 
 ul.pager li:first-child .page-link {
   margin-left: 0;
-  border-top-left-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
+  border-radius: 0.25rem;
 }
 ul.pager li:last-child .page-link {
-  border-top-right-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
+  border-radius: 0.25rem;
 }
 ul.pager li.active .page-link {
   z-index: 1;
@@ -271,7 +247,7 @@ ul.pager li.active .page-link {
   border-color: #0085A1;
 }
 ul.pager li.disabled .page-link {
-  color: #868e96;
+  color: #6c757d;
   pointer-events: none;
   cursor: auto;
   background-color: #fff;

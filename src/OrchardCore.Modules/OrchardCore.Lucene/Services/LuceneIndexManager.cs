@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
+using Lucene.Net.Spatial.Prefix;
+using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Store;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,6 +19,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Modules;
+using Spatial4n.Core.Context;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
 
@@ -32,12 +35,14 @@ namespace OrchardCore.Lucene
         private readonly ILogger _logger;
         private readonly string _rootPath;
         private bool _disposing;
-        private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
-        private ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
-        private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
-        private static object _synLock = new object();
+        private readonly SpatialContext _ctx;
+        private readonly GeohashPrefixTree _grid;
+        private readonly static object _synLock = new object();
 
         public LuceneIndexManager(
             IClock clock,
@@ -54,10 +59,19 @@ namespace OrchardCore.Lucene
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name, "Lucene");
-
             Directory.CreateDirectory(_rootPath);
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _luceneIndexSettingsService = luceneIndexSettingsService;
+
+            // Typical geospatial context
+            // These can also be constructed from SpatialContextFactory
+            _ctx = SpatialContext.GEO;
+
+            var maxLevels = 11; // Results in sub-meter precision for geohash
+
+            // TODO demo lookup by detail distance
+            // This can also be constructed from SpatialPrefixTreeFactory
+            _grid = new GeohashPrefixTree(_ctx, maxLevels);
         }
 
         public async Task CreateIndexAsync(string indexName)
@@ -96,7 +110,7 @@ namespace OrchardCore.Lucene
                     reader.Dispose();
                 }
 
-                _timestamps.TryRemove(indexName, out var timestamp);
+                _timestamps.TryRemove(indexName, out _);
 
                 var indexFolder = PathExtensions.Combine(_rootPath, indexName);
 
@@ -109,13 +123,13 @@ namespace OrchardCore.Lucene
                     catch { }
                 }
 
-                _writers.TryRemove(indexName, out writer);
+                _writers.TryRemove(indexName, out _);
             }
         }
 
         public bool Exists(string indexName)
         {
-            if (string.IsNullOrWhiteSpace(indexName))
+            if (String.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }
@@ -194,7 +208,7 @@ namespace OrchardCore.Lucene
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
-                        // store "true"/"false" for booleans
+                        // Store "true"/"false" for booleans
                         doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
                         break;
 
@@ -219,7 +233,7 @@ namespace OrchardCore.Lucene
                     case DocumentIndex.Types.Integer:
                         if (entry.Value != null && Int32.TryParse(entry.Value.ToString(), out var value))
                         {
-                            doc.Add(new Int32Field(entry.Name, Convert.ToInt32(entry.Value), store));
+                            doc.Add(new Int32Field(entry.Name, value, store));
                         }
                         else
                         {
@@ -261,6 +275,27 @@ namespace OrchardCore.Lucene
                             {
                                 doc.Add(new StringField(entry.Name, "NULL", store));
                             }
+                        }
+                        break;
+
+                    case DocumentIndex.Types.GeoPoint:
+                        var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
+                        if (entry.Value != null && entry.Value is DocumentIndex.GeoPoint point)
+                        {
+                            var geoPoint = _ctx.MakePoint((double)point.Longitude, (double)point.Latitude);
+                            foreach (var field in strategy.CreateIndexableFields(geoPoint))
+                            {
+                                doc.Add(field);
+                            }
+
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Store))
+                            {
+                                doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                            }
+                        }
+                        else
+                        {
+                            doc.Add(new StringField(strategy.FieldName, "NULL", store));
                         }
                         break;
                 }
@@ -335,7 +370,6 @@ namespace OrchardCore.Lucene
             var pool = _indexPools.GetOrAdd(indexName, n =>
             {
                 var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
-                //var directory = CreateDirectory(indexName);
                 var reader = DirectoryReader.Open(FSDirectory.Open(path));
                 return new IndexReaderPool(reader);
             });
@@ -405,9 +439,9 @@ namespace OrchardCore.Lucene
                     reader.Dispose();
                 }
 
-                _timestamps.TryRemove(indexName, out var timestamp);
+                _timestamps.TryRemove(indexName, out _);
 
-                _writers.TryRemove(indexName, out writer);
+                _writers.TryRemove(indexName, out _);
             }
         }
 
@@ -443,7 +477,7 @@ namespace OrchardCore.Lucene
     {
         private bool _dirty;
         private int _count;
-        private IndexReader _reader;
+        private readonly IndexReader _reader;
 
         public IndexReaderPool(IndexReader reader)
         {
@@ -475,7 +509,7 @@ namespace OrchardCore.Lucene
 
         public struct IndexReaderLease : IDisposable
         {
-            private IndexReaderPool _pool;
+            private readonly IndexReaderPool _pool;
 
             public IndexReaderLease(IndexReaderPool pool, IndexReader reader)
             {
@@ -488,7 +522,7 @@ namespace OrchardCore.Lucene
 
             public void Dispose()
             {
-                var count = Interlocked.Decrement(ref _pool._count);
+                Interlocked.Decrement(ref _pool._count);
                 _pool.Release();
             }
         }

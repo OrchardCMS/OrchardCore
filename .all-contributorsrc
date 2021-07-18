@@ -2152,6 +2152,7 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/12182810?v=4",
       "profile": "https://github.com/Diman96",
       "contributions": [
+        "doc",
         "code"
       ]
     },
@@ -2315,6 +2316,51 @@
       "profile": "https://welshtechnologies.com/",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "andycyberian",
+      "name": "Andy Rose",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4202906?v=4",
+      "profile": "http://cyberian.co.uk",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "doticca",
+      "name": "Fotis G. Pappas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6129662?v=4",
+      "profile": "http://www.doticca.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "vlodkopits",
+      "name": "vlodkopits",
+      "avatar_url": "https://avatars.githubusercontent.com/u/14543503?v=4",
+      "profile": "https://github.com/vlodkopits",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "john-s-morgan",
+      "name": "John Morgan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70619927?v=4",
+      "profile": "https://github.com/john-s-morgan",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "brunoAltinet",
+      "name": "brunoAltinet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4034604?v=4",
+      "profile": "https://github.com/brunoAltinet",
+      "contributions": [
+        "doc"
       ]
     }
   ],

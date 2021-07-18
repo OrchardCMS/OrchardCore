@@ -12,6 +12,7 @@ namespace OrchardCore.Users.Workflows.Drivers
             model.SendConfirmationEmail = activity.SendConfirmationEmail;
             model.ConfirmationEmailSubject = activity.ConfirmationEmailSubject.Expression;
             model.ConfirmationEmailTemplate = activity.ConfirmationEmailTemplate.Expression;
+            model.RequireModeration = activity.RequireModeration;
         }
 
         protected override void UpdateActivity(RegisterUserTaskViewModel model, RegisterUserTask activity)
@@ -19,6 +20,7 @@ namespace OrchardCore.Users.Workflows.Drivers
             activity.SendConfirmationEmail = model.SendConfirmationEmail;
             activity.ConfirmationEmailSubject = new WorkflowExpression<string>(model.ConfirmationEmailSubject);
             activity.ConfirmationEmailTemplate = new WorkflowExpression<string>(model.ConfirmationEmailTemplate);
+            activity.RequireModeration = model.RequireModeration;
         }
     }
 }

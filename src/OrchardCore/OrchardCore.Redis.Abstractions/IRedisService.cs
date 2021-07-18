@@ -8,6 +8,7 @@ namespace OrchardCore.Redis
     {
         Task ConnectAsync();
         IConnectionMultiplexer Connection { get; }
+        string InstancePrefix { get; }
         IDatabase Database { get; }
     }
 }

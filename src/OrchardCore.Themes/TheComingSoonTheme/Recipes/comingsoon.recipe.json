@@ -332,7 +332,7 @@
             "Title": "Coming Soon"
           },
           "HtmlBodyPart": {
-            "Html": "\r\n<div class=\"input-group input-group-newsletter\">\r\n                <input class=\"form-control\" aria-describedby=\"basic-addon\" aria-label=\"Enter email...\" type=\"email\" placeholder=\"Enter email...\">\r\n                <div class=\"input-group-append\">\r\n                  <button class=\"btn btn-secondary\" type=\"button\">Notify Me!</button>\r\n                </div>\r\n              </div>"
+            "Html": "\r\n<div class=\"input-group input-group-newsletter\">\r\n                <input class=\"form-control\" aria-describedby=\"submit-button\" aria-label=\"Enter email address...\" type=\"email\" placeholder=\"Enter email address...\">\r\n                <button class=\"btn btn-primary\" id=\"submit-button\" type=\"button\">Notify Me!</button>\r\n                </div>"
           },
           "SocialIcons": {
             "ContentItems": [
@@ -367,7 +367,7 @@
                 "Author": "admin",
                 "SocialIcon": {
                   "IconClass": {
-                    "Text": "fab fa-facebook"
+                    "Text": "fab fa-facebook-f"
                   },
                   "Url": {
                     "Text": "https://facebook.com"
@@ -425,17 +425,17 @@
                 "Author": "admin",
                 "Register": {
                   "Placeholder": {
-                    "Text": "enter your email...."
+                    "Text": "Enter email address..."
                   },
                   "Button": {
-                    "Text": "NOTIFY ME!"
+                    "Text": "Notify Me!"
                   },
                   "InputFieldName": {
                     "Text": "Email"
                   }
                 },
                 "HtmlBodyPart": {
-                  "Html": "[js: '<p class=\"mb-5\">We&#39;re working hard to finish the development of this site. Our target launch date is ' +  variables('readyDate') + '! Sign up for updates using the form below!</p>']"
+                  "Html": "[js: '<p class=\"mb-5\">We&#39;re working hard to finish the development of this site. Our target launch date is ' +  variables('readyDate') + '! Sign up below to receive updates and to be notified when we launch!</p>']"
                 },
                 "FlowMetadata": {
                   "Alignment": 3,

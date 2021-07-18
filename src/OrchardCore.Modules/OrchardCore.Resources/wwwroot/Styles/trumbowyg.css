@@ -4,7 +4,7 @@
 */
 
 /**
- * Trumbowyg v2.23.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.25.0 - A lightweight WYSIWYG editor
  * Default stylesheet for Trumbowyg editor
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -233,6 +233,7 @@
 .trumbowyg-button-pane.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active),
 .trumbowyg-button-pane button.trumbowyg-disable, .trumbowyg-disabled .trumbowyg-button-pane button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
   opacity: 0.2;
+  pointer-events: none;
 }
 [dir] .trumbowyg-button-pane.trumbowyg-disable button:not(.trumbowyg-not-disable):not(.trumbowyg-active), [dir] .trumbowyg-button-pane button.trumbowyg-disable, [dir] .trumbowyg-disabled .trumbowyg-button-pane button:not(.trumbowyg-not-disable):not(.trumbowyg-viewHTML-button) {
   cursor: default;
@@ -421,98 +422,95 @@
 [dir] .trumbowyg-modal-box .trumbowyg-progress .trumbowyg-progress-bar {
   background: #2BC06A;
 }
-.trumbowyg-modal-box label {
-  display: block;
+.trumbowyg-modal-box .trumbowyg-input-row {
   position: relative;
-  height: 29px;
-  line-height: 29px;
   overflow: hidden;
 }
-[dir] .trumbowyg-modal-box label {
+[dir] .trumbowyg-modal-box .trumbowyg-input-row {
   margin: 15px 12px;
-}
-.trumbowyg-modal-box label .trumbowyg-input-infos {
-  display: block;
-  height: 25px;
-  line-height: 25px;
-  transition: all 150ms;
-}
-[dir=ltr] .trumbowyg-modal-box label .trumbowyg-input-infos {
-  text-align: left;
-}
-[dir=rtl] .trumbowyg-modal-box label .trumbowyg-input-infos {
-  text-align: right;
-}
-.trumbowyg-modal-box label .trumbowyg-input-infos span {
-  display: block;
-  color: #69878f;
-  width: 150px;
-}
-[dir] .trumbowyg-modal-box label .trumbowyg-input-infos span {
-  background-color: #fbfcfc;
   border: 1px solid #DEDEDE;
-  padding: 0 7px;
 }
-.trumbowyg-modal-box label .trumbowyg-input-infos span.trumbowyg-msg-error {
-  color: #e74c3c;
-}
-[dir] .trumbowyg-modal-box label.trumbowyg-input-error input, [dir] .trumbowyg-modal-box label.trumbowyg-input-error textarea {
-  border: 1px solid #e74c3c;
-}
-[dir] .trumbowyg-modal-box label.trumbowyg-input-error .trumbowyg-input-infos {
-  margin-top: -27px;
-}
-.trumbowyg-modal-box label input {
+.trumbowyg-modal-box .trumbowyg-input-infos {
+  transition: all 150ms;
+  width: 150px;
   position: absolute;
   top: 0;
-  height: 27px;
-  line-height: 27px;
-  font-size: 14px;
-  max-width: 330px;
-  width: 70%;
-  transition: all 150ms;
+  bottom: 0;
 }
-[dir] .trumbowyg-modal-box label input {
-  border: 1px solid #DEDEDE;
-  background: #fff;
+[dir] .trumbowyg-modal-box .trumbowyg-input-infos {
   padding: 0 7px;
+  background-color: #fbfcfc;
 }
-[dir=ltr] .trumbowyg-modal-box label input {
-  right: 0;
-}
-[dir=rtl] .trumbowyg-modal-box label input {
+[dir=ltr] .trumbowyg-modal-box .trumbowyg-input-infos {
+  text-align: left;
+  border-right: 1px solid #DEDEDE;
   left: 0;
 }
-.trumbowyg-modal-box label input:hover, .trumbowyg-modal-box label input:focus {
-  outline: none;
+[dir=rtl] .trumbowyg-modal-box .trumbowyg-input-infos {
+  text-align: right;
+  border-left: 1px solid #DEDEDE;
+  right: 0;
 }
-[dir] .trumbowyg-modal-box label input:hover, [dir] .trumbowyg-modal-box label input:focus {
-  border: 1px solid #95a5a6;
+.trumbowyg-modal-box .trumbowyg-input-infos label {
+  color: #69878f;
+  overflow: hidden;
+  height: 27px;
+  line-height: 27px;
 }
-[dir] .trumbowyg-modal-box label input:focus {
+.trumbowyg-modal-box .trumbowyg-input-infos label, .trumbowyg-modal-box .trumbowyg-input-infos label span {
+  display: block;
+  height: 27px;
+  line-height: 27px;
+  transition: all 150ms;
+}
+.trumbowyg-modal-box .trumbowyg-input-infos .trumbowyg-msg-error {
+  color: #e74c3c;
+}
+[dir=ltr] .trumbowyg-modal-box .trumbowyg-input-html {
+  padding: 1px 1px 1px 152px;
+}
+[dir=rtl] .trumbowyg-modal-box .trumbowyg-input-html {
+  padding: 1px 152px 1px 1px;
+}
+.trumbowyg-modal-box .trumbowyg-input-html, .trumbowyg-modal-box .trumbowyg-input-html input, .trumbowyg-modal-box .trumbowyg-input-html textarea, .trumbowyg-modal-box .trumbowyg-input-html select {
+  font-size: 14px;
+}
+.trumbowyg-modal-box .trumbowyg-input-html input, .trumbowyg-modal-box .trumbowyg-input-html textarea, .trumbowyg-modal-box .trumbowyg-input-html select {
+  transition: all 150ms;
+  height: 27px;
+  line-height: 27px;
+  width: 100%;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-input-html input, [dir] .trumbowyg-modal-box .trumbowyg-input-html textarea, [dir] .trumbowyg-modal-box .trumbowyg-input-html select {
+  border: 0;
+  padding: 0 7px;
+}
+.trumbowyg-modal-box .trumbowyg-input-html input:hover, .trumbowyg-modal-box .trumbowyg-input-html input:focus, .trumbowyg-modal-box .trumbowyg-input-html textarea:hover, .trumbowyg-modal-box .trumbowyg-input-html textarea:focus, .trumbowyg-modal-box .trumbowyg-input-html select:hover, .trumbowyg-modal-box .trumbowyg-input-html select:focus {
+  outline: 1px solid #95a5a6;
+}
+[dir] .trumbowyg-modal-box .trumbowyg-input-html input:focus, [dir] .trumbowyg-modal-box .trumbowyg-input-html textarea:focus, [dir] .trumbowyg-modal-box .trumbowyg-input-html select:focus {
   background: #fbfcfc;
 }
-.trumbowyg-modal-box label input[type=checkbox] {
-  top: 6px;
-  height: 16px;
+.trumbowyg-modal-box .trumbowyg-input-html input[type=checkbox] {
   width: 16px;
+  height: 16px;
 }
-[dir=ltr] .trumbowyg-modal-box label input[type=checkbox] {
-  left: 6px;
-  right: auto;
+[dir] .trumbowyg-modal-box .trumbowyg-input-html input[type=checkbox] {
+  padding: 0;
 }
-[dir=rtl] .trumbowyg-modal-box label input[type=checkbox] {
-  right: 6px;
-  left: auto;
+[dir=ltr] .trumbowyg-modal-box .trumbowyg-input-html-with-checkbox {
+  text-align: left;
+  padding: 3px 1px 1px 3px;
 }
-.trumbowyg-modal-box label input[type=checkbox] + .trumbowyg-input-infos span {
-  width: auto;
+[dir=rtl] .trumbowyg-modal-box .trumbowyg-input-html-with-checkbox {
+  text-align: right;
+  padding: 3px 3px 1px 1px;
 }
-[dir=ltr] .trumbowyg-modal-box label input[type=checkbox] + .trumbowyg-input-infos span {
-  padding-left: 25px;
+.trumbowyg-modal-box .trumbowyg-input-error input, .trumbowyg-modal-box .trumbowyg-input-error select, .trumbowyg-modal-box .trumbowyg-input-error textarea {
+  outline: 1px solid #e74c3c;
 }
-[dir=rtl] .trumbowyg-modal-box label input[type=checkbox] + .trumbowyg-input-infos span {
-  padding-right: 25px;
+[dir] .trumbowyg-modal-box .trumbowyg-input-error .trumbowyg-input-infos label span:first-child {
+  margin-top: -27px;
 }
 .trumbowyg-modal-box .error {
   display: block;

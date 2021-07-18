@@ -34,11 +34,8 @@ namespace OrchardCore.ContentLocalization
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
-        private readonly IShellConfiguration _shellConfiguration;
-
-        public Startup(IShellConfiguration shellConfiguration, IOptions<AdminOptions> adminOptions)
+        public Startup(IOptions<AdminOptions> adminOptions)
         {
-            _shellConfiguration = shellConfiguration;
             _adminOptions = adminOptions.Value;
         }
 
@@ -49,10 +46,7 @@ namespace OrchardCore.ContentLocalization
                 o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
                 o.MemberAccessStrategy.Register<CultureInfo>();
             })
-            .AddLiquidFilter<ContentLocalizationFilter>("localization_set")
-            .AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
-
-            services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
+            .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
 
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
@@ -62,6 +56,7 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
             services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
+            services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
         }
 
@@ -79,15 +74,21 @@ namespace OrchardCore.ContentLocalization
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
     public class ContentPickerStartup : StartupBase
     {
+        private readonly IShellConfiguration _shellConfiguration;
+        public ContentPickerStartup(IShellConfiguration shellConfiguration)
+        {
+            _shellConfiguration = shellConfiguration;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
             services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
-            services.Configure<RequestLocalizationOptions>(options =>
-            {
-                options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider());
-            });
+            services.AddScoped<IDisplayDriver<ISite>, ContentRequestCultureProviderSettingsDriver>();
+            services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
+            services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

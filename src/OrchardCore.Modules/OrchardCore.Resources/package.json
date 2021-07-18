@@ -3,24 +3,24 @@
   "version": "1.0.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.3",
-    "bootstrap": "4.6.0",
-    "bootstrap-scss": "4.6.0",
+    "@popperjs/core": "2.9.2",
+    "bootstrap": "5.0.2",
+    "bootstrap-scss": "5.0.2",
     "bootstrap-select": "1.13.18",
     "bootstrap-slider": "11.0.2",
-    "codemirror": "5.61.0",
+    "codemirror": "5.62.0",
     "jquery": "3.6.0",
     "jquery-resizable-dom": "0.35.0",
     "jquery.easing": "1.4.1",
     "js-cookie": "2.2.1",
-    "monaco-editor": "^0.23.0",
-    "popper.js": "1.16.1",
-    "sortablejs": "^1.13.0",
-    "trumbowyg": "2.23.0",
-    "vue": "^2.6.12",
+    "monaco-editor": "^0.26.0",
+    "sortablejs": "^1.14.0",
+    "trumbowyg": "2.25.1",
+    "vue": "^2.6.14",
     "vue-multiselect": "^2.1.6",
     "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
-    "typescript-json-schema": "^0.50.0"
+    "typescript-json-schema": "^0.50.1"
   }
 }

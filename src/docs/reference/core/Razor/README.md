@@ -11,11 +11,11 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `CultureDir()` | OrchardCore.DisplayManagement | Returns the current culture direction. |
 | `CultureName()` | OrchardCore.DisplayManagement | Returns the current culture name. |
 | `ResourceUrl(string resourcePath, bool? appendVersion = null)` | OrchardCore.ResourceManagement | Prefixes the Cdn Base URL to the specified resource path. |
-| `GetContentItemIdByAliasAsync(string alias)` | OrchardCore.Contents | Returns a content item id from its alias. Ex: `carousel` |
-| `GetContentItemIdBySlugAsync(string slug)` | OrchardCore.Contents | Returns a content item id from its slug. Ex: `myblog/my-blog-post` |
+| `GetContentItemIdByAliasAsync(string alias)` | OrchardCore.Alias | Returns a content item id from its alias. Ex: `carousel` |
+| `GetContentItemIdBySlugAsync(string slug)` | OrchardCore.Autoroute | Returns a content item id from its slug. Ex: `myblog/my-blog-post` |
 | `GetContentItemIdByHandleAsync(string handle)` | OrchardCore.Contents | Returns a content item id from its handle. Ex: `alias:carousel`, `slug:myblog/my-blog-post` |
-| `GetContentItemByAliasAsync(string alias, bool latest = false)` | OrchardCore.Contents | Loads a content item by its alias, seeking the latest version or not. Ex: `carousel` |
-| `GetContentItemBySlugAsync(string slug, bool latest = false)` | OrchardCore.Contents | Loads a content item by its slug, seeking the latest version or not. Ex: `slug:myblog/my-blog-post`|
+| `GetContentItemByAliasAsync(string alias, bool latest = false)` | OrchardCore.Alias | Loads a content item by its alias, seeking the latest version or not. Ex: `carousel` |
+| `GetContentItemBySlugAsync(string slug, bool latest = false)` | OrchardCore.Autoroute | Loads a content item by its slug, seeking the latest version or not. Ex: `slug:myblog/my-blog-post`|
 | `GetContentItemByHandleAsync(string handle, bool latest = false)` | OrchardCore.Contents | Loads a content item by its handle, seeking the latest version or not. Ex: `alias:carousel`, `slug:myblog/my-blog-post`|
 | `GetContentItemByIdAsync(string contentItemId, bool latest = false)` | OrchardCore.Contents | Loads a content item by its id. |
 | `GetContentItemsByIdAsync(IEnumerable<string> contentItemIds, bool latest = false)` | OrchardCore.Contents | Loads a list of content items by their ids. |
@@ -34,6 +34,7 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `ContentQueryAsync(string queryName, IDictionary<string, object> parameters)` | [OrchardCore.Queries](../../modules/Queries/README.md#razor-helpers) | Returns a List of Content items |
 | `QueryAsync(string liquid, object model)` | [OrchardCore.Queries](../../modules/Queries/README.md#razor-helpers) | Returns a List of objects |
 | `QueryAsync(string queryName, IDictionary<string, object> parameters)` | [OrchardCore.Queries](../../modules/Queries/README.md#razor-helpers) | Returns a List of objects |
+| `ShortcodesToHtmlAsync(string html, object model = null)` | [OrchardCore.Shortcodes](../../modules/Shortcodes/README.md#rendering-shortcodes) | Renders shortcodes. |
 | `GetTaxonomyTermAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../modules/Taxonomies/README.md#orchard-helpers) | Returns a the term from its content item id and taxonomy. |
 | `GetInheritedTermsAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../modules/Taxonomies/README.md#orchard-helpers) | Returns the list of terms including their parents. |
 | `QueryCategorizedContentItemsAsync(string taxonomy(Func<IQuery<ContentItem, TaxonomyIndex>, IQuery<ContentItem>> query)` | [OrchardCore.Taxonomies](../../modules/Taxonomies/README.md#orchard-helpers) | Query content items. |

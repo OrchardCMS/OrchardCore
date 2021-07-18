@@ -38,11 +38,13 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using YesSql.Filters.Query;
 using YesSql.Indexes;
 
 namespace OrchardCore.Users
@@ -76,7 +78,6 @@ namespace OrchardCore.Users
                 pattern: userOptions.ChangePasswordUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
-
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
@@ -117,6 +118,18 @@ namespace OrchardCore.Users
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
+            routes.MapAreaControllerRoute(
+                name: "UsersEditPassword",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersUnlock",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Unlock/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Unlock) }
+            );
 
             builder.UseAuthorization();
         }
@@ -128,8 +141,6 @@ namespace OrchardCore.Users
                 var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
                 configuration.GetSection("OrchardCore_Users").Bind(userOptions);
             });
-
-            services.AddSecurity();
 
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
@@ -184,7 +195,6 @@ namespace OrchardCore.Users
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
-            services.AddIdGeneration();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
             services.AddScoped<IAuthorizationHandler, UserAuthorizationHandler>();
@@ -193,6 +203,7 @@ namespace OrchardCore.Users
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
             services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
+            services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
@@ -210,10 +221,26 @@ namespace OrchardCore.Users
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
 
             services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
-            services.AddScoped<IUsersAdminListFilter, DefaultUsersAdminListFilter>();
 
             services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
             services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
+
+            services.AddSingleton<IUsersAdminListFilterParser>(sp =>
+            {
+                var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
+                var builder = new QueryEngineBuilder<User>();
+                foreach (var provider in filterProviders)
+                {
+                    provider.Build(builder);
+                }
+
+                var parser = builder.Build();
+
+                return new DefaultUsersAdminListFilterParser(parser);
+            });
+
+            services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
+
         }
     }
 
@@ -339,15 +366,31 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationStartup : StartupBase
     {
-        private const string RegisterPath = "Register";
+        private const string RegisterPath = nameof(RegistrationController.Register);
+        private const string ConfirmEmailSent = nameof(RegistrationController.ConfirmEmailSent);
+        private const string RegistrationPending = nameof(RegistrationController.RegistrationPending);
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
-                name: "Register",
+                name: RegisterPath,
                 areaName: "OrchardCore.Users",
                 pattern: RegisterPath,
-                defaults: new { controller = "Registration", action = "Register" }
+                defaults: new { controller = "Registration", action = RegisterPath }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: ConfirmEmailSent,
+                areaName: "OrchardCore.Users",
+                pattern: ConfirmEmailSent,
+                defaults: new { controller = "Registration", action = ConfirmEmailSent }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: RegistrationPending,
+                areaName: "OrchardCore.Users",
+                pattern: RegistrationPending,
+                defaults: new { controller = "Registration", action = RegistrationPending }
             );
         }
 

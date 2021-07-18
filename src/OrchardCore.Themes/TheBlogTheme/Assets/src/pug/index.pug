@@ -1,0 +1,99 @@
+doctype html
+html(lang='en')
+
+    head
+
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+        meta(name='description', content='')
+        meta(name='author', content='')
+
+        title Clean Blog - Start Bootstrap Theme
+
+        link(rel='icon', type='image/x-icon', href='assets/favicon.ico')
+
+        include includes/css.pug
+
+    body
+
+        include includes/navbar.pug
+
+        // Page Header
+        header.masthead(style="background-image: url('assets/img/home-bg.jpg')")
+            .container.position-relative.px-4.px-lg-5
+                .row.gx-4.gx-lg-5.justify-content-center
+                    .col-md-10.col-lg-8.col-xl-7
+                        .site-heading
+                            h1 Clean Blog
+                            span.subheading A Blog Theme by Start Bootstrap
+
+        // Main Content
+        .container.px-4.px-lg-5
+            .row.gx-4.gx-lg-5.justify-content-center
+                .col-md-10.col-lg-8.col-xl-7
+
+                    // Post preview
+                    .post-preview
+                        a(href='post.html')
+                            h2.post-title
+                                | Man must explore, and this is exploration at its greatest
+                            h3.post-subtitle
+                                | Problems look mighty small from 150 miles up
+                        p.post-meta
+                            | Posted by
+                            a(href='#!') Start Bootstrap
+                            | on September 24, 2021
+                    
+                    // Divider
+                    hr.my-4
+
+                    // Post preview
+                    .post-preview
+                        a(href='post.html')
+                            h2.post-title
+                                | I believe every human has a finite number of heartbeats. I don't intend to waste any of mine.
+                        p.post-meta
+                            | Posted by
+                            a(href='#!') Start Bootstrap
+                            | on September 18, 2021
+                    
+                    // Divider
+                    hr.my-4
+
+                    // Post preview
+                    .post-preview
+                        a(href='post.html')
+                            h2.post-title
+                                | Science has not yet mastered prophecy
+                            h3.post-subtitle
+                                | We predict too much for the next year and yet far too little for the next ten.
+                        p.post-meta
+                            | Posted by
+                            a(href='#!') Start Bootstrap
+                            | on August 24, 2021
+
+                    // Divider
+                    hr.my-4
+
+                    // Post preview
+                    .post-preview
+                        a(href='post.html')
+                            h2.post-title
+                                | Failure is not an option
+                            h3.post-subtitle
+                                | Many say exploration is part of our destiny, but it’s actually our duty to future generations.
+                        p.post-meta
+                            | Posted by
+                            a(href='#!') Start Bootstrap
+                            | on July 8, 2021
+                    
+                    // Divider
+                    hr.my-4
+
+                    // Pager
+                    .d-flex.justify-content-end.mb-4
+                        a.btn.btn-primary.text-uppercase(href='#!') Older Posts →
+        
+        include includes/footer.pug
+
+        include includes/scripts.pug

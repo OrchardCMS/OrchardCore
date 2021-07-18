@@ -52,6 +52,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
+                // <script asp-src="~/TheBlogTheme/js/clean-blog.min.js"></script>
                 RequireSettings setting;
 
                 if (String.IsNullOrEmpty(DependsOn))
@@ -142,6 +143,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
                 // Resource required
+                // <script asp-name="bootstrap"></script>
 
                 var setting = _resourceManager.RegisterResource("script", Name);
 
@@ -186,6 +188,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                 }
 
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
+
                 // Allow Inline to work with both named scripts, and named inline scripts.
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -195,7 +202,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     {
                         // Inline content definition
                         _resourceManager.InlineManifest.DefineScript(Name)
-                            .SetInnerContent(childContent.GetContent());
+                           .SetInnerContent(childContent.GetContent());
                     }
 
                     if (At == ResourceLocation.Inline)
@@ -311,7 +318,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 else if (At == ResourceLocation.Inline)
                 {
                     output.Content.SetHtmlContent(builder);
-                } else
+                }
+                else
                 {
                     _resourceManager.RegisterFootScript(builder);
                 }

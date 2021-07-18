@@ -98,45 +98,46 @@
                 init: function (trumbowyg) {
                     trumbowyg.pasteHandlers.push(function (pasteEvent) {
                         setTimeout(function () {
-                          try {
-                              trumbowyg.saveRange();
+                            try {
+                                trumbowyg.saveRange();
 
-                              var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                                  pastedData = clipboardData.getData('Text'),
-                                  node = trumbowyg.doc.getSelection().focusNode,
-                                  range = trumbowyg.doc.createRange(),
-                                  cleanedPaste = cleanIt(pastedData.trim()),
-                                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
+                                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                                pastedData = clipboardData.getData('Text'),
+                                node = trumbowyg.doc.getSelection().focusNode,
+                                range = trumbowyg.doc.createRange(),
+                                cleanedPaste = cleanIt(pastedData.trim()),
+                                newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
 
-                              if (trumbowyg.$ed.html() === '') {
-                                // simply append if there is no content in editor
-                                trumbowyg.$ed[0].appendChild(newNode);
-                              } else {
-                                // insert pasted content behind last focused node
-                                range.setStartAfter(node);
-                                range.setEndAfter(node);
+                                if (trumbowyg.$ed.html() === '') {
+                                    // simply append if there is no content in editor
+                                    trumbowyg.$ed[0].appendChild(newNode);
+                                } else {
+                                    // insert pasted content behind last focused node
+                                    range.setStartAfter(node);
+                                    range.setEndAfter(node);
+                                    trumbowyg.doc.getSelection().removeAllRanges();
+                                    trumbowyg.doc.getSelection().addRange(range);
+
+                                    trumbowyg.range.insertNode(newNode);
+                                }
+
+                                // now set cursor right after pasted content
+                                range = trumbowyg.doc.createRange();
+                                range.setStartAfter(newNode);
+                                range.setEndAfter(newNode);
                                 trumbowyg.doc.getSelection().removeAllRanges();
                                 trumbowyg.doc.getSelection().addRange(range);
 
-                                trumbowyg.range.insertNode(newNode);
-                              }
+                                // prevent defaults
+                                pasteEvent.stopPropagation();
+                                pasteEvent.preventDefault();
 
-                              // now set cursor right after pasted content
-                              range = trumbowyg.doc.createRange()
-                              range.setStartAfter(newNode);
-                              range.setEndAfter(newNode);
-                              trumbowyg.doc.getSelection().removeAllRanges();
-                              trumbowyg.doc.getSelection().addRange(range);
-
-                              // prevent defaults
-                              pasteEvent.stopPropagation();
-                              pasteEvent.preventDefault();
-
-                              // save new node as focused node
-                              trumbowyg.saveRange();
-                              trumbowyg.syncCode();
-                          } catch (c) {
-                          }
+                                // save new node as focused node
+                                trumbowyg.saveRange();
+                                trumbowyg.syncCode();
+                                trumbowyg.$c.trigger('tbwchange');
+                            } catch (c) {
+                            }
                         }, 0);
                     });
                 }

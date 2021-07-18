@@ -17,7 +17,7 @@ namespace OrchardCore.Redis.Options
 
         public void Configure(RedisCacheOptions options)
         {
-            options.InstanceName = _tenant;
+            options.InstanceName = _redisOptions.Value.InstancePrefix + _tenant;
             options.ConfigurationOptions = _redisOptions.Value.ConfigurationOptions;
         }
     }

@@ -27,7 +27,7 @@
     </div>
 </form>
 
-<form asp-action="Features" method="post">
+<form asp-action="Features" method="post" class="no-multisubmit">
     <input name="BulkAction" type="hidden" />
     <input name="Force" type="hidden" value="true" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
@@ -76,7 +76,7 @@
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
                             var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
-                            var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
+                            var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
                                 <div class="row">

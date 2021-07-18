@@ -5,8 +5,7 @@ on:
       - '**/*.md'	
       - 'mkdocs.yml'	
       - 'src/docs/**/*'
-    branches:
-      - dev
+    branches: [ dev, main ]
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
