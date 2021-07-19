@@ -196,7 +196,9 @@ namespace OrchardCore.Taxonomies.Services
                 return;
             }
 
-            foreach (var term in taxonomy.As<TaxonomyPart>().Terms)
+            var terms = new List<ContentItem>();
+            GetAllTerms(taxonomy.Content.TaxonomyPart.Terms as JArray, terms);
+            foreach (var term in terms)
             {
                 var categorizedItems = await _session.Query<ContentItem>()
                     .With<TaxonomyIndex>(t => t.TermContentItemId == term.ContentItemId)
@@ -215,6 +217,17 @@ namespace OrchardCore.Taxonomies.Services
                         RegisterCategorizedItemOrder(categorizedItem, term.ContentItemId, orderValue);
                     }
                     orderValue--;
+                }
+            }
+        }
+        private void GetAllTerms(JArray termsArray, List<ContentItem> terms)
+        {
+            foreach (JObject term in termsArray)
+            {
+                terms.Add(term.ToObject<ContentItem>());
+                if (term.GetValue("Terms") is JArray children)
+                {
+                    GetAllTerms(children, terms);
                 }
             }
         }
