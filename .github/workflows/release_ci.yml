@@ -56,14 +56,12 @@ jobs:
         path: |
           test/Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
-    - name: Build version number
+    - name: Deploy release NuGet packages
+      if: matrix.os == 'ubuntu-latest'
       run: |
         arrTag=(${GITHUB_REF//\// })
         VERSION="${arrTag[2]}"
         VERSION="${VERSION//v}"
-    - name: Deploy release NuGet packages
-      if: matrix.os == 'ubuntu-latest'
-      run: |
         dotnet pack -c Release --no-restore --no-build -p:Version=$VERSION
         dotnet nuget push './src/**/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
     - name: Login to DockerHub
