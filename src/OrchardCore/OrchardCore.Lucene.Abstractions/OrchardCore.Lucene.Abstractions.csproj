@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lucene.Net" />
+    <PackageReference Include="Lucene.Net" NoWarn="NU5104" />
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 </Project>
