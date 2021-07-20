@@ -24,11 +24,9 @@ Nightly (dev):
 
 ## Status
 
-### RC 2
+### 1.0.0
 
-The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs.
-
-Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
+Here is a more detailed [Roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 
 ## Getting Started
 
