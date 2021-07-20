@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jint" NoWarn="NU5104" />
+    <PackageReference Include="Jint" />
   </ItemGroup>
 
   <ItemGroup>

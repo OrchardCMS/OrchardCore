@@ -38,9 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lucene.Net.Analysis.Common" NoWarn="NU5104" />
-    <PackageReference Include="Lucene.Net.QueryParser" NoWarn="NU5104" />
-    <PackageReference Include="Lucene.Net.Spatial" NoWarn="NU5104" />
+    <PackageReference Include="Lucene.Net.Analysis.Common" />
+    <PackageReference Include="Lucene.Net.QueryParser" />
+    <PackageReference Include="Lucene.Net.Spatial" />
   </ItemGroup>
 
 </Project>

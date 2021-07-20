@@ -62,7 +62,7 @@ jobs:
         arrTag=(${GITHUB_REF//\// })
         VERSION="${arrTag[2]}"
         VERSION="${VERSION//v}"
-        dotnet pack -c Release --no-restore --no-build -p:Version=$VERSION
+        dotnet pack -c Release --no-restore --no-build -p:Version=$VERSION -p:TreatWarningsAsErrors=false
         dotnet nuget push './src/**/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
     - name: Login to DockerHub
       if: matrix.os == 'ubuntu-latest'
