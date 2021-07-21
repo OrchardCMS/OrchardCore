@@ -63,14 +63,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
                 {
                     foreach (var resourceDefinition in resource.Value)
                     {
-                        if (!String.IsNullOrEmpty(resourceDefinition.CdnIntegrity))
+                        if (!String.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !String.IsNullOrEmpty(resourceDefinition.Url))
                         {
                             var resourcePath = contentRootProvider.GetFileInfo(resourceDefinition.Url[orchardCoreResourceFolder.Length..]).PhysicalPath;
                             var resourceIntegrity = GetSubResourceIntegrity(resourcePath);
                             Assert.Equal(resourceIntegrity, resourceDefinition.CdnIntegrity);
                         }
 
-                        if (!String.IsNullOrEmpty(resourceDefinition.CdnDebugIntegrity))
+                        if (!String.IsNullOrEmpty(resourceDefinition.CdnDebugIntegrity) && !String.IsNullOrEmpty(resourceDefinition.UrlDebug))
                         {
                             var resourceDebugPath = contentRootProvider.GetFileInfo(resourceDefinition.UrlDebug[orchardCoreResourceFolder.Length..]).PhysicalPath;
                             var resourceDebugintegrity = GetSubResourceIntegrity(resourceDebugPath);
