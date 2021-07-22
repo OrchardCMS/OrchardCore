@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlSanitizer" NoWarn="NU5104" />
+    <PackageReference Include="HtmlSanitizer" />
     <PackageReference Include="MimeKit" />
   </ItemGroup>
 
