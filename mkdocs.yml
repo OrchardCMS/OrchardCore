@@ -37,7 +37,7 @@ extra:
 # Repository
 repo_name: OrchardCMS/OrchardCore
 repo_url: https://github.com/OrchardCMS/OrchardCore
-edit_uri: edit/dev/src/
+edit_uri: edit/main/src/
 
 # Options
 docs_dir: src
