@@ -1,0 +1,15 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+:root[data-theme=default] pre, .audittrail-comment{
+    font-family: $font-family-base;
+    white-space: pre-wrap;
+    word-break: normal;
+    margin-bottom: 0;
+}
+
+:root[data-theme=darkmode] pre, .audittrail-comment{
+    font-family: $font-family-base;
+    white-space: pre-wrap;
+    word-break: normal;
+    margin-bottom: 0;
+}

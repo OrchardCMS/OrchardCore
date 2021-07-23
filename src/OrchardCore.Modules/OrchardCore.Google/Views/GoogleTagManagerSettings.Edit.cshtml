@@ -1,0 +1,17 @@
+@using OrchardCore.Google.TagManager.ViewModels;
+@model GoogleTagManagerSettingsViewModel;
+
+<p class="alert alert-secondary">
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Google/#google-tag-manager" target="_blank">@T["See documentation"]</a>
+</p>
+
+<h3>@T["Google Tag Manager Settings"]</h3>
+
+<div class="form-group row" asp-validation-class-for="ContainerID">
+    <div class="col-large">
+        <label asp-for="ContainerID">@T["Container ID"]</label>
+        <input asp-for="ContainerID" class="form-control" autocomplete="off" />
+        <span asp-validation-for="ContainerID"></span>
+        <span class="hint">@T["The container ID defined in your Google Tag Manager account."]</span>
+    </div>
+</div>

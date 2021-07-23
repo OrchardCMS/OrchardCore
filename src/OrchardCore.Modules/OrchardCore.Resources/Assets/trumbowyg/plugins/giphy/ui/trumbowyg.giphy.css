@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.19.1 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.25.1 - A lightweight WYSIWYG editor
  * Trumbowyg plugin stylesheet
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -10,7 +10,10 @@
  */
 
 .trumbowyg-giphy-button svg {
-  transform: scale(1.22); }
+  -webkit-transform: scale(1.22);
+      -ms-transform: scale(1.22);
+       -o-transform: scale(1.22);
+          transform: scale(1.22); }
 
 .trumbowyg-giphy-search {
   display: block;
@@ -61,10 +64,21 @@
 
 .trumbowyg-giphy-modal {
   padding: 0 5%;
-  -moz-columns: 3;
-       columns: 3;
-  -moz-column-gap: 10px;
-       column-gap: 10px; }
+  -webkit-columns: 3;
+     -moz-columns: 3;
+          columns: 3;
+  -webkit-column-gap: 10px;
+     -moz-column-gap: 10px;
+          column-gap: 10px; }
+  .trumbowyg-giphy-modal .trumbowyg-giphy-no-result {
+    width: 250%;
+    margin: 13% 0 0 29%; }
+  .trumbowyg-giphy-modal .trumbowyg-giphy-offline {
+    font-size: 18px;
+    width: 305%;
+    height: 600px;
+    margin-top: 95px;
+    text-align: center; }
 
 .trumbowyg-giphy-modal .img-container {
   width: 100%;
@@ -74,6 +88,8 @@
     width: 100%;
     cursor: pointer;
     opacity: 0;
+    -webkit-transition: opacity 150ms;
+    -o-transition: opacity 150ms;
     transition: opacity 150ms; }
     .trumbowyg-giphy-modal .img-container img:hover, .trumbowyg-giphy-modal .img-container img:focus {
       border: #2ecc71 solid 3px; }

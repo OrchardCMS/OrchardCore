@@ -15,6 +15,7 @@
     "install:orchardcore.themes": "cd src/OrchardCore.Modules/OrchardCore.Themes && npm install",
     "install:orchardcore.shortcodes": "cd src/OrchardCore.Modules/OrchardCore.Shortcodes && npm install",
     "install:orchardcore.workflows": "cd src/OrchardCore.Modules/OrchardCore.Workflows && npm install",
+    "install:orchardcore.audittrail": "cd src/OrchardCore.Modules/OrchardCore.AuditTrail && npm install",
     "install:orchardcore.theadmin": "cd src/OrchardCore.Themes/TheAdmin && npm install",
     "install:orchardcore.theagencytheme": "cd src/OrchardCore.Themes/TheAgencyTheme && npm install",
     "install:orchardcore.theblogtheme": "cd src/OrchardCore.Themes/TheBlogTheme && npm install",
@@ -24,7 +25,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
-    "@babel/preset-env": "^7.14.5",
+    "@babel/preset-env": "^7.14.7",
     "@babel/preset-flow": "7.14.5",
     "all-contributors-cli": "^6.20.0",
     "es6-promise": "4.2.8",
@@ -55,7 +56,7 @@
     "path-posix": "1.0.0",
     "postcss": "8.3.5",
     "postcss-rtl": "^1.7.3",
-    "rtlcss": "3.2.0",
-    "typescript": "^4.3.4"
+    "rtlcss": "3.2.1",
+    "typescript": "^4.3.5"
   }
 }
