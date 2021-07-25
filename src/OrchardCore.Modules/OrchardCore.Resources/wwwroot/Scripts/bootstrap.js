@@ -37,7 +37,7 @@ function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArra
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArrayLimit(arr, i) { var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]); if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -56,7 +56,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
-  * Bootstrap v5.0.1 (https://getbootstrap.com/)
+  * Bootstrap v5.0.2 (https://getbootstrap.com/)
   * Copyright 2011-2021 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
@@ -64,6 +64,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   (typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('@popperjs/core')) : typeof define === 'function' && define.amd ? define(['@popperjs/core'], factory) : (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.bootstrap = factory(global.Popper));
 })(this, function (Popper) {
   'use strict';
+
+  var _KEY_TO_DIRECTION;
 
   function _interopNamespace(e) {
     if (e && e.__esModule) return e;
@@ -90,7 +92,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var Popper__namespace = /*#__PURE__*/_interopNamespace(Popper);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): dom/selector-engine.js
+   * Bootstrap (v5.0.2): dom/selector-engine.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -164,7 +166,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): util/index.js
+   * Bootstrap (v5.0.2): util/index.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -286,24 +288,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     return null;
   };
 
-  var emulateTransitionEnd = function emulateTransitionEnd(element, duration) {
-    var called = false;
-    var durationPadding = 5;
-    var emulatedDuration = duration + durationPadding;
-
-    function listener() {
-      called = true;
-      element.removeEventListener(TRANSITION_END, listener);
-    }
-
-    element.addEventListener(TRANSITION_END, listener);
-    setTimeout(function () {
-      if (!called) {
-        triggerTransitionEnd(element);
-      }
-    }, emulatedDuration);
-  };
-
   var typeCheckConfig = function typeCheckConfig(componentName, config, configTypes) {
     Object.keys(configTypes).forEach(function (property) {
       var expectedTypes = configTypes[property];
@@ -317,17 +301,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
 
   var isVisible = function isVisible(element) {
-    if (!element) {
+    if (!isElement(element) || element.getClientRects().length === 0) {
       return false;
     }
 
-    if (element.style && element.parentNode && element.parentNode.style) {
-      var elementStyle = getComputedStyle(element);
-      var parentNodeStyle = getComputedStyle(element.parentNode);
-      return elementStyle.display !== 'none' && parentNodeStyle.display !== 'none' && elementStyle.visibility !== 'hidden';
-    }
-
-    return false;
+    return getComputedStyle(element).getPropertyValue('visibility') === 'visible';
   };
 
   var isDisabled = function isDisabled(element) {
@@ -386,9 +364,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     return null;
   };
 
+  var DOMContentLoadedCallbacks = [];
+
   var onDOMContentLoaded = function onDOMContentLoaded(callback) {
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', callback);
+      // add listener on the first call when the document is in loading state
+      if (!DOMContentLoadedCallbacks.length) {
+        document.addEventListener('DOMContentLoaded', function () {
+          DOMContentLoadedCallbacks.forEach(function (callback) {
+            return callback();
+          });
+        });
+      }
+
+      DOMContentLoadedCallbacks.push(callback);
     } else {
       callback();
     }
@@ -422,61 +411,68 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       callback();
     }
   };
-  /**
-   * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): dom/data.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
-   * --------------------------------------------------------------------------
-   */
 
-  /**
-   * ------------------------------------------------------------------------
-   * Constants
-   * ------------------------------------------------------------------------
-   */
+  var executeAfterTransition = function executeAfterTransition(callback, transitionElement) {
+    var waitForTransition = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
-
-  var elementMap = new Map();
-  var Data = {
-    set: function set(element, key, instance) {
-      if (!elementMap.has(element)) {
-        elementMap.set(element, new Map());
-      }
-
-      var instanceMap = elementMap.get(element); // make it clear we only want one instance per element
-      // can be removed later when multiple key/instances are fine to be used
-
-      if (!instanceMap.has(key) && instanceMap.size !== 0) {
-        // eslint-disable-next-line no-console
-        console.error("Bootstrap doesn't allow more than one instance per element. Bound instance: ".concat(Array.from(instanceMap.keys())[0], "."));
-        return;
-      }
-
-      instanceMap.set(key, instance);
-    },
-    get: function get(element, key) {
-      if (elementMap.has(element)) {
-        return elementMap.get(element).get(key) || null;
-      }
-
-      return null;
-    },
-    remove: function remove(element, key) {
-      if (!elementMap.has(element)) {
-        return;
-      }
-
-      var instanceMap = elementMap.get(element);
-      instanceMap["delete"](key); // free up element references if there are no instances left for an element
-
-      if (instanceMap.size === 0) {
-        elementMap["delete"](element);
-      }
+    if (!waitForTransition) {
+      execute(callback);
+      return;
     }
+
+    var durationPadding = 5;
+    var emulatedDuration = getTransitionDurationFromElement(transitionElement) + durationPadding;
+    var called = false;
+
+    var handler = function handler(_ref3) {
+      var target = _ref3.target;
+
+      if (target !== transitionElement) {
+        return;
+      }
+
+      called = true;
+      transitionElement.removeEventListener(TRANSITION_END, handler);
+      execute(callback);
+    };
+
+    transitionElement.addEventListener(TRANSITION_END, handler);
+    setTimeout(function () {
+      if (!called) {
+        triggerTransitionEnd(transitionElement);
+      }
+    }, emulatedDuration);
+  };
+  /**
+   * Return the previous/next element of a list.
+   *
+   * @param {array} list    The list of elements
+   * @param activeElement   The active element
+   * @param shouldGetNext   Choose to get next or previous element
+   * @param isCycleAllowed
+   * @return {Element|elem} The proper element
+   */
+
+
+  var getNextActiveElement = function getNextActiveElement(list, activeElement, shouldGetNext, isCycleAllowed) {
+    var index = list.indexOf(activeElement); // if the element does not exist in the list return an element depending on the direction and if cycle is allowed
+
+    if (index === -1) {
+      return list[!shouldGetNext && isCycleAllowed ? list.length - 1 : 0];
+    }
+
+    var listLength = list.length;
+    index += shouldGetNext ? 1 : -1;
+
+    if (isCycleAllowed) {
+      index = (index + listLength) % listLength;
+    }
+
+    return list[Math.max(0, Math.min(index, listLength - 1))];
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): dom/event-handler.js
+   * Bootstrap (v5.0.2): dom/event-handler.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -486,6 +482,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * Constants
    * ------------------------------------------------------------------------
    */
+
 
   var namespaceRegex = /[^.]*(?=\..*)\.|.*/;
   var stripNameRegex = /\..*/;
@@ -769,7 +766,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): base-component.js
+   * Bootstrap (v5.0.2): dom/data.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -780,7 +777,58 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * ------------------------------------------------------------------------
    */
 
-  var VERSION = '5.0.1';
+  var elementMap = new Map();
+  var Data = {
+    set: function set(element, key, instance) {
+      if (!elementMap.has(element)) {
+        elementMap.set(element, new Map());
+      }
+
+      var instanceMap = elementMap.get(element); // make it clear we only want one instance per element
+      // can be removed later when multiple key/instances are fine to be used
+
+      if (!instanceMap.has(key) && instanceMap.size !== 0) {
+        // eslint-disable-next-line no-console
+        console.error("Bootstrap doesn't allow more than one instance per element. Bound instance: ".concat(Array.from(instanceMap.keys())[0], "."));
+        return;
+      }
+
+      instanceMap.set(key, instance);
+    },
+    get: function get(element, key) {
+      if (elementMap.has(element)) {
+        return elementMap.get(element).get(key) || null;
+      }
+
+      return null;
+    },
+    remove: function remove(element, key) {
+      if (!elementMap.has(element)) {
+        return;
+      }
+
+      var instanceMap = elementMap.get(element);
+      instanceMap["delete"](key); // free up element references if there are no instances left for an element
+
+      if (instanceMap.size === 0) {
+        elementMap["delete"](element);
+      }
+    }
+  };
+  /**
+   * --------------------------------------------------------------------------
+   * Bootstrap (v5.0.2): base-component.js
+   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+   * --------------------------------------------------------------------------
+   */
+
+  /**
+   * ------------------------------------------------------------------------
+   * Constants
+   * ------------------------------------------------------------------------
+   */
+
+  var VERSION = '5.0.2';
 
   var BaseComponent = /*#__PURE__*/function () {
     function BaseComponent(element) {
@@ -811,17 +859,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "_queueCallback",
       value: function _queueCallback(callback, element) {
         var isAnimated = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-        if (!isAnimated) {
-          execute(callback);
-          return;
-        }
-
-        var transitionDuration = getTransitionDurationFromElement(element);
-        EventHandler.one(element, 'transitionend', function () {
-          return execute(callback);
-        });
-        emulateTransitionEnd(element, transitionDuration);
+        executeAfterTransition(callback, element, isAnimated);
       }
       /** Static */
 
@@ -829,6 +867,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "getInstance",
       value: function getInstance(element) {
         return Data.get(element, this.DATA_KEY);
+      }
+    }, {
+      key: "getOrCreateInstance",
+      value: function getOrCreateInstance(element) {
+        var config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        return this.getInstance(element) || new this(element, _typeof(config) === 'object' ? config : null);
       }
     }, {
       key: "VERSION",
@@ -856,7 +900,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }();
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): alert.js
+   * Bootstrap (v5.0.2): alert.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -936,10 +980,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_destroyElement",
       value: function _destroyElement(element) {
-        if (element.parentNode) {
-          element.parentNode.removeChild(element);
-        }
-
+        element.remove();
         EventHandler.trigger(element, EVENT_CLOSED);
       } // Static
 
@@ -953,11 +994,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "jQueryInterface",
       value: function jQueryInterface(config) {
         return this.each(function () {
-          var data = Data.get(this, DATA_KEY$b);
-
-          if (!data) {
-            data = new Alert(this);
-          }
+          var data = Alert.getOrCreateInstance(this);
 
           if (config === 'close') {
             data[config](this);
@@ -997,7 +1034,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Alert);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): button.js
+   * Bootstrap (v5.0.2): button.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1050,11 +1087,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "jQueryInterface",
       value: function jQueryInterface(config) {
         return this.each(function () {
-          var data = Data.get(this, DATA_KEY$a);
-
-          if (!data) {
-            data = new Button(this);
-          }
+          var data = Button.getOrCreateInstance(this);
 
           if (config === 'toggle') {
             data[config]();
@@ -1075,12 +1108,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   EventHandler.on(document, EVENT_CLICK_DATA_API$6, SELECTOR_DATA_TOGGLE$5, function (event) {
     event.preventDefault();
     var button = event.target.closest(SELECTOR_DATA_TOGGLE$5);
-    var data = Data.get(button, DATA_KEY$a);
-
-    if (!data) {
-      data = new Button(button);
-    }
-
+    var data = Button.getOrCreateInstance(button);
     data.toggle();
   });
   /**
@@ -1093,7 +1121,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Button);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): dom/manipulator.js
+   * Bootstrap (v5.0.2): dom/manipulator.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1165,7 +1193,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): carousel.js
+   * Bootstrap (v5.0.2): carousel.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1205,6 +1233,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var ORDER_PREV = 'prev';
   var DIRECTION_LEFT = 'left';
   var DIRECTION_RIGHT = 'right';
+  var KEY_TO_DIRECTION = (_KEY_TO_DIRECTION = {}, _defineProperty(_KEY_TO_DIRECTION, ARROW_LEFT_KEY, DIRECTION_RIGHT), _defineProperty(_KEY_TO_DIRECTION, ARROW_RIGHT_KEY, DIRECTION_LEFT), _KEY_TO_DIRECTION);
   var EVENT_SLIDE = "slide".concat(EVENT_KEY$9);
   var EVENT_SLID = "slid".concat(EVENT_KEY$9);
   var EVENT_KEYDOWN = "keydown".concat(EVENT_KEY$9);
@@ -1277,9 +1306,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "next",
       value: // Public
       function next() {
-        if (!this._isSliding) {
-          this._slide(ORDER_NEXT);
-        }
+        this._slide(ORDER_NEXT);
       }
     }, {
       key: "nextWhenVisible",
@@ -1293,9 +1320,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "prev",
       value: function prev() {
-        if (!this._isSliding) {
-          this._slide(ORDER_PREV);
-        }
+        this._slide(ORDER_PREV);
       }
     }, {
       key: "pause",
@@ -1364,7 +1389,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getConfig",
       value: function _getConfig(config) {
-        config = _objectSpread(_objectSpread({}, Default$9), config);
+        config = _objectSpread(_objectSpread(_objectSpread({}, Default$9), Manipulator.getDataAttributes(this._element)), _typeof(config) === 'object' ? config : {});
         typeCheckConfig(NAME$a, config, DefaultType$9);
         return config;
       }
@@ -1489,14 +1514,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return;
         }
 
-        if (event.key === ARROW_LEFT_KEY) {
+        var direction = KEY_TO_DIRECTION[event.key];
+
+        if (direction) {
           event.preventDefault();
 
-          this._slide(DIRECTION_RIGHT);
-        } else if (event.key === ARROW_RIGHT_KEY) {
-          event.preventDefault();
-
-          this._slide(DIRECTION_LEFT);
+          this._slide(direction);
         }
       }
     }, {
@@ -1509,20 +1532,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "_getItemByOrder",
       value: function _getItemByOrder(order, activeElement) {
         var isNext = order === ORDER_NEXT;
-        var isPrev = order === ORDER_PREV;
-
-        var activeIndex = this._getItemIndex(activeElement);
-
-        var lastItemIndex = this._items.length - 1;
-        var isGoingToWrap = isPrev && activeIndex === 0 || isNext && activeIndex === lastItemIndex;
-
-        if (isGoingToWrap && !this._config.wrap) {
-          return activeElement;
-        }
-
-        var delta = isPrev ? -1 : 1;
-        var itemIndex = (activeIndex + delta) % this._items.length;
-        return itemIndex === -1 ? this._items[this._items.length - 1] : this._items[itemIndex];
+        return getNextActiveElement(this._items, activeElement, isNext, this._config.wrap);
       }
     }, {
       key: "_triggerSlideEvent",
@@ -1598,6 +1608,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         if (nextElement && nextElement.classList.contains(CLASS_NAME_ACTIVE$2)) {
           this._isSliding = false;
+          return;
+        }
+
+        if (this._isSliding) {
           return;
         }
 
@@ -1697,19 +1711,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "carouselInterface",
       value: function carouselInterface(element, config) {
-        var data = Data.get(element, DATA_KEY$9);
-
-        var _config = _objectSpread(_objectSpread({}, Default$9), Manipulator.getDataAttributes(element));
+        var data = Carousel.getOrCreateInstance(element, config);
+        var _config = data._config;
 
         if (_typeof(config) === 'object') {
           _config = _objectSpread(_objectSpread({}, _config), config);
         }
 
         var action = typeof config === 'string' ? config : _config.slide;
-
-        if (!data) {
-          data = new Carousel(element, _config);
-        }
 
         if (typeof config === 'number') {
           data.to(config);
@@ -1751,7 +1760,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         Carousel.carouselInterface(target, config);
 
         if (slideIndex) {
-          Data.get(target, DATA_KEY$9).to(slideIndex);
+          Carousel.getInstance(target).to(slideIndex);
         }
 
         event.preventDefault();
@@ -1772,7 +1781,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var carousels = SelectorEngine.find(SELECTOR_DATA_RIDE);
 
     for (var i = 0, len = carousels.length; i < len; i++) {
-      Carousel.carouselInterface(carousels[i], Data.get(carousels[i], DATA_KEY$9));
+      Carousel.carouselInterface(carousels[i], Carousel.getInstance(carousels[i]));
     }
   });
   /**
@@ -1785,7 +1794,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Carousel);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): collapse.js
+   * Bootstrap (v5.0.2): collapse.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1913,7 +1922,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           var tempActiveData = actives.find(function (elem) {
             return container !== elem;
           });
-          activesData = tempActiveData ? Data.get(tempActiveData, DATA_KEY$8) : null;
+          activesData = tempActiveData ? Collapse.getInstance(tempActiveData) : null;
 
           if (activesData && activesData._isTransitioning) {
             return;
@@ -2095,7 +2104,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "collapseInterface",
       value: function collapseInterface(element, config) {
-        var data = Data.get(element, DATA_KEY$8);
+        var data = Collapse.getInstance(element);
 
         var _config = _objectSpread(_objectSpread(_objectSpread({}, Default$8), Manipulator.getDataAttributes(element)), _typeof(config) === 'object' && config ? config : {});
 
@@ -2143,7 +2152,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var selector = getSelectorFromElement(this);
     var selectorElements = SelectorEngine.find(selector);
     selectorElements.forEach(function (element) {
-      var data = Data.get(element, DATA_KEY$8);
+      var data = Collapse.getInstance(element);
       var config;
 
       if (data) {
@@ -2171,7 +2180,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Collapse);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): dropdown.js
+   * Bootstrap (v5.0.2): dropdown.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2330,9 +2339,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
         if ('ontouchstart' in document.documentElement && !parent.closest(SELECTOR_NAVBAR_NAV)) {
-          var _ref3;
+          var _ref4;
 
-          (_ref3 = []).concat.apply(_ref3, _toConsumableArray(document.body.children)).forEach(function (elem) {
+          (_ref4 = []).concat.apply(_ref4, _toConsumableArray(document.body.children)).forEach(function (elem) {
             return EventHandler.on(elem, 'mouseover', noop);
           });
         }
@@ -2402,9 +2411,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
         if ('ontouchstart' in document.documentElement) {
-          var _ref4;
+          var _ref5;
 
-          (_ref4 = []).concat.apply(_ref4, _toConsumableArray(document.body.children)).forEach(function (elem) {
+          (_ref5 = []).concat.apply(_ref5, _toConsumableArray(document.body.children)).forEach(function (elem) {
             return EventHandler.off(elem, 'mouseover', noop);
           });
         }
@@ -2517,27 +2526,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
     }, {
       key: "_selectMenuItem",
-      value: function _selectMenuItem(event) {
+      value: function _selectMenuItem(_ref6) {
+        var key = _ref6.key,
+            target = _ref6.target;
         var items = SelectorEngine.find(SELECTOR_VISIBLE_ITEMS, this._menu).filter(isVisible);
 
         if (!items.length) {
           return;
-        }
-
-        var index = items.indexOf(event.target); // Up
-
-        if (event.key === ARROW_UP_KEY && index > 0) {
-          index--;
-        } // Down
+        } // if target isn't included in items (e.g. when expanding the dropdown)
+        // allow cycling to get the last item in case key equals ARROW_UP_KEY
 
 
-        if (event.key === ARROW_DOWN_KEY && index < items.length - 1) {
-          index++;
-        } // index is -1 if the first keydown is an ArrowUp
-
-
-        index = index === -1 ? 0 : index;
-        items[index].focus();
+        getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
       } // Static
 
     }], [{
@@ -2558,13 +2558,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "dropdownInterface",
       value: function dropdownInterface(element, config) {
-        var data = Data.get(element, DATA_KEY$7);
-
-        var _config = _typeof(config) === 'object' ? config : null;
-
-        if (!data) {
-          data = new Dropdown(element, _config);
-        }
+        var data = Dropdown.getOrCreateInstance(element, config);
 
         if (typeof config === 'string') {
           if (typeof data[config] === 'undefined') {
@@ -2591,7 +2585,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var toggles = SelectorEngine.find(SELECTOR_DATA_TOGGLE$3);
 
         for (var i = 0, len = toggles.length; i < len; i++) {
-          var context = Data.get(toggles[i], DATA_KEY$7);
+          var context = Dropdown.getInstance(toggles[i]);
 
           if (!context || context._config.autoClose === false) {
             continue;
@@ -2670,17 +2664,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return;
         }
 
-        if (!isActive && (event.key === ARROW_UP_KEY || event.key === ARROW_DOWN_KEY)) {
-          getToggleButton().click();
+        if (event.key === ARROW_UP_KEY || event.key === ARROW_DOWN_KEY) {
+          if (!isActive) {
+            getToggleButton().click();
+          }
+
+          Dropdown.getInstance(getToggleButton())._selectMenuItem(event);
+
           return;
         }
 
         if (!isActive || event.key === SPACE_KEY) {
           Dropdown.clearMenus();
-          return;
         }
-
-        Dropdown.getInstance(getToggleButton())._selectMenuItem(event);
       }
     }]);
 
@@ -2711,7 +2707,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Dropdown);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): util/scrollBar.js
+   * Bootstrap (v5.0.2): util/scrollBar.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2719,81 +2715,125 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var SELECTOR_FIXED_CONTENT = '.fixed-top, .fixed-bottom, .is-fixed, .sticky-top';
   var SELECTOR_STICKY_CONTENT = '.sticky-top';
 
-  var getWidth = function getWidth() {
-    // https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth#usage_notes
-    var documentWidth = document.documentElement.clientWidth;
-    return Math.abs(window.innerWidth - documentWidth);
-  };
+  var ScrollBarHelper = /*#__PURE__*/function () {
+    function ScrollBarHelper() {
+      _classCallCheck(this, ScrollBarHelper);
 
-  var hide = function hide() {
-    var width = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getWidth();
-
-    _disableOverFlow(); // give padding to element to balances the hidden scrollbar width
-
-
-    _setElementAttributes('body', 'paddingRight', function (calculatedValue) {
-      return calculatedValue + width;
-    }); // trick: We adjust positive paddingRight and negative marginRight to sticky-top elements, to keep shown fullwidth
-
-
-    _setElementAttributes(SELECTOR_FIXED_CONTENT, 'paddingRight', function (calculatedValue) {
-      return calculatedValue + width;
-    });
-
-    _setElementAttributes(SELECTOR_STICKY_CONTENT, 'marginRight', function (calculatedValue) {
-      return calculatedValue - width;
-    });
-  };
-
-  var _disableOverFlow = function _disableOverFlow() {
-    var actualValue = document.body.style.overflow;
-
-    if (actualValue) {
-      Manipulator.setDataAttribute(document.body, 'overflow', actualValue);
+      this._element = document.body;
     }
 
-    document.body.style.overflow = 'hidden';
-  };
-
-  var _setElementAttributes = function _setElementAttributes(selector, styleProp, callback) {
-    var scrollbarWidth = getWidth();
-    SelectorEngine.find(selector).forEach(function (element) {
-      if (element !== document.body && window.innerWidth > element.clientWidth + scrollbarWidth) {
-        return;
+    _createClass(ScrollBarHelper, [{
+      key: "getWidth",
+      value: function getWidth() {
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth#usage_notes
+        var documentWidth = document.documentElement.clientWidth;
+        return Math.abs(window.innerWidth - documentWidth);
       }
+    }, {
+      key: "hide",
+      value: function hide() {
+        var width = this.getWidth();
 
-      var actualValue = element.style[styleProp];
-      var calculatedValue = window.getComputedStyle(element)[styleProp];
-      Manipulator.setDataAttribute(element, styleProp, actualValue);
-      element.style[styleProp] = "".concat(callback(Number.parseFloat(calculatedValue)), "px");
-    });
-  };
+        this._disableOverFlow(); // give padding to element to balance the hidden scrollbar width
 
-  var reset = function reset() {
-    _resetElementAttributes('body', 'overflow');
 
-    _resetElementAttributes('body', 'paddingRight');
+        this._setElementAttributes(this._element, 'paddingRight', function (calculatedValue) {
+          return calculatedValue + width;
+        }); // trick: We adjust positive paddingRight and negative marginRight to sticky-top elements to keep showing fullwidth
 
-    _resetElementAttributes(SELECTOR_FIXED_CONTENT, 'paddingRight');
 
-    _resetElementAttributes(SELECTOR_STICKY_CONTENT, 'marginRight');
-  };
+        this._setElementAttributes(SELECTOR_FIXED_CONTENT, 'paddingRight', function (calculatedValue) {
+          return calculatedValue + width;
+        });
 
-  var _resetElementAttributes = function _resetElementAttributes(selector, styleProp) {
-    SelectorEngine.find(selector).forEach(function (element) {
-      var value = Manipulator.getDataAttribute(element, styleProp);
-
-      if (typeof value === 'undefined') {
-        element.style.removeProperty(styleProp);
-      } else {
-        Manipulator.removeDataAttribute(element, styleProp);
-        element.style[styleProp] = value;
+        this._setElementAttributes(SELECTOR_STICKY_CONTENT, 'marginRight', function (calculatedValue) {
+          return calculatedValue - width;
+        });
       }
-    });
-  };
+    }, {
+      key: "_disableOverFlow",
+      value: function _disableOverFlow() {
+        this._saveInitialAttribute(this._element, 'overflow');
+
+        this._element.style.overflow = 'hidden';
+      }
+    }, {
+      key: "_setElementAttributes",
+      value: function _setElementAttributes(selector, styleProp, callback) {
+        var _this16 = this;
+
+        var scrollbarWidth = this.getWidth();
+
+        var manipulationCallBack = function manipulationCallBack(element) {
+          if (element !== _this16._element && window.innerWidth > element.clientWidth + scrollbarWidth) {
+            return;
+          }
+
+          _this16._saveInitialAttribute(element, styleProp);
+
+          var calculatedValue = window.getComputedStyle(element)[styleProp];
+          element.style[styleProp] = "".concat(callback(Number.parseFloat(calculatedValue)), "px");
+        };
+
+        this._applyManipulationCallback(selector, manipulationCallBack);
+      }
+    }, {
+      key: "reset",
+      value: function reset() {
+        this._resetElementAttributes(this._element, 'overflow');
+
+        this._resetElementAttributes(this._element, 'paddingRight');
+
+        this._resetElementAttributes(SELECTOR_FIXED_CONTENT, 'paddingRight');
+
+        this._resetElementAttributes(SELECTOR_STICKY_CONTENT, 'marginRight');
+      }
+    }, {
+      key: "_saveInitialAttribute",
+      value: function _saveInitialAttribute(element, styleProp) {
+        var actualValue = element.style[styleProp];
+
+        if (actualValue) {
+          Manipulator.setDataAttribute(element, styleProp, actualValue);
+        }
+      }
+    }, {
+      key: "_resetElementAttributes",
+      value: function _resetElementAttributes(selector, styleProp) {
+        var manipulationCallBack = function manipulationCallBack(element) {
+          var value = Manipulator.getDataAttribute(element, styleProp);
+
+          if (typeof value === 'undefined') {
+            element.style.removeProperty(styleProp);
+          } else {
+            Manipulator.removeDataAttribute(element, styleProp);
+            element.style[styleProp] = value;
+          }
+        };
+
+        this._applyManipulationCallback(selector, manipulationCallBack);
+      }
+    }, {
+      key: "_applyManipulationCallback",
+      value: function _applyManipulationCallback(selector, callBack) {
+        if (isElement(selector)) {
+          callBack(selector);
+        } else {
+          SelectorEngine.find(selector, this._element).forEach(callBack);
+        }
+      }
+    }, {
+      key: "isOverflowing",
+      value: function isOverflowing() {
+        return this.getWidth() > 0;
+      }
+    }]);
+
+    return ScrollBarHelper;
+  }();
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): util/backdrop.js
+   * Bootstrap (v5.0.2): util/backdrop.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2803,14 +2843,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     isVisible: true,
     // if false, we use the backdrop helper without adding any element to the dom
     isAnimated: false,
-    rootElement: document.body,
+    rootElement: 'body',
     // give the choice to place backdrop under different elements
     clickCallback: null
   };
   var DefaultType$6 = {
     isVisible: 'boolean',
     isAnimated: 'boolean',
-    rootElement: 'element',
+    rootElement: '(element|string)',
     clickCallback: '(function|null)'
   };
   var NAME$7 = 'backdrop';
@@ -2851,7 +2891,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "hide",
       value: function hide(callback) {
-        var _this16 = this;
+        var _this17 = this;
 
         if (!this._config.isVisible) {
           execute(callback);
@@ -2861,7 +2901,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._getElement().classList.remove(CLASS_NAME_SHOW$6);
 
         this._emulateAnimation(function () {
-          _this16.dispose();
+          _this17.dispose();
 
           execute(callback);
         });
@@ -2886,15 +2926,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getConfig",
       value: function _getConfig(config) {
-        config = _objectSpread(_objectSpread({}, Default$6), _typeof(config) === 'object' ? config : {});
-        config.rootElement = config.rootElement || document.body;
+        config = _objectSpread(_objectSpread({}, Default$6), _typeof(config) === 'object' ? config : {}); // use getElement() with the default "body" to get a fresh Element on each instantiation
+
+        config.rootElement = getElement(config.rootElement);
         typeCheckConfig(NAME$7, config, DefaultType$6);
         return config;
       }
     }, {
       key: "_append",
       value: function _append() {
-        var _this17 = this;
+        var _this18 = this;
 
         if (this._isAppended) {
           return;
@@ -2903,7 +2944,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._config.rootElement.appendChild(this._getElement());
 
         EventHandler.on(this._getElement(), EVENT_MOUSEDOWN, function () {
-          execute(_this17._config.clickCallback);
+          execute(_this18._config.clickCallback);
         });
         this._isAppended = true;
       }
@@ -2916,23 +2957,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         EventHandler.off(this._element, EVENT_MOUSEDOWN);
 
-        this._getElement().parentNode.removeChild(this._element);
+        this._element.remove();
 
         this._isAppended = false;
       }
     }, {
       key: "_emulateAnimation",
       value: function _emulateAnimation(callback) {
-        if (!this._config.isAnimated) {
-          execute(callback);
-          return;
-        }
-
-        var backdropTransitionDuration = getTransitionDurationFromElement(this._getElement());
-        EventHandler.one(this._getElement(), 'transitionend', function () {
-          return execute(callback);
-        });
-        emulateTransitionEnd(this._getElement(), backdropTransitionDuration);
+        executeAfterTransition(callback, this._getElement(), this._config.isAnimated);
       }
     }]);
 
@@ -2940,7 +2972,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }();
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): modal.js
+   * Bootstrap (v5.0.2): modal.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -2999,18 +3031,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super6 = _createSuper(Modal);
 
     function Modal(element, config) {
-      var _this18;
+      var _this19;
 
       _classCallCheck(this, Modal);
 
-      _this18 = _super6.call(this, element);
-      _this18._config = _this18._getConfig(config);
-      _this18._dialog = SelectorEngine.findOne(SELECTOR_DIALOG, _this18._element);
-      _this18._backdrop = _this18._initializeBackDrop();
-      _this18._isShown = false;
-      _this18._ignoreBackdropClick = false;
-      _this18._isTransitioning = false;
-      return _this18;
+      _this19 = _super6.call(this, element);
+      _this19._config = _this19._getConfig(config);
+      _this19._dialog = SelectorEngine.findOne(SELECTOR_DIALOG, _this19._element);
+      _this19._backdrop = _this19._initializeBackDrop();
+      _this19._isShown = false;
+      _this19._ignoreBackdropClick = false;
+      _this19._isTransitioning = false;
+      _this19._scrollBar = new ScrollBarHelper();
+      return _this19;
     } // Getters
 
 
@@ -3023,26 +3056,28 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "show",
       value: function show(relatedTarget) {
-        var _this19 = this;
+        var _this20 = this;
 
         if (this._isShown || this._isTransitioning) {
           return;
-        }
-
-        if (this._isAnimated()) {
-          this._isTransitioning = true;
         }
 
         var showEvent = EventHandler.trigger(this._element, EVENT_SHOW$3, {
           relatedTarget: relatedTarget
         });
 
-        if (this._isShown || showEvent.defaultPrevented) {
+        if (showEvent.defaultPrevented) {
           return;
         }
 
         this._isShown = true;
-        hide();
+
+        if (this._isAnimated()) {
+          this._isTransitioning = true;
+        }
+
+        this._scrollBar.hide();
+
         document.body.classList.add(CLASS_NAME_OPEN);
 
         this._adjustDialog();
@@ -3052,26 +3087,26 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._setResizeEvent();
 
         EventHandler.on(this._element, EVENT_CLICK_DISMISS$2, SELECTOR_DATA_DISMISS$2, function (event) {
-          return _this19.hide(event);
+          return _this20.hide(event);
         });
         EventHandler.on(this._dialog, EVENT_MOUSEDOWN_DISMISS, function () {
-          EventHandler.one(_this19._element, EVENT_MOUSEUP_DISMISS, function (event) {
-            if (event.target === _this19._element) {
-              _this19._ignoreBackdropClick = true;
+          EventHandler.one(_this20._element, EVENT_MOUSEUP_DISMISS, function (event) {
+            if (event.target === _this20._element) {
+              _this20._ignoreBackdropClick = true;
             }
           });
         });
 
         this._showBackdrop(function () {
-          return _this19._showElement(relatedTarget);
+          return _this20._showElement(relatedTarget);
         });
       }
     }, {
       key: "hide",
       value: function hide(event) {
-        var _this20 = this;
+        var _this21 = this;
 
-        if (event) {
+        if (event && ['A', 'AREA'].includes(event.target.tagName)) {
           event.preventDefault();
         }
 
@@ -3105,7 +3140,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         EventHandler.off(this._dialog, EVENT_MOUSEDOWN_DISMISS);
 
         this._queueCallback(function () {
-          return _this20._hideModal();
+          return _this21._hideModal();
         }, this._element, isAnimated);
       }
     }, {
@@ -3145,14 +3180,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getConfig",
       value: function _getConfig(config) {
-        config = _objectSpread(_objectSpread(_objectSpread({}, Default$5), Manipulator.getDataAttributes(this._element)), config);
+        config = _objectSpread(_objectSpread(_objectSpread({}, Default$5), Manipulator.getDataAttributes(this._element)), _typeof(config) === 'object' ? config : {});
         typeCheckConfig(NAME$6, config, DefaultType$5);
         return config;
       }
     }, {
       key: "_showElement",
       value: function _showElement(relatedTarget) {
-        var _this21 = this;
+        var _this22 = this;
 
         var isAnimated = this._isAnimated();
 
@@ -3188,12 +3223,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         var transitionComplete = function transitionComplete() {
-          if (_this21._config.focus) {
-            _this21._element.focus();
+          if (_this22._config.focus) {
+            _this22._element.focus();
           }
 
-          _this21._isTransitioning = false;
-          EventHandler.trigger(_this21._element, EVENT_SHOWN$3, {
+          _this22._isTransitioning = false;
+          EventHandler.trigger(_this22._element, EVENT_SHOWN$3, {
             relatedTarget: relatedTarget
           });
         };
@@ -3203,29 +3238,29 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_enforceFocus",
       value: function _enforceFocus() {
-        var _this22 = this;
+        var _this23 = this;
 
         EventHandler.off(document, EVENT_FOCUSIN$2); // guard against infinite focus loop
 
         EventHandler.on(document, EVENT_FOCUSIN$2, function (event) {
-          if (document !== event.target && _this22._element !== event.target && !_this22._element.contains(event.target)) {
-            _this22._element.focus();
+          if (document !== event.target && _this23._element !== event.target && !_this23._element.contains(event.target)) {
+            _this23._element.focus();
           }
         });
       }
     }, {
       key: "_setEscapeEvent",
       value: function _setEscapeEvent() {
-        var _this23 = this;
+        var _this24 = this;
 
         if (this._isShown) {
           EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS$1, function (event) {
-            if (_this23._config.keyboard && event.key === ESCAPE_KEY$1) {
+            if (_this24._config.keyboard && event.key === ESCAPE_KEY$1) {
               event.preventDefault();
 
-              _this23.hide();
-            } else if (!_this23._config.keyboard && event.key === ESCAPE_KEY$1) {
-              _this23._triggerBackdropTransition();
+              _this24.hide();
+            } else if (!_this24._config.keyboard && event.key === ESCAPE_KEY$1) {
+              _this24._triggerBackdropTransition();
             }
           });
         } else {
@@ -3235,11 +3270,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_setResizeEvent",
       value: function _setResizeEvent() {
-        var _this24 = this;
+        var _this25 = this;
 
         if (this._isShown) {
           EventHandler.on(window, EVENT_RESIZE, function () {
-            return _this24._adjustDialog();
+            return _this25._adjustDialog();
           });
         } else {
           EventHandler.off(window, EVENT_RESIZE);
@@ -3248,7 +3283,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_hideModal",
       value: function _hideModal() {
-        var _this25 = this;
+        var _this26 = this;
 
         this._element.style.display = 'none';
 
@@ -3263,20 +3298,21 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._backdrop.hide(function () {
           document.body.classList.remove(CLASS_NAME_OPEN);
 
-          _this25._resetAdjustments();
+          _this26._resetAdjustments();
 
-          reset();
-          EventHandler.trigger(_this25._element, EVENT_HIDDEN$3);
+          _this26._scrollBar.reset();
+
+          EventHandler.trigger(_this26._element, EVENT_HIDDEN$3);
         });
       }
     }, {
       key: "_showBackdrop",
       value: function _showBackdrop(callback) {
-        var _this26 = this;
+        var _this27 = this;
 
         EventHandler.on(this._element, EVENT_CLICK_DISMISS$2, function (event) {
-          if (_this26._ignoreBackdropClick) {
-            _this26._ignoreBackdropClick = false;
+          if (_this27._ignoreBackdropClick) {
+            _this27._ignoreBackdropClick = false;
             return;
           }
 
@@ -3284,10 +3320,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             return;
           }
 
-          if (_this26._config.backdrop === true) {
-            _this26.hide();
-          } else if (_this26._config.backdrop === 'static') {
-            _this26._triggerBackdropTransition();
+          if (_this27._config.backdrop === true) {
+            _this27.hide();
+          } else if (_this27._config.backdrop === 'static') {
+            _this27._triggerBackdropTransition();
           }
         });
 
@@ -3301,7 +3337,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_triggerBackdropTransition",
       value: function _triggerBackdropTransition() {
-        var _this27 = this;
+        var _this28 = this;
 
         var hideEvent = EventHandler.trigger(this._element, EVENT_HIDE_PREVENTED);
 
@@ -3309,27 +3345,31 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return;
         }
 
-        var isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
+        var _this$_element = this._element,
+            classList = _this$_element.classList,
+            scrollHeight = _this$_element.scrollHeight,
+            style = _this$_element.style;
+        var isModalOverflowing = scrollHeight > document.documentElement.clientHeight; // return if the following background transition hasn't yet completed
 
-        if (!isModalOverflowing) {
-          this._element.style.overflowY = 'hidden';
+        if (!isModalOverflowing && style.overflowY === 'hidden' || classList.contains(CLASS_NAME_STATIC)) {
+          return;
         }
 
-        this._element.classList.add(CLASS_NAME_STATIC);
+        if (!isModalOverflowing) {
+          style.overflowY = 'hidden';
+        }
 
-        var modalTransitionDuration = getTransitionDurationFromElement(this._dialog);
-        EventHandler.off(this._element, 'transitionend');
-        EventHandler.one(this._element, 'transitionend', function () {
-          _this27._element.classList.remove(CLASS_NAME_STATIC);
+        classList.add(CLASS_NAME_STATIC);
+
+        this._queueCallback(function () {
+          classList.remove(CLASS_NAME_STATIC);
 
           if (!isModalOverflowing) {
-            EventHandler.one(_this27._element, 'transitionend', function () {
-              _this27._element.style.overflowY = '';
-            });
-            emulateTransitionEnd(_this27._element, modalTransitionDuration);
+            _this28._queueCallback(function () {
+              style.overflowY = '';
+            }, _this28._dialog);
           }
-        });
-        emulateTransitionEnd(this._element, modalTransitionDuration);
+        }, this._dialog);
 
         this._element.focus();
       } // ----------------------------------------------------------------------
@@ -3340,7 +3380,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "_adjustDialog",
       value: function _adjustDialog() {
         var isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
-        var scrollbarWidth = getWidth();
+
+        var scrollbarWidth = this._scrollBar.getWidth();
+
         var isBodyOverflowing = scrollbarWidth > 0;
 
         if (!isBodyOverflowing && isModalOverflowing && !isRTL() || isBodyOverflowing && !isModalOverflowing && isRTL()) {
@@ -3372,7 +3414,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "jQueryInterface",
       value: function jQueryInterface(config, relatedTarget) {
         return this.each(function () {
-          var data = Modal.getInstance(this) || new Modal(this, _typeof(config) === 'object' ? config : {});
+          var data = Modal.getOrCreateInstance(this, config);
 
           if (typeof config !== 'string') {
             return;
@@ -3397,7 +3439,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
   EventHandler.on(document, EVENT_CLICK_DATA_API$2, SELECTOR_DATA_TOGGLE$2, function (event) {
-    var _this28 = this;
+    var _this29 = this;
 
     var target = getElementFromSelector(this);
 
@@ -3412,12 +3454,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       EventHandler.one(target, EVENT_HIDDEN$3, function () {
-        if (isVisible(_this28)) {
-          _this28.focus();
+        if (isVisible(_this29)) {
+          _this29.focus();
         }
       });
     });
-    var data = Modal.getInstance(target) || new Modal(target);
+    var data = Modal.getOrCreateInstance(target);
     data.toggle(this);
   });
   /**
@@ -3430,7 +3472,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Modal);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): offcanvas.js
+   * Bootstrap (v5.0.2): offcanvas.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3481,18 +3523,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super7 = _createSuper(Offcanvas);
 
     function Offcanvas(element, config) {
-      var _this29;
+      var _this30;
 
       _classCallCheck(this, Offcanvas);
 
-      _this29 = _super7.call(this, element);
-      _this29._config = _this29._getConfig(config);
-      _this29._isShown = false;
-      _this29._backdrop = _this29._initializeBackDrop();
+      _this30 = _super7.call(this, element);
+      _this30._config = _this30._getConfig(config);
+      _this30._isShown = false;
+      _this30._backdrop = _this30._initializeBackDrop();
 
-      _this29._addEventListeners();
+      _this30._addEventListeners();
 
-      return _this29;
+      return _this30;
     } // Getters
 
 
@@ -3505,7 +3547,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "show",
       value: function show(relatedTarget) {
-        var _this30 = this;
+        var _this31 = this;
 
         if (this._isShown) {
           return;
@@ -3525,7 +3567,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._backdrop.show();
 
         if (!this._config.scroll) {
-          hide();
+          new ScrollBarHelper().hide();
 
           this._enforceFocusOnElement(this._element);
         }
@@ -3539,7 +3581,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._element.classList.add(CLASS_NAME_SHOW$4);
 
         var completeCallBack = function completeCallBack() {
-          EventHandler.trigger(_this30._element, EVENT_SHOWN$2, {
+          EventHandler.trigger(_this31._element, EVENT_SHOWN$2, {
             relatedTarget: relatedTarget
           });
         };
@@ -3549,7 +3591,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "hide",
       value: function hide() {
-        var _this31 = this;
+        var _this32 = this;
 
         if (!this._isShown) {
           return;
@@ -3572,19 +3614,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this._backdrop.hide();
 
         var completeCallback = function completeCallback() {
-          _this31._element.setAttribute('aria-hidden', true);
+          _this32._element.setAttribute('aria-hidden', true);
 
-          _this31._element.removeAttribute('aria-modal');
+          _this32._element.removeAttribute('aria-modal');
 
-          _this31._element.removeAttribute('role');
+          _this32._element.removeAttribute('role');
 
-          _this31._element.style.visibility = 'hidden';
+          _this32._element.style.visibility = 'hidden';
 
-          if (!_this31._config.scroll) {
-            reset();
+          if (!_this32._config.scroll) {
+            new ScrollBarHelper().reset();
           }
 
-          EventHandler.trigger(_this31._element, EVENT_HIDDEN$2);
+          EventHandler.trigger(_this32._element, EVENT_HIDDEN$2);
         };
 
         this._queueCallback(completeCallback, this._element, true);
@@ -3609,14 +3651,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_initializeBackDrop",
       value: function _initializeBackDrop() {
-        var _this32 = this;
+        var _this33 = this;
 
         return new Backdrop({
           isVisible: this._config.backdrop,
           isAnimated: true,
           rootElement: this._element.parentNode,
           clickCallback: function clickCallback() {
-            return _this32.hide();
+            return _this33.hide();
           }
         });
       }
@@ -3635,14 +3677,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_addEventListeners",
       value: function _addEventListeners() {
-        var _this33 = this;
+        var _this34 = this;
 
         EventHandler.on(this._element, EVENT_CLICK_DISMISS$1, SELECTOR_DATA_DISMISS$1, function () {
-          return _this33.hide();
+          return _this34.hide();
         });
         EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS, function (event) {
-          if (_this33._config.keyboard && event.key === ESCAPE_KEY) {
-            _this33.hide();
+          if (_this34._config.keyboard && event.key === ESCAPE_KEY) {
+            _this34.hide();
           }
         });
       } // Static
@@ -3661,7 +3703,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "jQueryInterface",
       value: function jQueryInterface(config) {
         return this.each(function () {
-          var data = Data.get(this, DATA_KEY$5) || new Offcanvas(this, _typeof(config) === 'object' ? config : {});
+          var data = Offcanvas.getOrCreateInstance(this, config);
 
           if (typeof config !== 'string') {
             return;
@@ -3686,7 +3728,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
   EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$1, function (event) {
-    var _this34 = this;
+    var _this35 = this;
 
     var target = getElementFromSelector(this);
 
@@ -3700,8 +3742,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     EventHandler.one(target, EVENT_HIDDEN$2, function () {
       // focus on trigger when it is closed
-      if (isVisible(_this34)) {
-        _this34.focus();
+      if (isVisible(_this35)) {
+        _this35.focus();
       }
     }); // avoid conflict when clicking a toggler of an offcanvas, while another is open
 
@@ -3711,12 +3753,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       Offcanvas.getInstance(allReadyOpen).hide();
     }
 
-    var data = Data.get(target, DATA_KEY$5) || new Offcanvas(target);
+    var data = Offcanvas.getOrCreateInstance(target);
     data.toggle(this);
   });
   EventHandler.on(window, EVENT_LOAD_DATA_API$1, function () {
-    SelectorEngine.find(OPEN_SELECTOR).forEach(function (el) {
-      return (Data.get(el, DATA_KEY$5) || new Offcanvas(el)).show();
+    return SelectorEngine.find(OPEN_SELECTOR).forEach(function (el) {
+      return Offcanvas.getOrCreateInstance(el).show();
     });
   });
   /**
@@ -3728,7 +3770,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Offcanvas);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): util/sanitizer.js
+   * Bootstrap (v5.0.2): util/sanitizer.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3809,7 +3851,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
 
   function sanitizeHtml(unsafeHtml, allowList, sanitizeFn) {
-    var _ref5;
+    var _ref7;
 
     if (!unsafeHtml.length) {
       return unsafeHtml;
@@ -3823,20 +3865,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var createdDocument = domParser.parseFromString(unsafeHtml, 'text/html');
     var allowlistKeys = Object.keys(allowList);
 
-    var elements = (_ref5 = []).concat.apply(_ref5, _toConsumableArray(createdDocument.body.querySelectorAll('*')));
+    var elements = (_ref7 = []).concat.apply(_ref7, _toConsumableArray(createdDocument.body.querySelectorAll('*')));
 
     var _loop = function _loop(i, len) {
-      var _ref6;
+      var _ref8;
 
       var el = elements[i];
       var elName = el.nodeName.toLowerCase();
 
       if (!allowlistKeys.includes(elName)) {
-        el.parentNode.removeChild(el);
+        el.remove();
         return "continue";
       }
 
-      var attributeList = (_ref6 = []).concat.apply(_ref6, _toConsumableArray(el.attributes));
+      var attributeList = (_ref8 = []).concat.apply(_ref8, _toConsumableArray(el.attributes));
 
       var allowedAttributes = [].concat(allowList['*'] || [], allowList[elName] || []);
       attributeList.forEach(function (attr) {
@@ -3856,7 +3898,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): tooltip.js
+   * Bootstrap (v5.0.2): tooltip.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -3953,7 +3995,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super8 = _createSuper(Tooltip);
 
     function Tooltip(element, config) {
-      var _this35;
+      var _this36;
 
       _classCallCheck(this, Tooltip);
 
@@ -3961,20 +4003,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         throw new TypeError('Bootstrap\'s tooltips require Popper (https://popper.js.org)');
       }
 
-      _this35 = _super8.call(this, element); // private
+      _this36 = _super8.call(this, element); // private
 
-      _this35._isEnabled = true;
-      _this35._timeout = 0;
-      _this35._hoverState = '';
-      _this35._activeTrigger = {};
-      _this35._popper = null; // Protected
+      _this36._isEnabled = true;
+      _this36._timeout = 0;
+      _this36._hoverState = '';
+      _this36._activeTrigger = {};
+      _this36._popper = null; // Protected
 
-      _this35._config = _this35._getConfig(config);
-      _this35.tip = null;
+      _this36._config = _this36._getConfig(config);
+      _this36.tip = null;
 
-      _this35._setListeners();
+      _this36._setListeners();
 
-      return _this35;
+      return _this36;
     } // Getters
 
 
@@ -4027,8 +4069,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         clearTimeout(this._timeout);
         EventHandler.off(this._element.closest(".".concat(CLASS_NAME_MODAL)), 'hide.bs.modal', this._hideModalHandler);
 
-        if (this.tip && this.tip.parentNode) {
-          this.tip.parentNode.removeChild(this.tip);
+        if (this.tip) {
+          this.tip.remove();
         }
 
         if (this._popper) {
@@ -4040,7 +4082,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "show",
       value: function show() {
-        var _this36 = this;
+        var _this37 = this;
 
         if (this._element.style.display === 'none') {
           throw new Error('Please use show on visible elements');
@@ -4104,20 +4146,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
         if ('ontouchstart' in document.documentElement) {
-          var _ref7;
+          var _ref9;
 
-          (_ref7 = []).concat.apply(_ref7, _toConsumableArray(document.body.children)).forEach(function (element) {
+          (_ref9 = []).concat.apply(_ref9, _toConsumableArray(document.body.children)).forEach(function (element) {
             EventHandler.on(element, 'mouseover', noop);
           });
         }
 
         var complete = function complete() {
-          var prevHoverState = _this36._hoverState;
-          _this36._hoverState = null;
-          EventHandler.trigger(_this36._element, _this36.constructor.Event.SHOWN);
+          var prevHoverState = _this37._hoverState;
+          _this37._hoverState = null;
+          EventHandler.trigger(_this37._element, _this37.constructor.Event.SHOWN);
 
           if (prevHoverState === HOVER_STATE_OUT) {
-            _this36._leave(null, _this36);
+            _this37._leave(null, _this37);
           }
         };
 
@@ -4128,7 +4170,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "hide",
       value: function hide() {
-        var _this37 = this;
+        var _this38 = this;
 
         if (!this._popper) {
           return;
@@ -4137,24 +4179,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var tip = this.getTipElement();
 
         var complete = function complete() {
-          if (_this37._isWithActiveTrigger()) {
+          if (_this38._isWithActiveTrigger()) {
             return;
           }
 
-          if (_this37._hoverState !== HOVER_STATE_SHOW && tip.parentNode) {
-            tip.parentNode.removeChild(tip);
+          if (_this38._hoverState !== HOVER_STATE_SHOW) {
+            tip.remove();
           }
 
-          _this37._cleanTipClass();
+          _this38._cleanTipClass();
 
-          _this37._element.removeAttribute('aria-describedby');
+          _this38._element.removeAttribute('aria-describedby');
 
-          EventHandler.trigger(_this37._element, _this37.constructor.Event.HIDDEN);
+          EventHandler.trigger(_this38._element, _this38.constructor.Event.HIDDEN);
 
-          if (_this37._popper) {
-            _this37._popper.destroy();
+          if (_this38._popper) {
+            _this38._popper.destroy();
 
-            _this37._popper = null;
+            _this38._popper = null;
           }
         };
 
@@ -4168,9 +4210,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         // empty mouseover listeners we added for iOS support
 
         if ('ontouchstart' in document.documentElement) {
-          var _ref8;
+          var _ref10;
 
-          (_ref8 = []).concat.apply(_ref8, _toConsumableArray(document.body.children)).forEach(function (element) {
+          (_ref10 = []).concat.apply(_ref10, _toConsumableArray(document.body.children)).forEach(function (element) {
             return EventHandler.off(element, 'mouseover', noop);
           });
         }
@@ -4289,7 +4331,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getOffset",
       value: function _getOffset() {
-        var _this38 = this;
+        var _this39 = this;
 
         var offset = this._config.offset;
 
@@ -4301,7 +4343,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         if (typeof offset === 'function') {
           return function (popperData) {
-            return offset(popperData, _this38._element);
+            return offset(popperData, _this39._element);
           };
         }
 
@@ -4310,7 +4352,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_getPopperConfig",
       value: function _getPopperConfig(attachment) {
-        var _this39 = this;
+        var _this40 = this;
 
         var defaultBsPopperConfig = {
           placement: attachment,
@@ -4339,12 +4381,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             enabled: true,
             phase: 'afterWrite',
             fn: function fn(data) {
-              return _this39._handlePopperPlacementChange(data);
+              return _this40._handlePopperPlacementChange(data);
             }
           }],
           onFirstUpdate: function onFirstUpdate(data) {
             if (data.options.placement !== data.placement) {
-              _this39._handlePopperPlacementChange(data);
+              _this40._handlePopperPlacementChange(data);
             }
           }
         };
@@ -4363,30 +4405,30 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_setListeners",
       value: function _setListeners() {
-        var _this40 = this;
+        var _this41 = this;
 
         var triggers = this._config.trigger.split(' ');
 
         triggers.forEach(function (trigger) {
           if (trigger === 'click') {
-            EventHandler.on(_this40._element, _this40.constructor.Event.CLICK, _this40._config.selector, function (event) {
-              return _this40.toggle(event);
+            EventHandler.on(_this41._element, _this41.constructor.Event.CLICK, _this41._config.selector, function (event) {
+              return _this41.toggle(event);
             });
           } else if (trigger !== TRIGGER_MANUAL) {
-            var eventIn = trigger === TRIGGER_HOVER ? _this40.constructor.Event.MOUSEENTER : _this40.constructor.Event.FOCUSIN;
-            var eventOut = trigger === TRIGGER_HOVER ? _this40.constructor.Event.MOUSELEAVE : _this40.constructor.Event.FOCUSOUT;
-            EventHandler.on(_this40._element, eventIn, _this40._config.selector, function (event) {
-              return _this40._enter(event);
+            var eventIn = trigger === TRIGGER_HOVER ? _this41.constructor.Event.MOUSEENTER : _this41.constructor.Event.FOCUSIN;
+            var eventOut = trigger === TRIGGER_HOVER ? _this41.constructor.Event.MOUSELEAVE : _this41.constructor.Event.FOCUSOUT;
+            EventHandler.on(_this41._element, eventIn, _this41._config.selector, function (event) {
+              return _this41._enter(event);
             });
-            EventHandler.on(_this40._element, eventOut, _this40._config.selector, function (event) {
-              return _this40._leave(event);
+            EventHandler.on(_this41._element, eventOut, _this41._config.selector, function (event) {
+              return _this41._leave(event);
             });
           }
         });
 
         this._hideModalHandler = function () {
-          if (_this40._element) {
-            _this40.hide();
+          if (_this41._element) {
+            _this41.hide();
           }
         };
 
@@ -4588,17 +4630,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "jQueryInterface",
       value: function jQueryInterface(config) {
         return this.each(function () {
-          var data = Data.get(this, DATA_KEY$4);
-
-          var _config = _typeof(config) === 'object' && config;
-
-          if (!data && /dispose|hide/.test(config)) {
-            return;
-          }
-
-          if (!data) {
-            data = new Tooltip(this, _config);
-          }
+          var data = Tooltip.getOrCreateInstance(this, config);
 
           if (typeof config === 'string') {
             if (typeof data[config] === 'undefined') {
@@ -4624,7 +4656,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Tooltip);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): popover.js
+   * Bootstrap (v5.0.2): popover.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -4693,6 +4725,25 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return this.getTitle() || this._getContent();
       }
     }, {
+      key: "getTipElement",
+      value: function getTipElement() {
+        if (this.tip) {
+          return this.tip;
+        }
+
+        this.tip = _get(_getPrototypeOf(Popover.prototype), "getTipElement", this).call(this);
+
+        if (!this.getTitle()) {
+          SelectorEngine.findOne(SELECTOR_TITLE, this.tip).remove();
+        }
+
+        if (!this._getContent()) {
+          SelectorEngine.findOne(SELECTOR_CONTENT, this.tip).remove();
+        }
+
+        return this.tip;
+      }
+    }, {
       key: "setContent",
       value: function setContent() {
         var tip = this.getTipElement(); // we use append for html objects to maintain js events
@@ -4759,18 +4810,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "jQueryInterface",
       value: function jQueryInterface(config) {
         return this.each(function () {
-          var data = Data.get(this, DATA_KEY$3);
-
-          var _config = _typeof(config) === 'object' ? config : null;
-
-          if (!data && /dispose|hide/.test(config)) {
-            return;
-          }
-
-          if (!data) {
-            data = new Popover(this, _config);
-            Data.set(this, DATA_KEY$3, data);
-          }
+          var data = Popover.getOrCreateInstance(this, config);
 
           if (typeof config === 'string') {
             if (typeof data[config] === 'undefined') {
@@ -4796,7 +4836,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Popover);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): scrollspy.js
+   * Bootstrap (v5.0.2): scrollspy.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -4847,27 +4887,27 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super10 = _createSuper(ScrollSpy);
 
     function ScrollSpy(element, config) {
-      var _this41;
+      var _this42;
 
       _classCallCheck(this, ScrollSpy);
 
-      _this41 = _super10.call(this, element);
-      _this41._scrollElement = _this41._element.tagName === 'BODY' ? window : _this41._element;
-      _this41._config = _this41._getConfig(config);
-      _this41._selector = "".concat(_this41._config.target, " ").concat(SELECTOR_NAV_LINKS, ", ").concat(_this41._config.target, " ").concat(SELECTOR_LIST_ITEMS, ", ").concat(_this41._config.target, " .").concat(CLASS_NAME_DROPDOWN_ITEM);
-      _this41._offsets = [];
-      _this41._targets = [];
-      _this41._activeTarget = null;
-      _this41._scrollHeight = 0;
-      EventHandler.on(_this41._scrollElement, EVENT_SCROLL, function () {
-        return _this41._process();
+      _this42 = _super10.call(this, element);
+      _this42._scrollElement = _this42._element.tagName === 'BODY' ? window : _this42._element;
+      _this42._config = _this42._getConfig(config);
+      _this42._selector = "".concat(_this42._config.target, " ").concat(SELECTOR_NAV_LINKS, ", ").concat(_this42._config.target, " ").concat(SELECTOR_LIST_ITEMS, ", ").concat(_this42._config.target, " .").concat(CLASS_NAME_DROPDOWN_ITEM);
+      _this42._offsets = [];
+      _this42._targets = [];
+      _this42._activeTarget = null;
+      _this42._scrollHeight = 0;
+      EventHandler.on(_this42._scrollElement, EVENT_SCROLL, function () {
+        return _this42._process();
       });
 
-      _this41.refresh();
+      _this42.refresh();
 
-      _this41._process();
+      _this42._process();
 
-      return _this41;
+      return _this42;
     } // Getters
 
 
@@ -4875,7 +4915,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "refresh",
       value: // Public
       function refresh() {
-        var _this42 = this;
+        var _this43 = this;
 
         var autoMethod = this._scrollElement === this._scrollElement.window ? METHOD_OFFSET : METHOD_POSITION;
         var offsetMethod = this._config.method === 'auto' ? autoMethod : this._config.method;
@@ -4902,9 +4942,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }).sort(function (a, b) {
           return a[0] - b[0];
         }).forEach(function (item) {
-          _this42._offsets.push(item[0]);
+          _this43._offsets.push(item[0]);
 
-          _this42._targets.push(item[1]);
+          _this43._targets.push(item[1]);
         });
       }
     }, {
@@ -5050,7 +5090,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "jQueryInterface",
       value: function jQueryInterface(config) {
         return this.each(function () {
-          var data = ScrollSpy.getInstance(this) || new ScrollSpy(this, _typeof(config) === 'object' ? config : {});
+          var data = ScrollSpy.getOrCreateInstance(this, config);
 
           if (typeof config !== 'string') {
             return;
@@ -5089,7 +5129,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(ScrollSpy);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): tab.js
+   * Bootstrap (v5.0.2): tab.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -5141,7 +5181,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "show",
       value: // Public
       function show() {
-        var _this43 = this;
+        var _this44 = this;
 
         if (this._element.parentNode && this._element.parentNode.nodeType === Node.ELEMENT_NODE && this._element.classList.contains(CLASS_NAME_ACTIVE)) {
           return;
@@ -5173,9 +5213,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         var complete = function complete() {
           EventHandler.trigger(previous, EVENT_HIDDEN$1, {
-            relatedTarget: _this43._element
+            relatedTarget: _this44._element
           });
-          EventHandler.trigger(_this43._element, EVENT_SHOWN$1, {
+          EventHandler.trigger(_this44._element, EVENT_SHOWN$1, {
             relatedTarget: previous
           });
         };
@@ -5190,14 +5230,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_activate",
       value: function _activate(element, container, callback) {
-        var _this44 = this;
+        var _this45 = this;
 
         var activeElements = container && (container.nodeName === 'UL' || container.nodeName === 'OL') ? SelectorEngine.find(SELECTOR_ACTIVE_UL, container) : SelectorEngine.children(container, SELECTOR_ACTIVE);
         var active = activeElements[0];
         var isTransitioning = callback && active && active.classList.contains(CLASS_NAME_FADE$1);
 
         var complete = function complete() {
-          return _this44._transitionComplete(element, active, callback);
+          return _this45._transitionComplete(element, active, callback);
         };
 
         if (active && isTransitioning) {
@@ -5269,7 +5309,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "jQueryInterface",
       value: function jQueryInterface(config) {
         return this.each(function () {
-          var data = Data.get(this, DATA_KEY$1) || new Tab(this);
+          var data = Tab.getOrCreateInstance(this);
 
           if (typeof config === 'string') {
             if (typeof data[config] === 'undefined') {
@@ -5300,7 +5340,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return;
     }
 
-    var data = Data.get(this, DATA_KEY$1) || new Tab(this);
+    var data = Tab.getOrCreateInstance(this);
     data.show();
   });
   /**
@@ -5313,7 +5353,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Tab);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): toast.js
+   * Bootstrap (v5.0.2): toast.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -5363,19 +5403,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var _super12 = _createSuper(Toast);
 
     function Toast(element, config) {
-      var _this45;
+      var _this46;
 
       _classCallCheck(this, Toast);
 
-      _this45 = _super12.call(this, element);
-      _this45._config = _this45._getConfig(config);
-      _this45._timeout = null;
-      _this45._hasMouseInteraction = false;
-      _this45._hasKeyboardInteraction = false;
+      _this46 = _super12.call(this, element);
+      _this46._config = _this46._getConfig(config);
+      _this46._timeout = null;
+      _this46._hasMouseInteraction = false;
+      _this46._hasKeyboardInteraction = false;
 
-      _this45._setListeners();
+      _this46._setListeners();
 
-      return _this45;
+      return _this46;
     } // Getters
 
 
@@ -5383,7 +5423,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "show",
       value: // Public
       function show() {
-        var _this46 = this;
+        var _this47 = this;
 
         var showEvent = EventHandler.trigger(this._element, EVENT_SHOW);
 
@@ -5398,13 +5438,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         var complete = function complete() {
-          _this46._element.classList.remove(CLASS_NAME_SHOWING);
+          _this47._element.classList.remove(CLASS_NAME_SHOWING);
 
-          _this46._element.classList.add(CLASS_NAME_SHOW);
+          _this47._element.classList.add(CLASS_NAME_SHOW);
 
-          EventHandler.trigger(_this46._element, EVENT_SHOWN);
+          EventHandler.trigger(_this47._element, EVENT_SHOWN);
 
-          _this46._maybeScheduleHide();
+          _this47._maybeScheduleHide();
         };
 
         this._element.classList.remove(CLASS_NAME_HIDE);
@@ -5418,7 +5458,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "hide",
       value: function hide() {
-        var _this47 = this;
+        var _this48 = this;
 
         if (!this._element.classList.contains(CLASS_NAME_SHOW)) {
           return;
@@ -5431,9 +5471,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         var complete = function complete() {
-          _this47._element.classList.add(CLASS_NAME_HIDE);
+          _this48._element.classList.add(CLASS_NAME_HIDE);
 
-          EventHandler.trigger(_this47._element, EVENT_HIDDEN);
+          EventHandler.trigger(_this48._element, EVENT_HIDDEN);
         };
 
         this._element.classList.remove(CLASS_NAME_SHOW);
@@ -5462,7 +5502,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_maybeScheduleHide",
       value: function _maybeScheduleHide() {
-        var _this48 = this;
+        var _this49 = this;
 
         if (!this._config.autohide) {
           return;
@@ -5473,7 +5513,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
 
         this._timeout = setTimeout(function () {
-          _this48.hide();
+          _this49.hide();
         }, this._config.delay);
       }
     }, {
@@ -5508,22 +5548,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }, {
       key: "_setListeners",
       value: function _setListeners() {
-        var _this49 = this;
+        var _this50 = this;
 
         EventHandler.on(this._element, EVENT_CLICK_DISMISS, SELECTOR_DATA_DISMISS, function () {
-          return _this49.hide();
+          return _this50.hide();
         });
         EventHandler.on(this._element, EVENT_MOUSEOVER, function (event) {
-          return _this49._onInteraction(event, true);
+          return _this50._onInteraction(event, true);
         });
         EventHandler.on(this._element, EVENT_MOUSEOUT, function (event) {
-          return _this49._onInteraction(event, false);
+          return _this50._onInteraction(event, false);
         });
         EventHandler.on(this._element, EVENT_FOCUSIN, function (event) {
-          return _this49._onInteraction(event, true);
+          return _this50._onInteraction(event, true);
         });
         EventHandler.on(this._element, EVENT_FOCUSOUT, function (event) {
-          return _this49._onInteraction(event, false);
+          return _this50._onInteraction(event, false);
         });
       }
     }, {
@@ -5552,13 +5592,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       key: "jQueryInterface",
       value: function jQueryInterface(config) {
         return this.each(function () {
-          var data = Data.get(this, DATA_KEY);
-
-          var _config = _typeof(config) === 'object' && config;
-
-          if (!data) {
-            data = new Toast(this, _config);
-          }
+          var data = Toast.getOrCreateInstance(this, config);
 
           if (typeof config === 'string') {
             if (typeof data[config] === 'undefined') {
@@ -5584,7 +5618,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Toast);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.1): index.umd.js
+   * Bootstrap (v5.0.2): index.umd.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */

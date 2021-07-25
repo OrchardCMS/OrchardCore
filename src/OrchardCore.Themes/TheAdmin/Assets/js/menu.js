@@ -82,11 +82,13 @@ function unSetCompactStatus() {
     persistAdminPreferences();
 }
 
+var leftNav = document.getElementById("left-nav");
+
 // create an Observer instance
 const resizeObserver = new ResizeObserver(entries => {
     if (isCompactExplicit)
     {
-        if (document.getElementById("left-nav").scrollHeight > document.getElementById("left-nav").clientHeight)
+        if (leftNav.scrollHeight > leftNav.clientHeight)
         {
             document.body.classList.add("scroll");
         }
@@ -102,4 +104,7 @@ const resizeObserver = new ResizeObserver(entries => {
 })
 
 // start observing a DOM node
-resizeObserver.observe(document.getElementById("left-nav"))
+if (leftNav != null)
+{
+    resizeObserver.observe(leftNav)
+}

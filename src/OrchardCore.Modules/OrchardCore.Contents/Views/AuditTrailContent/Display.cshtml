@@ -1,0 +1,17 @@
+@model IShape
+@using OrchardCore.ContentManagement
+
+@{
+    var contentItem = Model.GetProperty<ContentItem>("ContentItem");
+    var versionNumber = Model.GetProperty<int>("VersionNumber");
+}
+
+<style asp-src="~/OrchardCore.Contents/Styles/audittrail-disabledcontent.min.css" debug-src="~/OrchardCore.Contents/Styles/audittrail-disabledcontent.css"></style>
+<script asp-src="~/OrchardCore.Contents/Scripts/audittrail-disabledcontent.min.js" debug-src="~/OrchardCore.Contents/Scripts/audittrail-disabledcontent.js" at="Foot" depends-on="jQuery"></script>
+
+<zone name="Title"><h1>@RenderTitleSegments(T["{0} {1} - Version {2}", contentItem.ContentType, contentItem.DisplayText, versionNumber])</h1></zone>
+
+<div class="disabledContent__wrapper">
+    @await DisplayAsync(Model)
+    <div class="disabledContent__overlay"></div>
+</div>

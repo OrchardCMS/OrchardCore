@@ -97,6 +97,20 @@ namespace OrchardCore.OpenId.Configuration
                     _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
                 }
             }
+
+            if (settings.Parameters?.Any() == true)
+            {
+                var parameters = settings.Parameters;
+                options.Events.OnRedirectToIdentityProvider = (context) =>
+                {
+                    foreach(var parameter in parameters)
+                    {
+                        context.ProtocolMessage.SetParameter(parameter.Name, parameter.Value);
+                    }
+
+                    return Task.CompletedTask;
+                };
+            }
         }
 
         public void Configure(OpenIdConnectOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
