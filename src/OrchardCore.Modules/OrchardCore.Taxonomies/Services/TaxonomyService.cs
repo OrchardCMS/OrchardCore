@@ -48,7 +48,7 @@ namespace OrchardCore.Taxonomies.Services
                 if (pager.Before != null)
                 {
                     var beforeValue = new DateTime(long.Parse(pager.Before));
-                    query = query = query
+                    query = query
                         .Where(x => x.CreatedUtc > beforeValue)
                         .OrderBy(x => x.CreatedUtc);
                 }
@@ -57,7 +57,7 @@ namespace OrchardCore.Taxonomies.Services
                     if (pager.After != null)
                     {
                         var afterValue = new DateTime(long.Parse(pager.After));
-                        query = query = query.Where(x => x.CreatedUtc < afterValue);
+                        query = query.Where(x => x.CreatedUtc < afterValue);
                     }
 
                     query = query.OrderByDescending(x => x.CreatedUtc);
@@ -78,7 +78,7 @@ namespace OrchardCore.Taxonomies.Services
                     if (pager.After != null)
                     {
                         var afterValue = int.Parse(pager.After);
-                        query = query = query.Where(x => x.Order < afterValue);
+                        query = query.Where(x => x.Order < afterValue);
                     }
 
                     query = query.OrderByDescending(x => x.Order);
