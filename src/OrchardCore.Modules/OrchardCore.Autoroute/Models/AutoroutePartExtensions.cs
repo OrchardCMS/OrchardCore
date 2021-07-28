@@ -18,8 +18,7 @@ namespace OrchardCore.Autoroute.Models
             if (HasInvalidCharacters(autoroute.Path))
             {
                 var invalidCharactersForMessage = string.Join(", ", AutoroutePart.InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                const string errorMessage = "Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).";
-                yield return new ValidationResult(S[errorMessage, invalidCharactersForMessage], new[] { nameof(autoroute.Path) });
+                yield return new ValidationResult(S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage], new[] { nameof(autoroute.Path) });
             }
 
             if (autoroute.Path?.Length > AutoroutePart.MaxPathLength)
@@ -30,9 +29,21 @@ namespace OrchardCore.Autoroute.Models
 
         private static bool HasInvalidCharacters(string path)
         {
-            if (path?.IndexOfAny(AutoroutePart.InvalidCharactersForPath) > -1) return true; // IndexOfAny performs culture-insensitive search.
-            if (path?.IndexOf(' ', StringComparison.Ordinal) > -1) return true;
-            if (path?.IndexOf("//", StringComparison.Ordinal) > -1) return true;
+            // IndexOfAny performs culture-insensitive and case-sensitive search.
+            if (path?.IndexOfAny(AutoroutePart.InvalidCharactersForPath) > -1)
+            {
+                return true;
+            }
+
+            if (path?.IndexOf(' ', StringComparison.Ordinal) > -1)
+            {
+                return true;
+            }
+
+            if (path?.IndexOf("//", StringComparison.Ordinal) > -1)
+            {
+                return true;
+            }
 
             return false;
         }
