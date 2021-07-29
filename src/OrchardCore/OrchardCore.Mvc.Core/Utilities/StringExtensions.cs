@@ -21,11 +21,6 @@ namespace OrchardCore.Mvc.Utilities
                 return "";
             }
 
-            if (camel == "RawHtml")
-            {
-                return "Raw Html";
-            }
-
             using var sb = ZString.CreateStringBuilder();
             for (var i = 0; i < camel.Length; ++i)
             {
