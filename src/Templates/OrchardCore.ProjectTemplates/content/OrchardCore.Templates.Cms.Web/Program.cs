@@ -32,7 +32,7 @@ namespace OrchardCore.Templates.Cms.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
 #if (UseNLog)
-                    webBuilder.UseNLogWeb()
+                    webBuilder.UseNLogWeb();
 #endif
                     webBuilder.UseStartup<Startup>();
                 });

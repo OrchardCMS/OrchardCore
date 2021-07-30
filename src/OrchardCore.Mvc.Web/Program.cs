@@ -6,12 +6,16 @@ namespace OrchardCore.Mvc.Web
 {
     public class Program
     {
-        public static Task Main(string[] args)
-            => BuildHost(args).RunAsync();
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
 
-        public static IHost BuildHost(string[] args) =>
+         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
-                .Build();
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }
