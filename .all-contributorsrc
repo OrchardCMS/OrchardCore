@@ -2362,6 +2362,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "aaronamm",
+      "name": "aaronamm",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2938310?v=4",
+      "profile": "https://www.codesanook.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

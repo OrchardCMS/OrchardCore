@@ -14,28 +14,32 @@ While the checklist is in a recommended order not every step depends strictly on
 
 ```markdown
 ### Prepare the project
+
 Do some housekeeping on GitHub in the [main repo](https://github.com/OrchardCMS/OrchardCore).
 
 - [ ] Close remaining issues for the version (including merging corresponding pull requests if suitable) or assign then to the next one.
 - [ ] Assign all issues that were closed for an upcoming version (including a wildcard version like "1.0.x") to this version (milestone).
 
 ### Prepare the code
+
 Update the source so everything looks like on the new version.
 
-- [ ] Update code generation templates in `OrchardCore.ProjectTemplates`.
-- [ ] Make sure that [OrchardCore.Samples works](https://github.com/OrchardCMS/OrchardCore.Samples).
 - [ ] Create a `release/<version name>` branch out of `dev`.
+- [ ] Update code generation templates in `OrchardCore.ProjectTemplates`.
 - [ ] Update the `OrchardCore.Commons.props` file: Update `VersionPrefix` for release versions (like "1.0.0") and `VersionSuffix` for pre-release versions (like "rc2", for the full version to be e.g. "1.0.0-rc2").
 - [ ] Update module versions in `ManifestConstants`.
 - [ ] Change docker version in _.travis.yml_ and _appveyor.yml_.
 
 ### Test the release
+
 Make sure everything works all right.
 
+- [ ] Make sure that [OrchardCore.Samples works](https://github.com/OrchardCMS/OrchardCore.Samples).
 - [ ] Test the [guides](https://docs.orchardcore.net/en/dev/docs/guides/) with the NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too). Test at least the following guides:
     - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/dev/docs/guides/create-modular-application-mvc/)
     - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/dev/docs/guides/create-cms-application/)
     - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/dev/docs/guides/decoupled-cms/)
+
 ### Prepare and publish Orchard Core Translations
 
 Update everything in the [Translations project](https://github.com/OrchardCMS/OrchardCore.Translations). Only do this once all the code changes are done since localized strings can change until then.
@@ -46,6 +50,7 @@ Update everything in the [Translations project](https://github.com/OrchardCMS/Or
 - [ ] Update the `OrchardCore.Translations.All` package reference in the main repo's _src/OrchardCore.Build/Dependencies.props_ file to refer to the new NuGet package.
 
 ### Prepare the documentation
+
 Update the docs so they contain information about the new release so once the release is out you'll just need to point to new information.
 
 - [ ] Create release notes in a specific documentation section. You can take the previous release notes as a template.
@@ -55,6 +60,7 @@ Update the docs so they contain information about the new release so once the re
     - Full changelog. You can generate this with [github-changelog](https://github.com/cfpb/github-changelog) with the `changelog OrchardCMS OrchardCore <previous version> <current version>` command, e.g. `changelog OrchardCMS OrchardCore 1.0.0-rc1 1.0.0-rc2`. Alternatively, you can use [Antoine's app](https://github.com/agriffard/Changelog.OrchardCore) too.
 
 ### Publish the release
+
 Do the harder parts of making the release public. This should come after everything above is done.
 
 - [ ] Merge `release/<version name>` to `master`.
@@ -68,6 +74,7 @@ Do the harder parts of making the release public. This should come after everyth
 - [ ] Update [Try Orchard Core](https://github.com/OrchardCMS/TryOrchardCore).
 
 ### Publicize the release
+
 Let the whole world know about our shiny new release. Savor this part! These steps will make the release public so only do them once everything else is ready.
 
 - [ ] Update the documentation to mention the version in all places where the latest version is referenced, for example, but not limited to (do a search for the package version string): [Status in the root README](https://docs.orchardcore.net/en/dev/#status), CLI templates, commands, the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/dev/docs/guides/decoupled-cms/) guide.
