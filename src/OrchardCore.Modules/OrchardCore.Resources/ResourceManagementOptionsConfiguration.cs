@@ -17,7 +17,7 @@ namespace OrchardCore.Resources
 
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
-        private const string codeMirrorVersion = "5.62.0";
+        private const string codeMirrorVersion = "5.62.2";
         private const string monacoEditorVersion = "0.26.1";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
@@ -227,7 +227,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn(codeMirrorUrl + "codemirror.min.js", codeMirrorUrl + "codemirror.js")
-                .SetCdnIntegrity("sha384-dyKmF6f8HxufZVfnbOXHDghtE7ukP8KKL8qVw1QvqY/8MFVkAla7N2h6oCNqMDlz", "sha384-IF7UVTFIt3bK395JQx3Bbtic2AmtV9x1qakA7EwqkUw0FHex0VkK6Xw8Xcb9xzPc")
+                .SetCdnIntegrity("sha384-rzcLytDyan25531bcpTEaKPpozaQYGnFzr0JIOraZeKDsrKPkwrfBVrJ9fCLgbpJ", "sha384-ULdIy0tCFbR+CuSTv6S3zd2j98/10qEYGhXB3BSjn5fIPt70/P0B5PpkfzB/w0P5")
                 .SetVersion(codeMirrorVersion);
 
             manifest
@@ -276,7 +276,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror-addon-hint-show-hint")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/hint/show-hint.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/hint/show-hint.js")
                 .SetCdn(codeMirrorUrl + "addon/hint/show-hint.min.js", codeMirrorUrl + "addon/hint/show-hint.js")
-                .SetCdnIntegrity("sha384-YHH6Bxz1jzwAQrWOInRPW4vkcNnaVxXh1a5tqaGf2gfLWcGWtIt8EhrTBaBn132Z", "sha384-StteqlqIF6JtTFDhoXRxcjLviwjhIW+zvD9lT8HskscpZF/0fc6EmmDfauesTebF")
+                .SetCdnIntegrity("sha384-pFJF3GAZ6kaXHIeHTe2ecWeeBzFVuVF2QXccnazviREKim+uL3lm/voyytwY71bQ", "sha384-RzmY798hMmzDwNL4d5ZkSaygnsA6Rq2ROY7awxW1t9NV+8XPpnXivbcD+EI1r2Ij")
                 .SetVersion(codeMirrorVersion);
 
             manifest
