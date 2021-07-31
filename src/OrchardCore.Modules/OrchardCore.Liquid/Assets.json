@@ -1,6 +1,7 @@
 [
   {
     "tsCompilerOptions": {
+      "removeComments":  true,
       "target": "ES5",
       "lib": [
         "dom",
@@ -11,7 +12,7 @@
       ]
     },
     "inputs": [
-      "Assets/monaco/*.ts"
+      "Assets/monaco/liquid-intellisense.ts"
     ],
     "output": "wwwroot/monaco/liquid-intellisense.js"
   }
