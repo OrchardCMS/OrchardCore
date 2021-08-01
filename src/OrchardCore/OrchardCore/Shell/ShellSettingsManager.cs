@@ -26,7 +26,7 @@ namespace OrchardCore.Environment.Shell
         private Func<string, Task<IConfigurationBuilder>> _tenantConfigBuilderFactory;
         private readonly SemaphoreSlim _tenantConfigSemaphore = new SemaphoreSlim(1);
 
-        private bool disposedValue;
+        private bool _disposedValue;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
@@ -274,7 +274,7 @@ namespace OrchardCore.Environment.Shell
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -282,7 +282,7 @@ namespace OrchardCore.Environment.Shell
                     _tenantConfigSemaphore.Dispose();
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

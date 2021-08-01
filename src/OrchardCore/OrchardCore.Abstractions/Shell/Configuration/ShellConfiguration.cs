@@ -25,7 +25,7 @@ namespace OrchardCore.Environment.Shell.Configuration
         private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        private bool disposedValue;
+        private bool _disposedValue;
 
         public ShellConfiguration()
         {
@@ -169,14 +169,14 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
                     _semaphore.Dispose();
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

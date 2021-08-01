@@ -34,7 +34,7 @@ namespace OrchardCore.Environment.Shell
         private readonly ConcurrentDictionary<string, ShellSettings> _shellSettings = new ConcurrentDictionary<string, ShellSettings>();
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
         private readonly SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
-        private bool disposedValue;
+        private bool _disposedValue;
 
         public ShellHost(
             IShellSettingsManager shellSettingsManager,
@@ -468,7 +468,7 @@ namespace OrchardCore.Environment.Shell
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -487,7 +487,7 @@ namespace OrchardCore.Environment.Shell
                     _shellSemaphores.Clear();
                     _initializingSemaphore.Dispose();
 
-                    disposedValue = true;
+                    _disposedValue = true;
                 }
             }
         }

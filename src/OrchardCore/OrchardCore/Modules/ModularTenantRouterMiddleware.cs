@@ -24,7 +24,7 @@ namespace OrchardCore.Modules
         private readonly IFeatureCollection _features;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-        private bool disposedValue;
+        private bool _disposedValue;
 
         public ModularTenantRouterMiddleware(
             IFeatureCollection features,
@@ -130,7 +130,7 @@ namespace OrchardCore.Modules
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -144,7 +144,7 @@ namespace OrchardCore.Modules
                     _semaphores.Clear();
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
