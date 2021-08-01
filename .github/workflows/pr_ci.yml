@@ -19,6 +19,8 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Set up JDK 11
       if: matrix.os == 'windows-latest'
       uses: actions/setup-java@v1
