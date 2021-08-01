@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -37,3 +36,4 @@ namespace OrchardCore.Templates.Cms.Web
                     webBuilder.UseStartup<Startup>();
                 });
     }
+}
