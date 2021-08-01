@@ -19,11 +19,12 @@ namespace OrchardCore.Modules
     /// Handles a request by forwarding it to the tenant specific pipeline.
     /// It also initializes the middlewares for the requested tenant on the first request.
     /// </summary>
-    public class ModularTenantRouterMiddleware
+    public class ModularTenantRouterMiddleware : IDisposable
     {
         private readonly IFeatureCollection _features;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private bool disposedValue;
 
         public ModularTenantRouterMiddleware(
             IFeatureCollection features,
@@ -50,7 +51,7 @@ namespace OrchardCore.Modules
             {
                 PathString prefix = "/" + shellContext.Settings.RequestUrlPrefix;
                 httpContext.Request.PathBase += prefix;
-                httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out PathString remainingPath);
+                httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out var remainingPath);
                 httpContext.Request.Path = remainingPath;
             }
 
@@ -110,7 +111,7 @@ namespace OrchardCore.Modules
             return shellPipeline;
         }
 
-        private void ConfigureTenantPipeline(IApplicationBuilder appBuilder)
+        private static void ConfigureTenantPipeline(IApplicationBuilder appBuilder)
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
@@ -125,6 +126,33 @@ namespace OrchardCore.Modules
                     startup.Configure(appBuilder, routes, ShellScope.Services);
                 }
             });
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    var semaphores = _semaphores.Values.ToArray();
+
+                    foreach (var semaphore in semaphores)
+                    {
+                        semaphore.Dispose();
+                    }
+
+                    _semaphores.Clear();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

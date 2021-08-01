@@ -14,8 +14,8 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private ShellConfiguration _settings;
-        private ShellConfiguration _configuration;
+        private readonly ShellConfiguration _settings;
+        private readonly ShellConfiguration _configuration;
 
         public ShellSettings()
         {

@@ -16,6 +16,7 @@ namespace OrchardCore.Locking
         private readonly ILogger _logger;
 
         private readonly Dictionary<string, Semaphore> _semaphores = new Dictionary<string, Semaphore>();
+        private bool disposedValue;
 
         public LocalLock(ILogger<LocalLock> logger)
         {
@@ -163,14 +164,31 @@ namespace OrchardCore.Locking
             }
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    var semaphores = _semaphores.Values.ToArray();
+
+                    foreach (var semaphore in semaphores)
+                    {
+                        semaphore.Value.Dispose();
+                    }
+
+                    _semaphores.Clear();
+                }
+
+                disposedValue = true;
+            }
+        }
+
         public void Dispose()
         {
-            var semaphores = _semaphores.Values.ToArray();
-
-            foreach (var semaphore in semaphores)
-            {
-                semaphore.Value.Dispose();
-            }
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

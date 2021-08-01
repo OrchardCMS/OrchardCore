@@ -14,16 +14,18 @@ namespace OrchardCore.Environment.Shell.Configuration
     /// from the application configuration 'appsettings.json', the 'App_Data/appsettings.json'
     /// file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
     /// </summary>
-    public class ShellConfiguration : IShellConfiguration
+    public class ShellConfiguration : IShellConfiguration, IDisposable
     {
         private IConfigurationRoot _configuration;
         private UpdatableDataProvider _updatableData;
         private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
 
         private readonly string _name;
-        private Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
+        private readonly Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
         private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
-        private SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+
+        private bool disposedValue;
 
         public ShellConfiguration()
         {
@@ -163,6 +165,26 @@ namespace OrchardCore.Environment.Shell.Configuration
         public IChangeToken GetReloadToken()
         {
             return Configuration.GetReloadToken();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _semaphore.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

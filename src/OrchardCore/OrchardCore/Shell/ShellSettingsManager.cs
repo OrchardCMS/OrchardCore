@@ -12,7 +12,7 @@ using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
-    public class ShellSettingsManager : IShellSettingsManager
+    public class ShellSettingsManager : IShellSettingsManager, IDisposable
     {
         private readonly IConfiguration _applicationConfiguration;
         private readonly IShellsConfigurationSources _tenantsConfigSources;
@@ -25,6 +25,8 @@ namespace OrchardCore.Environment.Shell
 
         private Func<string, Task<IConfigurationBuilder>> _tenantConfigBuilderFactory;
         private readonly SemaphoreSlim _tenantConfigSemaphore = new SemaphoreSlim(1);
+
+        private bool disposedValue;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
@@ -239,7 +241,7 @@ namespace OrchardCore.Environment.Shell
                 .AddConfiguration(_applicationConfiguration)
                 .AddSourcesAsync(_tenantsConfigSources);
 
-            if (lastProviders.Count() > 0)
+            if (lastProviders.Length > 0)
             {
                 configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
             }
@@ -268,6 +270,27 @@ namespace OrchardCore.Environment.Shell
             };
 
             _configuration = configuration;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _semaphore.Dispose();
+                    _tenantConfigSemaphore.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

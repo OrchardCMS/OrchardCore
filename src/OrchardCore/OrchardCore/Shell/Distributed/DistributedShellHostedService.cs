@@ -29,6 +29,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IShellSettingsManager _shellSettingsManager;
+        private readonly IClock _clock;
         private readonly ILogger _logger;
 
         private readonly ConcurrentDictionary<string, ShellIdentifier> _identifiers = new ConcurrentDictionary<string, ShellIdentifier>();
@@ -47,11 +48,13 @@ namespace OrchardCore.Environment.Shell.Distributed
             IShellHost shellHost,
             IShellContextFactory shellContextFactory,
             IShellSettingsManager shellSettingsManager,
+            IClock clock,
             ILogger<DistributedShellHostedService> logger)
         {
             _shellHost = shellHost;
             _shellContextFactory = shellContextFactory;
             _shellSettingsManager = shellSettingsManager;
+            _clock = clock;
             _logger = logger;
 
             shellHost.LoadingAsync += LoadingAsync;
@@ -103,7 +106,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellChangedId;
                     try
                     {
-                        shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
+                        shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey, token: stoppingToken);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -125,7 +128,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellCreatedId;
                     try
                     {
-                        shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
+                        shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey, token: stoppingToken);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -152,7 +155,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Init the busy start time.
-                    var _busyStartTime = DateTime.UtcNow;
+                    var _busyStartTime = _clock.UtcNow;
                     var syncingSuccess = true;
 
                     // Keep in sync all tenants by checking their specific identifiers.
@@ -165,11 +168,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                         }
 
                         var semaphore = _semaphores.GetOrAdd(settings.Name, name => new SemaphoreSlim(1));
-                        await semaphore.WaitAsync();
+                        await semaphore.WaitAsync(stoppingToken);
                         try
                         {
                             // Try to retrieve the release identifier of this tenant from the distributed cache.
-                            var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name));
+                            var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name), token: stoppingToken);
                             if (releaseId != null)
                             {
                                 // Check if the release identifier of this tenant has changed.
@@ -185,7 +188,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                             }
 
                             // Try to retrieve the reload identifier of this tenant from the distributed cache.
-                            var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name));
+                            var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name), token: stoppingToken);
                             if (reloadId != null)
                             {
                                 // Check if the reload identifier of this tenant has changed.
@@ -406,8 +409,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
-        private string ReleaseIdKey(string name) => name + ReleaseIdKeySuffix;
-        private string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
+        private static string ReleaseIdKey(string name) => name + ReleaseIdKeySuffix;
+        private static string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
 
         /// <summary>
         /// Creates a distributed context based on the default tenant settings and descriptor.
@@ -528,7 +531,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// <summary>
         /// Tries to wait for a given delay, returns false if it was cancelled.
         /// </summary>
-        private async Task<bool> TryWaitAsync(TimeSpan delay, CancellationToken stoppingToken)
+        private static async Task<bool> TryWaitAsync(TimeSpan delay, CancellationToken stoppingToken)
         {
             try
             {
@@ -538,6 +541,27 @@ namespace OrchardCore.Environment.Shell.Distributed
             catch (TaskCanceledException)
             {
                 return false;
+            }
+        }
+
+        private bool _isDisposed;
+
+        public override void Dispose()
+        {
+            if (!_isDisposed)
+            {
+                var semaphores = _semaphores.Values.ToArray();
+
+                foreach (var semaphore in semaphores)
+                {
+                    semaphore.Dispose();
+                }
+
+                _semaphores.Clear();
+
+                base.Dispose();
+
+                _isDisposed = true;
             }
         }
     }

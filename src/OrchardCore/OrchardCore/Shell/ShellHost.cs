@@ -33,7 +33,8 @@ namespace OrchardCore.Environment.Shell
         private readonly ConcurrentDictionary<string, ShellContext> _shellContexts = new ConcurrentDictionary<string, ShellContext>();
         private readonly ConcurrentDictionary<string, ShellSettings> _shellSettings = new ConcurrentDictionary<string, ShellSettings>();
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
-        private SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _initializingSemaphore = new SemaphoreSlim(1);
+        private bool disposedValue;
 
         public ShellHost(
             IShellSettingsManager shellSettingsManager,
@@ -447,7 +448,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Whether or not a shell can be activated and added to the running shells.
         /// </summary>
-        private bool CanRegisterShell(ShellSettings shellSettings)
+        private static bool CanRegisterShell(ShellSettings shellSettings)
         {
             return
                 shellSettings.State == TenantState.Running ||
@@ -465,12 +466,37 @@ namespace OrchardCore.Environment.Shell
             return settings.State != TenantState.Disabled || _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes == 0;
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    foreach (var shell in ListShellContexts())
+                    {
+                        shell.Dispose();
+                    }
+
+                    var semaphores = _shellSemaphores.Values.ToArray();
+
+                    foreach (var semaphore in semaphores)
+                    {
+                        semaphore.Dispose();
+                    }
+
+                    _shellSemaphores.Clear();
+                    _initializingSemaphore.Dispose();
+
+                    disposedValue = true;
+                }
+            }
+        }
+
         public void Dispose()
         {
-            foreach (var shell in ListShellContexts())
-            {
-                shell.Dispose();
-            }
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
