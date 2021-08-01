@@ -162,16 +162,16 @@
                 </td>
                 <td class="text-center">
                     <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove parameter from list"]" class="btn">
-                        <i class="fas fa-times"></i>
+                        <i class="fas fa-times" aria-hidden="true"></i>
                     </a>
                 </td>
-                <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt"></i></div></td>
+                <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div></td>
             </tr>
         </draggable>
         <tfoot>
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
-                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small"></i> @T["Add a parameter"]</a>
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small" aria-hidden="true"></i> @T["Add a parameter"]</a>
                     <input class="form-control" id="@Html.IdFor(m => m.Parameters)" name="@Html.NameFor(m => m.Parameters)" type="hidden" v-bind:value="getParametersFormattedList()" />
                 </td>
             </tr>
@@ -209,7 +209,7 @@
     <div class="row mb-3">
         <div class="col-12 col-lg-6">
             <label asp-for="Parameters">@T["Advanced Parameters"]</label>
-            <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
             <parameters-table :data="sharedState"></parameters-table>
             <parameters-modal :data="sharedState" v-on:reload-data="reloadData()"></parameters-modal>
             <div class="hint">@T["Advanced parameters that can be sent with the authorize request."]</div>
