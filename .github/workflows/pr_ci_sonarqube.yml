@@ -1,4 +1,4 @@
-name: PR - CI
+name: PR - CI - SonarQube
 on: 
   pull_request:
     paths-ignore:
