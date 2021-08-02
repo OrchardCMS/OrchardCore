@@ -161,13 +161,15 @@ Finally, here is an example of consuming your Content Item as your Content Part 
 public class ProductController : Controller
 {
     private readonly IOrchardHelper _orchardHelper;
+    private readonly IContentManager _contentManager;
 
-    public ProductController(IOrchardHelper orchardHelper)
+    public ProductController(IOrchardHelper orchardHelper, IContentManager contentManager)
     {
         _orchardHelper = orchardHelper;
+        _contentManager = contentManager;
     }
 
-    [HttpPost("/api/product/{productId}")]
+    [HttpGet("/api/product/{productId}")]
     public async Task<ObjectResult> GetProductAsync(string productId)
     {
         var product = _orchardHelper.GetContentItemByIdAsync(productId);
@@ -185,6 +187,27 @@ public class ProductController : Controller
              Image = productPart.Image.Paths.FirstOrDefault(),
              Price = productPart.Price.Value,
         });
+    }
+    
+    [HttpPost("/api/product/{productId}/price/{price}")]
+    public async Task<ObjectResult> UpdateProductPriceAsync(string productId, int price)
+    {
+        var product = _orchardHelper.GetContentItemByIdAsync(productId);
+
+        if (product == null) 
+        {
+            return NotFoundObjectResult();
+        }
+
+        var productPart = product.As<Product>();
+        productPart.Price.Value = price;
+        
+        product.Apply(productPart) //apply modified part to a content item
+        
+        await _contentManager.UpdateAsync(product); //update will fire handlers which could alter the content item.
+
+        //validation will cancel changes if product is not valid. It's fired after update since handlers could change the object.
+        return await _contentManager.ValidateAsync(product);
     }
 }
 ```
