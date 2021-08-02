@@ -19,13 +19,6 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Set up JDK 11
-      if: matrix.os == 'windows-latest'
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.11
     - uses: actions/setup-node@v2
       with:
         node-version: "15"
@@ -37,35 +30,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
-    - name: Cache SonarCloud packages
-      if: matrix.os == 'windows-latest'
-      uses: actions/cache@v1
-      with:
-        path: ~\sonar\cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
-    - name: Cache SonarCloud scanner
-      if: matrix.os == 'windows-latest'
-      id: cache-sonar-scanner
-      uses: actions/cache@v1
-      with:
-        path: .\.sonar\scanner
-        key: ${{ runner.os }}-sonar-scanner
-        restore-keys: ${{ runner.os }}-sonar-scanner
-    - name: Install SonarCloud scanner
-      if: matrix.os == 'windows-latest' && steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      shell: powershell
-      run: |
-        New-Item -Path .\.sonar\scanner -ItemType Directory
-        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-    - name: Sonar Configure
-      if: matrix.os == 'windows-latest'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: powershell
-      run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"OrchardCMS_OrchardCore" /o:"orchardcms" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
     - name: Build
       run: |
         dotnet build --configuration Release --framework net5.0
@@ -80,14 +44,6 @@ jobs:
         npm install
         npm run cms:test
         npm run mvc:test
-    - name: Sonar Analyze
-      if: matrix.os == 'windows-latest'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: powershell
-      run: |
-        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
     - uses: actions/upload-artifact@v2
       if: matrix.os == 'ubuntu-latest' && failure()
       with:
