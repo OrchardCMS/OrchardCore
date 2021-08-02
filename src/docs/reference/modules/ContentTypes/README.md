@@ -190,7 +190,7 @@ public class ProductController : Controller
     }
     
     [HttpPost("/api/product/{productId}/price/{price}")]
-    public async Task<ObjectResult> UpdateProductPriceAsync(string productId, int price)
+    public async Task<ContentValidateResult> UpdateProductPriceAsync(string productId, int price)
     {
         var product = _orchardHelper.GetContentItemByIdAsync(productId);
 
