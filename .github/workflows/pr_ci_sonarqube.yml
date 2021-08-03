@@ -8,7 +8,7 @@ on:
       - '**/*.md'	
       - 'mkdocs.yml'	
       - 'src/docs/**/*'
-    branches: [ dev, main, release/** ]
+    branches: [ dev, main, release/**, jetski5822/** ]
     types: [opened, synchronize, reopened]
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
