@@ -73,6 +73,9 @@ jobs:
     - name: Deploy release docker image for linux
       if: matrix.os == 'ubuntu-latest'
       run: |
+        arrTag=(${GITHUB_REF//\// })
+        VERSION="${arrTag[2]}"
+        VERSION="${VERSION//v}"
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
