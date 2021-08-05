@@ -26,8 +26,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\monaco\" />
-  </ItemGroup>
+
 
 </Project>
