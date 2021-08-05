@@ -544,7 +544,7 @@ namespace OrchardCore.Users.Controllers
 
             if (settings.UsersCanRegister == UserRegistrationType.NoRegistration)
             {
-                _logger.LogWarning("Site does not allow user registration.", model.UserName, model.Email);
+                _logger.LogWarning("Site does not allow user registration.");
                 return NotFound();
             }
 
