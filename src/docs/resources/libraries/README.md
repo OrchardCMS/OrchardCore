@@ -12,7 +12,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Castle.Core](https://github.com/castleproject/Core) | Castle DynamicProxy. | 4.4.1 |[Apache-2.0](https://github.com/castleproject/Core/blob/master/LICENSE) |
 | [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.0.13 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 2.4.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
-| [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 6.0.430-beta | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
+| [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 6.0.437 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 1.0.3 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
 | [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2032 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
