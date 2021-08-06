@@ -21,8 +21,8 @@
             {% for service in Model.ContentItem.Content.Services.ContentItems %}
             <div class="col-md-4">
                 <span class="fa-stack fa-4x">
-                    <i class="fas fa-circle fa-stack-2x text-primary" aria-hidden="true"></i>
-                    <i class="fas {{ service.Service.IconClass.Text }} fa-stack-1x fa-inverse" aria-hidden="true"></i>
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas {{ service.Service.IconClass.Text }} fa-stack-1x fa-inverse"></i>
                 </span>
                 <h4 class="service-heading">{{ service.DisplayText }}</h4>
                 <p class="text-muted">{{ service.HtmlBodyPart.Html | raw }}</p>
@@ -47,7 +47,7 @@
                 <div class="portfolio-item">
                     <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal{{ forloop.index }}">
                         <div class="portfolio-hover">
-                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x" aria-hidden="true"></i></div>
+                            <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
                         </div>
                         <img class="img-fluid" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: profile: 'medium', mode: 'stretch' }}" alt="{{ project.DisplayText }}" />
                     </a>
@@ -119,17 +119,17 @@
                     <p class="text-muted">{{ member.TeamMember.Occupation.Text }}</p>
                     {% if member.TeamMember.Twitter.Text.size > 0 %}
                     <a class="btn btn-dark btn-social mx-2" href="https://www.twitter.com/{{ member.TeamMember.Twitter.Text }}">
-                        <i class="fab fa-twitter" aria-hidden="true"></i>
+                        <i class="fab fa-twitter"></i>
                     </a>
                     {% endif %}
                     {% if member.TeamMember.Facebook.Text.size > 0 %}
                     <a class="btn btn-dark btn-social mx-2" href="https://www.facebook.com/{{ member.TeamMember.Facebook.Text }}">
-                        <i class="fab fa-facebook" aria-hidden="true"></i>
+                        <i class="fab fa-facebook"></i>
                     </a>
                     {% endif %}
                     {% if member.TeamMember.LinkedIn.Text.size > 0 %}
                     <a class="btn btn-dark btn-social mx-2" href="https://www.linkedin.com/in/{{ member.TeamMember.LinkedIn.Text }}">
-                        <i class="fab fa-linkedin" aria-hidden="true"></i>
+                        <i class="fab fa-linkedin"></i>
                     </a>
                     {% endif %}
                 </div>
@@ -202,7 +202,7 @@
 
 <!-- Modals -->
 {% for project in Model.ContentItem.Content.Portfolio.ContentItems %}
-<div class="portfolio-modal modal fade" id="portfolioModal{{ forloop.index }}" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="portfolio-modal modal fade" id="portfolioModal{{ forloop.index }}" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="close-modal" data-bs-dismiss="modal"><img src="/TheAgencyTheme/assets/img/close-icon.svg" alt="Close modal" /></div>
@@ -223,7 +223,7 @@
                             </ul>
                             {% endcomment %}
                             <button class="btn btn-primary" data-bs-dismiss="modal" type="button">
-                                <i class="fa fa-times me-1" aria-hidden="true"></i>
+                                <i class="fa fa-times me-1"></i>
                                 Close Project
                             </button>
                         </div>
