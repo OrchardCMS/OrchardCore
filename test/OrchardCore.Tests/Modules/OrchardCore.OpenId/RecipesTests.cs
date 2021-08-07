@@ -1,27 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Locking;
-using OrchardCore.Locking.Distributed;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
-using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Recipes.Services;
-using OrchardCore.Scripting;
 using Xunit;
 using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 

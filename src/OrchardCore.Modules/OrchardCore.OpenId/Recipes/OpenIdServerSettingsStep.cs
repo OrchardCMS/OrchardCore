@@ -13,6 +13,7 @@ namespace OrchardCore.OpenId.Recipes
     /// </summary>
     public class OpenIdServerSettingsStep : IRecipeStepHandler
     {
+        private const string StepName = "OpenIdServer";
         private readonly IOpenIdServerService _serverService;
 
         public OpenIdServerSettingsStep(IOpenIdServerService serverService)
@@ -20,12 +21,12 @@ namespace OrchardCore.OpenId.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, nameof(OpenIdServerSettings), StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, StepName, StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdServerSettingsStepModel>();
+            var model = context.Step.Property(StepName).Value.ToObject<OpenIdServerSettingsStepModel>();
             var settings = await _serverService.LoadSettingsAsync();
 
             settings.AccessTokenFormat = model.AccessTokenFormat;
