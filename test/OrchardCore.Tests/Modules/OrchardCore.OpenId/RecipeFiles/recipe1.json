@@ -1,0 +1,43 @@
+{
+  "name": "Recipe1",
+  "displayName": "Recipe 1",
+  "description": "",
+  "author": "Hisham Bin Ateya",
+  "website": "",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "test" ],
+  "tags": [],
+  "variables": {
+    "messageContentItemId": "[js:uuid()]",
+    "now": "[js: new Date().toISOString()]"
+  },
+  "steps": [
+    {
+      "name": "OpenIdServer",
+      "OpenIdServer": {
+        "AccessTokenFormat": 1,
+        "Authority": "https://localhost",
+        "DisableAccessTokenEncryption": false,
+        "EncryptionCertificateStoreLocation": null,
+        "EncryptionCertificateStoreName": null,
+        "EncryptionCertificateThumbprint": null,
+        "SigningCertificateStoreLocation": null,
+        "SigningCertificateStoreName": null,
+        "SigningCertificateThumbprint": null,
+        "AuthorizationEndpointPath": "/connect/authorize",
+        "LogoutEndpointPath": "/connect/logout",
+        "TokenEndpointPath": "/connect/token",
+        "UserinfoEndpointPath": "/connect/userinfo",
+        "AllowPasswordFlow": false,
+        "AllowClientCredentialsFlow": false,
+        "AllowAuthorizationCodeFlow": true,
+        "AllowRefreshTokenFlow": true,
+        "AllowHybridFlow": false,
+        "AllowImplicitFlow": false,
+        "DisableRollingRefreshTokens": false,
+        "UseReferenceAccessTokens": false
+      }
+    }
+  ]
+}
