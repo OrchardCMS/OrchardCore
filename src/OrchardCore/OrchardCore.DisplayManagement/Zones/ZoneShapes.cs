@@ -18,10 +18,15 @@ namespace OrchardCore.DisplayManagement.Zones
         private const string ContentKey = "Content";
 
         [Shape]
-        public async Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IEnumerable<object> Shape)
+        public async Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IShape Shape)
         {
+            if (Shape.TryGetProperty("ZoneName", out string zoneName))
+            {
+                Shape.Metadata.Alternates.Add("Zone__" + zoneName);
+            }
+
             var htmlContentBuilder = new HtmlContentBuilder();
-            foreach (var item in Shape)
+            foreach (var item in (IEnumerable<object>)Shape)
             {
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync((IShape)item));
             }

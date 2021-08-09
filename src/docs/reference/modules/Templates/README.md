@@ -550,6 +550,31 @@ Instead of rendering the shape directly, you can also access its properties. In 
 {{ Model.Content["Article-Description"].Field.Text }}
 ```
 
+## Zone templates
+
+### `Zone__[ZoneName]`
+
+This template is called when displaying a Layout zone.
+
+#### Zone Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Zone__Footer` | `Zone-Footer.cshtml` |
+| `Zone__Content` | `Zone-Content.cshtml` |
+
+Which zones are available depends on the current theme.
+
+!!! note
+    The `Zone__Content` alternate is for the Layout zone called "Content", which (depending on the theme) is usually the main content area of the page. It has nothing to do with content item shapes.
+
+#### Zone Available properties
+
+| Property | Description |
+| --------- | ------------ |
+| `Model.Parent` | A zone shape that's the parent of the current zone. For root-level zones this will be the Layout shape. |
+| `Model.ZoneName` | The `string` name of the zone, e.g. "Footer" and "Content". |
+
 ## Overriding Views
 
 Some modules (namely the OrchardCore.Users module) allow you to override some of its views in your Theme. Since these views are not shapes, the way to override them is a little different than mentioned above.
