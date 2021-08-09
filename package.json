@@ -30,7 +30,7 @@
     "all-contributors-cli": "^6.20.0",
     "es6-promise": "4.2.8",
     "glob": "^7.1.7",
-    "graceful-fs": "4.2.6",
+    "graceful-fs": "4.2.8",
     "gulp": "^4.0.2",
     "gulp-babel": "8.0.0",
     "gulp-cli": "^2.3.0",
