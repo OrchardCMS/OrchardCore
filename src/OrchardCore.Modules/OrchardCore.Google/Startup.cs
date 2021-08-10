@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Google.Analytics;
-using OrchardCore.Google.Analytics.Deployment;
 using OrchardCore.Google.Analytics.Drivers;
 using OrchardCore.Google.Analytics.Recipes;
 using OrchardCore.Google.Analytics.Services;
+using OrchardCore.Google.Analytics.Settings;
 using OrchardCore.Google.Authentication.Configuration;
 using OrchardCore.Google.Authentication.Drivers;
 using OrchardCore.Google.Authentication.Recipes;
@@ -95,14 +94,13 @@ namespace OrchardCore.Google
         }
     }
 
+    [Feature(GoogleConstants.Features.GoogleAnalytics)]
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public class GoogleAnalyticsDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, GoogleAnalyticsDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, GoogleAnalyticsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<GoogleAnalyticsDeploymentStep>>();
+            services.AddSiteSettingsPropertyDeploymentStep<GoogleAnalyticsSettings, GoogleAnalyticsDeploymentStartup>(S => S["Google Analytics Settings"], S => S["Exports the Google Analytics settings."]);
         }
     }
 }
