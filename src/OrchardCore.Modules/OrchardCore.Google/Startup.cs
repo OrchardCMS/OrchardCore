@@ -84,16 +84,6 @@ namespace OrchardCore.Google
         }
     }
 
-    [Feature(GoogleConstants.Features.GoogleTagManager)]
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class GoogleTagManagerDeploymentStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSiteSettingsPropertyDeploymentStep<GoogleTagManagerSettings, GoogleTagManagerDeploymentStartup>(S => S["Google Tag Manager Settings"], S => S["Exports the Google Tag Manager settings."]);
-        }
-    }
-
     [Feature(GoogleConstants.Features.GoogleAnalytics)]
     [RequireFeatures("OrchardCore.Deployment")]
     public class GoogleAnalyticsDeploymentStartup : StartupBase
@@ -101,6 +91,16 @@ namespace OrchardCore.Google
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSiteSettingsPropertyDeploymentStep<GoogleAnalyticsSettings, GoogleAnalyticsDeploymentStartup>(S => S["Google Analytics Settings"], S => S["Exports the Google Analytics settings."]);
+        }
+    }
+
+    [Feature(GoogleConstants.Features.GoogleTagManager)]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class GoogleTagManagerDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSiteSettingsPropertyDeploymentStep<GoogleTagManagerSettings, GoogleTagManagerDeploymentStartup>(S => S["Google Tag Manager Settings"], S => S["Exports the Google Tag Manager settings."]);
         }
     }
 }
