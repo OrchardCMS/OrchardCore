@@ -192,6 +192,7 @@ public class ProductController : Controller
     [HttpPost("/api/product/{productId}/price/{price}")]
     public async Task<ContentValidateResult> UpdateProductPriceAsync(string productId, int price)
     {
+        //this call will only fetch published content item, which makes publishing after update redundant
         var product = _orchardHelper.GetContentItemByIdAsync(productId);
 
         if (product == null) 
