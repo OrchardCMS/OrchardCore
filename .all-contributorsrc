@@ -2380,6 +2380,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "felixhoi",
+      "name": "Felix Hoi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60052664?v=4",
+      "profile": "https://github.com/felixhoi",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
