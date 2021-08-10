@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Google.Analytics;
 using OrchardCore.Google.Analytics.Drivers;
-using OrchardCore.Google.Analytics.Recipes;
 using OrchardCore.Google.Analytics.Services;
 using OrchardCore.Google.Analytics.Settings;
 using OrchardCore.Google.Authentication.Configuration;
@@ -56,7 +55,6 @@ namespace OrchardCore.Google
         {
             services.AddScoped<IPermissionProvider, Permissions.GoogleAnalytics>();
             services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
-            services.AddRecipeExecutionStep<GoogleAnalyticsSettingsStep>();
 
             services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
