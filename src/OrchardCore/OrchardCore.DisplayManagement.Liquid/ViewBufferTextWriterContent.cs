@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 
@@ -17,13 +18,15 @@ namespace OrchardCore.DisplayManagement.Liquid
         private StringBuilder _builder;
         private StringBuilderPool _pooledBuilder;
         private List<StringBuilderPool> _previousPooledBuilders;
+        private readonly bool _releaseOnWrite;
 
         public override Encoding Encoding => Encoding.UTF8;
 
-        public ViewBufferTextWriterContent()
+        public ViewBufferTextWriterContent(bool releaseOnWrite = true)
         {
             _pooledBuilder = StringBuilderPool.GetInstance();
             _builder = _pooledBuilder.Builder;
+            _releaseOnWrite = releaseOnWrite;
         }
 
         protected override void Dispose(bool disposing)
@@ -194,6 +197,20 @@ namespace OrchardCore.DisplayManagement.Liquid
             }
         }
 
+        public override void Write(StringBuilder value)
+        {
+            if (value != null)
+            {
+                foreach (var chunk in value.GetChunks())
+                {
+                    if (!chunk.IsEmpty)
+                    {
+                        Write(chunk.Span);
+                    }
+                }
+            }
+        }
+
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
             if (_builder == null)
@@ -223,7 +240,10 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
             }
 
-            ReleasePooledBuffer();
+            if (_releaseOnWrite)
+            {
+                ReleasePooledBuffer();
+            }
         }
 
         public override Task FlushAsync()
@@ -231,5 +251,89 @@ namespace OrchardCore.DisplayManagement.Liquid
             // Override since the base implementation does unnecessary work
             return Task.CompletedTask;
         }
+
+        #region Async Methods
+
+        public override Task WriteAsync(string value)
+        {
+            Write(value);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteAsync(char value)
+        {
+            Write(value);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteAsync(char[] buffer, int index, int count)
+        {
+            Write(buffer, index, count);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteAsync(ReadOnlyMemory<char> buffer, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task.FromCanceled(cancellationToken);
+            }
+
+            Write(buffer.Span);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteAsync(StringBuilder value, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task.FromCanceled(cancellationToken);
+            }
+
+            Write(value);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteLineAsync(char value)
+        {
+            WriteLine(value);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteLineAsync(string value)
+        {
+            WriteLine(value);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteLineAsync(char[] buffer, int index, int count)
+        {
+            WriteLine(buffer, index, count);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteLineAsync(ReadOnlyMemory<char> buffer, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task.FromCanceled(cancellationToken);
+            }
+
+            WriteLine(buffer);
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteLineAsync(StringBuilder value, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task.FromCanceled(cancellationToken);
+            }
+
+            WriteLine(value);
+            return Task.CompletedTask;
+        }
+
+        #endregion
     }
 }

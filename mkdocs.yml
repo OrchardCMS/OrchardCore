@@ -3,13 +3,25 @@ theme:
   name: material  
   custom_dir: src/docs/theme
   logo: docs/assets/images/orchard-logo.png
-  favicon: docs/assets/images/favicon-blue.png
+  favicon: docs/assets/images/favicon.png
   features:
     - navigation.instant
     - navigation.tabs
-  palette:
-    primary: blue
-    accent: light blue
+  palette:    
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: green
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: green
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
   static_templates:
     - 404.html
     
@@ -25,7 +37,7 @@ extra:
 # Repository
 repo_name: OrchardCMS/OrchardCore
 repo_url: https://github.com/OrchardCMS/OrchardCore
-edit_uri: edit/dev/src/
+edit_uri: edit/main/src/
 
 # Options
 docs_dir: src
@@ -90,6 +102,7 @@ nav:
         - Customize encoding settings: docs/guides/encoding-settings/README.md
         - Understanding Content Definitions Stores: docs/guides/content-definitions/README.md 
         - Change password configuration: docs/guides/password-configuration/README.md 
+        - Change lockout configuration: docs/guides/lockout-configuration/README.md 
         - Azure AD integration: docs/guides/azuread-integration/README.md 
         - Development Teams and Deployment: docs/guides/development-teams-and-deployment/README.md 
         - Create a Liquid Widget: docs/guides/create-liquid-widget/README.md
@@ -145,6 +158,7 @@ nav:
             - Rules: docs/reference/modules/Rules/README.md
             - Shortcodes: docs/reference/modules/Shortcodes/README.md
             - Sitemaps: docs/reference/modules/Sitemaps/README.md
+            - Spatial: docs/reference/modules/Spatial/README.md
             - XML-RPC: docs/reference/modules/XmlRpc/README.md
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
@@ -172,6 +186,7 @@ nav:
             - Custom Settings: docs/reference/modules/CustomSettings/README.md
             - Placement: docs/reference/core/Placement/README.md
             - Data: docs/reference/core/Data/README.md
+            - Data Migrations: docs/reference/modules/Migrations/README.md 
             - Dynamic Cache: docs/reference/modules/DynamicCache/README.md
             - Email: docs/reference/modules/Email/README.md
             - GraphQL: docs/reference/modules/Apis.GraphQL/README.md
@@ -207,6 +222,7 @@ nav:
         - Owners: docs/resources/owners/README.md
         - Workshops: docs/resources/workshops/README.md
     - Releases: 
+        - 1.0.0: docs/releases/1.0.0.md
         - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
         - 1.0.0-rc1: docs/releases/1.0.0-rc1.md
         - 1.0.0-beta3: docs/releases/1.0.0-beta3.md

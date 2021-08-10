@@ -29,6 +29,8 @@ namespace OrchardCore.Queries.Sql
             var FALSE = ToTerm("FALSE");
             var AND = ToTerm("AND");
             var OVER = ToTerm("OVER");
+            var UNION = ToTerm("UNION");
+            var ALL = ToTerm("ALL");
 
             //Non-terminals
             var Id = new NonTerminal("Id");
@@ -83,10 +85,17 @@ namespace OrchardCore.Queries.Sql
             var overArgumentsOpt = new NonTerminal("overArgumentsOpt");
             var overPartitionByClauseOpt = new NonTerminal("overPartitionByClauseOpt");
             var overOrderByClauseOpt = new NonTerminal("overOrderByClauseOpt");
+            var unionStatementList = new NonTerminal("unionStmtList");
+            var unionStatement = new NonTerminal("unionStmt");
+            var unionClauseOpt = new NonTerminal("unionClauseOpt");
 
             //BNF Rules
             this.Root = statementList;
-            statementLine.Rule = statement + optionalSemicolon;
+            unionClauseOpt.Rule = Empty | UNION | UNION + ALL;
+            unionStatement.Rule = statement + unionClauseOpt;
+            unionStatementList.Rule = MakePlusRule(unionStatementList, unionStatement);
+
+            statementLine.Rule = unionStatementList + optionalSemicolon;
             optionalSemicolon.Rule = Empty | ";";
             statementList.Rule = MakePlusRule(statementList, statementLine);
 

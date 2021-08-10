@@ -255,6 +255,13 @@ namespace OrchardCore.ResourceManagement
             {
                 case "script":
                     tagBuilder = new TagBuilder("script");
+                    if (settings.Attributes.Count > 0)
+                    {
+                        foreach (var kv in settings.Attributes)
+                        {
+                            tagBuilder.Attributes.Add(kv);
+                        }
+                    }
                     filePathAttributeName = "src";
                     break;
                 case "stylesheet":

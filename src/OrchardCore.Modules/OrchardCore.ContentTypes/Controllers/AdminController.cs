@@ -9,13 +9,13 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
 
 namespace OrchardCore.ContentTypes.Controllers
@@ -121,6 +121,11 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
 
+            if (viewModel.Name.IsReservedContentName())
+            {
+                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
+            }
+
             if (_contentDefinitionService.LoadTypes().Any(t => String.Equals(t.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("Name", S["A type with the same Technical Name already exists."]);
@@ -198,7 +203,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("Edit")]
@@ -221,7 +226,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["\"{0}\" has been removed.", typeViewModel.DisplayName]);
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
 
         public async Task<ActionResult> AddPartsTo(string id)
@@ -317,7 +322,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return await AddPartsTo(id);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("AddReusablePartTo")]
@@ -364,6 +369,11 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
 
+            if (viewModel.Name.IsReservedContentName())
+            {
+                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
+            }
+
             if (String.IsNullOrWhiteSpace(viewModel.Name))
             {
                 ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
@@ -386,7 +396,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["The \"{0}\" part has been added.", partToAdd]);
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("RemovePart")]
@@ -408,7 +418,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["The \"{0}\" part has been removed.", name]);
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         #endregion Types
@@ -469,6 +479,11 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
 
+            if (viewModel.Name.IsReservedContentName())
+            {
+                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(viewModel);
@@ -484,7 +499,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Success(H["The \"{0}\" content part has been created.", partViewModel.Name]);
 
-            return RedirectToAction("EditPart", new { id = partViewModel.Name });
+            return RedirectToAction(nameof(EditPart), new { id = partViewModel.Name });
         }
 
         public async Task<ActionResult> EditPart(string id)
@@ -537,7 +552,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
             }
 
-            return RedirectToAction("EditPart", new { id });
+            return RedirectToAction(nameof(EditPart), new { id });
         }
 
         [HttpPost, ActionName("EditPart")]
@@ -560,7 +575,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _notifier.Information(H["\"{0}\" has been removed.", partViewModel.DisplayName]);
 
-            return RedirectToAction("ListParts");
+            return RedirectToAction(nameof(ListParts));
         }
 
         public async Task<ActionResult> AddFieldTo(string id, string returnUrl = null)
@@ -658,7 +673,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
             else
             {
-                return RedirectToAction("EditField", new { id, viewModel.Name });
+                return RedirectToAction(nameof(EditField), new { id, viewModel.Name });
             }
         }
 
@@ -784,10 +799,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 var typeViewModel = _contentDefinitionService.LoadType(id);
                 if (typeViewModel != null)
                 {
-                    return RedirectToAction("Edit", new { id });
+                    return RedirectToAction(nameof(Edit), new { id });
                 }
 
-                return RedirectToAction("EditPart", new { id });
+                return RedirectToAction(nameof(EditPart), new { id });
             }
         }
 
@@ -819,10 +834,10 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (_contentDefinitionService.LoadType(id) != null)
             {
-                return RedirectToAction("Edit", new { id });
+                return RedirectToAction(nameof(Edit), new { id });
             }
 
-            return RedirectToAction("EditPart", new { id });
+            return RedirectToAction(nameof(EditPart), new { id });
         }
 
         #endregion Parts
@@ -937,7 +952,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["The \"{0}\" part settings have been saved.", part.DisplayName()]);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         #endregion Type Parts

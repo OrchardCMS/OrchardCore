@@ -1,11 +1,15 @@
 @model SummaryAdminUserViewModel
 @using OrchardCore.Entities
 @using OrchardCore.Users.Models
+@using Microsoft.AspNetCore.Identity
+@using OrchardCore.Users
+@inject UserManager<IUser> UserManager
 @inject IAuthorizationService AuthorizationService
 @{
     var user = Model.User as User;
     var currentUser = user.UserName == User.Identity.Name;
     var hasManageUser = await AuthorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user);
+    var isLockedOut = await UserManager.IsLockedOutAsync(user);
 }
 <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">@T["Edit"]</a>
 
@@ -16,11 +20,15 @@
         <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.UserId" data-url-af="RemoveUrl UnsafeUrl" >@T["Delete"]</a>
     }
     <a asp-action="EditPassword" asp-route-id="@user.UserId" class="btn btn-secondary btn-sm">@T["Edit Password"]</a>
+    if (isLockedOut)
+    {
+        <a asp-action="Unlock" asp-route-id="@user.UserId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Unlock user"]" data-message="@T["Are you sure you want to unlock this user?"]">@T["Unlock"]</a>
+    }
 }
 
 @if (!user.EmailConfirmed && Site.As<RegistrationSettings>().UsersMustValidateEmail && hasManageUser)
 {
-    <form method="post" class="d-inline-block">
+    <form method="post" class="d-inline-block" class="no-multisubmit">
         <input name="id" type="hidden" value="@user.UserId" />
         <button asp-action="SendVerificationEmail" asp-controller="Registration" class="btn btn-info btn-sm">@T["Send verification email"]</button>
     </form>

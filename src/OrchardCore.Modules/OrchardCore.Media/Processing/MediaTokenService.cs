@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using Cysharp.Text;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -36,17 +37,19 @@ namespace OrchardCore.Media.Processing
 
         public string AddTokenToPath(string path)
         {
-            var pathParts = path.Split('?');
+            var pathIndex = path.IndexOf('?');
 
-            var parsed = QueryHelpers.ParseQuery(pathParts.Length > 1 ? pathParts[1] : string.Empty);
+            var parsed = pathIndex != -1
+                ? QueryHelpers.ParseQuery(path.Substring(pathIndex + 1))
+                : null;
 
             // If no commands or only a version command don't bother tokenizing.
-            if (parsed.Count == 0 || parsed.Count == 1 && parsed.ContainsKey(ImageVersionProcessor.VersionCommand))
+            if (parsed is null || parsed.Count == 0 || parsed.Count == 1 && parsed.ContainsKey(ImageVersionProcessor.VersionCommand))
             {
                 return path;
             }
 
-            var processingCommands = new Dictionary<string, string>();
+            var processingCommands = new Dictionary<string, string>(parsed.Count);
             Dictionary<string, string> otherCommands = null;
 
             foreach (var command in parsed)
@@ -63,15 +66,12 @@ namespace OrchardCore.Media.Processing
             }
 
             // Using the command values as a key retrieve from cache
-            var commandValues = String.Concat(processingCommands.Values);
-
-            var queryStringTokenKey = TokenCacheKeyPrefix + commandValues;
-
-            var queryStringToken = GetHash(commandValues, queryStringTokenKey);
+            var queryStringTokenKey = CreateQueryStringTokenKey(processingCommands.Values);
+            var queryStringToken = GetHash(queryStringTokenKey);
 
             processingCommands["token"] = queryStringToken;
 
-            // If any non-resizing paramters have been added to the path include these on the query string output.
+            // If any non-resizing parameters have been added to the path include these on the query string output.
             if (otherCommands != null)
             {
                 foreach (var command in otherCommands)
@@ -80,17 +80,15 @@ namespace OrchardCore.Media.Processing
                 }
             }
 
-            return QueryHelpers.AddQueryString(pathParts[0], processingCommands);
+            return QueryHelpers.AddQueryString(path.Substring(0, pathIndex), processingCommands);
         }
 
         public bool TryValidateToken(IDictionary<string, string> commands, string token)
         {
-            var commandValues = String.Concat(commands.Values);
-
-            var queryStringTokenKey = TokenCacheKeyPrefix + commandValues;
+            var queryStringTokenKey = CreateQueryStringTokenKey(commands.Values);
 
             // Store a hash of the valid query string commands.
-            var queryStringToken = GetHash(commandValues, queryStringTokenKey);
+            var queryStringToken = GetHash(queryStringTokenKey);
 
             if (String.Equals(queryStringToken, token, StringComparison.OrdinalIgnoreCase))
             {
@@ -100,14 +98,26 @@ namespace OrchardCore.Media.Processing
             return false;
         }
 
-        private string GetHash(string commandValues, string queryStringTokenKey)
+        private static string CreateQueryStringTokenKey(IEnumerable<string> values)
+        {
+            using var builder = ZString.CreateStringBuilder();
+            builder.Append(TokenCacheKeyPrefix);
+            foreach (var item in values)
+            {
+                builder.Append(item);
+            }
+            return builder.ToString();
+        }
+
+        private string GetHash(string queryStringTokenKey)
             => _memoryCache.GetOrCreate(queryStringTokenKey, entry =>
                {
                    entry.SlidingExpiration = TimeSpan.FromHours(5);
 
                    using var hmac = new HMACSHA256(_hashKey);
 
-                   var bytes = Encoding.UTF8.GetBytes(commandValues);
+                   // queryStringTokenKey also contains prefix
+                   var bytes = Encoding.UTF8.GetBytes(queryStringTokenKey, TokenCacheKeyPrefix.Length, queryStringTokenKey.Length - TokenCacheKeyPrefix.Length);
 
                    var hash = hmac.ComputeHash(bytes);
 

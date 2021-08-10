@@ -1,0 +1,14 @@
+@model ShapeViewModel<AuditTrailIndexOptions>
+@{
+    var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "date");
+}
+
+<h4 class="card-title">@T["Date"]</h4>
+<pre class="mb-3">@(@term != null ? @term.ToString() : "date:...")</pre>
+<p>@T["Filters by a date or range."]</p>
+<span class="hint">@T["ISO 8601 date format *see date range syntax"]</span>
+<div class="d-block text-right">
+    <span>
+        <i class="fas fa-sm fa-minus text-primary" aria-hidden="true"></i>
+    </span>
+</div>

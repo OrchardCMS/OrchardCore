@@ -3,73 +3,12 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-.trumbowyg-dropdown-emoji {
-  width: 265px;
-}
-
-[dir=ltr] .trumbowyg-dropdown-emoji {
-  padding: 7px 0 7px 5px;
-}
-
-[dir=rtl] .trumbowyg-dropdown-emoji {
-  padding: 7px 5px 7px 0;
-}
-
-.trumbowyg-dropdown-emoji svg {
-  display: none !important;
-}
-
-.trumbowyg-dropdown-emoji button {
-  display: block;
-  position: relative;
-  height: 26px;
-  width: 26px;
-  line-height: 24px;
-}
-
-[dir] .trumbowyg-dropdown-emoji button {
-  padding: 0;
-  margin: 2px;
-  text-align: center;
-}
-
-[dir=ltr] .trumbowyg-dropdown-emoji button {
-  float: left;
-}
-
-[dir=rtl] .trumbowyg-dropdown-emoji button {
-  float: right;
-}
-.trumbowyg-dropdown-emoji button:hover::after, .trumbowyg-dropdown-emoji button:focus::after {
-  display: block;
-  position: absolute;
-  top: -5px;
-  height: 27px;
-  width: 27px;
-  z-index: 10;
-}
-[dir] .trumbowyg-dropdown-emoji button:hover::after, [dir] .trumbowyg-dropdown-emoji button:focus::after {
-  background: inherit;
-  box-shadow: #000 0 0 2px;
-  background-color: transparent;
-}
-[dir=ltr] .trumbowyg-dropdown-emoji button:hover::after, [dir=ltr] .trumbowyg-dropdown-emoji button:focus::after {
-  left: -5px;
-}
-[dir=rtl] .trumbowyg-dropdown-emoji button:hover::after, [dir=rtl] .trumbowyg-dropdown-emoji button:focus::after {
-  right: -5px;
-}
-
-.trumbowyg .emoji {
-  width: 22px;
-  height: 22px;
-  display: inline-block;
-}
 .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list),
 .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) {
   max-width: 276px;
   overflow: initial;
 }
+
 [dir] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list), [dir] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) {
   padding: 7px 5px;
 }
@@ -137,6 +76,66 @@
 [dir=rtl] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, [dir=rtl] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
   right: 0;
   border-right-color: #fff;
+}
+.trumbowyg-dropdown-emoji {
+  width: 265px;
+}
+[dir=ltr] .trumbowyg-dropdown-emoji {
+  padding: 7px 0 7px 5px;
+}
+[dir=rtl] .trumbowyg-dropdown-emoji {
+  padding: 7px 5px 7px 0;
+}
+
+.trumbowyg-dropdown-emoji svg {
+  display: none !important;
+}
+
+.trumbowyg-dropdown-emoji button {
+  display: block;
+  position: relative;
+  height: 26px;
+  width: 26px;
+  line-height: 24px;
+}
+
+[dir] .trumbowyg-dropdown-emoji button {
+  padding: 0;
+  margin: 2px;
+  text-align: center;
+}
+
+[dir=ltr] .trumbowyg-dropdown-emoji button {
+  float: left;
+}
+
+[dir=rtl] .trumbowyg-dropdown-emoji button {
+  float: right;
+}
+.trumbowyg-dropdown-emoji button:hover::after, .trumbowyg-dropdown-emoji button:focus::after {
+  display: block;
+  position: absolute;
+  top: -5px;
+  height: 27px;
+  width: 27px;
+  z-index: 10;
+}
+[dir] .trumbowyg-dropdown-emoji button:hover::after, [dir] .trumbowyg-dropdown-emoji button:focus::after {
+  background: inherit;
+  box-shadow: #000 0 0 2px;
+  background-color: transparent;
+}
+[dir=ltr] .trumbowyg-dropdown-emoji button:hover::after, [dir=ltr] .trumbowyg-dropdown-emoji button:focus::after {
+  left: -5px;
+}
+[dir=rtl] .trumbowyg-dropdown-emoji button:hover::after, [dir=rtl] .trumbowyg-dropdown-emoji button:focus::after {
+  right: -5px;
+}
+
+.trumbowyg .emoji {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
 }
 [dir] .trumbowyg-giphy-button svg {
   transform: scale(1.22);
@@ -332,40 +331,6 @@
   left: 0;
   background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
 }
-.trumbowyg-editor table {
-  width: 100%;
-}
-[dir] .trumbowyg-editor table td {
-  border: 1px dotted #e7eaec;
-  padding: 8px;
-}
-
-.trumbowyg-dropdown-table table {
-  display: inline-block;
-}
-
-[dir] .trumbowyg-dropdown-table table {
-  margin: 10px;
-}
-.trumbowyg-dropdown-table table td {
-  display: inline-block;
-  height: 20px;
-  width: 20px;
-}
-[dir] .trumbowyg-dropdown-table table td {
-  margin: 1px;
-  padding: 0;
-  background-color: #fff;
-  box-shadow: 0 0 0 1px #cecece inset;
-}
-[dir] .trumbowyg-dropdown-table table td.active {
-  background-color: #00b393;
-  box-shadow: none;
-  cursor: pointer;
-}
-[dir] .trumbowyg-dropdown-table .trumbowyg-table-size {
-  text-align: center;
-}
 .trumbowyg-symbol-\&nbsp-dropdown-button {
   display: none !important;
 }
@@ -427,4 +392,38 @@
   width: 22px;
   height: 22px;
   display: inline-block;
+}
+.trumbowyg-editor table {
+  width: 100%;
+}
+[dir] .trumbowyg-editor table td {
+  border: 1px dotted #e7eaec;
+  padding: 8px;
+}
+
+.trumbowyg-dropdown-table table {
+  display: inline-block;
+}
+
+[dir] .trumbowyg-dropdown-table table {
+  margin: 10px;
+}
+.trumbowyg-dropdown-table table td {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+}
+[dir] .trumbowyg-dropdown-table table td {
+  margin: 1px;
+  padding: 0;
+  background-color: #fff;
+  box-shadow: 0 0 0 1px #cecece inset;
+}
+[dir] .trumbowyg-dropdown-table table td.active {
+  background-color: #00b393;
+  box-shadow: none;
+  cursor: pointer;
+}
+[dir] .trumbowyg-dropdown-table .trumbowyg-table-size {
+  text-align: center;
 }

@@ -1,7 +1,10 @@
 using System;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -15,12 +18,19 @@ using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
+using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Liquid
 {
     public class Startup : StartupBase
     {
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            app.UseMiddleware<ScriptsMiddleware>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISlugService, SlugService>();
@@ -32,6 +42,8 @@ namespace OrchardCore.Liquid
                 options.Filters.AddFilter("html_class", LiquidViewFilters.HtmlClass);
                 options.Filters.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
 
+                options.MemberAccessStrategy.Register<LiquidPartViewModel>();
+
                 // Used to provide a factory to return a value based on a property name that is unknown at registration time.
                 options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
@@ -39,9 +51,16 @@ namespace OrchardCore.Liquid
                 options.MemberAccessStrategy.Register<JObject, object>((source, name) => source[name]);
 
                 // Convert JToken to FluidValue
-                options.ValueConverters.Add(x => x is JObject o ? new ObjectValue(o) : null);
-                options.ValueConverters.Add(x => x is JValue v ? v.Value : null);
-                options.ValueConverters.Add(x => x is DateTime d ? new ObjectValue(d) : null);
+                options.ValueConverters.Add(x =>
+                {
+                    return x switch
+                    {
+                        JObject o => new ObjectValue(o),
+                        JValue v => v.Value,
+                        DateTime d => new ObjectValue(d),
+                        _ => null
+                    };
+                });
 
                 options.Filters.AddFilter("json", JsonFilter.Json);
                 options.Filters.AddFilter("jsonparse", JsonParseFilter.JsonParse);
@@ -54,6 +73,8 @@ namespace OrchardCore.Liquid
             .AddLiquidFilter<NewShapeFilter>("shape_new")
             .AddLiquidFilter<ShapeRenderFilter>("shape_render")
             .AddLiquidFilter<ShapeStringifyFilter>("shape_stringify");
+
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
     }
 

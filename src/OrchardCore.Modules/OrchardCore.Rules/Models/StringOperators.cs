@@ -9,7 +9,7 @@ namespace OrchardCore.Rules.Models
     {
     }
 
-    public class StringNotEqualsOperator : StringOperator
+    public class StringNotEqualsOperator : StringOperator, INegateOperator
     {
     }    
 
@@ -17,7 +17,7 @@ namespace OrchardCore.Rules.Models
     {
     }
 
-    public class StringNotStartsWithOperator : StringOperator
+    public class StringNotStartsWithOperator : StringOperator, INegateOperator
     {
     }   
 
@@ -25,7 +25,7 @@ namespace OrchardCore.Rules.Models
     {
     }
 
-    public class StringNotEndsWithOperator : StringOperator
+    public class StringNotEndsWithOperator : StringOperator, INegateOperator
     {
     }   
      
@@ -33,7 +33,7 @@ namespace OrchardCore.Rules.Models
     {
     }
 
-    public class StringNotContainsOperator : StringOperator
+    public class StringNotContainsOperator : StringOperator, INegateOperator
     {
     }    
 }

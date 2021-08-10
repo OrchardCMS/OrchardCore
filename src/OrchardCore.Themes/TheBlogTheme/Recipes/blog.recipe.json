@@ -4,7 +4,7 @@
   "description": "Provides a functional Blog with CMS features.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "blog" ],
@@ -142,62 +142,6 @@
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
                   "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidPage",
-          "DisplayName": "Liquid Page",
-          "Hidden": false,
-          "Settings": {
-            "ContentTypeSettings": {
-              "Creatable": true,
-              "Draftable": true,
-              "Versionable": true,
-              "Listable": true
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPage",
-              "Name": "LiquidPage",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "AutoroutePartSettings": {
-                  "AllowCustomPath": true,
-                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
-                  "ShowHomepageOption": true
-                },
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
-            },
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "3"
                 }
               }
             },
@@ -383,7 +327,7 @@
           "Name": "Blockquote",
           "DisplayName": "Blockquote",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -403,73 +347,20 @@
           ]
         },
         {
-          "Name": "ImageWidget",
-          "DisplayName": "Image",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Image",
-              "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidWidget",
-          "DisplayName": "Liquid",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Listable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
           "Name": "Image",
           "DisplayName": "Image",
           "Settings": {
             "ContentTypeSettings": {
-              "Versionable": true
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
             }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Image",
               "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
@@ -505,7 +396,7 @@
           "Name": "RawHtml",
           "DisplayName": "Raw Html",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -925,8 +816,6 @@
               "Input",
               "Label",
               "LinkMenuItem",
-              "LiquidWidget",
-              "LiquidPage",
               "Menu",
               "Page",
               "Paragraph",
@@ -1265,15 +1154,15 @@
       "Files": [
         {
           "TargetPath": "about-bg.jpg",
-          "SourcePath": "../wwwroot/img/about-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/about-bg.jpg"
         },
         {
           "TargetPath": "home-bg.jpg",
-          "SourcePath": "../wwwroot/img/home-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/home-bg.jpg"
         },
         {
           "TargetPath": "post-bg.jpg",
-          "SourcePath": "../wwwroot/img/post-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/post-bg.jpg"
         }
       ]
     },
@@ -1286,6 +1175,7 @@
             "ConditionId":"[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
                 "Name": "BooleanCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"
@@ -1300,6 +1190,7 @@
             "ConditionId": "[js: uuid()]",
             "Conditions": [
               {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
                 "Name": "HomepageCondition",
                 "Value": true,
                 "ConditionId": "[js: uuid()]"

@@ -85,6 +85,14 @@ namespace OrchardCore.ContentManagement.Display
                 }
             }
 
+            var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
+            var stereotype = "";
+
+            if (settings != null)
+            {
+                stereotype = settings.Stereotype;
+            }
+
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = contentTypePartDefinition.Name;
@@ -139,35 +147,55 @@ namespace OrchardCore.ContentManagement.Display
 
                         var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => new ValueTask<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
                         shapeResult.Differentiator(partName);
+                        shapeResult.Name(partName);
                         shapeResult.Location("Content");
+
+                        shapeResult.Displaying(ctx =>
+                        {
+                            string[] displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
+
+                            foreach (var displayType in displayTypes)
+                            {
+                                // eg. ServicePart,  ServicePart.Summary
+                                ctx.Shape.Metadata.Alternates.Add($"{partTypeName}{displayType}");
+
+                                // [ContentType]_[DisplayType]__[PartType]
+                                // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary
+                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
+
+                                if (!String.IsNullOrEmpty(stereotype))
+                                {
+                                    // [Stereotype]_[DisplayType]__[PartType],
+                                    // e.g. Widget-ServicePart
+                                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partTypeName}");
+                                }
+                            }
+
+                            if (partTypeName != partName)
+                            {
+                                foreach (var displayType in displayTypes)
+                                {
+                                    // [ContentType]_[DisplayType]__[PartName]
+                                    // e.g. Employee-Address1, Employee-Address2
+                                    ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
+
+                                    if (!String.IsNullOrEmpty(stereotype))
+                                    {
+                                        // [Stereotype]_[DisplayType]__[PartType]__[PartName]
+                                        // e.g. Widget-Services
+                                        ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partTypeName}__{partName}");
+                                    }
+                                }
+                            }
+                        });
 
                         await shapeResult.ApplyAsync(context);
 
                         var contentPartShape = shapeResult.Shape;
 
                         // Make the ContentPart name property available on the shape
-                        var dynamicContentPartShape = contentPartShape;
-                        dynamicContentPartShape.Properties[partTypeName] = part.Content;
-                        dynamicContentPartShape.Properties["ContentItem"] = part.ContentItem;
-
-                        contentPartShape.Metadata.Alternates.Add(partTypeName);
-                        contentPartShape.Metadata.Alternates.Add($"{contentType}__{partTypeName}");
-
-                        if (context.DisplayType != "Detail")
-                        {
-                            contentPartShape.Metadata.Alternates.Add($"{partTypeName}_{context.DisplayType}");
-                            contentPartShape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partTypeName}");
-                        }
-
-                        if (partName != partTypeName)
-                        {
-                            contentPartShape.Metadata.Alternates.Add($"{contentType}__{partName}");
-
-                            if (context.DisplayType != "Detail")
-                            {
-                                contentPartShape.Metadata.Alternates.Add($"{contentType}_{context.DisplayType}__{partName}");
-                            }
-                        }
+                        contentPartShape.Properties[partTypeName] = part.Content;
+                        contentPartShape.Properties["ContentItem"] = part.ContentItem;
 
                         context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater);
                         // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.

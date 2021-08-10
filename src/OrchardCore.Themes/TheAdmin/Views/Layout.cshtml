@@ -1,8 +1,10 @@
 @inject DarkModeService DarkModeService
-@inject IOptions<AdminOptions> AdminOptions
 @{
     var adminSettings = Site.As<AdminSettings>();
     var darkMode = await DarkModeService.IsDarkModeAsync();
+
+    // Branding is pre-rendered to allow resource injection
+    var brandingHtml = await DisplayAsync(await New.AdminBranding());
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-tenant="@DarkModeService.CurrentTenant" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
@@ -11,29 +13,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <style media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css"></style>
+    <style media="all" asp-name="admin" version="1"></style>
+    <style asp-name="material-icons" version="0.7.2"></style>
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
-
-    <script asp-name="font-awesome" at="Foot" version="5"></script>
-    <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
+    <script asp-name="font-awesome" at="Head" version="5"></script>
+    <script asp-name="font-awesome-v4-shims" at="Head" version="5"></script>
     <script asp-name="js-cookie" at="Foot" version="2"></script>
-    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery" at="Foot"></script>
+    <script asp-name="admin" version="1" at="Foot"></script>
     <resources type="Header" />
 
     <!-- This script can't wait till the footer -->
-    <script asp-src="~/TheAdmin/Scripts/TheAdmin-header.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin-header.js"></script>
+    <script asp-name="admin-head" version="1"></script>
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body class="preload">
     <div class="ta-wrapper">
         <div class="ta-navbar-top navbar-expand-lg bg-primary">
             <div class="d-flex w-100">
-                <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src=@Url.Content("~/TheAdmin/logo.png") alt="@Site.SiteName" /><span>@Site.SiteName</span></a>
-
+                @brandingHtml
                 <div class="flex-grow-1">
                     @if (adminSettings.DisplayTitlesInTopbar)
                     {
@@ -47,16 +46,16 @@
                         <a id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
                             @if (darkMode)
                             {
-                                <i class="fas fa-sun"></i>
+                                <i class="fas fa-sun" aria-hidden="true"></i>
                             }
                             else
                             {
-                                <i class="fas fa-moon"></i>
+                                <i class="fas fa-moon" aria-hidden="true"></i>
                             }
                         </a>
                     }
                     <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]" role="button">
-                        <i class="fa fa-fw fa-external-link"></i>
+                        <i class="fa fa-fw fa-external-link" aria-hidden="true"></i>
                     </a>
                     @await DisplayAsync(await New.UserMenu())
                 </div>

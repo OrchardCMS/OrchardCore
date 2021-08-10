@@ -8,10 +8,10 @@ Vue.component('uploadList', {
                 <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
                     <div class="toggle-button"> \
                     <div v-show="expanded"> \
-                        <i class="fa fa-chevron-down"></i> \
+                        <i class="fa fa-chevron-down" aria-hidden="true"></i> \
                     </div> \
                     <div v-show="!expanded"> \
-                        <i class="fa fa-chevron-up"></i> \
+                        <i class="fa fa-chevron-up" aria-hidden="true"></i> \
                     </div> \
                 </div> \
             </div> \

@@ -31,9 +31,7 @@ namespace OrchardCore.Localization
         }
 
         public static implicit operator string(CultureDictionaryRecordKey cultureDictionaryRecordKey)
-            => String.IsNullOrEmpty(cultureDictionaryRecordKey._context)
-                ? cultureDictionaryRecordKey._messageId
-                : cultureDictionaryRecordKey._context.ToLowerInvariant() + "|" + cultureDictionaryRecordKey._messageId;
+            => cultureDictionaryRecordKey.ToString();
 
         /// <inheritdoc />
         public override bool Equals(object obj)
@@ -52,5 +50,10 @@ namespace OrchardCore.Localization
 
         /// <inheritdoc />
         public override int GetHashCode() => HashCode.Combine(_messageId, _context);
+
+        public override string ToString()
+            => String.IsNullOrEmpty(_context)
+                ? _messageId
+                : _context.ToLowerInvariant() + "|" + _messageId;
     }
 }

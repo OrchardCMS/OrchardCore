@@ -114,7 +114,7 @@ namespace OrchardCore.AdminMenu.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
         {
-            return RedirectToAction("List", new RouteValueDictionary {
+            return RedirectToAction(nameof(List), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -266,7 +266,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 }
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
 
         [HttpPost]

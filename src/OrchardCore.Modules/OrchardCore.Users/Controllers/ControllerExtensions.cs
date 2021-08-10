@@ -69,17 +69,17 @@ namespace OrchardCore.Users.Controllers
 
                 if (controller.ModelState.IsValid)
                 {
-                    var user = await userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail }, model.Password, (key, message) => controller.ModelState.AddModelError(key, message)) as User;
+                    var user = await userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, IsEnabled = !settings.UsersAreModerated }, model.Password, (key, message) => controller.ModelState.AddModelError(key, message)) as User;
 
                     if (user != null && controller.ModelState.IsValid)
                     {
-                        if (settings.UsersMustValidateEmail)
+                        if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
                         {
                             // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                             // Send an email with this link
                             await controller.SendEmailConfirmationTokenAsync(user, confirmationEmailSubject);
                         }
-                        else
+                        else if (!(settings.UsersAreModerated && !user.IsEnabled))
                         {
                             await signInManager.SignInAsync(user, isPersistent: false);
                         }
