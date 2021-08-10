@@ -12,7 +12,7 @@ using OrchardCore.Security.Permissions;
 namespace OrchardCore.Media.Services
 {
     /// <summary>
-    /// Checks if the user has related permission to manage the path resource which passed from AuthorizationHandler
+    /// Checks if the user has related permission to manage the path resource which is passed from AuthorizationHandler
     /// </summary>
     public class ManageMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
