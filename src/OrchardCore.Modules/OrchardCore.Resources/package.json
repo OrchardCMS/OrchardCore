@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
-    "@popperjs/core": "2.9.2",
-    "bootstrap": "5.0.2",
-    "bootstrap-scss": "5.0.2",
+    "@popperjs/core": "2.9.3",
+    "bootstrap": "5.1.0",
+    "bootstrap-scss": "5.1.0",
     "bootstrap-select": "1.13.18",
     "bootstrap-slider": "11.0.2",
     "codemirror": "5.62.2",
