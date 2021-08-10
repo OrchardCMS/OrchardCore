@@ -39,8 +39,15 @@ namespace OrchardCore.Users.Workflows.Drivers
 
                 if (model.SendConfirmationEmail)
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailSubject), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailSubject)]);
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailTemplate), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailTemplate)]);
+                    if (string.IsNullOrEmpty(viewModel.ConfirmationEmailSubject))
+                    {
+                        updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailSubject), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailSubject)]);
+                    }
+
+                    if (string.IsNullOrEmpty(viewModel.ConfirmationEmailTemplate))
+                    {
+                        updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailTemplate), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailTemplate)]);
+                    }
                 }
             }
 
