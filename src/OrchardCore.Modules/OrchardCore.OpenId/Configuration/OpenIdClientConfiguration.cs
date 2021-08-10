@@ -98,7 +98,7 @@ namespace OrchardCore.OpenId.Configuration
                 }
             }
 
-            if (settings.Parameters.Any())
+            if (settings.Parameters?.Any() == true)
             {
                 var parameters = settings.Parameters;
                 options.Events.OnRedirectToIdentityProvider = (context) =>

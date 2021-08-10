@@ -2362,6 +2362,33 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "aaronamm",
+      "name": "aaronamm",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2938310?v=4",
+      "profile": "https://www.codesanook.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mildronize",
+      "name": "Thada Wangthammang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3647850?v=4",
+      "profile": "https://thadaw.com/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "felixhoi",
+      "name": "Felix Hoi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60052664?v=4",
+      "profile": "https://github.com/felixhoi",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

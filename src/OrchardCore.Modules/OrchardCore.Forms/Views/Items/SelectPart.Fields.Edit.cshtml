@@ -27,10 +27,10 @@
         </td>
         <td class="text-center">
             <a v-on:click.prevent.stop="remove" href="#" title="@T["Remove element from list"]" class="btn">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times" aria-hidden="true"></i>
             </a>
         </td>
-        <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt"></i></div></td>
+        <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div></td>
     </tr>
 </script>
 
@@ -55,7 +55,7 @@
         <tfoot>
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
-                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small"></i> @T["Add an option"]</a>
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small" aria-hidden="true"></i> @T["Add an option"]</a>
                 </td>
             </tr>
         </tfoot>
@@ -104,7 +104,7 @@
 
 <div id="@Html.IdFor(m => m)" class="form-group">
     <label asp-for="Options">@T["Options"]</label>
-    <a href="#" v-on:click.prevent.stop="showModal = true" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
+    <a href="#" v-on:click.prevent.stop="showModal = true" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
     <select-options-table :data="state"
                           :mode="'single'"
                           v-on:reorder-option="reorderOption"

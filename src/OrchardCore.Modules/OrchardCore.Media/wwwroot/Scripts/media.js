@@ -2679,7 +2679,7 @@ Vue.component('sortIndicator', {
 Vue.component('upload', {
   template: '\
         <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
-            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times"></i> </span>\
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times" aria-hidden="true"></i> </span>\
             <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
             <div> \
                <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
@@ -2742,10 +2742,10 @@ Vue.component('uploadList', {
                 <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
                     <div class="toggle-button"> \
                     <div v-show="expanded"> \
-                        <i class="fa fa-chevron-down"></i> \
+                        <i class="fa fa-chevron-down" aria-hidden="true"></i> \
                     </div> \
                     <div v-show="!expanded"> \
-                        <i class="fa fa-chevron-up"></i> \
+                        <i class="fa fa-chevron-up" aria-hidden="true"></i> \
                     </div> \
                 </div> \
             </div> \
@@ -3496,20 +3496,20 @@ Vue.component('mediaFieldThumbsContainer', {
                          </div>\
                          <div class="media-container-main-item-title card-body">\
                                 <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
-                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
-                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
+                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash" aria-hidden="true"></i></a>\
+                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download" aria-hidden="true"></i></a> \
                                 <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
                          </div>\
                     </div>\
                     <div v-else>\
                         <div class="thumb-container flex-column" :style="{height: thumbSize + \'px\'}">\
-                            <i class="fa fa-ban text-danger d-block"></i>\
+                            <i class="fa fa-ban text-danger d-block" aria-hidden="true"></i>\
                             <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>\
                             <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
                         </div>\
                         <div class="media-container-main-item-title card-body">\
                             <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
-                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
+                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash" aria-hidden="true"></i></a>\
                             <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
                         </div>\
                    </div>\
