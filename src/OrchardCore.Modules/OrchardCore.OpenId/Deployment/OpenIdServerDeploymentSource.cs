@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Deployment
 {
@@ -23,12 +24,19 @@ namespace OrchardCore.OpenId.Deployment
                 return;
             }
 
-            var serverSettings = await _openIdServerService.GetSettingsAsync();
+            var serverSettings = await _openIdServerService
+                .GetSettingsAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "OpenIdServer"),
-                new JProperty("OpenIdServer", JObject.FromObject(serverSettings))
-            ));
+            // Use nameof(OpenIdServerSettings) as name,
+            // to match the recipe step.
+            var obj = new JObject(
+                new JProperty(
+                    "name",
+                    nameof(OpenIdServerSettings)));
+
+            obj.Merge(JObject.FromObject(serverSettings));
+
+            result.Steps.Add(obj);
         }
     }
 }
