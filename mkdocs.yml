@@ -92,6 +92,7 @@ nav:
         - Change password configuration: docs/guides/password-configuration/README.md 
         - Azure AD integration: docs/guides/azuread-integration/README.md 
         - Development Teams and Deployment: docs/guides/development-teams-and-deployment/README.md 
+        - Create a Liquid Widget: docs/guides/create-liquid-widget/README.md
     - Key Topics: 
         - Manage your Content: docs/topics/content-management/README.md
         - Customize the Display: docs/topics/display/README.md
