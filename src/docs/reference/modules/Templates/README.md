@@ -572,8 +572,26 @@ Which zones are available depends on the current theme.
 
 | Property | Description |
 | --------- | ------------ |
+| `Model.Items` | While the property is not unique to zone shapes keep in mind that `Model.Items` contains the child shapes that should be displayed from the zone. In Razor but not in Liquid iterating over `Model` directly yields the child shapes too. |
 | `Model.Parent` | A zone shape that's the parent of the current zone. For root-level zones this will be the Layout shape. |
 | `Model.ZoneName` | The `string` name of the zone, e.g. "Footer" and "Content". |
+
+=== "Liquid"
+
+    ``` liquid
+    {% for shape in Model.Items %}
+        {{ shape | shape_render }}
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ``` csharp
+    @foreach (var shape in Model)
+    {
+        @await DisplayAsync(shape);
+    }
+    ```
 
 ## Overriding Views
 
