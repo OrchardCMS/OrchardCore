@@ -26,7 +26,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             };
         }
 
-        private static Mock<IOpenIdServerService> CreateServerServiceWithAuthorityMock(OpenIdServerSettings settings)
+        private static Mock<IOpenIdServerService> CreateServerServiceWithSettingsMock(OpenIdServerSettings settings)
         {
             var serverService = new Mock<IOpenIdServerService>();
 
@@ -48,10 +48,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var recipeFile = "Recipe.json";
 
             var expectedSettings = CreateSettings("https://deploy.localhost", TokenFormat.JsonWebToken);
-            var deployServerServiceMock = CreateServerServiceWithAuthorityMock(expectedSettings);
+            var deployServerServiceMock = CreateServerServiceWithSettingsMock(expectedSettings);
 
             var actualSettings = CreateSettings("https://recipe.localhost", TokenFormat.DataProtection);
-            var recipeServerServiceMock = CreateServerServiceWithAuthorityMock(actualSettings);
+            var recipeServerServiceMock = CreateServerServiceWithSettingsMock(actualSettings);
 
             Assert.NotEqual(expectedSettings.Authority, actualSettings.Authority);
             Assert.NotEqual(expectedSettings.AccessTokenFormat, actualSettings.AccessTokenFormat);
