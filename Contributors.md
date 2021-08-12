@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-256-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-257-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -351,6 +351,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://www.codesanook.com/"><img src="https://avatars.githubusercontent.com/u/2938310?v=4?s=100" width="100px;" alt=""/><br /><sub><b>aaronamm</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=aaronamm" title="Code">💻</a></td>
     <td align="center"><a href="https://thadaw.com/"><img src="https://avatars.githubusercontent.com/u/3647850?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Thada Wangthammang</b></sub></a><br /><a href="#translation-mildronize" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/felixhoi"><img src="https://avatars.githubusercontent.com/u/60052664?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Felix Hoi</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=felixhoi" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.trend-fox.at/"><img src="https://avatars.githubusercontent.com/u/16665420?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Martin Kaip</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kaipm" title="Code">💻</a></td>
   </tr>
 </table>
 
