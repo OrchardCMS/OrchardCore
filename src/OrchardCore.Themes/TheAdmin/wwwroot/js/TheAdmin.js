@@ -7398,12 +7398,13 @@ function unSetCompactStatus() {
   $('#left-nav > ul > li').css("transition", "");
   isCompactExplicit = false;
   persistAdminPreferences();
-} // create an Observer instance
+}
 
+var leftNav = document.getElementById("left-nav"); // create an Observer instance
 
 var resizeObserver = new ResizeObserver(function (entries) {
   if (isCompactExplicit) {
-    if (document.getElementById("left-nav").scrollHeight > document.getElementById("left-nav").clientHeight) {
+    if (leftNav.scrollHeight > leftNav.clientHeight) {
       document.body.classList.add("scroll");
     } else {
       document.body.classList.remove("scroll");
@@ -7413,7 +7414,9 @@ var resizeObserver = new ResizeObserver(function (entries) {
   }
 }); // start observing a DOM node
 
-resizeObserver.observe(document.getElementById("left-nav"));
+if (leftNav != null) {
+  resizeObserver.observe(leftNav);
+}
 /*
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

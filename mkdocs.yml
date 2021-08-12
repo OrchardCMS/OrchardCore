@@ -37,7 +37,7 @@ extra:
 # Repository
 repo_name: OrchardCMS/OrchardCore
 repo_url: https://github.com/OrchardCMS/OrchardCore
-edit_uri: edit/dev/src/
+edit_uri: edit/main/src/
 
 # Options
 docs_dir: src
@@ -185,6 +185,7 @@ nav:
             - Custom Settings: docs/reference/modules/CustomSettings/README.md
             - Placement: docs/reference/core/Placement/README.md
             - Data: docs/reference/core/Data/README.md
+            - Data Migrations: docs/reference/modules/Migrations/README.md 
             - Dynamic Cache: docs/reference/modules/DynamicCache/README.md
             - Email: docs/reference/modules/Email/README.md
             - GraphQL: docs/reference/modules/Apis.GraphQL/README.md
@@ -220,6 +221,7 @@ nav:
         - Owners: docs/resources/owners/README.md
         - Workshops: docs/resources/workshops/README.md
     - Releases: 
+        - 1.0.0: docs/releases/1.0.0.md
         - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
         - 1.0.0-rc1: docs/releases/1.0.0-rc1.md
         - 1.0.0-beta3: docs/releases/1.0.0-beta3.md

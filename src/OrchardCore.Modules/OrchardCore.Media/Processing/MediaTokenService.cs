@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using Cysharp.Text;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
 using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Media.Processing
@@ -37,17 +37,19 @@ namespace OrchardCore.Media.Processing
 
         public string AddTokenToPath(string path)
         {
-            var pathParts = path.Split('?');
+            var pathIndex = path.IndexOf('?');
 
-            var parsed = QueryHelpers.ParseQuery(pathParts.Length > 1 ? pathParts[1] : string.Empty);
+            var parsed = pathIndex != -1
+                ? QueryHelpers.ParseQuery(path.Substring(pathIndex + 1))
+                : null;
 
             // If no commands or only a version command don't bother tokenizing.
-            if (parsed.Count == 0 || parsed.Count == 1 && parsed.ContainsKey(ImageVersionProcessor.VersionCommand))
+            if (parsed is null || parsed.Count == 0 || parsed.Count == 1 && parsed.ContainsKey(ImageVersionProcessor.VersionCommand))
             {
                 return path;
             }
 
-            var processingCommands = new Dictionary<string, string>();
+            var processingCommands = new Dictionary<string, string>(parsed.Count);
             Dictionary<string, string> otherCommands = null;
 
             foreach (var command in parsed)
@@ -78,7 +80,7 @@ namespace OrchardCore.Media.Processing
                 }
             }
 
-            return QueryHelpers.AddQueryString(pathParts[0], processingCommands);
+            return QueryHelpers.AddQueryString(path.Substring(0, pathIndex), processingCommands);
         }
 
         public bool TryValidateToken(IDictionary<string, string> commands, string token)
@@ -98,14 +100,13 @@ namespace OrchardCore.Media.Processing
 
         private static string CreateQueryStringTokenKey(IEnumerable<string> values)
         {
-            using var stringBuilderPool = StringBuilderPool.GetInstance();
-            var result = stringBuilderPool.Builder;
-            result.Append(TokenCacheKeyPrefix);
+            using var builder = ZString.CreateStringBuilder();
+            builder.Append(TokenCacheKeyPrefix);
             foreach (var item in values)
             {
-                result.Append(item);
+                builder.Append(item);
             }
-            return result.ToString();
+            return builder.ToString();
         }
 
         private string GetHash(string queryStringTokenKey)

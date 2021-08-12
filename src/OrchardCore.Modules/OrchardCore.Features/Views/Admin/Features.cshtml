@@ -9,7 +9,7 @@
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
                 <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
-                    <i class="fa fa-search form-control-feedback"></i>
+                    <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
                     <input id="search-box" class="form-control mr-sm-2" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
                 <div class="dropdown float-right order-md-1">
@@ -76,7 +76,7 @@
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
                             var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
-                            var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup";
+                            var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
                                 <div class="row">

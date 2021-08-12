@@ -13,19 +13,19 @@ namespace OrchardCore.Themes.TheComingSoonTheme
 
             _manifest
                 .DefineScript("TheComingSoonTheme-bootstrap-bundle")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.js")
-                .SetCdnIntegrity("sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4", "sha384-zlQmapo6noJSGz1A/oxylOFtN0k8EiXX45sOWv3x9f/RGYG0ECMxTbMao6+OLt2e")
-                .SetVersion("5.0.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.js")
+                .SetCdnIntegrity("sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj", "sha384-sCrrXXsCVYsmCuGTFZDBWJBhcTU5N2csSa8rhGERa1/tCRBHcJEcxG3ivcPvx3t6")
+                .SetVersion("5.1.0");
 
             _manifest
                 .DefineScript("coming-soon")
                 .SetUrl("~/TheComingSoonTheme/js/scripts.min.js", "TheComingSoonTheme/js/scripts.js")
-                .SetVersion("6.0.0");
+                .SetVersion("6.0.4");
 
             _manifest
                 .DefineStyle("coming-soon")
                 .SetUrl("~/TheComingSoonTheme/css/styles.min.css", "TheComingSoonTheme/css/styles.css")
-                .SetVersion("6.0.0");
+                .SetVersion("6.0.4");
 
             _manifest
                 .DefineStyle("TheComingSoonTheme-bootstrap-oc")

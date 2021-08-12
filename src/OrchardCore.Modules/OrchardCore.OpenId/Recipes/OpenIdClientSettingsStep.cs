@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -39,6 +40,7 @@ namespace OrchardCore.OpenId.Recipes
             settings.ResponseType = model.ResponseType;
             settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
             settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
+            settings.Parameters = model.Parameters;
 
             await _clientService.UpdateSettingsAsync(settings);
         }
@@ -59,5 +61,6 @@ namespace OrchardCore.OpenId.Recipes
         public string Scopes { get; set; }
         public string ResponseType { get; set; }
         public string ResponseMode { get; set; }
+        public ParameterSetting[] Parameters { get; set; }
     }
 }

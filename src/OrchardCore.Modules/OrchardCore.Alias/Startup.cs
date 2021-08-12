@@ -11,6 +11,7 @@ using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -53,7 +54,11 @@ namespace OrchardCore.Alias
                     });
                 });
             });
-            services.AddScoped<IScopedIndexProvider, AliasPartIndexProvider>();
+
+            services.AddScoped<AliasPartIndexProvider>();
+            services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AliasPartIndexProvider>());
+            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AliasPartIndexProvider>());
+
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();
 

@@ -8,5 +8,5 @@
     @{
         var icon = Model.Activity.SendConfirmationEmail ? "fa-user-shield" : "fa-user";
     }
-    <h4><i class="fa @icon"></i>@Model.Activity.GetTitleOrDefault(() => T["Register User"])</h4>
+    <h4><i class="fa @icon" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Register User"])</h4>
 </header>

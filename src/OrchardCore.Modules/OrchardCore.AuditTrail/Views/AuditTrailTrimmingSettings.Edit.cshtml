@@ -1,0 +1,23 @@
+@model AuditTrailTrimmingSettingsViewModel
+
+<section>
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="Disabled" checked="@Model.Disabled" />
+            <label class="custom-control-label" asp-for="Disabled">@T["Disable trimming task"]</label>
+        </div>
+        <span class="hint">@T["Whether the trimming task is disabled."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="RetentionDays">
+        <label asp-for="RetentionDays">@T["Retention period"]</label>
+        <input asp-for="RetentionDays" type="number" class="form-control" />
+        <span class="hint">@T["The number of days an event is retained."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="LastRunUtc">
+        <label asp-for="LastRunUtc">@T["Last run"]</label>
+        <div class="form-control">@(Model.LastRunUtc.HasValue ? await DisplayAsync(await New.DateTime(Utc: Model.LastRunUtc.Value, Format: "g")) : T["Never"])</div>
+        <span class="hint">@T["The last time the trimming task was run."]</span>
+    </div>
+</section>

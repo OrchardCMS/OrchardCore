@@ -55,6 +55,7 @@ namespace OrchardCore.Google.Analytics.Drivers
                     settings.TrackingID = model.TrackingID;
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

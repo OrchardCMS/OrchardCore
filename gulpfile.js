@@ -247,6 +247,19 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
     if ((!doConcat || assetGroup.inputPaths.length < 2) && !assetGroup.inputPaths.some(function (inputPath) { return path.extname(inputPath).toLowerCase() === ".ts"; }))
         generateSourceMaps = false;
 
+    var tsCompilerOptions = assetGroup.hasOwnProperty("tsCompilerOptions") ? assetGroup.tsCompilerOptions : {
+        declaration: false,
+        noImplicitAny: true,
+        noEmitOnError: true,
+        lib: [
+            "dom",
+            "es5",
+            "scripthost",
+            "es2015.iterable"
+        ],
+        target: "es5",
+    };
+
     console.log(assetGroup.inputPaths);
     return gulp.src(assetGroup.inputPaths)
         .pipe(gulpif(!doRebuild,
@@ -258,18 +271,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
                 }))))
         .pipe(plumber())
         .pipe(gulpif(generateSourceMaps, sourcemaps.init()))
-        .pipe(gulpif("*.ts", typescript({
-            declaration: false,
-            noImplicitAny: true,
-            noEmitOnError: true,
-            lib: [
-                "dom",
-                "es5",
-                "scripthost",
-                "es2015.iterable"
-            ],
-            target: "es5",
-        })))
+        .pipe(gulpif("*.ts", typescript(tsCompilerOptions)))
         .pipe(babel({
             "presets": [
                 [

@@ -2344,6 +2344,60 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "john-s-morgan",
+      "name": "John Morgan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70619927?v=4",
+      "profile": "https://github.com/john-s-morgan",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "brunoAltinet",
+      "name": "brunoAltinet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4034604?v=4",
+      "profile": "https://github.com/brunoAltinet",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "aaronamm",
+      "name": "aaronamm",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2938310?v=4",
+      "profile": "https://www.codesanook.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mildronize",
+      "name": "Thada Wangthammang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3647850?v=4",
+      "profile": "https://thadaw.com/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "felixhoi",
+      "name": "Felix Hoi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60052664?v=4",
+      "profile": "https://github.com/felixhoi",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kaipm",
+      "name": "Martin Kaip",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16665420?v=4",
+      "profile": "http://www.trend-fox.at/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

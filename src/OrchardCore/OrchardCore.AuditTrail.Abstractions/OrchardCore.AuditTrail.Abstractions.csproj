@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.AuditTrail</RootNamespace>
+    
+    <!-- NuGet properties-->
+    <Title>OrchardCore AuditTrail Abstractions</Title>
+    <Description>$(OCCMSDescription)
+    
+    Abstractions for AuditTrail</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS AuditTrail Abstractions</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="YesSql.Filters.Query" />
+  </ItemGroup>
+
+</Project>

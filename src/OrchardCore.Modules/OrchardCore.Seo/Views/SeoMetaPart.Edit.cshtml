@@ -82,16 +82,16 @@
                 </td>                    
                 <td class="text-center">
                     <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
-                        <i class="fas fa-times"></i>
+                        <i class="fas fa-times" aria-hidden="true"></i>
                     </a>
                 </td>
-                <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt"></i></div></td>
+                <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div></td>
             </tr>
         </draggable>
         <tfoot>
             <tr>
                 <td class="col-sm-12 text-center" colspan="7">
-                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small"></i> @T["Add a custom meta tag"]</a>
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small" aria-hidden="true"></i> @T["Add a custom meta tag"]</a>
                     <input class="form-control content-preview-text" id="@Html.IdFor(m => m.CustomMetaTags)" name="@Html.NameFor(m => m.CustomMetaTags)" type="hidden" v-bind:value="getMetaTagsFormattedList()" />
                 </td>
             </tr>
@@ -127,7 +127,7 @@
 
 <div id="@Html.IdFor(m => m)" class="form-group">
     <label asp-for="CustomMetaTags">@T["Custom Meta Tags"]</label>
-    <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
+    <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
     <meta-tags-table :data="sharedState"></meta-tags-table>
     <meta-tags-modal :data="sharedState" v-on:reload-data="reloadData()"></meta-tags-modal>
 </div>
