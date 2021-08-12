@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -39,12 +40,12 @@ namespace OrchardCore.Users.Workflows.Drivers
 
                 if (model.SendConfirmationEmail)
                 {
-                    if (string.IsNullOrEmpty(viewModel.ConfirmationEmailSubject))
+                    if (String.IsNullOrWhiteSpace(viewModel.ConfirmationEmailSubject))
                     {
                         updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailSubject), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailSubject)]);
                     }
 
-                    if (string.IsNullOrEmpty(viewModel.ConfirmationEmailTemplate))
+                    if (String.IsNullOrWhiteSpace(viewModel.ConfirmationEmailTemplate))
                     {
                         updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailTemplate), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailTemplate)]);
                     }
