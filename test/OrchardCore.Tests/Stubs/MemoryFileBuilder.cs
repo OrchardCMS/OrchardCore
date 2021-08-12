@@ -13,7 +13,7 @@ namespace OrchardCore.Tests.Stubs
     public class MemoryFileBuilder
         : IFileBuilder
     {
-        public Dictionary<string, byte[]> VirtualFiles { get; private set; } = new();
+        public Dictionary<string, byte[]> VirtualFiles { get; private set; } = new Dictionary<string, byte[]>();
 
         public async Task SetFileAsync(string subpath, Stream stream)
         {
