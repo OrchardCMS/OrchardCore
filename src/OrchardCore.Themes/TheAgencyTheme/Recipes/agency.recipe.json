@@ -45,7 +45,6 @@
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
         "OrchardCore.Deployment.Remote",
-        "OrchardCore.Feeds",
         "OrchardCore.Flows",
         "OrchardCore.Layers",
         "OrchardCore.Lists",
