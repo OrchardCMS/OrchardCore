@@ -27,7 +27,7 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdScopeStepViewModel>();
+            var model = context.Step.ToObject<OpenIdScopeStepModel>();
             var descriptor = new OpenIdScopeDescriptor
             {
                 Description = model.Description,
