@@ -28,19 +28,39 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             var model = context.Step.ToObject<OpenIdScopeStepModel>();
-            var descriptor = new OpenIdScopeDescriptor
+
+            var descriptor = (OpenIdScopeDescriptor)await _scopeManager
+                .FindByNameAsync(model.ScopeName);
+
+            var isNew = false;
+
+            if (descriptor is null)
             {
-                Description = model.Description,
-                Name = model.ScopeName,
-                DisplayName = model.DisplayName
-            };
+                isNew = true;
+                descriptor = new OpenIdScopeDescriptor();
+            }
+
+            descriptor.Description = model.Description;
+            descriptor.Name = model.ScopeName;
+            descriptor.DisplayName = model.DisplayName;
 
             if (!string.IsNullOrEmpty(model.Resources))
             {
-                descriptor.Resources.UnionWith(model.Resources.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
+                descriptor.Resources.Clear();
+                descriptor.Resources.UnionWith(
+                    model.Resources.Split(
+                        new[] { " " },
+                        StringSplitOptions.RemoveEmptyEntries));
             }
 
-            await _scopeManager.CreateAsync(descriptor);
+            if (isNew)
+            {
+                await _scopeManager.CreateAsync(descriptor);
+            }
+            else
+            {
+                await _scopeManager.UpdateAsync(descriptor);
+            }
         }
     }
 }
