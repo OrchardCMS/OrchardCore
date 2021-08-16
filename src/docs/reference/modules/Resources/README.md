@@ -113,9 +113,37 @@ We set the Cdn Integrity Hashes and the version to `3.4.1`
 
 This script will then be available for the tag helper or API to register by name. 
 
+Additionally, we can use the `SetDependencies` method to ensure the script of style are loaded after their dependency. 
+
+```csharp
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+{
+    private static ResourceManifest _manifest;
+
+    static ResourceManagementOptionsConfiguration()
+    {
+        _manifest = new ResourceManifest();
+
+        _manifest.DefineStyle("ModuleName-Bootstrap-Select")
+                 .SetUrl($"~/ModuleName/bootstrap-select.min.css", $"~/ModuleName/bootstrap-select.css")
+                 .SetDependencies("bootstrap:4")
+                 .SetVersion("1.0.0");
+    }
+
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
+
+```
+
+In this example, we define a style that depends on bootstrap version 4. In this case, the latest available minor version of bootstrap version 4 will be added. Alternatively, you can set a specific version of your choice. For example, `SetDependencies("bootstrap:4.6.0")` will load bootstrap version `4.6.0`. Finally, you can add the latest available version by simply not specifying any version (i.e., `SetDependencies("bootstrap")`).
+
 !!! note "Registration"
     Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
     `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
+  
 
 ## Usage
 
