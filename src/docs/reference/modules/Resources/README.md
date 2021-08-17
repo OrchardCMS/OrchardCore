@@ -113,7 +113,7 @@ We set the Cdn Integrity Hashes and the version to `3.4.1`
 
 This script will then be available for the tag helper or API to register by name. 
 
-Additionally, we can use the `SetDependencies` method to ensure the script of style are loaded after their dependency. 
+Additionally, we can use the `SetDependencies` method to ensure the script or style is loaded after their dependency. 
 
 ```csharp
 public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
