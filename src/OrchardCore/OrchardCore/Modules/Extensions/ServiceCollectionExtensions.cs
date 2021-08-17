@@ -171,7 +171,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         private static void AddStaticFiles(OrchardCoreBuilder builder)
         {
-            var services = builder.ApplicationServices;
             builder.ConfigureServices(services =>
             {
                 services.AddSingleton<IModuleStaticFileProvider>(serviceProvider =>
