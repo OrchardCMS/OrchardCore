@@ -124,10 +124,10 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
     {
         _manifest = new ResourceManifest();
 
-        _manifest.DefineStyle("ModuleName-Bootstrap-Select")
-                 .SetUrl($"~/ModuleName/bootstrap-select.min.css", $"~/ModuleName/bootstrap-select.css")
-                 .SetDependencies("bootstrap:4")
-                 .SetVersion("1.0.0");
+        _manifest
+            .DefineStyle("ModuleName-Bootstrap-Select")
+            .SetUrl("~/ModuleName/bootstrap-select.min.css", "~/ModuleName/bootstrap-select.css")
+            .SetDependencies("bootstrap:4");
     }
 
     public void Configure(ResourceManagementOptions options)
@@ -138,7 +138,7 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
 
 ```
 
-In this example, we define a style that depends on Bootstrap version 4. In this case, the latest available minor version of bootstrap version 4 will be added. Alternatively, you can set a specific version of your choice. For example, `SetDependencies("bootstrap:4.6.0")` will load bootstrap version `4.6.0`. Finally, you can add the latest available version by simply not specifying any version (i.e., `SetDependencies("bootstrap")`).
+In this example, we define a style that depends on Bootstrap version 4. In this case, the latest available minor version of bootstrap version 4 will be added. Alternatively, you can set a specific version of your choice. For example, `SetDependencies("bootstrap:4.6.0")` will load bootstrap version `4.6.0`. Finally, we can add the latest available version by simply not specifying any version (i.e., `SetDependencies("bootstrap")`).
 
 !!! note "Registration"
     Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
