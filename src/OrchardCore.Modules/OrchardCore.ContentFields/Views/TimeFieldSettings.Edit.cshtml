@@ -13,7 +13,7 @@
         <input asp-for="Step" class="form-control" />
     </div>
         <span class="hint">@T["The step attribute of the time input allowing to edit seconds and ms."]</span>
-        <span class="hint">@T["For seconds use an integer from '1' to '30', for ms a decimal from '.001' to '.1'."]</span>
+        <span class="hint">@T["For seconds use a divisor of 60 e.g. '15', for ms a decimal equal to a divisor of 1000 divided by 1000 e.g. '0.250'."]</span>
 </div>
 
 <div class="form-group">
