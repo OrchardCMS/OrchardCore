@@ -7,6 +7,14 @@
         <span class="hint dashed">@T["Whether a value is required."]</span>
     </div>
 </div>
+<div class="form-group">
+    <div class="w-sm-75 w-md-50 w-lg-25 pr-md-3">
+        <label asp-for="Step">@T["Step"]</label>
+        <input asp-for="Step" class="form-control" />
+    </div>
+        <span class="hint">@T["The step attribute of the time input allowing to edit seconds and ms."]</span>
+        <span class="hint">@T["For seconds use an integer from '1' to '30', for ms a decimal from '.001' to '.1'."]</span>
+</div>
 
 <div class="form-group">
     <div class="w-md-75 w-xl-50 pr-md-3">
