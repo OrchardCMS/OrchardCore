@@ -49,7 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.FileProvider = _fileProvider;
             }
 
-            var cacheControl = _shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}");
+            var cacheControl = _shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-maxage={TimeSpan.FromDays(365.25).TotalSeconds}");
             var beforePrepare = options.OnPrepareResponse;
 
             options.OnPrepareResponse = ctx => OnPrepareResponseCacheControl(ctx, cacheControl, beforePrepare);
