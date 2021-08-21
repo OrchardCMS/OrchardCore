@@ -1,14 +1,15 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 using Moq;
 using Newtonsoft.Json.Linq;
+using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Recipes;
+using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Tests.Utilities;
 using Xunit;
@@ -61,10 +62,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 m.CreateAsync(
                     It.IsAny<OpenIdScopeDescriptor>(),
                     It.IsAny<CancellationToken>()))
-                .Callback<object, CancellationToken>((r, c) =>
-                    actual = (OpenIdScopeDescriptor)r)
+                .Callback<OpenIddictScopeDescriptor, CancellationToken>((s, c) =>
+                    actual = (OpenIdScopeDescriptor)s)
                 .Returns(
-                    new ValueTask<object>(actual));
+                    new ValueTask<object>());
 
             var step = new OpenIdScopeStep(scopeManagerMock.Object);
 
@@ -94,7 +95,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.DisplayName, actual.DisplayName);
             Assert.Equal(expected.Description, actual.Description);
-            Assert.Equal(expected.Resources, actual.Resources);
+            Assert.Equal(expected.Resources.ToArray(), actual.Resources.ToArray());
         }
 
         [Fact]
@@ -110,6 +111,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var actual = CreateScopeDescriptor(
                 scopeName, "B", "res");
 
+            var dbActual = new OpenIdScope
+            {
+                Name = actual.Name,
+                Resources = actual.Resources.ToImmutableArray()
+            };
+
             var scopeManagerMock = new Mock<IOpenIdScopeManager>(MockBehavior.Strict);
 
             scopeManagerMock.Setup(m =>
@@ -117,14 +124,23 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     It.IsAny<string>(),
                     It.IsAny<CancellationToken>()))
                 .Returns(
-                    new ValueTask<object>(actual));
+                    new ValueTask<object>(dbActual));
+
+            scopeManagerMock.Setup(m =>
+                m.PopulateAsync(
+                    It.IsAny<object>(),
+                    It.IsAny<OpenIdScopeDescriptor>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(
+                    new ValueTask());
 
             scopeManagerMock.Setup(m =>
                 m.UpdateAsync(
+                    It.IsAny<object>(),
                     It.IsAny<OpenIdScopeDescriptor>(),
                     It.IsAny<CancellationToken>()))
-                .Callback<object, CancellationToken>((r, c) =>
-                    actual = (OpenIdScopeDescriptor)r)
+                .Callback<object, OpenIddictScopeDescriptor, CancellationToken>((s, desc, c) =>
+                    actual = (OpenIdScopeDescriptor)desc)
                 .Returns(
                     new ValueTask());
 
@@ -149,14 +165,21 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     It.IsAny<CancellationToken>()));
 
             scopeManagerMock.Verify(m =>
+                m.PopulateAsync(
+                    It.IsAny<object>(),
+                    It.IsAny<OpenIdScopeDescriptor>(),
+                    It.IsAny<CancellationToken>()));
+
+            scopeManagerMock.Verify(m =>
                 m.UpdateAsync(
+                    It.IsAny<object>(),
                     It.IsAny<OpenIdScopeDescriptor>(),
                     It.IsAny<CancellationToken>()));
 
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.DisplayName, actual.DisplayName);
             Assert.Equal(expected.Description, actual.Description);
-            Assert.Equal(expected.Resources, actual.Resources);
+            Assert.Equal(expected.Resources.ToArray(), actual.Resources.ToArray());
         }
     }
 }
