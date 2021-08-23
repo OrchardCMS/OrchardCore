@@ -58,14 +58,11 @@ You can find a sample application here: [`OrchardCore.Mvc.Web`](../../../../Orch
 
 ## Configuration
 
-The following configuration values are used by default and can be customized:
-
-By default each tenant doesn't serve static files from Host `wwwroot`. To serve Host `wwwroot` for each tenant, set `ServeHostWebRoot` to `true` in tenant config.
+The following configuration values are used by default for module embedded static files and can be customized:
 
 ```json
     "StaticFileOptions": {
       // The CacheControl header sent with any static file served by modules
-      "CacheControl": "public, max-age=2592000, s-maxage=31557600",
-      "ServeHostWebRoot" : false
+      "CacheControl": "public, max-age=2592000, s-max-age=31557600"
     }
 ```
