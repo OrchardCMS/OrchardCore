@@ -63,6 +63,6 @@ The following configuration values are used by default for module embedded stati
 ```json
     "StaticFileOptions": {
       // The CacheControl header sent with any static file served by modules
-      "CacheControl": "public, max-age=2592000, s-max-age=31557600"
+      "CacheControl": "public, max-age=2592000, s-maxage=31557600"
     }
 ```
