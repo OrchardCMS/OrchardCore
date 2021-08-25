@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement
             }
             catch (InvalidCastException ex)
             {
-                throw new InvalidCastException("Failed casting content part, have you registered your content part with AddContentPart?", ex);
+                throw new InvalidCastException($"Failed casting content part to {typeof(TElement).Name}, have you registered your content part with AddContentPart?", ex);
             }
         }
 
