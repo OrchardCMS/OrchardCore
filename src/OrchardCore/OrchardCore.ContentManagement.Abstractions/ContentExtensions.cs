@@ -23,7 +23,14 @@ namespace OrchardCore.ContentManagement
         /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
         public static TElement Get<TElement>(this ContentElement contentElement, string name) where TElement : ContentElement
         {
-            return (TElement)contentElement.Get(typeof(TElement), name);
+            try
+            {
+                return (TElement)contentElement.Get(typeof(TElement), name);
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new InvalidCastException("Failed casting content part, have you registered your content part with AddContentPart?", ex);
+            }
         }
 
         /// <summary>
