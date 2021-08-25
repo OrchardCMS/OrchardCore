@@ -217,7 +217,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     RequestPath = String.Empty,
                     FileProvider = fileProvider,
+
+#if NET5_0_OR_GREATER
                     RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
+#endif
 
                     ContentTypeProvider = options.ContentTypeProvider,
                     DefaultContentType = options.DefaultContentType,
