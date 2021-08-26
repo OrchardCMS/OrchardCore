@@ -1,14 +1,4 @@
 $(function () {
-    //function scoped variables    
-    function guid() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
-        return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
-    }
-
     $(document).on('click', '.add-list-widget', function (event) {
         var type = $(this).data("widget-type");
         var targetId = $(this).data("target-id");
@@ -18,7 +8,8 @@ $(function () {
         var partName = $(this).data("part-name");
         var zonesName = $(this).data("zones-name");
         var zone = $(this).data("zone");
-        var prefix = guid();
+        // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
+        var prefix = partName + '-' + zone + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
             url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
@@ -44,7 +35,8 @@ $(function () {
         var partName = $(this).data("part-name");
         var zonesName = $(this).data("zones-name");
         var zone = $(this).data("zone");
-        var prefix = guid();
+        // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
+        var prefix = partName + '-' + zone + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
             url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName

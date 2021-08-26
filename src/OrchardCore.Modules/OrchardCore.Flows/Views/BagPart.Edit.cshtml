@@ -1,4 +1,3 @@
-@using OrchardCore.ContentManagement.Metadata.Settings;
 @using OrchardCore.Flows.Models;
 @using OrchardCore.Flows.ViewModels;
 @using OrchardCore.Mvc.Utilities;
@@ -19,35 +18,36 @@
 
 <div class="form-group">
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
-        @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
-        @foreach (var widget in Model.BagPart.ContentItems)
-        {
-            //Create a Card Shape
-            dynamic contentCard = await New.ContentCard(
-                // FOR Updater
-                CollectionShape: Model,
-                //Shape Specific
-                CollectionShapeType: nameof(BagPart),
-                ContentItem: widget,
-                BuildEditor: true,
-                ParentContentType: parentContentType,
-                CollectionPartName :partName,
-                //Card Specific Properties
-                TargetId: widgetTemplatePlaceholderId,
-                Inline: false,
-                CanMove: true,
-                CanDelete: true,
-                //Input hidden
-                //Prefixes
-                PrefixValue: widget.ContentItemId,
-                HtmlFieldPrefix: htmlFieldPrefix,
-                PrefixesId: Html.IdFor(x => x.Prefixes),
-                PrefixesName: Html.NameFor(x => x.Prefixes),
-                //Content Types
-                ContentTypesId: Html.IdFor(x => x.ContentTypes),
-                ContentTypesName: Html.NameFor(x => x.ContentTypes)
-            );
-            @await DisplayAsync(contentCard)
+        @{
+            var index = 0;
+            foreach (var widget in Model.BagPart.ContentItems)
+            {
+                //Create a Card Shape
+                dynamic contentCard = await New.ContentCard(
+                    // FOR Updater
+                    CollectionShape: Model,
+                    //Shape Specific
+                    CollectionShapeType: nameof(BagPart),
+                    ContentItem: widget,
+                    BuildEditor: true,
+                    ParentContentType: parentContentType,
+                    CollectionPartName: partName,
+                    //Card Specific Properties
+                    TargetId: widgetTemplatePlaceholderId,
+                    Inline: false,
+                    CanMove: true,
+                    CanDelete: true,
+                    //Input hidden
+                    //Prefixes
+                    PrefixValue: partName + '-' + (index++).ToString(),
+                    PrefixesId: Html.IdFor(x => x.Prefixes),
+                    PrefixesName: Html.NameFor(x => x.Prefixes),
+                    //Content Types
+                    ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                    ContentTypesName: Html.NameFor(x => x.ContentTypes)
+                );
+                @await DisplayAsync(contentCard)
+            }
         }
     </div>
 
@@ -76,11 +76,11 @@
     {
         Context.Items["BagPart.Edit"] = new object();
         <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
-            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+                debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
         <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
-            debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+               debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
         <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"
-            debug-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
+               debug-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
     }
 
     @* Rendered only once per type to initialize the scripts its editor will need *@
