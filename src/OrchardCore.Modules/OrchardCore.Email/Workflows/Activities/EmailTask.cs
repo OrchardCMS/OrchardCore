@@ -123,8 +123,8 @@ namespace OrchardCore.Email.Workflows.Activities
                 // Author and Sender are both not required fields.
                 From = author?.Trim() ?? sender?.Trim(),
                 To = recipients.Trim(),
-                Cc = bcc.Trim(),
-                Bcc = cc.Trim(),
+                Cc = cc?.Trim(),
+                Bcc = bcc?.Trim(),
                 // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
                 ReplyTo = replyTo?.Trim(),
                 Subject = subject.Trim(),
