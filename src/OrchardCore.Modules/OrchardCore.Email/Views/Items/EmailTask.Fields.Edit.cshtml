@@ -29,6 +29,20 @@
     <span class="hint">@T["The comma-separated list of recipient email addresses. With Liquid support."]</span>
 </div>
 
+<div class="form-group" asp-validation-class-for="CcExpression">
+    <label asp-for="CcExpression">@T["Cc"]</label>
+    <input type="text" asp-for="CcExpression" class="form-control code" />
+    <span asp-validation-for="CcExpression"></span>
+    <span class="hint">@T["The comma-separated list of carbon copy email addresses. With Liquid support."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="BccExpression">
+    <label asp-for="BccExpression">@T["Cc"]</label>
+    <input type="text" asp-for="BccExpression" class="form-control code" />
+    <span asp-validation-for="BccExpression"></span>
+    <span class="hint">@T["The comma-separated list of blind copy email addresses. With Liquid support."]</span>
+</div>
+
 <div class="form-group" asp-validation-class-for="SubjectExpression">
     <label asp-for="SubjectExpression">@T["Subject"]</label>
     <input type="text" asp-for="SubjectExpression" class="form-control code" />
