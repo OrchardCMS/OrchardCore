@@ -9,10 +9,11 @@ using OrchardCore.Modules.Manifest;
     Category = "Internationalization",
     Dependencies = new[] { "OrchardCore.Settings" }
 )]
-
+#if NET5_0
 [assembly: Feature(
     Id = "OrchardCore.Localization.ContentLanguageHeader",
     Name = "Content Language Header",
     Description = "Adds the Content-Language HTTP header, which describes the language(s) intended for the audience.",
     Category = "Internationalization"
 )]
+#endif
