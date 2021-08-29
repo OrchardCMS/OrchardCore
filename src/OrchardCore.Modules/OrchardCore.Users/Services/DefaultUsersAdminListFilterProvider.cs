@@ -123,7 +123,7 @@ namespace OrchardCore.Users.Services
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
                             var normalizedUserName = userManager.NormalizeName(val);
-                            query.With<UserIndex>(x => x.NormalizedUserName.IsNotIn<UserIndex>(s => s.NormalizedUserName, w => w.NormalizedUserName.Contains(normalizedUserName)));
+                            query.With<UserIndex>(x => x.NormalizedUserName.NotContains(normalizedUserName));
 
                             return new ValueTask<IQuery<User>>(query);
                         })
@@ -145,7 +145,7 @@ namespace OrchardCore.Users.Services
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
                             var normalizedEmail = userManager.NormalizeEmail(val);
-                            query.With<UserIndex>(x => x.NormalizedEmail.IsNotIn<UserIndex>(s => s.NormalizedEmail, w => w.NormalizedEmail.Contains(normalizedEmail)));
+                            query.With<UserIndex>(x => x.NormalizedEmail.NotContains(normalizedEmail));
 
                             return new ValueTask<IQuery<User>>(query);
                         })

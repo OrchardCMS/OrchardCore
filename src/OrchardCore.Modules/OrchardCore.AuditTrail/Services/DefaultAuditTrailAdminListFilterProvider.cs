@@ -187,7 +187,7 @@ namespace OrchardCore.AuditTrail.Services
                             var context = (AuditTrailQueryContext)ctx;
                             var lookupNormalizer = context.ServiceProvider.GetRequiredService<ILookupNormalizer>();
                             var normalizedUserName = lookupNormalizer.NormalizeName(val);
-                            query.With<AuditTrailEventIndex>(x => x.NormalizedUserName.IsNotIn<AuditTrailEventIndex>(s => s.NormalizedUserName, w => w.NormalizedUserName.Contains(normalizedUserName)));
+                            query.With<AuditTrailEventIndex>(x => x.NormalizedUserName.NotContains(normalizedUserName));
 
                             return new ValueTask<IQuery<AuditTrailEvent>>(query);
                         }
@@ -203,7 +203,7 @@ namespace OrchardCore.AuditTrail.Services
                         },
                         (val, query) =>
                         {
-                            query.With<AuditTrailEventIndex>(x => x.UserId.IsNotIn<AuditTrailEventIndex>(s => s.UserId, w => w.UserId.Contains(val)));
+                            query.With<AuditTrailEventIndex>(x => x.UserId.NotContains(val));
 
                             return query;
                         }

@@ -13,8 +13,8 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.ViewModels;
-using YesSql.Filters.Query;
 using YesSql;
+using YesSql.Filters.Query;
 using YesSql.Services;
 
 namespace OrchardCore.Contents.Services
@@ -48,13 +48,13 @@ namespace OrchardCore.Contents.Services
                                     break;
                                 default:
                                     query.With<ContentItemIndex>(x => x.Latest);
-                                    break;                                    
+                                    break;
                             }
                         }
                         else
                         {
                             // Draft is the default value.
-                            query.With<ContentItemIndex>(x => x.Latest);                        
+                            query.With<ContentItemIndex>(x => x.Latest);
                         }
 
                         return new ValueTask<IQuery<ContentItem>>(query);
@@ -215,7 +215,7 @@ namespace OrchardCore.Contents.Services
 
                         return query;
                     })
-                    .MapTo<ContentOptionsViewModel>((val, model) => 
+                    .MapTo<ContentOptionsViewModel>((val, model) =>
                     {
                         if (!String.IsNullOrEmpty(val))
                         {
@@ -234,11 +234,11 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithDefaultTerm("text", builder => builder
-                        .ManyCondition<ContentItem>(
-                            ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val))),
-                            ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.IsNotIn<ContentItemIndex>(s => s.DisplayText, w => w.DisplayText.Contains(val))))
-                        )
-                    );
+                    .ManyCondition<ContentItem>(
+                        (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
+                        (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.NotContains(val))
+                    )
+                );
         }
     }
 }
