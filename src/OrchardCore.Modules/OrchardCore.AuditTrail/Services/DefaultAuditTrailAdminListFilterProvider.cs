@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Indexes;
+using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.Modules;
+using Parlot;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
-using Parlot;
 
 namespace OrchardCore.AuditTrail.Services
 {

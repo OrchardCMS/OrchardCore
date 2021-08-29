@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
-using OrchardCore.Users.Indexes;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
@@ -60,7 +60,7 @@ namespace OrchardCore.Users.Services
                         if (Enum.TryParse<UsersOrder>(val, true, out var usersOrder))
                         {
                             switch (usersOrder)
-                            {   
+                            {
                                 case UsersOrder.Name:
                                     query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
                                     break;
@@ -71,7 +71,7 @@ namespace OrchardCore.Users.Services
                         }
                         else
                         {
-                            query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);                        
+                            query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
                         }
 
                         return query;
