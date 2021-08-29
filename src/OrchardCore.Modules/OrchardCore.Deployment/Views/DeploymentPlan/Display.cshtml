@@ -7,7 +7,6 @@
 }
 
 <script asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.js" debug-src="~/OrchardCore.Deployment/Scripts/steporder.js" asp-name="step-order" at="Foot" depends-on="sortable, jQuery"></script>
-<style asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.css" debug-src="~/OrchardCore.Deployment/Scripts/steporder.css" asp-name="step-order" at="Foot" depends-on="sortable, jQuery"></style>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plan"])</h1></zone>
 
@@ -40,7 +39,7 @@
 
                 <li class="list-group-item">
                     <div class="d-flex">
-                        <div class="ui-sortable-handle cursor-pointer mr-2"><i class="fas fa-arrows-alt"></i></div>
+                        <div class="ui-sortable-handle cursor-pointer mr-2"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
                         @await DisplayAsync(item)
                     </div>
                 </li>

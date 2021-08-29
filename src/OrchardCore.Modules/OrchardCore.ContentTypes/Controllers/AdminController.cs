@@ -9,13 +9,13 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
 
 namespace OrchardCore.ContentTypes.Controllers
@@ -119,6 +119,11 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!String.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
+            }
+
+            if (viewModel.Name.IsReservedContentName())
+            {
+                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
             }
 
             if (_contentDefinitionService.LoadTypes().Any(t => String.Equals(t.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
@@ -364,6 +369,11 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
 
+            if (viewModel.Name.IsReservedContentName())
+            {
+                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
+            }
+
             if (String.IsNullOrWhiteSpace(viewModel.Name))
             {
                 ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
@@ -467,6 +477,11 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!String.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
+            }
+
+            if (viewModel.Name.IsReservedContentName())
+            {
+                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
             }
 
             if (!ModelState.IsValid)

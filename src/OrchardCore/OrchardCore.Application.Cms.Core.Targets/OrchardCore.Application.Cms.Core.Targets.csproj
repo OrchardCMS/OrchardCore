@@ -40,6 +40,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.AdminMenu\OrchardCore.AdminMenu.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Alias\OrchardCore.Alias.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Apis.GraphQL\OrchardCore.Apis.GraphQL.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.AuditTrail\OrchardCore.AuditTrail.csproj" PrivateAssets="none"/>
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Autoroute\OrchardCore.Autoroute.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.AutoSetup\OrchardCore.AutoSetup.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj" PrivateAssets="none" />
@@ -99,6 +100,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Setup\OrchardCore.Setup.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Sitemaps\OrchardCore.Sitemaps.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Shortcodes\OrchardCore.Shortcodes.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Spatial\OrchardCore.Spatial.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Taxonomies\OrchardCore.Taxonomies.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Templates\OrchardCore.Templates.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Tenants\OrchardCore.Tenants.csproj" PrivateAssets="none" />

@@ -74,7 +74,20 @@ namespace OrchardCore.ReCaptcha.Services
         /// <param name="reportError">Lambda for reporting errors</param>
         public async Task<bool> ValidateCaptchaAsync(Action<string, string> reportError)
         {
-            var reCaptchaResponse = _httpContextAccessor.HttpContext?.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
+            if (!_settings.IsValid())
+            {
+                _logger.LogWarning("The ReCaptcha settings are not valid");
+                return false;
+            }
+
+            // We use the header value as default if it's passed
+            var reCaptchaResponse = _httpContextAccessor.HttpContext?.Request.Headers[Constants.ReCaptchaServerResponseHeaderName];
+
+            // If this is a standard form post we get the token from the form values if not affected previously in the header
+            if(String.IsNullOrEmpty(reCaptchaResponse) && (_httpContextAccessor.HttpContext?.Request.HasFormContentType ?? false))
+            {
+                reCaptchaResponse = _httpContextAccessor.HttpContext.Request.Form[Constants.ReCaptchaServerResponseHeaderName].ToString();
+            }
 
             var isValid = !String.IsNullOrEmpty(reCaptchaResponse) && await VerifyCaptchaResponseAsync(reCaptchaResponse);
 

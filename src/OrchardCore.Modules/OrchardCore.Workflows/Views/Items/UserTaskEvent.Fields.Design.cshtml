@@ -2,7 +2,7 @@
 @model ActivityViewModel<UserTaskEvent>
 
 <header>
-    <h4><i class="fa fa-user-circle"></i>@Model.Activity.GetTitleOrDefault(() => T["User Task"])</h4>
+    <h4><i class="fa fa-user-circle" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["User Task"])</h4>
 </header>
 
 @if (Model.Activity.Actions.Any())

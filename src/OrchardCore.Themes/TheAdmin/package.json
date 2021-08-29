@@ -5,6 +5,7 @@
     "bootstrap": "4.6.0",
     "bootstrap-select": "1.13.18",
     "bootstrap-slider": "11.0.2",
+    "material-icons": "0.7.2",
     "popper.js": "1.16.1"
   }
 }

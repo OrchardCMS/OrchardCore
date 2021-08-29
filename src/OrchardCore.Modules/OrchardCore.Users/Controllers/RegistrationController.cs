@@ -98,9 +98,19 @@ namespace OrchardCore.Users.Controllers
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
+                var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
                 // If we get a user, redirect to returnUrl
-                if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
+                if (iUser is User user)
                 {
+                    if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
+                    {
+                        return RedirectToAction("ConfirmEmailSent", new { ReturnUrl = returnUrl });
+                    }
+                    if (settings.UsersAreModerated && !user.IsEnabled)
+                    {
+                        return RedirectToAction("RegistrationPending", new { ReturnUrl = returnUrl });
+                    }
+
                     return RedirectToLocal(returnUrl);
                 }
             }
@@ -134,6 +144,16 @@ namespace OrchardCore.Users.Controllers
 
             return NotFound();
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ConfirmEmailSent(string returnUrl = null)
+            => View(new { ReturnUrl = returnUrl });
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegistrationPending(string returnUrl = null)
+            => View(new { ReturnUrl = returnUrl });
 
         [Authorize]
         [HttpPost]

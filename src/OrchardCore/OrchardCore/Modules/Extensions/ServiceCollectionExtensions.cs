@@ -8,10 +8,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
@@ -62,6 +66,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddStaticFiles(builder);
 
                 AddRouting(builder);
+                AddEndpointsApiExplorer(builder);
                 AddAntiForgery(builder);
                 AddSameSiteCookieBackwardsCompatibility(builder);
                 AddAuthentication(builder);
@@ -209,8 +214,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.FileProvider = fileProvider;
 
                 var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-
-                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", "public, max-age=2592000, s-max-age=31557600");
+                
+                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}");
 
                 // Cache static files for a year as they are coming from embedded resources and should not vary
                 options.OnPrepareResponse = ctx =>
@@ -252,7 +257,36 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 collection.AddRouting();
             },
-            order: int.MinValue + 100);
+            order: Int32.MinValue + 100);
+        }
+
+        /// <summary>
+        /// Configures ApiExplorer at the tenant level using <see cref="Endpoint.Metadata"/>.
+        /// </summary>
+        private static void AddEndpointsApiExplorer(OrchardCoreBuilder builder)
+        {
+            // 'AddEndpointsApiExplorer()' is called by the host.
+
+            builder.ConfigureServices(collection =>
+            {
+                // Remove the related host singletons as they are not tenant aware.
+                var descriptorsToRemove = collection
+                    .Where(sd => sd is ClonedSingletonDescriptor &&
+                        (sd.ServiceType == typeof(IActionDescriptorCollectionProvider) ||
+                        sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)))
+                    .ToArray();
+
+                foreach (var descriptor in descriptorsToRemove)
+                {
+                    collection.Remove(descriptor);
+                }
+
+#if NET6_0_OR_GREATER
+                // Configure ApiExplorer at the tenant level.
+                collection.AddEndpointsApiExplorer();
+#endif
+            },
+            order: Int32.MinValue + 100);
         }
 
         /// <summary>
@@ -292,7 +326,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return;
                 }
 
-                // Re-register the antiforgery  services to be tenant-aware.
+                // Re-register the antiforgery services to be tenant-aware.
                 var collection = new ServiceCollection()
                     .AddAntiforgery(options =>
                     {
@@ -333,7 +367,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (options.SameSite == SameSiteMode.None)
             {
-                if (string.IsNullOrEmpty(userAgent))
+                if (String.IsNullOrEmpty(userAgent))
                 {
                     return;
                 }

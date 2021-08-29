@@ -166,6 +166,8 @@ namespace OrchardCore.Modules
                         {
                             _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                             context.Exception = ex;
+
+                            await scope.HandleExceptionAsync(ex);
                         }
 
                         await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);

@@ -258,6 +258,7 @@ namespace OrchardCore.ResourceManagement
             {
                 Name = Name,
                 Type = Type,
+                Location = Location,
                 Position = Position
             }
                 .Combine(other)

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -9,15 +8,10 @@ using OrchardCore.Menu.ViewModels;
 
 namespace OrchardCore.Menu.Settings
 {
-    public class HtmlMenuItemPartSettingsDisplayDriver: ContentTypePartDefinitionDisplayDriver
+    public class HtmlMenuItemPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<HtmlMenuItemPart>
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(HtmlMenuItemPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<HtmlMenuItemPartSettingsViewModel>("HtmlMenuItemPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
@@ -29,11 +23,6 @@ namespace OrchardCore.Menu.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(HtmlMenuItemPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new HtmlMenuItemPartSettingsViewModel();
             var settings = new HtmlMenuItemPartSettings();
 

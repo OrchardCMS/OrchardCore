@@ -53,23 +53,25 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
 | js-cookie             | Script | 2.2.1         | jQuery         |
 | popper                | Script | 1.16.1        | -              |
-| bootstrap             | Script | 3.4.0, 4.6.0  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.6.0  | -              |
+| popperjs              | Script | 2.9.3         | -              |
+| bootstrap             | Script | 4.6.0         | popper         |
+| bootstrap             | Script | 5.1.0         | popperjs       |
+| bootstrap             | Style  | 4.6.0, 5.1.0  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.61.0        | -              |
-| codemirror            | Style  | 5.61.0        | -              |
-| font-awesome          | Style  | 4.7.0, 5.15.3 | -              |
-| font-awesome          | Script | 5.15.3        | -              |
-| font-awesome-v4-shims | Script | 5.15.3        | -              |
+| codemirror            | Script | 5.62.2        | -              |
+| codemirror            | Style  | 5.62.2        | -              |
+| font-awesome          | Style  | 5.15.4        | -              |
+| font-awesome          | Script | 5.15.4        | -              |
+| font-awesome-v4-shims | Script | 5.15.4        | -              |
 | Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Script | 2.23.0        | -              |
+| trumbowyg             | Script | 2.25.1        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.23.0        | -              |
-| monaco                | Script | 0.23.0        | monaco-loader  |
+| monaco-loader         | Script | 0.26.1        | -              |
+| monaco                | Script | 0.26.1        | monaco-loader  |
 
 ### Registering a Resource Manifest
 
@@ -111,9 +113,37 @@ We set the Cdn Integrity Hashes and the version to `3.4.1`
 
 This script will then be available for the tag helper or API to register by name. 
 
+Additionally, we can use the `SetDependencies` method to ensure the script or style is loaded after their dependency. 
+
+```csharp
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+{
+    private static ResourceManifest _manifest;
+
+    static ResourceManagementOptionsConfiguration()
+    {
+        _manifest = new ResourceManifest();
+
+        _manifest
+            .DefineStyle("ModuleName-Bootstrap-Select")
+            .SetUrl("~/ModuleName/bootstrap-select.min.css", "~/ModuleName/bootstrap-select.css")
+            .SetDependencies("bootstrap:4");
+    }
+
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
+
+```
+
+In this example, we define a style that depends on Bootstrap version 4. In this case, the latest available minor version of bootstrap version 4 will be added. Alternatively, you can set a specific version of your choice or the latest version available. [See Inline definition](#inline-definition) for more details about versioning usage.
+
 !!! note "Registration"
     Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
     `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
+  
 
 ## Usage
 

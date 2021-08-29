@@ -633,7 +633,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function quasi(type, value) {
       if (type != "quasi") return pass();
       if (value.slice(value.length - 2) != "${") return cont(quasi);
-      return cont(expression, continueQuasi);
+      return cont(maybeexpression, continueQuasi);
     }
 
     function continueQuasi(type) {
@@ -804,6 +804,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (type == "{") return cont(pushlex("}"), typeprops, poplex, afterType);
       if (type == "(") return cont(commasep(typearg, ")"), maybeReturnType, afterType);
       if (type == "<") return cont(commasep(typeexpr, ">"), typeexpr);
+
+      if (type == "quasi") {
+        return pass(quasiType, afterType);
+      }
     }
 
     function maybeReturnType(type) {
@@ -830,6 +834,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return pass(functiondecl, typeprop);
       } else if (!type.match(/[;\}\)\],]/)) {
         return cont();
+      }
+    }
+
+    function quasiType(type, value) {
+      if (type != "quasi") return pass();
+      if (value.slice(value.length - 2) != "${") return cont(quasiType);
+      return cont(typeexpr, continueQuasiType);
+    }
+
+    function continueQuasiType(type) {
+      if (type == "}") {
+        cx.marked = "string-2";
+        cx.state.tokenize = tokenQuasi;
+        return cont(quasiType);
       }
     }
 
@@ -1044,6 +1062,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     function classfield(type, value) {
+      if (value == "!") return cont(classfield);
       if (value == "?") return cont(classfield);
       if (type == ":") return cont(typeexpr, maybeAssign);
       if (value == "=") return cont(expressionNoComma);
@@ -1190,8 +1209,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       jsonMode: jsonMode,
       expressionAllowed: expressionAllowed,
       skipExpression: function skipExpression(state) {
-        var top = state.cc[state.cc.length - 1];
-        if (top == expression || top == expressionNoComma) state.cc.pop();
+        parseJS(state, "atom", "atom", "true", new CodeMirror.StringStream("", 2, null));
       }
     };
   });
