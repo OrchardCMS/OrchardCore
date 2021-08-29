@@ -468,7 +468,7 @@ The following properties are available on the `Request` object.
 | `Protocol` | `https` | The protocol of this request. |
 | `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The unescaped path of the request. |
 | `UriPath` | `/OrchardCore.ContentPreview/Preview/Render` | The path escaped in a way which is correct for combining into the URI representation. |
-| `PathBase` | `/mytenant` | The unescaped base path of the request, unescaped. |
+| `PathBase` | `/mytenant` | The unescaped base path of the request. |
 | `UriPathBase` | `/mytenant` | The base path escaped in a way which is correct for combining into the URI representation. |
 | `Host` | `localhost:44300` | The unescaped `Host` header. May contain the port. |
 | `UriHost` | `localhost:44300` | The `Host` header properly formatted and encoded for use in a URI in a HTTP header. |
