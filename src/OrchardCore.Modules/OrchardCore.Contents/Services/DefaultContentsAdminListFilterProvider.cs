@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Services
         {
             builder
                 .WithNamedTerm("status", builder => builder
-                    .OneCondition<ContentItem>((val, query, ctx) =>
+                    .OneCondition((val, query, ctx) =>
                     {
                         var context = (ContentQueryContext)ctx;
                         if (Enum.TryParse<ContentsStatus>(val, true, out var contentsStatus))
@@ -78,7 +78,7 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithNamedTerm("sort", builder => builder
-                    .OneCondition<ContentItem>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (Enum.TryParse<ContentsOrder>(val, true, out var contentsOrder))
                         {
@@ -125,7 +125,7 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithNamedTerm("type", builder => builder
-                    .OneCondition<ContentItem>(async (contentType, query, ctx) =>
+                    .OneCondition(async (contentType, query, ctx) =>
                     {
                         var context = (ContentQueryContext)ctx;
                         var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -234,7 +234,7 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithDefaultTerm("text", builder => builder
-                    .ManyCondition<ContentItem>(
+                    .ManyCondition(
                         (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
                         (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.NotContains(val))
                     )

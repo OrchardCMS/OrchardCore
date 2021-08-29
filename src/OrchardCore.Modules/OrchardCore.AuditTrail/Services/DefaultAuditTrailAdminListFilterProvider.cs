@@ -30,7 +30,7 @@ namespace OrchardCore.AuditTrail.Services
         {
             builder
                 .WithNamedTerm("id", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (!String.IsNullOrEmpty(val))
                         {
@@ -53,7 +53,7 @@ namespace OrchardCore.AuditTrail.Services
                     })
                 )
                 .WithNamedTerm("category", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (!String.IsNullOrEmpty(val))
                         {
@@ -99,7 +99,7 @@ namespace OrchardCore.AuditTrail.Services
                     })
                 )
                 .WithNamedTerm("date", builder => builder
-                    .OneCondition<AuditTrailEvent>(async (val, query, ctx) =>
+                    .OneCondition(async (val, query, ctx) =>
                     {
                         if (String.IsNullOrEmpty(val))
                         {
@@ -139,7 +139,7 @@ namespace OrchardCore.AuditTrail.Services
                     })
                 )
                 .WithNamedTerm("sort", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query, ctx) =>
+                    .OneCondition((val, query, ctx) =>
                     {
                         var context = (AuditTrailQueryContext)ctx;
                         var options = context.ServiceProvider.GetRequiredService<IOptions<AuditTrailAdminListOptions>>().Value;
@@ -172,7 +172,7 @@ namespace OrchardCore.AuditTrail.Services
                     .AlwaysRun()
                 )
                 .WithDefaultTerm("username", builder => builder
-                    .ManyCondition<AuditTrailEvent>(
+                    .ManyCondition(
                         (val, query, ctx) =>
                         {
                             var context = (AuditTrailQueryContext)ctx;
@@ -194,7 +194,7 @@ namespace OrchardCore.AuditTrail.Services
                     )
                 )
                 .WithNamedTerm("userid", builder => builder
-                    .ManyCondition<AuditTrailEvent>(
+                    .ManyCondition(
                         (val, query) =>
                         {
                             query.With<AuditTrailEventIndex>(x => x.UserId.Contains(val));

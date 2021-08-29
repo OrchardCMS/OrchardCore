@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Services
         {
             builder
                 .WithNamedTerm("status", builder => builder
-                    .OneCondition<User>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (Enum.TryParse<UsersFilter>(val, true, out var usersStatus))
                         {
@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Services
                     })
                 )
                 .WithNamedTerm("sort", builder => builder
-                    .OneCondition<User>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (Enum.TryParse<UsersOrder>(val, true, out var usersOrder))
                         {
@@ -95,7 +95,7 @@ namespace OrchardCore.Users.Services
                     .AlwaysRun()
                 )
                 .WithNamedTerm("role", builder => builder
-                    .OneCondition<User>((val, query, ctx) =>
+                    .OneCondition((val, query, ctx) =>
                     {
                         var context = (UserQueryContext)ctx;
                         var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -108,7 +108,7 @@ namespace OrchardCore.Users.Services
                     .MapFrom<UserIndexOptions>((model) => (!String.IsNullOrEmpty(model.SelectedRole), model.SelectedRole))
                 )
                 .WithDefaultTerm("name", builder => builder
-                    .ManyCondition<User>(
+                    .ManyCondition(
                         ((val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
@@ -130,7 +130,7 @@ namespace OrchardCore.Users.Services
                     )
                 )
                 .WithNamedTerm("email", builder => builder
-                    .ManyCondition<User>(
+                    .ManyCondition(
                         ((val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
