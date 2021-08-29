@@ -7,6 +7,7 @@
     "install:orchardcore.admindashboard": "cd src/OrchardCore.Modules/OrchardCore.AdminDashboard && npm install",
     "install:orchardcore.adminmenu": "cd src/OrchardCore.Modules/OrchardCore.AdminMenu && npm install",
     "install:orchardcore.apis.graphql": "cd src/OrchardCore.Modules/OrchardCore.Apis.GraphQL && npm install",
+    "install:orchardcore.liquid": "cd src/OrchardCore.Modules/OrchardCore.Liquid && npm install",
     "install:orchardcore.markdown": "cd src/OrchardCore.Modules/OrchardCore.Markdown && npm install",
     "install:orchardcore.media": "cd src/OrchardCore.Modules/OrchardCore.Media && npm install",
     "install:orchardcore.resources": "cd src/OrchardCore.Modules/OrchardCore.Resources && npm install",

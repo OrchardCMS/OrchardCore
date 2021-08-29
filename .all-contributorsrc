@@ -2389,6 +2389,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "kaipm",
+      "name": "Martin Kaip",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16665420?v=4",
+      "profile": "http://www.trend-fox.at/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
