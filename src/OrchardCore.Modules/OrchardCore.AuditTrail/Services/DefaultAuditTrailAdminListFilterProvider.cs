@@ -76,7 +76,7 @@ namespace OrchardCore.AuditTrail.Services
                     })
                 )
                 .WithNamedTerm("event", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (!String.IsNullOrEmpty(val))
                         {

@@ -109,7 +109,7 @@ namespace OrchardCore.Users.Services
                 )
                 .WithDefaultTerm("name", builder => builder
                     .ManyCondition(
-                        ((val, query, ctx) =>
+                        (val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -117,8 +117,8 @@ namespace OrchardCore.Users.Services
                             query.With<UserIndex>(x => x.NormalizedUserName.Contains(normalizedUserName));
 
                             return new ValueTask<IQuery<User>>(query);
-                        }),
-                        ((val, query, ctx) =>
+                        },
+                        (val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -126,12 +126,12 @@ namespace OrchardCore.Users.Services
                             query.With<UserIndex>(x => x.NormalizedUserName.NotContains(normalizedUserName));
 
                             return new ValueTask<IQuery<User>>(query);
-                        })
+                        }
                     )
                 )
                 .WithNamedTerm("email", builder => builder
                     .ManyCondition(
-                        ((val, query, ctx) =>
+                        (val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -139,8 +139,8 @@ namespace OrchardCore.Users.Services
                             query.With<UserIndex>(x => x.NormalizedEmail.Contains(normalizedEmail));
 
                             return new ValueTask<IQuery<User>>(query);
-                        }),
-                        ((val, query, ctx) =>
+                        },
+                        (val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -148,7 +148,7 @@ namespace OrchardCore.Users.Services
                             query.With<UserIndex>(x => x.NormalizedEmail.NotContains(normalizedEmail));
 
                             return new ValueTask<IQuery<User>>(query);
-                        })
+                        }
                     )
                 );
 
