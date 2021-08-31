@@ -15,13 +15,14 @@ $(function () {
   $(document).on('click', '.add-widget', function (event) {
     var type = $(this).data("widget-type");
     var targetId = $(this).data("target-id");
+    var htmlFieldPrefix = $(this).data("html-field-prefix");
     var createEditorUrl = $('#' + targetId).data("buildeditorurl");
     var prefixesName = $(this).data("prefixes-name");
     var flowmetadata = $(this).data("flowmetadata");
     var parentContentType = $(this).data("parent-content-type");
     var partName = $(this).data("part-name"); // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
 
-    var prefix = partName + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
+    var prefix = htmlFieldPrefix + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
     var contentTypesName = $(this).data("contenttypes-name");
     $.ajax({
       url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
@@ -38,13 +39,14 @@ $(function () {
     var type = $(this).data("widget-type");
     var target = $(this).closest('.widget-template');
     var targetId = $(this).data("target-id");
+    var htmlFieldPrefix = $(this).data("html-field-prefix");
     var createEditorUrl = $('#' + targetId).data("buildeditorurl");
     var flowmetadata = $(this).data("flowmetadata");
     var prefixesName = $(this).data("prefixes-name");
     var parentContentType = $(this).data("parent-content-type");
     var partName = $(this).data("part-name"); // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
 
-    var prefix = partName + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
+    var prefix = htmlFieldPrefix + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
     var contentTypesName = $(this).data("contenttypes-name");
     $.ajax({
       url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName

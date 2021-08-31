@@ -10,6 +10,7 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
+    var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
     var parentContentType = Model.WidgetsListPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
@@ -54,7 +55,8 @@
                                     CanDelete: true,
                                     //Input hidden
                                     //Prefixes
-                                    PrefixValue: partName + '-' + zone + '-' + (index++).ToString(),
+                                    HtmlFieldPrefix: htmlFieldPrefix,
+                                    PrefixValue: htmlFieldPrefix + '-' + zone + '-' + (index++).ToString(),
                                     PrefixesId: Html.IdFor(x => x.Prefixes),
                                     PrefixesName: Html.NameFor(x => x.Prefixes),
                                     //Content Types
@@ -134,10 +136,12 @@
                                     {
                                         <a class="dropdown-item add-list-widget btn-sm"
                                            data-target-id="@widgetTemplatePlaceholderId"
+                                           data-html-field-prefix="@htmlFieldPrefix"
                                            data-zones-name="@Html.NameFor(x => x.Zones)"
                                            data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
                                            data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
                                            data-widget-type="@type.Name"
+                                           data-parent-content-type="@parentContentType"
                                            data-part-name="@partName"
                                            data-zone="@zone"
                                            href="javascript:;">@type.DisplayName</a>

@@ -29,10 +29,13 @@
                         {
                             <a class="dropdown-item insert-list-widget btn-sm"
                                data-target-id="@Model.TargetId"
+                               data-html-field-prefix="@Model.HtmlFieldPrefix"
                                data-prefixes-name="@Model.PrefixesName"
                                data-zones-name="@Model.ZonesName"
                                data-contenttypes-name="@Model.ContentTypesName"
                                data-widget-type="@type.Name"
+                               data-parent-content-type="@Model.ParentContentType"
+                               data-part-name="@Model.CollectionPartName"
                                data-zone="@Model.ZoneValue"
                                href="javascript:;">@type.DisplayName</a>
                         }

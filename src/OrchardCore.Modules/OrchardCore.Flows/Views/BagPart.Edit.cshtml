@@ -10,6 +10,7 @@
 
 @{
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
+    var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
     var parentContentType = Model.BagPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
 }
@@ -39,7 +40,8 @@
                     CanDelete: true,
                     //Input hidden
                     //Prefixes
-                    PrefixValue: partName + '-' + (index++).ToString(),
+                    HtmlFieldPrefix: htmlFieldPrefix,
+                    PrefixValue: htmlFieldPrefix + '-' + (index++).ToString(),
                     PrefixesId: Html.IdFor(x => x.Prefixes),
                     PrefixesName: Html.NameFor(x => x.Prefixes),
                     //Content Types
@@ -60,6 +62,7 @@
             {
                 <a class="dropdown-item add-widget  btn-sm"
                    data-target-id="@widgetTemplatePlaceholderId"
+                   data-html-field-prefix="@htmlFieldPrefix"
                    data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
                    data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
                    data-widget-type="@type.Name"
