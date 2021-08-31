@@ -7,6 +7,7 @@
     "install:orchardcore.admindashboard": "cd src/OrchardCore.Modules/OrchardCore.AdminDashboard && npm install",
     "install:orchardcore.adminmenu": "cd src/OrchardCore.Modules/OrchardCore.AdminMenu && npm install",
     "install:orchardcore.apis.graphql": "cd src/OrchardCore.Modules/OrchardCore.Apis.GraphQL && npm install",
+    "install:orchardcore.audittrail": "cd src/OrchardCore.Modules/OrchardCore.AuditTrail && npm install",
     "install:orchardcore.liquid": "cd src/OrchardCore.Modules/OrchardCore.Liquid && npm install",
     "install:orchardcore.markdown": "cd src/OrchardCore.Modules/OrchardCore.Markdown && npm install",
     "install:orchardcore.media": "cd src/OrchardCore.Modules/OrchardCore.Media && npm install",
@@ -16,7 +17,6 @@
     "install:orchardcore.themes": "cd src/OrchardCore.Modules/OrchardCore.Themes && npm install",
     "install:orchardcore.shortcodes": "cd src/OrchardCore.Modules/OrchardCore.Shortcodes && npm install",
     "install:orchardcore.workflows": "cd src/OrchardCore.Modules/OrchardCore.Workflows && npm install",
-    "install:orchardcore.audittrail": "cd src/OrchardCore.Modules/OrchardCore.AuditTrail && npm install",
     "install:orchardcore.theadmin": "cd src/OrchardCore.Themes/TheAdmin && npm install",
     "install:orchardcore.theagencytheme": "cd src/OrchardCore.Themes/TheAgencyTheme && npm install",
     "install:orchardcore.theblogtheme": "cd src/OrchardCore.Themes/TheBlogTheme && npm install",
@@ -25,13 +25,13 @@
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.6",
-    "@babel/preset-env": "^7.14.7",
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
     "@babel/preset-flow": "7.14.5",
     "all-contributors-cli": "^6.20.0",
     "es6-promise": "4.2.8",
     "glob": "^7.1.7",
-    "graceful-fs": "4.2.6",
+    "graceful-fs": "4.2.8",
     "gulp": "^4.0.2",
     "gulp-babel": "8.0.0",
     "gulp-cli": "^2.3.0",
@@ -45,7 +45,7 @@
     "gulp-minifier": "^3.5.0",
     "gulp-newer": "1.4.0",
     "gulp-plumber": "1.2.1",
-    "gulp-postcss": "^9.0.0",
+    "gulp-postcss": "^9.0.1",
     "gulp-print": "5.0.2",
     "gulp-rename": "2.0.0",
     "gulp-sourcemaps": "^3.0.0",
@@ -55,9 +55,9 @@
     "merge-stream": "2.0.0",
     "npm-run-all": "^4.1.5",
     "path-posix": "1.0.0",
-    "postcss": "8.3.5",
+    "postcss": "8.3.6",
     "postcss-rtl": "^1.7.3",
-    "rtlcss": "3.2.1",
-    "typescript": "^4.3.5"
+    "rtlcss": "3.3.0",
+    "typescript": "^4.4.2"
   }
 }
