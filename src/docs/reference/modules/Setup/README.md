@@ -107,3 +107,8 @@ This is to allow access to resources when an internet connection is not availabl
 
 !!! note
     It is recommended to enable the CDN setting after setup.
+    
+## Related information
+Please refer to separate sections for additional information on setup:
+
+- [Auto Setup - how to predefine setup parameters when deploying an empty site](../AutoSetup/README.md)
