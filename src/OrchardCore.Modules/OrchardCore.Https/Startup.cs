@@ -50,10 +50,7 @@ namespace OrchardCore.Https
                         options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
                     }
 
-                    if (settings.SslPort != null)
-                    {
-                        options.HttpsPort = settings.SslPort;
-                    }
+                    options.HttpsPort = settings.SslPort;
                 });
 
             services.AddHsts(options =>
