@@ -4,7 +4,9 @@ The auto-setup module allows to automatically install the application/tenants on
 
 ## JSON Configuration Parameters
 
+Auto-Setup parameters are defined in appsettings.json. Example excerpt:
 ```json
+"OrchardCore": {
     "OrchardCore_AutoSetup": {
     "AutoSetupPath": "",
     "Tenants": [
