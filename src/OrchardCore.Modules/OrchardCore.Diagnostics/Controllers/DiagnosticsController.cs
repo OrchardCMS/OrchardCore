@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OrchardCore.Diagnostics.Controllers
 {
+    [IgnoreAntiforgeryToken]
     public class DiagnosticsController : Controller
     {
         public IActionResult Error(int? status)
