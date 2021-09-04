@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OrchardCore.Diagnostics.Controllers
 {
-    [IgnoreAntiforgeryToken]
     public class DiagnosticsController : Controller
     {
+        [IgnoreAntiforgeryToken]
         public IActionResult Error(int? status)
         {
             // Most commonly used error messages
