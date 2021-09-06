@@ -36,9 +36,9 @@ namespace OrchardCore.Modules
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogInformation("Begin Routing Request");
+                _logger.LogDebug("Begin Routing Request");
             }
 
             var shellContext = ShellScope.Context;
