@@ -51,7 +51,7 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
-| js-cookie             | Script | 3.0.0         | jQuery         |
+| js-cookie             | Script | 3.0.1         | jQuery         |
 | popper                | Script | 1.16.1        | -              |
 | popperjs              | Script | 2.9.2         | -              |
 | bootstrap             | Script | 4.6.0         | popper         |

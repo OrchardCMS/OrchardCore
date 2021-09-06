@@ -5,7 +5,7 @@
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-/*! js-cookie v3.0.0 | MIT */
+/*! js-cookie v3.0.1 | MIT */
 ;
 
 (function (global, factory) {
@@ -40,6 +40,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   var defaultConverter = {
     read: function read(value) {
+      if (value[0] === '"') {
+        value = value.slice(1, -1);
+      }
+
       return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
     },
     write: function write(value) {
@@ -67,7 +71,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       key = encodeURIComponent(key).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
-      value = converter.write(value, key);
       var stringifiedAttributes = '';
 
       for (var attributeName in attributes) {
@@ -91,7 +94,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
       }
 
-      return document.cookie = key + '=' + value + stringifiedAttributes;
+      return document.cookie = key + '=' + converter.write(value, key) + stringifiedAttributes;
     }
 
     function get(key) {
@@ -108,12 +111,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var parts = cookies[i].split('=');
         var value = parts.slice(1).join('=');
 
-        if (value[0] === '"') {
-          value = value.slice(1, -1);
-        }
-
         try {
-          var foundKey = defaultConverter.read(parts[0]);
+          var foundKey = decodeURIComponent(parts[0]);
           jar[foundKey] = converter.read(value, foundKey);
 
           if (key === foundKey) {
