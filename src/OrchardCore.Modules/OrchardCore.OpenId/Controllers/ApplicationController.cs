@@ -32,6 +32,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IHtmlLocalizer H;
         private readonly ISiteService _siteService;
         private readonly IOpenIdApplicationManager _applicationManager;
+        private readonly IOpenIdScopeManager _scopeManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly dynamic New;
@@ -42,6 +43,7 @@ namespace OrchardCore.OpenId.Controllers
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
             IOpenIdApplicationManager applicationManager,
+            IOpenIdScopeManager scopeManager,
             IHtmlLocalizer<ApplicationController> htmlLocalizer,
             INotifier notifier,
             ShellDescriptor shellDescriptor)
@@ -52,6 +54,7 @@ namespace OrchardCore.OpenId.Controllers
             H = htmlLocalizer;
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
+            _scopeManager = scopeManager;
             _notifier = notifier;
             _shellDescriptor = shellDescriptor;
         }
@@ -110,6 +113,14 @@ namespace OrchardCore.OpenId.Controllers
                 _notifier.Warning(H["There are no registered services to provide roles."]);
             }
 
+            await foreach (var scope in _scopeManager.ListAsync(null, null, default))
+            {
+                model.ScopeEntries.Add(new CreateOpenIdApplicationViewModel.ScopeEntry
+                {
+                    Name = await _scopeManager.GetNameAsync(scope)
+                });
+            }
+            
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
@@ -226,11 +237,15 @@ namespace OrchardCore.OpenId.Controllers
                 .Where(role => role.Selected)
                 .Select(role => role.Name));
 
+            descriptor.Permissions.UnionWith(model.ScopeEntries
+                .Where(scope => scope.Selected)
+                .Select(scope => OpenIddictConstants.Permissions.Prefixes.Scope + scope.Name));
+
             await _applicationManager.CreateAsync(descriptor);
 
             if (string.IsNullOrEmpty(returnUrl))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             return LocalRedirect(returnUrl);
@@ -285,6 +300,17 @@ namespace OrchardCore.OpenId.Controllers
             else
             {
                 _notifier.Warning(H["There are no registered services to provide roles."]);
+            }
+
+            var permissions = await _applicationManager.GetPermissionsAsync(application);
+            await foreach (var scope in _scopeManager.ListAsync())
+            {
+                var scopeName = await _scopeManager.GetNameAsync(scope);
+                model.ScopeEntries.Add(new EditOpenIdApplicationViewModel.ScopeEntry
+                {
+                    Name = scopeName,
+                    Selected = await _applicationManager.HasPermissionAsync(application, OpenIddictConstants.Permissions.Prefixes.Scope + scopeName)
+                });
             }
 
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
@@ -483,11 +509,19 @@ namespace OrchardCore.OpenId.Controllers
 
             descriptor.Roles.Clear();
 
-            foreach (string selectedRole in (model.RoleEntries
+            foreach (var selectedRole in (model.RoleEntries
                 .Where(role => role.Selected)
                 .Select(role => role.Name)))
             {
                 descriptor.Roles.Add(selectedRole);
+            }
+
+            descriptor.Permissions.RemoveWhere(permission => permission.StartsWith(OpenIddictConstants.Permissions.Prefixes.Scope));
+            foreach (var selectedScope in (model.ScopeEntries
+                .Where(scope => scope.Selected)
+                .Select(scope => scope.Name)))
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Prefixes.Scope + selectedScope);
             }
 
             descriptor.PostLogoutRedirectUris.Clear();
@@ -510,7 +544,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (string.IsNullOrEmpty(returnUrl))
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             return LocalRedirect(returnUrl);

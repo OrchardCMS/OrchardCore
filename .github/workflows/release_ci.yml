@@ -5,8 +5,9 @@ on:
       - '**/*.md'
       - 'mkdocs.yml'
       - 'src/docs/**/*'
-    branches:
-      - 'dev'
+    tags: 
+      - 'v*.*.*'
+
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -20,20 +21,24 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "15"
     - name: Setup .NET Core 3.1 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.*
     - name: Setup .NET Core 5.0 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.*
     - name: Set build number 
       if: matrix.os == 'ubuntu-latest'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
     - name: Build
       run: |
-        dotnet build --configuration Release
+        dotnet build --configuration Release --framework net5.0
+        dotnet build --configuration Release --framework netcoreapp3.1
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
@@ -50,34 +55,44 @@ jobs:
         name: Functional Test failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
-    - name: Deploy preview nuget packages
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+    - name: Deploy release NuGet packages
       if: matrix.os == 'ubuntu-latest'
       run: |
-        dotnet pack -c Release --no-restore --no-build
-        dotnet nuget push './src/**/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
+        arrTag=(${GITHUB_REF//\// })
+        VERSION="${arrTag[2]}"
+        VERSION="${VERSION//v}"
+        dotnet pack -c Release --no-restore --no-build -p:Version=$VERSION -p:TreatWarningsAsErrors=false
+        dotnet nuget push './src/**/*.nupkg' -k ${{secrets.NUGET_API_KEY}} -n true -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Login to DockerHub
       if: matrix.os == 'ubuntu-latest'
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: Deploy preview docker image for linux
+    - name: Deploy release docker image for linux
       if: matrix.os == 'ubuntu-latest'
-      # Buildkit Only working in linux
-      env:
-        DOCKER_BUILDKIT: 1
       run: |
+        arrTag=(${GITHUB_REF//\// })
+        VERSION="${arrTag[2]}"
+        VERSION="${VERSION//v}"
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore
-        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
-        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-        docker push orchardproject/orchardcore-cms-linux
+        rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest .
+        docker push orchardproject/orchardcore-cms-linux:latest 
+        docker push "orchardproject/orchardcore-cms-linux:$VERSION"
     - name: Deploy preview docker image for windows
       if: matrix.os == 'windows-latest'
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore
-        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-        docker push orchardproject/orchardcore-cms-windows
+        docker push orchardproject/orchardcore-cms-windows:latest 
+        docker push "orchardproject/orchardcore-cms-windows:$VERSION"
+
+# TODO: 
+# use NuGet
+# enable docker push commands

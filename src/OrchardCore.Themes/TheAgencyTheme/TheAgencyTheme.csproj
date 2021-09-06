@@ -1,24 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-  </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="wwwroot\node_modules\**" />
-    <EmbeddedResource Remove="wwwroot\node_modules\**" />
-    <None Remove="wwwroot\node_modules\**" />
-  </ItemGroup>
+    <!-- NuGet properties-->
+    <Title>The Agency theme</Title>
+    <Description>$(OCCMSDescription)
+
+    Orchard Core CMS theme adapted for agency websites.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Theme</PackageTags>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="**\*.less;**\*.scss;" />
   </ItemGroup>
 
 </Project>

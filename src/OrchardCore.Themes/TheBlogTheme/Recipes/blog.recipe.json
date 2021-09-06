@@ -4,13 +4,14 @@
   "description": "Provides a functional Blog with CMS features.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "blog" ],
 
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
+    "adminUrlPrefix": "[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]",
     "blogContentItemId": "[js:uuid()]",
     "menuContentItemId": "[js:uuid()]",
     "tagsContentItemId": "[js:uuid()]",
@@ -63,8 +64,10 @@
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
+        "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
         "OrchardCore.Taxonomies",
         "OrchardCore.Title",
         "OrchardCore.Templates",
@@ -139,62 +142,6 @@
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
                   "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidPage",
-          "DisplayName": "Liquid Page",
-          "Hidden": false,
-          "Settings": {
-            "ContentTypeSettings": {
-              "Creatable": true,
-              "Draftable": true,
-              "Versionable": true,
-              "Listable": true
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPage",
-              "Name": "LiquidPage",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "AutoroutePartSettings": {
-                  "AllowCustomPath": true,
-                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
-                  "ShowHomepageOption": true
-                },
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
-            },
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "3"
                 }
               }
             },
@@ -380,7 +327,7 @@
           "Name": "Blockquote",
           "DisplayName": "Blockquote",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -400,73 +347,20 @@
           ]
         },
         {
-          "Name": "ImageWidget",
-          "DisplayName": "Image",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Image",
-              "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidWidget",
-          "DisplayName": "Liquid",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Listable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
           "Name": "Image",
           "DisplayName": "Image",
           "Settings": {
             "ContentTypeSettings": {
-              "Versionable": true
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
             }
           },
           "ContentTypePartDefinitionRecords": [
             {
               "PartName": "Image",
               "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
@@ -502,7 +396,7 @@
           "Name": "RawHtml",
           "DisplayName": "Raw Html",
           "Settings": {
-            "ContentTypeSettings": {
+            "ContentTypeSettings": {           
               "Draftable": true,
               "Versionable": true,
               "Securable": true,
@@ -922,8 +816,6 @@
               "Input",
               "Label",
               "LinkMenuItem",
-              "LiquidWidget",
-              "LiquidPage",
               "Menu",
               "Page",
               "Paragraph",
@@ -981,6 +873,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js: uuid()]",
+                "DisplayText": "Home",
                 "LinkMenuItemPart": {
                   "Name": "Home",
                   "Url": "~/"
@@ -989,6 +882,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js: uuid()]",
+                "DisplayText": "About",
                 "LinkMenuItemPart": {
                   "Name": "About",
                   "Url": "~/about"
@@ -1260,15 +1154,15 @@
       "Files": [
         {
           "TargetPath": "about-bg.jpg",
-          "SourcePath": "../wwwroot/img/about-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/about-bg.jpg"
         },
         {
           "TargetPath": "home-bg.jpg",
-          "SourcePath": "../wwwroot/img/home-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/home-bg.jpg"
         },
         {
           "TargetPath": "post-bg.jpg",
-          "SourcePath": "../wwwroot/img/post-bg.jpg"
+          "SourcePath": "../wwwroot/assets/img/post-bg.jpg"
         }
       ]
     },
@@ -1277,12 +1171,32 @@
       "Layers": [
         {
           "Name": "Always",
-          "Rule": "true",
+          "LayerRule": {
+            "ConditionId":"[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
           "Name": "Homepage",
-          "Rule": "isHomepage()",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -1305,14 +1219,15 @@
       "data": [
         {
           "Id": "baef6f85ad13481681cde70ada401333",
-          "Name": "Admin menu from blog recipe",
+          "Name": "Admin menus",
           "Enabled": true,
           "MenuItems": [
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Blog",
-              "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
+              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
               "IconClass": "fas fa-rss",
+              "PermissionNames": [],
               "UniqueId": "7b293d57056a4eebb3713f07f12c65d8",
               "Enabled": true,
               "Text": null,
@@ -1323,17 +1238,15 @@
               "LinkToFirstChild": true,
               "LocalNav": false,
               "Culture": null,
-              "Resource": null,
               "Items": [],
-              "RouteValues": null,
-              "Permissions": [],
               "Classes": []
             },
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Main Menu",
-              "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
+              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
               "IconClass": "fas fa-sitemap",
+              "PermissionNames": [],
               "UniqueId": "5118cecfde834dacb26ac08980f1b5a7",
               "Enabled": true,
               "Text": null,
@@ -1344,16 +1257,14 @@
               "LinkToFirstChild": true,
               "LocalNav": false,
               "Culture": null,
-              "Resource": null,
               "Items": [],
-              "RouteValues": null,
-              "Permissions": [],
               "Classes": []
             },
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Content",
               "IconClass": null,
+              "PermissionNames": [],
               "UniqueId": "3e590d44f8704e4588e272dd966ce291",
               "Enabled": true,
               "Text": null,
@@ -1364,12 +1275,11 @@
               "LinkToFirstChild": true,
               "LocalNav": false,
               "Culture": null,
-              "Resource": null,
               "Items": [
                 {
                   "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
                   "LinkText": "Content Items",
-                  "LinkUrl": "Admin/Contents/ContentItems/",
+                  "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/']",
                   "IconClass": null,
                   "UniqueId": "7b293d57056a4eebb3713f07f12c65d9",
                   "Enabled": true,
@@ -1381,16 +1291,14 @@
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
-                  "Resource": null,
                   "Items": [],
-                  "RouteValues": null,
-                  "Permissions": [],
                   "Classes": []
                 },
                 {
                   "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
                   "LinkText": "Content Types",
                   "IconClass": null,
+                  "PermissionNames": [],
                   "UniqueId": "2f1fc33133334a1abf7d1a0516ee8b4e",
                   "Enabled": true,
                   "Text": null,
@@ -1402,7 +1310,6 @@
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
-                  "Resource": null,
                   "Items": [
                     {
                       "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
@@ -1419,20 +1326,13 @@
                       "LinkToFirstChild": true,
                       "LocalNav": false,
                       "Culture": null,
-                      "Resource": null,
                       "Items": [],
-                      "RouteValues": null,
-                      "Permissions": [],
                       "Classes": []
                     }
                   ],
-                  "RouteValues": null,
-                  "Permissions": [],
                   "Classes": []
                 }
               ],
-              "RouteValues": null,
-              "Permissions": [],
               "Classes": []
             }
           ]

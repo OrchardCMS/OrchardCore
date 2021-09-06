@@ -6,10 +6,10 @@
 @{
     var settings = ViewData[nameof(OpenIdServerSettings)] as OpenIdServerSettings;
 }
-<h1>@RenderTitleSegments(T["Create a new application"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create a new application"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" class="no-multisubmit">
     <div class="form-group" asp-validation-class-for="ClientId">
         <label asp-for="ClientId">@T["Client Id"]</label>
         <input asp-for="ClientId" class="form-control" autofocus />
@@ -132,6 +132,18 @@
                 </ul>
             </div>
         </div>
+    </div>
+
+    <div class="form-group" id="ScopeGroup" name="ScopeGroup">
+        <h6>@T["Allowed Scopes"]</h6>
+        @for (var i = 0; i < Model.ScopeEntries.Count; i++)
+        {
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="ScopeEntries[i].Selected">
+                <input type="hidden" asp-for="ScopeEntries[i].Name">
+                <label class="custom-control-label" asp-for="ScopeEntries[i].Selected">@Model.ScopeEntries[i].Name</label>
+            </div>
+        }
     </div>
 
     <div class="form-group collapse" id="RoleGroup" name="RoleGroup">

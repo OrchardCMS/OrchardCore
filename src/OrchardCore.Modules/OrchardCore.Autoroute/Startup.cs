@@ -1,12 +1,12 @@
 using System;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Handlers;
 using OrchardCore.Autoroute.Indexing;
-using OrchardCore.Autoroute.Liquid;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.Routing;
 using OrchardCore.Autoroute.Services;
@@ -33,19 +33,43 @@ namespace OrchardCore.Autoroute
 {
     public class Startup : StartupBase
     {
-
         public override int ConfigureOrder => -100;
-
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<AutoroutePartViewModel>();
-        }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<AutoroutePartViewModel>();
+
+                o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Slug", (obj, context) =>
+                {
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
+
+                    return new LiquidPropertyAccessor(liquidTemplateContext, async (slug, context) =>
+                    {
+                        var autorouteEntries = context.Services.GetRequiredService<IAutorouteEntries>();
+                        var contentManager = context.Services.GetRequiredService<IContentManager>();
+
+                        if (!slug.StartsWith('/'))
+                        {
+                            slug = "/" + slug;
+                        }
+
+                        (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
+
+                        if (found)
+                        {
+                            return FluidValue.Create(await contentManager.GetAsync(entry.ContentItemId, entry.JsonPath), context.Options);
+                        }
+
+                        return NilValue.Instance;
+                    });
+                });
+            });
+
             // Autoroute Part
             services.AddContentPart<AutoroutePart>()
-                .UseDisplayDriver<AutoroutePartDisplay>()
+                .UseDisplayDriver<AutoroutePartDisplayDriver>()
                 .AddHandler<AutoroutePartHandler>();
 
             services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
@@ -54,13 +78,13 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 
-            services.AddScoped<IScopedIndexProvider, AutoroutePartIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<AutoroutePartIndexProvider>();
+            services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
+            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
 
+            services.AddScoped<IDataMigration, Migrations>();
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
             services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
-
-            services.AddScoped<ILiquidTemplateEventHandler, ContentAutorouteLiquidTemplateEventHandler>();
 
             services.Configure<GraphQLContentOptions>(options =>
             {

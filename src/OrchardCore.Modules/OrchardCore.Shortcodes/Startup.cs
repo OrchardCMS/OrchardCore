@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes.Controllers;
+using OrchardCore.Shortcodes.Deployment;
 using OrchardCore.Shortcodes.Drivers;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.Providers;
+using OrchardCore.Shortcodes.Recipes;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
 using Shortcodes;
 using Sc = Shortcodes;
@@ -24,23 +28,29 @@ namespace OrchardCore.Shortcodes
 {
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ShortcodeViewModel>();
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<Context, object>((obj, name) => obj[name]);
-
-            // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
-            FluidValue.SetTypeMapping<Context>(o => new ObjectValue(o));
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.NamedOrDefault(name));
-
-            // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
-            FluidValue.SetTypeMapping<Sc.Arguments>(o => new ObjectValue(o));
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ShortcodeViewModel>();
+
+                o.MemberAccessStrategy.Register<Context, object>((obj, name) => obj[name]);
+
+                o.ValueConverters.Add(x =>
+                {
+                    return x switch
+                    {
+                        // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
+                        Context c => new ObjectValue(c),
+                        // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
+                        Sc.Arguments a => new ObjectValue(a),
+                        _ => null
+                    };
+                });
+
+                o.MemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.Named(name));
+            });
+
             services.AddScoped<IShortcodeService, ShortcodeService>();
             services.AddScoped<IShortcodeDescriptorManager, ShortcodeDescriptorManager>();
             services.AddScoped<IShortcodeDescriptorProvider, ShortcodeOptionsDescriptorProvider>();
@@ -71,6 +81,8 @@ namespace OrchardCore.Shortcodes
             services.AddScoped<ShortcodeTemplatesManager>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
+            services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
 
             services.AddScoped<IShortcodeProvider, TemplateShortcodeProvider>();
             services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
@@ -122,6 +134,17 @@ namespace OrchardCore.Shortcodes
 </table>";
                 d.Categories = new string[] { "Localization" };
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Shortcodes.Templates")]
+    public class ShortcodeTemplatesDeployementStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
         }
     }
 }

@@ -13,8 +13,7 @@ body:not(.left-sidebar-compact) {
         color: $admin-menu-font-color;
         border-right: $border-content;
         transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-        font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue",
-            Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
         ::-webkit-scrollbar {
             width: 4px;
@@ -27,7 +26,6 @@ body:not(.left-sidebar-compact) {
         figure {
             margin: 0;
         }
-
         // Rotate the chevron's icon when the menu is active
         a[aria-expanded="true"] {
             .chevron {
@@ -68,7 +66,6 @@ body:not(.left-sidebar-compact) {
             position: relative;
             flex: 1 1 auto;
             height: calc(100% - 51px - 38px); // minus footer and search input heights
-
             ul {
                 margin: 0;
                 padding: 0;
@@ -94,21 +91,11 @@ body:not(.left-sidebar-compact) {
                     width: $left-navigation-width;
                     transition: width 0.2s ease-in-out;
                     background-color: $admin-menu-bg-color;
-
-                    &:first-child:after {
-                        content: "";
-                        width: 92%;
-                        height: 1px;
-                        background: rgba(0, 0, 0, 0.1);
-                        display: block;
-                        margin: 0px auto;
-                    }
                 }
 
                 > li > figure > ul > li {
                     line-height: 2.5em;
                 }
-
                 // first level menu items that have no items and are active
                 > li.active:not(.has-items)::before {
                     border-left: 3px solid;
@@ -118,6 +105,15 @@ body:not(.left-sidebar-compact) {
                     left: 0;
                     position: absolute;
                     top: 0;
+                }
+
+                > li.new:after {
+                    content: "";
+                    width: 92%;
+                    height: 1px;
+                    background: rgba(140, 130, 115, 0.13);
+                    display: block;
+                    margin: 0px auto;
                 }
 
                 // changing the padding of the icons on the first level to match
@@ -187,7 +183,6 @@ body:not(.left-sidebar-compact) {
             > li > figure > figcaption > .item-label {
                 width: 100%;
             }
-
             //for accessibility testing
             /*.btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
@@ -319,7 +314,7 @@ body:not(.left-sidebar-compact) {
             content: "";
             width: 92%;
             height: 1px;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(140, 130, 115, 0.13);
             display: block;
             margin: 0px auto;
         }
@@ -328,6 +323,7 @@ body:not(.left-sidebar-compact) {
         #filter:focus {
             border: none;
             box-shadow: unset;
+            border-radius: unset;
         }
     }
 }
@@ -586,39 +582,6 @@ body:not(.left-sidebar-compact) {
                     scrollbar-color: $scrollbar-color $admin-menu-bg-color;
                 }
 
-                @media (max-height: 414px) {
-                    > li.visible {
-                        > figure {
-                            position: static;
-                            z-index: unset;
-
-                            > ul:before {
-                                content: attr(data-title);
-                                padding: 0 20px;
-                                font-size: 14px;
-                                font-weight: bold;
-                            }
-                        }
-                    }
-
-                    > li > figure > ul {
-                        position: absolute;
-                        left: $left-navigation-width-when-compact;
-                        width: $left-navigation-width;
-                        -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                        -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                        height: calc(100vh - 52px);
-                        max-height: unset;
-                        z-index: 1;
-                        overflow-x: hidden;
-                        overflow-y: auto;
-                        scrollbar-width: thin;
-                        scrollbar-color: $scrollbar-color $admin-menu-bg-color;
-                        top: 0px;
-                    }
-                }
-
                 > li > figure > ul li .item-label:hover {
                     background-color: rgba(0, 0, 0, 0.05);
                 }
@@ -713,7 +676,7 @@ body:not(.left-sidebar-compact) {
 
         li > figure > ul > li.active ul > li.active .item-label {
             background: rgba(0, 0, 0, 0.05);
-            color: rgba(0, 0, 0, 0.9) !important;
+            color: rgba($admin-menu-item-font-color-active, 0.9) !important;
             font-weight: 600;
             padding-left: (2 * $link-padding-left + 16) !important;
         }
@@ -846,6 +809,60 @@ body:not(.left-sidebar-compact) {
         #filter,
         #filter:focus {
             display: none;
+        }
+    }
+}
+
+// Left sidebar when compacted with a scrollbar
+.left-sidebar-compact.scroll {
+    #ta-left-sidebar {
+        #left-nav {
+            > ul {
+                > li.visible {
+                    > figure {
+                        position: static;
+                        z-index: unset;
+
+                        > ul:before {
+                            content: attr(data-title);
+                            padding: 0 20px;
+                            font-size: 14px;
+                            font-weight: bold;
+                            width: 100%;
+                            display: block;
+                        }
+
+                        > ul > li:first-child::before
+                        {
+                            background: rgba(0, 0, 0, 0.1);
+                            margin: 0px auto;
+                            content: "";
+                            height: 1px;
+                            display: block;
+                            position: absolute;
+                            width: 90%;
+                            left: 15px;
+                        }
+                    }
+                }
+
+                > li > figure > ul {
+                    position: absolute;
+                    left: $left-navigation-width-when-compact;
+                    width: $left-navigation-width;
+                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+                    height: calc(100vh - 52px);
+                    max-height: unset;
+                    z-index: 1;
+                    overflow-x: hidden;
+                    overflow-y: auto;
+                    scrollbar-width: thin;
+                    scrollbar-color: $scrollbar-color $admin-menu-bg-color;
+                    top: 0px;
+                }
+            }
         }
     }
 }

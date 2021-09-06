@@ -1,11 +1,21 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Lucene.QueryProviders.Filters;
 
 namespace OrchardCore.Lucene.QueryProviders
 {
     public class BooleanQueryProvider : ILuceneQueryProvider
     {
+        private readonly IEnumerable<ILuceneBooleanFilterProvider> _filters;
+
+        public BooleanQueryProvider(IEnumerable<ILuceneBooleanFilterProvider> filters)
+        {
+            _filters = filters;
+        }
+
         public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
         {
             if (type != "bool")
@@ -40,6 +50,8 @@ namespace OrchardCore.Lucene.QueryProviders
                         boolQuery.MinimumNumberShouldMatch = property.Value.Value<int>();
                         isProps = true;
                         break;
+                    case "filter":
+                        return CreateFilteredQuery(builder, context, boolQuery, property.Value);
                     default: throw new ArgumentException($"Invalid property '{property.Name}' in boolean query");
                 }
 
@@ -66,6 +78,48 @@ namespace OrchardCore.Lucene.QueryProviders
             }
 
             return boolQuery;
+        }
+
+        private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JToken filter)
+        {
+            Query filteredQuery = null;
+            var queryObj = filter as JObject;
+
+            switch (filter.Type)
+            {
+                case JTokenType.Object:
+                    var first = queryObj.Properties().First();
+
+                    foreach (var queryProvider in _filters)
+                    {
+                        filteredQuery = queryProvider.CreateFilteredQuery(builder, context, first.Name, first.Value, query);
+
+                        if (filteredQuery != null)
+                        {
+                            break;
+                        }
+                    }
+                    break;
+                case JTokenType.Array:
+                    foreach (var item in ((JArray)filter))
+                    {
+                        var firstQuery = item.First() as JProperty;
+
+                        foreach (var queryProvider in _filters)
+                        {
+                            filteredQuery = queryProvider.CreateFilteredQuery(builder, context, firstQuery.Name, firstQuery.Value, query);
+
+                            if (filteredQuery != null)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                default: throw new ArgumentException($"Invalid value in boolean query");
+            }
+
+            return filteredQuery;
         }
     }
 }

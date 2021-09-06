@@ -21,7 +21,7 @@
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
@@ -180,7 +180,7 @@
   },
   {
     "inputs": [
-      "node_modules/popper.js/dist/umd/popper.js"
+      "node_modules/@popperjs/core/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
   },
@@ -217,12 +217,6 @@
       "Assets/trumbowyg/plugins/*/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"
-  },
-  {
-    "inputs": [
-      "Assets/trumbowyg/js/resizable-resolveconflict.js"
-    ],
-    "output": "wwwroot/Scripts/resizable-resolveconflict.js"
   },
   {
     "copy": true,
@@ -297,8 +291,22 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/js/js.cookie.js"
+      "node_modules/js-cookie/src/js.cookie.js"
     ],
     "output": "wwwroot/Scripts/js.cookie.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/monaco/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/monaco-editor/min/**/*"
+    ],
+    "output": "wwwroot/Scripts/monaco/@"
   }
 ]

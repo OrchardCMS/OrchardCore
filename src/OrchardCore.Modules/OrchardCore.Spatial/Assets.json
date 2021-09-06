@@ -1,0 +1,31 @@
+[
+  {
+    "generateSourceMaps": false,
+    "generateRTL": true,
+    "inputs": [
+      "Assets/js/coordinate-leaflet-field.js"
+    ],
+    "output": "wwwroot/Scripts/coordinate-leaflet-field.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "./node_modules/leaflet/dist/*.js",
+      "./node_modules/leaflet/dist/*.map"
+    ],
+    "output": "wwwroot/Scripts/leaflet/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "./node_modules/leaflet/dist/images/*"
+    ],
+    "output": "wwwroot/Styles/images/@"
+  },
+  {
+    "inputs": [
+      "./node_modules/leaflet/dist/leaflet.css"
+    ],
+    "output": "wwwroot/Styles/leaflet.css"
+  }
+]

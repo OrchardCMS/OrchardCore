@@ -1,7 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore DynamicCache</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Dynamic Cache Provides tag helpers to cache sections of markup.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Cache</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

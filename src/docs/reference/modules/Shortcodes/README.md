@@ -35,10 +35,10 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 
 | Parameter | Value |
 | --------- | ----------- |
-| `Name` | [display_text] |
+| `Name` | display_text |
 | `Hint` | Returns the display text of the content item. |
 | `Usage` | [display_text] |
-| `Content` | `{{ Context.ContentItem.DisplayText }}`<br>`{{ More}}` |
+| `Content` | `{{ Context.ContentItem.DisplayText }}`<br>`{{ More }}` |
 
 !!! note
     The `ContentItem` `Context` is only available when the caller, i.e. an `HtmlBodyPart`, has passed the `ContentItem` value to the `Context`. 
@@ -47,7 +47,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 
 | Parameter | Value |
 | --------- | ----------- |
-| `Name` | [site_name] |
+| `Name` | site_name |
 | `Hint` | Returns the site name. |
 | `Usage` | [site_name] |
 | `Content` | `{{ Site.SiteName }}` |
@@ -56,7 +56,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 
 | Parameter | Value |
 | --------- | ----------- |
-| `Name` | [primary] |
+| `Name` | primary |
 | `Hint` | Formats text in the themes primary color. |
 | `Usage` | [primary text]&lt;br&lt;[primary]text[/primary] |
 | `Content` | `{% capture output %}`<br>`{% if Args.Text != nil %}`<br>`<span class="text-primary">{{Args.Text}}</span>`<br>`{% else %}`<br>`<span class="text-primary">{{Content}}</span>`<br>`{% endif %}`<br>`{% endcapture %}`<br>`{{ output | sanitize | raw }}` |
@@ -73,7 +73,7 @@ Shortcodes can be registered in code via a `ShortcodeDelegate` using the `AddSho
 | `Shortcode` | `ShortcodeDelegate` | The Shortcode Delegate. |
 | `Describe` | `Action<ShortcodeOption>` | Optionally a Description of the Shortcode. |
 
-In this example we register a `[bold]` Shortcode Delegate and describe the Shortcode.
+In this example, we register a `[bold]` Shortcode Delegate and describe the Shortcode.
 
 ``` csharp
 services.AddShortcode("bold", (args, content, ctx) => {
@@ -142,15 +142,41 @@ For example, if the current locale is `en-CA` and you specified this shortcode: 
 You can disable this behavior by passing `false` as the second argument of the shortcode. 
 `[locale en false]English Text[/locale]` would render nothing if the current culture is not exactly `en`.
 
+## Rendering Shortcodes
+
+Shortcodes are automatically rendered when using a `Shape` produced by a display driver that supports Shortcodes.
+
+- `HtmlBodyPart`
+- `HtmlField`
+- `MarkdownBodyPart`
+- `MarkdownField`
+
+=== "Liquid"
+
+    ``` liquid
+    {{ Model.Content.HtmlBodyPart | shape_render }}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @await DisplayAsync(Model.Content.HtmlBodyPart)
+    ```
+
+Shortcodes can also be rendered via a liquid filter or html helper
+
+=== "Liquid"
+
+    ``` liquid
+    {{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @Html.Raw(@await Orchard.ShortcodesToHtmlAsync((string)Model.ContentItem.Content.RawHtml.Content.Html))
+    ```
 
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/ofPKGsW5Ftg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-## CREDITS
-
-### Shortcodes
-
-<https://github.com/sebastienros/shortcodes>  
-Copyright (c) 2020 Sébastien Ros  
-MIT License

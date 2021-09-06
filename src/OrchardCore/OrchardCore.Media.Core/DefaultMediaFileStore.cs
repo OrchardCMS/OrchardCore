@@ -40,27 +40,27 @@ namespace OrchardCore.Media.Core
             _logger = logger;
         }
 
-        public Task<IFileStoreEntry> GetFileInfoAsync(string path)
+        public virtual Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
             return _fileStore.GetFileInfoAsync(path);
         }
 
-        public Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
+        public virtual Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
         {
             return _fileStore.GetDirectoryInfoAsync(path);
         }
 
-        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+        public virtual IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
             return _fileStore.GetDirectoryContentAsync(path, includeSubDirectories);
         }
 
-        public Task<bool> TryCreateDirectoryAsync(string path)
+        public virtual Task<bool> TryCreateDirectoryAsync(string path)
         {
             return _fileStore.TryCreateDirectoryAsync(path);
         }
 
-        public async Task<bool> TryDeleteFileAsync(string path)
+        public virtual async Task<bool> TryDeleteFileAsync(string path)
         {
             var deletingContext = new MediaDeletingContext
             {
@@ -82,7 +82,7 @@ namespace OrchardCore.Media.Core
             return result;
         }
 
-        public async Task<bool> TryDeleteDirectoryAsync(string path)
+        public virtual async Task<bool> TryDeleteDirectoryAsync(string path)
         {
             var deletingContext = new MediaDeletingContext
             {
@@ -104,7 +104,7 @@ namespace OrchardCore.Media.Core
             return result;
         }
 
-        public async Task MoveFileAsync(string oldPath, string newPath)
+        public virtual async Task MoveFileAsync(string oldPath, string newPath)
         {
             var context = new MediaMoveContext
             {
@@ -119,22 +119,22 @@ namespace OrchardCore.Media.Core
             await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaMovedAsync(context), context, _logger);
         }
 
-        public Task CopyFileAsync(string srcPath, string dstPath)
+        public virtual Task CopyFileAsync(string srcPath, string dstPath)
         {
             return _fileStore.CopyFileAsync(srcPath, dstPath);
         }
 
-        public Task<Stream> GetFileStreamAsync(string path)
+        public virtual Task<Stream> GetFileStreamAsync(string path)
         {
             return _fileStore.GetFileStreamAsync(path);
         }
 
-        public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
+        public virtual Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
             return _fileStore.GetFileStreamAsync(fileStoreEntry);
         }
 
-        public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+        public virtual async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
             if (_mediaCreatingEventHandlers.Any())
             {
@@ -176,7 +176,7 @@ namespace OrchardCore.Media.Core
             }
         }
 
-        public string MapPathToPublicUrl(string path)
+        public virtual string MapPathToPublicUrl(string path)
         {
             return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizePath(path);
         }

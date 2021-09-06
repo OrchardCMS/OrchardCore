@@ -66,9 +66,80 @@ Verbs: **POST** and **GET**
 | `name` | `myQuery` | The name of the query to execute. |
 | `parameters` | `{ size: 3}` | A Json object representing the parameters of the query. |
 
+## GraphQL
+
+When exposing queries (Lucene or SQL) through GraphQL, you need to define schema of a query return type.  
+There are two options: To return a `ContentItem` or to return a custom object.
+
+If you want to expose `ContentItems` (e.g. of type `BlogPost`), you need to check `Return Content Items` checkbox and define `Schema` like this:
+
+```json
+{
+    "type": "ContentItem/BlogPost"
+}
+
+```
+
+However, if you want to expose a custom object (e.g. only DisplayText), you need to uncheck `Return Content Items` checkbox and change `Schema` to look like this:
+
+```json
+{
+    "type": "object",
+    "properties": {  
+        "Content.ContentItem.DisplayText" : {
+            "type" : "string",
+            "description" : "This is BlogPost display text."
+        }
+    }
+}
+```
+
+Where properties can either be of `string` or `integer` type.
+
+For Lucene queries with custom object schema, you are limited to elements stored in Lucene index.
+
+For SQL queries, you can expose any column where property name is a column alias from the query.
+
+Here is an example of a custom Query from a manually added table in a database : 
+
+```sql
+-- On the Query don't check the "return content items" checkbox
+SELECT Name FROM Test
+```
+
+Here is how you would define a Schema for this Query to add it to the GraphQL endpoint.
+
+```json
+{
+    "type": "object",
+    "properties": {  
+        "Name" : {
+            "type" : "string",
+            "description" : "This is your custom table 'Name' column."
+        }
+    }
+}
+```
+
+If your Query has the same name as a content type name it could lead into having them colliding in the GraphQL endpoint.
+For SQL and Lucene queries you can then define a custom field type name in their schema.
+
+```json
+{
+    "type": "object",
+    "fieldTypeName": "customGraphQLFieldTypeName",
+    "properties": {  
+        "Name" : {
+            "type" : "string",
+            "description" : "This is your custom table 'Name' column."
+        }
+    }
+}
+```
+
 ## SQL Queries (`OrchardCore.Queries.Sql`)
 
-This feature provide a new type of query targeting the SQL database.
+This feature provides a new type of query targeting the SQL database.
 
 ### Queries recipe step
 
@@ -85,7 +156,8 @@ Here is an example for creating a SQL query from a Queries recipe step:
 
 ## Liquid templates
 
-You can access queries from liquid views and templates by using the `Queries` property. Queries are accessed by name, for example `Queries.RecentBlogPosts`.
+You can access queries from liquid views and templates by using the `Queries` property.  
+Queries are accessed by name, for example `Queries.RecentBlogPosts`.
 
 ### query
 
@@ -115,10 +187,10 @@ The `QueryAsync` and `ContentQueryAsync` Orchard Helper extension methods (in th
 
 You can use the `DisplayAsync` extension method (also in `OrchardCore.ContentManagement`) to display the content items returned from `ContentQueryAsync`.
 
-For example, to run a query called `LatestBlogPosts`, and display the results:
+For example, to run a query called `RecentBlogPosts`, and display the results:
 
 ```liquid
-@foreach (var contentItem in await Orchard.ContentQueryAsync("AllContent"))
+@foreach (var contentItem in await Orchard.ContentQueryAsync("RecentBlogPosts"))
 {
     @await Orchard.DisplayAsync(contentItem)
 }
@@ -154,7 +226,7 @@ select
     day(CreatedUtc) as [Day],
     count(*) as [Count]
 from ContentItemIndex 
-where Published = true and ContentType = 'BlogPost'
+where Published = true and ContentType = 'BlogPost' and PublishedUtc > now()
 group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
 ```
 
@@ -212,6 +284,7 @@ The SQL parser is also able to convert some specific functions to the intended d
 | `day(_date_)`    | Returns the days part of a date.    |
 | `month(_date_)`  | Returns the months part of a date.  |
 | `year(_date_)`   | Returns the years part of a date.   |
+| `now()`          | Returns current date time (utc).    |
 
 ## Scripting
 

@@ -1,25 +1,23 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
     public class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, PlaceholderAdminNode>
     {
-        private readonly IPermissionsService _permissionService;
+        private readonly IAdminMenuPermissionService _adminMenuPermissionService;
 
-        public PlaceholderAdminNodeDriver(
-            IPermissionsService permissionService)
+        public PlaceholderAdminNodeDriver(IAdminMenuPermissionService adminMenuPermissionService)
         {
-            _permissionService = permissionService;
+            _adminMenuPermissionService = adminMenuPermissionService;
         }
+
         public override IDisplayResult Display(PlaceholderAdminNode treeNode)
         {
             return Combine(
@@ -34,62 +32,39 @@ namespace OrchardCore.AdminMenu.AdminNodes
             {
                 model.LinkText = treeNode.LinkText;
                 model.IconClass = treeNode.IconClass;
-                model.SelectedItems = new List<VueMultiselectItemViewModel>();
-                model.AllItems = new List<VueMultiselectItemViewModel>();
 
-                var nameList = new List<string>();
+                var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
 
-                foreach (var permission in treeNode.Permissions)
-                {
-                    nameList.Add(permission.Name);
+                var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
 
-                    model.SelectedItems.Add(new VueMultiselectItemViewModel
+                model.SelectedItems = selectedPermissions
+                    .Select(p => new PermissionViewModel
                     {
-                        Id = permission.Name,
-                        DisplayText = $"{permission.Name} - {permission.Description}"
-                    });
-                }
-
-                model.PermissionIds = String.Join(",", nameList);
-
-                foreach (var permission in await _permissionService.GetInstalledPermissionsAsync())
-                {
-                    model.AllItems.Add(new VueMultiselectItemViewModel
+                        Name = p.Name,
+                        DisplayText = p.Description
+                    }).ToList();
+                model.AllItems = permissions
+                    .Select(p => new PermissionViewModel
                     {
-                        Id = permission.Name,
-                        DisplayText = $"{permission.Name} - {permission.Description}"
-                    });
-                }
+                        Name = p.Name,
+                        DisplayText = p.Description
+                    }).ToList();
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(PlaceholderAdminNode treeNode, IUpdateModel updater)
         {
             var model = new PlaceholderAdminNodeViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkText, x => x.IconClass, x => x.PermissionIds))
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkText, x => x.IconClass, x => x.SelectedPermissionNames))
             {
                 treeNode.LinkText = model.LinkText;
                 treeNode.IconClass = model.IconClass;
 
-                var modifiedPermissions = (model.PermissionIds == null ? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries));
-                //clear the old permissions to insert all every time
-                treeNode.Permissions.Clear();
-
-                //change permissions only if one is inserted
-                if (modifiedPermissions.Length > 0)
-                {
-                    var permissions = await _permissionService.GetInstalledPermissionsAsync();
-
-                    foreach (var permissionName in modifiedPermissions)
-                    {
-                        var perm = permissions.Where(p => p.Name == permissionName).FirstOrDefault();
-
-                        if (perm != null)
-                        {
-                            treeNode.Permissions.Add(perm);
-                        }
-                    }
-                }
+                var selectedPermissions = (model.SelectedPermissionNames == null ? new string[0] : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+                treeNode.PermissionNames = permissions
+                    .Where(p => selectedPermissions.Contains(p.Name))
+                    .Select(p => p.Name).ToArray();
             };
 
             return Edit(treeNode);

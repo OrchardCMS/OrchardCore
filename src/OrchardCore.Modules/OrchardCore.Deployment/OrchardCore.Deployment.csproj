@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Deployment</Title>
+    <Description>$(OCCMSDescription)
+
+    Provides Deployment.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Deployment.Core\OrchardCore.Deployment.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />

@@ -1,7 +1,7 @@
 @model EditRoleViewModel
 @using OrchardCore.Roles.ViewModels;
 
-<h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1></zone>
 
 <form autocomplete="off">
 
@@ -14,7 +14,7 @@
     </div>
 </form>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="no-multisubmit">
     <h5>@T["Edit Role Detail"]</h5>
     <div class="form-group" asp-validation-class-for="RoleDescription">
         <label asp-for="RoleDescription">@T["Role description"]</label>
@@ -85,7 +85,6 @@
 <script at="Foot">
     $(function () {
         var searchBox = $('#search-box');
-        $('[data-toggle="tooltip"]').tooltip();
         // On each keypress filter the list of roles
         searchBox.keyup(function (e) {
             var search = $(this).val().toLowerCase();

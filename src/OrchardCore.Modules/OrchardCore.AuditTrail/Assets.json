@@ -1,0 +1,16 @@
+[
+  {
+    "inputs": [
+      "node_modules/diff/dist/diff.js"
+    ],
+    "output": "wwwroot/Scripts/diff.js"
+  },  
+  {
+    "generateSourceMaps": false,
+    "generateRTL": true,
+    "inputs": [
+      "Assets/scss/audittrailui.scss"
+    ],
+    "output": "wwwroot/Styles/audittrailui.css"
+  }
+]

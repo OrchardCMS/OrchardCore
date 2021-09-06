@@ -1,8 +1,8 @@
 @model OrchardCore.Email.ViewModels.SmtpSettingsViewModel
 
-<h1>@RenderTitleSegments(T["Settings"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
 
-<form asp-action="Index" asp-controller="Admin" asp-area="OrchardCore.Email" method="post">
+<form asp-action="Index" asp-controller="Admin" asp-area="OrchardCore.Email" method="post" class="no-multisubmit">
     @Html.ValidationSummary()
 
     <div class="form-group">

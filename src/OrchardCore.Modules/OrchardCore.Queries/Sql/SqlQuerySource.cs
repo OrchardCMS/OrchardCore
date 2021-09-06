@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Fluid;
+using Fluid.Values;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Data;
@@ -16,15 +18,18 @@ namespace OrchardCore.Queries.Sql
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
         private readonly ISession _session;
+        private readonly TemplateOptions _templateOptions;
 
         public SqlQuerySource(
             ILiquidTemplateManager liquidTemplateManager,
             IDbConnectionAccessor dbConnectionAccessor,
-            ISession session)
+            ISession session,
+            IOptions<TemplateOptions> templateOptions)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _dbConnectionAccessor = dbConnectionAccessor;
             _session = session;
+            _templateOptions = templateOptions.Value;
         }
 
         public string Name => "Sql";
@@ -39,17 +44,8 @@ namespace OrchardCore.Queries.Sql
             var sqlQuery = query as SqlQuery;
             var sqlQueryResults = new SQLQueryResults();
 
-            var templateContext = _liquidTemplateManager.Context;
-
-            if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    templateContext.SetValue(parameter.Key, parameter.Value);
-                }
-            }
-
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default);
+            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default, 
+                parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
             var connection = _dbConnectionAccessor.CreateConnection();
             var dialect = _session.Store.Configuration.SqlDialect;

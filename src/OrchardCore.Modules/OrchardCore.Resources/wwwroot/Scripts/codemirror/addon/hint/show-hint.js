@@ -7,6 +7,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
+// declare global: DOMRect
 (function (mod) {
   if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object") // CommonJS
     mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd) // AMD
@@ -64,10 +65,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     this.tick = 0;
     this.startPos = this.cm.getCursor("start");
     this.startLen = this.cm.getLine(this.startPos.line).length - this.cm.getSelection().length;
-    var self = this;
-    cm.on("cursorActivity", this.activityFunc = function () {
-      self.cursorActivity();
-    });
+
+    if (this.options.updateOnCursorActivity) {
+      var self = this;
+      cm.on("cursorActivity", this.activityFunc = function () {
+        self.cursorActivity();
+      });
+    }
   }
 
   var requestAnimationFrame = window.requestAnimationFrame || function (fn) {
@@ -80,7 +84,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (!this.active()) return;
       this.cm.state.completionActive = null;
       this.tick = null;
-      this.cm.off("cursorActivity", this.activityFunc);
+
+      if (this.options.updateOnCursorActivity) {
+        this.cm.off("cursorActivity", this.activityFunc);
+      }
+
       if (this.widget && this.data) CodeMirror.signal(this.data, "close");
       if (this.widget) this.widget.close();
       CodeMirror.signal(this.cm, "endCompletion", this.cm);
@@ -96,7 +104,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         CodeMirror.signal(data, "pick", completion);
         self.cm.scrollIntoView();
       });
-      this.close();
+
+      if (this.options.closeOnPick) {
+        this.close();
+      }
     },
     cursorActivity: function cursorActivity() {
       if (this.debounce) {
@@ -236,6 +247,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 
   function Widget(completion, data) {
+    this.id = "cm-complete-" + Math.floor(Math.random(1e6));
     this.completion = completion;
     this.data = data;
     this.picked = false;
@@ -244,6 +256,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var ownerDocument = cm.getInputField().ownerDocument;
     var parentWindow = ownerDocument.defaultView || ownerDocument.parentWindow;
     var hints = this.hints = ownerDocument.createElement("ul");
+    hints.setAttribute("role", "listbox");
+    hints.setAttribute("aria-expanded", "true");
+    hints.id = this.id;
     var theme = completion.cm.options.theme;
     hints.className = "CodeMirror-hints " + theme;
     this.selectedHint = data.selectedHint || 0;
@@ -255,6 +270,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       var className = HINT_ELEMENT_CLASS + (i != this.selectedHint ? "" : " " + ACTIVE_HINT_ELEMENT_CLASS);
       if (cur.className != null) className = cur.className + " " + className;
       elt.className = className;
+      if (i == this.selectedHint) elt.setAttribute("aria-selected", "true");
+      elt.id = this.id + "-" + i;
+      elt.setAttribute("role", "option");
       if (cur.render) cur.render(elt, data, cur);else elt.appendChild(ownerDocument.createTextNode(cur.displayText || getText(cur)));
       elt.hintId = i;
     }
@@ -283,10 +301,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var winW = parentWindow.innerWidth || Math.max(ownerDocument.body.offsetWidth, ownerDocument.documentElement.offsetWidth);
     var winH = parentWindow.innerHeight || Math.max(ownerDocument.body.offsetHeight, ownerDocument.documentElement.offsetHeight);
     container.appendChild(hints);
-    var box = hints.getBoundingClientRect(),
-        overlapY = box.bottom - winH;
-    var scrolls = hints.scrollHeight > hints.clientHeight + 1;
-    var startScroll = cm.getScrollInfo();
+    cm.getInputField().setAttribute("aria-autocomplete", "list");
+    cm.getInputField().setAttribute("aria-owns", this.id);
+    cm.getInputField().setAttribute("aria-activedescendant", this.id + "-" + this.selectedHint);
+    var box = completion.options.moveOnOverlap ? hints.getBoundingClientRect() : new DOMRect();
+    var scrolls = completion.options.paddingForScrollbar ? hints.scrollHeight > hints.clientHeight + 1 : false; // Compute in the timeout to avoid reflow on init
+
+    var startScroll;
+    setTimeout(function () {
+      startScroll = cm.getScrollInfo();
+    });
+    var overlapY = box.bottom - winH;
 
     if (overlapY > 0) {
       var height = box.bottom - box.top,
@@ -310,6 +335,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     var overlapX = box.right - winW;
+    if (scrolls) overlapX += cm.display.nativeBarWidth;
 
     if (overlapX > 0) {
       if (box.right - box.left > winW) {
@@ -358,6 +384,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     cm.on("scroll", this.onScroll = function () {
       var curScroll = cm.getScrollInfo(),
           editor = cm.getWrapperElement().getBoundingClientRect();
+      if (!startScroll) startScroll = cm.getScrollInfo();
       var newTop = top + startScroll.top - curScroll.top;
       var point = newTop - (parentWindow.pageYOffset || (ownerDocument.documentElement || ownerDocument.body).scrollTop);
       if (!below) point += hints.offsetHeight;
@@ -385,8 +412,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       setTimeout(function () {
         cm.focus();
       }, 20);
-    });
-    this.scrollToActive();
+    }); // The first hint doesn't need to be scrolled to on init
+
+    var selectedHintRange = this.getSelectedHintRange();
+
+    if (selectedHintRange.from !== 0 || selectedHintRange.to !== 0) {
+      this.scrollToActive();
+    }
+
     CodeMirror.signal(data, "select", completions[this.selectedHint], hints.childNodes[this.selectedHint]);
     return true;
   }
@@ -395,8 +428,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     close: function close() {
       if (this.completion.widget != this) return;
       this.completion.widget = null;
-      this.hints.parentNode.removeChild(this.hints);
+      if (this.hints.parentNode) this.hints.parentNode.removeChild(this.hints);
       this.completion.cm.removeKeyMap(this.keyMap);
+      var input = this.completion.cm.getInputField();
+      input.removeAttribute("aria-activedescendant");
+      input.removeAttribute("aria-owns");
       var cm = this.completion.cm;
 
       if (this.completion.options.closeOnUnfocus) {
@@ -423,21 +459,35 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (i >= this.data.list.length) i = avoidWrap ? this.data.list.length - 1 : 0;else if (i < 0) i = avoidWrap ? 0 : this.data.list.length - 1;
       if (this.selectedHint == i) return;
       var node = this.hints.childNodes[this.selectedHint];
-      if (node) node.className = node.className.replace(" " + ACTIVE_HINT_ELEMENT_CLASS, "");
+
+      if (node) {
+        node.className = node.className.replace(" " + ACTIVE_HINT_ELEMENT_CLASS, "");
+        node.removeAttribute("aria-selected");
+      }
+
       node = this.hints.childNodes[this.selectedHint = i];
       node.className += " " + ACTIVE_HINT_ELEMENT_CLASS;
+      node.setAttribute("aria-selected", "true");
+      this.completion.cm.getInputField().setAttribute("aria-activedescendant", node.id);
       this.scrollToActive();
       CodeMirror.signal(this.data, "select", this.data.list[this.selectedHint], node);
     },
     scrollToActive: function scrollToActive() {
-      var margin = this.completion.options.scrollMargin || 0;
-      var node1 = this.hints.childNodes[Math.max(0, this.selectedHint - margin)];
-      var node2 = this.hints.childNodes[Math.min(this.data.list.length - 1, this.selectedHint + margin)];
+      var selectedHintRange = this.getSelectedHintRange();
+      var node1 = this.hints.childNodes[selectedHintRange.from];
+      var node2 = this.hints.childNodes[selectedHintRange.to];
       var firstNode = this.hints.firstChild;
       if (node1.offsetTop < this.hints.scrollTop) this.hints.scrollTop = node1.offsetTop - firstNode.offsetTop;else if (node2.offsetTop + node2.offsetHeight > this.hints.scrollTop + this.hints.clientHeight) this.hints.scrollTop = node2.offsetTop + node2.offsetHeight - this.hints.clientHeight + firstNode.offsetTop;
     },
     screenAmount: function screenAmount() {
       return Math.floor(this.hints.clientHeight / this.hints.firstChild.offsetHeight) || 1;
+    },
+    getSelectedHintRange: function getSelectedHintRange() {
+      var margin = this.completion.options.scrollMargin || 0;
+      return {
+        from: Math.max(0, this.selectedHint - margin),
+        to: Math.min(this.data.list.length - 1, this.selectedHint + margin)
+      };
     }
   };
 
@@ -533,11 +583,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     completeSingle: true,
     alignWithWord: true,
     closeCharacters: /[\s()\[\]{};:>,]/,
+    closeOnPick: true,
     closeOnUnfocus: true,
+    updateOnCursorActivity: true,
     completeOnSingleClick: true,
     container: null,
     customKeys: null,
-    extraKeys: null
+    extraKeys: null,
+    paddingForScrollbar: true,
+    moveOnOverlap: true
   };
   CodeMirror.defineOption("hintOptions", null);
 });

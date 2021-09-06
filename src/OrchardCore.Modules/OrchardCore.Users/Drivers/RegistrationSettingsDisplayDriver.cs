@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Drivers
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationSettingsDisplayDriver : SectionDisplayDriver<ISite, RegistrationSettings>
     {
-        public const string GroupId = "RegistrationSettings";
+        public const string GroupId = "userRegistration";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -24,7 +24,7 @@ namespace OrchardCore.Users.Drivers
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
-        public override async Task<IDisplayResult> EditAsync(RegistrationSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(RegistrationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -35,14 +35,15 @@ namespace OrchardCore.Users.Drivers
 
             return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model =>
             {
-                model.UsersCanRegister = section.UsersCanRegister;
-                model.UsersMustValidateEmail = section.UsersMustValidateEmail;
-                model.UseSiteTheme = section.UseSiteTheme;
-                model.NoPasswordForExternalUsers = section.NoPasswordForExternalUsers;
-                model.NoUsernameForExternalUsers = section.NoUsernameForExternalUsers;
-                model.NoEmailForExternalUsers = section.NoEmailForExternalUsers;
-                model.UseScriptToGenerateUsername = section.UseScriptToGenerateUsername;
-                model.GenerateUsernameScript = section.GenerateUsernameScript;
+                model.UsersCanRegister = settings.UsersCanRegister;
+                model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
+                model.UsersAreModerated = settings.UsersAreModerated;
+                model.UseSiteTheme = settings.UseSiteTheme;
+                model.NoPasswordForExternalUsers = settings.NoPasswordForExternalUsers;
+                model.NoUsernameForExternalUsers = settings.NoUsernameForExternalUsers;
+                model.NoEmailForExternalUsers = settings.NoEmailForExternalUsers;
+                model.UseScriptToGenerateUsername = settings.UseScriptToGenerateUsername;
+                model.GenerateUsernameScript = settings.GenerateUsernameScript;
             }).Location("Content:5").OnGroup(GroupId);
         }
 

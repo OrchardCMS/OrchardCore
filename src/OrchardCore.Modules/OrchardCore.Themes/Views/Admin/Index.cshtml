@@ -1,6 +1,6 @@
 @model OrchardCore.Themes.Models.SelectThemesViewModel
 <style asp-src="~/OrchardCore.Themes/Styles/themes.admin.css"></style>
-<h1>@RenderTitleSegments(T["Themes"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Themes"])</h1></zone>
 
 @if (!Model.Themes.Any())
 {
@@ -13,30 +13,34 @@ else
         {
             <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch">
                 <div class="card theme-card w-100">
-                    <h4 class="card-title">@themeEntry.Name</h4>
-                    <div class="card-theme-thumbnail" style="background-image:url('@Url.Content($"~/{themeEntry.Extension.Id}/Theme.png")');"></div>
+                    <div class="card-theme-thumbnail" style="    background-image: url('@Url.Content($"~/{themeEntry.Extension.Id}/Theme.png")');"></div>
                     <div class="card-body">
-                        <p>@themeEntry.Extension.Manifest.Description</p>
-                        @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
-                        {
-                            <small>@T["By: {0}", themeEntry.Extension.Manifest.Author]</small><br />
-                        }
-                        @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Website))
-                        {
-                            <small><a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small><br />
-                        }
-                        @if (themeEntry.Extension.Manifest.Tags.Any())
-                        {
-                            <small>@T["Tags: {0}", string.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())]</small><br />
-                        }
-                        <small>@T["Version: {0}", themeEntry.Extension.Manifest.Version]</small>
+                        <h4 class="card-title">@themeEntry.Name</h4>
+                        <p class="card-text">
+                            @themeEntry.Extension.Manifest.Description
+                            <ul class="list-group list-group-flush">
+                                @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
+                                {
+                                    <li class="list-group-item"><small><i class="fa fa-user fa-fw" aria-hidden="true"></i> @themeEntry.Extension.Manifest.Author</small></li>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Website))
+                                {
+                                    <li class="list-group-item"><small><i class="fa fa-external-link fa-fw" aria-hidden="true"></i> <a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small></li>
+                                }
+                                @if (themeEntry.Extension.Manifest.Tags.Any())
+                                {
+                                    <li class="list-group-item"><small><i class="fa fa-tags fa-fw" aria-hidden="true"></i> @string.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())</small></li>
+                                }
+                                <li class="list-group-item"><small><i class="fa fa-code-branch fa-fw" aria-hidden="true"></i> @themeEntry.Extension.Manifest.Version</small></li>
+                            </ul>
+                        </p>
                     </div>
                     <div class="card-footer text-muted text-xs-right">
                         @if (!themeEntry.IsCurrent)
                         {
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                    <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                         <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
                                     </form>
                                 </div>
@@ -44,19 +48,19 @@ else
                                     <div class="float-right">
                                         @if (themeEntry.Enabled)
                                         {
-                                            <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                            <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                                 <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
                                             </form>
                                         }
                                         else
                                         {
-                                            <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post">
+                                            <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
                                                 <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
                                             </form>
                                         }
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                         }
                         else
                         {
@@ -69,16 +73,16 @@ else
                                 @T["This is the current Site theme"]
                             }
                         }
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
         }
     </div>
 
     <div class="alert alert-danger">
         <h4>@T["Reset current themes"]</h4>
         <p>@T["The following actions reset the themes. It is used for sites that can't use theming."]</p>
-        <a asp-action="ResetSiteTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
-        <a asp-action="ResetAdminTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
+        <a asp-action="ResetSiteTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
+        <a asp-action="ResetAdminTheme" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>
     </div>
 }

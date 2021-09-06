@@ -10,17 +10,23 @@ jobs:
     name: Functional Tests - MVC
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:8.3.1
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "15"
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.*
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -37,17 +43,20 @@ jobs:
     name: Functional Tests - CMS Sqlite
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:8.3.1
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.*
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -66,7 +75,7 @@ jobs:
     name: Functional Tests - CMS Postgres
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:8.3.1
     services:
       postgres:
         image: postgres:11
@@ -88,11 +97,14 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.*
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -111,7 +123,7 @@ jobs:
     name: Functional Tests - CMS MySql
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:8.3.1
     services:
       mariadb:
         image: mariadb:latest
@@ -123,17 +135,20 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
       OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
-      OrchardCore__DatabaseProvider: "Mysql"
+      OrchardCore__DatabaseProvider: "MySql"
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.*
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -152,7 +167,7 @@ jobs:
     name: Functional Tests - CMS SqlServer 2019
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:8.3.1
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -169,11 +184,14 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.*
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.*
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/Functional

@@ -121,7 +121,58 @@ Output
 ```text
 Bonjour!
 ```
+
 ## Html Filters
+
+### `absolute_url`
+
+Creates the full absolute URL for the given relative virtual path.
+
+Input
+
+```liquid
+{{ '~/some-page' | absolute_url }}
+```
+
+Output if there is no URL prefix for the current tenant:
+
+```text
+https://example.com/some-page
+```
+
+Output if there is a URL prefix for the current tenant:
+
+```text
+https://example.com/url-prefix/some-page
+```
+
+If the input URL starts with a tilde then the output URL's base will always be the current tenant's root URL, including the tenant prefix if one is configured. E.g. `~/` will always point to the homepage of the tenant, regardless of configuration.
+
+The HTTP request scheme (e.g. "https") and port number are added too.
+
+### `href`
+
+Creates a content URL for a relative virtual path. Recommended for generating URLs in every case you want to refer to a relative path.
+
+Input
+
+```liquid
+{{ '~/some-page' | href }}
+```
+
+Output if there is no URL prefix for the current tenant:
+
+```text
+/some-page
+```
+
+Output if there is an URL prefix for the current tenant:
+
+```text
+/url-prefix/some-page
+```
+
+If the input URL starts with a tilde then the output URL will always be relative to the current tenant's root URL, including the tenant prefix if one is configured. E.g. `~/` will always point to the homepage of the tenant, regardless of configuration.
 
 ### `html_class`
 
@@ -184,6 +235,14 @@ Sanitizes some HTML content.
   <span class="text-primary">{{ Content }}</span>
 {% endcapture %}
 {{ output | sanitize_html | raw }}
+```
+
+### `shortcode`
+
+Renders Shortcodes. Should be combined with the `raw` filter.
+
+```liquid
+{{ Model.ContentItem.Content.RawHtml.Content.Html | shortcode | raw }}
 ```
 
 ## Json Filters
@@ -300,6 +359,52 @@ Returns the user's email.
 {{ User | user_email }}
 ```
 
+##### user_id filter
+
+Returns the user's unique identifier.
+
+```liquid
+{{ User | user_id }}
+```
+
+##### users_by_id filter
+
+Loads a single or multiple user objects from the database by id(s).
+
+The resulting object has access to the following properties:
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `UserId` | `42z3ps88pm8d40zn9cfwbee45c ` | The id of the authenticated user. |
+| `UserName` | `admin` | The name of the authenticated user. |
+| `NormalizedUserName` | `ADMIN` | The normailzed name of the authenticated user. |
+| `Email` | `admin@gmail.com` | The email of the authenticated user. |
+| `NormailizedEmail` | `ADMIN@GMAIL>COM` | The normalized email of the authenticated user. |
+| `EmailConfirmed` | `true` | True if the user has confirmed his email or if the email confirmation is not required |
+| `IsEnabled` | `true` | True if the user is enabled |
+| `RoleNames` | `[Editor,Contributor]`  | An array of role names assigned to the user |
+| `Properties` | `UserProfile.FirstName.Text` | Holds the Custom Users Settings of the user. |
+
+You can use this filter to load the user information of the current authenticated user like this.
+```liquid
+{% assign user = User | user_id | users_by_id %}
+
+{{ user.UserName }} - {{ user.Email }}
+
+```
+
+You can use this filter with the UserPicker field to load the picked user's information.
+
+```liquid
+{% assign users = Model.ContentItem.Content.SomeType.UserPicker.UserIds | users_by_id %}
+
+{% for user in users %}
+  {{ user.UserName }} - {{ user.Email }}
+{% endfor %}
+
+```
+
+
 #### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
@@ -333,7 +438,6 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | -------- | ------- |------------ |
 | `BaseUrl` |  | The base URL of the site. | 
 | `Calendar` |  | The site's calendar. | 
-| `Culture` | `en-us` | The site's default culture as an ISO language code. | 
 | `MaxPagedCount` | `0` | The maximum number of pages that can be paged. | 
 | `MaxPageSize` | `100` | The maximum page size that can be set by a user. | 
 | `PageSize` | `10` | The default page size of lists. | 
@@ -353,7 +457,8 @@ The following properties are available on the `Request` object.
 
 | Property | Example | Description |
 | --------- | ---- |------------ |
-| `QueryString` | `?sort=name&page=1` | The query string. |
+| `QueryString` | `?sort=name&page=1` | The escaped query string with the leading '?' character. |
+| `UriQueryString` | `?sort=name&page=1` | The query string escaped in a way which is correct for combining into the URI representation. |
 | `ContentType` | `application/x-www-form-urlencoded; charset=UTF-8` | The `Content-Type` header. |
 | `ContentLength` | `600` | The `Content-Length` header. |
 | `Cookies` | Usage: `Request.Cookies.orchauth_Default` | The collection of cookies for this request. |
@@ -361,9 +466,12 @@ The following properties are available on the `Request` object.
 | `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString`. Each property value is an array of values. |
 | `Form` | Usage: `Request.Form.value` | The collection of form values. |
 | `Protocol` | `https` | The protocol of this request. |
-| `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The path of the request, unescaped. |
-| `PathBase` | `/mytenant` | The base path of the request, unescaped. |
-| `Host` | `localhost:44300` | The `Host` header. May contain the port. |
+| `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The unescaped path of the request. |
+| `UriPath` | `/OrchardCore.ContentPreview/Preview/Render` | The path escaped in a way which is correct for combining into the URI representation. |
+| `PathBase` | `/mytenant` | The unescaped base path of the request. |
+| `UriPathBase` | `/mytenant` | The base path escaped in a way which is correct for combining into the URI representation. |
+| `Host` | `localhost:44300` | The unescaped `Host` header. May contain the port. |
+| `UriHost` | `localhost:44300` | The `Host` header properly formatted and encoded for use in a URI in a HTTP header. |
 | `IsHttps` | `true` | True if the scheme of the request is `https`. |
 | `Scheme` | `https` | The scheme of the request. |
 | `Method` | `GET` | The HTTP method. |

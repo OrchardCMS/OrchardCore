@@ -15,23 +15,14 @@ export function build(dir) {
 }
 
 // destructive action that deletes the App_Data folder
-export function clean(dir) {
-  const appdataPath = path.join(dir, "App_Data");
-  fs.removeSync(appdataPath);
-  global.log(`${appdataPath} deleted`);
-}
-// clean and copy some files 
-export function setup(dir, copyDir) {
-    clean(dir);
-    const appdataPath = path.join(dir, "App_Data");
-    fs.ensureDirSync(appdataPath);
-    fs.copySync(copyDir, appdataPath);
-    global.log(`Copied SaaS tenant to ${appdataPath}`);
+export function deleteDirectory(dir) {
+  fs.removeSync(dir);
+  global.log(`${dir} deleted`);
 }
 
 // Host the dotnet application, does not rebuild
-export function host(dir, assembly) {
-  if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
+export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net5.0' }={}) {
+  if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
     global.log("Application already built, skipping build");
   } else {
     build(dir);
@@ -39,17 +30,12 @@ export function host(dir, assembly) {
   global.log("Starting application ..."); 
   
   const ocEnv = {};
-
-  Object.keys(process.env).forEach((v) => {
-    if(v.startsWith('OrchardCore__')){
-        ocEnv[v] = process.env[v];
-    }
-  });
-  console.log(`Environment variables:`, ocEnv)
+  ocEnv["ORCHARD_APP_DATA"] = appDataLocation;
+  
   let server = child_process.spawn(
     "dotnet",
-    ["bin/Release/netcoreapp3.1/" + assembly],
-    { cwd: dir, env: process.env }
+    [`bin/Release/${dotnetVersion}/` + assembly],
+    { cwd: dir, env: {...process.env, ...ocEnv} }
   );
 
   server.stdout.on("data", data => {
@@ -67,9 +53,9 @@ export function host(dir, assembly) {
 }
 
 // combines the functions above, useful when triggering tests from CI
-export function e2e(dir, assembly) {
-
-  var server = host(dir, assembly);
+export function e2e(dir, assembly, { dotnetVersion='net5.0' }={}) {
+  deleteDirectory(path.join(dir, "App_Data_Tests"));
+  var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
   let test = child_process.exec("npx cypress run");
   test.stdout.on("data", data => {

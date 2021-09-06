@@ -8,8 +8,28 @@
 
 .ta-navbar-top {
     @extend .navbar-dark;
+    color: $gray-300;
+
+    a {
+        color: $gray-300;
+        text-decoration: none;
+    }
 }
 
+.ta-badge {
+    @extend .badge-dark;
+
+    background-color: darken(#181a1b, 5%)
+}
+
+.ta-navbar-brand {
+    span:last-child {
+        font-weight: bold;
+        color: $gray-300;
+    }
+}
+
+@import "../../admin/_list.scss";
 @import "../../admin/_sidebar-menu.scss";
 // Layout ======================================================================
 @import "../../_layout.scss";
@@ -21,6 +41,7 @@
 #mediaApp {
     background-color: $body-bg;
 }
+
 // Buttons =====================================================================
 
 // Typography ==================================================================
@@ -29,6 +50,10 @@
     &-footer {
         color: $gray-600;
     }
+}
+
+.trumbowyg-fullscreen .trumbowyg-editor{
+    color: black;
 }
 
 // Tables ======================================================================
@@ -239,4 +264,11 @@
     .list-group-item-heading {
         color: #fff;
     }
+}
+
+// Cards
+
+.card-header
+{
+    background-color: #1b1e1f;
 }

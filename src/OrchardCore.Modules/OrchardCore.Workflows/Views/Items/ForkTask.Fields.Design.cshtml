@@ -1,7 +1,7 @@
 @model ActivityViewModel<ForkTask>
 
 <header>
-    <h4><i class="fa fa-code-fork"></i>@Model.Activity.GetTitleOrDefault(() => T["Fork"])</h4>
+    <h4><i class="fa fa-code-fork" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Fork"])</h4>
 </header>
 
 @if (Model.Activity.Forks.Any())

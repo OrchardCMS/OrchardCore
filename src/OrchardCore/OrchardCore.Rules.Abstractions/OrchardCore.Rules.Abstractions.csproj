@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Rules</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Rules Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for rules.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

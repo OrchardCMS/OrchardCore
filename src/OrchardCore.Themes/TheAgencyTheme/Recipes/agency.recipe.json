@@ -4,7 +4,7 @@
   "description": "Ready to use company website.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "agency" ],
@@ -45,15 +45,16 @@
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
         "OrchardCore.Deployment.Remote",
-        "OrchardCore.Feeds",
         "OrchardCore.Flows",
         "OrchardCore.Layers",
         "OrchardCore.Lists",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
+        "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Rules",
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
@@ -84,85 +85,6 @@
     {
       "name": "ContentDefinition",
       "ContentTypes": [
-        {
-          "Name": "LiquidPage",
-          "DisplayName": "Liquid Page",
-          "Hidden": false,
-          "Settings": {
-            "ContentTypeSettings": {
-              "Creatable": true,
-              "Draftable": true,
-              "Versionable": true,
-              "Listable": true
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPage",
-              "Name": "LiquidPage",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "2"
-                }
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "AutoroutePartSettings": {
-                  "AllowCustomPath": true,
-                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
-                  "ShowHomepageOption": true
-                },
-                "ContentTypePartSettings": {
-                  "Position": "1"
-                }
-              }
-            },
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "3"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "HtmlWidget",
-          "DisplayName": "Html",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "HtmlWidget",
-              "Name": "HtmlWidget",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
         {
           "Name": "Page",
           "DisplayName": "Page",
@@ -494,6 +416,52 @@
           ]
         },
         {
+          "Name": "RawHtml",
+          "DisplayName": "Html",
+          "Settings": {
+            "ContentTypeSettings": {           
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "RawHtml",
+              "Name": "RawHtml",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blockquote",
+          "DisplayName": "Blockquote",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Draftable": true,
+              "Versionable": true,
+              "Securable": true,
+              "Stereotype": "Widget"
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Blockquote",
+              "Name": "Blockquote",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
           "Name": "Container",
           "DisplayName": "Container",
           "Settings": {
@@ -526,79 +494,11 @@
           ]
         },
         {
-          "Name": "Blockquote",
-          "DisplayName": "Blockquote",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Blockquote",
-              "Name": "Blockquote",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "ImageWidget",
-          "DisplayName": "Image",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Image",
-              "Name": "Image",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "LiquidWidget",
-          "DisplayName": "Liquid",
-          "Settings": {
-            "ContentTypeSettings": {
-              "Draftable": true,
-              "Versionable": true,
-              "Securable": true,
-              "Stereotype": "Widget"
-            }
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "LiquidPart",
-              "Name": "LiquidPart",
-              "Settings": {
-                "ContentTypePartSettings": {
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
           "Name": "Image",
           "DisplayName": "Image",
           "Settings": {
             "ContentTypeSettings": {
+              "Draftable": true,
               "Versionable": true,
               "Securable": true,
               "Stereotype": "Widget"
@@ -650,39 +550,6 @@
         }
       ],
       "ContentParts": [
-        {
-          "Name": "HtmlWidget",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "HtmlField",
-              "Name": "Content",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Content",
-                  "Editor": "Multiline",
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "Name": "MenuItem",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Link",
-              "Settings": {
-                "ContentPartFieldSettings": {
-                  "DisplayName": "Link",
-                  "Position": "0"
-                }
-              }
-            }
-          ]
-        },
         {
           "Name": "Service",
           "Settings": {},
@@ -865,6 +732,23 @@
           ]
         },
         {
+          "Name": "RawHtml",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "HtmlField",
+              "Name": "Content",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Content",
+                  "Editor": "Multiline",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
           "Name": "Blockquote",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [
@@ -942,7 +826,7 @@
       "Data": [
         {
           "ContentItemId": "[js: uuid()]",
-          "ContentType": "HtmlWidget",
+          "ContentType": "RawHtml",
           "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
@@ -954,7 +838,7 @@
             "RenderTitle": false,
             "Position": 10
           },
-          "HtmlWidget": {
+          "RawHtml": {
             "Content": {
               "Html": "[file:text('Snippets/footer.html')]"
             }
@@ -967,12 +851,32 @@
       "Layers": [
         {
           "Name": "Always",
-          "Rule": "true",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.BooleanCondition, OrchardCore.Rules",
+                "Name": "BooleanCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are displayed on any page of this site."
         },
         {
           "Name": "Homepage",
-          "Rule": "isHomepage()",
+          "LayerRule": {
+            "ConditionId": "[js: uuid()]",
+            "Conditions": [
+              {
+                "$type": "OrchardCore.Rules.Models.HomepageCondition, OrchardCore.Rules",
+                "Name": "HomepageCondition",
+                "Value": true,
+                "ConditionId": "[js: uuid()]"
+              }
+            ]
+          },          
           "Description": "The widgets in this layer are only displayed on the homepage."
         }
       ]
@@ -982,71 +886,71 @@
       "Files": [
         {
           "TargetPath": "about/1.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/about/1.jpg"
+          "SourcePath": "../wwwroot/assets/img/about/1.jpg"
         },
         {
           "TargetPath": "about/2.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/about/2.jpg"
+          "SourcePath": "../wwwroot/assets/img/about/2.jpg"
         },
         {
           "TargetPath": "about/3.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/about/3.jpg"
+          "SourcePath": "../wwwroot/assets/img/about/3.jpg"
         },
         {
           "TargetPath": "about/4.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/about/4.jpg"
+          "SourcePath": "../wwwroot/assets/img/about/4.jpg"
         },
         {
-          "TargetPath": "logos/creative-market.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/logos/creative-market.jpg"
+          "TargetPath": "logos/ibm.svg",
+          "SourcePath": "../wwwroot/assets/img/logos/ibm.svg"
         },
         {
-          "TargetPath": "logos/designmodo.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/logos/designmodo.jpg"
+          "TargetPath": "logos/google.svg",
+          "SourcePath": "../wwwroot/assets/img/logos/google.svg"
         },
         {
-          "TargetPath": "logos/envato.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/logos/envato.jpg"
+          "TargetPath": "logos/microsoft.svg",
+          "SourcePath": "../wwwroot/assets/img/logos/microsoft.svg"
         },
         {
-          "TargetPath": "logos/themeforest.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/logos/themeforest.jpg"
+          "TargetPath": "logos/facebook.svg",
+          "SourcePath": "../wwwroot/assets/img/logos/facebook.svg"
         },
         {
-          "TargetPath": "portfolio/01-full.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/portfolio/01-full.jpg"
+          "TargetPath": "portfolio/1.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/1.jpg"
         },
         {
-          "TargetPath": "portfolio/02-full.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/portfolio/02-full.jpg"
+          "TargetPath": "portfolio/2.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/2.jpg"
         },
         {
-          "TargetPath": "portfolio/03-full.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/portfolio/03-full.jpg"
+          "TargetPath": "portfolio/3.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/3.jpg"
         },
         {
-          "TargetPath": "portfolio/04-full.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/portfolio/04-full.jpg"
+          "TargetPath": "portfolio/4.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/4.jpg"
         },
         {
-          "TargetPath": "portfolio/05-full.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/portfolio/05-full.jpg"
+          "TargetPath": "portfolio/5.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/5.jpg"
         },
         {
-          "TargetPath": "portfolio/06-full.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/portfolio/06-full.jpg"
+          "TargetPath": "portfolio/6.jpg",
+          "SourcePath": "../wwwroot/assets/img/portfolio/6.jpg"
         },
         {
           "TargetPath": "team/1.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/team/1.jpg"
+          "SourcePath": "../wwwroot/assets/img/team/1.jpg"
         },
         {
           "TargetPath": "team/2.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/team/2.jpg"
+          "SourcePath": "../wwwroot/assets/img/team/2.jpg"
         },
         {
           "TargetPath": "team/3.jpg",
-          "SourcePath": "../wwwroot/src/assets/img/team/3.jpg"
+          "SourcePath": "../wwwroot/assets/img/team/3.jpg"
         }
       ]
     },
@@ -1071,6 +975,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Services",
                 "LinkMenuItemPart": {
                   "Name": "Services",
                   "Url": "~/#services"
@@ -1079,6 +984,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Portfolio",
                 "LinkMenuItemPart": {
                   "Name": "Portfolio",
                   "Url": "~/#portfolio"
@@ -1087,6 +993,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "About",
                 "LinkMenuItemPart": {
                   "Name": "About",
                   "Url": "~/#about"
@@ -1095,6 +1002,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Team",
                 "LinkMenuItemPart": {
                   "Name": "Team",
                   "Url": "~/#team"
@@ -1103,6 +1011,7 @@
               {
                 "ContentType": "LinkMenuItem",
                 "ContentItemId": "[js:uuid()]",
+                "DisplayText": "Contact",
                 "LinkMenuItemPart": {
                   "Name": "Contact",
                   "Url": "~/#contact"
@@ -1212,7 +1121,7 @@
                 "Project": {
                   "Image": {
                     "Paths": [
-                      "/portfolio/01-full.jpg"
+                      "/portfolio/1.jpg"
                     ]
                   },
                   "Category": {
@@ -1238,7 +1147,7 @@
                 "Project": {
                   "Image": {
                     "Paths": [
-                      "/portfolio/02-full.jpg"
+                      "/portfolio/2.jpg"
                     ]
                   },
                   "Category": {
@@ -1264,7 +1173,7 @@
                 "Project": {
                   "Image": {
                     "Paths": [
-                      "/portfolio/03-full.jpg"
+                      "/portfolio/3.jpg"
                     ]
                   },
                   "Category": {
@@ -1290,7 +1199,7 @@
                 "Project": {
                   "Image": {
                     "Paths": [
-                      "/portfolio/04-full.jpg"
+                      "/portfolio/4.jpg"
                     ]
                   },
                   "Category": {
@@ -1316,7 +1225,7 @@
                 "Project": {
                   "Image": {
                     "Paths": [
-                      "/portfolio/05-full.jpg"
+                      "/portfolio/5.jpg"
                     ]
                   },
                   "Category": {
@@ -1342,7 +1251,7 @@
                 "Project": {
                   "Image": {
                     "Paths": [
-                      "/portfolio/06-full.jpg"
+                      "/portfolio/6.jpg"
                     ]
                   },
                   "Category": {
@@ -1397,7 +1306,7 @@
                 "Author": "[js: parameters('AdminUsername')]",
                 "Milestone": {
                   "Date": {
-                    "Text": "MARCH 2011"
+                    "Text": "March 2011"
                   },
                   "Image": {
                     "Paths": [
@@ -1423,7 +1332,7 @@
                 "Author": "[js: parameters('AdminUsername')]",
                 "Milestone": {
                   "Date": {
-                    "Text": "DECEMBER 2012"
+                    "Text": "December 2015"
                   },
                   "Image": {
                     "Paths": [
@@ -1449,7 +1358,7 @@
                 "Author": "[js: parameters('AdminUsername')]",
                 "Milestone": {
                   "Date": {
-                    "Text": "JULY 2014"
+                    "Text": "July 2020"
                   },
                   "Image": {
                     "Paths": [
@@ -1472,7 +1381,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "TeamMember",
-                "DisplayText": "Kay Garland",
+                "DisplayText": "Parveen Anand",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1487,24 +1396,24 @@
                     ]
                   },
                   "Twitter": {
-                    "Text": "@BillGates"
+                    "Text": "@"
                   },
                   "Facebook": {
-                    "Text": "BillGates"
+                    "Text": "@"
                   },
                   "LinkedIn": {
-                    "Text": "williamhgates"
+                    "Text": "@"
                   }
                 },
                 "TitlePart": {
-                  "Title": "Kay Garland"
+                  "Title": "Parveen Anand"
                 }
               },
               {
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "TeamMember",
-                "DisplayText": "Larry Parker",
+                "DisplayText": "Diana Petersen",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1519,24 +1428,24 @@
                     ]
                   },
                   "Twitter": {
-                    "Text": "@BillGates"
+                    "Text": "@"
                   },
                   "Facebook": {
-                    "Text": "BillGates"
+                    "Text": "@"
                   },
                   "LinkedIn": {
-                    "Text": "williamhgates"
+                    "Text": "@"
                   }
                 },
                 "TitlePart": {
-                  "Title": "Larry Parker"
+                  "Title": "Diana Petersen"
                 }
               },
               {
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "TeamMember",
-                "DisplayText": "Diana Pertersen",
+                "DisplayText": "Larry Parker",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1551,17 +1460,17 @@
                     ]
                   },
                   "Twitter": {
-                    "Text": "@BillGates"
+                    "Text": "@"
                   },
                   "Facebook": {
-                    "Text": "BillGates"
+                    "Text": "@"
                   },
                   "LinkedIn": {
-                    "Text": "williamhgates"
+                    "Text": "@"
                   }
                 },
                 "TitlePart": {
-                  "Title": "Diana Pertersen"
+                  "Title": "Larry Parker"
                 }
               }
             ]
@@ -1572,7 +1481,7 @@
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
-                "DisplayText": "Envato",
+                "DisplayText": "Microsoft",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1580,7 +1489,7 @@
                 "Client": {
                   "Logo": {
                     "Paths": [
-                      "/logos/envato.jpg"
+                      "/logos/microsoft.svg"
                     ]
                   },
                   "Url": {
@@ -1588,14 +1497,14 @@
                   }
                 },
                 "TitlePart": {
-                  "Title": "Envato"
+                  "Title": "Microsoft"
                 }
               },
               {
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
-                "DisplayText": "Design Moto",
+                "DisplayText": "Google",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1603,7 +1512,7 @@
                 "Client": {
                   "Logo": {
                     "Paths": [
-                      "/logos/designmodo.jpg"
+                      "/logos/google.svg"
                     ]
                   },
                   "Url": {
@@ -1611,14 +1520,14 @@
                   }
                 },
                 "TitlePart": {
-                  "Title": "Design Moto"
+                  "Title": "Google"
                 }
               },
               {
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
-                "DisplayText": "ThemeForest",
+                "DisplayText": "Facebook",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1626,7 +1535,7 @@
                 "Client": {
                   "Logo": {
                     "Paths": [
-                      "/logos/themeforest.jpg"
+                      "/logos/facebook.svg"
                     ]
                   },
                   "Url": {
@@ -1634,14 +1543,14 @@
                   }
                 },
                 "TitlePart": {
-                  "Title": "ThemeForest"
+                  "Title": "Facebook"
                 }
               },
               {
                 "ContentItemId": "[js:uuid()]",
                 "ContentItemVersionId": "[js:uuid()]",
                 "ContentType": "Client",
-                "DisplayText": "Creative",
+                "DisplayText": "IBM",
                 "Latest": false,
                 "Published": false,
                 "Owner": null,
@@ -1649,7 +1558,7 @@
                 "Client": {
                   "Logo": {
                     "Paths": [
-                      "/logos/creative-market.jpg"
+                      "/logos/ibm.svg"
                     ]
                   },
                   "Url": {
@@ -1657,7 +1566,7 @@
                   }
                 },
                 "TitlePart": {
-                  "Title": "Creative"
+                  "Title": "IBM"
                 }
               }
             ]
@@ -1678,8 +1587,8 @@
       "name": "MediaProfiles",
       "MediaProfiles": {
         "medium": {
-          "Hint": "A medium image (480px x 480px)",
-          "Width": 480,
+          "Hint": "A medium image (600px x 480px)",
+          "Width": 600,
           "Height": 480,
           "Mode": 0,
           "Format": 0,

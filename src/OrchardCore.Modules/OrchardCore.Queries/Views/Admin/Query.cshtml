@@ -11,11 +11,11 @@
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-sql" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["SQL Query"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
 
 <div asp-validation-summary="All" class="text-danger"></div>
 
-<form asp-action="Query" method="post">
+<form asp-action="Query" method="post" class="no-multisubmit">
     <div class="row">
         <div class="col-md-6">
 

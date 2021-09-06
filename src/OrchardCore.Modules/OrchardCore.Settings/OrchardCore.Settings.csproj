@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Settings</Title>
+    <Description>$(OCCMSDescription)
+
+    The settings module creates site settings.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

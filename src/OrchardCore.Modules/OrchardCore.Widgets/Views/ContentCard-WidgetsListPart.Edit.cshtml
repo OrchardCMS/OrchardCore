@@ -1,4 +1,6 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.Localization
+
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
@@ -10,34 +12,33 @@
     <div class="widget-editor-header card-header text-muted  py-1 pl-3 pr-1">
         @if (Model.CanMove != false)
         {
-            <div class="widget-editor-handle"><i class="fas fa-arrows-alt"></i></div>
+            <div class="widget-editor-handle"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
         }
         <button type="button" class="btn btn-outline-secondary btn-sm widget-list-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-list-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-up" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm widget-list-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
         @contentType
         <div class="btn-widget-metadata border border-info w-100">
             <div class="btn-group">
-                    @if (Model.CanInsert != false)
-                    {
-                        <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
-                            {
-                                <a
-                                class="dropdown-item insert-list-widget btn-sm"
-                                data-target-id="@Model.TargetId"
-                                data-prefixes-name="@Model.PrefixesName"
-                                data-zones-name="@Model.ZonesName"
-                                data-contenttypes-name="@Model.ContentTypesName"
-                                data-widget-type="@type.Name"
-                                data-zone="@Model.ZoneValue"
-                                href="javascript:;">@type.DisplayName</a>
-                            }
-                        </div>
-                    }
-                </div>
+                @if (Model.CanInsert != false)
+                {
+                    <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
+                        {
+                            <a class="dropdown-item insert-list-widget btn-sm"
+                               data-target-id="@Model.TargetId"
+                               data-prefixes-name="@Model.PrefixesName"
+                               data-zones-name="@Model.ZonesName"
+                               data-contenttypes-name="@Model.ContentTypesName"
+                               data-widget-type="@type.Name"
+                               data-zone="@Model.ZoneValue"
+                               href="javascript:;">@type.DisplayName</a>
+                        }
+                    </div>
+                }
+            </div>
         </div>
 
         <div class="btn-group btn-group-sm float-sm-right" role="group">
@@ -54,11 +55,11 @@
                 @await DisplayAsync(Model.ContentEditor)
             }
         </div>
-     </div>
+    </div>
     @if (Model.Footer != null)
     {
         <div class="widget-editor-footer card-footer text-muted px-1 py-1">
-                @await DisplayAsync(Model.Footer)
+            @await DisplayAsync(Model.Footer)
         </div>
     }
 </div>

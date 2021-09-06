@@ -3,8 +3,7 @@
   <Import Project="..\OrchardCore.Build\OrchardCore.Commons.props" />
 
   <PropertyGroup>
-    <DebugType>embedded</DebugType>
-    <EmbedAllSources>true</EmbedAllSources>
+    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
   </PropertyGroup>
 
 </Project>

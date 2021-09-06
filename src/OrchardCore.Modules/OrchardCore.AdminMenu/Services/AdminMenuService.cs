@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using OrchardCore.AdminMenu.Models;
 using OrchardCore.Documents;
 
-namespace OrchardCore.AdminMenu
+namespace OrchardCore.AdminMenu.Services
 {
     public class AdminMenuService : IAdminMenuService
     {

@@ -1,9 +1,9 @@
 @model EditDeploymentPlanStepViewModel
 
-<h1>@RenderTitleSegments(T["Create Step"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Step"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @await DisplayAsync(Model.Editor)
 
     <input type="hidden" asp-for="DeploymentPlanId" />

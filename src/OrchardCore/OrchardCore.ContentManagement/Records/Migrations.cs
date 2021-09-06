@@ -30,29 +30,58 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_ContentItemId", "ContentItemId", "Latest", "Published", "CreatedUtc")
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "CreatedUtc",
+                    "ModifiedUtc",
+                    "PublishedUtc",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
+                    "DocumentId",
+                    "Owner",
+                    "Published",
+                    "Latest")
             );
 
-            return 3;
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
+                    "DocumentId",
+                    "Author",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
+                    "DocumentId",
+                    "DisplayText",
+                    "Published",
+                    "Latest")
+            );
+
+            // Shortcut other migration steps on new content definition schemas.
+            return 6;
         }
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .AddColumn<string>("ContentItemVersionId", c => c.WithLength(26))
-            );
-
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
             return 2;
@@ -60,16 +89,11 @@ namespace OrchardCore.ContentManagement.Records
 
         public int UpdateFrom2()
         {
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
-            );
-
-            // Return 3 to shortcut the 3rd and 4th migration on new content definition schemas.
-            return 5;
+            return 3;
         }
 
         // Migrate content type definitions. This only needs to run on old content definition schemas.
@@ -156,6 +180,56 @@ namespace OrchardCore.ContentManagement.Records
             }
 
             return 5;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom5()
+        {
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "CreatedUtc",
+                    "ModifiedUtc",
+                    "PublishedUtc",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
+                    "DocumentId",
+                    "Owner",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
+                    "DocumentId",
+                    "Author",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
+                    "DocumentId",
+                    "DisplayText",
+                    "Published",
+                    "Latest")
+            );
+
+            return 6;
         }
     }
 }

@@ -29,6 +29,14 @@
                 tableDestroy: 'Delete table',
                 error: 'Error'
             },
+            cs: {
+                table: 'Vytvořit příkaz Table',
+                tableAddRow: 'Přidat řádek',
+                tableAddRowAbove: 'Přidat řádek',
+                tableAddColumnLeft: 'Přidat sloupec',
+                tableAddColumn: 'Přidat sloupec',
+                error: 'Chyba'
+            },
             da: {
                 table: 'Indsæt tabel',
                 tableAddRow: 'Tilføj række',
@@ -51,13 +59,16 @@
                 tableDestroy: 'Tabelle löschen',
                 error: 'Error'
             },
-            sk: {
-                table: 'Vytvoriť tabuľky',
-                tableAddRow: 'Pridať riadok',
-                tableAddRowAbove: 'Pridať riadok',
-                tableAddColumnLeft: 'Pridať stĺpec',
-                tableAddColumn: 'Pridať stĺpec',
-                error: 'Chyba'
+            et: {
+                table: 'Sisesta tabel',
+                tableAddRow: 'Lisa rida',
+                tableAddRowAbove: 'Lisa rida üles',
+                tableAddColumnLeft: 'Lisa tulp vasakule',
+                tableAddColumn: 'Lisa tulp paremale',
+                tableDeleteRow: 'Kustuta rida',
+                tableDeleteColumn: 'Kustuta tulp',
+                tableDestroy: 'Kustuta tabel',
+                error: 'Viga'
             },
             fr: {
                 table: 'Insérer un tableau',
@@ -70,13 +81,57 @@
                 tableDestroy: 'Effacer le tableau',
                 error: 'Erreur'
             },
-            cs: {
-                table: 'Vytvořit příkaz Table',
-                tableAddRow: 'Přidat řádek',
-                tableAddRowAbove: 'Přidat řádek',
-                tableAddColumnLeft: 'Přidat sloupec',
-                tableAddColumn: 'Přidat sloupec',
-                error: 'Chyba'
+            hu: {
+                table: 'Táblázat beszúrás',
+                tableAddRow: 'Sor hozzáadás',
+                tableAddRowAbove: 'Sor beszúrás fönt',
+                tableAddColumnLeft: 'Sor beszúrás balra',
+                tableAddColumn: 'Sor beszúrás jobbra',
+                tableDeleteRow: 'Sor törlés',
+                tableDeleteColumn: 'Oszlop törlés',
+                tableDestroy: 'Táblázat törlés',
+                error: 'Hiba'
+            },
+            id: {
+                table: 'Sisipkan tabel',
+                tableAddRow: 'Sisipkan baris',
+                tableAddRowAbove: 'Sisipkan baris',
+                tableAddColumnLeft: 'Sisipkan kolom',
+                tableAddColumn: 'Sisipkan kolom',
+                tableDeleteRow: 'Hapus baris',
+                tableDeleteColumn: 'Hapus kolom',
+                tableDestroy: 'Hapus tabel',
+                error: 'Galat'
+            },
+            ja: {
+                table: '表の挿入',
+                tableAddRow: '行の追加',
+                tableAddRowAbove: '行の追加',
+                tableAddColumnLeft: '列の追加',
+                tableAddColumn: '列の追加',
+                error: 'エラー'
+            },
+            ko: {
+                table: '표 넣기',
+                tableAddRow: '줄 추가',
+                tableAddRowAbove: '줄 추가',
+                tableAddColumnLeft: '칸 추가',
+                tableAddColumn: '칸 추가',
+                tableDeleteRow: '줄 삭제',
+                tableDeleteColumn: '칸 삭제',
+                tableDestroy: '표 지우기',
+                error: '에러'
+            },
+            pt_br: {
+                table: 'Inserir tabela',
+                tableAddRow: 'Adicionar linha',
+                tableAddRowAbove: 'Adicionar linha',
+                tableAddColumnLeft: 'Adicionar coluna',
+                tableAddColumn: 'Adicionar coluna',
+                tableDeleteRow: 'Deletar linha',
+                tableDeleteColumn: 'Deletar coluna',
+                tableDestroy: 'Deletar tabela',
+                error: 'Erro'
             },
             ru: {
                 table: 'Вставить таблицу',
@@ -89,20 +144,23 @@
                 tableDestroy: 'Удалить таблицу',
                 error: 'Ошибка'
             },
-            ja: {
-                table: '表の挿入',
-                tableAddRow: '行の追加',
-                tableAddRowAbove: '行の追加',
-                tableAddColumnLeft: '列の追加',
-                tableAddColumn: '列の追加',
-                error: 'エラー'
+            sk: {
+                table: 'Vytvoriť tabuľky',
+                tableAddRow: 'Pridať riadok',
+                tableAddRowAbove: 'Pridať riadok',
+                tableAddColumnLeft: 'Pridať stĺpec',
+                tableAddColumn: 'Pridať stĺpec',
+                error: 'Chyba'
             },
             tr: {
                 table: 'Tablo ekle',
                 tableAddRow: 'Satır ekle',
-                tableAddRowAbove: 'Satır ekle',
-                tableAddColumnLeft: 'Kolon ekle',
-                tableAddColumn: 'Kolon ekle',
+                tableAddRowAbove: 'Yukarıya satır ekle',
+                tableAddColumnLeft: 'Sola sütun ekle',
+                tableAddColumn: 'Sağa sütun ekle',
+                tableDeleteRow: 'Satırı sil',
+                tableDeleteColumn: 'Sütunu sil',
+                tableDestroy: 'Tabloyu sil',
                 error: 'Hata'
             },
             zh_tw: {
@@ -116,40 +174,17 @@
                 tableDestroy: '刪除表格',
                 error: '錯誤'
             },
-            id: {
-                table: 'Sisipkan tabel',
-                tableAddRow: 'Sisipkan baris',
-                tableAddRowAbove: 'Sisipkan baris',
-                tableAddColumnLeft: 'Sisipkan kolom',
-                tableAddColumn: 'Sisipkan kolom',
-                tableDeleteRow: 'Hapus baris',
-                tableDeleteColumn: 'Hapus kolom',
-                tableDestroy: 'Hapus tabel',
-                error: 'Galat'
-            },
-            pt_br: {
-                table: 'Inserir tabela',
-                tableAddRow: 'Adicionar linha',
-                tableAddRowAbove: 'Adicionar linha',
-                tableAddColumnLeft: 'Adicionar coluna',
-                tableAddColumn: 'Adicionar coluna',
-                tableDeleteRow: 'Deletar linha',
-                tableDeleteColumn: 'Deletar coluna',
-                tableDestroy: 'Deletar tabela',
-                error: 'Erro'
-            },
-            ko: {
-                table: '표 넣기',
-                tableAddRow: '줄 추가',
-                tableAddRowAbove: '줄 추가',
-                tableAddColumnLeft: '칸 추가',
-                tableAddColumn: '칸 추가',
-                tableDeleteRow: '줄 삭제',
-                tableDeleteColumn: '칸 삭제',
-                tableDestroy: '표 지우기',
-                error: '에러'
-            },
-            // jshint camelcase:true
+            es: {
+                table: 'Insertar tabla',
+                tableAddRow: 'Agregar fila',
+                tableAddRowAbove: 'Agregar fila arriba',
+                tableAddColumnLeft: 'Agregar columna a la izquierda',
+                tableAddColumn: 'Agregar columna a la derecha',
+                tableDeleteRow: 'Borrar fila',
+                tableDeleteColumn: 'Borrar columna',
+                tableDestroy: 'Borrar tabla',
+                error: 'Error'
+            }// jshint camelcase:true
         },
 
         plugins: {

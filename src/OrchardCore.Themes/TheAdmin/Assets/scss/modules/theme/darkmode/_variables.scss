@@ -66,9 +66,12 @@ $text-muted: $gray-600 !default;
 
 // Tables
 
-$table-accent-bg: $gray-800 !default;
-
-$table-border-color: $gray-700 !default;
+$table-color: $white !default;
+$table-bg: $gray-800 !default;
+$table-accent-bg: rgba($white, .05) !default;
+$table-hover-color: $table-color !default;
+$table-hover-bg: rgba($white, .075) !default;
+$table-border-color: lighten($table-bg, 7.5%) !default;
 
 // Forms
 
@@ -78,6 +81,8 @@ $input-color: $gray-400 !default;
 $input-group-addon-color: $input-color !default;
 $input-group-addon-bg: $gray-700 !default;
 $input-disabled-bg: rgb(35, 38, 40) !default;
+
+$custom-control-indicator-border-color: $input-border-color !default;
 
 $custom-file-color: $gray-500 !default;
 $custom-file-border-color: $body-bg !default;
@@ -117,20 +122,20 @@ $navbar-light-toggler-border-color: rgba($gray-900, 0.1) !default;
 // Pagination
 
 $pagination-color: $white !default;
-$pagination-bg: $success !default;
-$pagination-border-width: 0 !default;
-$pagination-border-color: transparent !default;
+$pagination-bg: $gray-900 !default;
+$pagination-border-width: 1px !default;
+$pagination-border-color: $gray-700 !default;
 
 $pagination-hover-color: $white !default;
-$pagination-hover-bg: lighten($success, 10%) !default;
+$pagination-hover-bg: lighten($gray-900, 10%) !default;
 $pagination-hover-border-color: transparent !default;
 
-$pagination-active-bg: $pagination-hover-bg !default;
-$pagination-active-border-color: transparent !default;
+$pagination-active-bg: $primary !default;
+$pagination-active-border-color: $gray-700 !default;
 
 $pagination-disabled-color: $white !default;
-$pagination-disabled-bg: darken($success, 15%) !default;
-$pagination-disabled-border-color: transparent !default;
+$pagination-disabled-bg: $pagination-hover-bg !default;
+$pagination-disabled-border-color: $gray-700 !default;
 
 // Jumbotron
 
@@ -140,6 +145,7 @@ $jumbotron-bg: $gray-800 !default;
 
 $card-cap-bg: $gray-700 !default;
 $card-bg: $gray-800 !default;
+$card-border-color: $gray-700 !default;
 
 // Popovers
 

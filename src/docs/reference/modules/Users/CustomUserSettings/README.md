@@ -17,10 +17,14 @@ Once created, open the Setting menu item and each of these sections should appea
 
 ### Liquid
 
-The Custom User Settings are available on the `{{ User.Properties }}` object.  
+The Custom User Settings are available when loading the user from the database. 
+```liquid 
+{% assign user = User | user_id | users_by_id %}
+{{user.Properties}}
+```
 Each section is made available using its name.
 
-For instance for a custom settings section named `UserProfile`, with a `TextField` named `FirstName` would be accessible using `{{ User.Properties.UserProfile.Content.UserProfile.FirstName.Text }}`.
+For instance for a custom settings section named `UserProfile`, with a `TextField` named `FirstName` would be accessible using `{{ user.Properties.UserProfile.UserProfile.FirstName.Text }}`.
 
 ### Placement
 
@@ -43,3 +47,7 @@ To adjust the placement, for example, to move the setting out of the tab, use th
 
 You may also extend the `User` properties by implementing a `SectionDisplayDriver<User, UserProfile>` where `User` is the type of entity to be edited,
 and `UserProfile` is the property to extend the `User` entity with.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/_ff79hm5PAc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

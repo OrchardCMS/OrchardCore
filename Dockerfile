@@ -1,13 +1,13 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
 LABEL stage=build-env
 WORKDIR /app
 
 # Copy and build
 COPY ./src /app
-RUN dotnet publish /app/OrchardCore.Cms.Web -c Release -o ./build/release
+RUN dotnet publish /app/OrchardCore.Cms.Web -c Release -o ./build/release --framework net5.0
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
 EXPOSE 80
 ENV ASPNETCORE_URLS http://+:80
 WORKDIR /app

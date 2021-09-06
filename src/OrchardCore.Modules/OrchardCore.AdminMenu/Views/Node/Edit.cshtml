@@ -1,9 +1,9 @@
 @model AdminNodeEditViewModel
 
-<h1>@RenderTitleSegments(T["Edit Node"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Node"])</h1></zone>
 
 <div asp-validation-summary="All"></div>
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="no-multisubmit">
     @await DisplayAsync(Model.Editor.Content)
 
     <input type="hidden" asp-for="AdminMenuId" />
@@ -30,7 +30,7 @@
            asp-controller="Node"
            asp-route-id="@Model.AdminMenuId"
            asp-route-treeNodeId="@Model.AdminNodeId"
-           itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
 
         <a class="btn btn-secondary cancel"
            role="button"

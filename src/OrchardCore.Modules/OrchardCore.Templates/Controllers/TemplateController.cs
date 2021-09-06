@@ -1,14 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
@@ -48,47 +52,69 @@ namespace OrchardCore.Templates.Controllers
             H = htmlLocalizer;
         }
 
-        public Task<IActionResult> Admin(PagerParameters pagerParameters)
+        public Task<IActionResult> Admin(ContentOptions options, PagerParameters pagerParameters)
         {
+            options.AdminTemplates = true;
+
             // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones
-            return Index(pagerParameters, true);
+            return Index(options, pagerParameters);
         }
 
-        public async Task<IActionResult> Index(PagerParameters pagerParameters, bool adminTemplates = false)
+        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
-            if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
+            if (!options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
                 return Forbid();
             }
 
-            if (adminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
+            if (options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, AdminTemplatesPermissions.ManageAdminTemplates))
             {
                 return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var templatesDocument = adminTemplates
+            var templatesDocument = options.AdminTemplates
                 ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
                 : await _templatesManager.GetTemplatesDocumentAsync()
                 ;
 
-            var count = templatesDocument.Templates.Count;
+            var templates = templatesDocument.Templates.ToList();
 
-            var templates = templatesDocument.Templates.OrderBy(x => x.Key)
+            if (!string.IsNullOrWhiteSpace(options.Search))
+            {
+                templates = templates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            var count = templates.Count;
+
+            templates = templates.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize);
+                .Take(pager.PageSize).ToList();
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
             var model = new TemplateIndexViewModel
             {
-                AdminTemplates = adminTemplates,
                 Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),
+                Options = options,
                 Pager = pagerShape
             };
 
+            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            };
+
             return View("Index", model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(TemplateIndexViewModel model)
+        {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<IActionResult> Create(TemplateViewModel model, bool adminTemplates = false, string returnUrl = null)
@@ -190,7 +216,7 @@ namespace OrchardCore.Templates.Controllers
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name, returnUrl });
+                return RedirectToAction(nameof(Create), new { name, returnUrl });
             }
 
             var template = templatesDocument.Templates[name];
@@ -286,8 +312,7 @@ namespace OrchardCore.Templates.Controllers
 
             var templatesDocument = adminTemplates
                 ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-                : await _templatesManager.LoadTemplatesDocumentAsync()
-                ;
+                : await _templatesManager.LoadTemplatesDocumentAsync();
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
@@ -296,12 +321,55 @@ namespace OrchardCore.Templates.Controllers
 
             await (adminTemplates
                     ? _adminTemplatesManager.RemoveTemplateAsync(name)
-                    : _templatesManager.RemoveTemplateAsync(name)
-                    );
+                    : _templatesManager.RemoveTemplateAsync(name));
 
-            _notifier.Success(H["Template deleted successfully"]);
+            _notifier.Success(H["Template deleted successfully."]);
 
             return RedirectToReturnUrlOrIndex(returnUrl);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> ListPost(ContentOptions options, IEnumerable<string> itemIds)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
+            {
+                return Forbid();
+            }
+
+            if (itemIds?.Count() > 0)
+            {
+                var templatesDocument = options.AdminTemplates
+                        ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                        : await _templatesManager.LoadTemplatesDocumentAsync();
+                var checkedContentItems = templatesDocument.Templates.Where(x => itemIds.Contains(x.Key));
+
+                switch (options.BulkAction)
+                {
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.Remove:
+                        foreach (var item in checkedContentItems)
+                        {
+                            await (options.AdminTemplates
+                                    ? _adminTemplatesManager.RemoveTemplateAsync(item.Key)
+                                    : _templatesManager.RemoveTemplateAsync(item.Key));
+                        }
+                        _notifier.Success(H["Templates successfully removed."]);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            if (options.AdminTemplates)
+            {
+                return RedirectToAction(nameof(Admin));
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)

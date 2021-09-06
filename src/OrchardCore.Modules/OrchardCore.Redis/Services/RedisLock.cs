@@ -12,21 +12,21 @@ using StackExchange.Redis;
 namespace OrchardCore.Redis.Services
 {
     /// <summary>
-    /// This component is a tenant singleton which allows to acquire named locks for a given tenant.
-    /// This is a distributed version where locks are auto released after provided expiration times.
+    /// This component is a tenant singleton which allows to acquire distributed named locks for a given tenant.
     /// </summary>
     public class RedisLock : IDistributedLock
     {
-        private readonly string _hostName;
-        private readonly string _prefix;
         private readonly IRedisService _redis;
         private readonly ILogger _logger;
+
+        private readonly string _hostName;
+        private readonly string _prefix;
 
         public RedisLock(IRedisService redis, ShellSettings shellSettings, ILogger<RedisLock> logger)
         {
             _redis = redis;
             _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
-            _prefix = shellSettings.Name + ':';
+            _prefix = redis.InstancePrefix + shellSettings.Name + ':';
             _logger = logger;
         }
 
@@ -45,7 +45,7 @@ namespace OrchardCore.Redis.Services
         /// </summary>
         public async Task<(ILocker locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
         {
-            using (var cts = new CancellationTokenSource(timeout))
+            using (var cts = new CancellationTokenSource(timeout != TimeSpan.MaxValue ? timeout : Timeout.InfiniteTimeSpan))
             {
                 var retries = 0.0;
 
@@ -62,16 +62,37 @@ namespace OrchardCore.Redis.Services
                     {
                         await Task.Delay(GetDelay(++retries), cts.Token);
                     }
-
                     catch (TaskCanceledException)
                     {
-                        _logger.LogError("Fails to acquire the named lock '{LockName}' after the given timeout of '{Timeout}'.",
-                            _prefix + key, timeout.ToString());
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            _logger.LogDebug("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                                _prefix + key, timeout.ToString());
+                        }
                     }
                 }
             }
 
             return (null, false);
+        }
+
+        public async Task<bool> IsLockAcquiredAsync(string key)
+        {
+            if (_redis.Database == null)
+            {
+                await _redis.ConnectAsync();
+            }
+
+            try
+            {
+                return (await _redis.Database.LockQueryAsync(_prefix + key)).HasValue;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Fails to check whether the named lock '{LockName}' is already acquired.", _prefix + key);
+            }
+
+            return false;
         }
 
         private async Task<bool> LockAsync(string key, TimeSpan expiry)
@@ -85,7 +106,6 @@ namespace OrchardCore.Redis.Services
             {
                 return await _redis.Database.LockTakeAsync(_prefix + key, _hostName, expiry);
             }
-
             catch (Exception e)
             {
                 _logger.LogError(e, "Fails to acquire the named lock '{LockName}'.", _prefix + key);
@@ -105,7 +125,6 @@ namespace OrchardCore.Redis.Services
             {
                 await _redis.Database.LockReleaseAsync(_prefix + key, _hostName);
             }
-
             catch (Exception e)
             {
                 _logger.LogError(e, "Fails to release the named lock '{LockName}'.", _prefix + key);
@@ -118,7 +137,6 @@ namespace OrchardCore.Redis.Services
             {
                 _redis.Database.LockRelease(_prefix + key, _hostName, CommandFlags.FireAndForget);
             }
-
             catch (Exception e)
             {
                 _logger.LogError(e, "Fails to release the named lock '{LockName}'.", _prefix + key);
@@ -162,29 +180,29 @@ namespace OrchardCore.Redis.Services
             }
         }
 
-        private static readonly double _baseDelay = 1000;
-        private static readonly double _maxDelay = 30000;
+        private static readonly double _baseDelay = 100;
+        private static readonly double _maxDelay = 10000;
 
-        protected internal virtual TimeSpan GetDelay(double retries)
+        private static TimeSpan GetDelay(double retries)
         {
             var delay = _baseDelay
-                * (1.0 + ((Math.Pow(1.5, retries - 1.0) - 1.0)
-                    * (0.7 + new Random().NextDouble() * 0.3)));
+                * (1.0 + ((Math.Pow(1.8, retries - 1.0) - 1.0)
+                    * (0.6 + new Random().NextDouble() * 0.4)));
 
             return TimeSpan.FromMilliseconds(Math.Min(delay, _maxDelay));
 
             // 2 examples with 10 retries
             // --------------------------
-            // 1000      1000 (start from base)
-            // 1382      1474
-            // 2217      2195
-            // 3051      2746
-            // 3933      4248
-            // 6066      6000
-            // 11340     9342
-            // 15656     13059
-            // 21885     19207
-            // 30000     30000 (max reached)
+            // 100     100 (start from base)
+            // 164     171
+            // 256     312
+            // 401     519
+            // 754     766
+            // 1327    1562
+            // 2950    3257
+            // 4596    4966
+            // 7215    8667
+            // 10000   10000 (max reached)
         }
     }
 }

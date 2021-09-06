@@ -1,8 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore ReCaptcha</Title>
+    <Description>$(OCCMSDescription)
+
+    Provides ReCaptcha functionality.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,8 +1,11 @@
 name: PR - CI
 on: 
   pull_request:
-    branches:
-      - dev
+    paths-ignore:
+      - '**/*.md'	
+      - 'mkdocs.yml'	
+      - 'src/docs/**/*'
+    branches: [ dev, main, release/** ]
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -16,17 +19,21 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "15"
     - name: Setup .NET Core 3.1 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.*
     - name: Setup .NET Core 5.0 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.*
     - name: Build
       run: |
-        dotnet build --configuration Release
+        dotnet build --configuration Release --framework net5.0
+        dotnet build --configuration Release --framework netcoreapp3.1
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 

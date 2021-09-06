@@ -20,6 +20,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var statementIndent = parserConfig.statementIndent;
     var jsonldMode = parserConfig.jsonld;
     var jsonMode = parserConfig.json || jsonldMode;
+    var trackScope = parserConfig.trackScope !== false;
     var isTS = parserConfig.typescript;
     var wordRE = parserConfig.wordCharacters || /[\w$\xa1-\uffff]/; // Tokenizer
 
@@ -306,6 +307,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       "string": true,
       "regexp": true,
       "this": true,
+      "import": true,
       "jsonld-keyword": true
     };
 
@@ -319,6 +321,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     function inScope(state, varname) {
+      if (!trackScope) return false;
+
       for (var v = state.localVars; v; v = v.next) {
         if (v.name == varname) return true;
       }
@@ -385,6 +389,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function register(varname) {
       var state = cx.state;
       cx.marked = "def";
+      if (!trackScope) return;
 
       if (state.context) {
         if (state.lexical.info == "var" && state.context && state.context.block) {
@@ -504,7 +509,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       if (type == "function") return cont(functiondef);
-      if (type == "for") return cont(pushlex("form"), forspec, statement, poplex);
+      if (type == "for") return cont(pushlex("form"), pushblockcontext, forspec, statement, popcontext, poplex);
 
       if (type == "class" || isTS && value == "interface") {
         cx.marked = "keyword";
@@ -579,7 +584,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (type == "{") return contCommasep(objprop, "}", null, maybeop);
       if (type == "quasi") return pass(quasi, maybeop);
       if (type == "new") return cont(maybeTarget(noComma));
-      if (type == "import") return cont(expression);
       return cont();
     }
 
@@ -629,7 +633,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function quasi(type, value) {
       if (type != "quasi") return pass();
       if (value.slice(value.length - 2) != "${") return cont(quasi);
-      return cont(expression, continueQuasi);
+      return cont(maybeexpression, continueQuasi);
     }
 
     function continueQuasi(type) {
@@ -784,7 +788,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     function typeexpr(type, value) {
-      if (value == "keyof" || value == "typeof" || value == "infer") {
+      if (value == "keyof" || value == "typeof" || value == "infer" || value == "readonly") {
         cx.marked = "keyword";
         return cont(value == "typeof" ? expressionNoComma : typeexpr);
       }
@@ -797,13 +801,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (value == "|" || value == "&") return cont(typeexpr);
       if (type == "string" || type == "number" || type == "atom") return cont(afterType);
       if (type == "[") return cont(pushlex("]"), commasep(typeexpr, "]", ","), poplex, afterType);
-      if (type == "{") return cont(pushlex("}"), commasep(typeprop, "}", ",;"), poplex, afterType);
+      if (type == "{") return cont(pushlex("}"), typeprops, poplex, afterType);
       if (type == "(") return cont(commasep(typearg, ")"), maybeReturnType, afterType);
       if (type == "<") return cont(commasep(typeexpr, ">"), typeexpr);
+
+      if (type == "quasi") {
+        return pass(quasiType, afterType);
+      }
     }
 
     function maybeReturnType(type) {
       if (type == "=>") return cont(typeexpr);
+    }
+
+    function typeprops(type) {
+      if (type.match(/[\}\)\]]/)) return cont();
+      if (type == "," || type == ";") return cont(typeprops);
+      return pass(typeprop, typeprops);
     }
 
     function typeprop(type, value) {
@@ -818,6 +832,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return cont(expect("variable"), maybetypeOrIn, expect("]"), typeprop);
       } else if (type == "(") {
         return pass(functiondecl, typeprop);
+      } else if (!type.match(/[;\}\)\],]/)) {
+        return cont();
+      }
+    }
+
+    function quasiType(type, value) {
+      if (type != "quasi") return pass();
+      if (value.slice(value.length - 2) != "${") return cont(quasiType);
+      return cont(typeexpr, continueQuasiType);
+    }
+
+    function continueQuasiType(type) {
+      if (type == "}") {
+        cx.marked = "string-2";
+        cx.state.tokenize = tokenQuasi;
+        return cont(quasiType);
       }
     }
 
@@ -1032,6 +1062,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     function classfield(type, value) {
+      if (value == "!") return cont(classfield);
       if (value == "?") return cont(classfield);
       if (type == ":") return cont(typeexpr, maybeAssign);
       if (value == "=") return cont(expressionNoComma);
@@ -1067,6 +1098,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function afterImport(type) {
       if (type == "string") return cont();
       if (type == "(") return pass(expression);
+      if (type == ".") return pass(maybeoperatorComma);
       return pass(importSpec, maybeMoreImports, maybeFrom);
     }
 
@@ -1153,7 +1185,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         if (!/^\s*else\b/.test(textAfter)) for (var i = state.cc.length - 1; i >= 0; --i) {
           var c = state.cc[i];
-          if (c == poplex) lexical = lexical.prev;else if (c != maybeelse) break;
+          if (c == poplex) lexical = lexical.prev;else if (c != maybeelse && c != popcontext) break;
         }
 
         while ((lexical.type == "stat" || lexical.type == "form") && (firstChar == "}" || (top = state.cc[state.cc.length - 1]) && (top == maybeoperatorComma || top == maybeoperatorNoComma) && !/^[,\.=+\-*:?[\(]/.test(textAfter))) {
@@ -1177,8 +1209,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       jsonMode: jsonMode,
       expressionAllowed: expressionAllowed,
       skipExpression: function skipExpression(state) {
-        var top = state.cc[state.cc.length - 1];
-        if (top == expression || top == expressionNoComma) state.cc.pop();
+        parseJS(state, "atom", "atom", "true", new CodeMirror.StringStream("", 2, null));
       }
     };
   });
@@ -1193,6 +1224,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     json: true
   });
   CodeMirror.defineMIME("application/x-json", {
+    name: "javascript",
+    json: true
+  });
+  CodeMirror.defineMIME("application/manifest+json", {
     name: "javascript",
     json: true
   });

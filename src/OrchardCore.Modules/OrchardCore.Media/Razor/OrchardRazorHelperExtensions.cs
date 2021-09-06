@@ -37,13 +37,13 @@ public static class OrchardRazorHelperExtensions
     /// <summary>
     /// Returns the relative URL of the specified asset path for a media profile with optional resizing parameters.
     /// </summary>
-    public static async Task<string> AssetProfileUrlAsync(this IOrchardHelper orchardHelper, string assetPath, string imageProfile, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
+    public static Task<string> AssetProfileUrlAsync(this IOrchardHelper orchardHelper, string assetPath, string imageProfile, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
     {
         var mediaFileStore = orchardHelper.HttpContext.RequestServices.GetService<IMediaFileStore>();
 
         if (mediaFileStore == null)
         {
-            return assetPath;
+            return Task.FromResult(assetPath);
         }
 
         var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath);
@@ -55,7 +55,7 @@ public static class OrchardRazorHelperExtensions
             resolvedAssetPath = fileVersionProvider.AddFileVersionToPath(orchardHelper.HttpContext.Request.PathBase, resolvedAssetPath);
         }
 
-        return await orchardHelper.ImageProfileResizeUrlAsync(resolvedAssetPath, imageProfile, width, height, resizeMode, quality, format, anchor, bgcolor);
+        return orchardHelper.ImageProfileResizeUrlAsync(resolvedAssetPath, imageProfile, width, height, resizeMode, quality, format, anchor, bgcolor);
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public static class OrchardRazorHelperExtensions
         {
             var mediaTokenService = orchardHelper.HttpContext.RequestServices.GetService<IMediaTokenService>();
 
-            url = mediaTokenService.TokenizePath(url);
+            url = mediaTokenService.AddTokenToPath(url);
         }
 
         return url;

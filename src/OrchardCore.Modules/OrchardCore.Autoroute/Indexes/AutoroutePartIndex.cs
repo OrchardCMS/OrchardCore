@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Data;
 using YesSql.Indexes;
@@ -12,6 +15,11 @@ namespace OrchardCore.ContentManagement.Records
 {
     public class AutoroutePartIndex : MapIndex
     {
+        /// <summary>
+        /// The id of the document.
+        /// </summary>
+        public int DocumentId { get; set; }
+
         /// <summary>
         /// The container content item id.
         /// </summary>
@@ -43,10 +51,12 @@ namespace OrchardCore.ContentManagement.Records
         public string JsonPath { get; set; }
     }
 
-    public class AutoroutePartIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-
+        private readonly HashSet<ContentItem> _itemRemoved = new HashSet<ContentItem>();
+        private readonly HashSet<string> _partRemoved = new HashSet<string>();
+        private IContentDefinitionManager _contentDefinitionManager;
         private IContentManager _contentManager;
 
         public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
@@ -54,36 +64,85 @@ namespace OrchardCore.ContentManagement.Records
             _serviceProvider = serviceProvider;
         }
 
-        public override void Describe(DescribeContext<ContentItem> context)
+        public override Task RemovedAsync(RemoveContentContext context)
+        {
+            if (context.NoActiveVersionLeft)
+            {
+                var part = context.ContentItem.As<AutoroutePart>();
+
+                if (part != null)
+                {
+                    _itemRemoved.Add(context.ContentItem);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public override async Task PublishedAsync(PublishContentContext context)
+        {
+            var part = context.ContentItem.As<AutoroutePart>();
+
+            // Validate that the content definition contains this part, this prevents indexing parts
+            // that have been removed from the type definition, but are still present in the elements.            
+            if (part != null)
+            {
+                // Lazy initialization because of ISession cyclic dependency.
+                _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
+                // Search for this part.
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+                if (!contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AutoroutePart)))
+                {
+                    context.ContentItem.Remove<AutoroutePart>();
+                    _partRemoved.Add(context.ContentItem.ContentItemId);
+
+                    // When the part has been removed enlist an update for after the session has been committed.
+                    var autorouteEntries = _serviceProvider.GetRequiredService<IAutorouteEntries>();
+                    await autorouteEntries.UpdateEntriesAsync();
+                }
+            }
+        }
+
+        public string CollectionName { get; set; }
+        public Type ForType() => typeof(ContentItem);
+        public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
+
+        public void Describe(DescribeContext<ContentItem> context)
         {
             context.For<AutoroutePartIndex>()
+                .When(contentItem => contentItem.Has<AutoroutePart>() || _partRemoved.Contains(contentItem.ContentItemId))
                 .Map(async contentItem =>
                 {
-                    var part = contentItem.As<AutoroutePart>();
-
-                    if (part == null)
+                    // If the content item was removed, a record is still added.
+                    var itemRemoved = _itemRemoved.Contains(contentItem);
+                    if (!contentItem.Published && !contentItem.Latest && !itemRemoved)
                     {
                         return null;
                     }
 
-                    var path = part?.Path;
-                    if (String.IsNullOrEmpty(path) || part.Disabled || !(contentItem.Published || contentItem.Latest))
+                    // If the part was removed from the type definition, a record is still added.
+                    var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
+
+                    var part = contentItem.As<AutoroutePart>();
+                    if (!partRemoved && (part == null || String.IsNullOrEmpty(part.Path)))
                     {
                         return null;
                     }
 
                     var results = new List<AutoroutePartIndex>
                     {
+                        // If the part is disabled or was removed, a record is still added but with a null path.
                         new AutoroutePartIndex
                         {
                             ContentItemId = contentItem.ContentItemId,
-                            Path = path,
+                            Path = !partRemoved && !part.Disabled ? part.Path : null,
                             Published = contentItem.Published,
                             Latest = contentItem.Latest
                         }
                     };
 
-                    if (!part.RouteContainedItems)
+                    if (partRemoved || !part.RouteContainedItems || part.Disabled || itemRemoved)
                     {
                         return results;
                     }
@@ -92,13 +151,13 @@ namespace OrchardCore.ContentManagement.Records
 
                     var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 
-                    await PopulateContainedContentItemIndexes(results, contentItem, containedContentItemsAspect, contentItem.Content as JObject, part.Path);
+                    await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, contentItem.Content, part.Path);
 
                     return results;
                 });
         }
 
-        private async Task PopulateContainedContentItemIndexes(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        private async Task PopulateContainedContentItemIndexesAsync(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
@@ -114,7 +173,7 @@ namespace OrchardCore.ContentManagement.Records
                         var path = handlerAspect.Path;
                         if (!handlerAspect.Absolute)
                         {
-                            path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
+                            path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                         }
 
                         results.Add(new AutoroutePartIndex
@@ -128,10 +187,10 @@ namespace OrchardCore.ContentManagement.Records
                         });
                     }
 
-                    var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
+                    var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                     var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 
-                    await PopulateContainedContentItemIndexes(results, containerContentItem, childrenAspect, jItem, itemBasePath);
+                    await PopulateContainedContentItemIndexesAsync(results, containerContentItem, childrenAspect, jItem, itemBasePath);
                 }
             }
         }

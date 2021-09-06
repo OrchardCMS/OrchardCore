@@ -227,14 +227,17 @@ namespace OrchardCore.Navigation
                 }
                 else
                 {
-                    //evaluate permissions in AND way
-                    var canSeeItem = true;
+                    // When multiple permissions are supplied all permissions must be authorized.
+                    var isAuthorized = true;
                     foreach (var permission in item.Permissions)
                     {
-                        canSeeItem = canSeeItem && (await _authorizationService.AuthorizeAsync(user, permission, item.Resource));
+                        if(!(await _authorizationService.AuthorizeAsync(user, permission, item.Resource)))
+                        {
+                            isAuthorized = false;
+                            break;
+                        }
                     }
-
-                    if (canSeeItem)
+                    if (isAuthorized)
                     {
                         filtered.Add(item);
                     }
@@ -243,7 +246,7 @@ namespace OrchardCore.Navigation
                 // Process child items
                 var oldItems = item.Items;
 
-                item.Items = (await AuthorizeAsync(item.Items, user)).ToList();
+                item.Items = (await AuthorizeAsync(item.Items, user));
             }
 
             return filtered;

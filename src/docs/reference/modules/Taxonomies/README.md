@@ -368,8 +368,8 @@ You can access the `TagNames` property directly with the following accessor:
 
     ``` liquid
     {% for tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames %}
-        <span class="badge badge-secondary">
-            <i class="fas fa-tag fa-xs fa-rotate-90 align-middle"></i>
+        <span class="badge bg-secondary">
+            <i class="fas fa-tag fa-xs fa-rotate-90 align-middle" aria-hidden="true"></i>
             <span class="align-middle"> {{ tagName }} </span> 
         </span>
     {% endfor %}
@@ -386,6 +386,10 @@ You can access the `TagNames` property directly with the following accessor:
 
 !!! note
     If the display text property of the term is updated any content items will need to be republished to reflect this change.
+
+## Taxonomies Contents List Filters
+
+Provides taxonomy filters in the admin contents list.
 
 ## Videos
 

@@ -106,11 +106,11 @@ namespace OrchardCore.Roles.Controllers
                 var result = await _roleManager.CreateAsync(role);
                 if (result.Succeeded)
                 {
-                    _notifier.Success(H["Role created successfully"]);
+                    _notifier.Success(H["Role created successfully."]);
                     return RedirectToAction(nameof(Index));
                 }
 
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
                 foreach (var error in result.Errors)
                 {
@@ -141,13 +141,13 @@ namespace OrchardCore.Roles.Controllers
 
             if (result.Succeeded)
             {
-                _notifier.Success(H["Role deleted successfully"]);
+                _notifier.Success(H["Role deleted successfully."]);
             }
             else
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
-                _notifier.Error(H["Could not delete this role"]);
+                _notifier.Error(H["Could not delete this role."]);
 
                 foreach (var error in result.Errors)
                 {
@@ -268,16 +268,19 @@ namespace OrchardCore.Roles.Controllers
         {
             // Create a fake user to check the actual permissions. If the role is anonymous
             // IsAuthenticated needs to be false.
-            var fakeUser = new ClaimsPrincipal(
-                new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName) },
-                role.RoleName != "Anonymous" ? "FakeAuthenticationType" : null)
-            );
+            var fakeIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName) },
+                role.RoleName != "Anonymous" ? "FakeAuthenticationType" : null);
+
+            // Add role claims
+            fakeIdentity.AddClaims(role.RoleClaims.Select(c => c.ToClaim()));
+
+            var fakePrincipal = new ClaimsPrincipal(fakeIdentity);
 
             var result = new List<string>();
 
             foreach (var permission in allPermissions)
             {
-                if (await _authorizationService.AuthorizeAsync(fakeUser, permission))
+                if (await _authorizationService.AuthorizeAsync(fakePrincipal, permission))
                 {
                     result.Add(permission.Name);
                 }

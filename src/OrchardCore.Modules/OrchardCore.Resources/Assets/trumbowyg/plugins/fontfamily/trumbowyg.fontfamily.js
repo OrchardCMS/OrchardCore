@@ -7,29 +7,38 @@
             en: {
                 fontFamily: 'Font'
             },
+            es: {
+                fontFamily: 'Fuente'
+            },
             da: {
                 fontFamily: 'Skrifttype'
-            },
-            fr: {
-                fontFamily: 'Police'
             },
             de: {
                 fontFamily: 'Schriftart'
             },
+            et: {
+                fontFamily: 'Font'
+            },
+            fr: {
+                fontFamily: 'Police'
+            },
+            hu: {
+                fontFamily: 'Betűtípus'
+            },
+            ko: {
+                fontFamily: '글꼴'
+            },
             nl: {
                 fontFamily: 'Lettertype'
-            },
-            tr: {
-                fontFamily: 'Yazı Tipi'
-            },
-            zh_tw: {
-                fontFamily: '字體',
             },
             pt_br: {
                 fontFamily: 'Fonte',
             },
-            ko: {
-                fontFamily: '글꼴'
+            tr: {
+                fontFamily: 'Yazı tipi'
+            },
+            zh_tw: {
+                fontFamily: '字體',
             },
         }
     });

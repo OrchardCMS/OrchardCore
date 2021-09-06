@@ -16,7 +16,7 @@ namespace OrchardCore.Taxonomies.Settings
 {
     public class TaxonomyContentsAdminListSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxonomyContentsAdminListSettings>
     {
-        public const string GroupId = "TaxonomyContentsAdminList";
+        public const string GroupId = "taxonomyContentsAdminList";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -35,7 +35,7 @@ namespace OrchardCore.Taxonomies.Settings
         public override async Task<IDisplayResult> EditAsync(TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
             {
                 return null;
             }

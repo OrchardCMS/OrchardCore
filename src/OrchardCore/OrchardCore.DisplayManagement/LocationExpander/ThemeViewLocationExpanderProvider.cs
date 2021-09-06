@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Environment.Extensions;
@@ -11,10 +12,12 @@ namespace OrchardCore.DisplayManagement.LocationExpander
 {
     public class ThemeViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IExtensionManager _extensionManager;
 
-        public ThemeViewLocationExpanderProvider(IExtensionManager extensionManager)
+        public ThemeViewLocationExpanderProvider(IHostEnvironment hostingEnvironment, IExtensionManager extensionManager)
         {
+            _hostingEnvironment = hostingEnvironment;
             _extensionManager = extensionManager;
         }
 
@@ -45,7 +48,18 @@ namespace OrchardCore.DisplayManagement.LocationExpander
             var currentThemeAndBaseThemesOrdered = _extensionManager
                 .GetFeatures(new[] { currentThemeId })
                 .Where(x => x.Extension.IsTheme())
-                .Reverse();
+                .Reverse()
+                .ToList();
+
+            // let the application acting as a super theme also for mvc views discovering.
+            var applicationTheme = _extensionManager
+                .GetFeatures()
+                .FirstOrDefault(x => x.Id == _hostingEnvironment.ApplicationName);
+
+            if (applicationTheme != null)
+            {
+                currentThemeAndBaseThemesOrdered.Insert(0, applicationTheme);
+            }
 
             var result = new List<string>();
 

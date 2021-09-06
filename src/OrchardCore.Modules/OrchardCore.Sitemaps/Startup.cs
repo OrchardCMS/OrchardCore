@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -39,7 +41,6 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddIdGeneration();
 
             services.Configure<SitemapsOptions>(options =>
             {
@@ -56,13 +57,13 @@ namespace OrchardCore.Sitemaps
                 }
             });
 
+            services.AddSingleton<SitemapEntries>();
+            services.AddSingleton<ISitemapManager, SitemapManager>();
             services.AddSingleton<IShellRouteValuesAddressScheme, SitemapValuesAddressScheme>();
             services.AddSingleton<SitemapRouteTransformer>();
-            services.AddSingleton<SitemapEntries>();
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ISitemapManager, SitemapManager>();
             services.AddScoped<ISitemapHelperService, SitemapHelperService>();
             services.AddScoped<IDisplayManager<SitemapSource>, DisplayManager<SitemapSource>>();
             services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
@@ -77,8 +78,15 @@ namespace OrchardCore.Sitemaps
 
             // Sitemap Part.
             services.AddContentPart<SitemapPart>()
-                .UseDisplayDriver<SitemapPartDisplay>()
+                .UseDisplayDriver<SitemapPartDisplayDriver>()
                 .AddHandler<SitemapPartHandler>();
+
+            // Custom sitemap path.
+            services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();
+            services.AddScoped<ISitemapSourceUpdateHandler, CustomPathSitemapSourceUpdateHandler>();
+            services.AddScoped<ISitemapSourceModifiedDateProvider, CustomPathSitemapSourceModifiedDateProvider>();
+            services.AddScoped<IDisplayDriver<SitemapSource>, CustomPathSitemapSourceDriver>();
+            services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -222,6 +230,15 @@ namespace OrchardCore.Sitemaps
         {
             services.AddOptions<SitemapsRazorPagesOptions>();
             services.AddScoped<IRouteableContentTypeProvider, RazorPagesContentTypeProvider>();
+        }
+    }
+
+    [Feature("OrchardCore.Sitemaps.Cleanup")]
+    public class SitemapsCleanupStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IBackgroundTask, SitemapCacheBackgroundTask>();
         }
     }
 }

@@ -17,6 +17,7 @@ namespace OrchardCore.Contents.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+
         public ContentsDriver(
             IContentDefinitionManager contentDefinitionManager,
             IHttpContextAccessor httpContextAccessor,
@@ -35,7 +36,9 @@ namespace OrchardCore.Contents.Drivers
             var context = _httpContextAccessor.HttpContext;
             var results = new List<IDisplayResult>();
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem)).Location("Detail", "Content:before");
+            var contentsMetadataShape = Shape("ContentsMetadata",
+                new ContentItemViewModel(contentItem))
+                .Location("Detail", "Content:before");
 
             if (contentTypeDefinition != null)
             {
@@ -52,6 +55,19 @@ namespace OrchardCore.Contents.Drivers
                     {
                         ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
                     }
+
+                    var displayType = ctx.Shape.Metadata.DisplayType;
+
+                    if (!String.IsNullOrEmpty(displayType) && displayType != "Detail")
+                    {                        
+                        ctx.Shape.Metadata.Alternates.Add($"ContentsMetadata_{ctx.Shape.Metadata.DisplayType}");
+
+                        if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                        {
+                            ctx.Shape.Metadata.Alternates.Add($"{stereotype}_{displayType}__ContentsMetadata");
+                        }
+                    }
+
                 });
 
                 results.Add(contentsMetadataShape);
@@ -92,26 +108,15 @@ namespace OrchardCore.Contents.Drivers
             }
 
             results.Add(Dynamic("Content_PublishButton").Location("Actions:10")
-                .RenderWhen(async () =>
-                {
-                    if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                })
-            );
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem)));
 
             results.Add(Dynamic("Content_SaveDraftButton").Location("Actions:20")
                 .RenderWhen(async () =>
                 {
-                    if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+                    if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable &&
+                        await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
                     {
-                        if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
 
                     return false;
