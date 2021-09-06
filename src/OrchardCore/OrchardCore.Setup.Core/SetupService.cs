@@ -71,7 +71,7 @@ namespace OrchardCore.Setup.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        /// <inheridoc />
+        /// <inheritdoc />
         public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()
         {
             if (_recipes == null)
@@ -83,7 +83,7 @@ namespace OrchardCore.Setup.Services
             return _recipes;
         }
 
-        /// <inheridoc />
+        /// <inheritdoc />
         public async Task<string> SetupAsync(SetupContext context)
         {
             var initialState = context.ShellSettings.State;
