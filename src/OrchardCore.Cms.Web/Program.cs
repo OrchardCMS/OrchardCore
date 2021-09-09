@@ -17,8 +17,8 @@ namespace OrchardCore.Cms.Web
                 .ConfigureLogging(logging => logging.ClearProviders())
                  .ConfigureWebHostDefaults(webBuilder =>
                  {
-                     webBuilder.UseStartup<Startup>();
                      webBuilder.UseNLogWeb();
+                     webBuilder.UseStartup<Startup>();
                  });
     }
 }
