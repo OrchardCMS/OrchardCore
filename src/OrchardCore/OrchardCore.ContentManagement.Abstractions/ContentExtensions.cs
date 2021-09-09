@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement
                 return te;
             }
             
-            throw new InvalidCastException($"Failed casting content to '{typeof(TElement).Name}', check you have registered your content part with AddContentPart?")
+            throw new InvalidCastException($"Failed casting content to '{typeof(TElement).Name}', check you have registered your content part with AddContentPart?");
         }
 
         /// <summary>
