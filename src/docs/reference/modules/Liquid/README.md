@@ -457,7 +457,8 @@ The following properties are available on the `Request` object.
 
 | Property | Example | Description |
 | --------- | ---- |------------ |
-| `QueryString` | `?sort=name&page=1` | The query string. |
+| `QueryString` | `?sort=name&page=1` | The escaped query string with the leading '?' character. |
+| `UriQueryString` | `?sort=name&page=1` | The query string escaped in a way which is correct for combining into the URI representation. |
 | `ContentType` | `application/x-www-form-urlencoded; charset=UTF-8` | The `Content-Type` header. |
 | `ContentLength` | `600` | The `Content-Length` header. |
 | `Cookies` | Usage: `Request.Cookies.orchauth_Default` | The collection of cookies for this request. |
@@ -465,9 +466,12 @@ The following properties are available on the `Request` object.
 | `Query` | Usage: `Request.Query.sort` | The query value collection parsed from `QueryString`. Each property value is an array of values. |
 | `Form` | Usage: `Request.Form.value` | The collection of form values. |
 | `Protocol` | `https` | The protocol of this request. |
-| `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The path of the request, unescaped. |
-| `PathBase` | `/mytenant` | The base path of the request, unescaped. |
-| `Host` | `localhost:44300` | The `Host` header. May contain the port. |
+| `Path` | `/OrchardCore.ContentPreview/Preview/Render` | The unescaped path of the request. |
+| `UriPath` | `/OrchardCore.ContentPreview/Preview/Render` | The path escaped in a way which is correct for combining into the URI representation. |
+| `PathBase` | `/mytenant` | The unescaped base path of the request. |
+| `UriPathBase` | `/mytenant` | The base path escaped in a way which is correct for combining into the URI representation. |
+| `Host` | `localhost:44300` | The unescaped `Host` header. May contain the port. |
+| `UriHost` | `localhost:44300` | The `Host` header properly formatted and encoded for use in a URI in a HTTP header. |
 | `IsHttps` | `true` | True if the scheme of the request is `https`. |
 | `Scheme` | `https` | The scheme of the request. |
 | `Method` | `GET` | The HTTP method. |
