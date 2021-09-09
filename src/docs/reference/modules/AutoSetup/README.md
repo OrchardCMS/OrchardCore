@@ -159,3 +159,8 @@ Lock configuration parameters are optional and can be set via environment variab
 "OrchardCore__OrchardCore_AutoSetup__LockOptions__LockTimeout": "10000"
 "OrchardCore__OrchardCore_AutoSetup__LockOptions__LockExpiration": "10000"
 ```
+
+## Additional information
+Please refer to separate sections for additional information on setup:
+
+- [OrchardCore.Setup - setting up an empty site](../Setup/README.md)
