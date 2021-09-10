@@ -1,0 +1,21 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayKeyValuePairsFieldViewModel
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Metadata.Models
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+@if (Model.Field.Values.Any())
+{
+<div class="field field-type-keyvaluepairsfield field-name-@name">
+    <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
+    @foreach (var kvp in Model.Field.Values)
+    {
+        <div>
+            <span class="key">@kvp.Key</span>
+            <span class="value">@kvp.Value</span>
+        </div>
+    }
+</div>
+}

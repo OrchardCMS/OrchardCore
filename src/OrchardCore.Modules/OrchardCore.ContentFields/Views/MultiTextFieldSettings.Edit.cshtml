@@ -32,7 +32,7 @@
                 <th scope="col" colspan="3">@T["Default?"]</th>
             </tr>
         </thead>
-        <draggable v-model="data.options" :element="'tbody'">
+        <draggable v-model="data.options" :tag="'tbody'">
             <tr v-for="(option, index) in data.options" :key="index">
                 <td>
                     <input type="text" class="form-control" v-model="option.name" placeholder="Enter a name" />

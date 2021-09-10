@@ -1,0 +1,59 @@
+@model OrchardCore.ContentFields.ViewModels.EditKeyValuePairsFieldViewModel
+@using OrchardCore.Mvc.Utilities
+
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<KeyValuePairsFieldSettings>();
+}
+
+<script asp-src="~/OrchardCore.ContentFields/Scripts/kvpEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/kvpEditor.js" asp-name="kvpEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
+<style asp-src="~/OrchardCore.ContentFields/Styles/kvpEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/kvpEditor.css"></style>
+
+<script at="Foot">
+    initializeKvpEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Keys), @Html.Raw(Model.Values));
+</script>
+
+<script type="text/x-template" id="kvp-table">
+    <table class="table table-bordered table-sm kvp-table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@T["Key"]</th>
+                <th scope="col">@T["Value"]</th>
+            </tr>
+        </thead>
+        <draggable v-model="data.options" :tag="'tbody'">
+            <tr v-for="(option, index) in data.options" :key="index">
+                <td>
+                    <input type="text" class="form-control" v-model="option.key" placeholder="Enter a name" />
+                </td>
+                <td>
+                    <input type="text" class="form-control courrier" v-model="option.value" placeholder="Enter a value" />
+                </td>
+                <td class="text-center">
+                    <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </a>
+                </td>
+                <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div></td>
+            </tr>
+        </draggable>
+        <tfoot>
+            <tr>
+                <td class="col-sm-12 text-center" colspan="5">
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small" aria-hidden="true"></i> @T["Add an option"]</a>
+                    <input class="form-control" id="@Html.IdFor(m => m.Keys)" name="@Html.NameFor(m => m.Keys)" type="hidden" v-bind:value="getKeys()" />
+                    <input class="form-control" id="@Html.IdFor(m => m.Values)" name="@Html.NameFor(m => m.Values)" type="hidden" v-bind:value="getValues()" />
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</script>
+
+<div class="form-group" id="@Html.IdFor(m => m)">
+    <label>@Model.PartFieldDefinition.DisplayName()</label>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+    <kvp-table :data="sharedState"></kvp-table>
+</div>
+

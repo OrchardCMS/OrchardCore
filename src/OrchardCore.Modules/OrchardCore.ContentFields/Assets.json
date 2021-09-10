@@ -24,7 +24,7 @@
       "Assets/js/vue-multiselect-userpicker.js"
     ],
     "output": "wwwroot/Scripts/vue-multiselect-userpicker.js"
-  },  
+  },
   {
     "generateSourceMaps": false,
     "inputs": [
@@ -37,13 +37,20 @@
       "Assets/js/vue-multiselect-multitextfieldpicker.js"
     ],
     "output": "wwwroot/Scripts/vue-multiselect-multitextfieldpicker.js"
-  },  
+  },
   {
     "generateSourceMaps": false,
     "inputs": [
       "Assets/scss/optionsEditor.scss"
     ],
     "output": "wwwroot/Styles/optionsEditor.css"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/kvpEditor.scss"
+    ],
+    "output": "wwwroot/Styles/kvpEditor.css"
   },
   {
     "generateSourceMaps": false,
@@ -57,6 +64,12 @@
       "Assets/js/OptionsEditor/*.js"
     ],
     "output": "wwwroot/Scripts/optionsEditor.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/kvpEditor.js"
+    ],
+    "output": "wwwroot/Scripts/kvpEditor.js"
   },
   {
     "inputs": [

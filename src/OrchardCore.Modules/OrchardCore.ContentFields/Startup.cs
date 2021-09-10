@@ -96,6 +96,12 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MultiTextFieldIndexHandler>();
 
+            // KeyValuePairs Field
+            services.AddContentField<KeyValuePairsField>()
+                .UseDisplayDriver<KeyValuePairsFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, KeyValuePairsFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, KeyValuePairsFieldIndexHandler>();
+
             // Numeric Field
             services.AddContentField<NumericField>()
                 .UseDisplayDriver<NumericFieldDisplayDriver>();
