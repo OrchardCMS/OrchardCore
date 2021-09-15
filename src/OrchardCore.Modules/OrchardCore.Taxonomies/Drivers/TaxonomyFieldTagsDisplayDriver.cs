@@ -20,7 +20,7 @@ using OrchardCore.Taxonomies.ViewModels;
 namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
-    {      
+    {
         private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -54,17 +54,17 @@ namespace OrchardCore.Taxonomies.Drivers
             return Initialize<EditTagTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
-                model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+                model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId);
 
                 if (model.Taxonomy != null)
                 {
                     var termEntries = new List<TermEntry>();
                     TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
                     var tagTermEntries = termEntries.Select(te => new TagTermEntry
-                    { 
-                        ContentItemId = te.ContentItemId, 
-                        Selected = te.Selected, 
-                        DisplayText = te.Term.DisplayText, 
+                    {
+                        ContentItemId = te.ContentItemId,
+                        Selected = te.Selected,
+                        DisplayText = te.Term.DisplayText,
                         IsLeaf = te.IsLeaf
                     });
 
@@ -86,7 +86,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
-     
+
                 field.TermContentItemIds = model.TermContentItemIds == null
                     ? Array.Empty<string>() : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
