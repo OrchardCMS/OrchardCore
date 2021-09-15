@@ -2398,6 +2398,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "sfsharapov",
+      "name": "Sardor",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23080892?v=4",
+      "profile": "https://github.com/sfsharapov",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

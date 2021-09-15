@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
@@ -17,13 +18,42 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
     public class OpenIdServerDeploymentSourceTests
     {
-        private static OpenIdServerSettings CreateSettings(string authority, TokenFormat tokenFormat)
+        private static OpenIdServerSettings CreateSettings(string authority, TokenFormat tokenFormat, bool initializeAllProperties)
         {
-            return new OpenIdServerSettings
+            var result = new OpenIdServerSettings
             {
                 Authority = new Uri(authority),
                 AccessTokenFormat = tokenFormat
             };
+
+            if (initializeAllProperties)
+            {
+                result.TokenEndpointPath = "/connect/token";
+                result.AuthorizationEndpointPath = "/connect/authorize";
+                result.LogoutEndpointPath = "/connect/logout";
+                result.UserinfoEndpointPath = "/connect/userinfo";
+
+                result.EncryptionCertificateStoreLocation = StoreLocation.LocalMachine;
+                result.EncryptionCertificateStoreName = StoreName.My;
+                result.EncryptionCertificateThumbprint = Guid.NewGuid().ToString();
+
+                result.SigningCertificateStoreLocation = StoreLocation.LocalMachine;
+                result.SigningCertificateStoreName = StoreName.My;
+                result.SigningCertificateThumbprint = Guid.NewGuid().ToString();
+
+                result.AllowAuthorizationCodeFlow = true;
+                result.AllowClientCredentialsFlow = true;
+                result.AllowHybridFlow = true;
+                result.AllowImplicitFlow = true;
+                result.AllowPasswordFlow = true;
+                result.AllowRefreshTokenFlow = true;
+
+                result.DisableAccessTokenEncryption = true;
+                result.DisableRollingRefreshTokens = true;
+                result.UseReferenceAccessTokens = true;
+            }
+
+            return result;
         }
 
         private static Mock<IOpenIdServerService> CreateServerServiceWithSettingsMock(OpenIdServerSettings settings)
@@ -47,14 +77,21 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             // Arrange
             var recipeFile = "Recipe.json";
 
-            var expectedSettings = CreateSettings("https://deploy.localhost", TokenFormat.JsonWebToken);
+            var expectedSettings = CreateSettings("https://deploy.localhost", TokenFormat.JsonWebToken, true);
             var deployServerServiceMock = CreateServerServiceWithSettingsMock(expectedSettings);
 
-            var actualSettings = CreateSettings("https://recipe.localhost", TokenFormat.DataProtection);
+            var actualSettings = CreateSettings("https://recipe.localhost", TokenFormat.DataProtection, false);
             var recipeServerServiceMock = CreateServerServiceWithSettingsMock(actualSettings);
 
-            Assert.NotEqual(expectedSettings.Authority, actualSettings.Authority);
-            Assert.NotEqual(expectedSettings.AccessTokenFormat, actualSettings.AccessTokenFormat);
+            var settingsProperties = typeof(OpenIdServerSettings)
+                .GetProperties();
+
+            foreach (var property in settingsProperties)
+            {
+                Assert.NotEqual(
+                    property.GetValue(expectedSettings),
+                    property.GetValue(actualSettings));
+            }
 
             var fileBuilder = new MemoryFileBuilder();
             var descriptor = new RecipeDescriptor();
@@ -82,8 +119,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             await recipeStep.ExecuteAsync(recipeContext);
 
             // Assert
-            Assert.Equal(expectedSettings.Authority, actualSettings.Authority);
-            Assert.Equal(expectedSettings.AccessTokenFormat, actualSettings.AccessTokenFormat);
+            foreach (var property in settingsProperties)
+            {
+                Assert.Equal(
+                    property.GetValue(expectedSettings),
+                    property.GetValue(actualSettings));
+            }
         }
     }
 }

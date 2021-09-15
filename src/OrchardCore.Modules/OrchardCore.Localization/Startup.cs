@@ -62,4 +62,15 @@ namespace OrchardCore.Localization
             services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
         }
     }
+
+#if NET5_0_OR_GREATER
+    [Feature("OrchardCore.Localization.ContentLanguageHeader")]
+    public class ContentLanguageHeaderStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
+        }
+    }
+#endif
 }

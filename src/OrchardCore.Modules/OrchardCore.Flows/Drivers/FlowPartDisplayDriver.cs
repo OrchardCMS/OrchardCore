@@ -47,7 +47,7 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
         {
-            return Initialize<FlowPartEditViewModel>("FlowPart_Edit", m =>
+            return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), m =>
             {
                 m.FlowPart = flowPart;
                 m.Updater = context.Updater;
