@@ -106,7 +106,7 @@ namespace OrchardCore.Search.Elastic.Controllers
 
             if (elasticIndexSettings == null)
             {
-                _logger.LogInformation($"Couldn't execute search. No Elastic index settings was defined for ({searchSettings.SearchIndex}) index.");
+                 _logger.LogInformation("Couldn't execute search. No Elastic index settings was defined for '{SearchIndex}' index.", searchSettings.SearchIndex);
                 return BadRequest($"Search index ({searchSettings.SearchIndex}) is not configured.");
             }
 
