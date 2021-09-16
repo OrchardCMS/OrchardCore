@@ -30,7 +30,7 @@ Add a reference to `OrchardCore.Logging.Serilog`.
       {
         "Name": "File",
         "Args": {
-          "path": "app_data/logs/orchard-log.txt",
+          "path": "App_Data/Logs/orchard-log.txt",
           "rollingInterval": "Day",
           "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.ffff}|{TenantName}|{RequestId}|{SourceContext}|{Level:u3}|{Message:lj}{NewLine}{Exception}",
           "restrictedToMinimumLevel": "Warning"
