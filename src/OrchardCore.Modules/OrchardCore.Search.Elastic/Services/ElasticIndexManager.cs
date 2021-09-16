@@ -186,9 +186,9 @@ namespace OrchardCore.Search.Elastic
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        if (entry.Value != null && Int32.TryParse(entry.Value.ToString(), out var value))
+                        if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
                         {
-                            entries.Add(entry.Name, Convert.ToInt32(entry.Value));
+                            entries.Add(entry.Name, value);
                         }
                         //else
                         //{
