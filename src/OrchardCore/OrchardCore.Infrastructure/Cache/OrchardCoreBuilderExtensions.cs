@@ -47,7 +47,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IMemoryCache, MemoryCache>();
 
                 // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
-                services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
+                services.AddSingleton<Microsoft.Extensions.Caching.Distributed.MemoryDistributedCache>();
+                services.AddSingleton<OrchardCore.Caching.Distributed.IDistributedCache, OrchardCore.Caching.Distributed.MemoryDistributedCache>();
             });
 
             // Adds services to keep in sync any document type between a document store and a multi level cache.

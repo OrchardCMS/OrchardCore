@@ -11,6 +11,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
+using OrchardCore.Redis.Caching;
 using OrchardCore.Redis.Options;
 using OrchardCore.Redis.Services;
 using StackExchange.Redis;
@@ -62,6 +63,7 @@ namespace OrchardCore.Redis
             if (services.Any(d => d.ServiceType == typeof(IRedisService)))
             {
                 services.AddStackExchangeRedisCache(o => { });
+                services.AddSingleton<IDistributedCache, RedisDistributedCache>();
                 services.AddTransient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>();
                 services.AddScoped<ITagCache, RedisTagCache>();
             }
