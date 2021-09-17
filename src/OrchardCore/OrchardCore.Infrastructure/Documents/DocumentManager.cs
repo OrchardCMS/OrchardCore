@@ -4,9 +4,11 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Caching;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Documents
 {
@@ -25,7 +27,8 @@ namespace OrchardCore.Documents
         public DocumentManager(
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
-            IOptionsMonitor<DocumentOptions> options)
+            IOptionsMonitor<DocumentOptions> options,
+            IClock clock)
         {
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
@@ -33,6 +36,8 @@ namespace OrchardCore.Documents
 
             if (!(_distributedCache is MemoryDistributedCache))
             {
+                //TODO: Discuss if this would be better handled with DI assuming someone can provide a clean services.AddDecorator(..) implementation 
+                _distributedCache = new DistributedCacheCircuitBreaker(_distributedCache, clock);
                 _isDistributed = true;
             }
 

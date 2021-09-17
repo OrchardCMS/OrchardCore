@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
 using OrchardCore.Locking.Distributed;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Documents
 {
@@ -26,8 +27,9 @@ namespace OrchardCore.Documents
             IDistributedCache distributedCache,
             IDistributedLock distributedLock,
             IMemoryCache memoryCache,
-            IOptionsMonitor<DocumentOptions> options)
-            : base(distributedCache, memoryCache, options)
+            IOptionsMonitor<DocumentOptions> options,
+            IClock clock)
+            : base(distributedCache, memoryCache, options, clock)
         {
             _isVolatile = true;
             _distributedLock = distributedLock;
