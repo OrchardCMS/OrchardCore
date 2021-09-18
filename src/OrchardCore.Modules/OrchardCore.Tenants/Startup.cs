@@ -140,6 +140,7 @@ namespace OrchardCore.Tenants
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<INavigationProvider, FeatureProfilesAdminMenu>();
             services.AddScoped<FeatureProfilesManager>();
             services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         }
