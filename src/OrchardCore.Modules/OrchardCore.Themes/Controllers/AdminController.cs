@@ -4,14 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Security;
 using OrchardCore.Themes.Models;
@@ -23,35 +20,23 @@ namespace OrchardCore.Themes.Controllers
     {
         private readonly ISiteThemeService _siteThemeService;
         private readonly IAdminThemeService _adminThemeService;
-        private readonly IExtensionManager _extensionManager;
-        private readonly IFeatureValidationService _featureValidationService;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly FeatureOptions _featureOptions;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
             ISiteThemeService siteThemeService,
             IAdminThemeService adminThemeService,
-            IThemeService themeService,
-            ShellSettings shellSettings,
-            IExtensionManager extensionManager,
-            IFeatureValidationService featureValidationService,
             IHtmlLocalizer<AdminController> localizer,
-            IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
-            IOptions<FeatureOptions> featureOptions,
             IAuthorizationService authorizationService,
             INotifier notifier)
         {
             _siteThemeService = siteThemeService;
             _adminThemeService = adminThemeService;
-            _extensionManager = extensionManager;
-            _featureValidationService = featureValidationService;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
-            _featureOptions = featureOptions.Value;
             _notifier = notifier;
 
             H = localizer;
@@ -72,35 +57,36 @@ namespace OrchardCore.Themes.Controllers
             var currentSiteTheme = currentSiteThemeExtensionInfo != null ? new ThemeEntry(currentSiteThemeExtensionInfo) : default(ThemeEntry);
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
-            var themes = _extensionManager.GetExtensions().OfType<IThemeExtensionInfo>().Where(extensionDescriptor =>
-            {
-                var tags = extensionDescriptor.Manifest.Tags.ToArray();
-                var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
-                if (isHidden)
+            var themes = (await _shellFeaturesManager.GetAvailableExtensionsAsync())
+                .OfType<IThemeExtensionInfo>()
+                .Where(extensionDescriptor =>
                 {
-                    return false;
-                }
+                    var tags = extensionDescriptor.Manifest.Tags.ToArray();
+                    var isHidden = tags.Any(x => String.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
+                    if (isHidden)
+                    {
+                        return false;
+                    }
 
-                // Is the theme allowed for this tenant?
-                return ThemeIsAllowed(extensionDescriptor.Id);
-            })
-            .Select(extensionDescriptor =>
-            {
-                var isAdmin = IsAdminTheme(extensionDescriptor.Manifest);
-                var themeId = isAdmin ? currentAdminTheme?.Extension.Id : currentSiteTheme?.Extension.Id;
-                var isCurrent = extensionDescriptor.Id == themeId;
-                var isEnabled = enabledFeatures.Any(x => x.Extension.Id == extensionDescriptor.Id);
-                var themeEntry = new ThemeEntry(extensionDescriptor)
+                    return true;
+                })
+                .Select(extensionDescriptor =>
                 {
-                    Enabled = isEnabled,
-                    CanUninstall = installThemes,
-                    IsAdmin = isAdmin,
-                    IsCurrent = isCurrent
-                };
+                    var isAdmin = IsAdminTheme(extensionDescriptor.Manifest);
+                    var themeId = isAdmin ? currentAdminTheme?.Extension.Id : currentSiteTheme?.Extension.Id;
+                    var isCurrent = extensionDescriptor.Id == themeId;
+                    var isEnabled = enabledFeatures.Any(x => x.Extension.Id == extensionDescriptor.Id);
+                    var themeEntry = new ThemeEntry(extensionDescriptor)
+                    {
+                        Enabled = isEnabled,
+                        CanUninstall = installThemes,
+                        IsAdmin = isAdmin,
+                        IsCurrent = isCurrent
+                    };
 
-                return themeEntry;
-            })
-            .OrderByDescending(x => x.IsCurrent);
+                    return themeEntry;
+                })
+                .OrderByDescending(x => x.IsCurrent);
 
             var model = new SelectThemesViewModel
             {
@@ -111,12 +97,6 @@ namespace OrchardCore.Themes.Controllers
 
             return View(model);
         }
-
-        /// <summary>
-        /// Checks whether the theme is allowed for the current tenant
-        /// </summary>
-        private bool ThemeIsAllowed(string themeId)
-            => _featureValidationService.IsFeatureValid(themeId);
 
         [HttpPost]
         public async Task<ActionResult> SetCurrentTheme(string id)
@@ -132,7 +112,8 @@ namespace OrchardCore.Themes.Controllers
             }
             else
             {
-                var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id && ThemeIsAllowed(id));
+                var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                    .FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
                 if (feature == null)
                 {
@@ -206,7 +187,8 @@ namespace OrchardCore.Themes.Controllers
                 return Forbid();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id && ThemeIsAllowed(id));
+            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -228,7 +210,8 @@ namespace OrchardCore.Themes.Controllers
                 return Forbid();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id && ThemeIsAllowed(id));
+            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -242,9 +225,9 @@ namespace OrchardCore.Themes.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool IsAdminTheme(IManifestInfo manifest)
+        private static bool IsAdminTheme(IManifestInfo manifest)
         {
-            return manifest.Tags.Any(x => string.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
+            return manifest.Tags.Any(x => String.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

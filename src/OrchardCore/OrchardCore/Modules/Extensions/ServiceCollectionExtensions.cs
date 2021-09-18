@@ -152,6 +152,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(shellServices =>
             {
                 shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
+                shellServices.AddNullFeatureProfilesService();
+                shellServices.AddFeatureValidation();
+                shellServices.ConfigureFeatureProfilesRuleOptions();
             });
         }
 
@@ -165,7 +168,6 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(services =>
             {
                 services.AddExtensionManager();
-                services.AddExtensionValidation();
             });
         }
 
@@ -214,7 +216,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.FileProvider = fileProvider;
 
                 var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-                
+
                 var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}");
 
                 // Cache static files for a year as they are coming from embedded resources and should not vary

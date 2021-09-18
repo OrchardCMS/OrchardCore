@@ -12,15 +12,44 @@ namespace OrchardCore.Environment.Shell
         private readonly IExtensionManager _extensionManager;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly IShellDescriptorFeaturesManager _shellDescriptorFeaturesManager;
+        private readonly IEnumerable<IFeatureValidationProvider> _featureValidators;
 
         public ShellFeaturesManager(
             IExtensionManager extensionManager,
             ShellDescriptor shellDescriptor,
-            IShellDescriptorFeaturesManager shellDescriptorFeaturesManager)
+            IShellDescriptorFeaturesManager shellDescriptorFeaturesManager,
+            IEnumerable<IFeatureValidationProvider> featureValidators)
         {
             _extensionManager = extensionManager;
             _shellDescriptor = shellDescriptor;
             _shellDescriptorFeaturesManager = shellDescriptorFeaturesManager;
+            _featureValidators = featureValidators;
+        }
+
+        public async Task<IEnumerable<IFeatureInfo>> GetAvailableFeaturesAsync()
+        {
+            var features = _extensionManager.GetFeatures();
+            var result = new List<IFeatureInfo>();
+            foreach(var feature in features)
+            {
+                var isFeatureValid = true;
+                foreach (var validator in _featureValidators)
+                {
+                    isFeatureValid = await validator.IsFeatureValidAsync(feature.Id);
+                    // When a feature is marked as invalid it cannot be reintroduced.
+                    if (!isFeatureValid)
+                    {
+                        break;
+                    }
+                }
+
+                if (isFeatureValid)
+                {
+                    result.Add(feature);
+                }
+            }
+
+            return result;
         }
 
         public Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync()
@@ -51,6 +80,32 @@ namespace OrchardCore.Environment.Shell
 
             // Extensions are still ordered according to the weight of their first features.
             return Task.FromResult(_extensionManager.GetExtensions().Where(e => enabledIds.Contains(e.Id)));
+        }
+
+        public async Task<IEnumerable<IExtensionInfo>> GetAvailableExtensionsAsync()
+        {
+            var extensions = _extensionManager.GetExtensions();
+            var result = new List<IExtensionInfo>();
+            foreach (var extension in extensions)
+            {
+                var isExtensionValid = true;
+                foreach (var validator in _featureValidators)
+                {
+                    isExtensionValid = await validator.IsExtensionValidAsync(extension.Id);
+                    // When a feature is marked as invalid it cannot be reintroduced.
+                    if (!isExtensionValid)
+                    {
+                        break;
+                    }
+                }
+
+                if (isExtensionValid)
+                {
+                    result.Add(extension);
+                }
+            }
+
+            return result;
         }
     }
 }

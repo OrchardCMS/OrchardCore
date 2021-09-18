@@ -23,12 +23,5 @@ namespace OrchardCore.Environment.Extensions
 
             return services;
         }
-
-        public static IServiceCollection AddExtensionValidation(this IServiceCollection services)
-        {
-            services.TryAddSingleton<IFeatureValidationService, FeatureValidationService>();
-
-            return services;
-        }
     }
 }

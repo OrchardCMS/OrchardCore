@@ -7,7 +7,6 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -37,10 +36,6 @@ namespace OrchardCore.Themes
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            // This is configured twice, also by the Features module, in the event that one module is disabled.
-            var section = _shellConfiguration.GetSection("OrchardCore_Features");
-            services.Configure<FeatureOptions>(section);
-
             services.AddRecipeExecutionStep<ThemesStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, SiteThemeSelector>();

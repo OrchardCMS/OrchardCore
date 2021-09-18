@@ -61,7 +61,7 @@
             <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
         </h6>
         <div class="row">
-            @if(!Model.DatabaseConfigurationPreset)
+            @if (!Model.DatabaseConfigurationPreset)
             {
                 <div class="form-group col-md-6">
                     <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
@@ -81,8 +81,8 @@
             </div>
         </div>
 
-        @if(!Model.DatabaseConfigurationPreset)
-        { 
+        @if (!Model.DatabaseConfigurationPreset)
+        {
             <div class="row connectionString" asp-validation-class-for="ConnectionString">
                 <div class="form-group col-md-12">
                     <label asp-for="ConnectionString">@T["Connection string"]</label>
@@ -92,7 +92,17 @@
                 </div>
             </div>
         }
+
     }
+    <h6>
+        @T["Feature profile"]
+        <span class="text-muted form-text small">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
+    </h6>
+    <div class="row" asp-validation-class-for="FeatureProfile">
+        <div class="form-group col-md-6">
+            <select asp-for="FeatureProfile" asp-items="Model.FeatureProfiles" class="form-control"></select>
+        </div>
+    </div>
 
     <div class="form-group">
         <button class="btn btn-primary save" type="submit">@T["Save"]</button>

@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.IO.Enumeration;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +17,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
 using OrchardCore.Tenants.Controllers;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants
@@ -30,7 +33,7 @@ namespace OrchardCore.Tenants
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<INavigationProvider, AdminMenu>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSetup();
         }
@@ -129,6 +132,16 @@ namespace OrchardCore.Tenants
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<DistributedShellMarkerService>();
+        }
+    }
+
+    [Feature("OrchardCore.Tenants.FeatureProfiles")]
+    public class FeatureProfilesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<FeatureProfilesManager>();
+            services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         }
     }
 }
