@@ -13,8 +13,8 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.ViewModels;
-using YesSql.Filters.Query;
 using YesSql;
+using YesSql.Filters.Query;
 using YesSql.Services;
 
 namespace OrchardCore.Contents.Services
@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Services
         {
             builder
                 .WithNamedTerm("status", builder => builder
-                    .OneCondition<ContentItem>((val, query, ctx) =>
+                    .OneCondition((val, query, ctx) =>
                     {
                         var context = (ContentQueryContext)ctx;
                         if (Enum.TryParse<ContentsStatus>(val, true, out var contentsStatus))
@@ -48,13 +48,13 @@ namespace OrchardCore.Contents.Services
                                     break;
                                 default:
                                     query.With<ContentItemIndex>(x => x.Latest);
-                                    break;                                    
+                                    break;
                             }
                         }
                         else
                         {
                             // Draft is the default value.
-                            query.With<ContentItemIndex>(x => x.Latest);                        
+                            query.With<ContentItemIndex>(x => x.Latest);
                         }
 
                         return new ValueTask<IQuery<ContentItem>>(query);
@@ -78,7 +78,7 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithNamedTerm("sort", builder => builder
-                    .OneCondition<ContentItem>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (Enum.TryParse<ContentsOrder>(val, true, out var contentsOrder))
                         {
@@ -125,7 +125,7 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithNamedTerm("type", builder => builder
-                    .OneCondition<ContentItem>(async (contentType, query, ctx) =>
+                    .OneCondition(async (contentType, query, ctx) =>
                     {
                         var context = (ContentQueryContext)ctx;
                         var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -215,7 +215,7 @@ namespace OrchardCore.Contents.Services
 
                         return query;
                     })
-                    .MapTo<ContentOptionsViewModel>((val, model) => 
+                    .MapTo<ContentOptionsViewModel>((val, model) =>
                     {
                         if (!String.IsNullOrEmpty(val))
                         {
@@ -234,11 +234,11 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithDefaultTerm("text", builder => builder
-                        .ManyCondition<ContentItem>(
-                            ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val))),
-                            ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.IsNotIn<ContentItemIndex>(s => s.DisplayText, w => w.DisplayText.Contains(val))))
-                        )
-                    );
+                    .ManyCondition(
+                        (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
+                        (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.NotContains(val))
+                    )
+                );
         }
     }
 }

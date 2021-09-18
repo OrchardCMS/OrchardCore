@@ -55,14 +55,14 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | popper                | Script | 1.16.1        | -              |
 | popperjs              | Script | 2.9.3         | -              |
 | bootstrap             | Script | 4.6.0         | popper         |
-| bootstrap             | Script | 5.1.0         | popperjs       |
-| bootstrap             | Style  | 4.6.0, 5.1.0  | -              |
+| bootstrap             | Script | 5.1.1         | popperjs       |
+| bootstrap             | Style  | 4.6.0, 5.1.1  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.62.2        | -              |
-| codemirror            | Style  | 5.62.2        | -              |
+| codemirror            | Script | 5.62.3        | -              |
+| codemirror            | Style  | 5.62.3        | -              |
 | font-awesome          | Style  | 5.15.4        | -              |
 | font-awesome          | Script | 5.15.4        | -              |
 | font-awesome-v4-shims | Script | 5.15.4        | -              |
