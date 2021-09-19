@@ -227,12 +227,12 @@ namespace OrchardCore.Lucene.Controllers
                 }
                 catch (Exception e)
                 {
-                    _notifier.Error(H["An error occurred while creating the index."]);
+                    await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
                     _logger.LogError(e, "An error occurred while creating an index.");
                     return View(model);
                 }
 
-                _notifier.Success(H["Index <em>{0}</em> created successfully.", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
             }
             else
             {
@@ -244,12 +244,12 @@ namespace OrchardCore.Lucene.Controllers
                 }
                 catch (Exception e)
                 {
-                    _notifier.Error(H["An error occurred while editing the index."]);
+                    await _notifier.ErrorAsync(H["An error occurred while editing the index."]);
                     _logger.LogError(e, "An error occurred while editing an index.");
                     return View(model);
                 }
 
-                _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
             }
 
             return RedirectToAction(nameof(Index));
@@ -278,7 +278,7 @@ namespace OrchardCore.Lucene.Controllers
                     await _luceneIndexingService.ProcessContentItemsAsync(id);
                 }
 
-                _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", id]);
             }
 
             return RedirectToAction(nameof(Index));
@@ -299,7 +299,7 @@ namespace OrchardCore.Lucene.Controllers
                 await _luceneIndexingService.RebuildIndexAsync(id);
                 await _luceneIndexingService.ProcessContentItemsAsync(id);
 
-                _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
             }
             else
             {
@@ -325,11 +325,11 @@ namespace OrchardCore.Lucene.Controllers
                 {
                     await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
 
-                    _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+                    await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
                 }
                 catch (Exception e)
                 {
-                    _notifier.Error(H["An error occurred while deleting the index."]);
+                    await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
                     _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
                 }
             }
@@ -441,7 +441,7 @@ namespace OrchardCore.Lucene.Controllers
                         {
                             await _luceneIndexingService.DeleteIndexAsync(item.IndexName);
                         }
-                        _notifier.Success(H["Indices successfully removed."]);
+                        await _notifier.SuccessAsync(H["Indices successfully removed."]);
                         break;
                     case ContentsBulkAction.Reset:
                         foreach (var item in checkedContentItems)
@@ -454,7 +454,7 @@ namespace OrchardCore.Lucene.Controllers
                             _luceneIndexingService.ResetIndex(item.IndexName);
                             await _luceneIndexingService.ProcessContentItemsAsync(item.IndexName);
 
-                            _notifier.Success(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
                         }
                         break;
                     case ContentsBulkAction.Rebuild:
@@ -468,7 +468,7 @@ namespace OrchardCore.Lucene.Controllers
                             await _luceneIndexingService.RebuildIndexAsync(item.IndexName);
                             await _luceneIndexingService.ProcessContentItemsAsync(item.IndexName);
 
-                            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
                         }
                         break;
                     default:

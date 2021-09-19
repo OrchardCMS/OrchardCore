@@ -104,11 +104,11 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    _notifier.Success(H["Deployment executed successfully."]);
+                    await _notifier.SuccessAsync(H["Deployment executed successfully."]);
                 }
                 else
                 {
-                    _notifier.Error(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+                    await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
                 }
             }
             finally

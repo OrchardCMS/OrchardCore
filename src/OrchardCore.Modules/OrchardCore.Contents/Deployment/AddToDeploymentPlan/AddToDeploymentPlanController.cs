@@ -79,7 +79,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             deploymentPlan.DeploymentSteps.Add(step);
 
-            _notifier.Success(H["Content added successfully to the deployment plan."]);
+            await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
             _session.Save(deploymentPlan);
 
@@ -116,7 +116,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 // Requesting EditContent would allow custom permissions to deny access to this content item.
                 if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, item))
                 {
-                    _notifier.Warning(H["Couldn't add selected content to deployment plan."]);
+                    await _notifier.WarningAsync(H["Couldn't add selected content to deployment plan."]);
 
                     return Forbid();
                 }
@@ -126,7 +126,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 deploymentPlan.DeploymentSteps.Add(step);
             }
 
-            _notifier.Success(H["Content added successfully to the deployment plan."]);
+            await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
             _session.Save(deploymentPlan);
 
