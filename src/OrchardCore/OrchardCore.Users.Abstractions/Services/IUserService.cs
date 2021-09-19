@@ -12,7 +12,7 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Authenticates the user credentials.
         /// </summary>
-        /// <param name="userName">The username.</param>
+        /// <param name="userName">The username or email address.</param>
         /// <param name="password">The user password.</param>
         /// <param name="reportError">The error reported in case failure happened during the authentication process.</param>
         /// <returns>A <see cref="IUser"/> that represents an authenticated user.</returns>
