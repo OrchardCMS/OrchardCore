@@ -14,12 +14,12 @@ namespace OrchardCore.Tenants.Services
         /// <summary>
         /// Loads the feature profiles document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<FeatureProfilesDocument> LoadFeatureProfilesDocumentAsync() => Task.FromResult(new FeatureProfilesDocument());
+        public Task<FeatureProfilesDocument> LoadFeatureProfilesDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the feature profiles document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<FeatureProfilesDocument> GetFeatureProfilesDocumentAsync() => Task.FromResult(new FeatureProfilesDocument());
+        public Task<FeatureProfilesDocument> GetFeatureProfilesDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task RemoveFeatureProfileAsync(string name)
         {

@@ -326,7 +326,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                ValidateViewModel(model, true);
+                await ValidateViewModel(model, true);
             }
 
             if (ModelState.IsValid)
@@ -434,7 +434,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                ValidateViewModel(model, false);
+                await ValidateViewModel(model, false);
             }
 
             var shellSettings = _shellHost.GetAllSettings()
@@ -596,7 +596,7 @@ namespace OrchardCore.Tenants.Controllers
             return Redirect(redirectUrl);
         }
 
-        private void ValidateViewModel(EditTenantViewModel model, bool newTenant)
+        private async Task ValidateViewModel(EditTenantViewModel model, bool newTenant)
         {
             var selectedProvider = _databaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
 
@@ -608,6 +608,15 @@ namespace OrchardCore.Tenants.Controllers
             if (String.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
+            }
+
+            if (!String.IsNullOrWhiteSpace(model.FeatureProfile))
+            {
+                var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
+                if (!featureProfiles.ContainsKey(model.FeatureProfile))
+                {
+                    ModelState.AddModelError(nameof(EditTenantViewModel.FeatureProfile), S["The feature profile does not exist.", model.FeatureProfile]);
+                }
             }
 
             var allSettings = _shellHost.GetAllSettings();

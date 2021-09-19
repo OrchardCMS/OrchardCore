@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Environment.Shell.Models
 {
@@ -9,7 +10,10 @@ namespace OrchardCore.Environment.Shell.Models
 
     public class FeatureRule
     {
+        [Required]
         public string Rule { get; set; }
+
+        [Required]
         public string Expression { get; set; }
     }
 }

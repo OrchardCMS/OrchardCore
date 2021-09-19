@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +13,12 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
-using Parlot;
 
 namespace OrchardCore.Tenants.Controllers
 {
@@ -123,6 +120,8 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
+            List<FeatureRule> featureRules = null;
+
             if (ModelState.IsValid)
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
@@ -141,20 +140,26 @@ namespace OrchardCore.Tenants.Controllers
 
                 if (String.IsNullOrEmpty(model.FeatureRules))
                 {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["The profile rules are mandatory."]);
+                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["The feature rules are mandatory."]);
                 }
-                // TODO validate json
-                //else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
-                //{
-                //    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
-                //}
+                else
+                {
+                    try
+                    {
+                        featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+                    }
+                    catch (Exception)
+                    {
+                        ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
+                    }
+                }
             }
 
             if (ModelState.IsValid)
             {
                 var template = new FeatureProfile
                 {
-                    FeatureRules = new List<FeatureRule>()// TODO parse from json model.FeatureRules
+                    FeatureRules = featureRules
                 };
 
                 await _featureProfilesManager.UpdateFeatureProfileAsync(model.Name, template);
@@ -192,7 +197,7 @@ namespace OrchardCore.Tenants.Controllers
             var model = new FeatureProfileViewModel
             {
                 Name = name,
-                FeatureRules = String.Empty// TODO parse to jsontemplate.Content,
+                FeatureRules = JsonConvert.SerializeObject(featureProfile.FeatureRules, Formatting.Indented)
             };
 
             return View(model);
@@ -213,6 +218,8 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
+            List<FeatureRule> featureRules = null;
+
             if (ModelState.IsValid)
             {
                 if (String.IsNullOrWhiteSpace(model.Name))
@@ -229,17 +236,24 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["The feature rules are mandatory."]);
                 }
-                //else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
-                //{
-                //    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
-                //}
+                else
+                {
+                    try
+                    {
+                        featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+                    }
+                    catch (Exception)
+                    {
+                        ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
+                    }
+                }
             }
 
             if (ModelState.IsValid)
             {
                 var featureProfile = new FeatureProfile
                 {
-                    FeatureRules =  new List<FeatureRule>()//, model.Content,
+                    FeatureRules = featureRules
                 };
 
                 await _featureProfilesManager.RemoveFeatureProfileAsync(sourceName);

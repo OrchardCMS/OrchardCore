@@ -45,6 +45,11 @@
     <input type="text" asp-for="RecipeNameExpression" class="form-control code" />
 </div>
 
+<div class="form-group" asp-validation-class-for="FeatureProfileExpression">
+    <label asp-for="FeatureProfileExpression">@T["Feature Profile"] <span asp-validation-for="FeatureProfileExpression"></span></label>
+    <input type="text" asp-for="FeatureProfileExpression" class="form-control code" />
+</div>
+
 <style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
@@ -61,7 +66,7 @@ $(function () {
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
+     });
     var editorRup = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RequestUrlPrefixExpression)'), {
         lineNumbers: true,
         styleActiveLine: true,
@@ -73,30 +78,36 @@ $(function () {
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
+     });
     var editorDp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseProviderExpression)'), {
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
+     });
     var editorTp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TablePrefixExpression)'), {
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
+     });
     var editorCs = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ConnectionStringExpression)'), {
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
+     });
     var editorRn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RecipeNameExpression)'), {
         lineNumbers: true,
         styleActiveLine: true,
         matchBrackets: true,
         mode: { name: "liquid" },
-      });
+    });
+    var editorFp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.FeatureProfileExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+    });
 });
 </script>

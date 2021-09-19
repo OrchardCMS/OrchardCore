@@ -92,17 +92,20 @@
                 </div>
             </div>
         }
-
     }
-    <h6>
-        @T["Feature profile"]
-        <span class="text-muted form-text small">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
-    </h6>
-    <div class="row" asp-validation-class-for="FeatureProfile">
-        <div class="form-group col-md-6">
-            <select asp-for="FeatureProfile" asp-items="Model.FeatureProfiles" class="form-control"></select>
+
+    @if (Model.FeatureProfiles.Any())
+    {
+        <h6>
+            @T["Feature profile"]
+            <span class="text-muted form-text small">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
+        </h6>
+        <div class="row" asp-validation-class-for="FeatureProfile">
+            <div class="form-group col-md-6">
+                <select asp-for="FeatureProfile" asp-items="Model.FeatureProfiles" class="form-control"></select>
+            </div>
         </div>
-    </div>
+    }
 
     <div class="form-group">
         <button class="btn btn-primary save" type="submit">@T["Save"]</button>
