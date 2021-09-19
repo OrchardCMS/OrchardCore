@@ -7,7 +7,6 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -26,12 +25,10 @@ namespace OrchardCore.Themes
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
-        private readonly IShellConfiguration _shellConfiguration;
 
-        public Startup(IOptions<AdminOptions> adminOptions, IShellConfiguration shellConfiguration)
+        public Startup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
-            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection services)

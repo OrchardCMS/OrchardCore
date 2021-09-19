@@ -9,5 +9,4 @@ namespace OrchardCore.Tenants.Models
     {
         public Dictionary<string, FeatureProfile> FeatureProfiles = new Dictionary<string, FeatureProfile>(StringComparer.OrdinalIgnoreCase);
     }
-
 }
