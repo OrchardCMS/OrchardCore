@@ -9,7 +9,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Liquid;
-using OrchardCore.Search.Elastic.Model;
 using OrchardCore.Search.Elastic.Services;
 using OrchardCore.Queries;
 using YesSql;
@@ -61,7 +60,7 @@ namespace OrchardCore.Search.Elastic
 
             //Should be renamed at OrchardCore.Queries to SearchQueryResults
 
-            var elasticQueryResults = new ElasticQueryResults();
+            var elasticQueryResults = new SearchEngineQueryResults();
 
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
             var parameterizedQuery = JObject.Parse(tokenizedContent);
