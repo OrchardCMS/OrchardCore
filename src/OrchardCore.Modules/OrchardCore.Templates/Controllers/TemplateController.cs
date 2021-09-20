@@ -181,7 +181,7 @@ namespace OrchardCore.Templates.Controllers
                     : _templatesManager.UpdateTemplateAsync(model.Name, template)
                     );
 
-                _notifier.Success(H["The \"{0}\" template has been created.", model.Name]);
+                await _notifier.SuccessAsync(H["The \"{0}\" template has been created.", model.Name]);
 
                 if (submit == "SaveAndContinue")
                 {
@@ -323,7 +323,7 @@ namespace OrchardCore.Templates.Controllers
                     ? _adminTemplatesManager.RemoveTemplateAsync(name)
                     : _templatesManager.RemoveTemplateAsync(name));
 
-            _notifier.Success(H["Template deleted successfully."]);
+            await _notifier.SuccessAsync(H["Template deleted successfully."]);
 
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
@@ -355,7 +355,7 @@ namespace OrchardCore.Templates.Controllers
                                     ? _adminTemplatesManager.RemoveTemplateAsync(item.Key)
                                     : _templatesManager.RemoveTemplateAsync(item.Key));
                         }
-                        _notifier.Success(H["Templates successfully removed."]);
+                        await _notifier.SuccessAsync(H["Templates successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

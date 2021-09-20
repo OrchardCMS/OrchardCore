@@ -219,7 +219,7 @@ namespace OrchardCore.Taxonomies.Controllers
             var contentItem = await _contentManager.NewAsync(existing.ContentType);
 
             contentItem.ContentItemId = existing.ContentItemId;
-            contentItem.Merge(existing);            
+            contentItem.Merge(existing);
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
@@ -285,7 +285,7 @@ namespace OrchardCore.Taxonomies.Controllers
             taxonomyItem.Remove();
             _session.Save(taxonomy);
 
-            _notifier.Success(H["Taxonomy item deleted successfully."]);
+            await _notifier.SuccessAsync(H["Taxonomy item deleted successfully."]);
 
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }

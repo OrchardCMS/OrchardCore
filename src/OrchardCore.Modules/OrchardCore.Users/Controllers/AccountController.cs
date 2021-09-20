@@ -271,7 +271,7 @@ namespace OrchardCore.Users.Controllers
                 {
                     if (Url.IsLocalUrl(returnUrl))
                     {
-                        _notifier.Success(H["Your password has been changed successfully."]);
+                        await _notifier.SuccessAsync(H["Your password has been changed successfully."]);
                         return Redirect(returnUrl);
                     }
                     else
