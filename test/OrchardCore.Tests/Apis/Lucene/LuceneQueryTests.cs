@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
+using OrchardCore.Lucene;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
-using OrchardCore.Queries;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Tests.Apis.Lucene
 {
@@ -39,7 +39,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 var query = JsonConvert.SerializeObject(dynamicQuery);
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-                var queryResults = await content.Content.ReadAsAsync<SearchEngineQueryResults>();
+                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
 
                 // Test
                 Assert.Equal(2, queryResults.Items.Count());
@@ -76,7 +76,7 @@ namespace OrchardCore.Tests.Apis.Lucene
 
                 var query = JsonConvert.SerializeObject(dynamicQuery);
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-                var queryResults = await content.Content.ReadAsAsync<SearchEngineQueryResults>();
+                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
 
                 // Test
                 Assert.Equal(2, queryResults.Items.Count());
@@ -116,7 +116,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 var query = JsonConvert.SerializeObject(dynamicQuery);
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-                var queryResults = await content.Content.ReadAsAsync<SearchEngineQueryResults>();
+                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
 
                 // Test
                 Assert.NotEmpty(queryResults.Items);
@@ -146,7 +146,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                         "] } } }";
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-                var queryResults = await content.Content.ReadAsAsync<SearchEngineQueryResults>();
+                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
                 var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
 
                 // Test

@@ -58,7 +58,7 @@ namespace OrchardCore.Lucene
         public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var luceneQuery = query as LuceneQuery;
-            var luceneQueryResults = new SearchEngineQueryResults();
+            var luceneQueryResults = new LuceneQueryResults();
 
             await _luceneIndexProvider.SearchAsync(luceneQuery.Index, async searcher =>
             {
