@@ -39,7 +39,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 var query = JsonConvert.SerializeObject(dynamicQuery);
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+                var queryResults = await content.Content.ReadAsAsync<SearchEngineQueryResults>();
 
                 // Test
                 Assert.Equal(2, queryResults.Items.Count());
@@ -76,7 +76,7 @@ namespace OrchardCore.Tests.Apis.Lucene
 
                 var query = JsonConvert.SerializeObject(dynamicQuery);
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+                var queryResults = await content.Content.ReadAsAsync<SearchEngineQueryResults>();
 
                 // Test
                 Assert.Equal(2, queryResults.Items.Count());
@@ -116,7 +116,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 var query = JsonConvert.SerializeObject(dynamicQuery);
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+                var queryResults = await content.Content.ReadAsAsync<SearchEngineQueryResults>();
 
                 // Test
                 Assert.NotEmpty(queryResults.Items);
@@ -146,7 +146,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                         "] } } }";
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+                var queryResults = await content.Content.ReadAsAsync<SearchEngineQueryResults>();
                 var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
 
                 // Test
