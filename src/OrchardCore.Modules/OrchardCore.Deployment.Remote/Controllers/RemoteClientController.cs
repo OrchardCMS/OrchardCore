@@ -134,7 +134,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _remoteClientService.CreateRemoteClientAsync(model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote client created successfully."]);
+                await _notifier.SuccessAsync(H["Remote client created successfully."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -190,7 +190,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _remoteClientService.TryUpdateRemoteClient(model.Id, model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote client updated successfully."]);
+                await _notifier.SuccessAsync(H["Remote client updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -216,7 +216,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             await _remoteClientService.DeleteRemoteClientAsync(id);
 
-            _notifier.Success(H["Remote client deleted successfully."]);
+            await _notifier.SuccessAsync(H["Remote client deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -244,7 +244,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         {
                             await _remoteClientService.DeleteRemoteClientAsync(item.Id);
                         }
-                        _notifier.Success(H["Remote clients successfully removed."]);
+                        await _notifier.SuccessAsync(H["Remote clients successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

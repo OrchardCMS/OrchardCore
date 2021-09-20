@@ -256,11 +256,11 @@ namespace OrchardCore.Layers.Controllers
             {
                 layers.Layers.Remove(layer);
                 await _layerService.UpdateAsync(layers);
-                _notifier.Success(H["Layer deleted successfully."]);
+                await _notifier.SuccessAsync(H["Layer deleted successfully."]);
             }
             else
             {
-                _notifier.Error(H["The layer couldn't be deleted: you must remove any associated widgets first."]);
+                await _notifier.ErrorAsync(H["The layer couldn't be deleted: you must remove any associated widgets first."]);
             }
 
             return RedirectToAction(nameof(Index));

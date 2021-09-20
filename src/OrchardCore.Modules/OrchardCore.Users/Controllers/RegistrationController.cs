@@ -170,7 +170,7 @@ namespace OrchardCore.Users.Controllers
             {
                 await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 
-                _notifier.Success(H["Verification email sent."]);
+                await _notifier.SuccessAsync(H["Verification email sent."]);
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");
