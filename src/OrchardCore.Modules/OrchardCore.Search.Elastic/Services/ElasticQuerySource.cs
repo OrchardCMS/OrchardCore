@@ -9,7 +9,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Liquid;
-using OrchardCore.Search.Elastic.Services;
 using OrchardCore.Queries;
 using YesSql;
 using YesSql.Services;
@@ -19,9 +18,9 @@ namespace OrchardCore.Search.Elastic
     public class ElasticQuerySource : IQuerySource
     {
         private readonly ElasticIndexManager _elasticIndexProvider;
-        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
-        private readonly IElasticQueryService _queryService;
+        //private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+        //private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
+        //private readonly IElasticQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
         private readonly JavaScriptEncoder _javaScriptEncoder;
@@ -29,18 +28,18 @@ namespace OrchardCore.Search.Elastic
 
         public ElasticQuerySource(
             ElasticIndexManager elasticIndexProvider,
-            ElasticIndexSettingsService elasticIndexSettingsService,
-            ElasticAnalyzerManager elasticAnalyzerManager,
-            IElasticQueryService queryService,
+            //ElasticIndexSettingsService elasticIndexSettingsService,
+            //ElasticAnalyzerManager elasticAnalyzerManager,
+            //IElasticQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             ISession session,
             JavaScriptEncoder javaScriptEncoder,
             IOptions<TemplateOptions> templateOptions)
         {
             _elasticIndexProvider = elasticIndexProvider;
-            _elasticIndexSettingsService = elasticIndexSettingsService;
-            _elasticAnalyzerManager = elasticAnalyzerManager;
-            _queryService = queryService;
+            //_elasticIndexSettingsService = elasticIndexSettingsService;
+            //_elasticAnalyzerManager = elasticAnalyzerManager;
+            //_queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
             _session = session;
             _javaScriptEncoder = javaScriptEncoder;
@@ -60,7 +59,7 @@ namespace OrchardCore.Search.Elastic
 
             //Should be renamed at OrchardCore.Queries to SearchQueryResults
 
-            var elasticQueryResults = new SearchEngineQueryResults();
+            var elasticQueryResults = new ElasticQueryResults();
 
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
             var parameterizedQuery = JObject.Parse(tokenizedContent);
