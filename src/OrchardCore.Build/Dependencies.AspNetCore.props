@@ -1,8 +1,8 @@
 <Project>
 
   <PropertyGroup>
-    <DefaultTargetFramework>net5.0</DefaultTargetFramework>
-    <AspNetCoreTargetFrameworks Condition="'$(AspNetCoreTargetFrameworks)' == ''">net5.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
+    <DefaultTargetFramework>net6.0</DefaultTargetFramework>
+    <AspNetCoreTargetFrameworks Condition="'$(AspNetCoreTargetFrameworks)' == ''">net6.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingByReSharper)' == 'true'">
