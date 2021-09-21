@@ -1,15 +1,22 @@
 <Project>
 
+  <!-- Default TFMs to use when building and packaging -->
   <PropertyGroup>
-    <DefaultTargetFramework>net5.0</DefaultTargetFramework>
-    <AspNetCoreTargetFrameworks Condition="'$(AspNetCoreTargetFrameworks)' == ''">net5.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
+    <!-- TFMs used when publishing packages -->
+    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net6.0;net5.0;netcoreapp3.1</CommonTargetFrameworks>
   </PropertyGroup>
 
+  <!-- TFM used when coding in Visual Studio -->
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingByReSharper)' == 'true'">
-    <AspNetCoreTargetFrameworks>$(DefaultTargetFramework)</AspNetCoreTargetFrameworks>
+    <CommonTargetFrameworks>net6.0</CommonTargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <AspNetCoreVersion>6.0.0-rc.1.21452.15</AspNetCoreVersion>
+    <MicrosoftExtensionsVersion>6.0.0-rc.1.21452.15</MicrosoftExtensionsVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <AspNetCoreVersion>5.0.10</AspNetCoreVersion>
     <MicrosoftExtensionsVersion>5.0.1</MicrosoftExtensionsVersion>
   </PropertyGroup>
