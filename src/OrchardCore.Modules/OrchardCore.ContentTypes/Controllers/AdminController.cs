@@ -141,7 +141,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = new EditTypeViewModel(contentTypeDefinition);
 
-            _notifier.Success(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
+            await _notifier.SuccessAsync(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
 
             return RedirectToAction("AddPartsTo", new { id = typeViewModel.Name });
         }
@@ -200,7 +200,7 @@ namespace OrchardCore.ContentTypes.Controllers
                     _contentDefinitionService.AlterPartFieldsOrder(ownedPartDefinition, viewModel.OrderedFieldNames);
                 }
                 _contentDefinitionService.AlterTypePartsOrder(contentTypeDefinition, viewModel.OrderedPartNames);
-                _notifier.Success(H["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
+                await _notifier.SuccessAsync(H["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
             }
 
             return RedirectToAction(nameof(Edit), new { id });
@@ -224,7 +224,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.RemoveType(id, true);
 
-            _notifier.Success(H["\"{0}\" has been removed.", typeViewModel.DisplayName]);
+            await _notifier.SuccessAsync(H["\"{0}\" has been removed.", typeViewModel.DisplayName]);
 
             return RedirectToAction(nameof(List));
         }
@@ -313,7 +313,7 @@ namespace OrchardCore.ContentTypes.Controllers
             foreach (var partToAdd in partsToAdd)
             {
                 _contentDefinitionService.AddPartToType(partToAdd, typeViewModel.Name);
-                _notifier.Success(H["The \"{0}\" part has been added.", partToAdd]);
+                await _notifier.SuccessAsync(H["The \"{0}\" part has been added.", partToAdd]);
             }
 
             if (!ModelState.IsValid)
@@ -394,7 +394,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.AddReusablePartToType(viewModel.Name, viewModel.DisplayName, viewModel.Description, partToAdd, typeViewModel.Name);
 
-            _notifier.Success(H["The \"{0}\" part has been added.", partToAdd]);
+            await _notifier.SuccessAsync(H["The \"{0}\" part has been added.", partToAdd]);
 
             return RedirectToAction(nameof(Edit), new { id });
         }
@@ -416,7 +416,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.RemovePartFromType(name, id);
 
-            _notifier.Success(H["The \"{0}\" part has been removed.", name]);
+            await _notifier.SuccessAsync(H["The \"{0}\" part has been removed.", name]);
 
             return RedirectToAction(nameof(Edit), new { id });
         }
@@ -493,11 +493,11 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (partViewModel == null)
             {
-                _notifier.Information(H["The content part could not be created."]);
+                await _notifier.InformationAsync(H["The content part could not be created."]);
                 return View(viewModel);
             }
 
-            _notifier.Success(H["The \"{0}\" content part has been created.", partViewModel.Name]);
+            await _notifier.SuccessAsync(H["The \"{0}\" content part has been created.", partViewModel.Name]);
 
             return RedirectToAction(nameof(EditPart), new { id = partViewModel.Name });
         }
@@ -549,7 +549,7 @@ namespace OrchardCore.ContentTypes.Controllers
             else
             {
                 _contentDefinitionService.AlterPartFieldsOrder(contentPartDefinition, orderedFieldNames);
-                _notifier.Success(H["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
+                await _notifier.SuccessAsync(H["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
             }
 
             return RedirectToAction(nameof(EditPart), new { id });
@@ -573,7 +573,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.RemovePart(id);
 
-            _notifier.Information(H["\"{0}\" has been removed.", partViewModel.DisplayName]);
+            await _notifier.InformationAsync(H["\"{0}\" has been removed.", partViewModel.DisplayName]);
 
             return RedirectToAction(nameof(ListParts));
         }
@@ -665,7 +665,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.AddFieldToPart(viewModel.Name, viewModel.DisplayName, viewModel.FieldTypeName, partDefinition.Name);
 
-            _notifier.Success(H["The field \"{0}\" has been added.", viewModel.DisplayName]);
+            await _notifier.SuccessAsync(H["The field \"{0}\" has been added.", viewModel.DisplayName]);
 
             if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -767,7 +767,7 @@ namespace OrchardCore.ContentTypes.Controllers
                     return View(viewModel);
                 }
 
-                _notifier.Information(H["Display name changed to {0}.", viewModel.DisplayName]);
+                await _notifier.InformationAsync(H["Display name changed to {0}.", viewModel.DisplayName]);
             }
 
             _contentDefinitionService.AlterField(partViewModel, viewModel);
@@ -786,7 +786,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
             else
             {
-                _notifier.Success(H["The \"{0}\" field settings have been saved.", field.DisplayName()]);
+                await _notifier.SuccessAsync(H["The \"{0}\" field settings have been saved.", field.DisplayName()]);
             }
 
             if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -830,7 +830,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.RemoveFieldFromPart(name, partViewModel.Name);
 
-            _notifier.Success(H["The \"{0}\" field has been removed.", field.DisplayName()]);
+            await _notifier.SuccessAsync(H["The \"{0}\" field has been removed.", field.DisplayName()]);
 
             if (_contentDefinitionService.LoadType(id) != null)
             {
@@ -949,7 +949,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
             else
             {
-                _notifier.Success(H["The \"{0}\" part settings have been saved.", part.DisplayName()]);
+                await _notifier.SuccessAsync(H["The \"{0}\" part settings have been saved.", part.DisplayName()]);
             }
 
             return RedirectToAction(nameof(Edit), new { id });

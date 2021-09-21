@@ -139,10 +139,10 @@ namespace OrchardCore.Themes.Controllers
                     if (!isEnabled)
                     {
                         await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
-                        _notifier.Success(H["{0} was enabled", feature.Name ?? feature.Id]);
+                        await _notifier.SuccessAsync(H["{0} was enabled", feature.Name ?? feature.Id]);
                     }
 
-                    _notifier.Success(H["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
+                    await _notifier.SuccessAsync(H["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
                 }
             }
 
@@ -159,7 +159,7 @@ namespace OrchardCore.Themes.Controllers
 
             await _siteThemeService.SetSiteThemeAsync("");
 
-            _notifier.Success(H["The Site theme was reset."]);
+            await _notifier.SuccessAsync(H["The Site theme was reset."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -174,7 +174,7 @@ namespace OrchardCore.Themes.Controllers
 
             await _adminThemeService.SetAdminThemeAsync("");
 
-            _notifier.Success(H["The Admin theme was reset."]);
+            await _notifier.SuccessAsync(H["The Admin theme was reset."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -197,7 +197,7 @@ namespace OrchardCore.Themes.Controllers
 
             await _shellFeaturesManager.DisableFeaturesAsync(new[] { feature }, force: true);
 
-            _notifier.Success(H["{0} was disabled.", feature.Name ?? feature.Id]);
+            await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name ?? feature.Id]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -220,7 +220,7 @@ namespace OrchardCore.Themes.Controllers
 
             await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
 
-            _notifier.Success(H["{0} was enabled.", feature.Name ?? feature.Id]);
+            await _notifier.SuccessAsync(H["{0} was enabled.", feature.Name ?? feature.Id]);
 
             return RedirectToAction(nameof(Index));
         }

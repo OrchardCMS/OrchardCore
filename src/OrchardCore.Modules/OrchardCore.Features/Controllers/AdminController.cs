@@ -161,11 +161,11 @@ namespace OrchardCore.Features.Controllers
                     break;
                 case FeaturesBulkAction.Enable:
                     await _shellFeaturesManager.EnableFeaturesAsync(features, force == true);
-                    Notify(features);
+                    await NotifyAsync(features);
                     break;
                 case FeaturesBulkAction.Disable:
                     await _shellFeaturesManager.DisableFeaturesAsync(features, force == true);
-                    Notify(features, enabled: false);
+                    await NotifyAsync(features, enabled: false);
                     break;
                 case FeaturesBulkAction.Toggle:
                     // The features array has already been checked for validity.
@@ -175,19 +175,19 @@ namespace OrchardCore.Features.Controllers
                     var featuresToDisable = enabledFeatures.Intersect(features);
 
                     await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, force == true);
-                    Notify(featuresToEnable);
-                    Notify(featuresToDisable, enabled: false);
+                    await NotifyAsync(featuresToEnable);
+                    await NotifyAsync(featuresToDisable, enabled: false);
                     return;
                 default:
                     break;
             }
         }
 
-        private void Notify(IEnumerable<IFeatureInfo> features, bool enabled = true)
+        private async ValueTask NotifyAsync(IEnumerable<IFeatureInfo> features, bool enabled = true)
         {
             foreach (var feature in features)
             {
-                _notifier.Success(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
+                await _notifier.SuccessAsync(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
             }
         }
     }

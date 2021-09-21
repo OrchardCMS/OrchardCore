@@ -291,7 +291,7 @@ namespace OrchardCore.Tenants.Controllers
 
             await _featureProfilesManager.RemoveFeatureProfileAsync(name);
 
-            _notifier.Success(H["Feature profile deleted successfully."]);
+            await _notifier.SuccessAsync(H["Feature profile deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -318,7 +318,7 @@ namespace OrchardCore.Tenants.Controllers
                         {
                             await _featureProfilesManager.RemoveFeatureProfileAsync(item.Key);
                         }
-                        _notifier.Success(H["Feature profiles successfully removed."]);
+                        await _notifier.SuccessAsync(H["Feature profiles successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

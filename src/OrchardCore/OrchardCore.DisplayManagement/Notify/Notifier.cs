@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,9 @@ namespace OrchardCore.DisplayManagement.Notify
             _logger = logger;
         }
 
+        [Obsolete("This method will be removed in a later version. Use AddAsync()")]
+        // TODO The implementation for this is provided as an interface default implementation
+        // when the interface method is removed, replace this with AddAsync.
         public void Add(NotifyType type, LocalizedHtmlString message)
         {
             if (_logger.IsEnabled(LogLevel.Information))

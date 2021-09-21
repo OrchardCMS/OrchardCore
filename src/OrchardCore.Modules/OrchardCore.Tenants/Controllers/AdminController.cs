@@ -231,11 +231,11 @@ namespace OrchardCore.Tenants.Controllers
                     case "Disable":
                         if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
                         {
-                            _notifier.Warning(H["You cannot disable the default tenant."]);
+                            await _notifier.WarningAsync(H["You cannot disable the default tenant."]);
                         }
                         else if (shellSettings.State != TenantState.Running)
                         {
-                            _notifier.Warning(H["The tenant '{0}' is already disabled.", shellSettings.Name]);
+                            await _notifier.WarningAsync(H["The tenant '{0}' is already disabled.", shellSettings.Name]);
                         }
                         else
                         {
@@ -248,7 +248,7 @@ namespace OrchardCore.Tenants.Controllers
                     case "Enable":
                         if (shellSettings.State != TenantState.Disabled)
                         {
-                            _notifier.Warning(H["The tenant '{0}' is already enabled.", shellSettings.Name]);
+                            await _notifier.WarningAsync(H["The tenant '{0}' is already enabled.", shellSettings.Name]);
                         }
                         else
                         {
@@ -514,13 +514,13 @@ namespace OrchardCore.Tenants.Controllers
 
             if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
             {
-                _notifier.Error(H["You cannot disable the default tenant."]);
+                await _notifier.ErrorAsync(H["You cannot disable the default tenant."]);
                 return RedirectToAction(nameof(Index));
             }
 
             if (shellSettings.State != TenantState.Running)
             {
-                _notifier.Error(H["You can only disable an Enabled tenant."]);
+                await _notifier.ErrorAsync(H["You can only disable an Enabled tenant."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -554,7 +554,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (shellSettings.State != TenantState.Disabled)
             {
-                _notifier.Error(H["You can only enable a Disabled tenant."]);
+                await _notifier.ErrorAsync(H["You can only enable a Disabled tenant."]);
             }
 
             shellSettings.State = TenantState.Running;
