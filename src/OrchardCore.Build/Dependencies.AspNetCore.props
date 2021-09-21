@@ -2,13 +2,16 @@
 
   <!-- Default TFMs to use when building and packaging -->
   <PropertyGroup>
+
+    <!-- TFM used when coding in Visual Studio and when creating templates -->
+    <DefaultTargetFramework>net6.0</DefaultTargetFramework>
+    
     <!-- TFMs used when publishing packages -->
     <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net6.0;net5.0;netcoreapp3.1</CommonTargetFrameworks>
   </PropertyGroup>
 
-  <!-- TFM used when coding in Visual Studio -->
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingByReSharper)' == 'true'">
-    <CommonTargetFrameworks>net6.0</CommonTargetFrameworks>
+    <CommonTargetFrameworks>$(DefaultTargetFramework)</CommonTargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
