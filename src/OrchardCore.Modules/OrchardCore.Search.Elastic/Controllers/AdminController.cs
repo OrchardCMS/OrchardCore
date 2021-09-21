@@ -255,12 +255,12 @@ namespace OrchardCore.Search.Elastic.Controllers
                 }
                 catch (Exception e)
                 {
-                    _notifier.Error(H["An error occurred while creating the index."]);
+                    await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
                     _logger.LogError(e, "An error occurred while creating an index.");
                     return View(model);
                 }
 
-                _notifier.Success(H["Index <em>{0}</em> created successfully.", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
             }
             else
             {
@@ -272,12 +272,12 @@ namespace OrchardCore.Search.Elastic.Controllers
                 }
                 catch (Exception e)
                 {
-                    _notifier.Error(H["An error occurred while editing the index."]);
+                    await _notifier.ErrorAsync(H["An error occurred while editing the index."]);
                     _logger.LogError(e, "An error occurred while editing an index.");
                     return View(model);
                 }
 
-                _notifier.Success(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
             }
 
             return RedirectToAction("Index");
@@ -299,7 +299,7 @@ namespace OrchardCore.Search.Elastic.Controllers
             _elasticIndexingService.ResetIndex(id);
             await _elasticIndexingService.ProcessContentItemsAsync(id);
 
-            _notifier.Success(H["Index <em>{0}</em> reset successfully.", id]);
+            await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -320,7 +320,7 @@ namespace OrchardCore.Search.Elastic.Controllers
             await _elasticIndexingService.RebuildIndexAsync(id);
             await _elasticIndexingService.ProcessContentItemsAsync(id);
 
-            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", id]);
+            await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
 
             return RedirectToAction("Index");
         }
@@ -342,11 +342,11 @@ namespace OrchardCore.Search.Elastic.Controllers
             {
                 await _elasticIndexingService.DeleteIndexAsync(model.IndexName);
 
-                _notifier.Success(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
             }
             catch (Exception e)
             {
-                _notifier.Error(H["An error occurred while deleting the index."]);
+                await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
                 _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
             }
 
@@ -445,7 +445,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                         {
                             await _elasticIndexingService.DeleteIndexAsync(item.IndexName);
                         }
-                        _notifier.Success(H["Indices successfully removed."]);
+                        await _notifier.SuccessAsync(H["Indices successfully removed."]);
                         break;
                     case ContentsBulkAction.Reset:
                         foreach (var item in checkedContentItems)
@@ -458,7 +458,7 @@ namespace OrchardCore.Search.Elastic.Controllers
                             _elasticIndexingService.ResetIndex(item.IndexName);
                             await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
 
-                            _notifier.Success(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
                         }
                         break;
                     case ContentsBulkAction.Rebuild:
@@ -471,7 +471,7 @@ namespace OrchardCore.Search.Elastic.Controllers
 
                             await _elasticIndexingService.RebuildIndexAsync(item.IndexName);
                             await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
-                            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
                         }
                         break;
                     default:
