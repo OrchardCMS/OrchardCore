@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28822.285
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31710.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{275E087F-A4E2-4A7B-A924-ED68E3A52086}"
 EndProject
@@ -215,7 +215,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}"
 	ProjectSection(SolutionItems) = preProject
 		src\OrchardCore.Build\Dependencies.AspNetCore.props = src\OrchardCore.Build\Dependencies.AspNetCore.props
-		src\OrchardCore.Build\Dependencies.props = src\OrchardCore.Build\Dependencies.props
+		src\OrchardCore\Directory.Build.targets = src\OrchardCore\Directory.Build.targets
 		NuGet.config = NuGet.config
 		src\OrchardCore.Build\OrchardCore.Commons.props = src\OrchardCore.Build\OrchardCore.Commons.props
 		src\OrchardCore.Build\OrchardCore.Commons.targets = src\OrchardCore.Build\OrchardCore.Commons.targets
@@ -409,6 +409,24 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AuditTrail", "src\OrchardCore.Modules\OrchardCore.AuditTrail\OrchardCore.AuditTrail.csproj", "{67509F89-E3D6-4FF9-98EC-A9519937A364}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Email.Core", "src\OrchardCore\OrchardCore.Email.Core\OrchardCore.Email.Core.csproj", "{D00CF459-396D-49C9-92E2-3FD3C2A59847}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore", "OrchardCore", "{2BC850C3-9846-47E1-9068-AC0A8E5537AC}"
+	ProjectSection(SolutionItems) = preProject
+		src\OrchardCore\Directory.Build.props = src\OrchardCore\Directory.Build.props
+		src\OrchardCore\Directory.Build.targets = src\OrchardCore\Directory.Build.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules", "OrchardCore.Modules", "{85EF279B-8F35-476D-9BBD-F503F20712B5}"
+	ProjectSection(SolutionItems) = preProject
+		src\OrchardCore.Modules\Directory.Build.props = src\OrchardCore.Modules\Directory.Build.props
+		src\OrchardCore.Modules\Directory.Build.targets = src\OrchardCore.Modules\Directory.Build.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Themes", "OrchardCore.Themes", "{21F459C1-494E-41C9-B221-6C102774A47F}"
+	ProjectSection(SolutionItems) = preProject
+		src\OrchardCore.Themes\Directory.Build.props = src\OrchardCore.Themes\Directory.Build.props
+		src\OrchardCore.Themes\Directory.Build.targets = src\OrchardCore.Themes\Directory.Build.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1315,6 +1333,9 @@ Global
 		{442C544F-6587-4FA5-8459-710ED8492AD4} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{67509F89-E3D6-4FF9-98EC-A9519937A364} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{D00CF459-396D-49C9-92E2-3FD3C2A59847} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{2BC850C3-9846-47E1-9068-AC0A8E5537AC} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
+		{85EF279B-8F35-476D-9BBD-F503F20712B5} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
+		{21F459C1-494E-41C9-B221-6C102774A47F} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

@@ -10,7 +10,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <!--<PreserveCompilationReferences>true</PreserveCompilationReferences>-->
+    <!-- Required for runtime compilation because the dependency on RuntimeCompilation package is not transitive -->
+    <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
   <ItemGroup>
