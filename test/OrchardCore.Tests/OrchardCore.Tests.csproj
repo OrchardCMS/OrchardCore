@@ -3,7 +3,7 @@
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+    <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
