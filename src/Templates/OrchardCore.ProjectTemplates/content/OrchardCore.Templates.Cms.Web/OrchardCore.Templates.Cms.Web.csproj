@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>$(TemplateTargetPackageFramework)</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <PreserveCompilationReferences>true</PreserveCompilationReferences>
+    <PreserveCompilationContext Condition="'$(TargetFramework)' != 'net6.0'">true</PreserveCompilationContext>
   </PropertyGroup>
 
   <ItemGroup>

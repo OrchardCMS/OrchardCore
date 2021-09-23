@@ -215,6 +215,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}"
 	ProjectSection(SolutionItems) = preProject
 		src\OrchardCore.Build\Dependencies.AspNetCore.props = src\OrchardCore.Build\Dependencies.AspNetCore.props
+		src\OrchardCore.Build\Dependencies.props = src\OrchardCore.Build\Dependencies.props
 		src\OrchardCore\Directory.Build.targets = src\OrchardCore\Directory.Build.targets
 		NuGet.config = NuGet.config
 		src\OrchardCore.Build\OrchardCore.Commons.props = src\OrchardCore.Build\OrchardCore.Commons.props

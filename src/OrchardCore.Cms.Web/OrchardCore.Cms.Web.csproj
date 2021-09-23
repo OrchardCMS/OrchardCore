@@ -11,7 +11,7 @@
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <!-- Required for runtime compilation because the dependency on RuntimeCompilation package is not transitive -->
-    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <PreserveCompilationContext Condition="'$(TargetFramework)' != 'net6.0'">true</PreserveCompilationContext>
   </PropertyGroup>
 
   <ItemGroup>

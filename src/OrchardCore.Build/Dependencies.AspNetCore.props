@@ -6,8 +6,8 @@
     <!-- TFM used when coding in Visual Studio and when creating templates -->
     <DefaultTargetFramework Condition="'$(DefaultTargetFramework)' == ''">net6.0</DefaultTargetFramework>
     
-    <!-- TFMs used to build the projects -->
-    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net6.0;net5.0;netcoreapp3.1</CommonTargetFrameworks>
+    <!-- TFMs used to build the abstractions and modules-->
+    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">$(DefaultTargetFramework)</CommonTargetFrameworks>
   </PropertyGroup>
 
   <!-- Detect if the solution is opened in VS to limit the TFMs that are analyzed by Roslyn for performance reasons -->
