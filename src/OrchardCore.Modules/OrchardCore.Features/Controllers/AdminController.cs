@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -23,11 +24,13 @@ namespace OrchardCore.Features.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
 
         public AdminController(
             IExtensionManager extensionManager,
-            IHtmlLocalizer<AdminController> localizer,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             ShellSettings shellSettings,
@@ -38,7 +41,8 @@ namespace OrchardCore.Features.Controllers
             _authorizationService = authorizationService;
             _shellSettings = shellSettings;
             _notifier = notifier;
-            H = localizer;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
 
         public async Task<ActionResult> Features()
@@ -91,7 +95,7 @@ namespace OrchardCore.Features.Controllers
 
             if (model.FeatureIds == null || !model.FeatureIds.Any())
             {
-                ModelState.AddModelError("featureIds", H["Please select one or more features."].ToString());
+                ModelState.AddModelError("featureIds", S["Please select one or more features."].ToString());
             }
 
             if (ModelState.IsValid)
