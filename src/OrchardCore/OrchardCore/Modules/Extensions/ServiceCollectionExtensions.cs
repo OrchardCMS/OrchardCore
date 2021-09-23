@@ -165,6 +165,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(services =>
             {
                 services.AddExtensionManager();
+                services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
+                services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
             });
         }
 
