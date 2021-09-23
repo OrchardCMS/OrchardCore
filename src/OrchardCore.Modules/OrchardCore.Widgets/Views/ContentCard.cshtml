@@ -16,13 +16,11 @@
         if (String.IsNullOrEmpty(Model.PrefixValue))
         {
             Model.PrefixValue = Guid.NewGuid().ToString("n");
-            Model.PrefixesId =  Model.PrefixValue + "_" + Model.PrefixesId;
-            Model.ContentTypesId =  Model.PrefixValue + "_" + Model.ContentTypesId;
         }
 
         //Build Editor for Content Item
         // AJAX request is new request and will not have CollectionShape.
-        var isNew = Model.CollectionShape == null ? true : false ;
+        var isNew = Model.CollectionShape == null ? true : false;
         dynamic contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, "", Model.PrefixValue);
 
         //We don't show Actions and Side bar the parent editor has its own buttons.
