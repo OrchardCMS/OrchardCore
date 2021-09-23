@@ -8,6 +8,5 @@ namespace OrchardCore.Environment.Shell
     public interface IFeatureValidationProvider
     {
         ValueTask<bool> IsFeatureValidAsync(string id);
-        ValueTask<bool> IsExtensionValidAsync(string id);
     }
 }

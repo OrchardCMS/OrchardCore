@@ -57,12 +57,16 @@ namespace OrchardCore.Themes.Controllers
             var currentSiteTheme = currentSiteThemeExtensionInfo != null ? new ThemeEntry(currentSiteThemeExtensionInfo) : default(ThemeEntry);
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
-            var themes = (await _shellFeaturesManager.GetAvailableExtensionsAsync())
-                .OfType<IThemeExtensionInfo>()
-                .Where(extensionDescriptor =>
+            var themes = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .Where(f =>
                 {
-                    var tags = extensionDescriptor.Manifest.Tags.ToArray();
-                    var isHidden = tags.Any(x => String.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
+                    if (!f.IsTheme())
+                    {
+                        return false;
+                    }
+
+                    var tags = f.Extension.Manifest.Tags.ToArray();
+                    var isHidden = tags.Any(t => String.Equals(t, "hidden", StringComparison.OrdinalIgnoreCase));
                     if (isHidden)
                     {
                         return false;
@@ -70,13 +74,13 @@ namespace OrchardCore.Themes.Controllers
 
                     return true;
                 })
-                .Select(extensionDescriptor =>
+                .Select(f =>
                 {
-                    var isAdmin = IsAdminTheme(extensionDescriptor.Manifest);
+                    var isAdmin = IsAdminTheme(f.Extension.Manifest);
                     var themeId = isAdmin ? currentAdminTheme?.Extension.Id : currentSiteTheme?.Extension.Id;
-                    var isCurrent = extensionDescriptor.Id == themeId;
-                    var isEnabled = enabledFeatures.Any(x => x.Extension.Id == extensionDescriptor.Id);
-                    var themeEntry = new ThemeEntry(extensionDescriptor)
+                    var isCurrent = f.Extension.Id == themeId;
+                    var isEnabled = enabledFeatures.Any(e => e.Id == f.Id);
+                    var themeEntry = new ThemeEntry(f.Extension)
                     {
                         Enabled = isEnabled,
                         CanUninstall = installThemes,
@@ -86,7 +90,7 @@ namespace OrchardCore.Themes.Controllers
 
                     return themeEntry;
                 })
-                .OrderByDescending(x => x.IsCurrent);
+                .OrderByDescending(t => t.IsCurrent);
 
             var model = new SelectThemesViewModel
             {

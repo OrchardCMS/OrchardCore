@@ -57,7 +57,7 @@ namespace OrchardCore.Features.Controllers
 
             var moduleFeatures = new List<ModuleFeature>();
 
-            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync()).Where(f => !f.Extension.IsTheme());
+            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync()).Where(f => !f.IsTheme());
 
             foreach (var moduleFeatureInfo in features)
             {

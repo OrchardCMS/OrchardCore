@@ -81,31 +81,5 @@ namespace OrchardCore.Environment.Shell
             // Extensions are still ordered according to the weight of their first features.
             return Task.FromResult(_extensionManager.GetExtensions().Where(e => enabledIds.Contains(e.Id)));
         }
-
-        public async Task<IEnumerable<IExtensionInfo>> GetAvailableExtensionsAsync()
-        {
-            var extensions = _extensionManager.GetExtensions();
-            var result = new List<IExtensionInfo>();
-            foreach (var extension in extensions)
-            {
-                var isExtensionValid = true;
-                foreach (var validator in _featureValidators)
-                {
-                    isExtensionValid = await validator.IsExtensionValidAsync(extension.Id);
-                    // When a feature is marked as invalid it cannot be reintroduced.
-                    if (!isExtensionValid)
-                    {
-                        break;
-                    }
-                }
-
-                if (isExtensionValid)
-                {
-                    result.Add(extension);
-                }
-            }
-
-            return result;
-        }
     }
 }

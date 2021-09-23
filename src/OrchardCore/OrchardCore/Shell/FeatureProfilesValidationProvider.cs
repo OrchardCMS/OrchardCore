@@ -31,9 +31,6 @@ namespace OrchardCore.Environment.Shell
             _featureProfilesRuleOptions = featureOptions.Value;
         }
 
-        public ValueTask<bool> IsExtensionValidAsync(string id)
-            => IsFeatureValidAsync(id);
-
         public async ValueTask<bool> IsFeatureValidAsync(string id)
         {
             var featureProfileName = _shellSettings["FeatureProfile"];
