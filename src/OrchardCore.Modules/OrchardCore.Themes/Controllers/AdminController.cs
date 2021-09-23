@@ -78,7 +78,7 @@ namespace OrchardCore.Themes.Controllers
                 {
                     var isAdmin = IsAdminTheme(f.Extension.Manifest);
                     var themeId = isAdmin ? currentAdminTheme?.Extension.Id : currentSiteTheme?.Extension.Id;
-                    var isCurrent = f.Extension.Id == themeId;
+                    var isCurrent = f.Id == themeId;
                     var isEnabled = enabledFeatures.Any(e => e.Id == f.Id);
                     var themeEntry = new ThemeEntry(f.Extension)
                     {
@@ -117,7 +117,7 @@ namespace OrchardCore.Themes.Controllers
             else
             {
                 var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                    .FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
+                    .FirstOrDefault(f => f.IsTheme() && f.Id == id);
 
                 if (feature == null)
                 {
@@ -192,7 +192,7 @@ namespace OrchardCore.Themes.Controllers
             }
 
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
+                .FirstOrDefault(f => f.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -215,7 +215,7 @@ namespace OrchardCore.Themes.Controllers
             }
 
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
+                .FirstOrDefault(f => f.IsTheme() && f.Id == id);
 
             if (feature == null)
             {

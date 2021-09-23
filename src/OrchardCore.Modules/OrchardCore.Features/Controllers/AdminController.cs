@@ -101,7 +101,7 @@ namespace OrchardCore.Features.Controllers
             if (ModelState.IsValid)
             {
                 var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                    .Where(f => !f.Extension.IsTheme() && model.FeatureIds.Contains(f.Id));
+                    .Where(f => !f.IsTheme() && model.FeatureIds.Contains(f.Id));
 
                 await EnableOrDisableFeaturesAsync(features, model.BulkAction, force);
             }
@@ -113,7 +113,7 @@ namespace OrchardCore.Features.Controllers
         public async Task<IActionResult> Disable(string id)
         {
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => !f.Extension.IsTheme() && f.Id == id);
+                .FirstOrDefault(f => !f.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -135,7 +135,7 @@ namespace OrchardCore.Features.Controllers
         public async Task<IActionResult> Enable(string id)
         {
             var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => !f.Extension.IsTheme() && f.Id == id);
+                .FirstOrDefault(f => !f.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
