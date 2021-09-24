@@ -73,7 +73,6 @@ namespace OrchardCore.Environment.Shell
             }
 
             var dependencies = _extensionManager.GetFeatureDependencies(id);
-
             foreach (var dependency in dependencies)
             {
                 isAllowed = IsAllowed(dependency.Id);

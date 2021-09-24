@@ -20,15 +20,15 @@ namespace OrchardCore.Environment.Shell
 
         public ValueTask<bool> IsFeatureValidAsync(string id)
         {
-            if (_shellSettings.Name == ShellHelper.DefaultShellName)
-            {
-                return new ValueTask<bool>(true);
-            }
-
             var features = _extensionManager.GetFeatures(new[] { id });
             if (!features.Any())
             {
                 return new ValueTask<bool>(false);
+            }
+
+            if (_shellSettings.Name == ShellHelper.DefaultShellName)
+            {
+                return new ValueTask<bool>(true);
             }
 
             return new ValueTask<bool>(!features.Any(f => f.DefaultTenantOnly));
