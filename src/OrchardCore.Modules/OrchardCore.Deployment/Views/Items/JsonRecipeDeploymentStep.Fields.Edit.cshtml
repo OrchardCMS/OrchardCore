@@ -1,27 +1,4 @@
-@using Newtonsoft.Json.Linq;
-
 @model JsonRecipeDeploymentStepViewModel
-@inject IStringLocalizer<ViewContext> S
-
-@{
-    var schema = new JObject
-    {
-        new JProperty("$schema", "http://json-schema.org/draft-04/schema#"),
-        new JProperty("type", "object"),
-        new JProperty("title", S["JSON Recipe deployment plan"].ToString()),
-        new JProperty("properties", new JObject
-        {
-            new JProperty("name", new JObject
-            {
-                new JProperty("type", "string")
-            })
-        }),
-        new JProperty("required", new JArray
-        {
-            new JValue("name")
-        })
-    };
-}
 
 <h5>@T["JSON Recipe"]</h5>
 
@@ -30,7 +7,7 @@
         <div class="form-group" asp-validation-class-for="Json">
             <label asp-for="Json">@T["Recipe"]</label>
             <div class="form-control" style="min-height: 400px;">
-                <div id="@Html.IdFor(x => x.Json)_editor" asp-for="FeatureRules" style="min-height: 385px;" dir="@Orchard.CultureDir()" data-schema='@schema.ToString()'></div>
+                <div id="@Html.IdFor(x => x.Json)_editor" style="min-height: 385px;" dir="@Orchard.CultureDir()" data-schema='@Model.Schema'></div>
             </div>
             <textarea asp-for="Json" hidden></textarea>
             <span class="hint">@T["The json recipe."]</span>

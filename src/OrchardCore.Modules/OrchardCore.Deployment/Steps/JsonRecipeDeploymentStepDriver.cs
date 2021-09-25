@@ -12,6 +12,25 @@ namespace OrchardCore.Deployment.Steps
 {
     public class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentStep, JsonRecipeDeploymentStep>
     {
+        /// <summary>
+        /// A limited schema for recipe steps. Does not include any step data.
+        /// </summary>
+        public const string Schema = @"
+{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""type"": ""object"",
+  ""title"": ""JSON Recipe deployment plan"",
+  ""properties"": {
+    ""name"": {
+      ""type"": ""string""
+    }
+  },
+  ""required"": [
+    ""name""
+  ]
+}
+";
+
         private readonly IStringLocalizer S;
 
         public JsonRecipeDeploymentStepDriver(IStringLocalizer<JsonRecipeDeploymentStepDriver> stringLocalizer)
@@ -33,6 +52,7 @@ namespace OrchardCore.Deployment.Steps
             return Initialize<JsonRecipeDeploymentStepViewModel>("JsonRecipeDeploymentStep_Fields_Edit", model =>
             {
                 model.Json = step.Json;
+                model.Schema = Schema;
             }).Location("Content");
         }
 
