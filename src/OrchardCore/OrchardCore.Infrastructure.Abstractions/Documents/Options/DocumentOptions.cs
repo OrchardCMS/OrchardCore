@@ -10,6 +10,7 @@ namespace OrchardCore.Documents.Options
         public bool? CheckConcurrency { get; set; }
         public bool? CheckConsistency { get; set; }
         public TimeSpan? SynchronizationLatency { get; set; }
+        public TimeSpan? FailoverRetryLatency { get; set; }
         public IDocumentSerialiser Serializer { get; set; }
         public int CompressThreshold { get; set; }
 

@@ -20,12 +20,16 @@ namespace OrchardCore.Documents.Options
         public void Configure(string name, DocumentOptions options)
         {
             var config = _shellConfiguration.GetSection(name).Get<DocumentOptions>() ?? new DocumentOptions();
+            var sharedConfig = _shellConfiguration.Get<DocumentOptions>() ?? new DocumentOptions();
 
             config.CacheKey ??= name;
             config.CacheIdKey ??= "ID_" + name;
-            config.CheckConcurrency ??= true;
-            config.CheckConsistency ??= true;
-            config.SynchronizationLatency ??= TimeSpan.FromSeconds(1);
+
+            config.CheckConcurrency ??= sharedConfig.CheckConcurrency ?? true;
+            config.CheckConsistency ??= sharedConfig.CheckConsistency ?? true;
+
+            config.SynchronizationLatency ??= sharedConfig.SynchronizationLatency ?? TimeSpan.FromSeconds(1);
+            config.FailoverRetryLatency ??= sharedConfig.FailoverRetryLatency ?? TimeSpan.FromSeconds(15);
 
             config.Serializer = DefaultDocumentSerializer.Instance;
 
@@ -50,6 +54,7 @@ namespace OrchardCore.Documents.Options
             options.CheckConcurrency = config.CheckConcurrency;
             options.CheckConsistency = config.CheckConsistency;
             options.SynchronizationLatency = config.SynchronizationLatency;
+            options.FailoverRetryLatency = config.FailoverRetryLatency;
             options.Serializer = config.Serializer;
             options.CompressThreshold = config.CompressThreshold;
 
