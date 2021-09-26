@@ -18,7 +18,7 @@
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="2.0.13" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
-    <PackageManagement Include="Jint" Version="3.0.0-beta-2034" />
+    <PackageManagement Include="Jint" Version="3.0.0-beta-2035" />
     <PackageManagement Include="HtmlSanitizer" Version="6.0.441" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00014" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00014" />
