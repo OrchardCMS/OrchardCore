@@ -35,11 +35,20 @@ namespace OrchardCore.Documents
             _distributedLock = distributedLock;
         }
 
-        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
+        public async Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
         {
-            if (updateAsync == null)
+            if (_isDistributed)
             {
-                return Task.CompletedTask;
+                try
+                {
+                    _ = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+                }
+                catch
+                {
+                    await DocumentStore.CancelAsync();
+
+                    throw new InvalidOperationException("Can't update the store if not able to access the distributed cache");
+                }
             }
 
             _updateDelegateAsync += () => updateAsync();
@@ -81,8 +90,6 @@ namespace OrchardCore.Documents
                     }
                 }
             });
-
-            return Task.CompletedTask;
         }
     }
 }

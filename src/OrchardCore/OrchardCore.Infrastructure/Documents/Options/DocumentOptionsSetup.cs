@@ -34,7 +34,7 @@ namespace OrchardCore.Documents.Options
             options.CacheIdKey = namedConfig.CacheIdKey ?? "ID_" + name;
 
             // Only from the shared config or default.
-            options.FailoverRetryLatency = sharedConfig.FailoverRetryLatency ?? TimeSpan.FromSeconds(15);
+            options.FailoverRetryLatency = sharedConfig.FailoverRetryLatency ?? TimeSpan.FromMinutes(5);
             options.FailoverKey = sharedConfig.FailoverKey ?? "OrchardCore_Documents_FailoverKey";
 
             // From the named or shared config or default.

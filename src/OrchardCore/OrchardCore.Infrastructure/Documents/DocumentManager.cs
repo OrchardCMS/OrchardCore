@@ -16,14 +16,12 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
-        private const string FailoverKey = "DocumentManager_Failover_Key";
-
-        private readonly IDistributedCache _distributedCache;
+        protected readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
         protected readonly DocumentOptions _options;
         private readonly ILogger _logger;
 
-        private readonly bool _isDistributed;
+        protected readonly bool _isDistributed;
         protected bool _isVolatile;
 
         public DocumentManager(
@@ -111,7 +109,7 @@ namespace OrchardCore.Documents
 
             TDocument document = null;
 
-            var failover = _isDistributed && _memoryCache.Get<bool>(FailoverKey);
+            var failover = _isDistributed && _memoryCache.Get<bool>(_options.FailoverKey);
             try
             {
                 // May call an async IO if using a distributed cache.
@@ -130,7 +128,7 @@ namespace OrchardCore.Documents
                 }
 
                 failover = true;
-                _memoryCache.Set(FailoverKey, failover, new MemoryCacheEntryOptions()
+                _memoryCache.Set(_options.FailoverKey, failover, new MemoryCacheEntryOptions()
                 {
                     AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency
                 });
@@ -160,8 +158,22 @@ namespace OrchardCore.Documents
             return document;
         }
 
-        public Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null)
+        public async Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null)
         {
+            if (_isDistributed)
+            {
+                try
+                {
+                    _ = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+                }
+                catch
+                {
+                    await DocumentStore.CancelAsync();
+
+                    throw new InvalidOperationException("Can't update the store if not able to access the distributed cache");
+                }
+            }
+
             if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
             {
                 throw new InvalidOperationException("Can't update a cached object");
@@ -171,7 +183,7 @@ namespace OrchardCore.Documents
 
             if (!_isVolatile)
             {
-                return DocumentStore.UpdateAsync(document, async document =>
+                await DocumentStore.UpdateAsync(document, async document =>
                 {
                     await SetInternalAsync(document);
 
@@ -181,6 +193,8 @@ namespace OrchardCore.Documents
                     }
                 },
                 _options.CheckConcurrency.Value);
+
+                return;
             }
 
             // Set the scoped cache in case of multiple updates.
@@ -197,10 +211,10 @@ namespace OrchardCore.Documents
                 }
             });
 
-            return Task.CompletedTask;
+            return;
         }
 
-        private async Task<TDocument> GetInternalAsync(bool failover)
+        private async Task<TDocument> GetInternalAsync(bool failover = false)
         {
             string id;
             if (_isDistributed)
