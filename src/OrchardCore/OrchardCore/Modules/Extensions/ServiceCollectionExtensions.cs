@@ -207,19 +207,29 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var fileProvider = serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
 
-                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
-
-                options.RequestPath = "";
-                options.FileProvider = fileProvider;
-
                 var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-                
-                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}");
+                // Cache static files for a year as they are coming from embedded resources and should not vary.
+                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-maxage={TimeSpan.FromDays(365.25).TotalSeconds}");
 
-                // Cache static files for a year as they are coming from embedded resources and should not vary
-                options.OnPrepareResponse = ctx =>
+                // Use the current options values but without mutating the resolved instance.
+                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
+                options = new StaticFileOptions
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                    RequestPath = String.Empty,
+                    FileProvider = fileProvider,
+
+#if NET5_0_OR_GREATER
+                    RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
+#endif
+                    ContentTypeProvider = options.ContentTypeProvider,
+                    DefaultContentType = options.DefaultContentType,
+                    ServeUnknownFileTypes = options.ServeUnknownFileTypes,
+                    HttpsCompression = options.HttpsCompression,
+
+                    OnPrepareResponse = ctx =>
+                    {
+                        ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                    },
                 };
 
                 app.UseStaticFiles(options);

@@ -2371,6 +2371,60 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mildronize",
+      "name": "Thada Wangthammang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3647850?v=4",
+      "profile": "https://thadaw.com/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "felixhoi",
+      "name": "Felix Hoi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60052664?v=4",
+      "profile": "https://github.com/felixhoi",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kaipm",
+      "name": "Martin Kaip",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16665420?v=4",
+      "profile": "http://www.trend-fox.at/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "sfsharapov",
+      "name": "Sardor",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23080892?v=4",
+      "profile": "https://github.com/sfsharapov",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "andrewjcarney",
+      "name": "Andrew Carney",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6652459?v=4",
+      "profile": "https://github.com/andrewjcarney",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "evaldsen",
+      "name": "evaldsen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90476086?v=4",
+      "profile": "https://github.com/evaldsen",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

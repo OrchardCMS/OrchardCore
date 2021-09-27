@@ -11,17 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="wwwroot\monaco\liquid-intellisense.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\monaco\liquid-intellisense.js">
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -35,5 +25,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Shortcodes.Abstractions\OrchardCore.Shortcodes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
   </ItemGroup>
+
+
 
 </Project>

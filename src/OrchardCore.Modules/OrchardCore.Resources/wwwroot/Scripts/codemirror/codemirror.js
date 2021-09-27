@@ -4849,6 +4849,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     cursor.style.top = pos.top + "px";
     cursor.style.height = Math.max(0, pos.bottom - pos.top) * cm.options.cursorHeight + "px";
 
+    if (/\bcm-fat-cursor\b/.test(cm.getWrapperElement().className)) {
+      var charPos = _charCoords(cm, head, "div", null, null);
+
+      cursor.style.width = Math.max(0, charPos.right - charPos.left) + "px";
+    }
+
     if (pos.other) {
       // Secondary cursor, shown when on a 'jump' in bi-directional text
       var otherCursor = output.appendChild(elt("div", "\xA0", "CodeMirror-cursor CodeMirror-secondarycursor"));
@@ -6577,7 +6583,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     d.scroller = elt("div", [d.sizer, d.heightForcer, d.gutters], "CodeMirror-scroll");
     d.scroller.setAttribute("tabIndex", "-1"); // The element in which the editor lives.
 
-    d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror"); // Work around IE7 z-index bug (not perfect, hence IE7 not really being supported)
+    d.wrapper = elt("div", [d.scrollbarFiller, d.gutterFiller, d.scroller], "CodeMirror"); // This attribute is respected by automatic translation systems such as Google Translate,
+    // and may also be respected by tools used by human translators.
+
+    d.wrapper.setAttribute('translate', 'no'); // Work around IE7 z-index bug (not perfect, hence IE7 not really being supported)
 
     if (ie && ie_version < 8) {
       d.gutters.style.zIndex = -1;
@@ -14669,6 +14678,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.62.2";
+  CodeMirror.version = "5.62.3";
   return CodeMirror;
 });

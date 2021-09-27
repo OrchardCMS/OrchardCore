@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentFields.Fields;
@@ -27,10 +28,11 @@ namespace OrchardCore.ContentFields.GraphQL
                 .Name("contentItems")
                 .Description("the content items")
                 .PagingArguments()
-                .ResolveAsync(x =>
+                .ResolveAsync(async x =>
                 {
                     var contentItemLoader = x.GetOrAddPublishedContentItemByIdDataLoader();
-                    return contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds));
+                    var items = await contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds));
+                    return items.Where(item => item != null).ToArray();
                 });
         }
     }

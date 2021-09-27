@@ -101,7 +101,7 @@ namespace OrchardCore.Recipes.Controllers
 
             if (recipe == null)
             {
-                _notifier.Error(H["Recipe was not found."]);
+                await _notifier.ErrorAsync(H["Recipe was not found."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -126,7 +126,7 @@ namespace OrchardCore.Recipes.Controllers
 
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-            _notifier.Success(H["The recipe '{0}' has been run successfully.", recipe.DisplayName]);
+            await _notifier.SuccessAsync(H["The recipe '{0}' has been run successfully.", recipe.DisplayName]);
             return RedirectToAction(nameof(Index));
         }
     }

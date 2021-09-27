@@ -4,5 +4,5 @@
     string className = "info-circle";
 }
 <header>
-    <h4><i class="fa fa-@className"></i>@Model.Activity.GetTitleOrDefault(() => T["Commit Transaction"])</h4>
+    <h4><i class="fa fa-@className" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Commit Transaction"])</h4>
 </header>

@@ -10,6 +10,10 @@ namespace OrchardCore.Email.Workflows.ViewModels
 
         public string ReplyToExpression { get; set; }
 
+        public string CcExpression { get; set; }
+
+        public string BccExpression { get; set; }
+
         [Required]
         public string RecipientsExpression { get; set; }
 

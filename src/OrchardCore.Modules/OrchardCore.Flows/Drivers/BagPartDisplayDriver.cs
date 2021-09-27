@@ -48,7 +48,7 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
         {
-            return Initialize<BagPartEditViewModel>("BagPart_Edit", m =>
+            return Initialize<BagPartEditViewModel>(GetEditorShapeType(context), m =>
             {
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
