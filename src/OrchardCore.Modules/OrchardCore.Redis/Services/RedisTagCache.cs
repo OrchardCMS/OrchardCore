@@ -34,6 +34,11 @@ namespace OrchardCore.Redis.Services
                 await _redis.ConnectAsync();
             }
 
+            if (_redis.Database == null)
+            {
+                return;
+            }
+
             foreach (var tag in tags)
             {
                 await _redis.Database.SetAddAsync(_prefix + tag, key);
@@ -45,6 +50,11 @@ namespace OrchardCore.Redis.Services
             if (_redis.Database == null)
             {
                 await _redis.ConnectAsync();
+            }
+
+            if (_redis.Database == null)
+            {
+                return Enumerable.Empty<string>();
             }
 
             var values = await _redis.Database.SetMembersAsync(_prefix + tag);
@@ -62,6 +72,11 @@ namespace OrchardCore.Redis.Services
             if (_redis.Database == null)
             {
                 await _redis.ConnectAsync();
+            }
+
+            if (_redis.Database == null)
+            {
+                return;
             }
 
             var values = await _redis.Database.SetMembersAsync(_prefix + tag);

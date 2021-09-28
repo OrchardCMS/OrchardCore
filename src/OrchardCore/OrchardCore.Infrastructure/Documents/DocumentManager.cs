@@ -170,7 +170,7 @@ namespace OrchardCore.Documents
                 {
                     await DocumentStore.CancelAsync();
 
-                    throw new InvalidOperationException("Can't update the store if not able to access the distributed cache");
+                    throw new InvalidOperationException($"Can't update the {typeof(TDocument).Name} if not able to access the distributed cache");
                 }
             }
 
