@@ -100,8 +100,16 @@ namespace OrchardCore.Layers.Controllers
                 {
                     model.Widgets.Add(zone, list = new List<dynamic>());
                 }
+                try
+                {
+                    var widgetDisplay = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin");
+                    list.Add(widgetDisplay);
+                }
+                catch (Exception _e) {
+                    await _notifier.ErrorAsync(H[_e.Message]);
+                    continue;
+                }
 
-                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
             }
 
             return View(model);
