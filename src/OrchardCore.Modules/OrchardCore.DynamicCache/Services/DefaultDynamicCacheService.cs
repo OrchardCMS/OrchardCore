@@ -99,6 +99,12 @@ namespace OrchardCore.DynamicCache.Services
 
         private async Task SetCachedValueAsync(string cacheKey, string value, CacheContext context)
         {
+            var failover = _memoryCache.Get<bool>(FailoverKey);
+            if (failover)
+            {
+                return;
+            }
+
             var bytes = Encoding.UTF8.GetBytes(value);
 
             var options = new DistributedCacheEntryOptions
@@ -112,12 +118,6 @@ namespace OrchardCore.DynamicCache.Services
             if (!options.AbsoluteExpiration.HasValue && !options.SlidingExpiration.HasValue && !options.AbsoluteExpirationRelativeToNow.HasValue)
             {
                 options.SlidingExpiration = new TimeSpan(0, 1, 0);
-            }
-
-            var failover = _memoryCache.Get<bool>(FailoverKey);
-            if (failover)
-            {
-                return;
             }
 
             try

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,12 +37,20 @@ namespace OrchardCore.Redis.Services
 
             if (_redis.Database == null)
             {
+                _logger.LogError("Fails to add the '{KeyName}' to the {PrefixName} tags.", key, _prefix);
                 return;
             }
 
-            foreach (var tag in tags)
+            try
             {
-                await _redis.Database.SetAddAsync(_prefix + tag, key);
+                foreach (var tag in tags)
+                {
+                    await _redis.Database.SetAddAsync(_prefix + tag, key);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Fails to add the '{KeyName}' to the {PrefixName} tags.", key, _prefix);
             }
         }
 
@@ -54,17 +63,27 @@ namespace OrchardCore.Redis.Services
 
             if (_redis.Database == null)
             {
+                _logger.LogError("Fails to get items of the {TagName} tags.", _prefix + tag);
                 return Enumerable.Empty<string>();
             }
 
-            var values = await _redis.Database.SetMembersAsync(_prefix + tag);
-
-            if (values == null || values.Length == 0)
+            try
             {
-                return Enumerable.Empty<string>();
+                var values = await _redis.Database.SetMembersAsync(_prefix + tag);
+
+                if (values == null || values.Length == 0)
+                {
+                    return Enumerable.Empty<string>();
+                }
+
+                return values.Select(v => (string)v).ToArray();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Fails to get items of the {TagName} tags.", _prefix + tag);
             }
 
-            return values.Select(v => (string)v).ToArray();
+            return Enumerable.Empty<string>();
         }
 
         public async Task RemoveTagAsync(string tag)
@@ -76,21 +95,29 @@ namespace OrchardCore.Redis.Services
 
             if (_redis.Database == null)
             {
+                _logger.LogError("Fails to remove the '{TagName}'.", _prefix + tag);
                 return;
             }
 
-            var values = await _redis.Database.SetMembersAsync(_prefix + tag);
-
-            if (values == null || values.Length == 0)
+            try
             {
-                return;
+                var values = await _redis.Database.SetMembersAsync(_prefix + tag);
+
+                if (values == null || values.Length == 0)
+                {
+                    return;
+                }
+
+                var set = values.Select(v => (string)v).ToArray();
+
+                await _redis.Database.KeyDeleteAsync(_prefix + tag);
+
+                await _tagRemovedEventHandlers.InvokeAsync(x => x.TagRemovedAsync(tag, set), _logger);
             }
-
-            var set = values.Select(v => (string)v).ToArray();
-
-            await _redis.Database.KeyDeleteAsync(_prefix + tag);
-
-            await _tagRemovedEventHandlers.InvokeAsync(x => x.TagRemovedAsync(tag, set), _logger);
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Fails to remove the '{TagName}'.", _prefix + tag);
+            }
         }
     }
 }
