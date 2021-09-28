@@ -18,6 +18,7 @@ namespace OrchardCore.DynamicCache.Services
     public class DefaultDynamicCacheService : IDynamicCacheService
     {
         public const string FailoverKey = "OrchardCore_DynamicCache_FailoverKey";
+        public static TimeSpan DefaultFailoverRetryLatency = TimeSpan.FromMinutes(5);
 
         private readonly PoolingJsonSerializer _serializer;
         private readonly ICacheContextManager _cacheContextManager;
@@ -128,7 +129,7 @@ namespace OrchardCore.DynamicCache.Services
 
                 _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = DefaultFailoverRetryLatency
                 });
 
                 return;
@@ -191,7 +192,7 @@ namespace OrchardCore.DynamicCache.Services
 
                 _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow = DefaultFailoverRetryLatency
                 });
             }
 

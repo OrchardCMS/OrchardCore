@@ -8,6 +8,8 @@ namespace OrchardCore.Documents.Options
 {
     public class DocumentOptionsSetup : IConfigureNamedOptions<DocumentOptions>
     {
+        public static TimeSpan DefaultFailoverRetryLatency = TimeSpan.FromMinutes(5);
+
         private readonly IShellConfiguration _shellConfiguration;
 
         public DocumentOptionsSetup(IShellConfiguration shellConfiguration)
@@ -34,7 +36,7 @@ namespace OrchardCore.Documents.Options
             options.CacheIdKey = namedConfig.CacheIdKey ?? "ID_" + name;
 
             // Only from the shared config or default.
-            options.FailoverRetryLatency = sharedConfig.FailoverRetryLatency ?? TimeSpan.FromMinutes(5);
+            options.FailoverRetryLatency = sharedConfig.FailoverRetryLatency ?? DefaultFailoverRetryLatency;
 
             // From the named or shared config or default.
             options.CheckConcurrency = namedConfig.CheckConcurrency ?? sharedConfig.CheckConcurrency ?? true;
