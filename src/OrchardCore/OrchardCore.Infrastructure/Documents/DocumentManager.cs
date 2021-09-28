@@ -16,6 +16,8 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
+        public const string FailoverKey = "OrchardCore_Documents_FailoverKey";
+
         protected readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
         protected readonly DocumentOptions _options;
@@ -109,7 +111,7 @@ namespace OrchardCore.Documents
 
             TDocument document = null;
 
-            var failover = _isDistributed && _memoryCache.Get<bool>(_options.FailoverKey);
+            var failover = _isDistributed && _memoryCache.Get<bool>(FailoverKey);
             try
             {
                 // May call an async IO if using a distributed cache.
@@ -128,7 +130,7 @@ namespace OrchardCore.Documents
                 }
 
                 failover = true;
-                _memoryCache.Set(_options.FailoverKey, failover, new MemoryCacheEntryOptions()
+                _memoryCache.Set(FailoverKey, failover, new MemoryCacheEntryOptions()
                 {
                     AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency
                 });

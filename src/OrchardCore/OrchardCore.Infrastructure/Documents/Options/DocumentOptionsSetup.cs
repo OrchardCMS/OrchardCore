@@ -35,7 +35,6 @@ namespace OrchardCore.Documents.Options
 
             // Only from the shared config or default.
             options.FailoverRetryLatency = sharedConfig.FailoverRetryLatency ?? TimeSpan.FromMinutes(5);
-            options.FailoverKey = sharedConfig.FailoverKey ?? "OrchardCore_Documents_FailoverKey";
 
             // From the named or shared config or default.
             options.CheckConcurrency = namedConfig.CheckConcurrency ?? sharedConfig.CheckConcurrency ?? true;

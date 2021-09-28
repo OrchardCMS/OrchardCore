@@ -9,7 +9,6 @@ namespace OrchardCore.Documents.Options
         public string CacheIdKey { get; set; }
 
         // Only from the shared config or default.
-        public string FailoverKey { get; set; }
         public TimeSpan? FailoverRetryLatency { get; set; }
     }
 }
