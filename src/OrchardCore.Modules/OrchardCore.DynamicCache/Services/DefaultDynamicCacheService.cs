@@ -25,6 +25,7 @@ namespace OrchardCore.DynamicCache.Services
         private readonly IDynamicCache _dynamicCache;
         private readonly IMemoryCache _memoryCache;
         private readonly IServiceProvider _serviceProvider;
+        private readonly DynamicCacheOptions _dynamicCacheOptions;
         private readonly CacheOptions _cacheOptions;
         private readonly ILogger _logger;
 
@@ -37,6 +38,7 @@ namespace OrchardCore.DynamicCache.Services
             IDynamicCache dynamicCache,
             IMemoryCache memoryCache,
             IServiceProvider serviceProvider,
+            IOptions<DynamicCacheOptions> dynamicCacheOptions,
             IOptions<CacheOptions> options,
             ILogger<DefaultDynamicCacheService> logger)
         {
@@ -45,6 +47,8 @@ namespace OrchardCore.DynamicCache.Services
             _dynamicCache = dynamicCache;
             _memoryCache = memoryCache;
             _serviceProvider = serviceProvider;
+            _dynamicCacheOptions = dynamicCacheOptions.Value;
+            _dynamicCacheOptions.FailoverRetryLatency ??= DefaultFailoverRetryLatency;
             _cacheOptions = options.Value;
             _logger = logger;
         }
@@ -129,7 +133,7 @@ namespace OrchardCore.DynamicCache.Services
 
                 _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
                 {
-                    AbsoluteExpirationRelativeToNow = DefaultFailoverRetryLatency
+                    AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency
                 });
 
                 return;
@@ -192,7 +196,7 @@ namespace OrchardCore.DynamicCache.Services
 
                 _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
                 {
-                    AbsoluteExpirationRelativeToNow = DefaultFailoverRetryLatency
+                    AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency
                 });
             }
 
