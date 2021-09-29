@@ -18,7 +18,7 @@ namespace OrchardCore.DynamicCache.Services
     public class DefaultDynamicCacheService : IDynamicCacheService
     {
         public const string FailoverKey = "OrchardCore_DynamicCache_FailoverKey";
-        public static TimeSpan DefaultFailoverRetryLatency = TimeSpan.FromMinutes(5);
+        public static TimeSpan DefaultFailoverRetryLatency = TimeSpan.FromSeconds(30);
 
         private readonly PoolingJsonSerializer _serializer;
         private readonly ICacheContextManager _cacheContextManager;
@@ -124,12 +124,9 @@ namespace OrchardCore.DynamicCache.Services
             {
                 await _dynamicCache.SetAsync(cacheKey, bytes, options);
             }
-            catch
+            catch (Exception e)
             {
-                if (_logger.IsEnabled(LogLevel.Warning))
-                {
-                    _logger.LogWarning("Failed to write the '{CacheKey}' to the dynamic cache", cacheKey);
-                }
+                _logger.LogError(e, "Failed to write the '{CacheKey}' to the dynamic cache", cacheKey);
 
                 _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
                 {
@@ -187,12 +184,9 @@ namespace OrchardCore.DynamicCache.Services
 
                 return Encoding.UTF8.GetString(bytes);
             }
-            catch
+            catch (Exception e)
             {
-                if (_logger.IsEnabled(LogLevel.Warning))
-                {
-                    _logger.LogWarning("Failed to read the '{CacheKey}' from the dynamic cache", cacheKey);
-                }
+                _logger.LogError(e, "Failed to read the '{CacheKey}' from the dynamic cache", cacheKey);
 
                 _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
                 {

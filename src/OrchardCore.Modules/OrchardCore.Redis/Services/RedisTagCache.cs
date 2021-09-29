@@ -33,12 +33,11 @@ namespace OrchardCore.Redis.Services
             if (_redis.Database == null)
             {
                 await _redis.ConnectAsync();
-            }
-
-            if (_redis.Database == null)
-            {
-                _logger.LogError("Fails to add the '{KeyName}' to the {PrefixName} tags.", key, _prefix);
-                return;
+                if (_redis.Database == null)
+                {
+                    _logger.LogError("Fails to add the '{KeyName}' to the {PrefixName} tags.", key, _prefix);
+                    return;
+                }
             }
 
             try
@@ -59,12 +58,11 @@ namespace OrchardCore.Redis.Services
             if (_redis.Database == null)
             {
                 await _redis.ConnectAsync();
-            }
-
-            if (_redis.Database == null)
-            {
-                _logger.LogError("Fails to get items of the {TagName} tags.", _prefix + tag);
-                return Enumerable.Empty<string>();
+                if (_redis.Database == null)
+                {
+                    _logger.LogError("Fails to get items of the {TagName}.", _prefix + tag);
+                    return Enumerable.Empty<string>();
+                }
             }
 
             try
@@ -80,7 +78,7 @@ namespace OrchardCore.Redis.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Fails to get items of the {TagName} tags.", _prefix + tag);
+                _logger.LogError(e, "Fails to get items of the {TagName}.", _prefix + tag);
             }
 
             return Enumerable.Empty<string>();
@@ -91,12 +89,11 @@ namespace OrchardCore.Redis.Services
             if (_redis.Database == null)
             {
                 await _redis.ConnectAsync();
-            }
-
-            if (_redis.Database == null)
-            {
-                _logger.LogError("Fails to remove the '{TagName}'.", _prefix + tag);
-                return;
+                if (_redis.Database == null)
+                {
+                    _logger.LogError("Fails to remove the '{TagName}'.", _prefix + tag);
+                    return;
+                }
             }
 
             try

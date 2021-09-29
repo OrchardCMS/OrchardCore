@@ -47,9 +47,9 @@ namespace OrchardCore.Locking
                 return (new Locker(this, semaphore, expiration), true);
             }
 
-            if (_logger.IsEnabled(LogLevel.Warning))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogWarning("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                _logger.LogDebug("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
                     key, timeout.ToString());
             }
 

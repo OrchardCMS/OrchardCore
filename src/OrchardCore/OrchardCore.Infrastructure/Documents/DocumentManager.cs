@@ -117,17 +117,14 @@ namespace OrchardCore.Documents
                 // May call an async IO if using a distributed cache.
                 document = await GetInternalAsync(failover);
             }
-            catch
+            catch (Exception e)
             {
                 if (!_isDistributed)
                 {
                     throw;
                 }
 
-                if (_logger.IsEnabled(LogLevel.Warning))
-                {
-                    _logger.LogWarning("Failed to read the '{DocumentName}' from the distributed cache", typeof(TDocument).Name);
-                }
+                _logger.LogError(e, "Failed to read the '{DocumentName}' from the distributed cache", typeof(TDocument).Name);
 
                 failover = true;
                 _memoryCache.Set(FailoverKey, failover, new MemoryCacheEntryOptions()
