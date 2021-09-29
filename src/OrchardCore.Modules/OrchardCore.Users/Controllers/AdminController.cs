@@ -433,7 +433,7 @@ namespace OrchardCore.Users.Controllers
             {
                 if (!String.IsNullOrEmpty(returnUrl))
                 {
-                    return LocalRedirect(returnUrl);
+                    return LocalRedirect(Uri.EscapeUriString(returnUrl));
                 }
 
                 return RedirectToAction(nameof(Edit));
@@ -442,7 +442,7 @@ namespace OrchardCore.Users.Controllers
             {
                 if (!String.IsNullOrEmpty(returnUrl))
                 {
-                    return LocalRedirect(returnUrl);
+                    return LocalRedirect(Uri.EscapeUriString(returnUrl));
                 }
 
                 return RedirectToAction(nameof(Index));

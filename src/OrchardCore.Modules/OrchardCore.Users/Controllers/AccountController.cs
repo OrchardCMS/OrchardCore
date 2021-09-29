@@ -272,11 +272,11 @@ namespace OrchardCore.Users.Controllers
                     if (Url.IsLocalUrl(returnUrl))
                     {
                         await _notifier.SuccessAsync(H["Your password has been changed successfully."]);
-                        return Redirect(returnUrl);
+                        return Redirect(Uri.EscapeUriString(returnUrl));
                     }
                     else
                     {
-                        return Redirect(Url.Action("ChangePasswordConfirmation"));
+                        return Redirect(Uri.EscapeUriString(Url.Action("ChangePasswordConfirmation")));
                     }
                 }
             }
@@ -298,11 +298,11 @@ namespace OrchardCore.Users.Controllers
             }
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+        private IActionResult RedirectToLocal(string unencodedUrl)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            if (Url.IsLocalUrl(unencodedUrl))
             {
-                return Redirect(returnUrl);
+                return Redirect(Uri.EscapeUriString(unencodedUrl));
             }
             else
             {

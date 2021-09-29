@@ -133,7 +133,7 @@ namespace OrchardCore.AutoSetup
                     if (settings.State != TenantState.Uninitialized)
                     {
                         await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
-                        httpContext.Response.Redirect(pathBase);
+                        httpContext.Response.Redirect(Uri.EscapeUriString(pathBase));
 
                         return;
                     }
@@ -153,7 +153,7 @@ namespace OrchardCore.AutoSetup
                             }
                         }
 
-                        httpContext.Response.Redirect(pathBase);
+                        httpContext.Response.Redirect(Uri.EscapeUriString(pathBase));
 
                         return;
                     }

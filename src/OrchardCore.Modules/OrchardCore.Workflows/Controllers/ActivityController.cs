@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -111,7 +112,7 @@ namespace OrchardCore.Workflows.Controllers
             _session.Save(workflowType);
             await _notifier.SuccessAsync(H["Activity added successfully."]);
 
-            return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)Redirect(model.ReturnUrl) : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
+            return Url.IsLocalUrl(model.ReturnUrl) ? Redirect(Uri.EscapeUriString(model.ReturnUrl)) : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
         }
 
         public async Task<IActionResult> Edit(int workflowTypeId, string activityId, string returnUrl)
@@ -168,7 +169,7 @@ namespace OrchardCore.Workflows.Controllers
             await _notifier.SuccessAsync(H["Activity updated successfully."]);
 
             return Url.IsLocalUrl(model.ReturnUrl)
-                ? (IActionResult)Redirect(model.ReturnUrl)
+                ? Redirect(Uri.EscapeUriString(model.ReturnUrl))
                 : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
         }
     }
