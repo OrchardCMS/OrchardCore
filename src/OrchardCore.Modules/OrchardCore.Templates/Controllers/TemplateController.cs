@@ -376,7 +376,7 @@ namespace OrchardCore.Templates.Controllers
         {
             if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
-                return Redirect(returnUrl);
+                return Redirect(Uri.EscapeUriString(returnUrl));
             }
             else
             {

@@ -147,11 +147,11 @@ namespace OrchardCore.Users.Controllers
             return View();
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+        private IActionResult RedirectToLocal(string unencodedUrl)
         {
-            if (Url.IsLocalUrl(returnUrl))
+            if (Url.IsLocalUrl(unencodedUrl))
             {
-                return Redirect(returnUrl);
+                return Redirect(Uri.EscapeUriString(unencodedUrl));
             }
             else
             {

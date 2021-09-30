@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -83,7 +84,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             _session.Save(deploymentPlan);
 
-            return LocalRedirect(returnUrl);
+            return LocalRedirect(Uri.EscapeUriString(returnUrl));
         }
 
         [HttpPost]
@@ -91,7 +92,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         {
             if (itemIds?.Count() == 0)
             {
-                return LocalRedirect(returnUrl);
+                return LocalRedirect(Uri.EscapeUriString(returnUrl));
             }
 
             if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
@@ -130,7 +131,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             _session.Save(deploymentPlan);
 
-            return LocalRedirect(returnUrl);
+            return LocalRedirect(Uri.EscapeUriString(returnUrl));
         }
     }
 }

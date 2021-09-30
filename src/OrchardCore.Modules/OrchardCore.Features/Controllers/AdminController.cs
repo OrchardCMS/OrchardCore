@@ -127,7 +127,7 @@ namespace OrchardCore.Features.Controllers
 
             await EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, force: true);
 
-            return Redirect(nextUrl);
+            return Redirect(Uri.EscapeUriString(nextUrl));
         }
 
         [HttpPost]
@@ -148,7 +148,7 @@ namespace OrchardCore.Features.Controllers
 
             await EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, force: true);
 
-            return Redirect(nextUrl);
+            return Redirect(Uri.EscapeUriString(nextUrl));
         }
 
         /// <summary>
