@@ -10,13 +10,16 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <!-- Required for runtime compilation because the dependency on RuntimeCompilation package is not transitive -->
-    <PreserveCompilationContext Condition="'$(TargetFramework)' != 'net6.0'">true</PreserveCompilationContext>
+    <RazorRuntimeCompilation>false</RazorRuntimeCompilation>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Localization\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Condition="'$(RazorRuntimeCompilation)' == 'true'" />
   </ItemGroup>
 
   <ItemGroup>

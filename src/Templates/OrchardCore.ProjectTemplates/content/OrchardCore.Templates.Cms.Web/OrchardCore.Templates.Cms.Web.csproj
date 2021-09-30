@@ -3,12 +3,17 @@
   <PropertyGroup>
     <TargetFramework>$(TemplateTargetPackageFramework)</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <PreserveCompilationContext Condition="'$(TargetFramework)' != 'net6.0'">true</PreserveCompilationContext>
+    <RazorRuntimeCompilation>false</RazorRuntimeCompilation>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Localization\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(TemplateOrchardPackageVersion)"
+                      Condition="'$(RazorRuntimeCompilation)' == 'true'" />
   </ItemGroup>
 
   <ItemGroup>

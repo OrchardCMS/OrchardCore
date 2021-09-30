@@ -32,6 +32,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
+    - name: Setup .NET Core 6.0 on ${{ matrix.os }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.100-rc.1.21458.32
     - name: Set build number 
       if: matrix.os == 'ubuntu-latest'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
