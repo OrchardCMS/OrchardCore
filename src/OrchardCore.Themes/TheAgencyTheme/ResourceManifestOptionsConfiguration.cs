@@ -15,7 +15,7 @@ namespace OrchardCore.Themes.TheAgencyTheme
                 .DefineScript("TheAgencyTheme-bootstrap-bundle")
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.js")
                 .SetCdnIntegrity("sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ", "sha384-5tkUMcue1IzwOrYYLqA5A9bSIk8vgFPWvPRRic7R+jUyDtqOVdrhzpTS9C4ThRYV")
-                .SetVersion("5.1.7");
+                .SetVersion("5.1.1");
 
             _manifest
                 .DefineScript("TheAgencyTheme")
