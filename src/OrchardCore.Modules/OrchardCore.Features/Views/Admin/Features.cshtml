@@ -85,13 +85,13 @@
                                         @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
                                         {
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id">
-                                                <label class="custom-control-label h6" for="@feature.Descriptor.Id">@featureName</label>
+                                                <input type="checkbox" class="custom-control-input" name="featureIds" id="@featureId" value="@featureId">
+                                                <label class="custom-control-label h6" for="@featureId">@featureName (@featureId)</label>
                                             </div>
                                         }
                                         else
                                         {
-                                            <h6>@featureName</h6>
+                                            <h6>@featureName (@featureId)</h6>
                                         }
 
                                         <p class="text-muted">@feature.Descriptor.Description</p>
