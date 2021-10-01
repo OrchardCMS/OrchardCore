@@ -47,7 +47,7 @@ The below table lists the different libraries used as Resources:
 | [jQuery UI i18n](https://github.com/jquery/jquery-ui/tree/master/ui/i18n) | jQuery UI internationalization. | 1.7.2 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
 | [jQuery Easing](https://github.com/gdsmith/jquery.easing) | jQuery Easing Plugin. | 1.4.1 | [MIT](https://github.com/gdsmith/jquery.easing/blob/master/LICENSE-BSD-3-Clause.txt) |
 | [jquery-resizable-dom](https://github.com/RickStrahl/jquery-resizable) | jQuery plug-in to make DOM components resizable. | 0.35.0 | [MIT](https://github.com/RickStrahl/jquery-resizable/blob/master/LICENSE.md) |
-| [js-cookie](https://github.com/js-cookie/js-cookie) | A simple, lightweight JavaScript API for handling browser cookies. | 2.2.1 | [MIT](https://github.com/js-cookie/js-cookie/blob/master/LICENSE) |
+| [js-cookie](https://github.com/js-cookie/js-cookie) | A simple, lightweight JavaScript API for handling browser cookies. | 3.0.1 | [MIT](https://github.com/js-cookie/js-cookie/blob/master/LICENSE) |
 | [Monaco Editor](https://microsoft.github.io/monaco-editor) | Lightweight source code editor | 0.28.1 | [MIT](https://github.com/microsoft/monaco-editor/blob/main/LICENSE.md) |
 | [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 1.16.1 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
 | [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.14.0 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
@@ -75,7 +75,7 @@ The below table lists the different Tests libraries:
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [BenchmarkDotNet ](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | 0.13.1 | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
-| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 8.4.0 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
+| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 8.5.0 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 16.11.0 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.4.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |

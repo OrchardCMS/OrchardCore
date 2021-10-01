@@ -248,7 +248,7 @@ namespace OrchardCore.OpenId.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return LocalRedirect(returnUrl);
+            return LocalRedirect(Uri.EscapeUriString(returnUrl));
         }
 
         public async Task<IActionResult> Edit(string id, string returnUrl = null)
@@ -547,7 +547,7 @@ namespace OrchardCore.OpenId.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return LocalRedirect(returnUrl);
+            return LocalRedirect(Uri.EscapeUriString(returnUrl));
         }
 
         [HttpPost]

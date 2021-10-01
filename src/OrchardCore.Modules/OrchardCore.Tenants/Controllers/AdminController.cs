@@ -565,7 +565,7 @@ namespace OrchardCore.Tenants.Controllers
 
             await _shellHost.ReloadShellContextAsync(shellSettings);
 
-            return Redirect(redirectUrl);
+            return Redirect(Uri.EscapeUriString(redirectUrl));
         }
 
         private void ValidateViewModel(EditTenantViewModel model, bool newTenant)
