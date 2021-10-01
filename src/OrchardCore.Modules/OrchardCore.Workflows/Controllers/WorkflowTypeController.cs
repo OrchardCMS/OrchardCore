@@ -283,7 +283,7 @@ namespace OrchardCore.Workflows.Controllers
             return isNew
                 ? RedirectToAction(nameof(Edit), new { workflowType.Id })
                 : Url.IsLocalUrl(viewModel.ReturnUrl)
-                   ? (IActionResult)Redirect(viewModel.ReturnUrl)
+                   ? (IActionResult)Redirect(Uri.EscapeUriString(viewModel.ReturnUrl))
                    : RedirectToAction(nameof(Index));
         }
 
