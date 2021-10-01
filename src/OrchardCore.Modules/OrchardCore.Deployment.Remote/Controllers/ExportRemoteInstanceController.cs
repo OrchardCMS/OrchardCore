@@ -119,7 +119,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (!string.IsNullOrEmpty(returnUrl))
             {
-                return LocalRedirect(Uri.EscapeUriString(returnUrl));
+                return this.LocalRedirect(returnUrl, true);
             }
 
             return RedirectToAction("Display", "DeploymentPlan", new { area = "OrchardCore.Deployment", id });

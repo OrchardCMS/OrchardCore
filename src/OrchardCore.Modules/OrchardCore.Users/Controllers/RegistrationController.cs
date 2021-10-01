@@ -111,7 +111,7 @@ namespace OrchardCore.Users.Controllers
                         return RedirectToAction("RegistrationPending", new { ReturnUrl = returnUrl });
                     }
 
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToLocal(Microsoft.AspNetCore.Mvc.ControllerExtensions.EscapeLocationHeader(returnUrl));
                 }
             }
 
@@ -176,11 +176,11 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(AdminController.Index), "Admin");
         }
 
-        private IActionResult RedirectToLocal(string unencodedUrl)
+        private IActionResult RedirectToLocal(string returnUrl)
         {
-            if (Url.IsLocalUrl(unencodedUrl))
+            if (Url.IsLocalUrl(returnUrl))
             {
-                return Redirect(Uri.EscapeUriString(unencodedUrl));
+                return Redirect(returnUrl);
             }
             else
             {

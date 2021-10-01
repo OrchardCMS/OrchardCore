@@ -87,7 +87,7 @@ namespace OrchardCore.Demo.Controllers
 
                 if (Url.IsLocalUrl(returnUrl))
                 {
-                    return Redirect(Uri.EscapeUriString(returnUrl));
+                    return this.Redirect(returnUrl, true);
                 }
 
                 return RedirectToAction(nameof(Index), "Todo");
