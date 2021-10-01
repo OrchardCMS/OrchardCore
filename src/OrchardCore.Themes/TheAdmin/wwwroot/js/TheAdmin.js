@@ -8332,108 +8332,107 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       moved = true;
 
       if (activeGroup && !options.disabled && (isOwner ? canSort || (revert = !rootEl.contains(dragEl)) // Reverting item into the original list
-      : activeGroup.pull && groupPut && (activeGroup.name === group.name || // by Name
-      groupPut.indexOf && ~groupPut.indexOf(activeGroup.name) // by Array
+      : activeGroup.pull && groupPut && (activeGroup.name === group.name || groupPut.indexOf && ~groupPut.indexOf(activeGroup.name) // by Array
       )) && (evt.rootEl === void 0 || evt.rootEl === this.el) // touch fallback
       ) {
-          // Smart auto-scrolling
-          _autoScroll(evt, options, this.el);
+        // Smart auto-scrolling
+        _autoScroll(evt, options, this.el);
 
-          if (_silent) {
-            return;
+        if (_silent) {
+          return;
+        }
+
+        target = _closest(evt.target, options.draggable, el);
+        dragRect = dragEl.getBoundingClientRect();
+
+        if (revert) {
+          _cloneHide(true);
+
+          if (cloneEl || nextEl) {
+            rootEl.insertBefore(dragEl, cloneEl || nextEl);
+          } else if (!canSort) {
+            rootEl.appendChild(dragEl);
           }
 
-          target = _closest(evt.target, options.draggable, el);
-          dragRect = dragEl.getBoundingClientRect();
+          return;
+        }
 
-          if (revert) {
-            _cloneHide(true);
-
-            if (cloneEl || nextEl) {
-              rootEl.insertBefore(dragEl, cloneEl || nextEl);
-            } else if (!canSort) {
-              rootEl.appendChild(dragEl);
+        if (el.children.length === 0 || el.children[0] === ghostEl || el === evt.target && (target = _ghostIsLast(el, evt))) {
+          if (target) {
+            if (target.animated) {
+              return;
             }
 
-            return;
+            targetRect = target.getBoundingClientRect();
           }
 
-          if (el.children.length === 0 || el.children[0] === ghostEl || el === evt.target && (target = _ghostIsLast(el, evt))) {
-            if (target) {
-              if (target.animated) {
-                return;
-              }
+          _cloneHide(isOwner);
 
-              targetRect = target.getBoundingClientRect();
+          if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect) !== false) {
+            if (!dragEl.contains(el)) {
+              el.appendChild(dragEl);
+              parentEl = el; // actualization
             }
+
+            this._animate(dragRect, dragEl);
+
+            target && this._animate(targetRect, target);
+          }
+        } else if (target && !target.animated && target !== dragEl && target.parentNode[expando] !== void 0) {
+          if (lastEl !== target) {
+            lastEl = target;
+            lastCSS = _css(target);
+            lastParentCSS = _css(target.parentNode);
+          }
+
+          var targetRect = target.getBoundingClientRect(),
+              width = targetRect.right - targetRect.left,
+              height = targetRect.bottom - targetRect.top,
+              floating = /left|right|inline/.test(lastCSS.cssFloat + lastCSS.display) || lastParentCSS.display == 'flex' && lastParentCSS['flex-direction'].indexOf('row') === 0,
+              isWide = target.offsetWidth > dragEl.offsetWidth,
+              isLong = target.offsetHeight > dragEl.offsetHeight,
+              halfway = (floating ? (evt.clientX - targetRect.left) / width : (evt.clientY - targetRect.top) / height) > 0.5,
+              nextSibling = target.nextElementSibling,
+              moveVector = _onMove(rootEl, el, dragEl, dragRect, target, targetRect),
+              after;
+
+          if (moveVector !== false) {
+            _silent = true;
+            setTimeout(_unsilent, 30);
 
             _cloneHide(isOwner);
 
-            if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect) !== false) {
-              if (!dragEl.contains(el)) {
-                el.appendChild(dragEl);
-                parentEl = el; // actualization
-              }
+            if (moveVector === 1 || moveVector === -1) {
+              after = moveVector === 1;
+            } else if (floating) {
+              var elTop = dragEl.offsetTop,
+                  tgTop = target.offsetTop;
 
-              this._animate(dragRect, dragEl);
-
-              target && this._animate(targetRect, target);
-            }
-          } else if (target && !target.animated && target !== dragEl && target.parentNode[expando] !== void 0) {
-            if (lastEl !== target) {
-              lastEl = target;
-              lastCSS = _css(target);
-              lastParentCSS = _css(target.parentNode);
-            }
-
-            var targetRect = target.getBoundingClientRect(),
-                width = targetRect.right - targetRect.left,
-                height = targetRect.bottom - targetRect.top,
-                floating = /left|right|inline/.test(lastCSS.cssFloat + lastCSS.display) || lastParentCSS.display == 'flex' && lastParentCSS['flex-direction'].indexOf('row') === 0,
-                isWide = target.offsetWidth > dragEl.offsetWidth,
-                isLong = target.offsetHeight > dragEl.offsetHeight,
-                halfway = (floating ? (evt.clientX - targetRect.left) / width : (evt.clientY - targetRect.top) / height) > 0.5,
-                nextSibling = target.nextElementSibling,
-                moveVector = _onMove(rootEl, el, dragEl, dragRect, target, targetRect),
-                after;
-
-            if (moveVector !== false) {
-              _silent = true;
-              setTimeout(_unsilent, 30);
-
-              _cloneHide(isOwner);
-
-              if (moveVector === 1 || moveVector === -1) {
-                after = moveVector === 1;
-              } else if (floating) {
-                var elTop = dragEl.offsetTop,
-                    tgTop = target.offsetTop;
-
-                if (elTop === tgTop) {
-                  after = target.previousElementSibling === dragEl && !isWide || halfway && isWide;
-                } else {
-                  after = tgTop > elTop;
-                }
+              if (elTop === tgTop) {
+                after = target.previousElementSibling === dragEl && !isWide || halfway && isWide;
               } else {
-                after = nextSibling !== dragEl && !isLong || halfway && isLong;
+                after = tgTop > elTop;
               }
-
-              if (!dragEl.contains(el)) {
-                if (after && !nextSibling) {
-                  el.appendChild(dragEl);
-                } else {
-                  target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
-                }
-              }
-
-              parentEl = dragEl.parentNode; // actualization
-
-              this._animate(dragRect, dragEl);
-
-              this._animate(targetRect, target);
+            } else {
+              after = nextSibling !== dragEl && !isLong || halfway && isLong;
             }
+
+            if (!dragEl.contains(el)) {
+              if (after && !nextSibling) {
+                el.appendChild(dragEl);
+              } else {
+                target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
+              }
+            }
+
+            parentEl = dragEl.parentNode; // actualization
+
+            this._animate(dragRect, dragEl);
+
+            this._animate(targetRect, target);
           }
         }
+      }
     },
     _animate: function _animate(prevRect, target) {
       var ms = this.options.animation;
