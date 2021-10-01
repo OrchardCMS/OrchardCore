@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -87,7 +86,7 @@ namespace OrchardCore.Demo.Controllers
 
                 if (Url.IsLocalUrl(returnUrl))
                 {
-                    return Redirect(Uri.EscapeUriString(returnUrl));
+                    return Redirect(returnUrl);
                 }
 
                 return RedirectToAction(nameof(Index), "Todo");

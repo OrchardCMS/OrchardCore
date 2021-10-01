@@ -669,7 +669,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-                return Redirect(Uri.EscapeUriString(returnUrl));
+                return Redirect(returnUrl);
             }
             else
             {
@@ -791,7 +791,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-                return Redirect(Uri.EscapeUriString(returnUrl));
+                return Redirect(returnUrl);
             }
             else
             {
