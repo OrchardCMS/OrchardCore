@@ -27,10 +27,7 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             var model = context.Step.ToObject<OpenIdScopeStepModel>();
-
-            var scope = await _scopeManager
-                .FindByNameAsync(model.ScopeName);
-
+            var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
             var descriptor = new OpenIdScopeDescriptor();
             var isNew = true;
 

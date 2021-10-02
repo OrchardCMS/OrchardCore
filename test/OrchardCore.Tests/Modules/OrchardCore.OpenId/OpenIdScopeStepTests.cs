@@ -33,7 +33,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 DisplayName = $"Test Scope {suffix}",
                 Description = $"Unit test scope {suffix}."
             };
-
             scope.Resources.UnionWith(resources);
             return scope;
         }
@@ -46,9 +45,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             // Match expected with scope-recipe.json
             var expected = CreateScopeDescriptor(
                 "test_scope", "A", "res1", "res2", "res3");
-
             OpenIdScopeDescriptor actual = null;
-
             var scopeManagerMock = new Mock<IOpenIdScopeManager>(MockBehavior.Strict);
 
             scopeManagerMock.Setup(m =>
@@ -68,10 +65,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask<object>());
 
             var step = new OpenIdScopeStep(scopeManagerMock.Object);
-
-            var recipe = JObject.Parse(
-                GetRecipeFileContent("scope-recipe"));
-
+            var recipe = JObject.Parse(GetRecipeFileContent("scope-recipe"));
             var context = new RecipeExecutionContext
             {
                 Name = recipe.Property("steps").Value.First.Value<string>("name"),
@@ -107,16 +101,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var scopeName = "test_scope";
             var expected = CreateScopeDescriptor(
                 scopeName, "A", "res1", "res2", "res3");
-
             var actual = CreateScopeDescriptor(
                 scopeName, "B", "res");
-
             var dbActual = new OpenIdScope
             {
                 Name = actual.Name,
                 Resources = actual.Resources.ToImmutableArray()
             };
-
             var scopeManagerMock = new Mock<IOpenIdScopeManager>(MockBehavior.Strict);
 
             scopeManagerMock.Setup(m =>
@@ -145,10 +136,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask());
 
             var step = new OpenIdScopeStep(scopeManagerMock.Object);
-
-            var recipe = JObject.Parse(
-                GetRecipeFileContent("scope-recipe"));
-
+            var recipe = JObject.Parse(GetRecipeFileContent("scope-recipe"));
             var context = new RecipeExecutionContext
             {
                 Name = recipe.Property("steps").Value.First.Value<string>("name"),

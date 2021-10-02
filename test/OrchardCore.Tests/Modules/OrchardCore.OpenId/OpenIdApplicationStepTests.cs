@@ -20,20 +20,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
     public class OpenIdApplicationStepTests
     {
-        private string GetRecipeFileContent(string recipeName)
-        {
-            return new EmbeddedFileProvider(GetType().Assembly)
-                .GetFileInfo($"Modules.OrchardCore.OpenId.RecipeFiles.{recipeName}.json")
-                .ReadToEnd();
-        }
-
         [Theory]
         [ClassData(typeof(OpenIdApplicationStepTestsData))]
         public async Task OpenIdApplicationCanBeParsed(string recipeName, OpenIdApplicationDescriptor expected)
         {
             // Arrange
             OpenIdApplicationDescriptor actual = null;
-
             var appManagerMock = new Mock<IOpenIdApplicationManager>(MockBehavior.Strict);
 
             appManagerMock.Setup(m =>
@@ -53,10 +45,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask<object>(actual));
 
             var step = new OpenIdApplicationStep(appManagerMock.Object);
-
-            var recipe = JObject.Parse(
-                GetRecipeFileContent(recipeName));
-
+            var recipe = JObject.Parse(GetRecipeFileContent(recipeName));
             var context = new RecipeExecutionContext
             {
                 Name = recipe.Property("steps").Value.First.Value<string>("name"),
@@ -147,10 +136,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask());
 
             var step = new OpenIdApplicationStep(appManagerMock.Object);
-
-            var recipe = JObject.Parse(
-                GetRecipeFileContent(recipeName));
-
+            var recipe = JObject.Parse(GetRecipeFileContent(recipeName));
             var context = new RecipeExecutionContext
             {
                 Name = recipe.Property("steps").Value.First.Value<string>("name"),
@@ -181,6 +167,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             Assert.Equal(expected.PostLogoutRedirectUris, actual.PostLogoutRedirectUris);
             Assert.Equal(expected.RedirectUris, actual.RedirectUris);
             Assert.Equal(expected.Roles, actual.Roles);
+        }
+
+        private string GetRecipeFileContent(string recipeName)
+        {
+            return new EmbeddedFileProvider(GetType().Assembly)
+                .GetFileInfo($"Modules.OrchardCore.OpenId.RecipeFiles.{recipeName}.json")
+                .ReadToEnd();
         }
     }
 }

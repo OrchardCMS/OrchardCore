@@ -25,6 +25,7 @@ namespace OrchardCore.OpenId.Recipes
         {
             public string Name { get; set; }
         }
+
         public class ScopeEntry
         {
             public string Name { get; set; }

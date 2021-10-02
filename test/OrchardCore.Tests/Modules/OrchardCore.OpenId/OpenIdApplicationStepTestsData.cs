@@ -73,7 +73,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             UnionIfNotNull(app.RedirectUris, redirectUris);
             UnionIfNotNull(app.Roles, roles);
             UnionIfNotNull(app.Permissions, permissions);
-
             Add(recipeFile, app);
         }
     }

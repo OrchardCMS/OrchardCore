@@ -29,12 +29,8 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             var model = context.Step.ToObject<OpenIdApplicationStepModel>();
-
-            var app = await _applicationManager
-                .FindByClientIdAsync(model.ClientId);
-
+            var app = await _applicationManager.FindByClientIdAsync(model.ClientId);
             var descriptor = new OpenIdApplicationDescriptor();
-
             var isNew = true;
 
             if (app != null)
@@ -82,7 +78,6 @@ namespace OrchardCore.OpenId.Recipes
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
             }
-            
             if (model.AllowAuthorizationCodeFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
@@ -107,7 +102,6 @@ namespace OrchardCore.OpenId.Recipes
                     descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
                 }
             }
-
             if (!string.IsNullOrWhiteSpace(model.PostLogoutRedirectUris))
             {
                 descriptor.PostLogoutRedirectUris.UnionWith(
@@ -115,7 +109,6 @@ namespace OrchardCore.OpenId.Recipes
                         .Split(' ', StringSplitOptions.RemoveEmptyEntries)
                         .Select(u => new Uri(u, UriKind.Absolute)));
             }
-
             if (!string.IsNullOrWhiteSpace(model.RedirectUris))
             {
                 descriptor.RedirectUris.UnionWith(
@@ -123,21 +116,18 @@ namespace OrchardCore.OpenId.Recipes
                         .Split(' ', StringSplitOptions.RemoveEmptyEntries)
                         .Select(u => new Uri(u, UriKind.Absolute)));
             }
-
             if (model.RoleEntries != null)
             {
                 descriptor.Roles.UnionWith(
                     model.RoleEntries
                         .Select(role => role.Name));
             }
-
             if (model.ScopeEntries != null)
             {
                 descriptor.Permissions.UnionWith(
                     model.ScopeEntries
                         .Select(scope => OpenIddictConstants.Permissions.Prefixes.Scope + scope.Name));
             }
-
             if (isNew)
             {
                 await _applicationManager.CreateAsync(descriptor);
