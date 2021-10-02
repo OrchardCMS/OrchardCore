@@ -84,7 +84,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             _session.Save(deploymentPlan);
 
-            return LocalRedirect(Uri.EscapeUriString(returnUrl));
+            return this.LocalRedirect(returnUrl, true);
         }
 
         [HttpPost]
@@ -92,7 +92,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         {
             if (itemIds?.Count() == 0)
             {
-                return LocalRedirect(Uri.EscapeUriString(returnUrl));
+                return this.LocalRedirect(returnUrl, true);
             }
 
             if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
@@ -131,7 +131,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             _session.Save(deploymentPlan);
 
-            return LocalRedirect(Uri.EscapeUriString(returnUrl));
+            return this.LocalRedirect(returnUrl, true);
         }
     }
 }
