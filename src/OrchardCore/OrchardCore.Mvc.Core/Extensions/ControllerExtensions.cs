@@ -50,9 +50,14 @@ namespace Microsoft.AspNetCore.Mvc
             return controller.Redirect(EscapeLocationHeader(url));
         }
 
-        public static string EscapeLocationHeader(string path)
+        public static string EscapeLocationHeader(string stringToEscape)
         {
-            var uri = new Uri(path, UriKind.RelativeOrAbsolute);
+            if (String.IsNullOrEmpty(stringToEscape))
+            {
+                return stringToEscape;
+            }
+
+            var uri = new Uri(stringToEscape, UriKind.RelativeOrAbsolute);
             return uri.GetComponents(UriComponents.SerializationInfoString, UriFormat.UriEscaped);
         }
     }
