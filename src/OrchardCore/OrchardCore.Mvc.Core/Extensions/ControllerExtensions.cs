@@ -35,6 +35,11 @@ namespace Microsoft.AspNetCore.Mvc
         /// <param name="escapeUrl">Whether to escape the url.</param>
         public static ActionResult LocalRedirect(this Controller controller, string localUrl, bool escapeUrl)
         {
+            if (!escapeUrl)
+            {
+                return controller.LocalRedirect(localUrl);
+            }
+
             return controller.LocalRedirect(EscapeLocationHeader(localUrl));
         }
 
@@ -47,6 +52,11 @@ namespace Microsoft.AspNetCore.Mvc
         /// <param name="escapeUrl">Whether to escape the url.</param>
         public static ActionResult Redirect(this Controller controller, string url, bool escapeUrl)
         {
+            if (!escapeUrl)
+            {
+                return controller.Redirect(url);
+            }
+
             return controller.Redirect(EscapeLocationHeader(url));
         }
 
