@@ -163,7 +163,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         private bool IsModuleOrRequestedTheme(IFeatureInfo feature, string themeId)
         {
-            if (!feature.Extension.IsTheme())
+            if (!feature.IsTheme())
             {
                 return true;
             }

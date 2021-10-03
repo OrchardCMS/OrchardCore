@@ -6,12 +6,12 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Tenants
 {
-    public class AdminMenu : INavigationProvider
+    public class FeatureProfilesAdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
         private readonly IStringLocalizer S;
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer, ShellSettings shellSettings)
+        public FeatureProfilesAdminMenu(IStringLocalizer<FeatureProfilesAdminMenu> localizer, ShellSettings shellSettings)
         {
             _shellSettings = shellSettings;
             S = localizer;
@@ -33,9 +33,9 @@ namespace OrchardCore.Tenants
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(S["Tenants"], S["Tenants"].PrefixPosition(), tenant => tenant
-                        .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
-                        .Permission(Permissions.ManageTenants)
+                    .Add(S["Tenant Feature Profiles"], S["Tenant Feature Profiles"].PrefixPosition(), featureProfiles => featureProfiles
+                        .Action("Index", "FeatureProfiles", new { area = "OrchardCore.Tenants" })
+                        .Permission(Permissions.ManageTenantFeatureProfiles)
                         .LocalNav()
                     )
                 );

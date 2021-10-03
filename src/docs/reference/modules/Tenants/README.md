@@ -21,4 +21,68 @@ E.g.
 `App_Data\Sites\Tenant1\wwwroot\robots.txt`
 
 `App_Data\Sites\Tenant2\wwwroot\robots.txt`
- 
+
+## Feature Profiles
+
+This feature allows the `Default` tenant to create Feature Profiles which can restrict the features available to a tenant with Feature Rules.
+
+### Creating a feature profile
+
+- Enable the _Tenant Feature Profiles_ feature on the `Default` tenant
+- Go to the _Configuration -> Tenant Feature Profiles_ menu
+- Select _Add Feature Profile_
+- Add a _Name_ and a set of _Rules_
+
+#### Rule Configuration
+
+Rules are a JSON array of Rule Expressions. 
+
+A rule consists of the Rule Name, and an Expression, which supports simple matching, i.e. characters, or the `*` or `?` modifier.
+
+By default the available rules are `Exclude` and `Include`
+
+
+Consider the following
+
+``` json
+[
+  {
+    "Rule": "Exclude",
+    "Expression": "OrchardCore.AdminTemplates"
+  },
+  {
+    "Rule": "Exclude",
+    "Expression": "TheAgencyTheme"
+  }
+]
+```
+
+In this rule we exclude the `OrchardCore.AdminTemplates` and `TheAgencyTheme` features
+
+or we can use wild card matching
+
+``` json
+[
+  {
+    "Rule": "Exclude",
+    "Expression": "MyModules.Custom.*"
+  },
+  {
+    "Rule": "Include",
+    "Expression": "MyModules.Custom.IncludedModule"
+  }
+]
+```
+
+In this example we exclude all Features starting with `MyModules.Custom.`, and then specifically include `MyModules.Custom.IncludedModule`
+
+Rules are processed in the order they are supplied, so reversing the order of the above will cause the last rule, i.e. the `Exclude` rule to be applied, negating the `Include` rule.
+
+### Selecting a feature profile
+
+- Create a Feature Profile
+- Go to the _Configuration -> Tenants_ menu
+- Edit the tenant
+- Select a feature profile from the dropdown
+
+The _Feature Profile_ drop down will only be available if at least one Feature Profile has been configured.
