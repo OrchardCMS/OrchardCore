@@ -20,16 +20,18 @@ namespace OrchardCore.Environment.Shell
 
         public ValueTask<bool> IsFeatureValidAsync(string id)
         {
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(x => x.Id == id);
+            var features = _extensionManager.GetFeatures(new[] { id });
+            if (!features.Any())
+            {
+                return new ValueTask<bool>(false);
+            }
 
-            return new ValueTask<bool>(_shellSettings.Name == ShellHelper.DefaultShellName || !feature.DefaultTenantOnly);
-        }
+            if (_shellSettings.Name == ShellHelper.DefaultShellName)
+            {
+                return new ValueTask<bool>(true);
+            }
 
-        public ValueTask<bool> IsExtensionValidAsync(string id)
-        {
-            var feature = _extensionManager.GetExtensions().FirstOrDefault(x => x.Id == id);
-
-            return new ValueTask<bool>(_shellSettings.Name == ShellHelper.DefaultShellName || feature.Features.FirstOrDefault(x => x.Id == x.Id)?.DefaultTenantOnly == false);
+            return new ValueTask<bool>(!features.Any(f => f.DefaultTenantOnly));
         }
     }
 }
