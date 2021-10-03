@@ -14,16 +14,13 @@ namespace OrchardCore.Tenants.Services
     {
         private readonly FeatureProfilesRuleOptions _featureProfilesRuleOptions;
         private IHostEnvironment _hostEnvironment;
-        private readonly IStringLocalizer S;
 
         public FeatureProfilesSchemaService(
             IOptions<FeatureProfilesRuleOptions> options,
-            IHostEnvironment hostEnvironment,
-            IStringLocalizer<FeatureProfilesSchemaService> stringLocalizer)
+            IHostEnvironment hostEnvironment)
         {
             _hostEnvironment = hostEnvironment;
             _featureProfilesRuleOptions = options.Value;
-            S = stringLocalizer;
         }
 
         public string GetJsonSchema()
@@ -31,15 +28,15 @@ namespace OrchardCore.Tenants.Services
             // Generate a schema, then localize and mutate the schema to add dynamic properties.
             var schema = JsonSchema.FromType<FeatureRule[]>();
 
-            schema.Title = S["Feature rules"];
-            schema.Description = S["An array of feature rules"];
+            schema.Title = "Feature rules";
+            schema.Description = "An array of feature rules";
 
             if (schema.Definitions.TryGetValue(nameof(FeatureRule), out var featureRule) && featureRule.ActualProperties.TryGetValue(nameof(FeatureRule.Rule), out var rule))
             {
                 var ruleProperty = new JsonSchema()
                 {
                     Type = JsonObjectType.String,
-                    Description = S["The rule to apply to this expression"]
+                    Description = "The rule to apply to this expression"
                 };
 
                 foreach(var ruleOption in _featureProfilesRuleOptions.Rules.Keys)
