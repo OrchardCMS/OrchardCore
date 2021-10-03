@@ -13,8 +13,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -272,7 +270,7 @@ namespace OrchardCore.Users.Controllers
                     if (Url.IsLocalUrl(returnUrl))
                     {
                         await _notifier.SuccessAsync(H["Your password has been changed successfully."]);
-                        return Redirect(returnUrl);
+                        return this.Redirect(returnUrl, true);
                     }
                     else
                     {
@@ -324,7 +322,7 @@ namespace OrchardCore.Users.Controllers
                     input: input, correlationId: ((User)user).UserId);
             }
 
-            return RedirectToLocal(returnUrl);
+            return RedirectToLocal(Microsoft.AspNetCore.Mvc.ControllerExtensions.EscapeLocationHeader(returnUrl));
         }
 
         [HttpPost]

@@ -330,7 +330,7 @@ namespace OrchardCore.Lucene.Controllers
                 catch (Exception e)
                 {
                     await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-                    _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                    _logger.LogError(e, "An error occurred while deleting the index " + model.IndexName);
                 }
             }
             else
