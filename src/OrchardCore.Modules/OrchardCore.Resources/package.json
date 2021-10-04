@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
-    "@popperjs/core": "2.10.1",
+    "@popperjs/core": "2.10.2",
     "bootstrap": "5.1.1",
     "bootstrap-scss": "5.1.1",
     "bootstrap-select": "1.13.18",
