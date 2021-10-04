@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure.Html;
+using OrchardCore.Media.Processing;
 using OrchardCore.ResourceManagement;
 using Shortcodes;
 
@@ -24,17 +24,20 @@ namespace OrchardCore.Media.Shortcodes
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResourceManagementOptions _options;
+        private readonly IOrchardHelper _orchardHelper;
 
         public ImageShortcodeProvider(
             IMediaFileStore mediaFileStore,
             IHtmlSanitizerService htmlSanitizerService,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<ResourceManagementOptions> options)
+            IOptions<ResourceManagementOptions> options,
+            IOrchardHelper orchardHelper)
         {
             _mediaFileStore = mediaFileStore;
             _htmlSanitizerService = htmlSanitizerService;
             _httpContextAccessor = httpContextAccessor;
             _options = options.Value;
+            _orchardHelper = orchardHelper;
         }
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
@@ -75,40 +78,14 @@ namespace OrchardCore.Media.Shortcodes
             var altText = string.Empty;
             if (arguments.Any())
             {
-                var queryStringParams = new Dictionary<string, string>();
+                int? width = int.TryParse(arguments.Named("width"), out var widthValue) ? widthValue : null;
+                int? height = int.TryParse(arguments.Named("height"), out var heightValue) ? heightValue : null;
+                var mode = Enum.TryParse<ResizeMode>(arguments.Named("mode"), true, out var modeValue) ? modeValue : ResizeMode.Undefined;
+                int? quality = int.TryParse(arguments.Named("quality"), out var qualityValue) ? qualityValue : null;
+                var format = Enum.TryParse<Format>(arguments.Named("format"), true, out var formatValue) ? formatValue : Format.Undefined;
 
-                var width = arguments.Named("width");
-                var height = arguments.Named("height");
-                var mode = arguments.Named("mode");
-                var quality = arguments.Named("quality");
-                var format = arguments.Named("format");
                 className = arguments.Named("class");
                 altText = arguments.Named("alt");
-
-                if (width != null)
-                {
-                    queryStringParams.Add("width", width);
-                }
-
-                if (height != null)
-                {
-                    queryStringParams.Add("height", height);
-                }
-
-                if (mode != null)
-                {
-                    queryStringParams.Add("rmode", mode);
-                }
-
-                if (quality != null)
-                {
-                    queryStringParams.Add("quality", quality);
-                }
-
-                if (format != null)
-                {
-                    queryStringParams.Add("format", format);
-                }
 
                 if (className != null)
                 {
@@ -120,7 +97,7 @@ namespace OrchardCore.Media.Shortcodes
                     altText = "alt=\"" + altText + "\" ";
                 }
 
-                content = QueryHelpers.AddQueryString(content, queryStringParams);
+                content = _orchardHelper.ImageResizeUrl(content, width, height, mode, quality, format);
             }
 
             content = "<img " + altText + className + "src=\"" + content + "\">";
