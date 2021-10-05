@@ -23,6 +23,12 @@ namespace OrchardCore.OpenId.Services
 {
     public class OpenIdServerService : IOpenIdServerService
     {
+        private string[] _linuxThumbprintsOfAvailableCertificates = new string[0];
+        private string linuxPublicCertificatesFolder = Environment.GetEnvironmentVariable("WEBSITE_PUBLIC_CERTS_PATH") ?? "/var/ssl/certs/";
+        private string linuxMyPrivateCertificatesFolder = Environment.GetEnvironmentVariable("WEBSITE_PRIVATE_CERTS_PATH") ?? "/var/ssl/private/";
+        private string linuxRootCertificatesFolder = Environment.GetEnvironmentVariable("WEBSITE_ROOT_CERTS_PATH") ?? "/var/ssl/root/";
+        private string linuxCertificateAuthorityCertificatesFolder = Environment.GetEnvironmentVariable("WEBSITE_INTERMEDIATE_CERTS_PATH") ?? "/var/ssl/intermediate/";
+
         private readonly IDataProtector _dataProtector;
         private readonly ILogger _logger;
         private readonly IMemoryCache _memoryCache;
@@ -47,6 +53,11 @@ namespace OrchardCore.OpenId.Services
             _shellSettings = shellSettings;
             _siteService = siteService;
             S = stringLocalizer;
+            var websiteLoadCertificatesEnv = Environment.GetEnvironmentVariable("WEBSITE_LOAD_CERTIFICATES");
+            if (websiteLoadCertificatesEnv != null && websiteLoadCertificatesEnv.Trim() != "*")
+            {
+                _linuxThumbprintsOfAvailableCertificates = websiteLoadCertificatesEnv.Trim().Split(",");
+            }
         }
 
         public async Task<OpenIdServerSettings> GetSettingsAsync()
@@ -94,7 +105,7 @@ namespace OrchardCore.OpenId.Services
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdServerSettings settings)
+        public async Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdServerSettings settings)
         {
             if (settings == null)
             {
@@ -133,7 +144,7 @@ namespace OrchardCore.OpenId.Services
                 settings.SigningCertificateStoreName != null &&
                 !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
-                var certificate = GetCertificate(
+                var certificate = await GetCertificateAsync(
                     settings.SigningCertificateStoreLocation.Value,
                     settings.SigningCertificateStoreName.Value, settings.SigningCertificateThumbprint);
 
@@ -234,10 +245,10 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            return Task.FromResult(results.ToImmutable());
+            return results.ToImmutable();
         }
 
-        public Task<ImmutableArray<(X509Certificate2 certificate, StoreLocation location, StoreName name)>> GetAvailableCertificatesAsync()
+        public async Task<ImmutableArray<(X509Certificate2 certificate, StoreLocation location, StoreName name)>> GetAvailableCertificatesAsync()
         {
             var certificates = ImmutableArray.CreateBuilder<(X509Certificate2, StoreLocation, StoreName)>();
 
@@ -247,13 +258,49 @@ namespace OrchardCore.OpenId.Services
                 {
                     // Note: on non-Windows platforms, an exception can
                     // be thrown if the store location/name doesn't exist.
+                    X509Certificate2Collection storeCertificates;
                     try
                     {
                         using var store = new X509Store(name, location);
                         store.Open(OpenFlags.ReadOnly);
+                        storeCertificates = store.Certificates;
+                    }
+                    catch (CryptographicException)
+                    {
+                        continue;
+                    }
+                    try
+                    {
 
-                        foreach (var certificate in store.Certificates)
+                        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && location == StoreLocation.CurrentUser)
                         {
+                            string certsPath = null;
+                            if (name == StoreName.TrustedPublisher)
+                            {
+                                certsPath = linuxPublicCertificatesFolder;
+                            }
+                            else if (name == StoreName.My)
+                            {
+                                certsPath = linuxMyPrivateCertificatesFolder;
+                            }
+                            else if (name == StoreName.Root)
+                            {
+                                certsPath = linuxRootCertificatesFolder;
+                            }
+                            else if (name == StoreName.CertificateAuthority)
+                            {
+                                certsPath = linuxCertificateAuthorityCertificatesFolder;
+                            }
+							
+							var certs = certsPath != null ? (await GetCertificatesAsync(new DirectoryInfo(certsPath))) : new ImmutableArray<(string path, X509Certificate2 certificate)>();
+                            if (!certs.IsDefault)
+                            {
+                                storeCertificates = new X509Certificate2Collection(certs.Select(tuple => tuple.certificate).ToArray());
+                            }
+                        }
+                        foreach (var certificateObj in storeCertificates)
+                        {
+                            var certificate = certificateObj as X509Certificate2;
                             if (!certificate.Archived && certificate.HasPrivateKey)
                             {
                                 certificates.Add((certificate, location, name));
@@ -267,7 +314,7 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            return Task.FromResult(certificates.ToImmutable());
+            return certificates.ToImmutable();
         }
 
         public async Task<ImmutableArray<SecurityKey>> GetEncryptionKeysAsync()
@@ -280,7 +327,7 @@ namespace OrchardCore.OpenId.Services
                 settings.EncryptionCertificateStoreName != null &&
                 !String.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
             {
-                var certificate = GetCertificate(
+                var certificate = await GetCertificateAsync(
                     settings.EncryptionCertificateStoreLocation.Value,
                     settings.EncryptionCertificateStoreName.Value, settings.EncryptionCertificateThumbprint);
 
@@ -349,7 +396,7 @@ namespace OrchardCore.OpenId.Services
                 settings.SigningCertificateStoreName != null &&
                 !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
-                var certificate = GetCertificate(
+                var certificate = await GetCertificateAsync(
                     settings.SigningCertificateStoreLocation.Value,
                     settings.SigningCertificateStoreName.Value, settings.SigningCertificateThumbprint);
 
@@ -445,12 +492,43 @@ namespace OrchardCore.OpenId.Services
             }
         }
 
-        private static X509Certificate2 GetCertificate(StoreLocation location, StoreName name, string thumbprint)
+        private async Task<X509Certificate2> GetCertificateAsync(StoreLocation location, StoreName name, string thumbprint)
         {
-            using var store = new X509Store(name, location);
-            store.Open(OpenFlags.ReadOnly);
+            X509Certificate2Collection certificates;
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && location == StoreLocation.CurrentUser)
+            {
+                string certsPath = null;
+                if (name == StoreName.TrustedPublisher)
+                {
+                    certsPath = linuxPublicCertificatesFolder;
+                }
+                else if (name == StoreName.My)
+                {
+                    certsPath = linuxMyPrivateCertificatesFolder;
+                }
+                else if (name == StoreName.Root)
+                {
+                    certsPath = linuxRootCertificatesFolder;
+                }
+                else if (name == StoreName.CertificateAuthority)
+                {
+                    certsPath = linuxCertificateAuthorityCertificatesFolder;
+                }
 
-            var certificates = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, validOnly: false);
+                var certs = Directory.Exists(certsPath) ? (await GetCertificatesAsync(new DirectoryInfo(certsPath))) : new ImmutableArray<(string path, X509Certificate2 certificate)>();
+                var allCerts = new X509Certificate2[0];
+                if (!certs.IsDefault)
+                {
+                    allCerts = certs.Where(tuple => tuple.certificate.Thumbprint == thumbprint).Select(tuple => tuple.certificate).ToArray();
+                }
+                certificates = new X509Certificate2Collection(allCerts);
+            }
+            else
+            {
+                using var store = new X509Store(name, location);
+                store.Open(OpenFlags.ReadOnly);
+                certificates = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, validOnly: false);
+            }
 
             return certificates.Count switch
             {
@@ -474,22 +552,28 @@ namespace OrchardCore.OpenId.Services
 
         private async Task<ImmutableArray<(string path, X509Certificate2 certificate)>> GetCertificatesAsync(DirectoryInfo directory)
         {
-            if (!directory.Exists)
-            {
-                return ImmutableArray.Create<(string, X509Certificate2)>();
-            }
-
             var certificates = ImmutableArray.CreateBuilder<(string, X509Certificate2)>();
 
-            foreach (var file in directory.EnumerateFiles("*.pfx", SearchOption.TopDirectoryOnly))
+            List<FileInfo> files = new List<FileInfo>();
+            try { files.AddRange(directory.EnumerateFiles("*.pfx", SearchOption.TopDirectoryOnly)); } catch (DirectoryNotFoundException) {};
+            files.AddRange(_linuxThumbprintsOfAvailableCertificates.Select(thumbprint => new FileInfo(Path.Combine(directory.FullName, thumbprint + ".pfx"))));
+            files.AddRange(_linuxThumbprintsOfAvailableCertificates.Select(thumbprint => new FileInfo(Path.Combine(directory.FullName, thumbprint + ".p12"))));
+            files.AddRange(_linuxThumbprintsOfAvailableCertificates.Select(thumbprint => new FileInfo(Path.Combine(directory.FullName, thumbprint + ".der"))));
+            
+            foreach (var file in files)
             {
                 try
                 {
                     // Only add the certificate if it's still valid.
                     var certificate = await GetCertificateAsync(file.FullName);
-                    if (certificate.NotBefore <= DateTime.Now && certificate.NotAfter > DateTime.Now)
+                    if (certificate != null)
                     {
-                        certificates.Add((file.FullName, certificate));
+                        _logger.LogError("certificate not null: NotBefore:" + certificate.NotBefore + " NotAfter:" + certificate.NotAfter);
+                        if (certificate.NotBefore <= DateTime.Now && certificate.NotAfter > DateTime.Now)
+                        {
+                            _logger.LogError("certificates added to list");
+                            certificates.Add((file.FullName, certificate));
+                        }
                     }
                 }
                 catch (Exception exception)
@@ -512,11 +596,11 @@ namespace OrchardCore.OpenId.Services
 
             async Task<X509Certificate2> GetCertificateAsync(string path)
             {
-                // Extract the certificate password from the separate .pwd file.
-                var password = await GetPasswordAsync(Path.ChangeExtension(path, ".pwd"));
-
+                string password = null;
                 try
                 {
+                    // Extract the certificate password from the separate .pwd file.
+                    password = await GetPasswordAsync(Path.ChangeExtension(path, ".pwd"));
                     // Note: ephemeral key sets are not supported on non-Windows platforms.
                     var flags = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
                         X509KeyStorageFlags.EphemeralKeySet :
@@ -528,16 +612,31 @@ namespace OrchardCore.OpenId.Services
                 // private key is not persisted or marked as exportable. To ensure X.509 certificates can be correctly
                 // read on these platforms, a second pass is made by specifying the PersistKeySet and Exportable flags.
                 // For more information, visit https://github.com/OrchardCMS/OrchardCore/issues/3222.
-                catch (CryptographicException exception)
+                catch (Exception exception)
                 {
+                    if (!(exception is CryptographicException || exception is FileNotFoundException || exception is DirectoryNotFoundException))
+                    {
+                        throw;
+                    }
                     _logger.LogDebug(exception, "A first-chance exception occurred while trying to extract " +
-                                                "a X.509 certificate with the default key storage options.");
-
-                    return new X509Certificate2(path, password,
-                        X509KeyStorageFlags.MachineKeySet |
-                        X509KeyStorageFlags.PersistKeySet |
-                        X509KeyStorageFlags.Exportable);
-                }
+                                                "a X.509 certificate with the default key storage options. At path " + path + ".pwd");
+                    try {
+                        var bytes = File.ReadAllBytes(path); 
+                        var cert2 =  new X509Certificate2(bytes, password,
+                            X509KeyStorageFlags.MachineKeySet |
+                            X509KeyStorageFlags.PersistKeySet |
+                            X509KeyStorageFlags.Exportable);
+                        return cert2;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is FileNotFoundException || ex is DirectoryNotFoundException)
+                        {
+                            return null;
+                        }
+                        throw;
+                    }
+                }                
                 // Don't swallow exceptions thrown from the catch handler to ensure unrecoverable exceptions
                 // (e.g caused by malformed X.509 certificates or invalid password) are correctly logged.
             }
