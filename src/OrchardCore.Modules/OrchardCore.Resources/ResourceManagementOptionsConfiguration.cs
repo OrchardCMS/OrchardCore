@@ -176,7 +176,7 @@ namespace OrchardCore.Resources
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap.bundle.min.js", "~/OrchardCore.Resources/Scripts/bootstrap.bundle.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.js")
-                .SetCdnIntegrity("sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ", "sha384-laHbHrUWBdp+e2xicjB5tFY2HWECJzQfGuvlBf/AZBMERb5qBIM+7N7rdDhTtwRZ)
+                .SetCdnIntegrity("sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ", "sha384-laHbHrUWBdp+e2xicjB5tFY2HWECJzQfGuvlBf/AZBMERb5qBIM+7N7rdDhTtwRZ")
                 .SetVersion("5.1.2");
 
             manifest
