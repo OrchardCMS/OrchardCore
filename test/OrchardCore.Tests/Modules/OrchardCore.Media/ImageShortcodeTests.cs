@@ -84,7 +84,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         private static ServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
-            var mediaOptions = Options.Create(new MediaOptions { UseTokenizedQueryString = true });
+            var mediaOptions = Options.Create(new MediaOptions());
             services.AddTransient(p => { return mediaOptions; });
             return services.BuildServiceProvider();
         }
