@@ -1,14 +1,17 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
+using OrchardCore.Media;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Events;
 using OrchardCore.Media.Shortcodes;
+using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
@@ -63,17 +66,27 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var defaultHttpContext = new DefaultHttpContext();
             defaultHttpContext.Request.PathBase = new PathString("/tenant");
+            defaultHttpContext.RequestServices = CreateServiceProvider();
             var httpContextAccessor = Mock.Of<IHttpContextAccessor>(hca => hca.HttpContext == defaultHttpContext);
 
             var options = Options.Create(new ResourceManagementOptions { CdnBaseUrl = cdnBaseUrl });
+            var orchardHelper = new DefaultOrchardHelper(httpContextAccessor);
 
-            var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options);
+            var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options, orchardHelper);
 
             var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, Enumerable.Empty<IShortcodeContextProvider>());
 
             var processed = await processor.ProcessAsync(text);
             Assert.Equal(expected, processed);
 
+        }
+
+        private static ServiceProvider CreateServiceProvider()
+        {
+            var services = new ServiceCollection();
+            var mediaOptions = Options.Create(new MediaOptions { UseTokenizedQueryString = true });
+            services.AddTransient(p => { return mediaOptions; });
+            return services.BuildServiceProvider();
         }
     }
 }
