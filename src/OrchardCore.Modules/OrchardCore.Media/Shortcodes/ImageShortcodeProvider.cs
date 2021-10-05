@@ -78,10 +78,10 @@ namespace OrchardCore.Media.Shortcodes
             var altText = string.Empty;
             if (arguments.Any())
             {
-                int? width = int.TryParse(arguments.Named("width"), out var widthValue) ? widthValue : null;
-                int? height = int.TryParse(arguments.Named("height"), out var heightValue) ? heightValue : null;
+                int? width = int.TryParse(arguments.Named("width"), out var widthValue) ? (int?)widthValue : null;
+                int? height = int.TryParse(arguments.Named("height"), out var heightValue) ? (int?)heightValue : null;
                 var mode = Enum.TryParse<ResizeMode>(arguments.Named("mode"), true, out var modeValue) ? modeValue : ResizeMode.Undefined;
-                int? quality = int.TryParse(arguments.Named("quality"), out var qualityValue) ? qualityValue : null;
+                int? quality = int.TryParse(arguments.Named("quality"), out var qualityValue) ? (int?)qualityValue : null;
                 var format = Enum.TryParse<Format>(arguments.Named("format"), true, out var formatValue) ? formatValue : Format.Undefined;
 
                 className = arguments.Named("class");
