@@ -77,7 +77,7 @@ namespace OrchardCore.Apis.GraphQL
         {
             var schema = await schemaService.GetSchemaAsync();
 
-            GraphQLRequest request = null;
+            GraphQLRequest request = new GraphQLRequest();
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
 
