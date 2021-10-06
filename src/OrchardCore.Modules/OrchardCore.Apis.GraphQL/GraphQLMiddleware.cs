@@ -83,6 +83,12 @@ namespace OrchardCore.Apis.GraphQL
 
             if (HttpMethods.IsPost(context.Request.Method))
             {
+                if (string.IsNullOrEmpty(context.Request.ContentType))
+                {
+                    await WriteErrorAsync(context, "Content-Type cannot be empty while processing the GraphQL query");
+                    return;
+                }
+
                 var mediaType = new MediaType(context.Request.ContentType);
 
                 try
@@ -121,6 +127,11 @@ namespace OrchardCore.Apis.GraphQL
                         {
                             request.OperationName = context.Request.Query["operationName"];
                         }
+                    }
+                    else
+                    {
+                        await WriteErrorAsync(context, "Need the correct Content-Type while processing the GraphQL query");
+                        return;
                     }
                 }
                 catch (Exception e)
