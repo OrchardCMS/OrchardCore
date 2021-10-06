@@ -7,7 +7,7 @@ namespace OrchardCore.Lists.Indexes
 {
     public class ContainedPartContentIndexHandler : IContentItemIndexHandler
     {
-        public const string ParentKey = "Content.ContentItem.ListContentItemId";
+        public const string ParentKey = "Content.ContentItem.ContainedPart";
 
         public Task BuildIndexAsync(BuildIndexContext context)
         {
@@ -19,8 +19,13 @@ namespace OrchardCore.Lists.Indexes
             }
 
             context.DocumentIndex.Set(
-                ParentKey,
+                ParentKey + ".ListContentItemId",
                 parent.ListContentItemId,
+                DocumentIndexOptions.Store);
+
+            context.DocumentIndex.Set(
+                ParentKey + ".Order",
+                parent.Order,
                 DocumentIndexOptions.Store);
 
             return Task.CompletedTask;
