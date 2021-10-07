@@ -41,12 +41,12 @@ The following properties are available on the `ListPartSettings` class.
 | -----| ---- |------------ |
 | `PageSize` | The number of content items returned per page. |
 | `EnableOrdering` | Flag to enable drag and drop ordering of content items. |
-| `ContainedContentTypes` | The content types that maybe contained by this part. |
+| `ContainedContentTypes` | The content types that may be contained by this part. |
 
 ### Template
 
 The following example is used to render the items of a `ListPart` and customize the pager.  
-For instance it can be set in a file named `Blog-ListPart.liquid` to override the `Blog` content type only.
+For instance, it can be set in a file named `Blog-ListPart.liquid` to override the `Blog` content type only.
 
 ```liquid
 {% for item in Model.ContentItems %}
@@ -68,21 +68,21 @@ For instance it can be set in a file named `Blog-ListPart.liquid` to override th
 
 ### QueryListItemsCountAsync
 
-Returns the number of list items satisfying given predicate.
+Returns the number of list items satisfying the given predicate.
 
 ### QueryListItemsAsync
 
-Returns the enumerable of list items satisfying given predicate.
+Returns the IEnumerable<ContentItem> satisfying given predicate.
 
 ## Liquid Tags
 
 ### list_count
 
-The `list_count` filter counts published list content items for given `ContentItem` object or explicit `ContentItem` id given as string.
+The `list_count` filter counts published content items for a given `ContentItem` object or explicit `ContentItem` id given as a string in a list.
 
 ### list_items
 
-The `list_items` filter loads published list content items for given `ContentItem` object or explicit `ContentItem` id given as string.
+The `list_items` filter loads published content items for a given `ContentItem` object or explicit `ContentItem` id given as a string in a list.
 
 ## Video
 
