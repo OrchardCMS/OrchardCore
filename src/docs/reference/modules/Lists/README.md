@@ -72,7 +72,7 @@ Returns the number of list items satisfying the given predicate.
 
 ### QueryListItemsAsync
 
-Returns the IEnumerable<ContentItem> satisfying given predicate.
+Returns the IEnumerable<ContentItem> satisfying the given predicate.
 
 ## Liquid Tags
 
