@@ -87,3 +87,16 @@ The `list_items` filter loads published list content items for given `ContentIte
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/a3yyR27vdQQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Lucene Indexing
+
+**Breaking Change** : Every content item that is contained in a list have a ContainedPart associated with it.
+The indexed data in Lucene before Orchard Core 1.1 was :
+
+`"Content.ContentItem.ListContentItemId"`
+
+After 1.1 this has changed for also including the display order, so it is now :
+
+`"Content.ContentItem.ContainedPart.ListContentItemId"`   
+and  
+`"Content.ContentItem.ContainedPart.Order"`
