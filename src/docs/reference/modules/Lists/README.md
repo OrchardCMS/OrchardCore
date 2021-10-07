@@ -68,7 +68,7 @@ For instance, it can be set in a file named `Blog-ListPart.liquid` to override t
 
 ### QueryListItemsCountAsync
 
-Returns the number of `IEnumerable<ContentItem>` satisfying the given predicate.
+Returns the count of `IEnumerable<ContentItem>` satisfying the given predicate.
 
 ### QueryListItemsAsync
 
@@ -90,12 +90,12 @@ The `list_items` filter loads published content items for a given `ContentItem` 
 
 ## Lucene Indexing
 
-**Breaking Change**: Every content item that is contained in a list has a ContainedPart associated with it.
-The indexed data in Lucene before Orchard Core 1.1 was :
+**Breaking Change**: Every content item that is contained in a list has a `ContainedPart` associated with it.
+The indexed data in Lucene before Orchard Core 1.1 was:
 
 `"Content.ContentItem.ListContentItemId"`
 
-After 1.1 this has changed for also including the display order, so it is now :
+After 1.1 this has changed for also including the display order, so it is now:
 
 `"Content.ContentItem.ContainedPart.ListContentItemId"`   
 and  
