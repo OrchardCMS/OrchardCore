@@ -20,12 +20,12 @@ namespace OrchardCore.Lists.Indexes
             }
 
             context.DocumentIndex.Set(
-                ListContentItemIdKey + ".ListContentItemId",
+                ListContentItemIdKey,
                 parent.ListContentItemId,
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
-                OrderKey + ".Order",
+                OrderKey,
                 parent.Order,
                 DocumentIndexOptions.Store);
 
