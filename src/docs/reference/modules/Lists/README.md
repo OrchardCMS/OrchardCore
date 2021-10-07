@@ -68,11 +68,11 @@ For instance, it can be set in a file named `Blog-ListPart.liquid` to override t
 
 ### QueryListItemsCountAsync
 
-Returns the number of list items satisfying the given predicate.
+Returns the number of `IEnumerable<ContentItem>` satisfying the given predicate.
 
 ### QueryListItemsAsync
 
-Returns the IEnumerable<ContentItem> satisfying the given predicate.
+Returns the `IEnumerable<ContentItem>` satisfying the given predicate.
 
 ## Liquid Tags
 
