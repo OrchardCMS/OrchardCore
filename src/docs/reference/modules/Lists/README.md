@@ -90,7 +90,7 @@ The `list_items` filter loads published content items for a given `ContentItem` 
 
 ## Lucene Indexing
 
-**Breaking Change** : Every content item that is contained in a list has a ContainedPart associated with it.
+**Breaking Change**: Every content item that is contained in a list has a ContainedPart associated with it.
 The indexed data in Lucene before Orchard Core 1.1 was :
 
 `"Content.ContentItem.ListContentItemId"`
