@@ -1,0 +1,18 @@
+{
+  "solution": {
+    "path": "OrchardCore.sln",
+    "projects": [
+      "test\\Functional\\OrchardCore.Tests.Functional.csproj",
+      "test\\OrchardCore.Benchmarks\\OrchardCore.Benchmarks.csproj",
+      "test\\OrchardCore.Tests.Modules\\BaseThemeSample2\\BaseThemeSample2.csproj",
+      "test\\OrchardCore.Tests.Modules\\BaseThemeSample\\BaseThemeSample.csproj",
+      "test\\OrchardCore.Tests.Modules\\DerivedThemeSample2\\DerivedThemeSample2.csproj",
+      "test\\OrchardCore.Tests.Modules\\DerivedThemeSample\\DerivedThemeSample.csproj",
+      "test\\OrchardCore.Tests.Modules\\ModuleSample\\ModuleSample.csproj",
+      "test\\OrchardCore.Tests.Pages\\OrchardCore.Application.Pages\\OrchardCore.Application.Pages.csproj",
+      "test\\OrchardCore.Tests.Pages\\OrchardCore.Modules.Pages\\Module.Pages\\Module.Pages.csproj",
+      "test\\OrchardCore.Tests.Pages\\OrchardCore.Themes.Pages\\Theme.Pages\\Theme.Pages.csproj",
+      "test\\OrchardCore.Tests\\OrchardCore.Tests.csproj"
+    ]
+  }
+}

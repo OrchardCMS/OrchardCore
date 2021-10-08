@@ -1,0 +1,13 @@
+{
+  "solution": {
+    "path": "OrchardCore.sln",
+    "projects": [
+      "src\\OrchardCore\\OrchardCore.Application.Cms.Core.Targets\\OrchardCore.Application.Cms.Core.Targets.csproj",
+      "src\\OrchardCore\\OrchardCore.Application.Cms.Targets\\OrchardCore.Application.Cms.Targets.csproj",
+      "src\\OrchardCore\\OrchardCore.Application.Mvc.Targets\\OrchardCore.Application.Mvc.Targets.csproj",
+      "src\\OrchardCore\\OrchardCore.Application.Targets\\OrchardCore.Application.Targets.csproj",
+      "src\\OrchardCore\\OrchardCore.Module.Targets\\OrchardCore.Module.Targets.csproj",
+      "src\\OrchardCore\\OrchardCore.Theme.Targets\\OrchardCore.Theme.Targets.csproj"
+    ]
+  }
+}

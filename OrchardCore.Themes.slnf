@@ -1,0 +1,14 @@
+{
+  "solution": {
+    "path": "OrchardCore.sln",
+    "projects": [
+      "src\\OrchardCore.Cms.Web\\OrchardCore.Cms.Web.csproj",
+      "src\\OrchardCore.Themes\\SafeMode\\SafeMode.csproj",
+      "src\\OrchardCore.Themes\\TheAdmin\\TheAdmin.csproj",
+      "src\\OrchardCore.Themes\\TheAgencyTheme\\TheAgencyTheme.csproj",
+      "src\\OrchardCore.Themes\\TheBlogTheme\\TheBlogTheme.csproj",
+      "src\\OrchardCore.Themes\\TheComingSoonTheme\\TheComingSoonTheme.csproj",
+      "src\\OrchardCore.Themes\\TheTheme\\TheTheme.csproj"
+    ]
+  }
+}

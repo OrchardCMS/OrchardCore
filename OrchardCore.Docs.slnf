@@ -1,0 +1,8 @@
+{
+  "solution": {
+    "path": "OrchardCore.sln",
+    "projects": [
+      "src\\docs\\OrchardCore.Docs.csproj"
+    ]
+  }
+}
