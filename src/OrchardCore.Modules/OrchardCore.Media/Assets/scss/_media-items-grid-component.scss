@@ -49,6 +49,7 @@ ol.media-items-grid {
         display: flex;
         align-items: center;
         justify-content: center;
+        background: repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 50% / 10px 10px;
     }
 
     list-style: none;
