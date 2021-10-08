@@ -93,7 +93,8 @@ namespace OrchardCore.Demo.Controllers
                 return RedirectToAction(nameof(Index), "Todo");
             }
 
-            return View(viewModel);
+            viewModel.DisplayMode = "Edit";
+            return View(nameof(Edit), viewModel);
         }
 
         public async Task<IActionResult> Delete(string todoId)
