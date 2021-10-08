@@ -28,10 +28,10 @@ This feature allows the `Default` tenant to create Feature Profiles which can re
 
 ### Creating a feature profile
 
-- Enable the _Tenant Feature Profiles_ feature on the `Default` tenant
-- Go to the _Configuration -> Tenant Feature Profiles_ menu
-- Select _Add Feature Profile_
-- Add a _Name_ and a set of _Rules_
+1. Enable the _Tenant Feature Profiles_ feature on the `Default` tenant.
+2. Go to the _Configuration -> Tenant Feature Profiles_ menu.
+3. Select _Add Feature Profile_.
+4. Add a _Name_ and a set of _Rules_.
 
 #### Rule Configuration
 
@@ -80,9 +80,11 @@ Rules are processed in the order they are supplied, so reversing the order of th
 
 ### Selecting a feature profile
 
-- Create a Feature Profile
-- Go to the _Configuration -> Tenants_ menu
-- Edit the tenant
-- Select a feature profile from the dropdown
+1. Create a Feature Profile.
+2. Go to the _Configuration -> Tenants_ menu.
+3. Edit the tenant.
+4 Select a feature profile from the dropdown.
 
 The _Feature Profile_ drop down will only be available if at least one Feature Profile has been configured.
+
+A feature profile can also be set when creating a tenant via the web API.
