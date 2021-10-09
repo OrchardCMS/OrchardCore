@@ -159,32 +159,32 @@ namespace OrchardCore.Resources
             manifest
                .DefineScript("popperjs")
                .SetUrl("~/OrchardCore.Resources/Scripts/popper.min.js", "~/OrchardCore.Resources/Scripts/popper.js")
-               .SetCdn("https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js", "https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.js")
-               .SetCdnIntegrity("sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp", "sha384-VRO1mxoiNGok7FQGrWgwCQyGKyyjd7wjoy2FdSJ9yXBtHlNmQ1uC+w3i0iO58rRq")
-               .SetVersion("2.9.3");
+               .SetCdn("https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js", "https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.js")
+               .SetCdnIntegrity("sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB", "sha384-7bLhHCLchQRw474eiNFHP0txk38fyqbVOG/RohbcYXnTrdd9mNPQrVkOcY14iscj")
+               .SetVersion("2.10.2");
 
             manifest
                 .DefineScript("bootstrap")
                 .SetDependencies("popperjs")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap.min.js", "~/OrchardCore.Resources/Scripts/bootstrap.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.js")
-                .SetCdnIntegrity("sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujBsIzCIv+l9liuYLaMQ/", "sha384-QECoUAUXR8KfvzQMET8p6BgTpkK9v9BaPdJ+hZKBoMsyMcAmF+NeDVkY01qeshw+")
-                .SetVersion("5.1.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.js")
+                .SetCdnIntegrity("sha384-PsUw7Xwds7x08Ew3exXhqzbhuEYmA2xnwc8BuD6SEr+UmEHlX8/MCltYEodzWA4u", "sha384-pJfliE4GpTXInvNMOlor0MTo/uOYEwKcoBQ1J702aHQROACMlgseGwei2PFEALl0")
+                .SetVersion("5.1.2");
 
             manifest
                 .DefineScript("bootstrap-bundle")
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap.bundle.min.js", "~/OrchardCore.Resources/Scripts/bootstrap.bundle.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.js")
-                .SetCdnIntegrity("sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ", "sha384-5tkUMcue1IzwOrYYLqA5A9bSIk8vgFPWvPRRic7R+jUyDtqOVdrhzpTS9C4ThRYV")
-                .SetVersion("5.1.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.js")
+                .SetCdnIntegrity("sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ", "sha384-laHbHrUWBdp+e2xicjB5tFY2HWECJzQfGuvlBf/AZBMERb5qBIM+7N7rdDhTtwRZ")
+                .SetVersion("5.1.2");
 
             manifest
                 .DefineStyle("bootstrap")
                 .SetUrl("~/OrchardCore.Resources/Styles/bootstrap.min.css", "~/OrchardCore.Resources/Styles/bootstrap.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.css")
-                .SetCdnIntegrity("sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU", "sha384-G+ejCv7/c84HdL0X3O+Wccd/pRhByFyCK4wEvI4apUwRmD/YBqA3RwAm9L+LF4Is")
-                .SetVersion("5.1.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.css")
+                .SetCdnIntegrity("sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF", "sha384-34eD75VKbijLeuxroGndOV0KMCdT6SMqtUCuMvRqZocSP84JprFDWFeD0jQ33+K9")
+                .SetVersion("5.1.2");
 
             manifest
                 .DefineStyle("bootstrap-select")

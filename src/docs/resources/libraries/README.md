@@ -37,7 +37,7 @@ The below table lists the different libraries used as Resources:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | 5.1.1 | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
+| [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | 5.1.2 | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
 | [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | 1.3.18 | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
 | [bootstrap-slider](https://github.com/seiyria/bootstrap-slider) | Slider control for Bootstrap. | 11.0.2 | [MIT](https://github.com/seiyria/bootstrap-slider/blob/master/LICENSE.md) |
 | [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.63.1 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
@@ -50,7 +50,7 @@ The below table lists the different libraries used as Resources:
 | [js-cookie](https://github.com/js-cookie/js-cookie) | A simple, lightweight JavaScript API for handling browser cookies. | 3.0.1 | [MIT](https://github.com/js-cookie/js-cookie/blob/master/LICENSE) |
 | [Material icons](https://github.com/marella/material-icons) | Latest icon fonts and CSS for self-hosting material design icons. | 1.7.0 | [Apache-2.0](https://github.com/marella/material-icons/blob/main/LICENSE) |
 | [Monaco Editor](https://microsoft.github.io/monaco-editor) | Lightweight source code editor | 0.28.1 | [MIT](https://github.com/microsoft/monaco-editor/blob/main/LICENSE.md) |
-| [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 1.16.1 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
+| [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 2.10.2 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
 | [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.14.0 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
 | [Trumbowyg](https://github.com/Alex-D/Trumbowyg) | A lightweight and amazing WYSIWYG JavaScript editor. | 2.25.1 | [MIT](https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE) |
 | [vue-multiselect](https://github.com/shentao/vue-multiselect) | Universal select/multiselect/tagging component for Vue.js. | 2.1.6 | [MIT](https://github.com/shentao/vue-multiselect/blob/master/LICENSE) |

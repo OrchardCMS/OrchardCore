@@ -56,7 +56,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
-  * Bootstrap v5.1.1 (https://getbootstrap.com/)
+  * Bootstrap v5.1.2 (https://getbootstrap.com/)
   * Copyright 2011-2021 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
@@ -66,7 +66,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   'use strict';
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): util/index.js
+   * Bootstrap (v5.1.2): util/index.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -384,7 +384,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): dom/event-handler.js
+   * Bootstrap (v5.1.2): dom/event-handler.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -677,7 +677,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): dom/data.js
+   * Bootstrap (v5.1.2): dom/data.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -728,7 +728,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): base-component.js
+   * Bootstrap (v5.1.2): base-component.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -739,7 +739,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    * ------------------------------------------------------------------------
    */
 
-  var VERSION = '5.1.1';
+  var VERSION = '5.1.2';
 
   var BaseComponent = /*#__PURE__*/function () {
     function BaseComponent(element) {
@@ -811,7 +811,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }();
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): util/component-functions.js
+   * Bootstrap (v5.1.2): util/component-functions.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -838,7 +838,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): alert.js
+   * Bootstrap (v5.1.2): alert.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -949,7 +949,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Alert);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): button.js
+   * Bootstrap (v5.1.2): button.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1036,7 +1036,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Button);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): dom/manipulator.js
+   * Bootstrap (v5.1.2): dom/manipulator.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1108,7 +1108,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): dom/selector-engine.js
+   * Bootstrap (v5.1.2): dom/selector-engine.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1183,7 +1183,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): carousel.js
+   * Bootstrap (v5.1.2): carousel.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1475,8 +1475,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         };
 
         SelectorEngine.find(SELECTOR_ITEM_IMG, this._element).forEach(function (itemImg) {
-          EventHandler.on(itemImg, EVENT_DRAG_START, function (e) {
-            return e.preventDefault();
+          EventHandler.on(itemImg, EVENT_DRAG_START, function (event) {
+            return event.preventDefault();
           });
         });
 
@@ -1788,7 +1788,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Carousel);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): collapse.js
+   * Bootstrap (v5.1.2): collapse.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -1820,6 +1820,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var CLASS_NAME_COLLAPSE = 'collapse';
   var CLASS_NAME_COLLAPSING = 'collapsing';
   var CLASS_NAME_COLLAPSED = 'collapsed';
+  var CLASS_NAME_DEEPER_CHILDREN = ":scope .".concat(CLASS_NAME_COLLAPSE, " .").concat(CLASS_NAME_COLLAPSE);
   var CLASS_NAME_HORIZONTAL = 'collapse-horizontal';
   var WIDTH = 'width';
   var HEIGHT = 'height';
@@ -1898,7 +1899,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var activesData;
 
         if (this._config.parent) {
-          var children = SelectorEngine.find(".".concat(CLASS_NAME_COLLAPSE, " .").concat(CLASS_NAME_COLLAPSE), this._config.parent);
+          var children = SelectorEngine.find(CLASS_NAME_DEEPER_CHILDREN, this._config.parent);
           actives = SelectorEngine.find(SELECTOR_ACTIVES, this._config.parent).filter(function (elem) {
             return !children.includes(elem);
           }); // remove children if greater depth
@@ -2047,7 +2048,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return;
         }
 
-        var children = SelectorEngine.find(".".concat(CLASS_NAME_COLLAPSE, " .").concat(CLASS_NAME_COLLAPSE), this._config.parent);
+        var children = SelectorEngine.find(CLASS_NAME_DEEPER_CHILDREN, this._config.parent);
         SelectorEngine.find(SELECTOR_DATA_TOGGLE$4, this._config.parent).filter(function (elem) {
           return !children.includes(elem);
         }).forEach(function (element) {
@@ -2293,42 +2294,40 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   function getBasePlacement(placement) {
     return placement.split('-')[0];
-  }
+  } // import { isHTMLElement } from './instanceOf';
 
-  var round$1 = Math.round;
 
-  function getBoundingClientRect(element, includeScale) {
-    if (includeScale === void 0) {
-      includeScale = false;
-    }
-
+  function getBoundingClientRect(element, // eslint-disable-next-line unused-imports/no-unused-vars
+  includeScale) {
     var rect = element.getBoundingClientRect();
     var scaleX = 1;
-    var scaleY = 1;
-
-    if (isHTMLElement(element) && includeScale) {
-      var offsetHeight = element.offsetHeight;
-      var offsetWidth = element.offsetWidth; // Do not attempt to divide by 0, otherwise we get `Infinity` as scale
-      // Fallback to 1 in case both values are `0`
-
-      if (offsetWidth > 0) {
-        scaleX = rect.width / offsetWidth || 1;
-      }
-
-      if (offsetHeight > 0) {
-        scaleY = rect.height / offsetHeight || 1;
-      }
-    }
+    var scaleY = 1; // FIXME:
+    // `offsetWidth` returns an integer while `getBoundingClientRect`
+    // returns a float. This results in `scaleX` or `scaleY` being
+    // non-1 when it should be for elements that aren't a full pixel in
+    // width or height.
+    // if (isHTMLElement(element) && includeScale) {
+    //   const offsetHeight = element.offsetHeight;
+    //   const offsetWidth = element.offsetWidth;
+    //   // Do not attempt to divide by 0, otherwise we get `Infinity` as scale
+    //   // Fallback to 1 in case both values are `0`
+    //   if (offsetWidth > 0) {
+    //     scaleX = rect.width / offsetWidth || 1;
+    //   }
+    //   if (offsetHeight > 0) {
+    //     scaleY = rect.height / offsetHeight || 1;
+    //   }
+    // }
 
     return {
-      width: round$1(rect.width / scaleX),
-      height: round$1(rect.height / scaleY),
-      top: round$1(rect.top / scaleY),
-      right: round$1(rect.right / scaleX),
-      bottom: round$1(rect.bottom / scaleY),
-      left: round$1(rect.left / scaleX),
-      x: round$1(rect.left / scaleX),
-      y: round$1(rect.top / scaleY)
+      width: rect.width / scaleX,
+      height: rect.height / scaleY,
+      top: rect.top / scaleY,
+      right: rect.right / scaleX,
+      bottom: rect.bottom / scaleY,
+      left: rect.left / scaleX,
+      x: rect.left / scaleX,
+      y: rect.top / scaleY
     };
   } // means it doesn't take into account transforms.
 
@@ -3568,9 +3567,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     var isOffsetParentAnElement = isHTMLElement(offsetParent);
-    var offsetParentIsScaled = isHTMLElement(offsetParent) && isElementScaled(offsetParent);
+    isHTMLElement(offsetParent) && isElementScaled(offsetParent);
     var documentElement = getDocumentElement(offsetParent);
-    var rect = getBoundingClientRect(elementOrVirtualElement, offsetParentIsScaled);
+    var rect = getBoundingClientRect(elementOrVirtualElement);
     var scroll = {
       scrollLeft: 0,
       scrollTop: 0
@@ -3587,7 +3586,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       if (isHTMLElement(offsetParent)) {
-        offsets = getBoundingClientRect(offsetParent, true);
+        offsets = getBoundingClientRect(offsetParent);
         offsets.x += offsetParent.clientLeft;
         offsets.y += offsetParent.clientTop;
       } else if (documentElement) {
@@ -3921,7 +3920,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   });
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): dropdown.js
+   * Bootstrap (v5.1.2): dropdown.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -4426,7 +4425,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Dropdown);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): util/scrollBar.js
+   * Bootstrap (v5.1.2): util/scrollBar.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -4552,8 +4551,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }();
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): util/backdrop.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+   * Bootstrap (v5.1.2): util/backdrop.js
+   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -4692,8 +4691,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }();
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): util/focustrap.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+   * Bootstrap (v5.1.2): util/focustrap.js
+   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -4805,7 +4804,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }();
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): modal.js
+   * Bootstrap (v5.1.2): modal.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -5290,8 +5289,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Modal);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): offcanvas.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+   * Bootstrap (v5.1.2): offcanvas.js
+   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -5583,45 +5582,45 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Offcanvas);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): util/sanitizer.js
+   * Bootstrap (v5.1.2): util/sanitizer.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
-  var uriAttrs = new Set(['background', 'cite', 'href', 'itemtype', 'longdesc', 'poster', 'src', 'xlink:href']);
+  var uriAttributes = new Set(['background', 'cite', 'href', 'itemtype', 'longdesc', 'poster', 'src', 'xlink:href']);
   var ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i;
   /**
    * A pattern that recognizes a commonly useful subset of URLs that are safe.
    *
-   * Shoutout to Angular 7 https://github.com/angular/angular/blob/7.2.4/packages/core/src/sanitization/url_sanitizer.ts
+   * Shoutout to Angular https://github.com/angular/angular/blob/12.2.x/packages/core/src/sanitization/url_sanitizer.ts
    */
 
-  var SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file):|[^#&/:?]*(?:[#/?]|$))/i;
+  var SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file|sms):|[^#&/:?]*(?:[#/?]|$))/i;
   /**
    * A pattern that matches safe data URLs. Only matches image, video and audio types.
    *
-   * Shoutout to Angular 7 https://github.com/angular/angular/blob/7.2.4/packages/core/src/sanitization/url_sanitizer.ts
+   * Shoutout to Angular https://github.com/angular/angular/blob/12.2.x/packages/core/src/sanitization/url_sanitizer.ts
    */
 
   var DATA_URL_PATTERN = /^data:(?:image\/(?:bmp|gif|jpeg|jpg|png|tiff|webp)|video\/(?:mpeg|mp4|ogg|webm)|audio\/(?:mp3|oga|ogg|opus));base64,[\d+/a-z]+=*$/i;
 
-  var allowedAttribute = function allowedAttribute(attr, allowedAttributeList) {
-    var attrName = attr.nodeName.toLowerCase();
+  var allowedAttribute = function allowedAttribute(attribute, allowedAttributeList) {
+    var attributeName = attribute.nodeName.toLowerCase();
 
-    if (allowedAttributeList.includes(attrName)) {
-      if (uriAttrs.has(attrName)) {
-        return Boolean(SAFE_URL_PATTERN.test(attr.nodeValue) || DATA_URL_PATTERN.test(attr.nodeValue));
+    if (allowedAttributeList.includes(attributeName)) {
+      if (uriAttributes.has(attributeName)) {
+        return Boolean(SAFE_URL_PATTERN.test(attribute.nodeValue) || DATA_URL_PATTERN.test(attribute.nodeValue));
       }
 
       return true;
     }
 
-    var regExp = allowedAttributeList.filter(function (attrRegex) {
-      return attrRegex instanceof RegExp;
+    var regExp = allowedAttributeList.filter(function (attributeRegex) {
+      return attributeRegex instanceof RegExp;
     }); // Check if a regular expression validates the attribute.
 
     for (var i = 0, len = regExp.length; i < len; i++) {
-      if (regExp[i].test(attrName)) {
+      if (regExp[i].test(attributeName)) {
         return true;
       }
     }
@@ -5676,27 +5675,26 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     var domParser = new window.DOMParser();
     var createdDocument = domParser.parseFromString(unsafeHtml, 'text/html');
-    var allowlistKeys = Object.keys(allowList);
 
     var elements = (_ref11 = []).concat.apply(_ref11, _toConsumableArray(createdDocument.body.querySelectorAll('*')));
 
     var _loop2 = function _loop2(i, len) {
       var _ref12;
 
-      var el = elements[i];
-      var elName = el.nodeName.toLowerCase();
+      var element = elements[i];
+      var elementName = element.nodeName.toLowerCase();
 
-      if (!allowlistKeys.includes(elName)) {
-        el.remove();
+      if (!Object.keys(allowList).includes(elementName)) {
+        element.remove();
         return "continue";
       }
 
-      var attributeList = (_ref12 = []).concat.apply(_ref12, _toConsumableArray(el.attributes));
+      var attributeList = (_ref12 = []).concat.apply(_ref12, _toConsumableArray(element.attributes));
 
-      var allowedAttributes = [].concat(allowList['*'] || [], allowList[elName] || []);
-      attributeList.forEach(function (attr) {
-        if (!allowedAttribute(attr, allowedAttributes)) {
-          el.removeAttribute(attr.nodeName);
+      var allowedAttributes = [].concat(allowList['*'] || [], allowList[elementName] || []);
+      attributeList.forEach(function (attribute) {
+        if (!allowedAttribute(attribute, allowedAttributes)) {
+          element.removeAttribute(attribute.nodeName);
         }
       });
     };
@@ -5711,7 +5709,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): tooltip.js
+   * Bootstrap (v5.1.2): tooltip.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -6495,7 +6493,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Tooltip);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): popover.js
+   * Bootstrap (v5.1.2): popover.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -6630,7 +6628,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Popover);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): scrollspy.js
+   * Bootstrap (v5.1.2): scrollspy.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -6909,7 +6907,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(ScrollSpy);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): tab.js
+   * Bootstrap (v5.1.2): tab.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -7133,7 +7131,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Tab);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): toast.js
+   * Bootstrap (v5.1.2): toast.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
@@ -7401,7 +7399,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   defineJQueryPlugin(Toast);
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.1.1): index.umd.js
+   * Bootstrap (v5.1.2): index.umd.js
    * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
