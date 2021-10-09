@@ -316,6 +316,7 @@
 }
 :root[data-theme=default] .media-items-table .thumbnail-column {
   width: 75px;
+  vertical-align: middle;
 }
 [dir]:root[data-theme=default] .media-items-table .thumbnail-column {
   text-align: center;
@@ -1123,6 +1124,7 @@
 }
 :root[data-theme=darkmode] .media-items-table .thumbnail-column {
   width: 75px;
+  vertical-align: middle;
 }
 [dir]:root[data-theme=darkmode] .media-items-table .thumbnail-column {
   text-align: center;
