@@ -271,7 +271,7 @@
   justify-content: center;
 }
 [dir]:root[data-theme=default] ol.media-items-grid .thumb-container {
-  background: repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 50%/10px 10px;
+  background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 :root[data-theme=default] .media-items-table {
   font-size: 0.875rem;
@@ -1074,7 +1074,7 @@
   justify-content: center;
 }
 [dir]:root[data-theme=darkmode] ol.media-items-grid .thumb-container {
-  background: repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 50%/10px 10px;
+  background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 :root[data-theme=darkmode] .media-items-table {
   font-size: 0.875rem;
