@@ -37,18 +37,14 @@
         padding-left: 16px;
         padding-right: 16px;
 
-        .image-wrapper {
-            width: 75px;
-            height: 75px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+        .img-wrapper {
+            background: white;
 
-        img {
-            max-width: 75px;
-            max-height: 75px;
+            img {
+                max-width: 75px;
+                max-height: 75px;
+                background: repeating-conic-gradient($gray-200 0% 25%, transparent 0% 50%) 50% / 10px 10px;
+            }
         }
     }
 
