@@ -36,12 +36,12 @@ jobs:
         dotnet-version: 6.0.100-rc.1.21458.32
     - name: Build
       run: |
-        dotnet build --configuration Release --framework net6.0
-        dotnet build --configuration Release --framework net5.0
-        dotnet build --configuration Release --framework netcoreapp3.1
+        dotnet build --configuration Release /p:DefaultTargetFramework=net6.0
+        dotnet build --configuration Release /p:DefaultTargetFramework=net5.0
+        dotnet build --configuration Release /p:DefaultTargetFramework=netcoreapp3.1
     - name: Unit Tests
       run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj /p:CommonTargetFrameworks=""net6.0;net5.0;netcoreapp3.1""
     - name: Functional Tests
       if: matrix.os == 'ubuntu-latest'
       run: |
