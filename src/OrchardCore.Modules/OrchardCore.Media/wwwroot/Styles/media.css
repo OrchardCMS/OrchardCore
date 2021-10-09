@@ -696,6 +696,9 @@
 :root[data-theme=default] .media-field-toolbar {
   display: flex;
 }
+[dir]:root[data-theme=default] .media-field-toolbar .selected-media-name {
+  margin: 0;
+}
 :root[data-theme=default] .media-field-toolbar code {
   flex-grow: 1;
   white-space: nowrap;
@@ -1499,6 +1502,9 @@
 }
 :root[data-theme=darkmode] .media-field-toolbar {
   display: flex;
+}
+[dir]:root[data-theme=darkmode] .media-field-toolbar .selected-media-name {
+  margin: 0;
 }
 :root[data-theme=darkmode] .media-field-toolbar code {
   flex-grow: 1;
