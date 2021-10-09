@@ -85,7 +85,7 @@ namespace OrchardCore.Apis.GraphQL
             {
                 if (string.IsNullOrEmpty(context.Request.ContentType))
                 {
-                    await WriteErrorAsync(context, "Content-Type cannot be empty while processing the GraphQL query");
+                    await WriteErrorAsync(context, "Missing content-type");
                     return;
                 }
 
