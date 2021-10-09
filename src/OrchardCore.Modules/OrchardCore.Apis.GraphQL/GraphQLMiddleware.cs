@@ -130,7 +130,7 @@ namespace OrchardCore.Apis.GraphQL
                     }
                     else
                     {
-                        await WriteErrorAsync(context, "Need the correct Content-Type while processing the GraphQL query");
+                        await WriteErrorAsync(context, "The request needs a valid content-type or a query argument");
                         return;
                     }
                 }
