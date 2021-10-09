@@ -271,6 +271,9 @@
   justify-content: center;
 }
 [dir]:root[data-theme=default] ol.media-items-grid .thumb-container {
+  background: white;
+}
+[dir]:root[data-theme=default] ol.media-items-grid .thumb-container img {
   background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 :root[data-theme=default] .media-items-table {
@@ -1074,6 +1077,9 @@
   justify-content: center;
 }
 [dir]:root[data-theme=darkmode] ol.media-items-grid .thumb-container {
+  background: white;
+}
+[dir]:root[data-theme=darkmode] ol.media-items-grid .thumb-container img {
   background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 :root[data-theme=darkmode] .media-items-table {
