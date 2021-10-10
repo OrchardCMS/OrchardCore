@@ -16,7 +16,7 @@ var optionsList = Vue.component('options-list', {
       this.options.push(value);
     },
     deleteOption: function deleteOption(value) {
-      this.options.splice($.inArray(value[0], this.options), 1);
+      this.options.splice($.inArray(value, this.options), 1);
     }
   }
 });
