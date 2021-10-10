@@ -945,7 +945,7 @@ In following example, `route_todoid` adds `Model.TodoId` to hyperlink.
 Using `helper` invokes the `ComponentTagHelper` of ASP.NET Core to render Razor component
 
 ```liquid
-{% helper "component", type: "OrchardCore.Demo.Components.BlazorComponent, MyAssembly", render_mode: "Static", param_ParamString: "ParamValue1", param_ParamObject: Model.ParamValue2 %}
+{% helper "component", type: "MyAssembly.Components.BlazorComponent, MyAssembly", render_mode: "Static", param_ParamString: "ParamValue1", param_ParamObject: Model.ParamValue2 %}
 ```
 
 
