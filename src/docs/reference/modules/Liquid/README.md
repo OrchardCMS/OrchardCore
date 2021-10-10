@@ -941,6 +941,13 @@ In following example, `route_todoid` adds `Model.TodoId` to hyperlink.
 {% enda %}
 ```
 
+### `component`
+Using `helper` invokes the `ComponentTagHelper` of ASP.NET Core to render Razor component
+
+```liquid
+{% helper "component", type: "OrchardCore.Demo.Components.BlazorComponent, MyAssembly", render_mode: "Static", param_ParamString: "ParamValue1", param_ParamObject: Model.ParamValue2 %}
+```
+
 
 ### `antiforgerytoken`
 
@@ -952,7 +959,7 @@ Example
 {% antiforgerytoken %}
 ```
 
-### `helper` and `block`
+### `helper and block`
 
 Allows custom Razor [TagHelpers](https://docs.microsoft.com/en-us/aspnet/core/mvc/views/tag-helpers/intro?view=aspnetcore-3.0) to be called from liquid.
 
