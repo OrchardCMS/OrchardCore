@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <None Remove="**\*.cshtml" />
+    <None Remove="**\*.razor" />
     <None Update="@(None)" CopyToPublishDirectory="Never" />
     <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
   </ItemGroup>

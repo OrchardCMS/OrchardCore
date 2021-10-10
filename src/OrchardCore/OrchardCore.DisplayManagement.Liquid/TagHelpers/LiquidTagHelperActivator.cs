@@ -113,6 +113,10 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         {
                             value = mp.CreateModelExpression(vd, v.ToStringValue());
                         }
+                        else if (property.PropertyType == typeof(Type))
+                        {
+                            value = Type.GetType(v.ToStringValue(), true, false);
+                        }
                         else
                         {
                             value = v.ToObjectValue();
