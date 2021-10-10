@@ -13,7 +13,15 @@ var optionsList = Vue.component('options-list', {
   },
   methods: {
     addOption: function addOption(value) {
-      this.options.push(value);
+      if (value !== null && value !== '') {
+        var noDuplicates = $.inArray(value.toLowerCase(), this.options.map(function (o) {
+          return o.toLowerCase();
+        })) < 0;
+
+        if (noDuplicates) {
+          this.options.push(value);
+        }
+      }
     },
     deleteOption: function deleteOption(value) {
       this.options.splice($.inArray(value, this.options), 1);
