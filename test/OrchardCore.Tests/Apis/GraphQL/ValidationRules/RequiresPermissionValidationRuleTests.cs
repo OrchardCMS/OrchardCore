@@ -9,11 +9,13 @@ using GraphQL.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
+using GraphQL.NewtonsoftJson;
 
 namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
 {
@@ -38,7 +40,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+
+            var writer = new DocumentWriter();
+            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
+
             Assert.Equal("Fantastic Fox Hates Permissions", result["data"]["test"]["noPermissions"].ToString());
         }
 
@@ -59,7 +64,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+
+            var writer = new DocumentWriter();
+            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
+
             Assert.Equal(expectedFieldValue, result["data"]["test"][fieldName].ToString());
         }
 
@@ -94,17 +102,20 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+
+            var writer = new DocumentWriter();
+            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
+
             Assert.Equal("Fantastic Fox Loves Multiple Permissions", result["data"]["test"]["permissionMultiple"].ToString());
         }
 
         private ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
         {
             var services = new ServiceCollection();
-
             services.AddAuthorization();
             services.AddLogging();
             services.AddOptions();
+            services.AddLocalization();
 
             services.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(x =>
             {
