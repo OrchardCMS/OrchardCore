@@ -61,8 +61,9 @@ The below table lists the different Client side libraries:
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.15.0 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
-| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.4.1 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
+| [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.4.2 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [GraphiQL explorer](https://github.com/onegraph/graphiql-explorer) | Explorer plugin for GraphiQL. | 0.6.3 | [MIT](https://github.com/OneGraph/graphiql-explorer/blob/master/LICENSE) |
+| [GraphQL](https://github.com/graphql/graphql-js) | A reference implementation of GraphQL for JavaScript. | 15.5.1 | [MIT](https://github.com/graphql/graphql-js/blob/main/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp-cli) | Command Line Interface for gulp. | 2.3.0 | [MIT](https://github.com/gulpjs/gulp-cli/blob/master/LICENSE) |
 | [jsPlumb](https://github.com/jsplumb/jsplumb) | Visual connectivity for webapps. | 2.15.6 | [MIT and GPLv2](https://github.com/jsplumb/jsplumb/blob/master/jsPlumb-LICENSE.txt) |

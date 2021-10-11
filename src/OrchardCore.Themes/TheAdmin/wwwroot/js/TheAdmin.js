@@ -8332,7 +8332,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       moved = true;
 
       if (activeGroup && !options.disabled && (isOwner ? canSort || (revert = !rootEl.contains(dragEl)) // Reverting item into the original list
-      : activeGroup.pull && groupPut && (activeGroup.name === group.name || groupPut.indexOf && ~groupPut.indexOf(activeGroup.name) // by Array
+      : activeGroup.pull && groupPut && (activeGroup.name === group.name || // by Name
+      groupPut.indexOf && ~groupPut.indexOf(activeGroup.name) // by Array
       )) && (evt.rootEl === void 0 || evt.rootEl === this.el) // touch fallback
       ) {
         // Smart auto-scrolling
