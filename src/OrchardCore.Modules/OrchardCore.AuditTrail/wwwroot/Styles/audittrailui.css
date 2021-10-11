@@ -4,7 +4,7 @@
 */
 
 :root[data-theme=default] pre, .audittrail-comment {
-  font-family: var(--bs-font-sans-serif);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   white-space: pre-wrap;
   word-break: normal;
 }
@@ -14,7 +14,7 @@
 }
 
 :root[data-theme=darkmode] pre, .audittrail-comment {
-  font-family: var(--bs-font-sans-serif);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   white-space: pre-wrap;
   word-break: normal;
 }
