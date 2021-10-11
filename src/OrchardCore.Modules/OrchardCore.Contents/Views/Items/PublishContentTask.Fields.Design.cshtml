@@ -1,7 +1,7 @@
 @model ContentTaskViewModel<PublishContentTask>
 
 <header>
-    <h4><i class="fa fa-cloud-upload"></i>@Model.Activity.GetTitleOrDefault(() => T["Publish Content"])</h4>
+    <h4><i class="fa fa-cloud-upload" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Publish Content"])</h4>
 </header>
 
 @if (string.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))

@@ -57,11 +57,11 @@ namespace OrchardCore.Sitemaps.Controllers
             var hasErrors = await _sitemapCacheProvider.PurgeAllAsync();
             if (hasErrors)
             {
-                _notifier.Error(H["Sitemap cache purged, with errors."]);
+                await _notifier.ErrorAsync(H["Sitemap cache purged, with errors."]);
             }
             else
             {
-                _notifier.Information(H["Sitemap cache purged."]);
+                await _notifier.InformationAsync(H["Sitemap cache purged."]);
             }
 
             return RedirectToAction(nameof(List));
@@ -78,11 +78,11 @@ namespace OrchardCore.Sitemaps.Controllers
             var failed = await _sitemapCacheProvider.PurgeAsync(cacheFileName);
             if (failed)
             {
-                _notifier.Error(H["Error purging sitemap cache item."]);
+                await _notifier.ErrorAsync(H["Error purging sitemap cache item."]);
             }
             else
             {
-                _notifier.Information(H["Sitemap cache item purged."]);
+                await _notifier.InformationAsync(H["Sitemap cache item purged."]);
             }
 
             return RedirectToAction(nameof(List));

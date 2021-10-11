@@ -98,10 +98,20 @@ namespace OrchardCore.Users.Controllers
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
+                var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
                 // If we get a user, redirect to returnUrl
-                if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
+                if (iUser is User user)
                 {
-                    return RedirectToLocal(returnUrl);
+                    if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
+                    {
+                        return RedirectToAction("ConfirmEmailSent", new { ReturnUrl = returnUrl });
+                    }
+                    if (settings.UsersAreModerated && !user.IsEnabled)
+                    {
+                        return RedirectToAction("RegistrationPending", new { ReturnUrl = returnUrl });
+                    }
+
+                    return RedirectToLocal(Microsoft.AspNetCore.Mvc.ControllerExtensions.EscapeLocationHeader(returnUrl));
                 }
             }
 
@@ -135,6 +145,16 @@ namespace OrchardCore.Users.Controllers
             return NotFound();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ConfirmEmailSent(string returnUrl = null)
+            => View(new { ReturnUrl = returnUrl });
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegistrationPending(string returnUrl = null)
+            => View(new { ReturnUrl = returnUrl });
+
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -150,7 +170,7 @@ namespace OrchardCore.Users.Controllers
             {
                 await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 
-                _notifier.Success(H["Verification email sent."]);
+                await _notifier.SuccessAsync(H["Verification email sent."]);
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");

@@ -27,19 +27,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "stopAtEntry": false,
-      "launchBrowser": {
-        "enabled": true,
-        "args": "${auto-detect-url}",
-        "windows": {
-          "command": "cmd.exe",
-          "args": "/C start http://localhost:5000"
-        },
-        "osx": {
-          "command": "open"
-        },
-        "linux": {
-          "command": "xdg-open"
-        }
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
     },
     {
@@ -54,20 +44,16 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "stopAtEntry": false,
-      "launchBrowser": {
-        "enabled": true,
-        "args": "${auto-detect-url}",
-        "windows": {
-          "command": "cmd.exe",
-          "args": "/C start http://localhost:5000"
-        }
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
     },
     {
       "name": ".NET Core Attach",
       "type": "coreclr",
       "request": "attach",
-      "processId": 0
+      "processId": "${command:pickProcess}"
     },
     {
       "name": ".NET Core Launch (publish framework dependent) - net5.0",
@@ -82,13 +68,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "stopAtEntry": false,
-      "launchBrowser": {
-        "enabled": true,
-        "args": "${auto-detect-url}",
-        "windows": {
-          "command": "cmd.exe",
-          "args": "/C start http://localhost:5000"
-        }
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
     },
     {
@@ -104,13 +86,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "stopAtEntry": false,
-      "launchBrowser": {
-        "enabled": true,
-        "args": "${auto-detect-url}",
-        "windows": {
-          "command": "cmd.exe",
-          "args": "/C start http://localhost:5000"
-        }
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
     },
     {

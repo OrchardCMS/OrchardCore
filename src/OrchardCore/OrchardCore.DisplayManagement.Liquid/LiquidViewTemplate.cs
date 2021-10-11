@@ -22,6 +22,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using TimeZoneConverter;
@@ -54,7 +55,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             try
             {
-                var content = new ViewBufferTextWriterContent();
+                // Defer the buffer disposing so that a template can be rendered twice.
+                var content = new ViewBufferTextWriterContent(releaseOnWrite: false);
+                ShellScope.Current.RegisterBeforeDispose(scope => content.Dispose());
+
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model);
                 await template.FluidTemplate.RenderAsync(content, htmlEncoder, context);
 
@@ -116,6 +120,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     nameof(Shape.Attributes) => shape.Attributes,
                     nameof(Shape.Metadata) => shape.Metadata,
                     nameof(Shape.Items) => shape.Items,
+                    nameof(Shape.Properties) => shape.Properties,
                     _ => null
                 };
 

@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Facebook.Deployment;
 using OrchardCore.Facebook.Login.Configuration;
 using OrchardCore.Facebook.Login.Drivers;
 using OrchardCore.Facebook.Login.Recipes;
@@ -11,6 +13,7 @@ using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook
@@ -33,9 +36,22 @@ namespace OrchardCore.Facebook
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, FacebookLoginConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
 
+                // Deployment
+
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>()
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<DeploymentStep>, FacebookLoginDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, FacebookLoginDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<FacebookLoginDeploymentStep>>();
         }
     }
 }

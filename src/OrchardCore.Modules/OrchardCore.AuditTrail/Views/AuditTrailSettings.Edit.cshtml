@@ -1,0 +1,99 @@
+@model AuditTrailSettingsViewModel
+
+@{ 
+    Title.Clear();
+    RenderTitleSegments(T["Audit Trail Settings"]);
+}
+ 
+<zone name="Title" position="before"><h1 class="float-left pr-2">@T["Audit Trail"]</h1></zone>
+
+<section>
+    <div class="form-group">
+        <label class="" for="Categories">@T["Events to record"]</label>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">@T["Event"]</th>
+                    <th scope="col">@T["Description"]</th>
+                    <th scope="col">@T["Enabled"]</th>
+                </tr>
+            </thead>
+            @{
+                var categoriesIndex = 0;
+                foreach (var category in Model.Categories)
+                {
+                    <input type="hidden" asp-for="Categories[categoriesIndex].Name" />
+                    <tbody class="check-all-container">
+                        <tr class="table-secondary">
+                            <td colspan="2">
+                                <strong>@category.Name</strong>
+                            </td>
+                            <td class="custom-checkbox">
+                                <input type="checkbox" class="custom-control-input check-all-master" id="@category.Name" />
+                                <label class="custom-control-label" for="@category.Name">@T["Select all"]</label>
+                            </td>
+                        </tr>
+                        @{
+                            var eventsIndex = 0;
+                            foreach (var auditTrailEvent in category.Events)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].Name" />
+                                        <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].Category" />
+                                        @auditTrailEvent.LocalizedName
+                                    </td>
+                                    <td>@auditTrailEvent.Description</td>
+                                    <td class="custom-control custom-checkbox check-all-slave">
+
+                                        <input type="checkbox" class="custom-control-input"
+                                               asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled"
+                                               disabled="@Model.Categories[categoriesIndex].Events[eventsIndex].IsMandatory"/>
+
+                                        <label class="custom-control-label" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">@auditTrailEvent.LocalizedName</label>
+                                    </td>
+                                </tr>
+                                eventsIndex++;
+                            }
+                        }
+                    </tbody>
+                    categoriesIndex++;
+                }
+            }
+        </table>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="ClientIpAddressAllowed">
+        <div class="custom-control custom-checkbox">
+            <input asp-for="ClientIpAddressAllowed" class="custom-control-input" type="checkbox" />
+            <label asp-for="ClientIpAddressAllowed" class="custom-control-label">@T["Allow client IP address"]</label>
+            <span class="hint dashed">@T["Whether the client IP address is recorded."]</span>
+        </div>
+    </div>
+</section>
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $('.check-all-container').each(function () {
+            var container = $(this);
+            var master = container.find('input[type="checkbox"].check-all-master');
+            var slaves = container.find('.check-all-slave input[type="checkbox"]:not(:disabled)');
+
+            var updateMaster = function () {
+                var allChecked = slaves.filter(':not(:checked)').length == 0;
+                master.prop('checked', allChecked);
+            }
+
+            master.on('change', function () {
+                var isChecked = $(this).is(':checked');
+                slaves.prop('checked', isChecked);
+            });
+
+            slaves.on('change', function () {
+                updateMaster();
+            });
+
+            updateMaster();
+        });
+    });
+</script>

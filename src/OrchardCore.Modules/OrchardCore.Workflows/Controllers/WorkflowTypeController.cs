@@ -194,7 +194,7 @@ namespace OrchardCore.Workflows.Controllers
                             if (workflowType != null)
                             {
                                 await _workflowTypeStore.DeleteAsync(workflowType);
-                                _notifier.Success(H["Workflow {0} has been deleted.", workflowType.Name]);
+                                await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", workflowType.Name]);
                             }
                         }
                         break;
@@ -283,7 +283,7 @@ namespace OrchardCore.Workflows.Controllers
             return isNew
                 ? RedirectToAction(nameof(Edit), new { workflowType.Id })
                 : Url.IsLocalUrl(viewModel.ReturnUrl)
-                   ? (IActionResult)Redirect(viewModel.ReturnUrl)
+                   ? (IActionResult)this.Redirect(viewModel.ReturnUrl, true)
                    : RedirectToAction(nameof(Index));
         }
 
@@ -461,8 +461,8 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             await _workflowTypeStore.SaveAsync(workflowType);
-            await _session.SaveChangesAsync();
-            _notifier.Success(H["Workflow has been saved."]);
+            await _notifier.SuccessAsync(H["Workflow has been saved."]);
+
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 
@@ -482,7 +482,7 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             await _workflowTypeStore.DeleteAsync(workflowType);
-            _notifier.Success(H["Workflow {0} deleted", workflowType.Name]);
+            await _notifier.SuccessAsync(H["Workflow {0} deleted", workflowType.Name]);
 
             return RedirectToAction(nameof(Index));
         }

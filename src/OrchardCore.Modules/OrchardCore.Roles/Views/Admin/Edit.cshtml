@@ -14,7 +14,7 @@
     </div>
 </form>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="no-multisubmit">
     <h5>@T["Edit Role Detail"]</h5>
     <div class="form-group" asp-validation-class-for="RoleDescription">
         <label asp-for="RoleDescription">@T["Role description"]</label>

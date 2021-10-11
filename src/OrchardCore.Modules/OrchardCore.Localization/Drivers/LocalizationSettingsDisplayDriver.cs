@@ -17,7 +17,7 @@ using OrchardCore.Localization.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Drivers
-{    
+{
     /// <summary>
     /// Represents a <see cref="SectionDisplayDriver{TModel,TSection}"/> for the localization settings section in the admin site.
     /// </summary>
@@ -121,7 +121,7 @@ namespace OrchardCore.Localization.Drivers
                     // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
                     using (CultureScope.Create(section.DefaultCulture))
                     {
-                        _notifier.Warning(H["The site has been restarted for the settings to take effect."]);
+                        await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);
                     }
                 }
             }

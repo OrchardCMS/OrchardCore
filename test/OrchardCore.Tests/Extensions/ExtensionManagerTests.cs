@@ -130,7 +130,7 @@ namespace OrchardCore.Tests.Extensions
         public void GetFeaturesShouldReturnAllFeaturesOrderedByDependency()
         {
             var features = ModuleScopedExtensionManager.GetFeatures()
-                .Where(f => f.Category == "Test" && !f.Extension.IsTheme());
+                .Where(f => f.Category == "Test" && !f.IsTheme());
 
             Assert.Equal(4, features.Count());
             Assert.Equal("Sample1", features.ElementAt(0).Id);

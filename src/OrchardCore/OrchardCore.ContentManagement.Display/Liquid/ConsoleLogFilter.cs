@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Cysharp.Text;
 using Fluid;
+using Fluid.Filters;
 using Fluid.Values;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
@@ -19,13 +20,13 @@ namespace OrchardCore.ContentManagement.Display.Liquid
             _hostEnvironment = hostEnvironment;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
         {
             var content = input.ToObjectValue();
 
             if (content == null || _hostEnvironment.IsProduction())
             {
-                return new ValueTask<FluidValue>(NilValue.Instance);
+                return NilValue.Instance;
             }
 
             using var sb = ZString.CreateStringBuilder();
@@ -51,14 +52,14 @@ namespace OrchardCore.ContentManagement.Display.Liquid
             }
             else
             {
-                sb.Append(JsonConvert.SerializeObject(content));
+                sb.Append((await MiscFilters.Json(input, arguments, context)).ToStringValue());
             }
 
             sb.Append(")</script>");
 
             var result = new StringValue(sb.ToString(), false);
 
-            return new ValueTask<FluidValue>(result);
+            return result;
         }
     }
 }

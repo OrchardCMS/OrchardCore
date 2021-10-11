@@ -34,6 +34,7 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `ContentQueryAsync(string queryName, IDictionary<string, object> parameters)` | [OrchardCore.Queries](../../modules/Queries/README.md#razor-helpers) | Returns a List of Content items |
 | `QueryAsync(string liquid, object model)` | [OrchardCore.Queries](../../modules/Queries/README.md#razor-helpers) | Returns a List of objects |
 | `QueryAsync(string queryName, IDictionary<string, object> parameters)` | [OrchardCore.Queries](../../modules/Queries/README.md#razor-helpers) | Returns a List of objects |
+| `ShortcodesToHtmlAsync(string html, object model = null)` | [OrchardCore.Shortcodes](../../modules/Shortcodes/README.md#rendering-shortcodes) | Renders shortcodes. |
 | `GetTaxonomyTermAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../modules/Taxonomies/README.md#orchard-helpers) | Returns a the term from its content item id and taxonomy. |
 | `GetInheritedTermsAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../modules/Taxonomies/README.md#orchard-helpers) | Returns the list of terms including their parents. |
 | `QueryCategorizedContentItemsAsync(string taxonomy(Func<IQuery<ContentItem, TaxonomyIndex>, IQuery<ContentItem>> query)` | [OrchardCore.Taxonomies](../../modules/Taxonomies/README.md#orchard-helpers) | Query content items. |

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -13,7 +12,7 @@ using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Settings
 {
-    public class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class ListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<ListPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
@@ -31,11 +30,6 @@ namespace OrchardCore.Lists.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", model =>
             {
                 model.ListPartSettings = contentTypePartDefinition.GetSettings<ListPartSettings>();
@@ -53,10 +47,6 @@ namespace OrchardCore.Lists.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(ListPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
             var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
 
             var model = new ListPartSettingsViewModel();

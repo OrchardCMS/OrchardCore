@@ -12,7 +12,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["New {0}", Html.Raw(typeDisplayName)])</h1></zone>
 
-<form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+<form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()
     @await DisplayAsync(Model)
 </form>

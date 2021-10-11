@@ -23,6 +23,7 @@ namespace OrchardCore.Users.Services
         IUserEmailStore<IUser>,
         IUserSecurityStampStore<IUser>,
         IUserLoginStore<IUser>,
+        IUserLockoutStore<IUser>,
         IUserAuthenticationTokenStore<IUser>
     {
         private const string TokenProtector = "OrchardCore.UserStore.Token";
@@ -99,11 +100,17 @@ namespace OrchardCore.Users.Services
 
                 newUser.UserId = newUserId;
 
+                var context = new UserCreateContext(user);
+
+                await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
+
+                if (context.Cancel)
+                {
+                    return IdentityResult.Failed();
+                }
+
                 _session.Save(user);
-
                 await _session.SaveChangesAsync();
-
-                var context = new UserContext(user);
                 await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             catch (Exception e)
@@ -123,17 +130,24 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _session.Delete(user);
-
             try
             {
-                await _session.SaveChangesAsync();
+                var context = new UserDeleteContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), context, _logger);
 
-                var context = new UserContext(user);
+                if (context.Cancel)
+                {
+                    return IdentityResult.Failed();
+                }
+
+                _session.Delete(user);
+                await _session.SaveChangesAsync();
                 await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
             }
-            catch
+            catch (Exception e)
             {
+                _logger.LogError(e, "Unexpected error while deleting a user.");
+
                 return IdentityResult.Failed();
             }
 
@@ -211,10 +225,26 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _session.Save(user);
+            try
+            {
+                var context = new UserUpdateContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
 
-            var context = new UserContext(user);
-            await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+                if (context.Cancel)
+                {
+                    return IdentityResult.Failed();
+                }
+                
+                _session.Save(user);
+                await _session.SaveChangesAsync();
+                await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unexpected error while updating a user.");
+
+                return IdentityResult.Failed();
+            }
 
             return IdentityResult.Success;
         }
@@ -664,5 +694,101 @@ namespace OrchardCore.Users.Services
                                                                 ut.Name == name);
         }
         #endregion
+
+        #region IUserLockoutStore<IUser>
+
+        public Task<int> GetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).AccessFailedCount);
+        }
+
+        public Task<bool> GetLockoutEnabledAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).IsLockoutEnabled);
+        }
+
+        public Task<DateTimeOffset?> GetLockoutEndDateAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (((User)user).LockoutEndUtc.HasValue)
+            {
+                return Task.FromResult<DateTimeOffset?>(((User)user).LockoutEndUtc.Value.ToUniversalTime());
+            }
+            else
+            {
+                return Task.FromResult<DateTimeOffset?>(null);
+            }
+        }
+
+        public Task<int> IncrementAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).AccessFailedCount++;
+
+            return Task.FromResult(((User)user).AccessFailedCount);
+        }
+
+        public Task ResetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).AccessFailedCount = 0;
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetLockoutEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            ((User)user).IsLockoutEnabled = enabled;
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetLockoutEndDateAsync(IUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (lockoutEnd.HasValue)
+            {
+                ((User)user).LockoutEndUtc = lockoutEnd.Value.UtcDateTime;
+            }
+            else
+            {
+                ((User)user).LockoutEndUtc = null;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        #endregion IUserLockoutStore<IUser>
     }
 }

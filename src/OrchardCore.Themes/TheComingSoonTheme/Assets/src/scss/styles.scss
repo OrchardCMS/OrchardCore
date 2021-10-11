@@ -1,0 +1,16 @@
+// 
+// Styles
+// 
+
+// Import variables from src/scss/variables
+@import "./variables";
+
+// Import Bootstrap
+@import "bootstrap/scss/bootstrap.scss";
+
+// Load global styling
+@import "./global";
+
+// Load section styling
+@import "./sections/masthead";
+@import "./sections/social";

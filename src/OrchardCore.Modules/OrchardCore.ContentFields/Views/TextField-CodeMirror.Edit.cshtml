@@ -37,6 +37,11 @@
                 styleActiveLine: true,
                 mode: { name: "htmlmixed" }
             });
+
+            editor.on('change', function(cmEditor){
+                cmEditor.save();
+                $(document).trigger('contentpreview:render');
+            });
         }
     });
 </script>

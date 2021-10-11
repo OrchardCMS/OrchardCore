@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -21,6 +24,10 @@ namespace OrchardCore.OpenId.Drivers
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
+        private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
 
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -28,6 +35,7 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IOpenIdClientService _clientService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly IStringLocalizer S;
 
         public OpenIdClientSettingsDisplayDriver(
             IAuthorizationService authorizationService,
@@ -35,7 +43,8 @@ namespace OrchardCore.OpenId.Drivers
             IOpenIdClientService clientService,
             IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -43,6 +52,7 @@ namespace OrchardCore.OpenId.Drivers
             _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            S = stringLocalizer;
         }
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
@@ -90,6 +100,8 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     model.UseIdTokenTokenFlow = true;
                 }
+
+                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, JsonSerializerSettings);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -151,6 +163,17 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     settings.ResponseType = OpenIdConnectResponseType.None;
                     useClientSecret = false;
+                }
+
+                try
+                {
+                    settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
+                        ? Array.Empty<ParameterSetting>()
+                        : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
+                }
+                catch
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, S["The parameters are written in an incorrect format."]);
                 }
 
                 if (!useClientSecret)

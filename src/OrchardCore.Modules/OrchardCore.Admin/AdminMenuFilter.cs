@@ -41,7 +41,7 @@ namespace OrchardCore.Admin
             }
 
             // Should only run for authenticated users
-            if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+            if (!(filterContext.HttpContext.User?.Identity?.IsAuthenticated ?? false))
             {
                 await next();
                 return;

@@ -83,7 +83,7 @@ namespace OrchardCore.Flows.Controllers
                 CanDelete: true,
                 //Input hidden
                 //Prefixes
-                HtmlFieldPrefix: prefix,
+                PrefixValue: prefix,
                 PrefixesId: prefixesName.Replace('.', '_'),
                 PrefixesName: prefixesName,
                 //ContentTypes
