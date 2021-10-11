@@ -19,6 +19,7 @@
     <PackageManagement Include="Fluid.Core" Version="2.0.13" />
     <PackageManagement Include="GraphQL" Version="4.6.1" />
     <PackageManagement Include="GraphQL.DataLoader" Version="4.6.1" />
+    <PackageManagement Include="GraphQL.MicrosoftDI" Version="4.6.1" />
     <PackageManagement Include="GraphQL.NewtonsoftJson" Version="4.6.1" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2034" />
     <PackageManagement Include="HtmlSanitizer" Version="6.0.441" />
