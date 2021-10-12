@@ -61,7 +61,7 @@ namespace OrchardCore.Widgets.Controllers
                 CanDelete: true,
                 //Input hidden
                 //Prefixes
-                HtmlFieldPrefix: prefix,
+                PrefixValue: prefix,
                 PrefixesId: prefixesName.Replace('.', '_'),
                 PrefixesName: prefixesName,
                 //ContentTypes

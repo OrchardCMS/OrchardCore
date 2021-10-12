@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -86,13 +87,14 @@ namespace OrchardCore.Demo.Controllers
 
                 if (Url.IsLocalUrl(returnUrl))
                 {
-                    return Redirect(returnUrl);
+                    return this.Redirect(returnUrl, true);
                 }
 
                 return RedirectToAction(nameof(Index), "Todo");
             }
 
-            return View(viewModel);
+            viewModel.DisplayMode = "Edit";
+            return View(nameof(Edit), viewModel);
         }
 
         public async Task<IActionResult> Delete(string todoId)

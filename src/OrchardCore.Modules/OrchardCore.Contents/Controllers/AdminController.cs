@@ -461,7 +461,7 @@ namespace OrchardCore.Contents.Controllers
 
             if ((!string.IsNullOrEmpty(returnUrl)) && (!stayOnSamePage))
             {
-                return LocalRedirect(returnUrl);
+                return this.LocalRedirect(returnUrl, true);
             }
 
             var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
@@ -592,7 +592,7 @@ namespace OrchardCore.Contents.Controllers
             }
             else
             {
-                return LocalRedirect(returnUrl);
+                return this.LocalRedirect(returnUrl, true);
             }
         }
 
@@ -618,12 +618,12 @@ namespace OrchardCore.Contents.Controllers
             catch (InvalidOperationException)
             {
                 await _notifier.WarningAsync(H["Could not clone the content item."]);
-                return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+                return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
             }
 
             await _notifier.InformationAsync(H["Successfully cloned. The clone was saved as a draft."]);
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -652,7 +652,7 @@ namespace OrchardCore.Contents.Controllers
                     : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -676,7 +676,7 @@ namespace OrchardCore.Contents.Controllers
                     : H["That {0} has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -706,7 +706,7 @@ namespace OrchardCore.Contents.Controllers
                 await _notifier.SuccessAsync(H["That {0} has been published.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -736,7 +736,7 @@ namespace OrchardCore.Contents.Controllers
                 await _notifier.SuccessAsync(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
     }
 }

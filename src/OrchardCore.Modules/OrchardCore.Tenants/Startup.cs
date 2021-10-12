@@ -30,7 +30,7 @@ namespace OrchardCore.Tenants
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<INavigationProvider, AdminMenu>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSetup();
         }
@@ -129,6 +129,58 @@ namespace OrchardCore.Tenants
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<DistributedShellMarkerService>();
+        }
+    }
+
+    [Feature("OrchardCore.Tenants.FeatureProfiles")]
+    public class FeatureProfilesStartup : StartupBase
+    {
+        private readonly AdminOptions _adminOptions;
+
+        public FeatureProfilesStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<INavigationProvider, FeatureProfilesAdminMenu>();
+            services.AddScoped<FeatureProfilesManager>();
+            services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
+            services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var featureProfilesControllerName = typeof(FeatureProfilesController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "TenantFeatureProfilesIndex",
+                areaName: "OrchardCore.Tenants",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles",
+                defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "TenantFeatureProfilesCreate",
+                areaName: "OrchardCore.Tenants",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Create",
+                defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Create) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "TenantFeatureProfilesEdit",
+                areaName: "OrchardCore.Tenants",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Edit/{name}",
+                defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Edit) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "TenantFeatureProfilesDelete",
+                areaName: "OrchardCore.Tenants",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Delete/{name}",
+                defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Delete) }
+            );
         }
     }
 }

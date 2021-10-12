@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.Notify
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Notification '{NotificationType}' with message '{NotificationMessage}'", type, message);
+                _logger.LogInformation("Notification '{NotificationType}' with message '{NotificationMessage}'", type, message.Value);
             }
 
             _entries.Add(new NotifyEntry { Type = type, Message = message });

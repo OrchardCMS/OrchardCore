@@ -697,9 +697,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           } // Take advantage of querySelectorAll
 
 
-          if (support.qsa && !nonnativeSelectorCache[selector + " "] && (!rbuggyQSA || !rbuggyQSA.test(selector)) && ( // Support: IE 8 only
-          // Exclude object elements
-          nodeType !== 1 || context.nodeName.toLowerCase() !== "object")) {
+          if (support.qsa && !nonnativeSelectorCache[selector + " "] && (!rbuggyQSA || !rbuggyQSA.test(selector)) && (nodeType !== 1 || context.nodeName.toLowerCase() !== "object")) {
             newSelector = selector;
             newContext = context; // qSA considers elements outside a scoping root when evaluating child or
             // descendant combinators, which is not what we want.
@@ -1597,9 +1595,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
           if (match[3]) {
             match[2] = match[4] || match[5] || ""; // Strip excess characters from unquoted arguments
-          } else if (unquoted && rpseudo.test(unquoted) && ( // Get excess from tokenize (recursively)
-          excess = tokenize(unquoted, true)) && ( // advance to the next closing parenthesis
-          excess = unquoted.indexOf(")", unquoted.length - excess) - unquoted.length)) {
+          } else if (unquoted && rpseudo.test(unquoted) && (excess = tokenize(unquoted, true)) && (excess = unquoted.indexOf(")", unquoted.length - excess) - unquoted.length)) {
             // excess is a negative index
             match[0] = match[0].slice(0, excess);
             match[2] = unquoted.slice(0, excess);
@@ -1697,8 +1693,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                 diff = nodeIndex && cache[2];
                 node = nodeIndex && parent.childNodes[nodeIndex];
 
-                while (node = ++nodeIndex && node && node[dir] || ( // Fallback to seeking `elem` from the start
-                diff = nodeIndex = 0) || start.pop()) {
+                while (node = ++nodeIndex && node && node[dir] || (diff = nodeIndex = 0) || start.pop()) {
                   // When found, cache indexes on `parent` and break
                   if (node.nodeType === 1 && ++diff && node === elem) {
                     uniqueCache[type] = [dirruns, nodeIndex, diff];
@@ -1907,9 +1902,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         },
         "text": function text(elem) {
           var attr;
-          return elem.nodeName.toLowerCase() === "input" && elem.type === "text" && ( // Support: IE<8
-          // New HTML5 attribute values (e.g., "search") appear with elem.type === "text"
-          (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text");
+          return elem.nodeName.toLowerCase() === "input" && elem.type === "text" && ((attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text");
         },
         // Position-in-collection
         "first": createPositionalPseudo(function () {
@@ -3199,9 +3192,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return _promise.then(null, fn);
         },
         // Keep pipe for back-compat
-        pipe: function pipe()
-        /* fnDone, fnFail, fnProgress */
-        {
+        pipe: function pipe() {
           var fns = arguments;
           return jQuery.Deferred(function (newDefer) {
             jQuery.each(tuples, function (_i, tuple) {
@@ -3250,10 +3241,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                 // Retrieve `then` only once
 
 
-                then = returned && ( // Support: Promises/A+ section 2.3.4
-                // https://promisesaplus.com/#point-64
-                // Only check objects and functions for thenability
-                _typeof(returned) === "object" || typeof returned === "function") && returned.then; // Handle a returned thenable
+                then = returned && (_typeof(returned) === "object" || typeof returned === "function") && returned.then; // Handle a returned thenable
 
                 if (isFunction(then)) {
                   // Special processors (notify) just wait for resolution
@@ -6059,13 +6047,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         if (computed) {
           // Certain elements can have dimension info if we invisibly show them
           // but it must have a current display style that would benefit
-          return rdisplayswap.test(jQuery.css(elem, "display")) && ( // Support: Safari 8+
-          // Table columns in Safari have non-zero offsetWidth & zero
-          // getBoundingClientRect().width unless display is changed.
-          // Support: IE <=11 only
-          // Running getBoundingClientRect on a disconnected node
-          // in IE throws an error.
-          !elem.getClientRects().length || !elem.getBoundingClientRect().width) ? swap(elem, cssShow, function () {
+          return rdisplayswap.test(jQuery.css(elem, "display")) && (!elem.getClientRects().length || !elem.getBoundingClientRect().width) ? swap(elem, cssShow, function () {
             return getWidthOrHeight(elem, dimension, extra);
           }) : getWidthOrHeight(elem, dimension, extra);
         }

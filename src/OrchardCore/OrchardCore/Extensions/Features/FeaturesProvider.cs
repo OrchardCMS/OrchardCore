@@ -67,15 +67,15 @@ namespace OrchardCore.Environment.Extensions.Features
                     }
 
                     var featureInfo = new FeatureInfo(
-                        featureId,
-                        featureName,
-                        featurePriority,
-                        featureCategory,
-                        featureDescription,
-                        extensionInfo,
-                        featureDependencyIds,
-                        featureDefaultTenantOnly,
-                        featureIsAlwaysEnabled);
+                        context.FeatureId,
+                        context.FeatureName,
+                        context.Priority,
+                        context.Category,
+                        context.Description,
+                        context.ExtensionInfo,
+                        context.FeatureDependencyIds,
+                        context.DefaultTenantOnly,
+                        context.IsAlwaysEnabled);
 
                     foreach (var builder in _featureBuilderEvents)
                     {
