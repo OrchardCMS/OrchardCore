@@ -30,6 +30,11 @@ namespace OrchardCore.Search.Elastic
         private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+        private readonly string[] IgnoredFields = {
+            "Analyzed",
+            "Sanitize",
+            "Normalized"
+        };
 
         public ElasticIndexManager(
             IClock clock,
@@ -149,13 +154,11 @@ namespace OrchardCore.Search.Elastic
             entries.Add("ContentItemId", documentIndex.ContentItemId);
             entries.Add("Id", documentIndex.ContentItemId);
 
-          
-
             foreach (var entry in documentIndex.Entries)
             {
                 if (entries.ContainsKey(entry.Name)
                     || entry.Name.Contains(IndexingConstants.FullTextKey)
-                    || Array.Exists(IndexingConstants.IgnoredFields, x => entry.Name.Contains(x)))
+                    || Array.Exists(IgnoredFields, x => entry.Name.Contains(x)))
                 {
                         continue;
                 }
