@@ -33,7 +33,8 @@ namespace OrchardCore.Search.Elastic
         private readonly string[] IgnoredFields = {
             "Analyzed",
             "Sanitize",
-            "Normalized"
+            "Normalized",
+            "Inherited"
         };
 
         public ElasticIndexManager(
