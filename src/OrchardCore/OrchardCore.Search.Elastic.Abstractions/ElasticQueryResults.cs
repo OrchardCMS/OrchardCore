@@ -1,6 +1,7 @@
+using OrchardCore.Queries;
 using System.Collections.Generic;
 
-namespace OrchardCore.Queries
+namespace OrchardCore.Search.Elastic
 {
     public class ElasticQueryResults : IQueryResults
     {
