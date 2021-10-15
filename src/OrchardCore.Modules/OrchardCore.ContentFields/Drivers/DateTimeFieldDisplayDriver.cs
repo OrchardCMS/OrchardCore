@@ -44,7 +44,15 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditDateTimeFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+                if (context.IsNew)
+                {
+                    var settings = context.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
+                    model.LocalDateTime = settings.Currently ? DateTime.Now : settings.DefaultValue;
+                }
+                else
+                {
+                    model.LocalDateTime = field.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(field.Value.Value)).DateTime;
+                }
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

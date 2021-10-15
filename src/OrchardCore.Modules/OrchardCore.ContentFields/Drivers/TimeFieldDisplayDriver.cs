@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -37,7 +38,9 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditTimeFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                model.Value = field.Value;
+                var settings = context.PartFieldDefinition.GetSettings<TimeFieldSettings>();
+                model.Value = (context.IsNew == false) ?
+                    field.Value : settings.Currently ? DateTime.Now.TimeOfDay : settings.DefaultValue;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
