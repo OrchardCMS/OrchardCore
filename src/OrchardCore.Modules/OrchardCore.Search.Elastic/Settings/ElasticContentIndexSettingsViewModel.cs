@@ -1,9 +1,9 @@
-using OrchardCore.Indexing;
+using OrchardCore.Search.Elastic.Model;
 
 namespace OrchardCore.Search.Elastic.Settings
 {
     public class ElasticContentIndexSettingsViewModel
     {
-        public ContentIndexSettings ContentIndexSettings { get; set; }
+        public ElasticContentIndexSettings ElasticContentIndexSettings { get; set; }
     }
 }

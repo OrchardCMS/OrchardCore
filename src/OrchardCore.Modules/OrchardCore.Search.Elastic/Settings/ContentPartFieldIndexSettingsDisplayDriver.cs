@@ -6,6 +6,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Indexing;
+using OrchardCore.Search.Elastic.Model;
 
 namespace OrchardCore.Search.Elastic.Settings
 {
@@ -29,7 +30,7 @@ namespace OrchardCore.Search.Elastic.Settings
 
             return Initialize<ElasticContentIndexSettingsViewModel>("ElasticContentIndexSettings_Edit", model =>
             {
-                model.ContentIndexSettings = contentPartFieldDefinition.GetSettings<ContentIndexSettings>();
+                model.ElasticContentIndexSettings = contentPartFieldDefinition.GetSettings<ElasticContentIndexSettings>();
             }).Location("Content:10");
         }
 
@@ -44,7 +45,7 @@ namespace OrchardCore.Search.Elastic.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.WithSettings(model.ContentIndexSettings);
+            context.Builder.WithSettings(model.ElasticContentIndexSettings);
 
             return await EditAsync(contentPartFieldDefinition, context.Updater);
         }

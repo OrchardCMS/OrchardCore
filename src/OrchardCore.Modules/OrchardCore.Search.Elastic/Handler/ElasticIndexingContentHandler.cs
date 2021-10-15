@@ -12,6 +12,7 @@ using OrchardCore.ContentPreview;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Search.Elastic.Model;
 
 namespace OrchardCore.Search.Elastic.Handlers
 {
@@ -106,7 +107,7 @@ namespace OrchardCore.Search.Elastic.Handlers
                         }
                         else
                         {
-                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId), contentItem, new string[] { contentItem.ContentType });
+                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId), contentItem, new string[] { contentItem.ContentType }, new ElasticContentIndexSettings());
                             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
                             await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });

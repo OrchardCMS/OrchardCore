@@ -1,0 +1,25 @@
+@model OrchardCore.Lucene.Settings.LuceneContentIndexSettingsViewModel
+<h4>Lucene</h4>
+
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="LuceneContentIndexSettings.Included" data-toggle="collapse" data-target="#lucene-index-settings" checked="@Model.LuceneContentIndexSettings.Included" />
+        <label class="custom-control-label" asp-for="LuceneContentIndexSettings.Included">@T["Include this element in the index"]</label>
+        <span class="hint dashed">@T["Check to include the value of this element in the index."]</span>
+    </div>
+    <div id="lucene-index-settings" class="collapse">
+
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="LuceneContentIndexSettings.Stored" checked="@Model.LuceneContentIndexSettings.Stored" />
+            <label class="custom-control-label" asp-for="LuceneContentIndexSettings.Stored">@T["Stored"]</label>
+            <span class="hint dashed">@T["Check to be able to retrieve the value from the index."]</span>
+        </div>
+
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="LuceneContentIndexSettings.Analyzed" checked="@Model.LuceneContentIndexSettings.Analyzed" />
+            <label class="custom-control-label" asp-for="LuceneContentIndexSettings.Analyzed">@T["Analyzed"]</label>
+            <span class="hint dashed">@T["Check to analyze the value as readable text."]</span>
+        </div>
+    </div>
+</div>
+
