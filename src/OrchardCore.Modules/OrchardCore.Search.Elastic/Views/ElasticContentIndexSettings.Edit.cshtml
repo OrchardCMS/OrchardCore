@@ -4,23 +4,9 @@
 
 <div class="form-group">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="ElasticContentIndexSettings.Included" data-toggle="collapse" data-target="#elastic-search-index-settings" checked="@Model.ElasticContentIndexSettings.Included" />
+        <input type="checkbox" class="custom-control-input" asp-for="ElasticContentIndexSettings.Included" checked="@Model.ElasticContentIndexSettings.Included" />
         <label class="custom-control-label" asp-for="ElasticContentIndexSettings.Included">@T["Include this element in the index"]</label>
         <span class="hint dashed">@T["Check to include the value of this element in the index."]</span>
-    </div>
-    <div id="elastic-search-index-settings" class="collapse">
-
-@*         <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" asp-for="ElasticContentIndexSettings.Stored" checked="@Model.ElasticContentIndexSettings.Stored" />
-            <label class="custom-control-label" asp-for="ElasticContentIndexSettings.Stored">@T["Stored"]</label>
-            <span class="hint dashed">@T["Check to be able to retrieve the value from the index."]</span>
-        </div>
-
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" asp-for="ElasticContentIndexSettings.Analyzed" checked="@Model.ElasticContentIndexSettings.Analyzed" />
-            <label class="custom-control-label" asp-for="ElasticContentIndexSettings.Analyzed">@T["Analyzed"]</label>
-            <span class="hint dashed">@T["Check to analyze the value as readable text."]</span>
-        </div> *@
     </div>
 </div>
 
