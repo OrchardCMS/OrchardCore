@@ -30,6 +30,7 @@ using OrchardCore.Search.Elastic.Model;
 using OrchardCore.Search.Elastic.Configurations;
 using Nest;
 using OrchardCore.Elastic.Search;
+using Microsoft.Extensions.Configuration;
 
 namespace OrchardCore.Search.Elastic
 {
@@ -38,60 +39,74 @@ namespace OrchardCore.Search.Elastic
     /// </summary>
     public class Startup : StartupBase
     {
+        private const string ConfigSectionName = "OrchardCore_Elastic";
         private readonly AdminOptions _adminOptions;
-        private readonly IShellConfiguration _configuration;
+        private readonly IShellConfiguration _shellConfiguration;
         private readonly ILogger<Startup> _logger;
 
         public Startup(IOptions<AdminOptions> adminOptions,
-            IShellConfiguration configuration,
+            IShellConfiguration shellConfiguration,
             ILogger<Startup> logger)
         {
             _adminOptions = adminOptions.Value;
-            _configuration = configuration;
+            _shellConfiguration = shellConfiguration;
             _logger = logger;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var url = _configuration[$"OrchardCore_Elastic:{nameof(ElasticConnectionOptions.Url)}"];
-            if (CheckOptions(url, _logger))
+            var configuration = _shellConfiguration.GetSection(ConfigSectionName);
+            services.Configure<ElasticConnectionOptions>(configuration);
+            var url = _shellConfiguration[ConfigSectionName + $":{nameof(ElasticConnectionOptions.Url)}"];
+
+            if (configuration.Exists() && CheckOptions(url, _logger))
             {
+                services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
+
+                services.AddSingleton<ElasticIndexSettingsService>();
+                services.AddScoped<INavigationProvider, AdminMenu>();
+                services.AddScoped<IPermissionProvider, Permissions>();
+
                 var settings = new ConnectionSettings(new Uri(url));
                 var client = new ElasticClient(settings);
                 services.AddSingleton<IElasticClient>(client);
+                services.AddSingleton<ElasticIndexingState>();
+                
+                services.AddSingleton<ElasticIndexManager>();
+                services.AddSingleton<ElasticAnalyzerManager>();
+                services.AddScoped<ElasticIndexingService>();
+                services.AddScoped<ISearchQueryService, SearchQueryService>();
+
+                services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
+                services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
+
+                services.Configure<ElasticOptions>(o =>
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
+
+                services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
+                services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
+
+                services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
+                services.AddElasticQueries();
+
+                // LuceneQuerySource is registered for both the Queries module and local usage
+                services.AddScoped<IQuerySource, ElasticQuerySource>();
+                services.AddScoped<ElasticQuerySource>();
+                services.AddRecipeExecutionStep<ElasticIndexStep>();
+
+                services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
+                services.AddShapeAttributes<SearchShapes>();
             }
-            services.AddSingleton<ElasticIndexingState>();
-            services.AddSingleton<ElasticIndexSettingsService>();
-            services.AddSingleton<ElasticIndexManager>();
-            services.AddSingleton<ElasticAnalyzerManager>();
-            services.AddScoped<ElasticIndexingService>();
-            services.AddScoped<ISearchQueryService, SearchQueryService>();
-
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-
-            services.Configure<ElasticOptions>(o =>
-                o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
-
-            services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
-            services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-
-            services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
-            services.AddElasticQueries();
-
-            // LuceneQuerySource is registered for both the Queries module and local usage
-            services.AddScoped<IQuerySource, ElasticQuerySource>();
-            services.AddScoped<ElasticQuerySource>();
-            services.AddRecipeExecutionStep<ElasticIndexStep>();
-
-            services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
-            services.AddShapeAttributes<SearchShapes>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var options = serviceProvider.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
+            if (!options.ConfigurationExists)
+            {
+                return;
+            }
+
             routes.MapAreaControllerRoute(
                 name: "Elastic.Search",
                 areaName: "OrchardCore.Search.Elastic",
@@ -165,8 +180,6 @@ namespace OrchardCore.Search.Elastic
             services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticSettingsDeploymentStepDriver>();
         }
     }
-
-    
 
     [Feature("OrchardCore.Search.Elastic.ContentPicker")]
     public class ElasticContentPickerStartup : StartupBase
