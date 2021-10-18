@@ -5,7 +5,6 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Indexing;
 using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene.Settings
