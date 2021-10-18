@@ -6,6 +6,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Indexing;
+using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene.Settings
 {
@@ -27,9 +28,9 @@ namespace OrchardCore.Lucene.Settings
                 return null;
             }
 
-            return Initialize<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
+            return Initialize<LuceneContentIndexSettingsViewModel>("LuceneContentIndexSettings_Edit", model =>
             {
-                model.ContentIndexSettings = contentPartFieldDefinition.GetSettings<ContentIndexSettings>();
+                model.LuceneContentIndexSettings = contentPartFieldDefinition.GetSettings<LuceneContentIndexSettings>();
             }).Location("Content:10");
         }
 
@@ -40,11 +41,11 @@ namespace OrchardCore.Lucene.Settings
                 return null;
             }
 
-            var model = new ContentIndexSettingsViewModel();
+            var model = new LuceneContentIndexSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.WithSettings(model.ContentIndexSettings);
+            context.Builder.WithSettings(model.LuceneContentIndexSettings);
 
             return await EditAsync(contentPartFieldDefinition, context.Updater);
         }
