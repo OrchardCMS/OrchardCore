@@ -51,7 +51,7 @@
                 },
                 "GraphQLContentTypePartSettings": {},
                 "HtmlBodyPartSettings": {},
-                "ContentIndexSettings": {}
+                "LuceneContentIndexSettings": {}
               }
             },
             {

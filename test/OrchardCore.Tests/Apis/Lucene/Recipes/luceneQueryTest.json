@@ -54,7 +54,7 @@
                   "Position": "1",
                   "Editor": "Wysiwyg"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": true,
                   "Stored": true,
                   "Analyzed": true

@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentPreview;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Lucene.Handlers
@@ -106,7 +107,7 @@ namespace OrchardCore.Lucene.Handlers
                         }
                         else
                         {
-                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId), contentItem, new string[] { contentItem.ContentType });
+                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
                             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
                             await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });

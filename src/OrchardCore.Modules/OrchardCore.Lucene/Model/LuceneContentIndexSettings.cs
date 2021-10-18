@@ -1,9 +1,11 @@
-﻿namespace OrchardCore.Indexing
+using OrchardCore.Indexing;
+
+namespace OrchardCore.Lucene.Model
 {
     /// <summary>
     /// Represents the indexing settings for a content part or a field.
     /// </summary>
-    public class ContentIndexSettings
+    public class LuceneContentIndexSettings : IContentIndexSettings
     {
         public bool Included { get; set; }
         public bool Stored { get; set; }

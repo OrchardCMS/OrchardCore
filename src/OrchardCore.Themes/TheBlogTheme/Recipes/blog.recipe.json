@@ -241,7 +241,7 @@
                 "ContentTypePartSettings": {
                   "Position": "1"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
                   "Analyzed": false,
@@ -569,7 +569,7 @@
                   "DisplayName": "Banner Image",
                   "Position": "0"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
                   "Analyzed": false,
@@ -607,7 +607,7 @@
                   "DisplayName": "Banner Image",
                   "Position": "1"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
                   "Analyzed": false,
@@ -631,7 +631,7 @@
                   "DisplayMode": "Tags",
                   "Position": "2"
                 },
-                "ContentIndexSettings": {},
+                "LuceneContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
                   "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 },
@@ -646,7 +646,7 @@
                   "DisplayName": "Category",
                   "Position": "3"
                 },
-                "ContentIndexSettings": {},
+                "LuceneContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
                   "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]",
                   "Unique": true,
@@ -788,7 +788,7 @@
                 "TextFieldSettings": {
                   "Required": true
                 },
-                "ContentIndexSettings": {}
+                "LuceneContentIndexSettings": {}
               }
             }
           ]
