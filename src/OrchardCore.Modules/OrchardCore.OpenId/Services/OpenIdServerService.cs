@@ -18,16 +18,17 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
+using static System.Environment;
 
 namespace OrchardCore.OpenId.Services
 {
     public class OpenIdServerService : IOpenIdServerService
     {
         private string[] _linuxThumbprintsOfAvailableCertificates = new string[0];
-        private string linuxPublicCertificatesFolder = System.Environment.GetEnvironmentVariable("WEBSITE_PUBLIC_CERTS_PATH") ?? "/var/ssl/certs/";
-        private string linuxMyPrivateCertificatesFolder = System.Environment.GetEnvironmentVariable("WEBSITE_PRIVATE_CERTS_PATH") ?? "/var/ssl/private/";
-        private string linuxRootCertificatesFolder = System.Environment.GetEnvironmentVariable("WEBSITE_ROOT_CERTS_PATH") ?? "/var/ssl/root/";
-        private string linuxCertificateAuthorityCertificatesFolder = System.Environment.GetEnvironmentVariable("WEBSITE_INTERMEDIATE_CERTS_PATH") ?? "/var/ssl/intermediate/";
+        private string linuxPublicCertificatesFolder = GetEnvironmentVariable("WEBSITE_PUBLIC_CERTS_PATH") ?? "/var/ssl/certs/";
+        private string linuxMyPrivateCertificatesFolder = GetEnvironmentVariable("WEBSITE_PRIVATE_CERTS_PATH") ?? "/var/ssl/private/";
+        private string linuxRootCertificatesFolder = GetEnvironmentVariable("WEBSITE_ROOT_CERTS_PATH") ?? "/var/ssl/root/";
+        private string linuxCertificateAuthorityCertificatesFolder = GetEnvironmentVariable("WEBSITE_INTERMEDIATE_CERTS_PATH") ?? "/var/ssl/intermediate/";
 
         private readonly IDataProtector _dataProtector;
         private readonly ILogger _logger;
@@ -53,7 +54,7 @@ namespace OrchardCore.OpenId.Services
             _shellSettings = shellSettings;
             _siteService = siteService;
             S = stringLocalizer;
-            var websiteLoadCertificatesEnv = System.Environment.GetEnvironmentVariable("WEBSITE_LOAD_CERTIFICATES");
+            var websiteLoadCertificatesEnv = GetEnvironmentVariable("WEBSITE_LOAD_CERTIFICATES");
             if (websiteLoadCertificatesEnv != null && websiteLoadCertificatesEnv.Trim() != "*")
             {
                 _linuxThumbprintsOfAvailableCertificates = websiteLoadCertificatesEnv.Trim().Split(",");
