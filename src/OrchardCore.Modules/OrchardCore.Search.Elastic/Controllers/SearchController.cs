@@ -139,7 +139,7 @@ namespace OrchardCore.Search.Elastic.Controllers
             }
 
             var terms = viewModel.Terms;
-            if (!searchSettings.AllowElasticQueriesInSearch)
+            if (!searchSettings.AllowElasticQueryStringQueryInSearch)
             {
                 //Need to revisit this
                 //terms = QueryParser.Escape(terms);
