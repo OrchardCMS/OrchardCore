@@ -14,7 +14,7 @@ namespace OrchardCore.Search.Elastic.Drivers
 {
     public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticSettings>
     {
-        public const string GroupId = "search";
+        public const string GroupId = "elastic";
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -44,7 +44,7 @@ namespace OrchardCore.Search.Elastic.Drivers
                     model.SearchIndex = settings.SearchIndex;
                     model.SearchFields = String.Join(", ", settings.DefaultSearchFields ?? new string[0]);
                     model.SearchIndexes = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
-                    model.AllowElasticQueriesInSearch = settings.AllowElasticQueriesInSearch;
+                    model.AllowElasticQueryStringQueryInSearch = settings.AllowElasticQueryStringQueryInSearch;
                 }).Location("Content:2").OnGroup(GroupId);
         }
 
@@ -65,7 +65,7 @@ namespace OrchardCore.Search.Elastic.Drivers
 
                 section.SearchIndex = model.SearchIndex;
                 section.DefaultSearchFields = model.SearchFields?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                section.AllowElasticQueriesInSearch = model.AllowElasticQueriesInSearch;
+                section.AllowElasticQueryStringQueryInSearch = model.AllowElasticQueryStringQueryInSearch;
             }
 
             return await EditAsync(section, context);

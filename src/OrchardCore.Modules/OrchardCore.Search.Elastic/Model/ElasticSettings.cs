@@ -12,6 +12,6 @@ namespace OrchardCore.Search.Elastic.Model
 
         public string[] DefaultSearchFields { get; set; } = FullTextField;
 
-        public bool AllowElasticQueriesInSearch { get; set; } = false;
+        public bool AllowElasticQueryStringQueryInSearch { get; set; } = false;
     }
 }

@@ -8,6 +8,6 @@ namespace OrchardCore.Search.Elastic.ViewModels
         public string SearchIndex { get; set; }
         public IEnumerable<string> SearchIndexes { get; set; }
         public string SearchFields { get; set; }
-        public bool AllowElasticQueriesInSearch { get; set; }
+        public bool AllowElasticQueryStringQueryInSearch { get; set; }
     }
 }

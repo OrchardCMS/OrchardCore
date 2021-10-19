@@ -14,7 +14,7 @@ namespace OrchardCore.Lucene.Drivers
 {
     public class LuceneSettingsDisplayDriver : SectionDisplayDriver<ISite, LuceneSettings>
     {
-        public const string GroupId = "search";
+        public const string GroupId = "lucene";
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
