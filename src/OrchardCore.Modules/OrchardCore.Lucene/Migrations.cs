@@ -18,7 +18,7 @@ namespace OrchardCore.Lucene
         public int Create()
         {
             var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
-            
+
             foreach (var partDefinition in partDefinitions)
             {
                 LuceneContentIndexSettings newPartSettings = null;

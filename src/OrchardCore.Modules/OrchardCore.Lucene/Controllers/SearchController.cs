@@ -13,7 +13,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.Entities;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Security.Permissions;

@@ -1,4 +1,4 @@
-﻿using OrchardCore.Lucene.Model;
+using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene.Settings
 {
