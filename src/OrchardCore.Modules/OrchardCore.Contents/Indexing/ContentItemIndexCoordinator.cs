@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -51,8 +50,8 @@ namespace OrchardCore.Contents.Indexing
                 var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)context.ContentItem.Get(partActivator.Type, partName);
 
-                MethodInfo ContentTypePartDefinitionMethod = typeof(ContentTypePartDefinition).GetMethod("GetSettings");
-                MethodInfo ContentTypePartDefinitionGeneric = ContentTypePartDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
+                var ContentTypePartDefinitionMethod = typeof(ContentTypePartDefinition).GetMethod("GetSettings");
+                var ContentTypePartDefinitionGeneric = ContentTypePartDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
                 var typePartIndexSettings = (IContentIndexSettings)ContentTypePartDefinitionGeneric.Invoke(contentTypePartDefinition, null);
 
                 // Skip this part if it's not included in the index and it's not the default type part
@@ -67,8 +66,8 @@ namespace OrchardCore.Contents.Indexing
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
-                    MethodInfo ContentPartFieldDefinitionMethod = typeof(ContentPartFieldDefinition).GetMethod("GetSettings");
-                    MethodInfo ContentPartFieldDefinitionGeneric = ContentPartFieldDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
+                    var ContentPartFieldDefinitionMethod = typeof(ContentPartFieldDefinition).GetMethod("GetSettings");
+                    var ContentPartFieldDefinitionGeneric = ContentPartFieldDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
                     var partFieldIndexSettings = (IContentIndexSettings)ContentPartFieldDefinitionGeneric.Invoke(contentPartFieldDefinition, null);
 
                     if (!partFieldIndexSettings.Included)
