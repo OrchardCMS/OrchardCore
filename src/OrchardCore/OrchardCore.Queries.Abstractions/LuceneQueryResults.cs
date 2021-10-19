@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.Queries;
 
 namespace OrchardCore.Queries
 {
