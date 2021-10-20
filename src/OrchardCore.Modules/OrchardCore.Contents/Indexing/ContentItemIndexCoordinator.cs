@@ -49,32 +49,34 @@ namespace OrchardCore.Contents.Indexing
                 var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)context.ContentItem.Get(partActivator.Type, partName);
 
-                var getContentTypePartSettingsMethod = contentTypePartDefinition.GetType().GetMethod("GetSettings");
-                var contentTypePartIndexSettings = (IContentIndexSettings)getContentTypePartSettingsMethod.Invoke(contentTypePartDefinition, null);
+                var contentTypePartDefinitionMethod = contentTypePartDefinition.GetType().GetMethod("GetSettings");
+                var contentTypePartDefinitionGeneric = contentTypePartDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
+                var typePartIndexSettings = (IContentIndexSettings)contentTypePartDefinitionGeneric.Invoke(contentTypePartDefinition, null);
 
                 // Skip this part if it's not included in the index and it's not the default type part
-                if (contentTypeDefinition.Name != partTypeName && !contentTypePartIndexSettings.Included)
+                if (contentTypeDefinition.Name != partTypeName && !typePartIndexSettings.Included)
                 {
                     continue;
                 }
 
-                await _partIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, context, contentTypePartIndexSettings) =>
-                    handler.BuildIndexAsync(part, contentTypePartDefinition, context, contentTypePartIndexSettings),
-                        part, contentTypePartDefinition, context, contentTypePartIndexSettings, _logger);
+                await _partIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, context, typePartIndexSettings) =>
+                    handler.BuildIndexAsync(part, contentTypePartDefinition, context, typePartIndexSettings),
+                        part, contentTypePartDefinition, context, typePartIndexSettings, _logger);
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
-                    var getContentPartFieldIndexSettingsMethod = contentPartFieldDefinition.GetType().GetMethod("GetSettings");
-                    var contentPartFieldIndexSettings = (IContentIndexSettings)getContentPartFieldIndexSettingsMethod.Invoke(contentTypePartDefinition, null);
+                    var contentPartFieldDefinitionMethod = contentPartFieldDefinition.GetType().GetMethod("GetSettings");
+                    var contentPartFieldDefinitionGeneric = contentPartFieldDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
+                    var partFieldIndexSettings = (IContentIndexSettings)contentPartFieldDefinitionGeneric.Invoke(contentPartFieldDefinition, null);
 
-                    if (!contentPartFieldIndexSettings.Included)
+                    if (!partFieldIndexSettings.Included)
                     {
                         continue;
                     }
 
-                    await _fieldIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, contentPartFieldDefinition, context, contentPartFieldIndexSettings) =>
-                        handler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, contentPartFieldIndexSettings),
-                            part, contentTypePartDefinition, contentPartFieldDefinition, context, contentPartFieldIndexSettings, _logger);
+                    await _fieldIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings) =>
+                        handler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings),
+                            part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, _logger);
                 }
             }
 
