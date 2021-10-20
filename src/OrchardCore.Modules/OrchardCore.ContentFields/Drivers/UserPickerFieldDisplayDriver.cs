@@ -54,7 +54,6 @@ namespace OrchardCore.ContentFields.Drivers
                 model.PartFieldDefinition = context.PartFieldDefinition;
                 model.TypePartDefinition = context.TypePartDefinition;
 
-
                 if (field.UserIds.Length > 0)
                 {
                     var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync())
