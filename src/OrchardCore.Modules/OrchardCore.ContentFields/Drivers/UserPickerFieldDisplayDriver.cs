@@ -53,10 +53,13 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
                 model.TypePartDefinition = context.TypePartDefinition;
-                
+
+
                 if (field.UserIds.Length > 0)
                 {
-                    var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync();
+                    var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync())
+                        .OrderBy(o => Array.FindIndex(field.UserIds, x => String.Equals(o.UserId, x, StringComparison.OrdinalIgnoreCase)));
+
                     foreach (var user in users)
                     {
                         model.SelectedUsers.Add(new VueMultiselectUserViewModel
