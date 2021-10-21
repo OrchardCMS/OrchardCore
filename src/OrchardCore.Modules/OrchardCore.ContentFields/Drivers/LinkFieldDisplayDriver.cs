@@ -63,6 +63,9 @@ namespace OrchardCore.ContentFields.Drivers
                     {
                         urlToValidate = urlToValidate.Substring(0, indexAnchor);
                     }
+
+                    var uri = new Uri(urlToValidate, UriKind.RelativeOrAbsolute);
+                    urlToValidate = uri.GetComponents(UriComponents.SerializationInfoString, UriFormat.UriEscaped);
                 }
 
                 // Validate Url

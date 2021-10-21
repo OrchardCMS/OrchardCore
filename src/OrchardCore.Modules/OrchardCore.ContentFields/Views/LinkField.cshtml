@@ -31,7 +31,14 @@
             }
             break;
     }
+
+    var href = Model.Url;
+    if (!string.IsNullOrEmpty(href))
+    {
+        var uri = new Uri(href, UriKind.RelativeOrAbsolute);
+        href = uri.GetComponents(UriComponents.SerializationInfoString, UriFormat.UriEscaped);
+    }
 }
 <div class="field field-type-linkfield field-name-@name">
-    <a href="@Model.Url">@text</a>
+    <a href="@href">@text</a>
 </div>
