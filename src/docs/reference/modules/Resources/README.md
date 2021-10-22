@@ -47,7 +47,7 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | --------------------- | ------ | ------------- | -------------- |
 | jQuery                | Script | 3.6.0         | -              |
 | jQuery.slim           | Script | 3.6.0         | -              |
-| jQuery-ui             | Script | 1.12.1        | jQuery         |
+| jQuery-ui             | Script | 1.13.0        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
@@ -55,8 +55,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | popper                | Script | 1.16.1        | -              |
 | popperjs              | Script | 2.10.2        | -              |
 | bootstrap             | Script | 4.6.0         | popper         |
-| bootstrap             | Script | 5.1.2         | popperjs       |
-| bootstrap             | Style  | 4.6.0, 5.1.2  | -              |
+| bootstrap             | Script | 5.1.3         | popperjs       |
+| bootstrap             | Style  | 4.6.0, 5.1.3  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
@@ -70,8 +70,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | trumbowyg             | Script | 2.25.1        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.20.0        | -              |
-| monaco                | Script | 0.29.0        | monaco-loader  |
+| monaco-loader         | Script | 0.29.1        | -              |
+| monaco                | Script | 0.29.1        | monaco-loader  |
 
 ### Registering a Resource Manifest
 
