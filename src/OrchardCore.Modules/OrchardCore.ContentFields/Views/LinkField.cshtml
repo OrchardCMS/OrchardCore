@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayLinkFieldViewModel
-@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentFields.Settings
 @using OrchardCore.Mvc.Utilities
 
 @{
@@ -35,8 +35,12 @@
     var href = Model.Url;
     if (!string.IsNullOrEmpty(href))
     {
-        var uri = new Uri(href, UriKind.RelativeOrAbsolute);
-        href = uri.GetComponents(UriComponents.SerializationInfoString, UriFormat.UriEscaped);
+        if (href.StartsWith("~/", StringComparison.Ordinal))
+        {
+            href = Url.Content(href);
+        }
+
+        href = href.ToUriComponents();
     }
 }
 <div class="field field-type-linkfield field-name-@name">
