@@ -33,7 +33,7 @@
     }
 
     var href = Model.Url;
-    if (!string.IsNullOrEmpty(href))
+    if (!string.IsNullOrWhiteSpace(href))
     {
         if (href.StartsWith("~/", StringComparison.Ordinal))
         {
