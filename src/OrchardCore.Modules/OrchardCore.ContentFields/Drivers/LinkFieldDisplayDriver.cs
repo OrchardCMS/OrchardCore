@@ -65,7 +65,7 @@ namespace OrchardCore.ContentFields.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 
                 var urlToValidate = field.Url;
-                if (!String.IsNullOrWhiteSpace(urlToValidate))
+                if (!String.IsNullOrEmpty(urlToValidate))
                 {
                     var indexAnchor = urlToValidate.IndexOf('#');
                     if (indexAnchor > -1)

@@ -4,7 +4,7 @@ namespace System
     {
         public static string ToUriComponents(this string url)
         {
-            if (String.IsNullOrWhiteSpace(url))
+            if (String.IsNullOrEmpty(url))
             {
                 return url;
             }
