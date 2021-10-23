@@ -1,6 +1,6 @@
 mkdocs>=1.2.3
 mkdocs-material>=7.3.4
-mkdocs-git-authors-plugin>=0.6
+mkdocs-git-authors-plugin>=0.6.1
 mkdocs-git-revision-date-localized-plugin>=0.10
 pymdown-extensions>=9.0
 mkdocs-exclude>=1.0.2
