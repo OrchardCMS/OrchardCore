@@ -63,7 +63,7 @@ jobs:
         VERSION="${arrTag[2]}"
         VERSION="${VERSION//v}"
         dotnet pack -c Release --no-restore --no-build -p:Version=$VERSION -p:TreatWarningsAsErrors=false
-        dotnet nuget push './src/**/*.nupkg' -k ${{secrets.NUGET_API_KEY}} -n true -s https://api.nuget.org/v3/index.json --skip-duplicate
+        dotnet nuget push './src/**/*.nupkg' -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Login to DockerHub
       if: matrix.os == 'ubuntu-latest'
       uses: docker/login-action@v1
@@ -82,6 +82,13 @@ jobs:
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest .
         docker push orchardproject/orchardcore-cms-linux:latest 
         docker push "orchardproject/orchardcore-cms-linux:$VERSION"
+    - name: Build version number
+      run: |
+        arrTag=(${GITHUB_REF//\// })
+        VERSION="${arrTag[2]}"
+        VERSION="${VERSION//v}"
+        echo "$VERSION"
+        echo "version=$VERSION" >> $GITHUB_ENV
     - name: Deploy preview docker image for windows
       if: matrix.os == 'windows-latest'
       run: |
@@ -91,7 +98,7 @@ jobs:
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-windows:latest 
-        docker push "orchardproject/orchardcore-cms-windows:$VERSION"
+        docker push "orchardproject/orchardcore-cms-windows:$env:version"
 
 # TODO: 
 # use NuGet

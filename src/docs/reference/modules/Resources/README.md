@@ -47,22 +47,22 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | --------------------- | ------ | ------------- | -------------- |
 | jQuery                | Script | 3.6.0         | -              |
 | jQuery.slim           | Script | 3.6.0         | -              |
-| jQuery-ui             | Script | 1.12.1        | jQuery         |
+| jQuery-ui             | Script | 1.13.0        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
 | js-cookie             | Script | 3.0.1         | jQuery         |
 | popper                | Script | 1.16.1        | -              |
-| popperjs              | Script | 2.9.3         | -              |
+| popperjs              | Script | 2.10.2        | -              |
 | bootstrap             | Script | 4.6.0         | popper         |
-| bootstrap             | Script | 5.1.1         | popperjs       |
-| bootstrap             | Style  | 4.6.0, 5.1.1  | -              |
+| bootstrap             | Script | 5.1.3         | popperjs       |
+| bootstrap             | Style  | 4.6.0, 5.1.3  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.63.1        | -              |
-| codemirror            | Style  | 5.63.1        | -              |
+| codemirror            | Script | 5.63.3        | -              |
+| codemirror            | Style  | 5.63.3        | -              |
 | font-awesome          | Style  | 5.15.4        | -              |
 | font-awesome          | Script | 5.15.4        | -              |
 | font-awesome-v4-shims | Script | 5.15.4        | -              |
@@ -70,8 +70,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | trumbowyg             | Script | 2.25.1        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.28.1        | -              |
-| monaco                | Script | 0.28.1        | monaco-loader  |
+| monaco-loader         | Script | 0.29.1        | -              |
+| monaco                | Script | 0.29.1        | monaco-loader  |
 
 ### Registering a Resource Manifest
 
