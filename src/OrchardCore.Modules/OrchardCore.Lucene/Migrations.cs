@@ -17,6 +17,33 @@ namespace OrchardCore.Lucene
         // This code can be removed in a later version.
         public int Create()
         {
+            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
+            
+            foreach (var contentTypeDefinition in contentTypeDefinitions)
+            {
+                foreach (var partDefinition in contentTypeDefinition.Parts)
+                {
+                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    {
+                        LuceneContentIndexSettings newPartSettings = null;
+
+                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings))
+                        {
+                            partDefinition.Settings.Remove("ContentIndexSettings");
+                            partDefinition.Settings.Remove("LuceneContentIndexSettings");
+                            partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
+
+                            newPartSettings = partDefinition.Settings.ToObject<LuceneContentIndexSettings>();
+                        }
+
+                        if (existingPartSettings != null)
+                        {
+                            partBuilder.WithSettings(newPartSettings);
+                        }
+                    });
+                }
+            }
+
             var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
 
             foreach (var partDefinition in partDefinitions)
@@ -61,35 +88,6 @@ namespace OrchardCore.Lucene
                         }
                     }
                 });
-            }
-
-            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
-            foreach (var contentTypeDefinition in contentTypeDefinitions)
-            {
-                foreach (var partDefinition in contentTypeDefinition.Parts)
-                {
-                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
-                    {
-                        foreach (var partDefinition in contentTypeDefinition.Parts)
-                        {
-                            LuceneContentIndexSettings newPartSettings = null;
-
-                            if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings))
-                            {
-                                partDefinition.Settings.Remove("ContentIndexSettings");
-                                partDefinition.Settings.Remove("LuceneContentIndexSettings");
-                                partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
-
-                                newPartSettings = partDefinition.Settings.ToObject<LuceneContentIndexSettings>();
-                            }
-
-                            if (existingPartSettings != null)
-                            {
-                                partBuilder.WithSettings(newPartSettings);
-                            }
-                        }
-                    });
-                }
             }
 
             return 1;
