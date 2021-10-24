@@ -111,7 +111,7 @@ namespace OrchardCore.Users.Controllers
                         return RedirectToAction("RegistrationPending", new { ReturnUrl = returnUrl });
                     }
 
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToLocal(returnUrl.ToUriComponents());
                 }
             }
 

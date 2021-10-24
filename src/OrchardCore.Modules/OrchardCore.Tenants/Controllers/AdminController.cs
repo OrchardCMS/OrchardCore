@@ -20,6 +20,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
+using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -31,6 +32,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
+        private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly IClock _clock;
@@ -47,6 +49,7 @@ namespace OrchardCore.Tenants.Controllers
             IEnumerable<DatabaseProvider> databaseProviders,
             IAuthorizationService authorizationService,
             ShellSettings currentShellSettings,
+            IFeatureProfilesService featureProfilesService,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             IDataProtectionProvider dataProtectorProvider,
             IClock clock,
@@ -62,6 +65,7 @@ namespace OrchardCore.Tenants.Controllers
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
             _dataProtectorProvider = dataProtectorProvider;
+            _featureProfilesService = featureProfilesService;
             _recipeHarvesters = recipeHarvesters;
             _clock = clock;
             _notifier = notifier;
@@ -274,11 +278,21 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
+
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
 
             // Creates a default shell settings based on the configuration.
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+
+            var currentFeatureProfile = shellSettings["FeatureProfile"];
+            
+            var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
+                .Select(x => new SelectListItem(x.Key, x.Key, String.Equals(x.Key, currentFeatureProfile, StringComparison.OrdinalIgnoreCase))).ToList();
+            if (featureProfiles.Any())
+            {
+                featureProfiles.Insert(0, new SelectListItem(S["None"], String.Empty, currentFeatureProfile == String.Empty));
+            }
 
             var model = new EditTenantViewModel
             {
@@ -286,7 +300,9 @@ namespace OrchardCore.Tenants.Controllers
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
                 TablePrefix = shellSettings["TablePrefix"],
-                RecipeName = shellSettings["RecipeName"]
+                RecipeName = shellSettings["RecipeName"],
+                FeatureProfile = currentFeatureProfile,
+                FeatureProfiles = featureProfiles
             };
             SetConfigurationShellValues(model);
 
@@ -310,7 +326,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                ValidateViewModel(model, true);
+                await ValidateViewModel(model, true);
             }
 
             if (ModelState.IsValid)
@@ -330,6 +346,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
+                shellSettings["FeatureProfile"] = model.FeatureProfile;
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -364,6 +381,14 @@ namespace OrchardCore.Tenants.Controllers
             {
                 return NotFound();
             }
+            var currentFeatureProfile = shellSettings["FeatureProfile"];
+            
+            var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
+                .Select(x => new SelectListItem(x.Key, x.Key, String.Equals(x.Key, currentFeatureProfile, StringComparison.OrdinalIgnoreCase))).ToList();
+            if (featureProfiles.Any())
+            {
+                featureProfiles.Insert(0, new SelectListItem(S["None"], String.Empty, currentFeatureProfile == String.Empty));
+            }
 
             var model = new EditTenantViewModel
             {
@@ -371,6 +396,8 @@ namespace OrchardCore.Tenants.Controllers
                 Name = shellSettings.Name,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
+                FeatureProfile = currentFeatureProfile,
+                FeatureProfiles = featureProfiles
             };
 
             // The user can change the 'preset' database information only if the
@@ -407,7 +434,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                ValidateViewModel(model, false);
+                await ValidateViewModel(model, false);
             }
 
             var shellSettings = _shellHost.GetAllSettings()
@@ -424,6 +451,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Description"] = model.Description;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
+                shellSettings["FeatureProfile"] = model.FeatureProfile;
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet
@@ -568,7 +596,7 @@ namespace OrchardCore.Tenants.Controllers
             return Redirect(redirectUrl);
         }
 
-        private void ValidateViewModel(EditTenantViewModel model, bool newTenant)
+        private async Task ValidateViewModel(EditTenantViewModel model, bool newTenant)
         {
             var selectedProvider = _databaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
 
@@ -580,6 +608,15 @@ namespace OrchardCore.Tenants.Controllers
             if (String.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
+            }
+
+            if (!String.IsNullOrWhiteSpace(model.FeatureProfile))
+            {
+                var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
+                if (!featureProfiles.ContainsKey(model.FeatureProfile))
+                {
+                    ModelState.AddModelError(nameof(EditTenantViewModel.FeatureProfile), S["The feature profile does not exist.", model.FeatureProfile]);
+                }
             }
 
             var allSettings = _shellHost.GetAllSettings();
