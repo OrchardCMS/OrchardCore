@@ -87,6 +87,18 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
+                var filenames = field.GetFilenames();
+                if (filenames != null)
+                {
+                    for (var i = 0; i < itemPaths.Count(); i++)
+                    {
+                        if (i >= 0 && i < filenames.Length)
+                        {
+                            itemPaths[i].Filename = filenames[i];
+                        }
+                    }
+                }
+
                 model.Paths = JsonConvert.SerializeObject(itemPaths, Settings);
                 model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
                 model.Field = field;
@@ -110,6 +122,18 @@ namespace OrchardCore.Media.Drivers
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService
                 if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
                 {
+                    var existingFilenames = field.GetFilenames();
+                    var filenames = new string[items.Count];
+                    foreach (var item in items)
+                    {
+                        if(item.IsNew)
+                        {
+                            var lastSlash = item.Path.LastIndexOf('/');
+                            var nameOnly = item.Path[(lastSlash + 1)..];
+                            item.Filename = nameOnly[36..]; // remove unique id from name
+                        }
+                    }
+
                     try
                     {
                         await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
@@ -122,6 +146,8 @@ namespace OrchardCore.Media.Drivers
                 }
 
                 field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? new string[] { };
+
+                field.SetFilenames(items.Where(i => !i.IsRemoved).Select(i => i.Filename).ToArray());
 
                 var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
 
