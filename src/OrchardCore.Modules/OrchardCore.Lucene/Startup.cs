@@ -27,6 +27,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
+using OrchardCore.Recipes.Events;
 using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -55,6 +56,7 @@ namespace OrchardCore.Lucene
             });
 
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IRecipeEventHandler, LuceneRecipeEventHandler>();
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
             services.AddSingleton<LuceneIndexManager>();
