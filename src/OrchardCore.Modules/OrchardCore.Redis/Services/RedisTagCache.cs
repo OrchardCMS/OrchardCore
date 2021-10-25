@@ -60,7 +60,7 @@ namespace OrchardCore.Redis.Services
                 await _redis.ConnectAsync();
                 if (_redis.Database == null)
                 {
-                    _logger.LogError("Fails to get items of the {TagName}.", _prefix + tag);
+                    _logger.LogError("Fails to get '{TagName}' items.", _prefix + tag);
                     return Enumerable.Empty<string>();
                 }
             }
@@ -78,7 +78,7 @@ namespace OrchardCore.Redis.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Fails to get items of the {TagName}.", _prefix + tag);
+                _logger.LogError(e, "Fails to get '{TagName}' items.", _prefix + tag);
             }
 
             return Enumerable.Empty<string>();
