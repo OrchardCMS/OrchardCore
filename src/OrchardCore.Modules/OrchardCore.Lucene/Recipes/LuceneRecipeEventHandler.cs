@@ -1,11 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
-using OrchardCore.Lucene.Model;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 
@@ -16,13 +12,6 @@ namespace OrchardCore.Lucene.Recipes
     /// </summary>
     public class LuceneRecipeEventHandler : IRecipeEventHandler
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public LuceneRecipeEventHandler(IContentDefinitionManager contentDefinitionManager)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
-
         public RecipeExecutionContext Context { get; private set; }
 
         public Task RecipeStepExecutedAsync(RecipeExecutionContext context) => Task.CompletedTask;
@@ -80,7 +69,7 @@ namespace OrchardCore.Lucene.Recipes
 
         private class ContentDefinitionStepModel
         {
-            public string name { get; set; }
+            public string Name { get; set; }
             public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = Array.Empty<ContentTypeDefinitionRecord>();
             public ContentPartDefinitionRecord[] ContentParts { get; set; } = Array.Empty<ContentPartDefinitionRecord>();
         }
