@@ -610,10 +610,7 @@
                 "LuceneContentIndexSettings": {
                   "Included": false,
                   "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                  "Analyzed": false
                 },
                 "MediaFieldSettings": {
                   "Multiple": false,
