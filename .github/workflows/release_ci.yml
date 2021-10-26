@@ -20,6 +20,13 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
+    - name: Get the version
+      id: get_version
+      run: |
+        arrTag=(${GITHUB_REF//\// })
+        VERSION="${arrTag[2]}"
+        echo ::set-output name=VERSION::${VERSION//v}
+      shell: bash
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
@@ -59,10 +66,7 @@ jobs:
     - name: Deploy release NuGet packages
       if: matrix.os == 'ubuntu-latest'
       run: |
-        arrTag=(${GITHUB_REF//\// })
-        VERSION="${arrTag[2]}"
-        VERSION="${VERSION//v}"
-        dotnet pack -c Release --no-restore --no-build -p:Version=$VERSION -p:TreatWarningsAsErrors=false
+        dotnet pack -c Release --no-restore --no-build -p:Version=${{ steps.get_version.outputs.VERSION }} -p:TreatWarningsAsErrors=false
         dotnet nuget push './src/**/*.nupkg' -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Login to DockerHub
       if: matrix.os == 'ubuntu-latest'
@@ -73,22 +77,12 @@ jobs:
     - name: Deploy release docker image for linux
       if: matrix.os == 'ubuntu-latest'
       run: |
-        arrTag=(${GITHUB_REF//\// })
-        VERSION="${arrTag[2]}"
-        VERSION="${VERSION//v}"
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest .
         docker push orchardproject/orchardcore-cms-linux:latest 
-        docker push "orchardproject/orchardcore-cms-linux:$VERSION"
-    - name: Build version number
-      run: |
-        arrTag=(${GITHUB_REF//\// })
-        VERSION="${arrTag[2]}"
-        VERSION="${VERSION//v}"
-        echo "$VERSION"
-        echo "version=$VERSION" >> $GITHUB_ENV
+        docker push "orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }}"
     - name: Deploy preview docker image for windows
       if: matrix.os == 'windows-latest'
       run: |
@@ -98,8 +92,4 @@ jobs:
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-windows:latest 
-        docker push "orchardproject/orchardcore-cms-windows:$env:version"
-
-# TODO: 
-# use NuGet
-# enable docker push commands
+        docker push "orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }}"
