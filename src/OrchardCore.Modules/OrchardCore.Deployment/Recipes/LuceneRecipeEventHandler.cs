@@ -2,11 +2,10 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Records;
-using OrchardCore.Lucene.Model;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 
-namespace OrchardCore.Lucene.Recipes
+namespace OrchardCore.Deployment.Recipes
 {
     /// <summary>
     /// This handler provides backward compatibility with ContentIndexSettings that have been migrated to LuceneContentIndexSettings.
@@ -33,9 +32,9 @@ namespace OrchardCore.Lucene.Recipes
                 {
                     foreach (var partDefinition in contentType.ContentTypePartDefinitionRecords)
                     {
-                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) && !partDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLucenePartSettings))
+                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) && !partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingLucenePartSettings))
                         {
-                            partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
+                            partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
                         }
 
                         partDefinition.Settings.Remove("ContentIndexSettings");
@@ -44,18 +43,18 @@ namespace OrchardCore.Lucene.Recipes
 
                 foreach (var partDefinition in step.ContentParts)
                 {
-                    if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) && !partDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLucenePartSettings))
+                    if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) && !partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingLucenePartSettings))
                     {
-                        partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
+                        partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
                     }
 
                     partDefinition.Settings.Remove("ContentIndexSettings");
 
                     foreach (var fieldDefinition in partDefinition.ContentPartFieldDefinitionRecords)
                     {
-                        if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings) && !fieldDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLuceneFieldSettings))
+                        if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings) && !fieldDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingLuceneFieldSettings))
                         {
-                            fieldDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingFieldSettings));
+                            fieldDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingFieldSettings));
                         }
 
                         fieldDefinition.Settings.Remove("ContentIndexSettings");
