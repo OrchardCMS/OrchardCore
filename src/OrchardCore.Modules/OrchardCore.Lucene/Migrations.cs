@@ -25,21 +25,12 @@ namespace OrchardCore.Lucene
                 {
                     _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
                     {
-                        LuceneContentIndexSettings newPartSettings = null;
-
-                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings))
+                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) && !partDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLucenePartSettings))
                         {
-                            partDefinition.Settings.Remove("ContentIndexSettings");
-                            partDefinition.Settings.Remove("LuceneContentIndexSettings");
-                            partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
-
-                            newPartSettings = partDefinition.Settings.ToObject<LuceneContentIndexSettings>();
+                            partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
                         }
 
-                        if (existingPartSettings != null)
-                        {
-                            partBuilder.WithSettings(newPartSettings);
-                        }
+                        partDefinition.Settings.Remove("ContentIndexSettings");
                     });
                 }
             }
@@ -48,44 +39,23 @@ namespace OrchardCore.Lucene
 
             foreach (var partDefinition in partDefinitions)
             {
-                LuceneContentIndexSettings newPartSettings = null;
-
-                if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings))
+                if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) && !partDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLucenePartSettings))
                 {
-                    partDefinition.Settings.Remove("ContentIndexSettings");
-                    partDefinition.Settings.Remove("LuceneContentIndexSettings");
-                    partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
-
-                    newPartSettings = partDefinition.Settings.ToObject<LuceneContentIndexSettings>();
+                    partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
                 }
+
+                partDefinition.Settings.Remove("ContentIndexSettings");
 
                 _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
                 {
-                    if (existingPartSettings != null)
-                    {
-                        partBuilder.WithSettings(newPartSettings);
-                    }
-
                     foreach (var fieldDefinition in partDefinition.Fields)
                     {
-                        LuceneContentIndexSettings newFieldSettings = null;
-
-                        if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings))
+                        if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings) && !fieldDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLuceneFieldSettings))
                         {
-                            fieldDefinition.Settings.Remove("ContentIndexSettings");
-                            fieldDefinition.Settings.Remove("LuceneContentIndexSettings");
-                            fieldDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingFieldSettings));
-
-                            newFieldSettings = fieldDefinition.Settings.ToObject<LuceneContentIndexSettings>();
+                            fieldDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingFieldSettings));
                         }
 
-                        if (existingFieldSettings != null)
-                        {
-                            partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
-                            {
-                                fieldBuilder.WithSettings(newFieldSettings);
-                            });
-                        }
+                        fieldDefinition.Settings.Remove("ContentIndexSettings");
                     }
                 });
             }

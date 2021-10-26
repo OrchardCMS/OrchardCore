@@ -56,7 +56,7 @@ namespace OrchardCore.Lucene
             });
 
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IRecipeEventHandler, LuceneRecipeEventHandler>();
+            services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
             services.AddSingleton<LuceneIndexManager>();
