@@ -7,7 +7,7 @@
     "watch": " gulp watch",
     "install:orchardcore.admindashboard": "cd src/OrchardCore.Modules/OrchardCore.AdminDashboard && npm install",
     "install:orchardcore.adminmenu": "cd src/OrchardCore.Modules/OrchardCore.AdminMenu && npm install",
-    "install:orchardcore.apis.graphql": "cd src/OrchardCore.Modules/OrchardCore.Apis.GraphQL && npm install",
+    
     "install:orchardcore.liquid": "cd src/OrchardCore.Modules/OrchardCore.Liquid && npm install",
     "install:orchardcore.markdown": "cd src/OrchardCore.Modules/OrchardCore.Markdown && npm install",
     "install:orchardcore.media": "cd src/OrchardCore.Modules/OrchardCore.Media && npm install",
@@ -17,7 +17,7 @@
     "install:orchardcore.themes": "cd src/OrchardCore.Modules/OrchardCore.Themes && npm install",
     "install:orchardcore.shortcodes": "cd src/OrchardCore.Modules/OrchardCore.Shortcodes && npm install",
     "install:orchardcore.workflows": "cd src/OrchardCore.Modules/OrchardCore.Workflows && npm install",
-    "install:orchardcore.audittrail": "cd src/OrchardCore.Modules/OrchardCore.AuditTrail && npm install",
+    
     "install:orchardcore.theadmin": "cd src/OrchardCore.Themes/TheAdmin && npm install",
     "install:orchardcore.theagencytheme": "cd src/OrchardCore.Themes/TheAgencyTheme && npm install",
     "install:orchardcore.theblogtheme": "cd src/OrchardCore.Themes/TheBlogTheme && npm install",
