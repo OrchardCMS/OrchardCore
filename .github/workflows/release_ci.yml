@@ -82,7 +82,7 @@ jobs:
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
-        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest,${{ steps.get_version.outputs.VERSION }} .
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }} .
         docker push orchardproject/orchardcore-cms-linux:latest 
         docker push "orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }}"
     - name: Deploy preview docker image for windows
@@ -91,7 +91,7 @@ jobs:
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
-        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest,${{ steps.get_version.outputs.VERSION }} .
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }} .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-windows:latest 
         docker push "orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }}"
