@@ -21847,7 +21847,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   outline: none;
   user-select: none;
   vertical-align: middle;
-  text-indent: calc(calc(calc(2.375rem * 0.8) * 2) + 0.5rem);
+  text-indent: calc((calc(2.375rem * 0.8) * 2) + 0.5rem);
 }
 [dir]:root[data-theme=default] .switch input + label {
   border-radius: calc(2.375rem * 0.8);
@@ -21928,7 +21928,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   min-width: calc(calc(1.9375rem * 0.8) * 2);
   height: calc(1.9375rem * 0.8);
   line-height: calc(1.9375rem * 0.8);
-  text-indent: calc(calc(calc(1.9375rem * 0.8) * 2) + 0.5rem);
+  text-indent: calc((calc(1.9375rem * 0.8) * 2) + 0.5rem);
 }
 :root[data-theme=default] .switch.switch-sm input + label::before {
   width: calc(calc(1.9375rem * 0.8) * 2);
@@ -21950,7 +21950,7 @@ a[dir]:root[data-theme=default] .badge-dark:focus, a[data-theme=default][dir]:ro
   min-width: calc(calc(3rem * 0.8) * 2);
   height: calc(3rem * 0.8);
   line-height: calc(3rem * 0.8);
-  text-indent: calc(calc(calc(3rem * 0.8) * 2) + 0.5rem);
+  text-indent: calc((calc(3rem * 0.8) * 2) + 0.5rem);
 }
 :root[data-theme=default] .switch.switch-lg input + label::before {
   width: calc(calc(3rem * 0.8) * 2);
@@ -45290,7 +45290,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   outline: none;
   user-select: none;
   vertical-align: middle;
-  text-indent: calc(calc(calc(2.375rem * 0.8) * 2) + 0.5rem);
+  text-indent: calc((calc(2.375rem * 0.8) * 2) + 0.5rem);
 }
 [dir]:root[data-theme=darkmode] .switch input + label {
   border-radius: calc(2.375rem * 0.8);
@@ -45371,7 +45371,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   min-width: calc(calc(1.9375rem * 0.8) * 2);
   height: calc(1.9375rem * 0.8);
   line-height: calc(1.9375rem * 0.8);
-  text-indent: calc(calc(calc(1.9375rem * 0.8) * 2) + 0.5rem);
+  text-indent: calc((calc(1.9375rem * 0.8) * 2) + 0.5rem);
 }
 :root[data-theme=darkmode] .switch.switch-sm input + label::before {
   width: calc(calc(1.9375rem * 0.8) * 2);
@@ -45393,7 +45393,7 @@ a[dir]:root[data-theme=darkmode] .badge-dark:focus, a[dir]:root[data-theme=darkm
   min-width: calc(calc(3rem * 0.8) * 2);
   height: calc(3rem * 0.8);
   line-height: calc(3rem * 0.8);
-  text-indent: calc(calc(calc(3rem * 0.8) * 2) + 0.5rem);
+  text-indent: calc((calc(3rem * 0.8) * 2) + 0.5rem);
 }
 :root[data-theme=darkmode] .switch.switch-lg input + label::before {
   width: calc(calc(3rem * 0.8) * 2);
