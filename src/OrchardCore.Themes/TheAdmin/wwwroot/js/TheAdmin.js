@@ -7836,9 +7836,9 @@ function isLetter(str) {
 
 function isNumber(str) {
   return str.length === 1 && str.match(/[0-9]/i);
-}
+} //$('[data-bs-toggle="tooltip"]').tooltip();
+//Prevent multi submissions on forms
 
-$('[data-bs-toggle="tooltip"]').tooltip(); //Prevent multi submissions on forms
 
 $("body").on("submit", "form.no-multisubmit", function (e) {
   var submittingClass = "submitting";
