@@ -8,14 +8,14 @@
 <div class="input-group input-group-sm w-50 d-inline-flex has-filter">
     <div class="input-group-prepend">
         <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button"
-            data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+            data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
         </button>
         <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-right</text>}"
             aria-labelledby="filter-dropdown">
             <a class="dropdown-item" href="?q=status:Enabled">@T["Only enabled users"]</a>
             <a class="dropdown-item" href="?q=status:Disabled">@T["Only disabled users"]</a>
-            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalUserIndexOptionsFilterSyntax">@T["Filter syntax"]</a>
+            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-target="#modalUserIndexOptionsFilterSyntax">@T["Filter syntax"]</a>
         </div>
     </div>
     <input asp-for="OriginalSearchText" type="hidden" />

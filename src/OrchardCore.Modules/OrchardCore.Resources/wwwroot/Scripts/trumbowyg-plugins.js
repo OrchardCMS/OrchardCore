@@ -536,6 +536,435 @@
   });
 }(jQuery);
 /* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        foreColor: 'Text color',
+        backColor: 'Background color',
+        foreColorRemove: 'Remove text color',
+        backColorRemove: 'Remove background color'
+      },
+      cs: {
+        foreColor: 'Barva textu',
+        backColor: 'Barva pozadí'
+      },
+      da: {
+        foreColor: 'Tekstfarve',
+        backColor: 'Baggrundsfarve'
+      },
+      de: {
+        foreColor: 'Textfarbe',
+        backColor: 'Hintergrundfarbe'
+      },
+      et: {
+        foreColor: 'Teksti värv',
+        backColor: 'Taustavärv',
+        foreColorRemove: 'Eemalda teksti värv',
+        backColorRemove: 'Eemalda taustavärv'
+      },
+      fr: {
+        foreColor: 'Couleur du texte',
+        backColor: 'Couleur de fond',
+        foreColorRemove: 'Supprimer la couleur du texte',
+        backColorRemove: 'Supprimer la couleur de fond'
+      },
+      hu: {
+        foreColor: 'Betű szín',
+        backColor: 'Háttér szín',
+        foreColorRemove: 'Betű szín eltávolítása',
+        backColorRemove: 'Háttér szín eltávolítása'
+      },
+      ja: {
+        foreColor: '文字色',
+        backColor: '背景色'
+      },
+      ko: {
+        foreColor: '글자색',
+        backColor: '배경색',
+        foreColorRemove: '글자색 지우기',
+        backColorRemove: '배경색 지우기'
+      },
+      nl: {
+        foreColor: 'Tekstkleur',
+        backColor: 'Achtergrondkleur'
+      },
+      pt_br: {
+        foreColor: 'Cor de fonte',
+        backColor: 'Cor de fundo'
+      },
+      ru: {
+        foreColor: 'Цвет текста',
+        backColor: 'Цвет выделения текста'
+      },
+      sk: {
+        foreColor: 'Farba textu',
+        backColor: 'Farba pozadia'
+      },
+      tr: {
+        foreColor: 'Yazı rengi',
+        backColor: 'Arka plan rengi',
+        foreColorRemove: 'Yazı rengini kaldır',
+        backColorRemove: 'Arka plan rengini kaldır'
+      },
+      zh_cn: {
+        foreColor: '文字颜色',
+        backColor: '背景颜色'
+      },
+      zh_tw: {
+        foreColor: '文字顏色',
+        backColor: '背景顏色'
+      }
+    }
+  }); // jshint camelcase:true
+
+  function hex(x) {
+    return ('0' + parseInt(x).toString(16)).slice(-2);
+  }
+
+  function colorToHex(rgb) {
+    if (rgb.search('rgb') === -1) {
+      return rgb.replace('#', '');
+    } else if (rgb === 'rgba(0, 0, 0, 0)') {
+      return 'transparent';
+    } else {
+      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
+      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+  }
+
+  function colorTagHandler(element, trumbowyg) {
+    var tags = [];
+
+    if (!element.style) {
+      return tags;
+    } // background color
+
+
+    if (element.style.backgroundColor !== '') {
+      var backColor = colorToHex(element.style.backgroundColor);
+
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
+        tags.push('backColor' + backColor);
+      } else {
+        tags.push('backColorFree');
+      }
+    } // text color
+
+
+    var foreColor;
+
+    if (element.style.color !== '') {
+      foreColor = colorToHex(element.style.color);
+    } else if (element.hasAttribute('color')) {
+      foreColor = colorToHex(element.getAttribute('color'));
+    }
+
+    if (foreColor) {
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
+        tags.push('foreColor' + foreColor);
+      } else {
+        tags.push('foreColorFree');
+      }
+    }
+
+    return tags;
+  }
+
+  var defaultOptions = {
+    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
+    foreColorList: null,
+    // fallbacks on colorList
+    backColorList: null,
+    // fallbacks on colorList
+    allowCustomForeColor: true,
+    allowCustomBackColor: true,
+    displayAsList: false
+  }; // Add all colors in two dropdowns
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
+          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
+          var foreColorBtnDef = {
+            dropdown: buildDropdown('foreColor', trumbowyg),
+            dropdownClass: dropdownClass
+          },
+              backColorBtnDef = {
+            dropdown: buildDropdown('backColor', trumbowyg),
+            dropdownClass: dropdownClass
+          };
+          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
+          trumbowyg.addBtnDef('backColor', backColorBtnDef);
+        },
+        tagHandler: colorTagHandler
+      }
+    }
+  });
+
+  function buildDropdown(_fn, trumbowyg) {
+    var dropdown = [],
+        trumbowygColorOptions = trumbowyg.o.plugins.colors,
+        colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
+    $.each(colorList, function (i, color) {
+      var btn = _fn + color,
+          btnDef = {
+        fn: _fn,
+        forceCss: true,
+        hasIcon: false,
+        text: trumbowyg.lang['#' + color] || '#' + color,
+        param: '#' + color,
+        style: 'background-color: #' + color + ';'
+      };
+
+      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
+        btnDef.style = 'color: #' + color + ' !important;';
+      }
+
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    }); // Remove color
+
+    var removeColorButtonName = _fn + 'Remove',
+        removeColorBtnDef = {
+      fn: 'removeFormat',
+      hasIcon: false,
+      param: _fn,
+      style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
+    };
+
+    if (trumbowygColorOptions.displayAsList) {
+      removeColorBtnDef.style = '';
+    }
+
+    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
+    dropdown.push(removeColorButtonName); // Custom color
+
+    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
+      // add free color btn
+      var freeColorButtonName = _fn + 'Free',
+          freeColorBtnDef = {
+        fn: function fn() {
+          trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
+            color: {
+              label: _fn,
+              forceCss: true,
+              type: 'color',
+              value: '#FFFFFF'
+            }
+          }, // callback
+          function (values) {
+            trumbowyg.execCmd(_fn, values.color);
+            return true;
+          });
+        },
+        hasIcon: false,
+        text: '#',
+        // style adjust for displaying the text
+        style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
+      };
+      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
+      dropdown.push(freeColorButtonName);
+    }
+
+    return dropdown;
+  }
+})(jQuery);
+!function (o) {
+  "use strict";
+
+  function r(o) {
+    return ("0" + parseInt(o).toString(16)).slice(-2);
+  }
+
+  function e(o) {
+    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o ? "transparent" : r((o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/))[1]) + r(o[2]) + r(o[3]);
+  }
+
+  o.extend(!0, o.trumbowyg, {
+    langs: {
+      en: {
+        foreColor: "Text color",
+        backColor: "Background color",
+        foreColorRemove: "Remove text color",
+        backColorRemove: "Remove background color"
+      },
+      cs: {
+        foreColor: "Barva textu",
+        backColor: "Barva pozadí"
+      },
+      da: {
+        foreColor: "Tekstfarve",
+        backColor: "Baggrundsfarve"
+      },
+      de: {
+        foreColor: "Textfarbe",
+        backColor: "Hintergrundfarbe"
+      },
+      et: {
+        foreColor: "Teksti värv",
+        backColor: "Taustavärv",
+        foreColorRemove: "Eemalda teksti värv",
+        backColorRemove: "Eemalda taustavärv"
+      },
+      fr: {
+        foreColor: "Couleur du texte",
+        backColor: "Couleur de fond",
+        foreColorRemove: "Supprimer la couleur du texte",
+        backColorRemove: "Supprimer la couleur de fond"
+      },
+      hu: {
+        foreColor: "Betű szín",
+        backColor: "Háttér szín",
+        foreColorRemove: "Betű szín eltávolítása",
+        backColorRemove: "Háttér szín eltávolítása"
+      },
+      ja: {
+        foreColor: "文字色",
+        backColor: "背景色"
+      },
+      ko: {
+        foreColor: "글자색",
+        backColor: "배경색",
+        foreColorRemove: "글자색 지우기",
+        backColorRemove: "배경색 지우기"
+      },
+      nl: {
+        foreColor: "Tekstkleur",
+        backColor: "Achtergrondkleur"
+      },
+      pt_br: {
+        foreColor: "Cor de fonte",
+        backColor: "Cor de fundo"
+      },
+      ru: {
+        foreColor: "Цвет текста",
+        backColor: "Цвет выделения текста"
+      },
+      sk: {
+        foreColor: "Farba textu",
+        backColor: "Farba pozadia"
+      },
+      tr: {
+        foreColor: "Yazı rengi",
+        backColor: "Arka plan rengi",
+        foreColorRemove: "Yazı rengini kaldır",
+        backColorRemove: "Arka plan rengini kaldır"
+      },
+      zh_cn: {
+        foreColor: "文字颜色",
+        backColor: "背景颜色"
+      },
+      zh_tw: {
+        foreColor: "文字顏色",
+        backColor: "背景顏色"
+      }
+    }
+  });
+  var l = {
+    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
+    foreColorList: null,
+    backColorList: null,
+    allowCustomForeColor: !0,
+    allowCustomBackColor: !0,
+    displayAsList: !1
+  };
+
+  function a(r, e) {
+    var l = [],
+        a = e.o.plugins.colors,
+        t = a[r + "List"] || a.colorList;
+    o.each(t, function (o, t) {
+      var c = r + t,
+          f = {
+        fn: r,
+        forceCss: !0,
+        hasIcon: !1,
+        text: e.lang["#" + t] || "#" + t,
+        param: "#" + t,
+        style: "background-color: #" + t + ";"
+      };
+      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
+    });
+    var c = r + "Remove",
+        f = {
+      fn: "removeFormat",
+      hasIcon: !1,
+      param: r,
+      style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
+    };
+
+    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
+      var d = r + "Free",
+          n = {
+        fn: function fn() {
+          e.openModalInsert(e.lang[r], {
+            color: {
+              label: r,
+              forceCss: !0,
+              type: "color",
+              value: "#FFFFFF"
+            }
+          }, function (o) {
+            return e.execCmd(r, o.color), !0;
+          });
+        },
+        hasIcon: !1,
+        text: "#",
+        style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
+      };
+      e.addBtnDef(d, n), l.push(d);
+    }
+
+    return l;
+  }
+
+  o.extend(!0, o.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(o) {
+          o.o.plugins.colors = o.o.plugins.colors || l;
+          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
+              e = {
+            dropdown: a("foreColor", o),
+            dropdownClass: r
+          },
+              t = {
+            dropdown: a("backColor", o),
+            dropdownClass: r
+          };
+          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
+        },
+        tagHandler: function tagHandler(o, r) {
+          var l,
+              a = [];
+          if (!o.style) return a;
+
+          if ("" !== o.style.backgroundColor) {
+            var t = e(o.style.backgroundColor);
+            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
+          }
+
+          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.emoji.js v0.1
  * Emoji picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -2985,195 +3414,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    source: [],
-    formatDropdownItem: formatDropdownItem,
-    formatResult: formatResult
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mention: 'Mention'
-      },
-      da: {
-        mention: 'Nævn'
-      },
-      et: {
-        mention: 'Maini'
-      },
-      fr: {
-        mention: 'Mentionner'
-      },
-      hu: {
-        mention: 'Említ'
-      },
-      ko: {
-        mention: '언급'
-      },
-      pt_br: {
-        mention: 'Menção'
-      },
-      ru: {
-        mention: 'Упомянуть'
-      },
-      tr: {
-        mention: 'Bahset'
-      },
-      zh_tw: {
-        mention: '標記'
-      } // jshint camelcase:true
-
-    },
-    plugins: {
-      mention: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
-          var btnDef = {
-            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
-          };
-          trumbowyg.addBtnDef('mention', btnDef);
-        }
-      }
-    }
-  });
-  /**
-   * Build dropdown list
-   *
-   * @param {Array}   items      Items
-   * @param {object}  trumbowyg  Editor
-   *
-   * @return {Array}
-   */
-
-  function buildDropdown(items, trumbowyg) {
-    var dropdown = [];
-    $.each(items, function (i, item) {
-      var btn = 'mention-' + i,
-          btnDef = {
-        hasIcon: false,
-        text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
-        fn: function fn() {
-          trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
-          return true;
-        }
-      };
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-    return dropdown;
-  }
-  /**
-   * Format item in dropdown.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-
-
-  function formatDropdownItem(item) {
-    return item.login;
-  }
-  /**
-   * Format result pasted in editor.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-
-
-  function formatResult(item) {
-    return '@' + item.login + ' ';
-  }
-})(jQuery);
-!function (n) {
-  "use strict";
-
-  var t = {
-    source: [],
-    formatDropdownItem: function formatDropdownItem(n) {
-      return n.login;
-    },
-    formatResult: function formatResult(n) {
-      return "@" + n.login + " ";
-    }
-  };
-
-  function o(t, o) {
-    var e = [];
-    return n.each(t, function (n, t) {
-      var i = "mention-" + n,
-          r = {
-        hasIcon: !1,
-        text: o.o.plugins.mention.formatDropdownItem(t),
-        fn: function fn() {
-          return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
-        }
-      };
-      o.addBtnDef(i, r), e.push(i);
-    }), e;
-  }
-
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        mention: "Mention"
-      },
-      da: {
-        mention: "Nævn"
-      },
-      et: {
-        mention: "Maini"
-      },
-      fr: {
-        mention: "Mentionner"
-      },
-      hu: {
-        mention: "Említ"
-      },
-      ko: {
-        mention: "언급"
-      },
-      pt_br: {
-        mention: "Menção"
-      },
-      ru: {
-        mention: "Упомянуть"
-      },
-      tr: {
-        mention: "Bahset"
-      },
-      zh_tw: {
-        mention: "標記"
-      }
-    },
-    plugins: {
-      mention: {
-        init: function init(e) {
-          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
-          var i = {
-            dropdown: o(e.o.plugins.mention.source, e)
-          };
-          e.addBtnDef("mention", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.noembed.js v1.0
  * noEmbed plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -3379,6 +3619,195 @@
   });
 }(jQuery);
 /* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    source: [],
+    formatDropdownItem: formatDropdownItem,
+    formatResult: formatResult
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        mention: 'Mention'
+      },
+      da: {
+        mention: 'Nævn'
+      },
+      et: {
+        mention: 'Maini'
+      },
+      fr: {
+        mention: 'Mentionner'
+      },
+      hu: {
+        mention: 'Említ'
+      },
+      ko: {
+        mention: '언급'
+      },
+      pt_br: {
+        mention: 'Menção'
+      },
+      ru: {
+        mention: 'Упомянуть'
+      },
+      tr: {
+        mention: 'Bahset'
+      },
+      zh_tw: {
+        mention: '標記'
+      } // jshint camelcase:true
+
+    },
+    plugins: {
+      mention: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
+          var btnDef = {
+            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
+          };
+          trumbowyg.addBtnDef('mention', btnDef);
+        }
+      }
+    }
+  });
+  /**
+   * Build dropdown list
+   *
+   * @param {Array}   items      Items
+   * @param {object}  trumbowyg  Editor
+   *
+   * @return {Array}
+   */
+
+  function buildDropdown(items, trumbowyg) {
+    var dropdown = [];
+    $.each(items, function (i, item) {
+      var btn = 'mention-' + i,
+          btnDef = {
+        hasIcon: false,
+        text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
+        fn: function fn() {
+          trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
+          return true;
+        }
+      };
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+    return dropdown;
+  }
+  /**
+   * Format item in dropdown.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+
+
+  function formatDropdownItem(item) {
+    return item.login;
+  }
+  /**
+   * Format result pasted in editor.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+
+
+  function formatResult(item) {
+    return '@' + item.login + ' ';
+  }
+})(jQuery);
+!function (n) {
+  "use strict";
+
+  var t = {
+    source: [],
+    formatDropdownItem: function formatDropdownItem(n) {
+      return n.login;
+    },
+    formatResult: function formatResult(n) {
+      return "@" + n.login + " ";
+    }
+  };
+
+  function o(t, o) {
+    var e = [];
+    return n.each(t, function (n, t) {
+      var i = "mention-" + n,
+          r = {
+        hasIcon: !1,
+        text: o.o.plugins.mention.formatDropdownItem(t),
+        fn: function fn() {
+          return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
+        }
+      };
+      o.addBtnDef(i, r), e.push(i);
+    }), e;
+  }
+
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        mention: "Mention"
+      },
+      da: {
+        mention: "Nævn"
+      },
+      et: {
+        mention: "Maini"
+      },
+      fr: {
+        mention: "Mentionner"
+      },
+      hu: {
+        mention: "Említ"
+      },
+      ko: {
+        mention: "언급"
+      },
+      pt_br: {
+        mention: "Menção"
+      },
+      ru: {
+        mention: "Упомянуть"
+      },
+      tr: {
+        mention: "Bahset"
+      },
+      zh_tw: {
+        mention: "標記"
+      }
+    },
+    plugins: {
+      mention: {
+        init: function init(e) {
+          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
+          var i = {
+            dropdown: o(e.o.plugins.mention.source, e)
+          };
+          e.addBtnDef("mention", i);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.pasteembed.js v1.0
  * Url paste to iframe with noembed. Plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -3516,78 +3945,6 @@
                 });
               }
             } catch (t) {}
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      pasteImage: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            try {
-              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
-                  mustPreventDefault = false,
-                  reader;
-
-              for (var i = items.length - 1; i >= 0; i -= 1) {
-                if (items[i].type.match(/^image\//)) {
-                  reader = new FileReader();
-                  /* jshint -W083 */
-
-                  reader.onloadend = function (event) {
-                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
-                  };
-                  /* jshint +W083 */
-
-
-                  reader.readAsDataURL(items[i].getAsFile());
-                  mustPreventDefault = true;
-                }
-              }
-
-              if (mustPreventDefault) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-              }
-            } catch (c) {}
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      pasteImage: {
-        init: function init(e) {
-          e.pasteHandlers.push(function (t) {
-            try {
-              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) {
-                n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
-                  e.execCmd("insertImage", t.target.result, !1, !0);
-                }, a.readAsDataURL(n[r].getAsFile()), i = !0);
-              }
-
-              i && (t.stopPropagation(), t.preventDefault());
-            } catch (e) {}
           });
         }
       }
@@ -3822,6 +4179,78 @@
             tag: "pre"
           };
           t.addBtnDef("preformatted", r);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
+                  mustPreventDefault = false,
+                  reader;
+
+              for (var i = items.length - 1; i >= 0; i -= 1) {
+                if (items[i].type.match(/^image\//)) {
+                  reader = new FileReader();
+                  /* jshint -W083 */
+
+                  reader.onloadend = function (event) {
+                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
+                  };
+                  /* jshint +W083 */
+
+
+                  reader.readAsDataURL(items[i].getAsFile());
+                  mustPreventDefault = true;
+                }
+              }
+
+              if (mustPreventDefault) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+              }
+            } catch (c) {}
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(e) {
+          e.pasteHandlers.push(function (t) {
+            try {
+              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) {
+                n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
+                  e.execCmd("insertImage", t.target.result, !1, !0);
+                }, a.readAsDataURL(n[r].getAsFile()), i = !0);
+              }
+
+              i && (t.stopPropagation(), t.preventDefault());
+            } catch (e) {}
+          });
         }
       }
     }
@@ -5137,435 +5566,6 @@
           };
 
           l.addBtnDef("table", a), l.addBtnDef("tableAddRowAbove", b), l.addBtnDef("tableAddRow", n), l.addBtnDef("tableAddColumnLeft", i), l.addBtnDef("tableAddColumn", r), l.addBtnDef("tableDeleteRow", u), l.addBtnDef("tableDeleteColumn", f), l.addBtnDef("tableDestroy", s);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        foreColor: 'Text color',
-        backColor: 'Background color',
-        foreColorRemove: 'Remove text color',
-        backColorRemove: 'Remove background color'
-      },
-      cs: {
-        foreColor: 'Barva textu',
-        backColor: 'Barva pozadí'
-      },
-      da: {
-        foreColor: 'Tekstfarve',
-        backColor: 'Baggrundsfarve'
-      },
-      de: {
-        foreColor: 'Textfarbe',
-        backColor: 'Hintergrundfarbe'
-      },
-      et: {
-        foreColor: 'Teksti värv',
-        backColor: 'Taustavärv',
-        foreColorRemove: 'Eemalda teksti värv',
-        backColorRemove: 'Eemalda taustavärv'
-      },
-      fr: {
-        foreColor: 'Couleur du texte',
-        backColor: 'Couleur de fond',
-        foreColorRemove: 'Supprimer la couleur du texte',
-        backColorRemove: 'Supprimer la couleur de fond'
-      },
-      hu: {
-        foreColor: 'Betű szín',
-        backColor: 'Háttér szín',
-        foreColorRemove: 'Betű szín eltávolítása',
-        backColorRemove: 'Háttér szín eltávolítása'
-      },
-      ja: {
-        foreColor: '文字色',
-        backColor: '背景色'
-      },
-      ko: {
-        foreColor: '글자색',
-        backColor: '배경색',
-        foreColorRemove: '글자색 지우기',
-        backColorRemove: '배경색 지우기'
-      },
-      nl: {
-        foreColor: 'Tekstkleur',
-        backColor: 'Achtergrondkleur'
-      },
-      pt_br: {
-        foreColor: 'Cor de fonte',
-        backColor: 'Cor de fundo'
-      },
-      ru: {
-        foreColor: 'Цвет текста',
-        backColor: 'Цвет выделения текста'
-      },
-      sk: {
-        foreColor: 'Farba textu',
-        backColor: 'Farba pozadia'
-      },
-      tr: {
-        foreColor: 'Yazı rengi',
-        backColor: 'Arka plan rengi',
-        foreColorRemove: 'Yazı rengini kaldır',
-        backColorRemove: 'Arka plan rengini kaldır'
-      },
-      zh_cn: {
-        foreColor: '文字颜色',
-        backColor: '背景颜色'
-      },
-      zh_tw: {
-        foreColor: '文字顏色',
-        backColor: '背景顏色'
-      }
-    }
-  }); // jshint camelcase:true
-
-  function hex(x) {
-    return ('0' + parseInt(x).toString(16)).slice(-2);
-  }
-
-  function colorToHex(rgb) {
-    if (rgb.search('rgb') === -1) {
-      return rgb.replace('#', '');
-    } else if (rgb === 'rgba(0, 0, 0, 0)') {
-      return 'transparent';
-    } else {
-      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
-      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-    }
-  }
-
-  function colorTagHandler(element, trumbowyg) {
-    var tags = [];
-
-    if (!element.style) {
-      return tags;
-    } // background color
-
-
-    if (element.style.backgroundColor !== '') {
-      var backColor = colorToHex(element.style.backgroundColor);
-
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
-        tags.push('backColor' + backColor);
-      } else {
-        tags.push('backColorFree');
-      }
-    } // text color
-
-
-    var foreColor;
-
-    if (element.style.color !== '') {
-      foreColor = colorToHex(element.style.color);
-    } else if (element.hasAttribute('color')) {
-      foreColor = colorToHex(element.getAttribute('color'));
-    }
-
-    if (foreColor) {
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
-        tags.push('foreColor' + foreColor);
-      } else {
-        tags.push('foreColorFree');
-      }
-    }
-
-    return tags;
-  }
-
-  var defaultOptions = {
-    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
-    foreColorList: null,
-    // fallbacks on colorList
-    backColorList: null,
-    // fallbacks on colorList
-    allowCustomForeColor: true,
-    allowCustomBackColor: true,
-    displayAsList: false
-  }; // Add all colors in two dropdowns
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      color: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
-          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
-          var foreColorBtnDef = {
-            dropdown: buildDropdown('foreColor', trumbowyg),
-            dropdownClass: dropdownClass
-          },
-              backColorBtnDef = {
-            dropdown: buildDropdown('backColor', trumbowyg),
-            dropdownClass: dropdownClass
-          };
-          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
-          trumbowyg.addBtnDef('backColor', backColorBtnDef);
-        },
-        tagHandler: colorTagHandler
-      }
-    }
-  });
-
-  function buildDropdown(_fn, trumbowyg) {
-    var dropdown = [],
-        trumbowygColorOptions = trumbowyg.o.plugins.colors,
-        colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
-    $.each(colorList, function (i, color) {
-      var btn = _fn + color,
-          btnDef = {
-        fn: _fn,
-        forceCss: true,
-        hasIcon: false,
-        text: trumbowyg.lang['#' + color] || '#' + color,
-        param: '#' + color,
-        style: 'background-color: #' + color + ';'
-      };
-
-      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
-        btnDef.style = 'color: #' + color + ' !important;';
-      }
-
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    }); // Remove color
-
-    var removeColorButtonName = _fn + 'Remove',
-        removeColorBtnDef = {
-      fn: 'removeFormat',
-      hasIcon: false,
-      param: _fn,
-      style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
-    };
-
-    if (trumbowygColorOptions.displayAsList) {
-      removeColorBtnDef.style = '';
-    }
-
-    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
-    dropdown.push(removeColorButtonName); // Custom color
-
-    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
-      // add free color btn
-      var freeColorButtonName = _fn + 'Free',
-          freeColorBtnDef = {
-        fn: function fn() {
-          trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
-            color: {
-              label: _fn,
-              forceCss: true,
-              type: 'color',
-              value: '#FFFFFF'
-            }
-          }, // callback
-          function (values) {
-            trumbowyg.execCmd(_fn, values.color);
-            return true;
-          });
-        },
-        hasIcon: false,
-        text: '#',
-        // style adjust for displaying the text
-        style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
-      };
-      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
-      dropdown.push(freeColorButtonName);
-    }
-
-    return dropdown;
-  }
-})(jQuery);
-!function (o) {
-  "use strict";
-
-  function r(o) {
-    return ("0" + parseInt(o).toString(16)).slice(-2);
-  }
-
-  function e(o) {
-    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o ? "transparent" : r((o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/))[1]) + r(o[2]) + r(o[3]);
-  }
-
-  o.extend(!0, o.trumbowyg, {
-    langs: {
-      en: {
-        foreColor: "Text color",
-        backColor: "Background color",
-        foreColorRemove: "Remove text color",
-        backColorRemove: "Remove background color"
-      },
-      cs: {
-        foreColor: "Barva textu",
-        backColor: "Barva pozadí"
-      },
-      da: {
-        foreColor: "Tekstfarve",
-        backColor: "Baggrundsfarve"
-      },
-      de: {
-        foreColor: "Textfarbe",
-        backColor: "Hintergrundfarbe"
-      },
-      et: {
-        foreColor: "Teksti värv",
-        backColor: "Taustavärv",
-        foreColorRemove: "Eemalda teksti värv",
-        backColorRemove: "Eemalda taustavärv"
-      },
-      fr: {
-        foreColor: "Couleur du texte",
-        backColor: "Couleur de fond",
-        foreColorRemove: "Supprimer la couleur du texte",
-        backColorRemove: "Supprimer la couleur de fond"
-      },
-      hu: {
-        foreColor: "Betű szín",
-        backColor: "Háttér szín",
-        foreColorRemove: "Betű szín eltávolítása",
-        backColorRemove: "Háttér szín eltávolítása"
-      },
-      ja: {
-        foreColor: "文字色",
-        backColor: "背景色"
-      },
-      ko: {
-        foreColor: "글자색",
-        backColor: "배경색",
-        foreColorRemove: "글자색 지우기",
-        backColorRemove: "배경색 지우기"
-      },
-      nl: {
-        foreColor: "Tekstkleur",
-        backColor: "Achtergrondkleur"
-      },
-      pt_br: {
-        foreColor: "Cor de fonte",
-        backColor: "Cor de fundo"
-      },
-      ru: {
-        foreColor: "Цвет текста",
-        backColor: "Цвет выделения текста"
-      },
-      sk: {
-        foreColor: "Farba textu",
-        backColor: "Farba pozadia"
-      },
-      tr: {
-        foreColor: "Yazı rengi",
-        backColor: "Arka plan rengi",
-        foreColorRemove: "Yazı rengini kaldır",
-        backColorRemove: "Arka plan rengini kaldır"
-      },
-      zh_cn: {
-        foreColor: "文字颜色",
-        backColor: "背景颜色"
-      },
-      zh_tw: {
-        foreColor: "文字顏色",
-        backColor: "背景顏色"
-      }
-    }
-  });
-  var l = {
-    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
-    foreColorList: null,
-    backColorList: null,
-    allowCustomForeColor: !0,
-    allowCustomBackColor: !0,
-    displayAsList: !1
-  };
-
-  function a(r, e) {
-    var l = [],
-        a = e.o.plugins.colors,
-        t = a[r + "List"] || a.colorList;
-    o.each(t, function (o, t) {
-      var c = r + t,
-          f = {
-        fn: r,
-        forceCss: !0,
-        hasIcon: !1,
-        text: e.lang["#" + t] || "#" + t,
-        param: "#" + t,
-        style: "background-color: #" + t + ";"
-      };
-      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
-    });
-    var c = r + "Remove",
-        f = {
-      fn: "removeFormat",
-      hasIcon: !1,
-      param: r,
-      style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
-    };
-
-    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
-      var d = r + "Free",
-          n = {
-        fn: function fn() {
-          e.openModalInsert(e.lang[r], {
-            color: {
-              label: r,
-              forceCss: !0,
-              type: "color",
-              value: "#FFFFFF"
-            }
-          }, function (o) {
-            return e.execCmd(r, o.color), !0;
-          });
-        },
-        hasIcon: !1,
-        text: "#",
-        style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
-      };
-      e.addBtnDef(d, n), l.push(d);
-    }
-
-    return l;
-  }
-
-  o.extend(!0, o.trumbowyg, {
-    plugins: {
-      color: {
-        init: function init(o) {
-          o.o.plugins.colors = o.o.plugins.colors || l;
-          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
-              e = {
-            dropdown: a("foreColor", o),
-            dropdownClass: r
-          },
-              t = {
-            dropdown: a("backColor", o),
-            dropdownClass: r
-          };
-          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
-        },
-        tagHandler: function tagHandler(o, r) {
-          var l,
-              a = [];
-          if (!o.style) return a;
-
-          if ("" !== o.style.backgroundColor) {
-            var t = e(o.style.backgroundColor);
-            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
-          }
-
-          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
         }
       }
     }
