@@ -87,14 +87,14 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
-                var filenames = field.GetFilenames();
+                var filenames = field.GetAttachedFileNames();
                 if (filenames != null)
                 {
                     for (var i = 0; i < itemPaths.Count(); i++)
                     {
                         if (i >= 0 && i < filenames.Length)
                         {
-                            itemPaths[i].Filename = filenames[i];
+                            itemPaths[i].AttachedFileName = filenames[i];
                         }
                     }
                 }
@@ -122,15 +122,13 @@ namespace OrchardCore.Media.Drivers
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService
                 if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
                 {
-                    var existingFilenames = field.GetFilenames();
-                    var filenames = new string[items.Count];
-                    foreach (var item in items)
+                    for (var i = 0; i < items.Count; i++)
                     {
-                        if(item.IsNew)
+                        if (items[i].IsNew)
                         {
-                            var lastSlash = item.Path.LastIndexOf('/');
-                            var nameOnly = item.Path[(lastSlash + 1)..];
-                            item.Filename = nameOnly[36..]; // remove unique id from name
+                            var lastSlash = items[i].Path.LastIndexOf('/');
+                            var nameOnly = items[i].Path[(lastSlash + 1)..];
+                            items[i].AttachedFileName = nameOnly[36..]; // remove unique id from name
                         }
                     }
 
@@ -147,7 +145,7 @@ namespace OrchardCore.Media.Drivers
 
                 field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? new string[] { };
 
-                field.SetFilenames(items.Where(i => !i.IsRemoved).Select(i => i.Filename).ToArray());
+                field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
 
                 var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
 

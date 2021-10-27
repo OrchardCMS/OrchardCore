@@ -25,13 +25,13 @@ namespace OrchardCore.Media.ViewModels
         public bool AllowAnchors { get; set; }
         public Anchor[] Anchors { get; set; } = Array.Empty<Anchor>();
 
-        public string[] Filenames { get; set; } = Array.Empty<string>();
+        public string[] AttachedFileNames { get; set; } = Array.Empty<string>();
     }
 
     public class EditMediaFieldItemInfo
     {
         public string Path { get; set; }
-        public string Filename { get; set; }
+        public string AttachedFileName { get; set; }
 
         // It will be true if the media item is a new upload from a attached media field.
         public bool IsNew { get; set; }

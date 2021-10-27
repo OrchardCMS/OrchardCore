@@ -34,7 +34,7 @@
             <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-trash-alt" aria-hidden="true"></i></a>
         </div>
         <label class="selected-media-name">
-            <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+            <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.attachedFileName == null ? selectedMedia.name : selectedMedia.attachedFileName }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
         </label>
     </div>
 
