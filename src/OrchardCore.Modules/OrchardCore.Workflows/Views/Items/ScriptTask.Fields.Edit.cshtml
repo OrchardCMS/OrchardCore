@@ -24,17 +24,17 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
 <script at="Foot">
-$(function () {
-    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Script)'), {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "javascript" },
-      });
+    $(function () {
+        var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Script)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "javascript" },
+        });
 
-    editor.on('change', function (cm) {
-        document.getElementById('@Html.IdFor(x => x.Script)').value = cm.getValue();
+        editor.on('change', function(cmEditor){
+            cmEditor.save();
+        });
     });
-});
 </script>

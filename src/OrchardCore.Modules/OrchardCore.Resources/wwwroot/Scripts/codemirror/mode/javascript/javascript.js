@@ -633,7 +633,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function quasi(type, value) {
       if (type != "quasi") return pass();
       if (value.slice(value.length - 2) != "${") return cont(quasi);
-      return cont(expression, continueQuasi);
+      return cont(maybeexpression, continueQuasi);
     }
 
     function continueQuasi(type) {

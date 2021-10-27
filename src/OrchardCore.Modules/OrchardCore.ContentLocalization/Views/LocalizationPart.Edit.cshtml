@@ -10,6 +10,7 @@
         <div class="accordion-header" id="contentLocalizationToggle">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contentLocalizationCard" aria-expanded="true" aria-controls="collapseOne">
                 @T["Current Culture: {1} | {0}", Model.CultureInfo.Name, Model.CultureInfo.DisplayName]
+                <i class="fa fa-angle-down" aria-hidden="true"></i>
             </button>
         </div>
         <div id="contentLocalizationCard" class="collapse" aria-labelledby="contentLocalizationToggle" data-bs-parent="#localizationPartEdit">
@@ -28,11 +29,11 @@
                             {
                                 if (!string.IsNullOrEmpty(culture.ContentItemId))
                                 {
-                                    <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
+                                    <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
                                 }
                                 else
                                 {
-                                    <a class="list-group-item list-group-item-action" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
+                                    <a class="list-group-item list-group-item-action" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
                                 }
                             }
                         </div>

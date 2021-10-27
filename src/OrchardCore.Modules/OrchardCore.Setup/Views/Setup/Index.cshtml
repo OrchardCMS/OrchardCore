@@ -173,7 +173,7 @@
 
             <div class="mb-3 col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
                 <label asp-for="TablePrefix">@T["Table Prefix"]</label>
-                <input asp-for="TablePrefix" class="form-control" />
+                <input asp-for="TablePrefix" class="form-select" />
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
                 <span class="text-muted form-text small">@T["You can specify a table prefix if you intend to reuse the same database for multiple sites."]</span>
             </div>

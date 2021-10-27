@@ -219,12 +219,6 @@
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"
   },
   {
-    "inputs": [
-      "Assets/trumbowyg/js/resizable-resolveconflict.js"
-    ],
-    "output": "wwwroot/Scripts/resizable-resolveconflict.js"
-  },
-  {
     "copy": true,
     "inputs": [
       "node_modules/vue/dist/vue.js"
@@ -297,7 +291,7 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "node_modules/js-cookie/src/js.cookie.js"
+      "node_modules/js-cookie/dist/js.cookie.js"
     ],
     "output": "wwwroot/Scripts/js.cookie.js"
   },

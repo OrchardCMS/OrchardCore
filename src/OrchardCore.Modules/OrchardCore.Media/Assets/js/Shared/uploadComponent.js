@@ -2,7 +2,7 @@
 Vue.component('upload', {
     template: '\
         <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
-            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times"></i> </span>\
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times" aria-hidden="true"></i> </span>\
             <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
             <div> \
                <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \

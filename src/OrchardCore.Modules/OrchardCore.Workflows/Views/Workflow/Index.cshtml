@@ -20,7 +20,7 @@
     </nav>
 </zone>
 
-<form asp-action="Index" id="workflows-form" method="post">
+<form asp-action="Index" id="workflows-form" method="post" class="no-multisubmit">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />

@@ -2,16 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Setup;
+using OrchardCore.AutoSetup.Extensions;
 using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Setup.Services;
 
 namespace OrchardCore.AutoSetup
@@ -27,22 +28,27 @@ namespace OrchardCore.AutoSetup
         private readonly RequestDelegate _next;
 
         /// <summary>
-        /// The Shell host.
+        /// The shell host.
         /// </summary>
         private readonly IShellHost _shellHost;
 
         /// <summary>
-        /// The Shell settings.
+        /// The shell settings.
         /// </summary>
         private readonly ShellSettings _shellSettings;
 
         /// <summary>
-        /// The Shell settings manager.
+        /// The shell settings manager.
         /// </summary>
         private readonly IShellSettingsManager _shellSettingsManager;
 
         /// <summary>
-        /// The auto-setup options.
+        /// A distributed lock guaranties an atomic setup in multi instances environment.
+        /// </summary>
+        private readonly IDistributedLock _distributedLock;
+
+        /// <summary>
+        /// The auto setup options.
         /// </summary>
         private readonly AutoSetupOptions _options;
 
@@ -51,23 +57,32 @@ namespace OrchardCore.AutoSetup
         /// </summary>
         private readonly ILogger<AutoSetupMiddleware> _logger;
 
+        /// <summary>
+        /// The auto setup lock options.
+        /// </summary>
+        private readonly LockOptions _lockOptions;
+
+        /// <summary>
+        /// The tenant setup options.
+        /// </summary>
         private readonly TenantSetupOptions _setupOptions;
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoSetupMiddleware"/> class.
         /// </summary>
         /// <param name="next">The next middleware in the execution pipeline.</param>
-        /// <param name="shellHost">The Shell host.</param>
-        /// <param name="shellSettings">The Shell settings.</param>
-        /// <param name="shellSettingsManager">The Shell settings manager.</param>
-        /// <param name="options">The auto-setup Options.</param>
+        /// <param name="shellHost">The shell host.</param>
+        /// <param name="shellSettings">The shell settings.</param>
+        /// <param name="shellSettingsManager">The shell settings manager.</param>
+        /// <param name="distributedLock">The distributed lock.</param>
+        /// <param name="options">The auto setup options.</param>
         /// <param name="logger">The logger.</param>
         public AutoSetupMiddleware(
             RequestDelegate next,
             IShellHost shellHost,
             ShellSettings shellSettings,
             IShellSettingsManager shellSettingsManager,
+            IDistributedLock distributedLock,
             IOptions<AutoSetupOptions> options,
             ILogger<AutoSetupMiddleware> logger)
         {
@@ -75,14 +90,16 @@ namespace OrchardCore.AutoSetup
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _shellSettingsManager = shellSettingsManager;
+            _distributedLock = distributedLock;
             _options = options.Value;
             _logger = logger;
 
+            _lockOptions = _options.LockOptions;
             _setupOptions = _options.Tenants.FirstOrDefault(options => _shellSettings.Name == options.ShellName);
         }
 
         /// <summary>
-        /// The middleware auto-setup invoke.
+        /// The auto setup middleware invoke.
         /// </summary>
         /// <param name="httpContext">
         /// The http context.
@@ -94,41 +111,52 @@ namespace OrchardCore.AutoSetup
         {
             if (_setupOptions != null && _shellSettings.State == TenantState.Uninitialized)
             {
-                await _semaphore.WaitAsync();
-                try
+                // Try to acquire a lock before starting installation, it guaranties an atomic setup in multi instances environment.
+                (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_lockOptions);
+                if (!locked)
                 {
-                    if (_shellSettings.State == TenantState.Uninitialized)
+                    throw new TimeoutException($"Fails to acquire an auto setup lock for the tenant: {_setupOptions.ShellName}");
+                }
+
+                await using var acquiredLock = locker;
+
+                if (_shellSettings.State == TenantState.Uninitialized)
+                {
+                    var pathBase = httpContext.Request.PathBase;
+                    if (!pathBase.HasValue)
                     {
-                        var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
-                        if (await SetupTenantAsync(setupService, _setupOptions, _shellSettings))
+                        pathBase = "/";
+                    }
+
+                    // Check if the tenant was installed by another instance.
+                    var settings = await _shellSettingsManager.LoadSettingsAsync(_shellSettings.Name);
+                    if (settings.State != TenantState.Uninitialized)
+                    {
+                        await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
+                        httpContext.Response.Redirect(pathBase);
+
+                        return;
+                    }
+
+                    var setupService = httpContext.RequestServices.GetRequiredService<ISetupService>();
+                    if (await SetupTenantAsync(setupService, _setupOptions, _shellSettings))
+                    {
+                        if (_setupOptions.IsDefault)
                         {
-                            if (_setupOptions.IsDefault)
+                            // Create the rest of the shells for further on demand setup.
+                            foreach (var setupOptions in _options.Tenants)
                             {
-                                // Create the rest of the Shells for further on demand setup.
-                                foreach (var setupOptions in _options.Tenants)
+                                if (_setupOptions != setupOptions)
                                 {
-                                    if (_setupOptions != setupOptions)
-                                    {
-                                        await CreateTenantSettingsAsync(setupOptions);
-                                    }
+                                    await CreateTenantSettingsAsync(setupOptions);
                                 }
                             }
-
-                            var pathBase = httpContext.Request.PathBase;
-                            if (!pathBase.HasValue)
-                            {
-                                pathBase = "/";
-                            }
-
-                            httpContext.Response.Redirect(pathBase);
-
-                            return;
                         }
+
+                        httpContext.Response.Redirect(pathBase);
+
+                        return;
                     }
-                }
-                finally
-                {
-                    _semaphore.Release();
                 }
             }
 
@@ -136,13 +164,13 @@ namespace OrchardCore.AutoSetup
         }
 
         /// <summary>
-        /// Setup tenant.
+        /// Sets up a tenant.
         /// </summary>
         /// <param name="setupService">The setup service.</param>
         /// <param name="setupOptions">The tenant setup options.</param>
         /// <param name="shellSettings">The tenant shell settings.</param>
         /// <returns>
-        /// The <see cref="Task"/>.
+        /// Returns <c>true</c> if successfully setup.
         /// </returns>
         public async Task<bool> SetupTenantAsync(ISetupService setupService, TenantSetupOptions setupOptions, ShellSettings shellSettings)
         {
@@ -166,11 +194,12 @@ namespace OrchardCore.AutoSetup
             }
 
             _logger.LogError("AutoSetup failed installing the site '{SiteName}' with errors: {Errors}", setupOptions.SiteName, stringBuilder);
+
             return false;
         }
 
         /// <summary>
-        /// Create tenant shell settings.
+        /// Creates a tenant shell settings.
         /// </summary>
         /// <param name="setupOptions">The setup options.</param>
         /// <returns>The <see cref="ShellSettings"/>.</returns>
@@ -195,12 +224,12 @@ namespace OrchardCore.AutoSetup
         }
 
         /// <summary>
-        /// Get setup context from the configuration.
+        /// Gets a setup context from the configuration.
         /// </summary>
         /// <param name="options">The tenant setup options.</param>
         /// <param name="setupService">The setup service.</param>
         /// <param name="shellSettings">The tenant shell settings.</param>
-        /// <returns> The <see cref="SetupContext"/>. to setup the site </returns>
+        /// <returns> The <see cref="SetupContext"/> used to setup the site.</returns>
         private static async Task<SetupContext> GetSetupContextAsync(TenantSetupOptions options, ISetupService setupService, ShellSettings shellSettings)
         {
             var recipes = await setupService.GetSetupRecipesAsync();

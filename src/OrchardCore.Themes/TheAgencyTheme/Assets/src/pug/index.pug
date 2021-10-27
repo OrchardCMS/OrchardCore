@@ -14,7 +14,7 @@ html(lang='en')
         link(rel='icon', type='image/x-icon', href='assets/favicon.ico')
 
         // Font Awesome icons (free version)
-        script(src='https://use.fontawesome.com/releases/v5.15.3/js/all.js', crossorigin='anonymous')
+        script(src='https://use.fontawesome.com/releases/v5.15.4/js/all.js', crossorigin='anonymous')
 
         // Google fonts
         link(href='https://fonts.googleapis.com/css?family=Montserrat:400,700', rel='stylesheet', type='text/css')
@@ -279,36 +279,95 @@ html(lang='en')
                 .text-center
                     h2.section-heading.text-uppercase Contact Us
                     h3.section-subheading.text-muted Lorem ipsum dolor sit amet consectetur.
-                form#contactForm
+
+                // * * * * * * * * * * * * * * *
+                // * * SB Forms Contact Form * *
+                // * * * * * * * * * * * * * * *
+
+                // This form is pre-integrated with SB Forms.
+                // To make this form functional, sign up at
+                // https://startbootstrap.com/solution/contact-forms
+                // to get an API token!
+
+                form#contactForm(data-sb-form-api-token='API_TOKEN')
                     .row.align-items-stretch.mb-5
                         .col-md-6
                             .form-group
-                                input#name.form-control(type='text', placeholder='Your Name *', required='required')
-                                p.help-block.text-danger
+
+                                // Name input
+                                input#name.form-control(
+                                    type='text',
+                                    placeholder='Your Name *',
+                                    data-sb-validations='required'
+                                )
+                                .invalid-feedback(data-sb-feedback='name:required')
+                                    | A name is required.
+
                             .form-group
-                                input#email.form-control(type='email', placeholder='Your Email *', required='required')
-                                p.help-block.text-danger
+
+                                // Email address input
+                                input#email.form-control(
+                                    type='email',
+                                    placeholder='Your Email *',
+                                    data-sb-validations='required,email'
+                                )
+                                .invalid-feedback(data-sb-feedback='email:required')
+                                    | An email is required.
+                                .invalid-feedback(data-sb-feedback='email:email')
+                                    | Email is not valid.
+
                             .form-group.mb-md-0
-                                input#phone.form-control(type='tel', placeholder='Your Phone *', required='required')
-                                p.help-block.text-danger
+
+                                // Phone number input
+                                input#phone.form-control(
+                                    type='tel',
+                                    placeholder='Your Phone *',
+                                    data-sb-validations='required'
+                                )
+                                .invalid-feedback(data-sb-feedback='phone:required')
+                                    | A phone number is required.
+
                         .col-md-6
                             .form-group.form-group-textarea.mb-md-0
-                                textarea#message.form-control(placeholder='Your Message *', required='required')
-                                p.help-block.text-danger
+
+                                // Message input
+                                textarea#message.form-control(
+                                    placeholder='Your Message *',
+                                    data-sb-validations='required'
+                                )
+                                .invalid-feedback(data-sb-feedback='message:required')
+                                    | A message is required.
+
+                    // Submit success message
+                    //
+                    // This is what your users will see when the form
+                    // has successfully submitted
+
+                    #submitSuccessMessage.d-none
+                        .text-center.text-white.mb-3
+                            .fw-bolder Form submission successful!
+                            | To activate this form, sign up at
+                            br
+                            a(href='https://startbootstrap.com/solution/contact-forms') https://startbootstrap.com/solution/contact-forms
+
+                    // Submit error message
+                    //
+                    // This is what your users will see when there is
+                    // an error submitting the form
+
+                    #submitErrorMessage.d-none
+                        .text-center.text-danger.mb-3 Error sending message!
+
+                    // Submit Button
                     .text-center
-                            #success
-                            button#sendMessageButton.btn.btn-primary.btn-xl.text-uppercase(type='submit') Send Message
+                        button#submitButton.btn.btn-primary.btn-xl.text-uppercase.disabled(type='submit') Send Message
 
         // Footer
         footer.footer.py-4
             .container
                 .row.align-items-center
                     .col-lg-4.text-lg-start
-                        | Copyright &copy; Your Website
-                        // This script automatically adds the current year to your website footer
-                        // (credit: https://updateyourfooter.com/)
-                        script.
-                            document.write(new Date().getFullYear());
+                        | Copyright &copy; Your Website 2021
                     .col-lg-4.my-3.my-lg-0
                         a.btn.btn-dark.btn-social.mx-2(href='#!')
                             i.fab.fa-twitter
@@ -329,7 +388,14 @@ html(lang='en')
         include includes/portfolio-modal-6
 
         // Bootstrap core JS
-        script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js')
+        script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js')
 
         // Core theme JS
         script(src='js/scripts.js')
+
+        // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        // * *                               SB Forms JS                               * *
+        // * * Activate your form at https://startbootstrap.com/solution/contact-forms * *
+        // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+        script(src='https://cdn.startbootstrap.com/sb-forms-latest.js')

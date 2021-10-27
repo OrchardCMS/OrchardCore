@@ -4,7 +4,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Tenant"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" class="no-multisubmit">
     <div class="row">
         <div class="mb-3 col-md-6" asp-validation-class-for="Name">
             <label asp-for="Name">@T["Name"]</label>
@@ -60,7 +60,7 @@
         <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
     </h6>
     <div class="row">
-        @if(!Model.DatabaseConfigurationPreset)
+        @if (!Model.DatabaseConfigurationPreset)
         {
             <div class="mb-3 col-md-6">
                 <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
@@ -79,14 +79,27 @@
             <input asp-for="TablePrefix" class="form-control" />
         </div>
     </div>
-    @if(!Model.DatabaseConfigurationPreset)
-    { 
+    @if (!Model.DatabaseConfigurationPreset)
+    {
         <div class="row connectionString" asp-validation-class-for="ConnectionString">
             <div class="mb-3 col-md-12">
                 <label asp-for="ConnectionString">@T["Connection string"]</label>
                 <input asp-for="ConnectionString" class="form-control" />
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
                 <span id="connectionStringHint" class="text-muted form-text small"></span>
+            </div>
+        </div>
+    }
+
+    @if (Model.FeatureProfiles.Any())
+    {
+        <h6>
+            @T["Feature profile"]
+            <span class="text-muted form-text small">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
+        </h6>
+        <div class="row" asp-validation-class-for="FeatureProfile">
+            <div class="form-group col-md-6">
+                <select asp-for="FeatureProfile" asp-items="Model.FeatureProfiles" class="form-control"></select>
             </div>
         </div>
     }

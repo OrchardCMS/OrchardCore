@@ -69,7 +69,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
                 if (!availableActions.Contains(action))
                 {
-                    _notifier.Error(H["Not authorized to trigger '{0}'.", action]);
+                    await _notifier.ErrorAsync(H["Not authorized to trigger '{0}'.", action]);
                 }
                 else
                 {

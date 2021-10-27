@@ -9,7 +9,7 @@
                     <div class="bg-secondary d-flex justify-content-center">
                         <img class="img-fluid img-modal" v-bind:src="selectedMedia.url" ref="anchorImage" v-on:mousedown="setAnchor" v-on:drop='onAnchorDrop($event)' v-on:dragover.prevent v-on:dragenter.prevent/>
                         <span v-if="selectedMedia.anchor && selectedMedia.anchor.x && selectedMedia.anchor.y" class="icon-media-anchor" draggable v-bind:style="{ left: anchorLeft(), top: anchorTop() }">
-                            <i class="fas fa-crosshairs"></i>
+                            <i class="fas fa-crosshairs" aria-hidden="true"></i>
                         </span>
                     </div>
                 </div>

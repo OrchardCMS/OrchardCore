@@ -39,18 +39,18 @@
                     </div>
                     <div class="btn-group visibility-buttons">
                         <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: gridView}" v-on:click="gridView = true">
-                            <span title="@T["Grid View"]"><i class="fa fa-th-large"></i></span>
+                            <span title="@T["Grid View"]"><i class="fa fa-th-large" aria-hidden="true"></i></span>
                         </button>
                         <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: !gridView}" v-on:click="gridView = false">
-                            <span title="@T["List View"]"><i class="fa fa-th-list"></i></span>
+                            <span title="@T["List View"]"><i class="fa fa-th-list" aria-hidden="true"></i></span>
                         </button>
                     </div>
                     <div class="btn-group visibility-buttons" v-show="gridView">
                         <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm" :class="{selected: smallThumbs}" v-on:click="smallThumbs = true">
-                            <span title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
+                            <span title="@T["Small Thumbs"]"><i class="fa fa-compress" aria-hidden="true"></i></span>
                         </button>
                         <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm me-2" :class="{selected: !smallThumbs}" v-on:click="smallThumbs = false">
-                            <span title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
+                            <span title="@T["Large Thumbs"]"><i class="fa fa-expand" aria-hidden="true"></i></span>
                         </button>
                     </div>
 
@@ -59,7 +59,7 @@
                             <div class="input-group input-group-sm">
                                 <span class="fa fa-filter icon-inside-input"></span>
                                 <input type="text" id="media-filter-input" v-model="mediaFilter" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
-                                <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times"></i></button>
+                                <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </div>

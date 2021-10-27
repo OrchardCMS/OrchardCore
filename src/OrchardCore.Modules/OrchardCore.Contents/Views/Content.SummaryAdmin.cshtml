@@ -31,7 +31,7 @@
                 }
             </div>
             <div class="contenttype me-1">
-                <span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary"></i> <a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-bs-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
+                <span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary" aria-hidden="true"></i> <a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-bs-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
             </div>
             @if (Model.Header != null)
             {

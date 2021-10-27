@@ -29,7 +29,7 @@
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^19.0.0",
-    "rollup": "^2.50.5"
+    "@rollup/plugin-commonjs": "^20.0.0",
+    "rollup": "^2.58.0"
   }
 }

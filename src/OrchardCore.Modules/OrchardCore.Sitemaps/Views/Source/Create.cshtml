@@ -3,7 +3,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Sitemap Source"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" class="no-multisubmit">
     @await DisplayAsync(Model.Editor.Content)
 
     <input type="hidden" asp-for="SitemapId" />

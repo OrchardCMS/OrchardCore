@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -61,43 +60,65 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task<IFileStoreEntry> GetFileInfoAsync(string path)
         {
-            var blob = GetBlobReference(path);
-
-            if (!await blob.ExistsAsync())
+            try
             {
-                return null;
+                var blob = GetBlobReference(path);
+
+                if (!await blob.ExistsAsync())
+                {
+                    return null;
+                }
+
+                var properties = await blob.GetPropertiesAsync();
+
+                return new BlobFile(path, properties.Value.ContentLength, properties.Value.LastModified);
             }
-
-            var properties = await blob.GetPropertiesAsync();
-
-            return new BlobFile(path, properties.Value.ContentLength, properties.Value.LastModified);
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot get file info with path '{path}'.", ex);
+            }
         }
 
         public async Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
         {
-            if (path == String.Empty)
+            try
             {
-                return new BlobDirectory(path, _clock.UtcNow);
+                if (path == String.Empty)
+                {
+                    return new BlobDirectory(path, _clock.UtcNow);
+                }
+
+                var blobDirectory = await GetBlobDirectoryReference(path);
+
+                if (blobDirectory != null)
+                {
+                    return new BlobDirectory(path, _clock.UtcNow);
+                }
+
+                return null;
             }
-
-            var blobDirectory = await GetBlobDirectoryReference(path);
-
-            if (blobDirectory != null)
+            catch (Exception ex)
             {
-                return new BlobDirectory(path, _clock.UtcNow);
+                throw new FileStoreException($"Cannot get directory info with path '{path}'.", ex);
             }
-
-            return null;
         }
+
         public IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
-            if (includeSubDirectories)
+            try
             {
-                return GetDirectoryContentFlatAsync(path);
+                if (includeSubDirectories)
+                {
+                    return GetDirectoryContentFlatAsync(path);
+                }
+                else
+                {
+                    return GetDirectoryContentByHierarchyAsync(path);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return GetDirectoryContentByHierarchyAsync(path);
+                throw new FileStoreException($"Cannot get directory content with path '{path}'.", ex);
             }
         }
 
@@ -180,106 +201,163 @@ namespace OrchardCore.FileStorage.AzureBlob
             // Since directories are only created implicitly when creating blobs, we
             // simply pretend like we created the directory, unless there is already
             // a blob with the same path.
-
-            var blobFile = GetBlobReference(path);
-
-            if (await blobFile.ExistsAsync())
+            try
             {
-                throw new FileStoreException($"Cannot create directory because the path '{path}' already exists and is a file.");
-            }
+                var blobFile = GetBlobReference(path);
 
-            var blobDirectory = await GetBlobDirectoryReference(path);
-            if (blobDirectory == null)
+                if (await blobFile.ExistsAsync())
+                {
+                    throw new FileStoreException($"Cannot create directory because the path '{path}' already exists and is a file.");
+                }
+
+                var blobDirectory = await GetBlobDirectoryReference(path);
+                if (blobDirectory == null)
+                {
+                    await CreateDirectoryAsync(path);
+                }
+
+                return true;
+            }
+            catch (FileStoreException)
             {
-                await CreateDirectoryAsync(path);
+                throw;
             }
-
-            return true;
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot create directory '{path}'.", ex);
+            }
         }
 
         public async Task<bool> TryDeleteFileAsync(string path)
         {
-            var blob = GetBlobReference(path);
+            try
+            {
+                var blob = GetBlobReference(path);
 
-            return await blob.DeleteIfExistsAsync();
+                return await blob.DeleteIfExistsAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot delete file '{path}'.", ex);
+            }
         }
 
         public async Task<bool> TryDeleteDirectoryAsync(string path)
         {
-            if (String.IsNullOrEmpty(path))
+            try
             {
-                throw new FileStoreException("Cannot delete the root directory.");
+                if (String.IsNullOrEmpty(path))
+                {
+                    throw new FileStoreException("Cannot delete the root directory.");
+                }
+
+                var blobsWereDeleted = false;
+                var prefix = this.Combine(_basePrefix, path);
+                prefix = this.NormalizePrefix(prefix);
+
+                var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
+                await foreach (var blob in page)
+                {
+                    var blobReference = _blobContainer.GetBlobClient(blob.Name);
+                    await blobReference.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
+                    blobsWereDeleted = true;
+                }
+
+                return blobsWereDeleted;
             }
-
-            var blobsWereDeleted = false;
-            var prefix = this.Combine(_basePrefix, path);
-            prefix = this.NormalizePrefix(prefix);
-
-            var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
-            await foreach (var blob in page)
+            catch (FileStoreException)
             {
-                var blobReference = _blobContainer.GetBlobClient(blob.Name);
-                await blobReference.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
-                blobsWereDeleted = true;
+                throw;
             }
-
-            return blobsWereDeleted;
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot delete directory '{path}'.", ex);
+            }
         }
 
         public async Task MoveFileAsync(string oldPath, string newPath)
         {
-            await CopyFileAsync(oldPath, newPath);
-            await TryDeleteFileAsync(oldPath);
+            try
+            {
+                await CopyFileAsync(oldPath, newPath);
+                await TryDeleteFileAsync(oldPath);
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.", ex);
+            }
         }
 
         public async Task CopyFileAsync(string srcPath, string dstPath)
         {
-            if (srcPath == dstPath)
+            try
             {
-                throw new ArgumentException($"The values for {nameof(srcPath)} and {nameof(dstPath)} must not be the same.");
-            }
+                if (srcPath == dstPath)
+                {
+                    throw new ArgumentException($"The values for {nameof(srcPath)} and {nameof(dstPath)} must not be the same.");
+                }
 
-            var oldBlob = GetBlobReference(srcPath);
-            var newBlob = GetBlobReference(dstPath);
+                var oldBlob = GetBlobReference(srcPath);
+                var newBlob = GetBlobReference(dstPath);
 
-            if (!await oldBlob.ExistsAsync())
-            {
-                throw new FileStoreException($"Cannot copy file '{srcPath}' because it does not exist.");
-            }
+                if (!await oldBlob.ExistsAsync())
+                {
+                    throw new FileStoreException($"Cannot copy file '{srcPath}' because it does not exist.");
+                }
 
-            if (await newBlob.ExistsAsync())
-            {
-                throw new FileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
-            }
+                if (await newBlob.ExistsAsync())
+                {
+                    throw new FileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
+                }
 
-            await newBlob.StartCopyFromUriAsync(oldBlob.Uri);
+                await newBlob.StartCopyFromUriAsync(oldBlob.Uri);
 
-            await Task.Delay(250);
-            var properties = await newBlob.GetPropertiesAsync();
-
-            while (properties.Value.CopyStatus == CopyStatus.Pending)
-            {
                 await Task.Delay(250);
-                // Need to fetch properties or CopyStatus will never update.
-                properties = await newBlob.GetPropertiesAsync();
-            }
+                var properties = await newBlob.GetPropertiesAsync();
 
-            if (properties.Value.CopyStatus != CopyStatus.Success)
+                while (properties.Value.CopyStatus == CopyStatus.Pending)
+                {
+                    await Task.Delay(250);
+                    // Need to fetch properties or CopyStatus will never update.
+                    properties = await newBlob.GetPropertiesAsync();
+                }
+
+                if (properties.Value.CopyStatus != CopyStatus.Success)
+                {
+                    throw new FileStoreException($"Error while copying file '{srcPath}'; copy operation failed with status {properties.Value.CopyStatus} and description {properties.Value.CopyStatusDescription}.");
+                }
+            }
+            catch (FileStoreException)
             {
-                throw new FileStoreException($"Error while copying file '{srcPath}'; copy operation failed with status {properties.Value.CopyStatus} and description {properties.Value.CopyStatusDescription}.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot copy file '{srcPath}' to '{dstPath}'.", ex);
             }
         }
 
         public async Task<Stream> GetFileStreamAsync(string path)
         {
-            var blob = GetBlobReference(path);
-
-            if (!await blob.ExistsAsync())
+            try
             {
-                throw new FileStoreException($"Cannot get file stream because the file '{path}' does not exist.");
-            }
+                var blob = GetBlobReference(path);
 
-            return (await blob.DownloadAsync()).Value.Content;
+                if (!await blob.ExistsAsync())
+                {
+                    throw new FileStoreException($"Cannot get file stream because the file '{path}' does not exist.");
+                }
+
+                return (await blob.DownloadAsync()).Value.Content;
+            }
+            catch (FileStoreException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot get file stream of the file '{path}'.", ex);
+            }
         }
 
         // Reduces the need to call blob.FetchAttributes, and blob.ExistsAsync,
@@ -291,23 +369,34 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
-            var blob = GetBlobReference(path);
-
-            if (!overwrite && await blob.ExistsAsync())
+            try
             {
-                throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
+                var blob = GetBlobReference(path);
+
+                if (!overwrite && await blob.ExistsAsync())
+                {
+                    throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
+                }
+
+                _contentTypeProvider.TryGetContentType(path, out var contentType);
+
+                var headers = new BlobHttpHeaders
+                {
+                    ContentType = contentType ?? "application/octet-stream"
+                };
+
+                await blob.UploadAsync(inputStream, headers);
+
+                return path;
             }
-
-            _contentTypeProvider.TryGetContentType(path, out var contentType);
-
-            var headers = new BlobHttpHeaders
+            catch (FileStoreException)
             {
-                ContentType = contentType ?? "application/octet-stream"
-            };
-
-            await blob.UploadAsync(inputStream, headers);
-
-            return path;
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot create file '{path}'.", ex);
+            }
         }
 
         private BlobClient GetBlobReference(string path)

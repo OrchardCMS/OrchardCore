@@ -1,6 +1,5 @@
 @model AdminDashboardViewModel
 @using OrchardCore.ContentManagement;
-@using OrchardCore.ContentManagement.Metadata.Settings;
 @inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
@@ -18,6 +17,7 @@
     };
 
 }
+
 <style asp-src="~/OrchardCore.AdminDashboard/Styles/dashboard.min.css" debug-src="~/OrchardCore.AdminDashboard/Styles/dashboard.css" at="Head"></style>
 
 @if (hasManageDashboardPermission)

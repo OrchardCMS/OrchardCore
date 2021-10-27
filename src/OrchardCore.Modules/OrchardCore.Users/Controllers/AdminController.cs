@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -42,6 +43,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUsersAdminListQueryService _usersAdminListQueryService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
+        private readonly ILogger _logger;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer H;
@@ -60,6 +62,7 @@ namespace OrchardCore.Users.Controllers
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
+            ILogger<AccountController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             IUpdateModelAccessor updateModelAccessor)
@@ -77,6 +80,7 @@ namespace OrchardCore.Users.Controllers
             _usersAdminListQueryService = usersAdminListQueryService;
             _updateModelAccessor = updateModelAccessor;
             _shapeFactory = shapeFactory;
+            _logger = logger;
 
             New = shapeFactory;
             H = htmlLocalizer;
@@ -250,7 +254,7 @@ namespace OrchardCore.Users.Controllers
                             {
                                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                                 await _userManager.ConfirmEmailAsync(user, token);
-                                _notifier.Success(H["User {0} successfully approved.", user.UserName]);
+                                await _notifier.SuccessAsync(H["User {0} successfully approved.", user.UserName]);
                             }
                         }
                         break;
@@ -262,7 +266,7 @@ namespace OrchardCore.Users.Controllers
                                 continue;
                             }
                             await _userManager.DeleteAsync(user);
-                            _notifier.Success(H["User {0} successfully deleted.", user.UserName]);
+                            await _notifier.SuccessAsync(H["User {0} successfully deleted.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Disable:
@@ -274,7 +278,7 @@ namespace OrchardCore.Users.Controllers
                             }
                             user.IsEnabled = false;
                             await _userManager.UpdateAsync(user);
-                            _notifier.Success(H["User {0} successfully disabled.", user.UserName]);
+                            await _notifier.SuccessAsync(H["User {0} successfully disabled.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Enable:
@@ -286,7 +290,7 @@ namespace OrchardCore.Users.Controllers
                             }
                             user.IsEnabled = true;
                             await _userManager.UpdateAsync(user);
-                            _notifier.Success(H["User {0} successfully enabled.", user.UserName]);
+                            await _notifier.SuccessAsync(H["User {0} successfully enabled.", user.UserName]);
                         }
                         break;
                     default:
@@ -335,7 +339,7 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
-            _notifier.Success(H["User created successfully."]);
+            await _notifier.SuccessAsync(H["User created successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -423,13 +427,13 @@ namespace OrchardCore.Users.Controllers
                 await _signInManager.RefreshSignInAsync(user);
             }
 
-            _notifier.Success(H["User updated successfully."]);
+            await _notifier.SuccessAsync(H["User updated successfully."]);
 
             if (editingOwnUser)
             {
                 if (!String.IsNullOrEmpty(returnUrl))
                 {
-                    return LocalRedirect(returnUrl);
+                    return this.LocalRedirect(returnUrl, true);
                 }
 
                 return RedirectToAction(nameof(Edit));
@@ -438,7 +442,7 @@ namespace OrchardCore.Users.Controllers
             {
                 if (!String.IsNullOrEmpty(returnUrl))
                 {
-                    return LocalRedirect(returnUrl);
+                    return this.LocalRedirect(returnUrl, true);
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -464,17 +468,17 @@ namespace OrchardCore.Users.Controllers
 
             if (result.Succeeded)
             {
-                _notifier.Success(H["User deleted successfully."]);
+                await _notifier.SuccessAsync(H["User deleted successfully."]);
             }
             else
             {
                 await _session.CancelAsync();
 
-                _notifier.Error(H["Could not delete the user."]);
+                await _notifier.ErrorAsync(H["Could not delete the user."]);
 
                 foreach (var error in result.Errors)
                 {
-                    _notifier.Error(H[error.Description]);
+                    await _notifier.ErrorAsync(H[error.Description]);
                 }
             }
 
@@ -521,13 +525,50 @@ namespace OrchardCore.Users.Controllers
 
                 if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
                 {
-                    _notifier.Success(H["Password updated correctly."]);
+                    await _notifier.SuccessAsync(H["Password updated correctly."]);
 
                     return RedirectToAction(nameof(Index));
                 }
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Unlock(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Forbid();
+            }
+
+            var user = await _userManager.FindByIdAsync(id) as User;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            await _userManager.ResetAccessFailedCountAsync(user);
+            var result = await _userManager.SetLockoutEndDateAsync(user, null);
+
+            if (result.Succeeded)
+            {
+                await _notifier.SuccessAsync(H["User unlocked successfully."]);
+            }
+            else
+            {
+                await _session.CancelAsync();
+
+                await _notifier.ErrorAsync(H["Could not unlock the user."]);
+
+                foreach (var error in result.Errors)
+                {
+                    _logger.LogWarning(error.Description);
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

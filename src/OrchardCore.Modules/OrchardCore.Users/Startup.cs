@@ -12,15 +12,12 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
-using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -38,6 +35,7 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
@@ -77,7 +75,6 @@ namespace OrchardCore.Users
                 pattern: userOptions.ChangePasswordUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
-
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
@@ -117,6 +114,18 @@ namespace OrchardCore.Users
                 areaName: "OrchardCore.Users",
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersEditPassword",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "UsersUnlock",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Unlock/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Unlock) }
             );
 
             builder.UseAuthorization();
@@ -191,6 +200,7 @@ namespace OrchardCore.Users
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
             services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
+            services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
@@ -289,13 +299,7 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<LoginSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<LoginDeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<LoginSettings>(S["Login settings"], S["Exports the Login settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<LoginSettings>());
+            services.AddSiteSettingsPropertyDeploymentStep<LoginSettings, LoginDeploymentStartup>(S => S["Login settings"], S => S["Exports the Login settings."]);
         }
     }
 
@@ -340,28 +344,38 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ChangeEmailSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<ChangeEmailDeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<ChangeEmailSettings>(S["Change Email settings"], S["Exports the Change Email settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ChangeEmailSettings>());
+            services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailDeploymentStartup, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
         }
     }
 
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationStartup : StartupBase
     {
-        private const string RegisterPath = "Register";
+        private const string RegisterPath = nameof(RegistrationController.Register);
+        private const string ConfirmEmailSent = nameof(RegistrationController.ConfirmEmailSent);
+        private const string RegistrationPending = nameof(RegistrationController.RegistrationPending);
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
-                name: "Register",
+                name: RegisterPath,
                 areaName: "OrchardCore.Users",
                 pattern: RegisterPath,
-                defaults: new { controller = "Registration", action = "Register" }
+                defaults: new { controller = "Registration", action = RegisterPath }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: ConfirmEmailSent,
+                areaName: "OrchardCore.Users",
+                pattern: ConfirmEmailSent,
+                defaults: new { controller = "Registration", action = ConfirmEmailSent }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: RegistrationPending,
+                areaName: "OrchardCore.Users",
+                pattern: RegistrationPending,
+                defaults: new { controller = "Registration", action = RegistrationPending }
             );
         }
 
@@ -383,13 +397,7 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<RegistrationSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<RegistrationDeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<RegistrationSettings>(S["Registration settings"], S["Exports the Registration settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<RegistrationSettings>());
+            services.AddSiteSettingsPropertyDeploymentStep<RegistrationSettings, RegistrationDeploymentStartup>(S => S["Registration settings"], S => S["Exports the Registration settings."]);
         }
     }
 
@@ -447,13 +455,7 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ResetPasswordSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<ResetPasswordDeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<ResetPasswordSettings>(S["Reset Password settings"], S["Exports the Reset Password settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ResetPasswordSettings>());
+            services.AddSiteSettingsPropertyDeploymentStep<ResetPasswordDeploymentStartup, ResetPasswordDeploymentStartup>(S => S["Reset Password settings"], S => S["Exports the Reset Password settings."]);
         }
     }
 

@@ -25,14 +25,14 @@
     <div class="mb-3 row">
         <label asp-for="ContainerName" class="col-sm-2 col-form-label">@T["Container Name"]</label>
         <div class="col-sm-10">
-            <code><input type="text" class="form-control-plaintext" value="@Model.ContainerName" /></code>
+            <code><input type="text" class="form-control-plaintext" value="@Model.ContainerName" readonly /></code>
         </div>
     </div>
 
     <div class="mb-3 row">
         <label asp-for="BasePath" class="col-sm-2 col-form-label">@T["Base Path"]</label>
         <div class="col-sm-10">
-            <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" /></code>
+            <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" readonly /></code>
         </div>
     </div>
 

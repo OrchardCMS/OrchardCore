@@ -12,7 +12,7 @@
 }
 
 @* the form is necessary to generate the antiforgery token*@
-<form asp-action="List" method="post">
+<form asp-action="List" method="post" class="no-multisubmit">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -21,7 +21,7 @@
         <div class="card-body bg-primary p-3">
             <div class="mb-0">
                 <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
-                <i class="fa fa-search form-control-feedback"></i>
+                <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
                     <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
                 <div class="btn-group float-end">

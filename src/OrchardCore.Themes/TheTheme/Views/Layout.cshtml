@@ -23,22 +23,22 @@
             </button>
             <div class="collapse navbar-collapse" id="navbar">
                 <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
-                <partial name="LoginMenu" />
+                <shape type="LoginMenu" />
             </div>
         </div>
     </nav>
     @await RenderSectionAsync("Header", required: false)
-    <main role="main" class="container">
+    <main class="container">
         @await RenderSectionAsync("Messages", required: false)
         @await RenderBodyAsync()
     </main>
     @if (IsSectionDefined("Footer"))
     {
-    <footer>
-        <div class="container">
-            @await RenderSectionAsync("Footer", required: false)
-        </div>
-    </footer>
+        <footer>
+            <div class="container">
+                @await RenderSectionAsync("Footer", required: false)
+            </div>
+        </footer>
     }
     <resources type="FootScript" />
 </body>

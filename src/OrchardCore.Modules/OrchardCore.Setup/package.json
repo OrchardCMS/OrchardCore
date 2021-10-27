@@ -2,8 +2,7 @@
   "name": "orchardcore.setup",
   "version": "1.0.0",
   "dependencies": {
-    "@popperjs/core": "2.9.2",
-    "bootstrap": "5.0.1",
+    "bootstrap": "5.1.0",
     "jquery": "3.6.0"
   }
 }

@@ -3,7 +3,7 @@
 
 <div class="btn-group btn-group-sm" role="group">
     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-align-left" aria-hidden="true"></i>
+        <i class="fa fa-align-@Model.Alignment.ToString().ToLowerInvariant()" aria-hidden="true" aria-hidden="true"></i>
     </button>
     <div class="dropdown-menu btn-group-toggle" data-bs-toggle="buttons">
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Left ? "active" : null)">

@@ -7,6 +7,7 @@ namespace OrchardCore.Environment.Shell
 {
     public interface IShellFeaturesManager
     {
+        Task<IEnumerable<IFeatureInfo>> GetAvailableFeaturesAsync();
         Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync();
         Task<IEnumerable<IFeatureInfo>> GetAlwaysEnabledFeaturesAsync();
         Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync();

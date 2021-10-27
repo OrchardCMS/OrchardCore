@@ -255,7 +255,7 @@
   margin-left: 3.8rem;
 }
 [dir]:root[data-theme=default] ol.media-items-grid li.selected {
-  border: 1px solid #0d6efd;
+  border: 1px solid #007bff;
 }
 :root[data-theme=default] ol.media-items-grid li.selected .inline-media-button, :root[data-theme=default] ol.media-items-grid li:hover .inline-media-button {
   opacity: 1;
@@ -269,6 +269,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+[dir]:root[data-theme=default] ol.media-items-grid .thumb-container {
+  background: white;
+}
+[dir]:root[data-theme=default] ol.media-items-grid .thumb-container img {
+  background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 :root[data-theme=default] .media-items-table {
   font-size: 0.875rem;
@@ -300,16 +306,17 @@
   padding: 0.25rem !important;
 }
 [dir]:root[data-theme=default] .media-items-table tr.media-item.selected {
-  background-color: #f1f6ff;
+  background-color: #e6f2ff;
 }
 [dir=ltr]:root[data-theme=default] .media-items-table tr.media-item.selected {
-  border-left: solid 2px #0d6efd;
+  border-left: solid 2px #007bff;
 }
 [dir=rtl]:root[data-theme=default] .media-items-table tr.media-item.selected {
-  border-right: solid 2px #0d6efd;
+  border-right: solid 2px #007bff;
 }
 :root[data-theme=default] .media-items-table .thumbnail-column {
   width: 75px;
+  vertical-align: middle;
 }
 [dir]:root[data-theme=default] .media-items-table .thumbnail-column {
   text-align: center;
@@ -322,17 +329,15 @@
   padding-right: 16px;
   padding-left: 16px;
 }
-:root[data-theme=default] .media-items-table .thumbnail-column .image-wrapper {
-  width: 75px;
-  height: 75px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+[dir]:root[data-theme=default] .media-items-table .thumbnail-column .img-wrapper {
+  background: white;
 }
-:root[data-theme=default] .media-items-table .thumbnail-column img {
+:root[data-theme=default] .media-items-table .thumbnail-column .img-wrapper img {
   max-width: 75px;
   max-height: 75px;
+}
+[dir]:root[data-theme=default] .media-items-table .thumbnail-column .img-wrapper img {
+  background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 :root[data-theme=default] .media-items-table td {
   vertical-align: middle;
@@ -526,7 +531,7 @@
   border-radius: 0px !important;
 }
 :root[data-theme=default] .visibility-buttons .selected {
-  color: #0d6efd;
+  color: #007bff;
 }
 :root[data-theme=default] #folder-tree {
   list-style: none;
@@ -564,10 +569,10 @@
   font-weight: bold;
 }
 [dir]:root[data-theme=default] #folder-tree li.selected > div:not(.treeroot) {
-  background-color: #f1f6ff;
+  background-color: #e6f2ff;
 }
 [dir]:root[data-theme=default] #folder-tree li div:not(.treeroot) a:hover, [dir]:root[data-theme=default] #folder-tree .folderhovered {
-  background-color: #f1f6ff;
+  background-color: #e6f2ff;
 }
 :root[data-theme=default] #folder-tree li div {
   min-height: 40px;
@@ -638,7 +643,7 @@
   align-items: center;
 }
 [dir]:root[data-theme=default] #folder-tree .folder-menu-item .folder-actions a.btn {
-  background-color: #f1f6ff;
+  background-color: #e6f2ff;
 }
 [dir=ltr]:root[data-theme=default] #folder-tree .opened svg {
   transform: rotate(90deg);
@@ -691,6 +696,9 @@
 }
 :root[data-theme=default] .media-field-toolbar {
   display: flex;
+}
+[dir]:root[data-theme=default] .media-field-toolbar .selected-media-name {
+  margin: 0;
 }
 :root[data-theme=default] .media-field-toolbar code {
   flex-grow: 1;
@@ -1055,7 +1063,7 @@
   margin-left: 3.8rem;
 }
 [dir]:root[data-theme=darkmode] ol.media-items-grid li.selected {
-  border: 1px solid #0d6efd;
+  border: 1px solid #007bff;
 }
 :root[data-theme=darkmode] ol.media-items-grid li.selected .inline-media-button, :root[data-theme=darkmode] ol.media-items-grid li:hover .inline-media-button {
   opacity: 1;
@@ -1069,6 +1077,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+[dir]:root[data-theme=darkmode] ol.media-items-grid .thumb-container {
+  background: white;
+}
+[dir]:root[data-theme=darkmode] ol.media-items-grid .thumb-container img {
+  background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 :root[data-theme=darkmode] .media-items-table {
   font-size: 0.875rem;
@@ -1103,13 +1117,14 @@
   background-color: #0a0c0d;
 }
 [dir=ltr]:root[data-theme=darkmode] .media-items-table tr.media-item.selected {
-  border-left: solid 2px #0d6efd;
+  border-left: solid 2px #007bff;
 }
 [dir=rtl]:root[data-theme=darkmode] .media-items-table tr.media-item.selected {
-  border-right: solid 2px #0d6efd;
+  border-right: solid 2px #007bff;
 }
 :root[data-theme=darkmode] .media-items-table .thumbnail-column {
   width: 75px;
+  vertical-align: middle;
 }
 [dir]:root[data-theme=darkmode] .media-items-table .thumbnail-column {
   text-align: center;
@@ -1122,17 +1137,15 @@
   padding-right: 16px;
   padding-left: 16px;
 }
-:root[data-theme=darkmode] .media-items-table .thumbnail-column .image-wrapper {
-  width: 75px;
-  height: 75px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+[dir]:root[data-theme=darkmode] .media-items-table .thumbnail-column .img-wrapper {
+  background: white;
 }
-:root[data-theme=darkmode] .media-items-table .thumbnail-column img {
+:root[data-theme=darkmode] .media-items-table .thumbnail-column .img-wrapper img {
   max-width: 75px;
   max-height: 75px;
+}
+[dir]:root[data-theme=darkmode] .media-items-table .thumbnail-column .img-wrapper img {
+  background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 :root[data-theme=darkmode] .media-items-table td {
   vertical-align: middle;
@@ -1326,7 +1339,7 @@
   border-radius: 0px !important;
 }
 :root[data-theme=darkmode] .visibility-buttons .selected {
-  color: #0d6efd;
+  color: #007bff;
 }
 :root[data-theme=darkmode] #folder-tree {
   list-style: none;
@@ -1491,6 +1504,9 @@
 }
 :root[data-theme=darkmode] .media-field-toolbar {
   display: flex;
+}
+[dir]:root[data-theme=darkmode] .media-field-toolbar .selected-media-name {
+  margin: 0;
 }
 :root[data-theme=darkmode] .media-field-toolbar code {
   flex-grow: 1;

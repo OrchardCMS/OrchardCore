@@ -38,6 +38,11 @@
             });
 
             initializeCodeMirrorShortcodeWrapper(editor);
+
+            editor.on('change', function(cmEditor){
+                cmEditor.save();
+                $(document).trigger('contentpreview:render');
+            });
         }
     });
 </script>

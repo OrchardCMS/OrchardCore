@@ -31,8 +31,8 @@ $(function () {
         mode: { name: "liquid" },
     });
 
-    editor.on('change', function (cm) {
-        document.getElementById('@Html.IdFor(x => x.Liquid)').value = cm.getValue();
+    editor.on('change', function (cmEditor) {
+        cmEditor.save()
         $(document).trigger('contentpreview:render');
     });
 });

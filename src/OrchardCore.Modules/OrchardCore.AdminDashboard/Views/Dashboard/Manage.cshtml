@@ -38,12 +38,13 @@
         </div>
     }
 </div>
-<zone Name="Title"><h1 class="float-start">@RenderTitleSegments(T["Dashboard"])</h1></zone>
 <div class="clearfix"></div>
 
 <div id="dashboard-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    <form id="dashboard-undo-form" asp-action="Update" method="POST">
+    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <form id="dashboard-undo-form" asp-action="Update" method="POST" class="no-multisubmit">
         @for (int index = 0; index < Model.Dashboards.Count(); index++)
         {
             <input type="hidden" id="undo_@(Model.Dashboards[index].Dashboard.ContentItemId)" name="parts[@(index)].ContentItemId" value="@Model.Dashboards[index].Dashboard.ContentItemId" />

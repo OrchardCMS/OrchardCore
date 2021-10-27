@@ -4,6 +4,6 @@
 @if (!Model.User.IsEnabled)
 {
     <span class="badge badge-danger ms-2" title="@T["Disabled"]">
-        <i class="fas fa-user-alt-slash"></i> @T["Disabled"]
+        <i class="fas fa-user-alt-slash" aria-hidden="true"></i> @T["Disabled"]
     </span>
 }

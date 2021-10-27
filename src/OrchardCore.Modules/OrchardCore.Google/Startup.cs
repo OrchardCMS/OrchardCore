@@ -4,22 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Google.Analytics;
-using OrchardCore.Google.Analytics.Deployment;
 using OrchardCore.Google.Analytics.Drivers;
-using OrchardCore.Google.Analytics.Recipes;
 using OrchardCore.Google.Analytics.Services;
+using OrchardCore.Google.Analytics.Settings;
 using OrchardCore.Google.Authentication.Configuration;
 using OrchardCore.Google.Authentication.Drivers;
-using OrchardCore.Google.Authentication.Recipes;
 using OrchardCore.Google.Authentication.Services;
+using OrchardCore.Google.Authentication.Settings;
+using OrchardCore.Google.TagManager;
+using OrchardCore.Google.TagManager.Drivers;
+using OrchardCore.Google.TagManager.Services;
+using OrchardCore.Google.TagManager.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Google
 {
@@ -29,7 +31,6 @@ namespace OrchardCore.Google
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions.GoogleAuthentication>();
-            services.AddRecipeExecutionStep<GoogleAuthenticationSettingsStep>();
             services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAuthenticationAdminMenu>();
@@ -52,7 +53,6 @@ namespace OrchardCore.Google
         {
             services.AddScoped<IPermissionProvider, Permissions.GoogleAnalytics>();
             services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
-            services.AddRecipeExecutionStep<GoogleAnalyticsSettingsStep>();
 
             services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
@@ -63,14 +63,50 @@ namespace OrchardCore.Google
         }
     }
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    [Feature(GoogleConstants.Features.GoogleTagManager)]
+    public class GoogleTagManagerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, GoogleAnalyticsDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, GoogleAnalyticsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<GoogleAnalyticsDeploymentStep>>();
+            services.AddScoped<IPermissionProvider, Permissions.GoogleTagManager>();
+            services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
+
+            services.AddScoped<IDisplayDriver<ISite>, GoogleTagManagerSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, GoogleTagManagerAdminMenu>();
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(GoogleTagManagerFilter));
+            });
+        }
+    }
+
+    [Feature(GoogleConstants.Features.GoogleAuthentication)]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class GoogleAuthenticationDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSiteSettingsPropertyDeploymentStep<GoogleAuthenticationSettings, GoogleAuthenticationDeploymentStartup>(S => S["Google Authentication Settings"], S => S["Exports the Google Authentication settings."]);
+        }
+    }
+
+    [Feature(GoogleConstants.Features.GoogleAnalytics)]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class GoogleAnalyticsDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSiteSettingsPropertyDeploymentStep<GoogleAnalyticsSettings, GoogleAnalyticsDeploymentStartup>(S => S["Google Analytics Settings"], S => S["Exports the Google Analytics settings."]);
+        }
+    }
+
+    [Feature(GoogleConstants.Features.GoogleTagManager)]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class GoogleTagManagerDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSiteSettingsPropertyDeploymentStep<GoogleTagManagerSettings, GoogleTagManagerDeploymentStartup>(S => S["Google Tag Manager Settings"], S => S["Exports the Google Tag Manager settings."]);
         }
     }
 }

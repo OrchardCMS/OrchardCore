@@ -4,7 +4,7 @@
     <zone Name="Title"><h1>@RenderTitleSegments(T["Add {0}", Model.Activity.DisplayText.Value])</h1></zone>
 
     <div asp-validation-summary="ModelOnly"></div>
-    <form asp-action="Create" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityname="@Model.Activity.Name" asp-route-returnurl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
+    <form asp-action="Create" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityname="@Model.Activity.Name" asp-route-returnurl="@Model.ReturnUrl" method="post" enctype="multipart/form-data" class="no-multisubmit">
         <input type="hidden" asp-for="ActivityId" />
         @await DisplayAsync(Model.ActivityEditor)
 

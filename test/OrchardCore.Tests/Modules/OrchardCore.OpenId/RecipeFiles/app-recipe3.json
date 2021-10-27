@@ -1,0 +1,19 @@
+{
+  "name": "AppRecipe",
+  "displayName": "Application Recipe",
+  "description": "",
+  "author": "",
+  "website": "",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "test" ],
+  "tags": [],
+  "steps": [
+    {
+      "name": "OpenIdApplication",
+      "clientId": "a1",
+      "displayName": "Expected Name",
+      "redirectUris": "https://localhost/redirect"
+    }
+  ]
+}
