@@ -6,6 +6,11 @@ namespace OrchardCore.Tenants.ViewModels
 {
     public class EditTenantViewModel
     {
+        public EditTenantViewModel()
+        {
+            FeatureProfiles = new List<SelectListItem>();
+        }
+
         public string Description { get; set; }
 
         public string Name { get; set; }
@@ -21,12 +26,15 @@ namespace OrchardCore.Tenants.ViewModels
         public string TablePrefix { get; set; }
 
         public string RecipeName { get; set; }
+
         public string FeatureProfile { get; set; }
+
         public List<SelectListItem> FeatureProfiles { get; set; }
 
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }
 
         public bool CanEditDatabasePresets { get; set; }
+
         public bool DatabaseConfigurationPreset { get; set; }
     }
 }
