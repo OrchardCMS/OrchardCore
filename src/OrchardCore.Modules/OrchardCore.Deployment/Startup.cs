@@ -17,7 +17,6 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.Recipes.Events;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
 
@@ -65,8 +64,6 @@ namespace OrchardCore.Deployment
             services.AddTransient<IDeploymentSource, JsonRecipeDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<JsonRecipeDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, JsonRecipeDeploymentStepDriver>();
-
-            services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

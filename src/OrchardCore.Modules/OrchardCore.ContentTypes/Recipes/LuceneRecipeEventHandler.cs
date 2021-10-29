@@ -5,7 +5,7 @@ using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 
-namespace OrchardCore.Deployment.Recipes
+namespace OrchardCore.ContentTypes
 {
     /// <summary>
     /// This handler provides backward compatibility with ContentIndexSettings that have been migrated to LuceneContentIndexSettings.
