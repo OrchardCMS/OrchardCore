@@ -98,7 +98,7 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     var entry = new ShellSettingsEntry
                     {
-                        Category = x.Category,
+                        Category = x["Category"],
                         Description = x["Description"],
                         Name = x.Name,
                         ShellSettings = x,
@@ -181,7 +181,7 @@ namespace OrchardCore.Tenants.Controllers
 
             // We populate the SelectLists
             model.Options.TenantsCategories = allSettings
-                .GroupBy(t => t.Category)
+                .GroupBy(t => t["Category"])
                 .Select(t => new SelectListItem(t.Key ?? AdminIndexViewModel.EmptyCategory, t.Key))
                 .ToList();
 
@@ -354,12 +354,12 @@ namespace OrchardCore.Tenants.Controllers
                 var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
                 shellSettings.Name = model.Name;
-                shellSettings.Category = model.Category;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.State = TenantState.Uninitialized;
 
                 SetConfigurationShellValues(model);
+                shellSettings["Category"] = model.Category;
                 shellSettings["Description"] = model.Description;
                 shellSettings["ConnectionString"] = model.ConnectionString;
                 shellSettings["TablePrefix"] = model.TablePrefix;
@@ -412,9 +412,9 @@ namespace OrchardCore.Tenants.Controllers
 
             var model = new EditTenantViewModel
             {
+                Category = shellSettings["Category"],
                 Description = shellSettings["Description"],
                 Name = shellSettings.Name,
-                Category = shellSettings.Category,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
                 FeatureProfile = currentFeatureProfile,
@@ -470,7 +470,7 @@ namespace OrchardCore.Tenants.Controllers
             if (ModelState.IsValid)
             {
                 shellSettings["Description"] = model.Description;
-                shellSettings.Category = model.Category;
+                shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings["FeatureProfile"] = model.FeatureProfile;

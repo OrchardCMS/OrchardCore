@@ -38,12 +38,6 @@ namespace OrchardCore.Environment.Shell
 
         public string Name { get; set; }
 
-        public string Category
-        {
-            get => _settings[nameof(Category)];
-            set => _settings[nameof(Category)] = value;
-        }
-
         public string VersionId
         {
             get => _settings["VersionId"];
