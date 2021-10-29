@@ -121,15 +121,26 @@ namespace OrchardCore.Tenants.Controllers
                      (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
-            switch (options.Filter)
+            if (!String.IsNullOrWhiteSpace(options.Category))
             {
-                case TenantsFilter.Disabled:
+                // Set category to null if not present
+                if (options.Category == AdminIndexViewModel.EmptyCategory)
+                {
+                    options.Category = null;
+                }
+
+                entries = entries.Where(t => t.Category == options.Category).ToList();
+            }
+
+            switch (options.Status)
+            {
+                case TenantsStatus.Disabled:
                     entries = entries.Where(t => t.ShellSettings.State == TenantState.Disabled).ToList();
                     break;
-                case TenantsFilter.Running:
+                case TenantsStatus.Running:
                     entries = entries.Where(t => t.ShellSettings.State == TenantState.Running).ToList();
                     break;
-                case TenantsFilter.Uninitialized:
+                case TenantsStatus.Uninitialized:
                     entries = entries.Where(t => t.ShellSettings.State == TenantState.Uninitialized).ToList();
                     break;
             }
@@ -154,7 +165,8 @@ namespace OrchardCore.Tenants.Controllers
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Filter", options.Filter);
+            routeData.Values.Add("Options.Category", options.Status);
+            routeData.Values.Add("Options.Status", options.Status);
             routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.OrderBy", options.OrderBy);
 
@@ -168,11 +180,16 @@ namespace OrchardCore.Tenants.Controllers
             };
 
             // We populate the SelectLists
+            model.Options.TenantsCategories = allSettings
+                .GroupBy(t => t.Category)
+                .Select(t => new SelectListItem(t.Key ?? AdminIndexViewModel.EmptyCategory, t.Key))
+                .ToList();
+
             model.Options.TenantsStates = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["All states"], Value = nameof(TenantsFilter.All) },
-                new SelectListItem() { Text = S["Running"], Value = nameof(TenantsFilter.Running) },
-                new SelectListItem() { Text = S["Disabled"], Value = nameof(TenantsFilter.Disabled) },
-                new SelectListItem() { Text = S["Uninitialized"], Value = nameof(TenantsFilter.Uninitialized) }
+                new SelectListItem() { Text = S["All states"], Value = nameof(TenantsStatus.All) },
+                new SelectListItem() { Text = S["Running"], Value = nameof(TenantsStatus.Running) },
+                new SelectListItem() { Text = S["Disabled"], Value = nameof(TenantsStatus.Disabled) },
+                new SelectListItem() { Text = S["Uninitialized"], Value = nameof(TenantsStatus.Uninitialized) }
             };
 
             model.Options.TenantsSorts = new List<SelectListItem>() {
@@ -193,7 +210,8 @@ namespace OrchardCore.Tenants.Controllers
         public ActionResult IndexFilterPOST(AdminIndexViewModel model)
         {
             return RedirectToAction("Index", new RouteValueDictionary {
-                { "Options.Filter", model.Options.Filter },
+                { "Options.Category", model.Options.Category },
+                { "Options.Status", model.Options.Status },
                 { "Options.OrderBy", model.Options.OrderBy },
                 { "Options.Search", model.Options.Search },
                 { "Options.TenantsStates", model.Options.TenantsStates }

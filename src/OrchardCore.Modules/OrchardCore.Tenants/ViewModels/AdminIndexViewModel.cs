@@ -7,7 +7,10 @@ namespace OrchardCore.Tenants.ViewModels
 {
     public class AdminIndexViewModel
     {
+        public static readonly string EmptyCategory = "Not Categorized";
+
         public List<ShellSettingsEntry> ShellSettingsEntries { get; set; } = new List<ShellSettingsEntry>();
+
         public TenantIndexOptions Options { get; set; } = new TenantIndexOptions();
 
         [BindNever]
@@ -47,9 +50,16 @@ namespace OrchardCore.Tenants.ViewModels
     public class TenantIndexOptions
     {
         public string Search { get; set; }
-        public TenantsFilter Filter { get; set; }
+
+        public string Category { get; set; }
+
+        public TenantsStatus Status { get; set; }
+
         public TenantsBulkAction BulkAction { get; set; }
+
         public TenantsOrder OrderBy { get; set; }
+
+        public List<SelectListItem> TenantsCategories { get; set; }
 
         [BindNever]
         public List<SelectListItem> TenantsStates { get; set; }
@@ -61,7 +71,7 @@ namespace OrchardCore.Tenants.ViewModels
         public List<SelectListItem> TenantsBulkAction { get; set; }
     }
 
-    public enum TenantsFilter
+    public enum TenantsStatus
     {
         All,
         Running,
