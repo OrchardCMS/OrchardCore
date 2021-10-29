@@ -60,7 +60,8 @@ function initializeShortcodesApp(element) {
           allShortcodes: shortcodes,
           filteredShortcodes: shortcodes,
           categories: categories,
-          defaultValue: ''
+          defaultValue: '',
+          modal: null
         };
       },
       watch: {
@@ -83,7 +84,8 @@ function initializeShortcodesApp(element) {
           }
 
           this.selectedValue = '';
-          $(this.$el).modal('show');
+          this.modal = new bootstrap.Modal(this.$el);
+          this.modal.show();
           var self = this;
           $(this.$el).on('shown.bs.modal', function (e) {
             self.$refs.filter.focus();
@@ -112,7 +114,7 @@ function initializeShortcodesApp(element) {
         },
         insertShortcode: function insertShortcode(event) {
           this.defaultValue = event.target.dataset.defaultValue;
-          $(this.$el).modal('hide');
+          this.modal.hide();
           this.onClose(this.defaultValue);
         }
       }
