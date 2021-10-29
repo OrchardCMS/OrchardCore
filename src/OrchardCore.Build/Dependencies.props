@@ -11,7 +11,7 @@
     <PackageManagement Include="AngleSharp" Version="0.16.0" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
-    <PackageManagement Include="Azure.Identity" Version="1.4.1" />
+    <PackageManagement Include="Azure.Identity" Version="1.5.0" />
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.10.0" />
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
@@ -27,7 +27,7 @@
     <PackageManagement Include="MailKit" Version="2.15.0" />
     <PackageManagement Include="Markdig" Version="0.26.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
-    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageManagement Include="MimeKit" Version="2.15.1" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
     <PackageManagement Include="Moq" Version="4.16.1" />
@@ -35,7 +35,7 @@
     <PackageManagement Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageManagement Include="NJsonSchema" Version="10.5.2" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="4.14.0" />
-    <PackageManagement Include="NodaTime" Version="3.0.7" />
+    <PackageManagement Include="NodaTime" Version="3.0.9" />
     <PackageManagement Include="OpenIddict.AspNetCore" Version="3.1.1" />
     <PackageManagement Include="OpenIddict.Core" Version="3.1.1" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.1.0" />
