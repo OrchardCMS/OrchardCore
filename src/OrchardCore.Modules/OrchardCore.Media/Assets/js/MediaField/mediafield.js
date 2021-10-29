@@ -18,7 +18,9 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             allowMediaText: allowMediaText,
             backupMediaText: '',
             allowAnchors: allowAnchors,
-            backupAnchor: null
+            backupAnchor: null,
+            mediaTextModal: null,
+            anchoringModal: null
         },
         created: function () {
             var self = this;
@@ -131,28 +133,33 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 if (self.canAddMedia) {
                     $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
                     $("#mediaApp").show();
-                    var modal = $(modalBodyElement).modal();
+
+                    var modal = new bootstrap.Modal(modalBodyElement);
+                    modal.show();
+
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
                         self.addMediaFiles(mediaApp.selectedMedias);
 
                         // we don't want the included medias to be still selected the next time we open the modal.
                         mediaApp.selectedMedias = [];
 
-                        modal.modal('hide');
+                        modal.hide();
                         return true;
                     });
                 }
             },
             showMediaTextModal: function (event) {
-                $(this.$refs.mediaTextModal).modal();
+                this.mediaTextModal = new bootstrap.Modal(this.$refs.mediaTextModal);
+                this.mediaTextModal.show();
                 this.backupMediaText = this.selectedMedia.mediaText;
             },
             cancelMediaTextModal: function (event) {
-                $(this.$refs.mediaTextModal).modal('hide');
+                this.mediaTextModal.hide();
                 this.selectedMedia.mediaText = this.backupMediaText;
             },
             showAnchorModal: function (event) {
-                $(this.$refs.anchoringModal).modal();
+                this.anchoringModal = new bootstrap.Modal(this.$refs.anchoringModal);
+                this.anchoringModal.show();
                 // Cause a refresh to recalc heights.
                 this.selectedMedia.anchor = {
                   x: this.selectedMedia.anchor.x,
@@ -161,7 +168,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 this.backupAnchor = this.selectedMedia.anchor;
             },            
             cancelAnchoringModal: function (event) {
-                $(this.$refs.anchoringModal).modal('hide');
+                this.anchoringModal.hide();
                 this.selectedMedia.anchor = this.backupAnchor;
             },            
             resetAnchor: function (event) {
