@@ -20,10 +20,10 @@
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2035" />
     <PackageManagement Include="HtmlSanitizer" Version="6.0.441" />
-    <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00014" />
-    <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00014" />
-    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00014" />
-    <PackageManagement Include="Lucene.Net.Spatial" Version="4.8.0-beta00014" />
+    <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00015" />
+    <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00015" />
+    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00015" />
+    <PackageManagement Include="Lucene.Net.Spatial" Version="4.8.0-beta00015" />
     <PackageManagement Include="MailKit" Version="2.15.0" />
     <PackageManagement Include="Markdig" Version="0.26.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
