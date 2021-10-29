@@ -98,6 +98,7 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     var entry = new ShellSettingsEntry
                     {
+                        Category = x.Category,
                         Description = x["Description"],
                         Name = x.Name,
                         ShellSettings = x,
