@@ -94,7 +94,7 @@
         }
     }
 
-    @if (Model.FeatureProfiles.Any())
+    @if (Model.FeatureProfiles?.Any() ?? false)
     {
         <h6>
             @T["Feature profile"]
