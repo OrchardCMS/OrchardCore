@@ -12,6 +12,11 @@
             <span asp-validation-for="Name" class="text-danger"></span>
             <span class="hint">@T["The name of the tenant."]</span>
         </div>
+        <div class="form-group col-md-6">
+            <label asp-for="Category">@T["Category"]</label>
+            <input asp-for="Category" class="form-control" />
+            <span class="hint">@T["The category of the tenant."]</span>
+        </div>
     </div>
     <div class="row">
         <div class="form-group col-md-6" asp-validation-class-for="Description">
@@ -91,7 +96,7 @@
         </div>
     }
 
-    @if (Model.FeatureProfiles.Any())
+    @if (Model.FeatureProfiles?.Any() ?? false)
     {
         <h6>
             @T["Feature profile"]

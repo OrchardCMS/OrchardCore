@@ -105,80 +105,104 @@
         </li>
         @if (Model.ShellSettingsEntries.Count > 0)
         {
-            @foreach (var entry in Model.ShellSettingsEntries)
-            {
-                <li class="list-group-item">
-                    <div class="row">
-                        <div class="col-lg-6 col-sm-12 title d-flex">
-                            <div class="custom-control custom-checkbox float-left flex-shrink-0">
-                                <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
-                                <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
+            <li class="list-group-item">
+                <div class="accordion" id="accordionExample">
+                    @foreach (var entryCategory in Model.ShellSettingsEntries.GroupBy(e => e.Category))
+                    {
+                        var category = entryCategory.Key ?? "Not Categorized";
+                        var categoryId = category.Replace(" ", String.Empty);
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#@categoryId" aria-expanded="true" aria-controls="collapseOne">
+                                        @category
+                                    </button>
+                                </h2>
                             </div>
-                            <div class="d-inline">
-                                <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
-                                @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
-                                {
-                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info" aria-hidden="true"></i> @entry.ShellSettings["DatabaseProvider"]</span>
-                                }
-                                @if (!string.IsNullOrEmpty(entry.ShellSettings["RecipeName"]))
-                                {
-                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-image text-info" aria-hidden="true"></i> @entry.ShellSettings["RecipeName"]</span>
-                                }
-                                <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
-                                    @switch (entry.ShellSettings.State)
-                                    {
-                                        case TenantState.Uninitialized:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-cog text-secondary" aria-hidden="true"></i> @T["Uninitialized"]</span>
-                                            break;
-                                        case TenantState.Initializing:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-hourglass-start text-info" aria-hidden="true"></i> @T["Initializing"]</span>
-                                            break;
-                                        case TenantState.Running:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-check text-success" aria-hidden="true"></i> @T["Running"]</span>
-                                            break;
-                                        case TenantState.Disabled:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-remove text-danger" aria-hidden="true"></i> @T["Disabled"]</span>
-                                            break;
-                                        case TenantState.Invalid:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-exclamation-triangle text-warning" aria-hidden="true"></i> @T["Invalid"]</span>
-                                            break;
-                                    }
-                                </a>
-                                @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
-                                {
-                                    <p class="mb-0"><code data-toggle="tooltip" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
-                                }
-                                @if (!string.IsNullOrEmpty(entry.Description))
-                                {
-                                    <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
-                                }
+                            <div id="@categoryId" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    <ul class="list-group">
+                                        @foreach (var entry in entryCategory)
+                                        {
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-sm-12 title d-flex">
+                                                        <div class="custom-control custom-checkbox float-left flex-shrink-0">
+                                                            <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
+                                                            <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
+                                                        </div>
+                                                        <div class="d-inline">
+                                                            <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                                                            @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
+                                                            {
+                                                                <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info" aria-hidden="true"></i> @entry.ShellSettings["DatabaseProvider"]</span>
+                                                            }
+                                                            @if (!string.IsNullOrEmpty(entry.ShellSettings["RecipeName"]))
+                                                            {
+                                                                <span class="badge ta-badge font-weight-normal"><i class="fa fa-image text-info" aria-hidden="true"></i> @entry.ShellSettings["RecipeName"]</span>
+                                                            }
+                                                            <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
+                                                                @switch (entry.ShellSettings.State)
+                                                                {
+                                                                    case TenantState.Uninitialized:
+                                                                        <span class="badge ta-badge font-weight-normal"><i class="fa fa-cog text-secondary" aria-hidden="true"></i> @T["Uninitialized"]</span>
+                                                                        break;
+                                                                    case TenantState.Initializing:
+                                                                        <span class="badge ta-badge font-weight-normal"><i class="fa fa-hourglass-start text-info" aria-hidden="true"></i> @T["Initializing"]</span>
+                                                                        break;
+                                                                    case TenantState.Running:
+                                                                        <span class="badge ta-badge font-weight-normal"><i class="fa fa-check text-success" aria-hidden="true"></i> @T["Running"]</span>
+                                                                        break;
+                                                                    case TenantState.Disabled:
+                                                                        <span class="badge ta-badge font-weight-normal"><i class="fa fa-remove text-danger" aria-hidden="true"></i> @T["Disabled"]</span>
+                                                                        break;
+                                                                    case TenantState.Invalid:
+                                                                        <span class="badge ta-badge font-weight-normal"><i class="fa fa-exclamation-triangle text-warning" aria-hidden="true"></i> @T["Invalid"]</span>
+                                                                        break;
+                                                                }
+                                                            </a>
+                                                            @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
+                                                            {
+                                                                <p class="mb-0"><code data-toggle="tooltip" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
+                                                            }
+                                                            @if (!string.IsNullOrEmpty(entry.Description))
+                                                            {
+                                                                <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-sm-12 related">
+                                                        <div class="float-right">
+                                                            <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm edit">@T["Edit"]</a>
+                                                            @if (entry.ShellSettings.State == TenantState.Running)
+                                                            {
+                                                                <a class="btn btn-info btn-sm view" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank">@T["View"]</a>
+                                                            }
+                                                            @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
+                                                            {
+                                                                <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
+                                                            }
+                                                            @if (entry.ShellSettings.State == TenantState.Disabled)
+                                                            {
+                                                                <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" data-url-af="UnsafeUrl">@T["Enable"]</a>
+                                                            }
+                                                            @if (entry.ShellSettings.State == TenantState.Uninitialized)
+                                                            {
+                                                                <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
+                                                            }
+                                                            <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" data-url-af="UnsafeUrl">@T["Reload"]</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-sm-12 related">
-                            <div class="float-right">
-                                <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm edit">@T["Edit"]</a>
-                                @if (entry.ShellSettings.State == TenantState.Running)
-                                {
-                                    <a class="btn btn-info btn-sm view" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank">@T["View"]</a>
-                                }
-                                @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
-                                {
-                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
-                                }
-                                @if (entry.ShellSettings.State == TenantState.Disabled)
-                                {
-                                    <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" data-url-af="UnsafeUrl">@T["Enable"]</a>
-                                }
-                                @if (entry.ShellSettings.State == TenantState.Uninitialized)
-                                {
-                                    <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
-                                }
-                                <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" data-url-af="UnsafeUrl">@T["Reload"]</a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            }
+                    }
+                </div>
+            </li>
         }
         else
         {

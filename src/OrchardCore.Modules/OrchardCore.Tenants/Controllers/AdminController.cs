@@ -336,6 +336,7 @@ namespace OrchardCore.Tenants.Controllers
                 var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
                 shellSettings.Name = model.Name;
+                shellSettings.Category = model.Category;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.State = TenantState.Uninitialized;
@@ -395,6 +396,7 @@ namespace OrchardCore.Tenants.Controllers
             {
                 Description = shellSettings["Description"],
                 Name = shellSettings.Name,
+                Category = shellSettings.Category,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
                 FeatureProfile = currentFeatureProfile,
@@ -450,6 +452,7 @@ namespace OrchardCore.Tenants.Controllers
             if (ModelState.IsValid)
             {
                 shellSettings["Description"] = model.Description;
+                shellSettings.Category = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings["FeatureProfile"] = model.FeatureProfile;
