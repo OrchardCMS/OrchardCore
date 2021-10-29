@@ -7647,14 +7647,15 @@ function confirmDialog(_ref) {
                 </div>\
             </div>\
         </div>\
-    </div>').appendTo("body");
-  var confirmModal = new bootstrap.Modal($("#confirmRemoveModal"), {
+    </div>').appendTo('body');
+  var confirmModal = new bootstrap.Modal($('#confirmRemoveModal'), {
     backdrop: 'static',
     keyboard: false
   });
   confirmModal.show();
-  confirmModal.addEventListener('hidden.bs.modal', function () {
-    confirmModal.remove();
+  document.getElementById('confirmRemoveModal').addEventListener('hidden.bs.modal', function (event) {
+    document.getElementById('confirmRemoveModal').remove();
+    confirmModal.dispose();
   });
   $("#modalOkButton").click(function () {
     callback(true);

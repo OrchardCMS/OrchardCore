@@ -18,17 +18,18 @@ function confirmDialog({callback, ...options}) {
                 </div>\
             </div>\
         </div>\
-    </div>').appendTo("body");
+    </div>').appendTo('body');
 
-    var confirmModal = new bootstrap.Modal($("#confirmRemoveModal"), {
+    var confirmModal = new bootstrap.Modal($('#confirmRemoveModal'), {
         backdrop: 'static',
         keyboard: false
     })
 
     confirmModal.show();
 
-    confirmModal.addEventListener('hidden.bs.modal', function () {
-        confirmModal.remove();
+    document.getElementById('confirmRemoveModal').addEventListener('hidden.bs.modal', function (event) {
+        document.getElementById('confirmRemoveModal').remove();
+        confirmModal.dispose();
     });
 
     $("#modalOkButton").click(function () {
