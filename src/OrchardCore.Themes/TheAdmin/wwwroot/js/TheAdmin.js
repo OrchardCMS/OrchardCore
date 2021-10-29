@@ -7648,20 +7648,21 @@ function confirmDialog(_ref) {
             </div>\
         </div>\
     </div>').appendTo("body");
-  $("#confirmRemoveModal").modal({
+  var confirmModal = new bootstrap.Modal($("#confirmRemoveModal"), {
     backdrop: 'static',
     keyboard: false
   });
-  $("#confirmRemoveModal").on('hidden.bs.modal', function () {
-    $("#confirmRemoveModal").remove();
+  confirmModal.show();
+  confirmModal.addEventListener('hidden.bs.modal', function () {
+    confirmModal.remove();
   });
   $("#modalOkButton").click(function () {
     callback(true);
-    $("#confirmRemoveModal").modal("hide");
+    confirmModal.hide();
   });
   $("#modalCancelButton").click(function () {
     callback(false);
-    $("#confirmRemoveModal").modal("hide");
+    confirmModal.hide();
   });
 } // Prevents page flickering while downloading css
 

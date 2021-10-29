@@ -75,11 +75,11 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         return store.getOptionsFormattedList();
       },
       showModal: function showModal() {
-        $(modalBodyElement).modal();
+        optionsModal.props.data.modal = new bootstrap.Modal(modalBodyElement[0]);
+        optionsModal.props.data.modal.show();
       },
       closeModal: function closeModal() {
-        var modal = $(modalBodyElement).modal();
-        modal.modal('hide');
+        optionsModal.props.data.modal.hide();
       }
     }
   };
@@ -89,7 +89,8 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
       optionsModal: optionsModal
     },
     data: {
-      sharedState: store.state
+      sharedState: store.state,
+      modal: null
     },
     el: elem,
     methods: {

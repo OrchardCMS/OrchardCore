@@ -692,12 +692,12 @@ a > :root[data-theme=default] code {
   margin-top: calc(-1 * var(--bs-gutter-y));
 }
 [dir=ltr]:root[data-theme=default] .row {
-  margin-right: calc(-.5 * var(--bs-gutter-x));
-  margin-left: calc(-.5 * var(--bs-gutter-x));
+  margin-right: calc(-0.5 * var(--bs-gutter-x));
+  margin-left: calc(-0.5 * var(--bs-gutter-x));
 }
 [dir=rtl]:root[data-theme=default] .row {
-  margin-left: calc(-.5 * var(--bs-gutter-x));
-  margin-right: calc(-.5 * var(--bs-gutter-x));
+  margin-left: calc(-0.5 * var(--bs-gutter-x));
+  margin-right: calc(-0.5 * var(--bs-gutter-x));
 }
 :root[data-theme=default] .row > * {
   flex-shrink: 0;
@@ -708,12 +708,12 @@ a > :root[data-theme=default] code {
   margin-top: var(--bs-gutter-y);
 }
 [dir=ltr]:root[data-theme=default] .row > * {
-  padding-right: calc(var(--bs-gutter-x) * .5);
-  padding-left: calc(var(--bs-gutter-x) * .5);
+  padding-right: calc(var(--bs-gutter-x) * 0.5);
+  padding-left: calc(var(--bs-gutter-x) * 0.5);
 }
 [dir=rtl]:root[data-theme=default] .row > * {
-  padding-left: calc(var(--bs-gutter-x) * .5);
-  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * 0.5);
+  padding-right: calc(var(--bs-gutter-x) * 0.5);
 }
 :root[data-theme=default] .col {
   flex: 1 0 0%;
@@ -7562,13 +7562,13 @@ a > :root[data-theme=default] code {
   --bs-aspect-ratio: 100%;
 }
 :root[data-theme=default] .ratio-4x3 {
-  --bs-aspect-ratio: calc(3 / 4 * 100%);
+  --bs-aspect-ratio: 75%;
 }
 :root[data-theme=default] .ratio-16x9 {
-  --bs-aspect-ratio: calc(9 / 16 * 100%);
+  --bs-aspect-ratio: 56.25%;
 }
 :root[data-theme=default] .ratio-21x9 {
-  --bs-aspect-ratio: calc(9 / 21 * 100%);
+  --bs-aspect-ratio: 42.8571428571%;
 }
 :root[data-theme=default] .fixed-top, :root[data-theme=default] .ta-navbar-top {
   position: fixed;
@@ -12436,7 +12436,7 @@ a > :root[data-theme=default] code {
 
 :root[data-theme=default] .bootstrap-select .dropdown-toggle .bs-select-clear-selected span {
   position: relative;
-  top: calc(((-1em / 1.5) + 1ex) / 2);
+  top: calc((-0.6666666667em + 1ex) / 2);
   pointer-events: none;
 }
 .bs3:root[data-theme=default] .bootstrap-select .dropdown-toggle .bs-select-clear-selected span {
@@ -30208,12 +30208,12 @@ a > :root[data-theme=darkmode] code {
   margin-top: calc(-1 * var(--bs-gutter-y));
 }
 [dir=ltr]:root[data-theme=darkmode] .row {
-  margin-right: calc(-.5 * var(--bs-gutter-x));
-  margin-left: calc(-.5 * var(--bs-gutter-x));
+  margin-right: calc(-0.5 * var(--bs-gutter-x));
+  margin-left: calc(-0.5 * var(--bs-gutter-x));
 }
 [dir=rtl]:root[data-theme=darkmode] .row {
-  margin-left: calc(-.5 * var(--bs-gutter-x));
-  margin-right: calc(-.5 * var(--bs-gutter-x));
+  margin-left: calc(-0.5 * var(--bs-gutter-x));
+  margin-right: calc(-0.5 * var(--bs-gutter-x));
 }
 :root[data-theme=darkmode] .row > * {
   flex-shrink: 0;
@@ -30224,12 +30224,12 @@ a > :root[data-theme=darkmode] code {
   margin-top: var(--bs-gutter-y);
 }
 [dir=ltr]:root[data-theme=darkmode] .row > * {
-  padding-right: calc(var(--bs-gutter-x) * .5);
-  padding-left: calc(var(--bs-gutter-x) * .5);
+  padding-right: calc(var(--bs-gutter-x) * 0.5);
+  padding-left: calc(var(--bs-gutter-x) * 0.5);
 }
 [dir=rtl]:root[data-theme=darkmode] .row > * {
-  padding-left: calc(var(--bs-gutter-x) * .5);
-  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * 0.5);
+  padding-right: calc(var(--bs-gutter-x) * 0.5);
 }
 :root[data-theme=darkmode] .col {
   flex: 1 0 0%;
@@ -37079,13 +37079,13 @@ a > :root[data-theme=darkmode] code {
   --bs-aspect-ratio: 100%;
 }
 :root[data-theme=darkmode] .ratio-4x3 {
-  --bs-aspect-ratio: calc(3 / 4 * 100%);
+  --bs-aspect-ratio: 75%;
 }
 :root[data-theme=darkmode] .ratio-16x9 {
-  --bs-aspect-ratio: calc(9 / 16 * 100%);
+  --bs-aspect-ratio: 56.25%;
 }
 :root[data-theme=darkmode] .ratio-21x9 {
-  --bs-aspect-ratio: calc(9 / 21 * 100%);
+  --bs-aspect-ratio: 42.8571428571%;
 }
 :root[data-theme=darkmode] .fixed-top, :root[data-theme=darkmode] .ta-navbar-top {
   position: fixed;
@@ -41953,7 +41953,7 @@ a > :root[data-theme=darkmode] code {
 
 :root[data-theme=darkmode] .bootstrap-select .dropdown-toggle .bs-select-clear-selected span {
   position: relative;
-  top: calc(((-1em / 1.5) + 1ex) / 2);
+  top: calc((-0.6666666667em + 1ex) / 2);
   pointer-events: none;
 }
 .bs3:root[data-theme=darkmode] .bootstrap-select .dropdown-toggle .bs-select-clear-selected span {

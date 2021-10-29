@@ -32,7 +32,12 @@ var iconPickerVue = new Vue({
                 $('#' + self.targetIconTag).replaceWith('<i id="' + self.targetIconTag + '" class="'+ selected + '"></i>')                
             }
 
-            $('#iconPickerModal').modal('hide');            
+            var iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
+                backdrop: 'static',
+                keyboard: false
+            });
+
+            iconPickerModal.show();
         });
 
     },
@@ -41,7 +46,12 @@ var iconPickerVue = new Vue({
             this.targetInputField = targetInputField;
             this.targetIconTag = targetIconTag;
 
-            $('#iconPickerModal').modal('show');
+            var iconPickerModal = new bootstrap.Modal($("#iconPickerModal"), {
+                backdrop: 'static',
+                keyboard: false
+            });
+
+            iconPickerModal.show();
         }
     }
 })

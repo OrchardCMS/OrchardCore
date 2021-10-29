@@ -9,7 +9,8 @@
                     ...$this.data(), callback: function (r) {
                         if (r) {
                             console.log('t')
-                            $('#modalExportContentToDeploymentTargetContentBulkActionsTarget').modal('show');
+                            var modal = new bootstrap.Modal($('#modalExportContentToDeploymentTargetContentBulkActionsTarget'));
+                            modal.show();
                         }
                     }
                 });

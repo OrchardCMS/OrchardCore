@@ -7,7 +7,8 @@
                 confirmDialog({
                     ...$this.data(), callback: function (r) {
                         if (r) {
-                            $('#modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan').modal('show');
+                            var modal = new bootstrap.Modal($('#modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan'));
+                            modal.show();
                         }
                     }
                 });

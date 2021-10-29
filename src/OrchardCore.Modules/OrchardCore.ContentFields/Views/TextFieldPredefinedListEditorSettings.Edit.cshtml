@@ -1,7 +1,7 @@
 @using OrchardCore.ContentFields.Settings
 @model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
 
-<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuedraggable, bootstrap"></script>
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
 
 <script at="Foot">
@@ -51,7 +51,7 @@
 </script>
 
 <script type="text/x-template" id="options-modal">
-    <div class="modal fade @Html.IdFor(m => m)-ModalBody text-start" role="dialog" aria-hidden="true">
+    <div slot="modal" class="modal fade @Html.IdFor(m => m)-ModalBody text-start" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
