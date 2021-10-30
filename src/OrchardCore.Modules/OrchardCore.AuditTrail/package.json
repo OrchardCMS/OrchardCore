@@ -5,7 +5,7 @@
   "license": "MIT",
   "description": "A diff module for OrchardCore.",
   "dependencies": {
-    "bootstrap": "4.6.0",
+    "bootstrap": "4.6.1",
     "diff": "5.0.0",
     "react": "^16.0.0",
     "react-diff-viewer": "^3.1.1",

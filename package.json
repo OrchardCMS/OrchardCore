@@ -1,4 +1,5 @@
 {
+  "name": "orchardcore",
   "private": true,
   "scripts": {
     "build": "gulp build",

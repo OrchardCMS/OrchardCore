@@ -1,7 +1,7 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
 
 @{
-    var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var monacoSettings = Model.PartFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
