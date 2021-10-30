@@ -32,8 +32,8 @@ namespace OrchardCore.ContentTypes
                 {
                     foreach (var partDefinition in contentType.ContentTypePartDefinitionRecords)
                     {
-                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings)
-                            && !partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingLucenePartSettings))
+                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                            !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
                         {
                             partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
                         }
@@ -44,8 +44,8 @@ namespace OrchardCore.ContentTypes
 
                 foreach (var partDefinition in step.ContentParts)
                 {
-                    if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings)
-                        && !partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingLucenePartSettings))
+                    if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                        !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
                     {
                         partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
                     }
@@ -54,8 +54,8 @@ namespace OrchardCore.ContentTypes
 
                     foreach (var fieldDefinition in partDefinition.ContentPartFieldDefinitionRecords)
                     {
-                        if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings)
-                            && !fieldDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingLuceneFieldSettings))
+                        if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings) &&
+                            !fieldDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
                         {
                             fieldDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingFieldSettings));
                         }

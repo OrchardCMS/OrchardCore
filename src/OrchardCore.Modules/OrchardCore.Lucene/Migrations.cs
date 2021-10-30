@@ -25,8 +25,8 @@ namespace OrchardCore.Lucene
                 {
                     _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
                     {
-                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings)
-                        && !partDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLucenePartSettings))
+                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                            !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
                         {
                             partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
                         }
@@ -42,8 +42,8 @@ namespace OrchardCore.Lucene
             {
                 _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
                 {
-                    if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings)
-                    && !partDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLucenePartSettings))
+                    if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                        !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
                     {
                         partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
                     }
