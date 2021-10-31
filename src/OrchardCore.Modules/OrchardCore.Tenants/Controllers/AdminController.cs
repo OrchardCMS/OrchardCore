@@ -324,10 +324,11 @@ namespace OrchardCore.Tenants.Controllers
                 await ValidateViewModel(model, true);
             }
 
-            // Creates a default shell settings based on the configuration.
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
             if (ModelState.IsValid)
             {
+                // Creates a default shell settings based on the configuration.
+                var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
@@ -350,7 +351,7 @@ namespace OrchardCore.Tenants.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
             model.Recipes = recipes;
-            model.FeatureProfiles = await GetFeatureProfilesAsync(shellSettings["FeatureProfile"]);
+            model.FeatureProfiles = await GetFeatureProfilesAsync(model.FeatureProfile);
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -476,7 +477,7 @@ namespace OrchardCore.Tenants.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
             model.Recipes = recipes;
-            model.FeatureProfiles = await GetFeatureProfilesAsync(shellSettings["FeatureProfile"]);
+            model.FeatureProfiles = await GetFeatureProfilesAsync(model.FeatureProfile);
 
             // If we got this far, something failed, redisplay form
             return View(model);
