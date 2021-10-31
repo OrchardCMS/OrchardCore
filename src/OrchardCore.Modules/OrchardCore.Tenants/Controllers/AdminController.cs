@@ -165,7 +165,7 @@ namespace OrchardCore.Tenants.Controllers
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Category", options.Status);
+            routeData.Values.Add("Options.Category", options.Category);
             routeData.Values.Add("Options.Status", options.Status);
             routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.OrderBy", options.OrderBy);
