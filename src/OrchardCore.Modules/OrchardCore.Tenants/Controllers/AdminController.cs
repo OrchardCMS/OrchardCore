@@ -27,6 +27,8 @@ namespace OrchardCore.Tenants.Controllers
 {
     public class AdminController : Controller
     {
+        private static readonly string DefaultCategory = "All";
+
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
@@ -121,14 +123,8 @@ namespace OrchardCore.Tenants.Controllers
                      (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
-            if (!String.IsNullOrWhiteSpace(options.Category))
+            if (!String.IsNullOrWhiteSpace(options.Category) && options?.Category != DefaultCategory)
             {
-                // Set category to null if not present
-                if (options.Category == AdminIndexViewModel.EmptyCategory)
-                {
-                    options.Category = null;
-                }
-
                 entries = entries.Where(t => t.Category == options.Category).ToList();
             }
 
@@ -182,8 +178,11 @@ namespace OrchardCore.Tenants.Controllers
             // We populate the SelectLists
             model.Options.TenantsCategories = allSettings
                 .GroupBy(t => t["Category"])
-                .Select(t => new SelectListItem(t.Key ?? AdminIndexViewModel.EmptyCategory, t.Key))
+                .Where(t => !String.IsNullOrEmpty(t.Key))
+                .Select(t => new SelectListItem(t.Key, t.Key))
                 .ToList();
+
+            model.Options.TenantsCategories.Insert(0, new SelectListItem(DefaultCategory, DefaultCategory));
 
             model.Options.TenantsStates = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["All states"], Value = nameof(TenantsStatus.All) },
@@ -305,7 +304,7 @@ namespace OrchardCore.Tenants.Controllers
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
             var currentFeatureProfile = shellSettings["FeatureProfile"];
-            
+
             var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
                 .Select(x => new SelectListItem(x.Key, x.Key, String.Equals(x.Key, currentFeatureProfile, StringComparison.OrdinalIgnoreCase))).ToList();
             if (featureProfiles.Any())
@@ -402,7 +401,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
             var currentFeatureProfile = shellSettings["FeatureProfile"];
-            
+
             var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
                 .Select(x => new SelectListItem(x.Key, x.Key, String.Equals(x.Key, currentFeatureProfile, StringComparison.OrdinalIgnoreCase))).ToList();
             if (featureProfiles.Any())
@@ -686,12 +685,12 @@ namespace OrchardCore.Tenants.Controllers
 
             model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(configurationShellConnectionString) || !string.IsNullOrEmpty(configurationDatabaseProvider);
 
-            if(!string.IsNullOrEmpty(configurationShellConnectionString))
+            if (!string.IsNullOrEmpty(configurationShellConnectionString))
             {
                 model.ConnectionString = configurationShellConnectionString;
             }
 
-            if(!string.IsNullOrEmpty(configurationDatabaseProvider))
+            if (!string.IsNullOrEmpty(configurationDatabaseProvider))
             {
                 model.DatabaseProvider = configurationDatabaseProvider;
             }

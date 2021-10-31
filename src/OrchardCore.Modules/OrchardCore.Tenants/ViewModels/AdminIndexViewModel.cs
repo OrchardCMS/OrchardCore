@@ -7,8 +7,6 @@ namespace OrchardCore.Tenants.ViewModels
 {
     public class AdminIndexViewModel
     {
-        public static readonly string EmptyCategory = "Not Categorized";
-
         public List<ShellSettingsEntry> ShellSettingsEntries { get; set; } = new List<ShellSettingsEntry>();
 
         public TenantIndexOptions Options { get; set; } = new TenantIndexOptions();
