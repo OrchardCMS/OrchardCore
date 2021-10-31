@@ -182,7 +182,7 @@ namespace OrchardCore.Tenants.Controllers
                 .Select(t => new SelectListItem(t.Key, t.Key))
                 .ToList();
 
-            model.Options.TenantsCategories.Insert(0, new SelectListItem(DefaultCategory, DefaultCategory, selected: true));
+            model.Options.TenantsCategories.Insert(0, new SelectListItem(S["All"], DefaultCategory, selected: true));
 
             model.Options.TenantsStates = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["All states"], Value = nameof(TenantsStatus.All) },
