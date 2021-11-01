@@ -1,0 +1,22 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Jint;
+using Jint.Native;
+using Newtonsoft.Json.Linq;
+
+namespace OrchardCore.Scripting.JavaScript
+{
+    public class MemberAccessor {
+        public static JsValue QweMemberAccessorHandler(Engine engine, object target, string member){
+            if(member == "Value")
+            {
+                if(target.GetType() == typeof(JObject))
+                {
+                    return JsValue.FromObject(engine,(target as JObject)[member]);
+                }
+            }
+            return null;
+        }
+    }
+}
