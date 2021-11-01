@@ -67,22 +67,6 @@ namespace OrchardCore.AuditTrail.Services
             => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}{DateTime.ToString("o")}";
     }
 
-    public class DateNode2 : OperatorNode
-    {
-        public DateNode2(DateTime dateTime)
-        {
-            DateTime = dateTime;
-        }
-
-        public DateTime DateTime { get; }
-
-        public override Expression BuildExpression(in BuildExpressionContext context)
-            => BuildOperation(context, Expression.Constant(DateTime, typeof(DateTime)));
-
-        public override string ToString()
-            => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}{DateTime.ToString("o")}";
-    }
-
     public class NowNode : OperatorNode
     {
         public NowNode()
