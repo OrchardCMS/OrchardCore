@@ -28,7 +28,7 @@
             // Column fixes
             @include make-col-grouping(#{$breakpoint}); // Include a fix for unspecified cols, i.e. col-md
             // Only apply to the lower half of the grid.
-            @for $i from 1 through $grid-columns / 2 {
+            @for $i from 1 through math.div($grid-columns, 2) {
                 // Include a fix for specified cols, i.e. col-md-3
                 @include make-col-grouping(#{$breakpoint}-#{$i});
             }

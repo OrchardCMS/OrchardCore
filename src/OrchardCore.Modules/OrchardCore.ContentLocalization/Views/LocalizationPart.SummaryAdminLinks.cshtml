@@ -6,7 +6,7 @@
         <button type="button" class="btn btn-sm btn-info dropdown-toggle localizations" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span>@T["Localizations"]</span>
         </button>
-        <div class="dropdown-menu dropdown-menu-right">
+        <div class="dropdown-menu dropdown-menu-end">
             @foreach (var culture in Model.ContentItemCultures)
             {
                 if (!string.IsNullOrEmpty(culture.ContentItemId))

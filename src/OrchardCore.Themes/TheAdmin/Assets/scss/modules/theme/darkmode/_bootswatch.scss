@@ -3,6 +3,7 @@
 
 // Variables ===================================================================
 @import "_admin-variables.scss";
+@import "../../admin/_root.scss";
 // Navbar ======================================================================
 @import "../../admin/_navbar.scss";
 
@@ -19,7 +20,7 @@
 .ta-badge {
     @extend .bg-dark;
 
-    background-color: darken(#181a1b, 5%)
+    background-color: darken(#181a1b, 5%);
 }
 
 .ta-navbar-brand {
@@ -52,7 +53,7 @@
     }
 }
 
-.trumbowyg-fullscreen .trumbowyg-editor{
+.trumbowyg-fullscreen .trumbowyg-editor {
     color: black;
 }
 
@@ -210,13 +211,30 @@
 @import "modules/admin/_forms.scss";
 
 .input-group-addon {
-    color: #fff;
+    color: $white;
 }
 
-// Navs ========================================================================
+.form-floating > label {
+    color: $gray-700;
+}
+
+// Navs
+
+.nav-tabs,
+.nav-pills {
+    .nav-link,
+    .nav-link.active,
+    .nav-link.active:focus,
+    .nav-link.active:hover,
+    .nav-item.open .nav-link,
+    .nav-item.open .nav-link:focus,
+    .nav-item.open .nav-link:hover {
+        color: $white;
+    }
+}
 
 .breadcrumb a {
-    color: #fff;
+    color: $white;
 }
 
 .pagination {
@@ -225,18 +243,18 @@
     }
 }
 
-// Indicators ==================================================================
-
-.close {
-    opacity: 0.4;
-
-    &:hover,
-    &:focus {
-        opacity: 1;
-    }
-}
+// Indicators
 
 .alert {
+    border: none;
+    color: $white;
+
+    a,
+    .alert-link {
+        color: $white;
+        text-decoration: underline;
+    }
+
     @each $color, $value in $theme-colors {
         &-#{$color} {
             @if $enable-gradients {
@@ -268,7 +286,6 @@
 
 // Cards
 
-.card-header
-{
+.card-header {
     background-color: #1b1e1f;
 }
