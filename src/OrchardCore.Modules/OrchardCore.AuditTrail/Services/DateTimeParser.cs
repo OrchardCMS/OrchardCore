@@ -200,7 +200,7 @@ namespace OrchardCore.AuditTrail.Services
                     // Try o, primarily for times, and fall back to local timezone                    
                     if (DateTimeOffset.TryParseExact(dateValue, "yyyy-MM-dd'T'HH:mm:ss.FFFK", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
                     {
-                        return new DateNode2(dateTimeOffset.UtcDateTime);
+                        return new DateNode(dateTimeOffset);
                     }
                     else
                     {
@@ -217,7 +217,8 @@ namespace OrchardCore.AuditTrail.Services
                         if (success)
                         {
                             var converted = context.Clock.ConvertToTimeZone(dateTime, context.UserTimeZone);
-                            return new DateNode2(converted.UtcDateTime.Date);
+
+                            return new DateNode(converted);
                         }
                     }
 
