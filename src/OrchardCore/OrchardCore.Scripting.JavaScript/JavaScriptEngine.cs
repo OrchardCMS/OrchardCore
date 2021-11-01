@@ -20,8 +20,10 @@ namespace OrchardCore.Scripting.JavaScript
 
         public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
         {
-            var engine = new Engine();
-
+            var options = new Options();
+            options.SetMemberAccessor(MemberAccessor.QweMemberAccessorHandler);
+            var engine = new Engine(options);
+            
             foreach (var method in methods)
             {
                 engine.SetValue(method.Name, method.Method(serviceProvider));
