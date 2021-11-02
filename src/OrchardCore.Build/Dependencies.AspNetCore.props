@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <AspNetCorePackagesVersion>	5.0.11</AspNetCorePackagesVersion>
+    <AspNetCorePackagesVersion>5.0.11</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>5.0.1</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
