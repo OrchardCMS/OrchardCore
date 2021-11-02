@@ -19,10 +19,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
-    - name: Setup .NET Core 6.0
+    - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.100-rc.1.21458.32
+        dotnet-version: 6.0.x
+        include-prerelease: true
     - name: Build and test
       run: |
         dotnet build --configuration Release

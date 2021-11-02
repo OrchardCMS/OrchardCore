@@ -24,23 +24,25 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: "15"
-    - name: Setup .NET Core 3.1 on ${{ matrix.os }}
+    - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.*
-    - name: Setup .NET Core 5.0 on ${{ matrix.os }}
+    - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
-    - name: Setup .NET Core 6.0 on ${{ matrix.os }}
+    - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.100-rc.1.21458.32
+        dotnet-version: 6.0.x
+        include-prerelease: true
     - name: Set build number 
       if: matrix.os == 'ubuntu-latest'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
     - name: Build
       run: |
+        dotnet build --configuration Release --framework net6.0
         dotnet build --configuration Release --framework net5.0
         dotnet build --configuration Release --framework netcoreapp3.1
     - name: Unit Tests
@@ -82,7 +84,7 @@ jobs:
         VERSION="${VERSION//v}"
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest .
         docker push orchardproject/orchardcore-cms-linux:latest 
         docker push "orchardproject/orchardcore-cms-linux:$VERSION"
@@ -91,7 +93,7 @@ jobs:
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-windows:latest 

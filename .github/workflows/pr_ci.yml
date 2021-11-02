@@ -5,7 +5,7 @@ on:
       - '**/*.md'	
       - 'mkdocs.yml'	
       - 'src/docs/**/*'
-    branches: [ dev, main, release/** ]
+    branches: [ main, release/** ]
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -30,10 +30,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
-    - name: Setup .NET Core 6.0 on ${{ matrix.os }}
+    - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.100-rc.1.21458.32
+        dotnet-version: 6.0.x
+        include-prerelease: true
     - name: Build
       run: |
         dotnet build --configuration Release --framework net6.0
