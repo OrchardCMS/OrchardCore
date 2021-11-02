@@ -322,7 +322,7 @@ namespace OrchardCore.Users.Controllers
                     input: input, correlationId: ((User)user).UserId);
             }
 
-            return RedirectToLocal(Microsoft.AspNetCore.Mvc.ControllerExtensions.EscapeLocationHeader(returnUrl));
+            return RedirectToLocal(returnUrl.ToUriComponents());
         }
 
         [HttpPost]

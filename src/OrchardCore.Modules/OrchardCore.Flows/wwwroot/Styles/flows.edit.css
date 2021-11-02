@@ -9,14 +9,14 @@
 }
 .widget-editor-body > div > .edit-container div.form-group:only-of-type > .trumbowyg-box:not(.trumbowyg-fullscreen) {
   margin-top: -12px !important;
-  width: calc(100% + 33px );
+  width: calc(100% + 33px);
   margin-left: -17px !important;
   border-top: none;
   border-right: none;
 }
 .widget-editor-body > div > .edit-container div.form-group:only-of-type > .CodeMirror {
   margin-top: -12px !important;
-  width: calc(100% + 33px );
+  width: calc(100% + 33px);
   margin-left: -17px !important;
   border-top: none;
   border-right: none;
