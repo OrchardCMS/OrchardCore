@@ -54,9 +54,9 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | js-cookie             | Script | 3.0.1         | jQuery         |
 | popper                | Script | 1.16.1        | -              |
 | popperjs              | Script | 2.10.2        | -              |
-| bootstrap             | Script | 4.6.0         | popper         |
+| bootstrap             | Script | 4.6.1         | popper         |
 | bootstrap             | Script | 5.1.3         | popperjs       |
-| bootstrap             | Style  | 4.6.0, 5.1.3  | -              |
+| bootstrap             | Style  | 4.6.1, 5.1.3  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
