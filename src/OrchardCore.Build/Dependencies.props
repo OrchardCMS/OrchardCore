@@ -52,6 +52,8 @@
     <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.0.7" />
     <PackageManagement Include="YesSql.Filters.Query" Version="3.0.7" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" PrivateAssets="all" />
+    <PackageManagement Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
     <PackageManagement Include="ZString" Version="2.4.2" />
   </ItemGroup>
 
