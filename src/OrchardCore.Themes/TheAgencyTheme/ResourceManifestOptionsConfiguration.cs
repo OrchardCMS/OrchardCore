@@ -13,19 +13,19 @@ namespace OrchardCore.Themes.TheAgencyTheme
 
             _manifest
                 .DefineScript("TheAgencyTheme-bootstrap-bundle")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.js")
-                .SetCdnIntegrity("sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj", "sha384-sCrrXXsCVYsmCuGTFZDBWJBhcTU5N2csSa8rhGERa1/tCRBHcJEcxG3ivcPvx3t6")
-                .SetVersion("5.1.0");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.js")
+                .SetCdnIntegrity("sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p", "sha384-8fq7CZc5BnER+jVlJI2Jafpbn4A9320TKhNJfYP33nneHep7sUg/OD30x7fK09pS")
+                .SetVersion("5.1.3");
 
             _manifest
                 .DefineScript("TheAgencyTheme")
                 .SetUrl("~/TheAgencyTheme/js/scripts.min.js", "~/TheAgencyTheme/js/scripts.js")
-                .SetVersion("7.0.6");
+                .SetVersion("7.0.10");
 
             _manifest
                 .DefineStyle("TheAgencyTheme")
                 .SetUrl("~/TheAgencyTheme/css/styles.min.css", "~/TheAgencyTheme/css/styles.css")
-                .SetVersion("7.0.6");
+                .SetVersion("7.0.10");
 
             _manifest
                 .DefineStyle("TheAgencyTheme-bootstrap-oc")

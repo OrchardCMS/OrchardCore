@@ -277,7 +277,7 @@ namespace OrchardCore.Placements.Controllers
         {
             if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
-                return Redirect(returnUrl);
+                return this.Redirect(returnUrl, true);
             }
             else
             {

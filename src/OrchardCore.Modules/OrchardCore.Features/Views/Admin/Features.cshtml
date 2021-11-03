@@ -35,10 +35,6 @@
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
         foreach (var featureGroup in featureGroups)
         {
-            if (!featureGroup.Any(x => Model.IsAllowed(x.Descriptor)))
-            {
-                continue;
-            }
             var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value;
             var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString()));
             if (featureGroup == featureGroups.First())
@@ -60,11 +56,6 @@
                     @{
                         foreach (var feature in features)
                         {
-                            if (!Model.IsAllowed(feature.Descriptor))
-                            {
-                                continue;
-                            }
-
                             //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
                             var featureId = feature.Descriptor.Id;
                             var featureName = feature.Descriptor.Name;
@@ -76,7 +67,7 @@
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
                             var showDisable = !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
-                            var showEnable = Model.IsAllowed(feature.Descriptor) && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
+                            var showEnable = !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
                                 <div class="row">

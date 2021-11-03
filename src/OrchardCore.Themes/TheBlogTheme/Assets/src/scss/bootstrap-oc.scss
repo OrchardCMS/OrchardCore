@@ -2,6 +2,7 @@
 Bootstrap customization for The Blog theme
 By Orchard Core Team
  */
+@use 'sass:math';
 @import "variables.scss";
 @import "../../../node_modules/bootstrap/scss/functions";
 @import "../../../node_modules/bootstrap/scss/variables";

@@ -134,7 +134,7 @@ Note: you need to add `@addTagHelper *, OrchardCore.Contents.TagHelpers` to your
 === "Liquid"
 
     ``` liquid
-    {% contentitem alias:"alias:main-menu" display_type="Detail" %}
+    {% contentitem alias: "alias:main-menu", display_type: "Detail" %}
     ```
 
 #### Manipulating shape metadata
