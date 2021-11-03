@@ -173,9 +173,7 @@ Finally, gluing it all together into a usable query:
 
 ## Using this Query in Code
 
-A full implementation (covering the UI as well as the API) can be found at ZZZ.
-
-However, as a simple implementation, you could do something like this in a View:
+This article is not intended to provide a complete implementation. However, as a simple example, you could do something like this in a View:
 
 ```
   var parameters = new Dictionary<string, object>();
