@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageManagement Include="AngleSharp" Version="0.16.0" />
+    <PackageManagement Include="AngleSharp" Version="0.16.1" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
     <PackageManagement Include="Azure.Identity" Version="1.5.0" />
@@ -19,7 +19,7 @@
     <PackageManagement Include="Fluid.Core" Version="2.1.4" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2035" />
-    <PackageManagement Include="HtmlSanitizer" Version="6.0.441" />
+    <PackageManagement Include="HtmlSanitizer" Version="6.0.453" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00015" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00015" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00015" />
