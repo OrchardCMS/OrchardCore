@@ -9,7 +9,6 @@ using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Security;
 using OrchardCore.Themes.Models;
@@ -21,7 +20,6 @@ namespace OrchardCore.Themes.Controllers
     {
         private readonly ISiteThemeService _siteThemeService;
         private readonly IAdminThemeService _adminThemeService;
-        private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -30,18 +28,13 @@ namespace OrchardCore.Themes.Controllers
         public AdminController(
             ISiteThemeService siteThemeService,
             IAdminThemeService adminThemeService,
-            IThemeService themeService,
-            ShellSettings shellSettings,
-            IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
-            IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             INotifier notifier)
         {
             _siteThemeService = siteThemeService;
             _adminThemeService = adminThemeService;
-            _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -58,54 +51,46 @@ namespace OrchardCore.Themes.Controllers
                 return Forbid();
             }
 
-            //&& _shellSettings.Name == ShellSettings.; // of the default tenant
-            //&& _featureManager.GetEnabledFeatures().FirstOrDefault(f => f.Id == "PackagingServices") != null
-
-            //var featuresThatNeedUpdate = _dataMigrationManager.GetFeaturesThatNeedUpdate();
-
             var currentSiteThemeExtensionInfo = await _siteThemeService.GetSiteThemeAsync();
             var currentAdminThemeExtensionInfo = await _adminThemeService.GetAdminThemeAsync();
             var currentAdminTheme = currentAdminThemeExtensionInfo != null ? new ThemeEntry(currentAdminThemeExtensionInfo) : default(ThemeEntry);
             var currentSiteTheme = currentSiteThemeExtensionInfo != null ? new ThemeEntry(currentSiteThemeExtensionInfo) : default(ThemeEntry);
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
-            var themes = _extensionManager.GetExtensions().OfType<IThemeExtensionInfo>().Where(extensionDescriptor =>
-            {
-                var tags = extensionDescriptor.Manifest.Tags.ToArray();
-                var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
-
-                // Is the theme allowed for this tenant?
-                // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
-
-                return !isHidden;
-            })
-            .Select(extensionDescriptor =>
-            {
-                var isAdmin = IsAdminTheme(extensionDescriptor.Manifest);
-                var themeId = isAdmin ? currentAdminTheme?.Extension.Id : currentSiteTheme?.Extension.Id;
-                var isCurrent = extensionDescriptor.Id == themeId;
-                var isEnabled = enabledFeatures.Any(x => x.Extension.Id == extensionDescriptor.Id);
-                var themeEntry = new ThemeEntry(extensionDescriptor)
+            var themes = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .Where(f =>
                 {
-                    //NeedsUpdate = featuresThatNeedUpdate.Contains(extensionDescriptor.Id),
-                    //IsRecentlyInstalled = _themeService.IsRecentlyInstalled(extensionDescriptor),
-                    Enabled = isEnabled,
-                    CanUninstall = installThemes,
-                    IsAdmin = isAdmin,
-                    IsCurrent = isCurrent
-                };
+                    if (!f.IsTheme())
+                    {
+                        return false;
+                    }
 
-                //if (_extensionDisplayEventHandler != null)
-                //{
-                //    foreach (string notification in _extensionDisplayEventHandler.Displaying(themeEntry.Descriptor, ControllerContext.RequestContext))
-                //    {
-                //        themeEntry.Notifications.Add(notification);
-                //    }
-                //}
+                    var tags = f.Extension.Manifest.Tags.ToArray();
+                    var isHidden = tags.Any(t => String.Equals(t, "hidden", StringComparison.OrdinalIgnoreCase));
+                    if (isHidden)
+                    {
+                        return false;
+                    }
 
-                return themeEntry;
-            })
-            .OrderByDescending(x => x.IsCurrent);
+                    return true;
+                })
+                .Select(f =>
+                {
+                    var isAdmin = IsAdminTheme(f.Extension.Manifest);
+                    var themeId = isAdmin ? currentAdminTheme?.Extension.Id : currentSiteTheme?.Extension.Id;
+                    var isCurrent = f.Id == themeId;
+                    var isEnabled = enabledFeatures.Any(e => e.Id == f.Id);
+                    var themeEntry = new ThemeEntry(f.Extension)
+                    {
+                        Enabled = isEnabled,
+                        CanUninstall = installThemes,
+                        IsAdmin = isAdmin,
+                        IsCurrent = isCurrent
+                    };
+
+                    return themeEntry;
+                })
+                .OrderByDescending(t => t.IsCurrent);
 
             var model = new SelectThemesViewModel
             {
@@ -131,7 +116,8 @@ namespace OrchardCore.Themes.Controllers
             }
             else
             {
-                var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
+                var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                    .FirstOrDefault(f => f.IsTheme() && f.Id == id);
 
                 if (feature == null)
                 {
@@ -157,10 +143,10 @@ namespace OrchardCore.Themes.Controllers
                     if (!isEnabled)
                     {
                         await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
-                        _notifier.Success(H["{0} was enabled", feature.Name ?? feature.Id]);
+                        await _notifier.SuccessAsync(H["{0} was enabled", feature.Name ?? feature.Id]);
                     }
 
-                    _notifier.Success(H["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
+                    await _notifier.SuccessAsync(H["{0} was set as the default {1} theme", feature.Name ?? feature.Id, isAdmin ? "Admin" : "Site"]);
                 }
             }
 
@@ -177,7 +163,7 @@ namespace OrchardCore.Themes.Controllers
 
             await _siteThemeService.SetSiteThemeAsync("");
 
-            _notifier.Success(H["The Site theme was reset."]);
+            await _notifier.SuccessAsync(H["The Site theme was reset."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -192,7 +178,7 @@ namespace OrchardCore.Themes.Controllers
 
             await _adminThemeService.SetAdminThemeAsync("");
 
-            _notifier.Success(H["The Admin theme was reset."]);
+            await _notifier.SuccessAsync(H["The Admin theme was reset."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -205,7 +191,8 @@ namespace OrchardCore.Themes.Controllers
                 return Forbid();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
+            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .FirstOrDefault(f => f.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -214,7 +201,7 @@ namespace OrchardCore.Themes.Controllers
 
             await _shellFeaturesManager.DisableFeaturesAsync(new[] { feature }, force: true);
 
-            _notifier.Success(H["{0} was disabled.", feature.Name ?? feature.Id]);
+            await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name ?? feature.Id]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -222,12 +209,13 @@ namespace OrchardCore.Themes.Controllers
         [HttpPost]
         public async Task<IActionResult> Enable(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme)) // , H["Not allowed to apply theme."]
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme))
             {
                 return Forbid();
             }
 
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
+            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .FirstOrDefault(f => f.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -236,14 +224,14 @@ namespace OrchardCore.Themes.Controllers
 
             await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
 
-            _notifier.Success(H["{0} was enabled.", feature.Name ?? feature.Id]);
+            await _notifier.SuccessAsync(H["{0} was enabled.", feature.Name ?? feature.Id]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool IsAdminTheme(IManifestInfo manifest)
+        private static bool IsAdminTheme(IManifestInfo manifest)
         {
-            return manifest.Tags.Any(x => string.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
+            return manifest.Tags.Any(x => String.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

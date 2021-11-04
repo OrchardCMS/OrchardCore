@@ -73,7 +73,7 @@ namespace OrchardCore.Widgets.Drivers
 
         public override IDisplayResult Edit(WidgetsListPart widgetPart, BuildPartEditorContext context)
         {
-            return Initialize<WidgetsListPartEditViewModel>("WidgetsListPart_Edit", m =>
+            return Initialize<WidgetsListPartEditViewModel>(GetEditorShapeType(context), m =>
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(widgetPart.ContentItem.ContentType);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(WidgetsListPart));

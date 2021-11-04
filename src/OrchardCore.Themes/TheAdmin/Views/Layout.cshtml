@@ -20,7 +20,7 @@
 
     <script asp-name="font-awesome" at="Head" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Head" version="5"></script>
-    <script asp-name="js-cookie" at="Foot" version="2"></script>
+    <script asp-name="js-cookie" at="Foot"></script>
     <script asp-name="admin" version="1" at="Foot"></script>
     <resources type="Header" />
 
@@ -46,16 +46,16 @@
                         <a id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
                             @if (darkMode)
                             {
-                                <i class="fas fa-sun"></i>
+                                <i class="fas fa-sun" aria-hidden="true"></i>
                             }
                             else
                             {
-                                <i class="fas fa-moon"></i>
+                                <i class="fas fa-moon" aria-hidden="true"></i>
                             }
                         </a>
                     }
                     <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]" role="button">
-                        <i class="fa fa-fw fa-external-link"></i>
+                        <i class="fa fa-fw fa-external-link" aria-hidden="true"></i>
                     </a>
                     @await DisplayAsync(await New.UserMenu())
                 </div>

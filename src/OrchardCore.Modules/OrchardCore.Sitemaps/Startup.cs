@@ -8,20 +8,23 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Controllers;
+using OrchardCore.Sitemaps.Deployment;
 using OrchardCore.Sitemaps.Drivers;
 using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Sitemaps.Recipes;
 using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
 
@@ -87,6 +90,8 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapSourceModifiedDateProvider, CustomPathSitemapSourceModifiedDateProvider>();
             services.AddScoped<IDisplayDriver<SitemapSource>, CustomPathSitemapSourceDriver>();
             services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
+
+            services.AddRecipeExecutionStep<SitemapsStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -239,6 +244,17 @@ namespace OrchardCore.Sitemaps
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IBackgroundTask, SitemapCacheBackgroundTask>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Sitemaps")]
+    public class SitemapsDeployementStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllSitemapsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSitemapsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllSitemapsDeploymentStepDriver>();
         }
     }
 }

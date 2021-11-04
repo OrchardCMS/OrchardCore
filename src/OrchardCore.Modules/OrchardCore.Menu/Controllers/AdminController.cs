@@ -279,7 +279,7 @@ namespace OrchardCore.Menu.Controllers
 
             await _contentManager.SaveDraftAsync(menu);
 
-            _notifier.Success(H["Menu item deleted successfully."]);
+            await _notifier.SuccessAsync(H["Menu item deleted successfully."]);
 
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
         }

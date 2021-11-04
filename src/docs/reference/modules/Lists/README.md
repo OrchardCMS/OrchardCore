@@ -41,12 +41,12 @@ The following properties are available on the `ListPartSettings` class.
 | -----| ---- |------------ |
 | `PageSize` | The number of content items returned per page. |
 | `EnableOrdering` | Flag to enable drag and drop ordering of content items. |
-| `ContainedContentTypes` | The content types that maybe contained by this part. |
+| `ContainedContentTypes` | The content types that may be contained by this part. |
 
 ### Template
 
 The following example is used to render the items of a `ListPart` and customize the pager.  
-For instance it can be set in a file named `Blog-ListPart.liquid` to override the `Blog` content type only.
+For instance, it can be set in a file named `Blog-ListPart.liquid` to override the `Blog` content type only.
 
 ```liquid
 {% for item in Model.ContentItems %}
@@ -68,22 +68,35 @@ For instance it can be set in a file named `Blog-ListPart.liquid` to override th
 
 ### QueryListItemsCountAsync
 
-Returns the number of list items satisfying given predicate.
+Returns the count of `IEnumerable<ContentItem>` satisfying the given predicate.
 
 ### QueryListItemsAsync
 
-Returns the enumerable of list items satisfying given predicate.
+Returns the `IEnumerable<ContentItem>` satisfying the given predicate.
 
 ## Liquid Tags
 
 ### list_count
 
-The `list_count` filter counts published list content items for given `ContentItem` object or explicit `ContentItem` id given as string.
+The `list_count` filter counts published content items for a given `ContentItem` object or explicit `ContentItem` id given as a string in a list.
 
 ### list_items
 
-The `list_items` filter loads published list content items for given `ContentItem` object or explicit `ContentItem` id given as string.
+The `list_items` filter loads published content items for a given `ContentItem` object or explicit `ContentItem` id given as a string in a list.
 
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/a3yyR27vdQQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Lucene Indexing
+
+**Breaking Change**: Every content item that is contained in a list has a `ContainedPart` associated with it.
+The indexed data in Lucene before Orchard Core 1.1 was:
+
+`"Content.ContentItem.ListContentItemId"`
+
+After 1.1 this has changed for also including the display order, so it is now:
+
+`"Content.ContentItem.ContainedPart.ListContentItemId"`   
+and  
+`"Content.ContentItem.ContainedPart.Order"`

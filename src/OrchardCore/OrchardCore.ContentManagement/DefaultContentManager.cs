@@ -628,6 +628,46 @@ namespace OrchardCore.ContentManagement
             return validateContext.ContentValidateResult;
         }
 
+        public async Task<ContentValidateResult> RestoreAsync(ContentItem contentItem)
+        {
+            // Prepare record for restore.
+            // So that a new record will be created.
+            contentItem.Id = 0;
+            // So that a new version id will be generated.
+            contentItem.ContentItemVersionId = "";
+            contentItem.Latest = contentItem.Published = false;
+
+            var context = new RestoreContentContext(contentItem);
+            await Handlers.InvokeAsync((handler, context) => handler.RestoringAsync(context), context, _logger);
+
+            // Invoke save and fire update handlers.
+            await UpdateAsync(contentItem);
+
+            var validationResult = await ValidateAsync(contentItem);
+            if (!validationResult.Succeeded)
+            {
+                // The session is already cancelled.
+                return validationResult;
+            }
+
+            // Remove an existing draft but keep an existing published version.
+            var latestVersion = await _session.Query<ContentItem, ContentItemIndex>()
+                .Where(index => index.ContentItemId == contentItem.ContentItemId && index.Latest)
+                .FirstOrDefaultAsync();
+
+            if (latestVersion != null)
+            {
+                latestVersion.Latest = false;
+                _session.Save(latestVersion);
+            }
+
+            await CreateAsync(contentItem, VersionOptions.Draft);
+
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.RestoredAsync(context), context, _logger);
+
+            return validationResult;
+        }
+
         public async Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect)
         {
             var context = new ContentItemAspectContext
@@ -695,12 +735,12 @@ namespace OrchardCore.ContentManagement
         public async Task<ContentItem> CloneAsync(ContentItem contentItem)
         {
             var cloneContentItem = await NewAsync(contentItem.ContentType);
+            cloneContentItem.DisplayText = contentItem.DisplayText;
             await CreateAsync(cloneContentItem, VersionOptions.Draft);
 
             var context = new CloneContentContext(contentItem, cloneContentItem);
 
             context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
-            context.CloneContentItem.DisplayText = contentItem.DisplayText;
 
             await Handlers.InvokeAsync((handler, context) => handler.CloningAsync(context), context, _logger);
 

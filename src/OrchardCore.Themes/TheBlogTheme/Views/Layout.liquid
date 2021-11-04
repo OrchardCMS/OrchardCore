@@ -27,7 +27,7 @@
             <a class="navbar-brand" href="{{ '~/' | href }}">{{ Site.SiteName }}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="sr-only">{{ "Toggle navigation" | t }}</span>
-                {{ "Menu" | t }} <i class="fa fa-bars"></i>
+                {{ "Menu" | t }} <i class="fa fa-bars" aria-hidden="true"></i>
             </button>
             {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu" %}
         </div>
