@@ -103,7 +103,7 @@ namespace OrchardCore.OpenId.Configuration
                 var parameters = settings.Parameters;
                 options.Events.OnRedirectToIdentityProvider = (context) =>
                 {
-                    foreach(var parameter in parameters)
+                    foreach (var parameter in parameters)
                     {
                         context.ProtocolMessage.SetParameter(parameter.Name, parameter.Value);
                     }
@@ -118,11 +118,13 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdClientSettings> GetClientSettingsAsync()
         {
             var settings = await _clientService.GetSettingsAsync();
-            if ((await _clientService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+            var result = await _clientService.ValidateSettingsAsync(settings);
+            if (result.Any(result => result != ValidationResult.Success))
             {
                 if (_shellSettings.State == TenantState.Running)
                 {
-                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+                    var errors = result.Where(x => x != ValidationResult.Success).Select(x => x.ErrorMessage);
+                    _logger.LogWarning("The OpenID Connect module is not correctly configured:{Error}", string.Join("\r\n;", errors));
                 }
 
                 return null;
