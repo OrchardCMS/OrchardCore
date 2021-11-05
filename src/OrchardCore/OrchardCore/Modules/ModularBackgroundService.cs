@@ -54,6 +54,9 @@ namespace OrchardCore.Modules
                 _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
+            // Ensure all ShellContext are loaded and available.
+            await _shellHost.InitializeAsync();
+
             while (GetRunningShells().Count() < 1)
             {
                 try
@@ -106,12 +109,6 @@ namespace OrchardCore.Modules
                     }
 
                     var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-
-                    if (shellScope.ShellContext.Pipeline == null)
-                    {
-                        break;
-                    }
-
                     var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
 
                     // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
@@ -192,11 +189,6 @@ namespace OrchardCore.Modules
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-
-                if (shellScope.ShellContext.Pipeline == null)
-                {
-                    return;
-                }
 
                 await shellScope.UsingAsync(async scope =>
                 {
@@ -286,7 +278,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && s.Pipeline != null).ToArray();
+            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
