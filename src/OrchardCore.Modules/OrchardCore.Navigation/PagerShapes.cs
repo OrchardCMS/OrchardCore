@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
@@ -535,7 +537,19 @@ namespace OrchardCore.Navigation
             var routeValues = shape.GetProperty<RouteValueDictionary>("RouteValues") ?? new RouteValueDictionary();
             if (!Disabled)
             {
-                shape.Attributes["href"] = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
+                // The 'Pager' uses a route parameter named "page" which is now a reserved routing name.
+                if (routeValues.TryGetValue("page", out var value))
+                {
+                    routeValues.Remove("page");
+                }
+
+                var href = Url.Action((string)routeValues["action"], (string)routeValues["controller"], routeValues);
+                if (value != null && value is int page)
+                {
+                    href = QueryHelpers.AddQueryString(href, "page", page.ToString(CultureInfo.InvariantCulture));
+                }
+
+                shape.Attributes["href"] = href;
             }
             else
             {
