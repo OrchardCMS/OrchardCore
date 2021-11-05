@@ -538,6 +538,8 @@ namespace OrchardCore.Navigation
             if (!Disabled)
             {
                 // The 'Pager' uses a route parameter named "page" which is now a reserved routing name.
+                // So, this route parameter is first removed and then added as a query string parameter.
+
                 if (routeValues.TryGetValue("page", out var value))
                 {
                     routeValues.Remove("page");
