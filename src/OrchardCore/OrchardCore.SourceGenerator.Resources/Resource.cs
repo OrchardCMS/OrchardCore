@@ -13,5 +13,7 @@ namespace OrchardCore.SourceGenerator.Resources
         public string[] CdnIntegrity { get; set; }
 
         public string Version { get; set; }
+
+        public ResourceType Type { get; set; }
     }
 }

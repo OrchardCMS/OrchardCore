@@ -11,6 +11,8 @@ namespace OrchardCore.SourceGenerator.Resources
     [Generator]
     internal class ResourceManfiestGenerator : ISourceGenerator
     {
+        private static readonly string _resourcesFile = "resources.json";
+
         public void Execute(GeneratorExecutionContext context)
         {
             var sourceBuilder = new StringBuilder(@"
@@ -24,120 +26,30 @@ namespace OrchardCore.ResourceManagement
 
         public static ResourceManifest Build(string tenantPrefix)
         {
-            var manifest = new ResourceManifest();");
+            var manifest = new ResourceManifest();
+            ResourceDefinition resource = null;");
 
             const string minificationFileExtension = ".min";
 
             var assembliesFolderPath = new FileInfo(typeof(Resource).Assembly.Location).Directory.FullName;
-            var resourcesFilePath = Path.Combine(assembliesFolderPath, "resources.json");
+            var resourcesFilePath = Path.Combine(assembliesFolderPath, _resourcesFile);
             using (var reader = new StreamReader(resourcesFilePath))
             {
-                var count = 1;
                 var content = reader.ReadToEnd();
                 var resources = JsonSerializer.Deserialize<Resources>(content);
 
-                for (var i = 0; i < resources.Scripts.Length; i++)
+                foreach (var resource in resources.Scripts)
                 {
-                    var script = resources.Scripts.ElementAt(i);
+                    resource.Type = ResourceType.Script;
 
-                    sourceBuilder.AppendLine($@"
-            var resource{count} = manifest
-                .DefineScript(""{script.Name}"")
-                .SetVersion(""{script.Version}"");");
-
-                    if (script.Dependencies != null)
-                    {
-                        sourceBuilder.AppendLine($@"
-            resource{count}.SetDependencies({String.Join(',', script.Dependencies.Select(d => "\"" + d + "\""))});");
-                    }
-
-                    if (!String.IsNullOrEmpty(script.Url))
-                    {
-                        if (script.Url.Contains(minificationFileExtension))
-                        {
-                            sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl(""{script.Url}"", ""{script.Url.Replace(minificationFileExtension, String.Empty)}"");");
-                        }
-                        else
-                        {
-                            sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl(""{script.Url}"");");
-                        }
-                    }
-
-                    if (!String.IsNullOrEmpty(script.Cdn))
-                    {
-                        if (script.Cdn.Contains(minificationFileExtension))
-                        {
-                            sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl(""{script.Cdn}"", ""{script.Cdn.Replace(minificationFileExtension, String.Empty)}"");");
-                        }
-                        else
-                        {
-                            sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl(""{script.Cdn}"");");
-                        }
-                    }
-
-                    if (script.CdnIntegrity != null)
-                    {
-                        sourceBuilder.AppendLine($@"
-            resource{count}.SetCdnIntegrity({String.Join(',', script.CdnIntegrity.Select(c => "\"" + c + "\""))});");
-                    }
-
-                    ++count;
+                    CreateResource(resource);
                 }
 
-                for (var i = 0; i < resources.Styles.Length; i++)
+                foreach (var resource in resources.Styles)
                 {
-                    var style = resources.Styles.ElementAt(i);
+                    resource.Type = ResourceType.Style;
 
-                    sourceBuilder.AppendLine($@"
-            var resource{count} = manifest
-                .DefineStyle(""{style.Name}"")
-                .SetVersion(""{style.Version}"");");
-
-                    if (style.Dependencies != null)
-                    {
-                        sourceBuilder.AppendLine($@"
-            resource{count}.SetDependencies({String.Join(',', style.Dependencies.Select(d => "\"" + d + "\""))});");
-                    }
-
-                    if (!String.IsNullOrEmpty(style.Url))
-                    {
-                        if (style.Url.Contains(minificationFileExtension))
-                        {
-                            sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl(""{style.Url}"", ""{style.Url.Replace(minificationFileExtension, String.Empty)}"");");
-                        }
-                        else
-                        {
-                            sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl(""{style.Url}"");");
-                        }
-                    }
-
-                    if (!String.IsNullOrEmpty(style.Cdn))
-                    {
-                        if (style.Cdn.Contains(minificationFileExtension))
-                        {
-                            sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl(""{style.Cdn}"", ""{style.Cdn.Replace(minificationFileExtension, String.Empty)}"");");
-                        }
-                        else
-                        {
-                            sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl(""{style.Cdn}"");");
-                        }
-                    }
-
-                    if (style.CdnIntegrity != null)
-                    {
-                        sourceBuilder.AppendLine($@"
-            resource{count}.SetCdnIntegrity({String.Join(',', style.CdnIntegrity.Select(c => "\"" + c + "\""))});");
-                    }
-
-                    ++count;
+                    CreateResource(resource);
                 }
             }
 
@@ -161,6 +73,64 @@ namespace OrchardCore.ResourceManagement
 }");
 
             context.AddSource(nameof(ResourceManfiestGenerator), SourceText.From(sourceBuilder.ToString(), Encoding.UTF8));
+
+            void CreateResource(Resource resource)
+            {
+                if (resource.Type == ResourceType.Script)
+                {
+                    sourceBuilder.AppendLine($@"
+            resource = manifest
+                .DefineScript(""{resource.Name}"")
+                .SetVersion(""{resource.Version}"");");
+                }
+                else
+                {
+                    sourceBuilder.AppendLine($@"
+            resource = manifest
+                .DefineStyle(""{resource.Name}"")
+                .SetVersion(""{resource.Version}"");");
+                }
+
+                if (resource.Dependencies != null)
+                {
+                    sourceBuilder.AppendLine($@"
+            resource.SetDependencies({String.Join(',', resource.Dependencies.Select(d => "\"" + d + "\""))});");
+                }
+
+                if (!String.IsNullOrEmpty(resource.Url))
+                {
+                    if (resource.Url.Contains(minificationFileExtension))
+                    {
+                        sourceBuilder.AppendLine($@"
+            resource.SetUrl(""{resource.Url}"", ""{resource.Url.Replace(minificationFileExtension, String.Empty)}"");");
+                    }
+                    else
+                    {
+                        sourceBuilder.AppendLine($@"
+            resource.SetUrl(""{resource.Url}"");");
+                    }
+                }
+
+                if (!String.IsNullOrEmpty(resource.Cdn))
+                {
+                    if (resource.Cdn.Contains(minificationFileExtension))
+                    {
+                        sourceBuilder.AppendLine($@"
+            resource.SetUrl(""{resource.Cdn}"", ""{resource.Cdn.Replace(minificationFileExtension, String.Empty)}"");");
+                    }
+                    else
+                    {
+                        sourceBuilder.AppendLine($@"
+            resource.SetUrl(""{resource.Cdn}"");");
+                    }
+                }
+
+                if (resource.CdnIntegrity != null)
+                {
+                    sourceBuilder.AppendLine($@"
+            resource.SetCdnIntegrity({String.Join(',', resource.CdnIntegrity.Select(c => "\"" + c + "\""))});");
+                }
+            }
         }
 
         public void Initialize(GeneratorInitializationContext context)
