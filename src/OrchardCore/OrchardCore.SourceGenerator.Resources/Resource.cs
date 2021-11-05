@@ -6,9 +6,9 @@ namespace OrchardCore.SourceGenerator.Resources
 
         public string[] Dependencies { get; set; }
 
-        public string[] Url { get; set; }
+        public string Url { get; set; }
 
-        public string[] Cdn { get; set; }
+        public string Cdn { get; set; }
 
         public string[] CdnIntegrity { get; set; }
 

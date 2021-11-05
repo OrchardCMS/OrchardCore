@@ -26,7 +26,9 @@ namespace OrchardCore.ResourceManagement
         {
             var manifest = new ResourceManifest();");
 
-            var assembliesFolderPath = new FileInfo(typeof(ResourceManfiestGenerator).Assembly.Location).Directory.FullName;
+            const string minificationFileExtension = ".min";
+
+            var assembliesFolderPath = new FileInfo(typeof(Resource).Assembly.Location).Directory.FullName;
             var resourcesFilePath = Path.Combine(assembliesFolderPath, "resources.json");
             using (var reader = new StreamReader(resourcesFilePath))
             {
@@ -49,16 +51,32 @@ namespace OrchardCore.ResourceManagement
             resource{count}.SetDependencies({String.Join(',', script.Dependencies.Select(d => "\"" + d + "\""))});");
                     }
 
-                    if (script.Url != null)
+                    if (!String.IsNullOrEmpty(script.Url))
                     {
-                        sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl({String.Join(',', script.Url.Select(u => "\"" + u + "\""))});");
+                        if (script.Url.Contains(minificationFileExtension))
+                        {
+                            sourceBuilder.AppendLine($@"
+            resource{count}.SetUrl(""{script.Url}"", ""{script.Url.Replace(minificationFileExtension, String.Empty)}"");");
+                        }
+                        else
+                        {
+                            sourceBuilder.AppendLine($@"
+            resource{count}.SetUrl(""{script.Url}"");");
+                        }
                     }
 
-                    if (script.Cdn != null)
+                    if (!String.IsNullOrEmpty(script.Cdn))
                     {
-                        sourceBuilder.AppendLine($@"
-            resource{count}.SetCdn({String.Join(',', script.Cdn.Select(c => "\"" + c + "\""))});");
+                        if (script.Cdn.Contains(minificationFileExtension))
+                        {
+                            sourceBuilder.AppendLine($@"
+            resource{count}.SetUrl(""{script.Cdn}"", ""{script.Cdn.Replace(minificationFileExtension, String.Empty)}"");");
+                        }
+                        else
+                        {
+                            sourceBuilder.AppendLine($@"
+            resource{count}.SetUrl(""{script.Cdn}"");");
+                        }
                     }
 
                     if (script.CdnIntegrity != null)
@@ -85,16 +103,32 @@ namespace OrchardCore.ResourceManagement
             resource{count}.SetDependencies({String.Join(',', style.Dependencies.Select(d => "\"" + d + "\""))});");
                     }
 
-                    if (style.Url != null)
+                    if (!String.IsNullOrEmpty(style.Url))
                     {
-                        sourceBuilder.AppendLine($@"
-            resource{count}.SetUrl({String.Join(',', style.Url.Select(u => "\"" + u + "\""))});");
+                        if (style.Url.Contains(minificationFileExtension))
+                        {
+                            sourceBuilder.AppendLine($@"
+            resource{count}.SetUrl(""{style.Url}"", ""{style.Url.Replace(minificationFileExtension, String.Empty)}"");");
+                        }
+                        else
+                        {
+                            sourceBuilder.AppendLine($@"
+            resource{count}.SetUrl(""{style.Url}"");");
+                        }
                     }
 
-                    if (style.Cdn != null)
+                    if (!String.IsNullOrEmpty(style.Cdn))
                     {
-                        sourceBuilder.AppendLine($@"
-            resource{count}.SetCdn({String.Join(',', style.Cdn.Select(c => "\"" + c + "\""))});");
+                        if (style.Cdn.Contains(minificationFileExtension))
+                        {
+                            sourceBuilder.AppendLine($@"
+            resource{count}.SetUrl(""{style.Cdn}"", ""{style.Cdn.Replace(minificationFileExtension, String.Empty)}"");");
+                        }
+                        else
+                        {
+                            sourceBuilder.AppendLine($@"
+            resource{count}.SetUrl(""{style.Cdn}"");");
+                        }
                     }
 
                     if (style.CdnIntegrity != null)

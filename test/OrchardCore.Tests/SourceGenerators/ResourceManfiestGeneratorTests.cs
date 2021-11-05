@@ -34,5 +34,24 @@ namespace OrchardCore.Tests.SourceGenerators
 
             Assert.Equal("monaco-loader", lastScript.Name);
         }
+
+        [Fact]
+        public void ResourceManifestGeneratorShouldMinifyUrlAndCdnIfNeeded()
+        {
+            // Arrange
+            const string minificationFileExtension = ".min";
+            var resourceManifest = ResourceManfiestGenerator.Build(String.Empty);
+
+            // Act & Assert
+            var resources = resourceManifest.GetResources("script").Values
+                .SelectMany(r => r)
+                .Where(r => !String.IsNullOrEmpty(r.Url));
+
+            var resourcesWithUrlDebugVersion = resources.Where(r => r.Url.Contains(minificationFileExtension));
+            var resourcesWithoutUrlDebugVersion = resources.Where(r => !r.Url.Contains(minificationFileExtension));
+
+            Assert.Equal(resourcesWithUrlDebugVersion.Select(r => r.Url.Replace(minificationFileExtension, String.Empty)), resourcesWithUrlDebugVersion.Select(r => r.UrlDebug));
+            Assert.True(resourcesWithoutUrlDebugVersion.All(r => String.IsNullOrEmpty(r.UrlDebug)));
+        }
     }
 }
