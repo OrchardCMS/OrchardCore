@@ -210,3 +210,4 @@ src/Templates/**/content/**/[Oo]bj/
 # BenchmarkDotNet artifacts
 BenchmarkDotNet.Artifacts
 
+/src/OrchardCore.Cms.Web/appsettings.Development.json
