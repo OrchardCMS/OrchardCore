@@ -1,7 +1,15 @@
+using System;
+
 namespace OrchardCore.Navigation
 {
     public class PagerParameters
     {
+        /// <summary>
+        /// Gets or sets the current page number or null if none specified.
+        /// </summary>
+        [Obsolete("This property will be removed in a future version. Use PageNum instead.")]
+        public int? Page { get; set; }
+
         /// <summary>
         /// Gets or sets the current page number or null if none specified.
         /// </summary>
