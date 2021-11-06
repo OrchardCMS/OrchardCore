@@ -31,7 +31,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         [InlineData("", @"foo [asset_url width=""100""]bar[/asset_url] baz", @"foo /media/bar?width=100 baz")]
         [InlineData("", @"foo [asset_url width=""100"" height=""50"" mode=""stretch""]bar[/asset_url] baz", @"foo /media/bar?width=100&amp;height=50&amp;rmode=stretch baz")]
         [InlineData("", "foo [asset_url]bar[/asset_url] baz foo [asset_url]bar[/asset_url] baz", @"foo /media/bar baz foo /media/bar baz")]
-        [InlineData("", "foo [asset_url]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')\"[/asset_url] baz", @"foo /media/bàr.jpeg?width=100 onload= baz")]
+        [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg onload=""javascript: alert('XSS')""[/asset_url]"">baz</a>", @"foo <a href=""/media/bàr.jpeg onload="">baz</a>")]
+        [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg?width=100 onload=""javascript: alert('XSS')""[/asset_url]"">baz</a>", @"foo <a href=""/media/bàr.jpeg?width=100 onload="">baz</a>")]
         public async Task ShouldProcess(string cdnBaseUrl, string text, string expected)
         {
             var fileStore = new DefaultMediaFileStore(
@@ -50,12 +51,26 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var options = Options.Create(new ResourceManagementOptions { CdnBaseUrl = cdnBaseUrl });
 
-            var assetUrlProvider = new AssetUrlShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options);
+            var assetUrlProvider = new AssetUrlShortcodeProvider(fileStore, httpContextAccessor, options);
 
             var processor = new ShortcodeService(new IShortcodeProvider[] { assetUrlProvider }, Enumerable.Empty<IShortcodeContextProvider>());
 
             var processed = await processor.ProcessAsync(text);
-            Assert.Equal(expected, processed);
+            // The markdown part sanitizes after processing.
+            var sanitized = sanitizer.Sanitize(processed);
+            Assert.Equal(expected, sanitized);
+        }
+
+        [Theory]
+        [InlineData(@"foo <a href=""[asset_url]bàr.jpeg[/asset_url]"">baz</a>", @"foo <a href=""[asset_url]bàr.jpeg[/asset_url]"">baz</a>")]
+        // Sanitizing strips the closing shortcode tag when it finds onload. This is fine, as the user cannot expect a good shortcode when they attempt xss
+        [InlineData(@"foo <a href=""[asset_url]bàr.jpeg?width=100 onload=""javascript: alert('XSS')""[/asset_url]"">baz</a>", @"foo <a href=""[asset_url]bàr.jpeg?width=100 onload="">baz</a>")]
+        public void ShouldSanitizeUnprocessed(string text, string expected)
+        {
+            // The html parts santize on save, so do not process the shortcode first.
+            var sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
+            var sanitized = sanitizer.Sanitize(text);
+            Assert.Equal(expected, sanitized);
         }
     }
 }

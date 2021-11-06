@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using OrchardCore.Infrastructure.Html;
 using OrchardCore.ResourceManagement;
 using Shortcodes;
 
@@ -12,32 +11,25 @@ namespace OrchardCore.Media.Shortcodes
 {
     public class AssetUrlShortcodeProvider : IShortcodeProvider
     {
-        private static readonly ValueTask<string> Null = new ValueTask<string>((string)null);
-        private static readonly ValueTask<string> AssetUrlShortcode = new ValueTask<string>("[asset_url]");
-        private const string Identifier = "asset_url";
-
         private readonly IMediaFileStore _mediaFileStore;
-        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResourceManagementOptions _options;
 
         public AssetUrlShortcodeProvider(
             IMediaFileStore mediaFileStore,
-            IHtmlSanitizerService htmlSanitizerService,
             IHttpContextAccessor httpContextAccessor,
             IOptions<ResourceManagementOptions> options)
         {
             _mediaFileStore = mediaFileStore;
-            _htmlSanitizerService = htmlSanitizerService;
             _httpContextAccessor = httpContextAccessor;
             _options = options.Value;
         }
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
-            if (!String.Equals(identifier, Identifier, StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(identifier, "asset_url", StringComparison.OrdinalIgnoreCase))
             {
-                return Null;
+                return new ValueTask<string>((string)null);
             }
 
             // Handle self closing shortcodes.
@@ -46,7 +38,7 @@ namespace OrchardCore.Media.Shortcodes
                 content = arguments.NamedOrDefault("src");
                 if (String.IsNullOrEmpty(content))
                 {
-                    return AssetUrlShortcode;
+                    return new ValueTask<string>("[asset_url]");
                 }
             }
 
@@ -105,10 +97,7 @@ namespace OrchardCore.Media.Shortcodes
                 content = QueryHelpers.AddQueryString(content, queryStringParams);
             }
 
-            // To sanitize the content, which may be later wrapped in a tag by the writer, we wrap it in an img tag, sanitize it, and remove the img tag.
-            content = "<img src=\"" + content + "\">";
-            content = _htmlSanitizerService.Sanitize(content);
-            content = content[10..^2];
+            // This does not produce a tag, so sanitization is performed by the consumer (html body or markdown).
 
             return new ValueTask<string>(content);
         }
