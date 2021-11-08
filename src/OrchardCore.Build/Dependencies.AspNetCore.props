@@ -17,18 +17,18 @@
 
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM (default = net6.0) -->
   <PropertyGroup>
-    <AspNetCorePackagesVersion>6.0.0-rc.2.21480.10</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>6.0.0-rc.2.21480.10</MicrosoftExtensionsPackagesVersion>
+    <AspNetCorePackagesVersion>6.0.0</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>6.0.0</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <AspNetCorePackagesVersion>5.0.11</AspNetCorePackagesVersion>
+    <AspNetCorePackagesVersion>5.0.12</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>5.0.1</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <AspNetCorePackagesVersion>3.1.20</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>3.1.20</MicrosoftExtensionsPackagesVersion>
+    <AspNetCorePackagesVersion>3.1.21</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>3.1.21</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
