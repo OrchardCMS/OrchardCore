@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Locking.Distributed;
 
 namespace OrchardCore.Documents
@@ -17,10 +19,7 @@ namespace OrchardCore.Documents
         private readonly IDistributedLock _distributedLock;
 
         private delegate Task<TDocument> UpdateDelegate();
-        private UpdateDelegate _updateDelegateAsync;
-
         private delegate Task AfterUpdateDelegate(TDocument document);
-        private AfterUpdateDelegate _afterUpdateDelegateAsync;
 
         public VolatileDocumentManager(
             IDistributedCache distributedCache,
@@ -40,11 +39,18 @@ namespace OrchardCore.Documents
                 return Task.CompletedTask;
             }
 
-            _updateDelegateAsync += () => updateAsync();
-
-            if (afterUpdateAsync != null)
+            var delegates = ShellScope.GetOrCreateFeature<UpdateDelegates>();
+            if (delegates.UpdateDelegateAsync == null ||
+                !delegates.UpdateDelegateAsync.GetInvocationList().Contains(updateAsync))
             {
-                _afterUpdateDelegateAsync += document => afterUpdateAsync(document);
+                delegates.UpdateDelegateAsync += () => updateAsync();
+            }
+
+            if (afterUpdateAsync != null &&
+                (delegates.AfterUpdateDelegateAsync == null ||
+                !delegates.AfterUpdateDelegateAsync.GetInvocationList().Contains(afterUpdateAsync)))
+            {
+                delegates.AfterUpdateDelegateAsync += document => afterUpdateAsync(document);
             }
 
             DocumentStore.AfterCommitSuccess<TDocument>(async () =>
@@ -62,7 +68,7 @@ namespace OrchardCore.Documents
                 await using var acquiredLock = locker;
 
                 TDocument document = null;
-                foreach (var d in _updateDelegateAsync.GetInvocationList())
+                foreach (var d in delegates.UpdateDelegateAsync.GetInvocationList())
                 {
                     document = await ((UpdateDelegate)d)();
                 }
@@ -71,9 +77,9 @@ namespace OrchardCore.Documents
 
                 await SetInternalAsync(document);
 
-                if (_afterUpdateDelegateAsync != null)
+                if (delegates.AfterUpdateDelegateAsync != null)
                 {
-                    foreach (var d in _afterUpdateDelegateAsync.GetInvocationList())
+                    foreach (var d in delegates.AfterUpdateDelegateAsync.GetInvocationList())
                     {
                         await ((AfterUpdateDelegate)d)(document);
                     }
@@ -81,6 +87,12 @@ namespace OrchardCore.Documents
             });
 
             return Task.CompletedTask;
+        }
+
+        private class UpdateDelegates
+        {
+            public UpdateDelegate UpdateDelegateAsync;
+            public AfterUpdateDelegate AfterUpdateDelegateAsync;
         }
     }
 }
