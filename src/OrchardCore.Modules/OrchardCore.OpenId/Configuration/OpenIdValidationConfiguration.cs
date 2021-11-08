@@ -247,14 +247,19 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdServerSettings> GetServerSettingsAsync(IOpenIdServerService service)
         {
             var settings = await service.GetSettingsAsync();
-            if (_logger.IsEnabled(LogLevel.Warning) &&
-                (await service.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+            if (_logger.IsEnabled(LogLevel.Warning))
             {
-                if (_shellSettings.State == TenantState.Running)
+                var result = await service.ValidateSettingsAsync(settings);
+                if (result.Any(result => result != ValidationResult.Success))
                 {
-                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+                    if (_shellSettings.State == TenantState.Running)
+                    {
+                        var errors = result.Where(x => x != ValidationResult.Success).Select(x => x.ErrorMessage);
+                        _logger.LogWarning("The Server Settings of OpenID Connect module is not correctly configured:{Error}", string.Join("\r\n;", errors));
+                    }
+
+                    return null;
                 }
-                return null;
             }
 
             return settings;
@@ -262,14 +267,20 @@ namespace OrchardCore.OpenId.Configuration
 
         private async Task<OpenIdValidationSettings> GetValidationSettingsAsync()
         {
-            var settings = await _validationService.GetSettingsAsync();
-            if ((await _validationService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
+            var settings = await _validationService.GetSettingsAsync();  
+            if (_logger.IsEnabled(LogLevel.Warning))
             {
-                if (_shellSettings.State == TenantState.Running)
+                var result = await _validationService.ValidateSettingsAsync(settings);
+                if (result.Any(result => result != ValidationResult.Success))
                 {
-                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+                    if (_shellSettings.State == TenantState.Running)
+                    {
+                        var errors = result.Where(x => x != ValidationResult.Success).Select(x => x.ErrorMessage);
+                        _logger.LogWarning("The OpenID Connect module is not correctly configured:{Error}", string.Join("\r\n;", errors));
+                    }
+
+                    return null;
                 }
-                return null;
             }
 
             return settings;
