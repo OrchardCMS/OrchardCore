@@ -120,29 +120,23 @@ namespace OrchardCore.Layers.Services
                         continue;
                     }
 
-                    try
+                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
+
+                    widgetContent.Classes.Add("widget");
+                    widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+
+                    var wrapper = new WidgetWrapper
                     {
-                        var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
+                        Widget = widget.ContentItem,
+                        Content = widgetContent
+                    };
 
-                        widgetContent.Classes.Add("widget");
-                        widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
 
-                        var wrapper = new WidgetWrapper
-                        {
-                            Widget = widget.ContentItem,
-                            Content = widgetContent
-                        };
+                    var contentZone = layout.Zones[widget.Zone];
 
-                        wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
-                        wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
-
-                        var contentZone = layout.Zones[widget.Zone];
-
-                        await contentZone.AddAsync(wrapper, "");
-                    }
-                    catch {
-                        continue;
-                    }                  
+                    await contentZone.AddAsync(wrapper, "");                    
                 }
             }
 

@@ -57,10 +57,6 @@ namespace OrchardCore.ContentManagement.Display
             }
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            if (contentTypeDefinition == null)
-            {
-                throw new ArgumentNullException(contentItem.ContentType);
-            }
 
             var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
             var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
@@ -106,10 +102,6 @@ namespace OrchardCore.ContentManagement.Display
             }
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            if (contentTypeDefinition == null)
-            {
-                throw new ArgumentNullException(contentItem.ContentType);
-            }
 
             var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
 
