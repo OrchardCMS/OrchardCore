@@ -1,11 +1,16 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
@@ -14,12 +19,41 @@ namespace OrchardCore.Menu.Drivers
 {
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IHtmlLocalizer H;
+        private readonly INotifier _notifier;
+        private readonly ILogger _logger;
 
+        public MenuPartDisplayDriver(
+            IContentDefinitionManager contentDefinitionManager,
+            IHtmlLocalizer<MenuPartDisplayDriver> htmlLocalizer,
+            INotifier notifier,
+            ILogger<MenuPartDisplayDriver> logger
+            )
+        {
+            _contentDefinitionManager = contentDefinitionManager;
+            H = htmlLocalizer;
+            _notifier = notifier;
+            _logger = logger;
+        }
+        
         public override IDisplayResult Edit(MenuPart part)
         {
-            return Initialize<MenuPartEditViewModel>("MenuPart_Edit", model =>
+            return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
             {
+                var menuItemContentTypes = _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "MenuItem");
+
+                foreach (var menuItem in part.ContentItem.As<MenuItemsListPart>().MenuItems)
+                {
+                    if (!menuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
+                    {
+                        _logger.LogWarning("The Widget ContentItem with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType);
+                        await _notifier.WarningAsync(H["The Widget ContentItem with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]);
+                    }
+                }
+
                 model.MenuPart = part;
+                model.MenuItemContentTypes = menuItemContentTypes;
             });
         }
 

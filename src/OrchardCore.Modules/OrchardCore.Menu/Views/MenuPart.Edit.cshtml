@@ -2,7 +2,6 @@
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @*
     This template is used to render the editor for a Menu content item.
     It render the hierarchy of the menu items.
@@ -16,7 +15,6 @@
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
-    var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "MenuItem");
     var canAddMenuItem = Model.MenuPart.ContentItem.Id != 0;
     var index = 0;
 }
@@ -32,10 +30,13 @@
     <ol id="menu">
         @foreach (var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
         {
-            dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-            menuItemShape.MenuPart = Model.MenuPart;
-            menuItemShape.Index = index++;
-            @await DisplayAsync(menuItemShape);
+            if (Model.MenuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
+            {
+                dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+                menuItemShape.MenuPart = Model.MenuPart;
+                menuItemShape.Index = index++;
+                @await DisplayAsync(menuItemShape);
+            }
         }
     </ol>
 </p>
@@ -52,7 +53,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    @foreach (var type in menuItemContentTypes)
+                    @foreach (var type in Model.MenuItemContentTypes)
                     {
                         var menuItem = await ContentManager.NewAsync(type.Name);
                         dynamic thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
