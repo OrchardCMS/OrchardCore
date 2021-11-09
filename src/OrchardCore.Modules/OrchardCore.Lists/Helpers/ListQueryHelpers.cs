@@ -19,10 +19,11 @@ namespace OrchardCore.Lists.Helpers
                     .CountAsync();
         }
 
-        internal static Task<IEnumerable<ContentItem>> QueryListItemsAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)
+        internal static Task<IEnumerable<ContentItem>> QueryListItemsAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null, Expression<Func<ContainedPartIndex, object>> partPredicate = null)
         {
             return session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
+                    .OrderBy(partPredicate ?? (c => c.ListContentItemId))
                     .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
                     .ListAsync();
         }
