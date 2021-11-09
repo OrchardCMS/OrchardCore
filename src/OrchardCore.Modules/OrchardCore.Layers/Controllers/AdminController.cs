@@ -117,6 +117,7 @@ namespace OrchardCore.Layers.Controllers
                 else
                 {
                     _logger.LogWarning("The Widget ContentItem with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType);
+                    await _notifier.WarningAsync(H["The Widget ContentItem with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
                 }
             }
 

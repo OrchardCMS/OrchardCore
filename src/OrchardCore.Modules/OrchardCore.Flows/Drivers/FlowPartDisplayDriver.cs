@@ -59,7 +59,7 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
         {
-            return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), m =>
+            return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), async model =>  
             {
                 var containedContentTypes = GetContainedContentTypes(context.TypePartDefinition);
                 var notify = false;
@@ -69,19 +69,19 @@ namespace OrchardCore.Flows.Drivers
                     if (!containedContentTypes.Any(c => c.Name == widget.ContentType))
                     {
                         _logger.LogWarning("The Widget ContentItem with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType);
-                        _notifier.WarningAsync(H["The Widget ContentItem with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
+                        await _notifier.WarningAsync(H["The Widget ContentItem with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
                         notify = true;
                     }
                 }
 
                 if(notify)
                 {
-                    _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
+                    await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
                 }
 
-                m.FlowPart = flowPart;
-                m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = containedContentTypes;
+                model.FlowPart = flowPart;
+                model.Updater = context.Updater;
+                model.ContainedContentTypeDefinitions = containedContentTypes;
             });
         }
 
