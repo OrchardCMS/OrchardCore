@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageManagement Include="AngleSharp" Version="0.16.0" />
+    <PackageManagement Include="AngleSharp" Version="0.16.1" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.1" />
     <PackageManagement Include="Azure.Identity" Version="1.5.0" />
@@ -16,10 +16,10 @@
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="Fluid.Core" Version="2.1.4" />
+    <PackageManagement Include="Fluid.Core" Version="2.2.0" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2035" />
-    <PackageManagement Include="HtmlSanitizer" Version="6.0.441" />
+    <PackageManagement Include="HtmlSanitizer" Version="6.0.453" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00015" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00015" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00015" />
@@ -52,7 +52,7 @@
     <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.0.7" />
     <PackageManagement Include="YesSql.Filters.Query" Version="3.0.7" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
-    <PackageManagement Include="ZString" Version="2.4.2" />
+    <PackageManagement Include="ZString" Version="2.4.3" />
   </ItemGroup>
 
 </Project>
