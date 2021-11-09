@@ -180,9 +180,10 @@ This article is not intended to provide a complete implementation. However, as a
   parameters.Add("categories", new string[] { "4pgm1krsy9nmyre41y5dj2p7df" });
   parameters.Add("tags", null);
   var posts = await Orchard.QueryAsync("GetBlogsByFilter", parameters);
+  
   foreach (ContentItem post in posts)
   {
-      Orchard.DisplayAsync(post);
+      await Orchard.DisplayAsync(post);
   }
 ```
 
