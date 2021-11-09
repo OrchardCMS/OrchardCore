@@ -42,14 +42,21 @@ namespace OrchardCore.Menu.Drivers
             return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
             {
                 var menuItemContentTypes = _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "MenuItem");
+                var notify = false;
 
                 foreach (var menuItem in part.ContentItem.As<MenuItemsListPart>().MenuItems)
                 {
                     if (!menuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
                     {
-                        _logger.LogWarning("The Widget ContentItem with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType);
-                        await _notifier.WarningAsync(H["The Widget ContentItem with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]);
+                        _logger.LogWarning("The menu item content item with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType);
+                        await _notifier.WarningAsync(H["The menu item content item with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]);
+                        notify = true;
                     }
+                }
+
+                if(notify)
+                {
+                    await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
                 }
 
                 model.MenuPart = part;
