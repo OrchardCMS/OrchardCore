@@ -68,8 +68,8 @@ namespace OrchardCore.Flows.Drivers
                 {
                     if (!containedContentTypes.Any(c => c.Name == widget.ContentType))
                     {
-                        _logger.LogWarning("The Widget ContentItem with id {0} has no matching {1} ContentType definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType);
-                        _notifier.WarningAsync(H["The Widget ContentItem with id {0} has no matching {1} ContentType definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
+                        _logger.LogWarning("The Widget ContentItem with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType);
+                        _notifier.WarningAsync(H["The Widget ContentItem with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
                         notify = true;
                     }
                 }
