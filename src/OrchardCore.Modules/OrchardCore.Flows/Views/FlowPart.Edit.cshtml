@@ -22,38 +22,41 @@
             var index = 0;
             foreach (var widget in Model.FlowPart.Widgets)
             {
-                var metadata = ((ContentItem)widget).As<OrchardCore.Flows.Models.FlowMetadata>();
-                var colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
+                if (Model.ContainedContentTypeDefinitions.Any(c => c.Name == widget.ContentType))
+                {
+                    var metadata = ((ContentItem)widget).As<OrchardCore.Flows.Models.FlowMetadata>();
+                    var colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
 
-                //Create a Card Shape
-                dynamic contentCard = await New.ContentCard(
-                    //For Updater
-                    CollectionShape: Model,
-                    //Shape Specific
-                    CollectionShapeType: nameof(FlowPart),
-                    ContentItem: widget,
-                    BuildEditor: true,
-                    ParentContentType: parentContentType,
-                    ContainedContentTypes: Model.ContainedContentTypeDefinitions,
-                    CollectionPartName: partName,
-                    //FlowPart Card Specific - For Frame
-                    ColumnSize: colSize,
-                    //Card Specific Properties
-                    TargetId: widgetTemplatePlaceholderId,
-                    Inline: false,
-                    CanMove: true,
-                    CanDelete: true,
-                    //Input hidden
-                    //Prefixes
-                    HtmlFieldPrefix: htmlFieldPrefix,
-                    PrefixValue: htmlFieldPrefix + '-' + (index++).ToString(),
-                    PrefixesId: widget.ContentItemId + "_" + Html.IdFor(x => x.Prefixes),
-                    PrefixesName: Html.NameFor(x => x.Prefixes),
-                    //Content Types
-                    ContentTypesId: widget.ContentItemId + "_" + Html.IdFor(x => x.ContentTypes),
-                    ContentTypesName: Html.NameFor(x => x.ContentTypes)
-                );
-                @await DisplayAsync(contentCard)
+                    //Create a Card Shape
+                    dynamic contentCard = await New.ContentCard(
+                        //For Updater
+                        CollectionShape: Model,
+                        //Shape Specific
+                        CollectionShapeType: nameof(FlowPart),
+                        ContentItem: widget,
+                        BuildEditor: true,
+                        ParentContentType: parentContentType,
+                        ContainedContentTypes: Model.ContainedContentTypeDefinitions,
+                        CollectionPartName: partName,
+                        //FlowPart Card Specific - For Frame
+                        ColumnSize: colSize,
+                        //Card Specific Properties
+                        TargetId: widgetTemplatePlaceholderId,
+                        Inline: false,
+                        CanMove: true,
+                        CanDelete: true,
+                        //Input hidden
+                        //Prefixes
+                        HtmlFieldPrefix: htmlFieldPrefix,
+                        PrefixValue: htmlFieldPrefix + '-' + (index++).ToString(),
+                        PrefixesId: widget.ContentItemId + "_" + Html.IdFor(x => x.Prefixes),
+                        PrefixesName: Html.NameFor(x => x.Prefixes),
+                        //Content Types
+                        ContentTypesId: widget.ContentItemId + "_" + Html.IdFor(x => x.ContentTypes),
+                        ContentTypesName: Html.NameFor(x => x.ContentTypes)
+                    );
+                    @await DisplayAsync(contentCard)
+                }
             }
         }
     </div>

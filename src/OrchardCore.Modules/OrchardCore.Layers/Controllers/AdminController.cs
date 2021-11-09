@@ -116,7 +116,7 @@ namespace OrchardCore.Layers.Controllers
                 }
                 else
                 {
-                    _logger.LogWarning($"The Widget ContentItem with id {widget.ContentItem.Id} has no matching ContentType definition.");
+                    _logger.LogWarning($"The Widget ContentItem with id {widget.ContentItem.ContentItemId} has no matching {widget.ContentItem.ContentType} ContentType definition.");
                 }
             }
 

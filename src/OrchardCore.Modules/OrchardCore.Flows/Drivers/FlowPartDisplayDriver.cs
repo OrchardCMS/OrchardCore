@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -10,6 +12,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.ViewModels;
@@ -21,16 +24,25 @@ namespace OrchardCore.Flows.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IHtmlLocalizer H;
+        private readonly INotifier _notifier;
+        private readonly ILogger _logger;
 
         public FlowPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
-            IServiceProvider serviceProvider
+            IServiceProvider serviceProvider,
+            IHtmlLocalizer<FlowPartDisplayDriver> htmlLocalizer,
+            INotifier notifier,
+            ILogger<FlowPartDisplayDriver> logger
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _serviceProvider = serviceProvider;
+            H = htmlLocalizer;
+            _notifier = notifier;
+            _logger = logger;
         }
 
         public override IDisplayResult Display(FlowPart flowPart, BuildPartDisplayContext context)
@@ -49,9 +61,27 @@ namespace OrchardCore.Flows.Drivers
         {
             return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), m =>
             {
+                var containedContentTypes = GetContainedContentTypes(context.TypePartDefinition);
+                var notify = false;
+
+                foreach (var widget in flowPart.Widgets)
+                {
+                    if (!containedContentTypes.Any(c => c.Name == widget.ContentType))
+                    {
+                        _logger.LogWarning($"The Widget ContentItem with id {widget.ContentItem.ContentItemId} has no matching {widget.ContentItem.ContentType} ContentType definition.");
+                        _notifier.WarningAsync(H[$"The Widget ContentItem with id {widget.ContentItem.ContentItemId} has no matching {widget.ContentItem.ContentType} ContentType definition."]);
+                        notify = true;
+                    }
+                }
+
+                if(notify)
+                {
+                    _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
+                }
+
                 m.FlowPart = flowPart;
                 m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = GetContainedContentTypes(context.TypePartDefinition);
+                m.ContainedContentTypeDefinitions = containedContentTypes;
             });
         }
 
