@@ -64,18 +64,25 @@
                     <i class="fa fa-plus" aria-hidden="true"></i>
                 </button>
                 <div class="dropdown-menu">
-                    @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
+                    @if (widgetContentTypes.Count() == 0)
                     {
-                        <a class="dropdown-item add-widget  btn-sm"
-                           data-target-id="@widgetTemplatePlaceholderId"
-                           data-html-field-prefix="@htmlFieldPrefix"
-                           data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
-                           data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
-                           data-widget-type="@type.Name"
-                           data-flowmetadata="true"
-                           data-parent-content-type="@parentContentType"
-                           data-part-name="@partName"
-                           href="javascript:;">@type.DisplayName</a>
+                        <a class="dropdown-item add-widget btn-sm" href="javascript:;">@T["No widgets found."]</a>
+                    }
+                    else
+                    {
+                        @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
+                        {
+                            <a class="dropdown-item add-widget  btn-sm"
+                            data-target-id="@widgetTemplatePlaceholderId"
+                            data-html-field-prefix="@htmlFieldPrefix"
+                            data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
+                            data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                            data-widget-type="@type.Name"
+                            data-flowmetadata="true"
+                            data-parent-content-type="@parentContentType"
+                            data-part-name="@partName"
+                            href="javascript:;">@type.DisplayName</a>
+                        }
                     }
                 </div>
             </div>

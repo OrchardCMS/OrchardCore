@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -42,7 +43,8 @@ namespace OrchardCore.Layers.Controllers
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
-
+        private readonly ILogger _logger;
+        
         public AdminController(
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
@@ -59,7 +61,8 @@ namespace OrchardCore.Layers.Controllers
             IEnumerable<IConditionFactory> conditionFactories,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier,
+            ILogger<AdminController> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
@@ -77,6 +80,7 @@ namespace OrchardCore.Layers.Controllers
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -106,9 +110,13 @@ namespace OrchardCore.Layers.Controllers
                     model.Widgets.Add(zone, list = new List<dynamic>());
                 }
                 
-                if(contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
+                if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
                 {
                     list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
+                }
+                else
+                {
+                    _logger.LogWarning($"The Widget ContentItem with id {widget.ContentItem.Id} has no matching ContentType definition.");
                 }
             }
 
