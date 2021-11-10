@@ -108,7 +108,7 @@ dotnet run -f net5.0 --launch-profile web
 or 
 
 ```
-dotnet run -f netcoreapp3.1 --launch-profile web
+dotnet run -f net6.0 --launch-profile web
 ```
 
 ## Enabling Auto Setup Feature
