@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
+using System.Linq;
 
 namespace OrchardCore.Queries
 {
@@ -28,7 +29,8 @@ namespace OrchardCore.Queries
                     }
 
                     var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
-                    return result.Items;
+                    //to fix https://github.com/OrchardCMS/OrchardCore/issues/10648
+                    return result.Items.ToArray();
                 })
             };
         }

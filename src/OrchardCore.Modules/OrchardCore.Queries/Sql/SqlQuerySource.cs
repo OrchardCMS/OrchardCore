@@ -94,9 +94,7 @@ namespace OrchardCore.Queries.Sql
                 {
                     results.Add(JObject.FromObject(document));
                 }
-                //to fix https://github.com/OrchardCMS/OrchardCore/issues/10648
-                // before fix Jint :https://github.com/sebastienros/jint/issues/1005 
-                sqlQueryResults.Items = results.ToArray();
+                sqlQueryResults.Items = results;
                 return sqlQueryResults;
             }
         }
