@@ -24,6 +24,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -54,6 +58,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -102,6 +110,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -146,6 +158,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -189,6 +205,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
