@@ -278,7 +278,7 @@ namespace OrchardCore.Workflows.Controllers
                         throw new ArgumentOutOfRangeException();
                 }
             }
-            return RedirectToAction(nameof(Index), new { workflowTypeId, pageNum = pagerParameters.PageNum, pageSize = pagerParameters.PageSize });
+            return RedirectToAction(nameof(Index), new { workflowTypeId, pagenum = pagerParameters.Page, pageSize = pagerParameters.PageSize });
         }
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)
