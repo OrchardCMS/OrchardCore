@@ -33,5 +33,8 @@
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" PrivateAssets="none" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+  </ItemGroup>
 
 </Project>

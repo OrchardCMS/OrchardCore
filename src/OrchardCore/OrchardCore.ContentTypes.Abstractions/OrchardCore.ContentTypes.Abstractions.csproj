@@ -19,4 +19,8 @@
     <ProjectReference Include="..\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+  </ItemGroup>
+
 </Project>

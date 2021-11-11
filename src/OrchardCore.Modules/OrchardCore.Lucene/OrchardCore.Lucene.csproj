@@ -43,4 +43,8 @@
     <PackageReference Include="Lucene.Net.Spatial" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+  </ItemGroup>
+
 </Project>

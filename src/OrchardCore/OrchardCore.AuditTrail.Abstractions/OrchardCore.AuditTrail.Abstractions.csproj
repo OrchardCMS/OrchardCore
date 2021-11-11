@@ -23,5 +23,9 @@
   <ItemGroup>
     <PackageReference Include="YesSql.Filters.Query" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+  </ItemGroup>
 
 </Project>

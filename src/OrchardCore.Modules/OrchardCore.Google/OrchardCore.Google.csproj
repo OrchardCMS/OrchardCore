@@ -30,4 +30,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+  </ItemGroup>
+
 </Project>
