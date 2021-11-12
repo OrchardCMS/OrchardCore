@@ -13,6 +13,8 @@
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
     var parentContentType = Model.FlowPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
+
+    Context.Features.Set(new OrchardCore.ContentManagement.IgnoreContentFeature());
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>

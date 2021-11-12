@@ -44,8 +44,13 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             H = localizer;
         }
 
-        public override IDisplayResult Edit(ContentItem contentItem)
+        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
         {
+            if (_httpContextAccessor.HttpContext?.Features.Get<IgnoreContentFeature>()?.Ignore == true)
+            {
+                return null;
+            }
+
             var results = new List<IDisplayResult>
             {
                 Initialize<UserTaskEventContentViewModel>("Content_UserTaskButton", async model => {
