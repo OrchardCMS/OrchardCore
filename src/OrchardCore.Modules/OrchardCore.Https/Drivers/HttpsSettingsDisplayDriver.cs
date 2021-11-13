@@ -47,12 +47,12 @@ namespace OrchardCore.Https.Drivers
                 return null;
             }
 
-            return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", model =>
+            return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", async model =>
             {
                 var isHttpsRequest = _httpContextAccessor.HttpContext.Request.IsHttps;
 
                 if (!isHttpsRequest)
-                    _notifier.Warning(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+                    await _notifier.WarningAsync(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
 
                 model.EnableStrictTransportSecurity = settings.EnableStrictTransportSecurity;
                 model.IsHttpsRequest = isHttpsRequest;

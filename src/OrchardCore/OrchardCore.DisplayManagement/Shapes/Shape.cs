@@ -182,8 +182,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             result = Items;
 
-            if (binder.ReturnType == typeof(IEnumerable<object>) ||
-                binder.ReturnType == typeof(IEnumerable<dynamic>))
+            if (binder.ReturnType == typeof(IEnumerable<object>))
             {
                 return true;
             }

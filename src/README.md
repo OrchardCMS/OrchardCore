@@ -58,8 +58,8 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `1.0.0`.
-The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/1.0.0>
+The latest released version of Orchard Core is `1.1.0`.
+The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/1.1.0>
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 

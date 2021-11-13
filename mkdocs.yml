@@ -221,6 +221,7 @@ nav:
         - Owners: docs/resources/owners/README.md
         - Workshops: docs/resources/workshops/README.md
     - Releases: 
+        - 1.1.0: docs/releases/1.1.0.md
         - 1.0.0: docs/releases/1.0.0.md
         - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
         - 1.0.0-rc1: docs/releases/1.0.0-rc1.md

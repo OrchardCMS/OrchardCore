@@ -38,7 +38,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 - Install the latest version of the .NET SDK from this page <https://dotnet.microsoft.com/download>
 - Next, navigate to `D:\OrchardCore\src\OrchardCore.Cms.Web` or wherever your folder is on the commandline in Administrator mode.
-- Call `dotnet run`.
+- Call `dotnet run -f net5.0` (or `dotnet run -f netcoreapp3.1` depending on your version of .NET SDK).
 - Then open the `http://localhost:5000` URL in your browser.
 
 ### Visual Studio

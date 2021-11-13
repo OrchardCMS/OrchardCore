@@ -62,7 +62,7 @@
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
                 <div class="input-group input-group-sm w-50 d-inline-flex has-search">
-                    <i class="fa fa-search form-control-feedback"></i>
+                    <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
                 <div class="dropdown float-right order-md-1">
@@ -118,29 +118,29 @@
                                 <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
                                 {
-                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info"></i> @entry.ShellSettings["DatabaseProvider"]</span>
+                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info" aria-hidden="true"></i> @entry.ShellSettings["DatabaseProvider"]</span>
                                 }
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings["RecipeName"]))
                                 {
-                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-image text-info"></i> @entry.ShellSettings["RecipeName"]</span>
+                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-image text-info" aria-hidden="true"></i> @entry.ShellSettings["RecipeName"]</span>
                                 }
                                 <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
                                     @switch (entry.ShellSettings.State)
                                     {
                                         case TenantState.Uninitialized:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-cog text-secondary"></i> @T["Uninitialized"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-cog text-secondary" aria-hidden="true"></i> @T["Uninitialized"]</span>
                                             break;
                                         case TenantState.Initializing:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-hourglass-start text-info"></i> @T["Initializing"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-hourglass-start text-info" aria-hidden="true"></i> @T["Initializing"]</span>
                                             break;
                                         case TenantState.Running:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-check text-success"></i> @T["Running"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-check text-success" aria-hidden="true"></i> @T["Running"]</span>
                                             break;
                                         case TenantState.Disabled:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-remove text-danger"></i> @T["Disabled"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-remove text-danger" aria-hidden="true"></i> @T["Disabled"]</span>
                                             break;
                                         case TenantState.Invalid:
-                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-exclamation-triangle text-warning"></i> @T["Invalid"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-exclamation-triangle text-warning" aria-hidden="true"></i> @T["Invalid"]</span>
                                             break;
                                     }
                                 </a>

@@ -13,8 +13,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -271,8 +269,8 @@ namespace OrchardCore.Users.Controllers
                 {
                     if (Url.IsLocalUrl(returnUrl))
                     {
-                        _notifier.Success(H["Your password has been changed successfully."]);
-                        return Redirect(returnUrl);
+                        await _notifier.SuccessAsync(H["Your password has been changed successfully."]);
+                        return this.Redirect(returnUrl, true);
                     }
                     else
                     {
@@ -324,7 +322,7 @@ namespace OrchardCore.Users.Controllers
                     input: input, correlationId: ((User)user).UserId);
             }
 
-            return RedirectToLocal(returnUrl);
+            return RedirectToLocal(returnUrl.ToUriComponents());
         }
 
         [HttpPost]
@@ -544,7 +542,7 @@ namespace OrchardCore.Users.Controllers
 
             if (settings.UsersCanRegister == UserRegistrationType.NoRegistration)
             {
-                _logger.LogWarning("Site does not allow user registration.", model.UserName, model.Email);
+                _logger.LogWarning("Site does not allow user registration.");
                 return NotFound();
             }
 

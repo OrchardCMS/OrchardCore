@@ -110,7 +110,7 @@ namespace OrchardCore.OpenId.Controllers
             }
             else
             {
-                _notifier.Warning(H["There are no registered services to provide roles."]);
+                await _notifier.WarningAsync(H["There are no registered services to provide roles."]);
             }
 
             await foreach (var scope in _scopeManager.ListAsync(null, null, default))
@@ -120,7 +120,7 @@ namespace OrchardCore.OpenId.Controllers
                     Name = await _scopeManager.GetNameAsync(scope)
                 });
             }
-            
+
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
@@ -248,7 +248,7 @@ namespace OrchardCore.OpenId.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return LocalRedirect(returnUrl);
+            return this.LocalRedirect(returnUrl, true);
         }
 
         public async Task<IActionResult> Edit(string id, string returnUrl = null)
@@ -299,7 +299,7 @@ namespace OrchardCore.OpenId.Controllers
             }
             else
             {
-                _notifier.Warning(H["There are no registered services to provide roles."]);
+                await _notifier.WarningAsync(H["There are no registered services to provide roles."]);
             }
 
             var permissions = await _applicationManager.GetPermissionsAsync(application);
@@ -547,7 +547,7 @@ namespace OrchardCore.OpenId.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return LocalRedirect(returnUrl);
+            return this.LocalRedirect(returnUrl, true);
         }
 
         [HttpPost]
@@ -577,7 +577,7 @@ namespace OrchardCore.OpenId.Controllers
                 var settings = await service.GetSettingsAsync();
                 if ((await service.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
                 {
-                    _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
+                    await _notifier.WarningAsync(H["OpenID Connect settings are not properly configured."]);
                 }
 
                 return settings;
