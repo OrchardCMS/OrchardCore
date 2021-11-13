@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using OrchardCore.Indexing;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Settings;
-using UglyToad.PdfPig;
 
 namespace OrchardCore.Media.Indexing
 {
     public class MediaFieldIndexHandler : ContentFieldIndexHandler<MediaField>
     {
+        private const string MediaTextKeySuffix = ".MediaText";
+        private const string FileTextKeySuffix = ".FileText";
+
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IEnumerable<IMediaFileTextProvider> _mediaFileTextProviders;
 
@@ -34,7 +36,7 @@ namespace OrchardCore.Media.Indexing
                     {
                         foreach (var mediaText in field.MediaTexts)
                         {
-                            context.DocumentIndex.Set(key + ".MediaText", mediaText, options);
+                            context.DocumentIndex.Set(key + MediaTextKeySuffix, mediaText, options);
                         }
                     }
                 }
@@ -57,7 +59,7 @@ namespace OrchardCore.Media.Indexing
                             {
                                 foreach (var key in context.Keys)
                                 {
-                                    context.DocumentIndex.Set(key + ".FileText", fileText, fileIndexingOptions);
+                                    context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, fileIndexingOptions);
                                 }
                             }
                         }
@@ -68,8 +70,8 @@ namespace OrchardCore.Media.Indexing
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key + ".MediaText", "NULL", options);
-                    context.DocumentIndex.Set(key + ".FileText", "NULL", options);
+                    context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
+                    context.DocumentIndex.Set(key + FileTextKeySuffix, "NULL", options);
                 }
             }
         }
