@@ -102,13 +102,19 @@ For testing purposes, you may add the above environment variables into a "web" p
 Then, start the web app project with the following command:
 
 ```
+dotnet run -f net6.0 --launch-profile web
+```
+
+or 
+
+```
 dotnet run -f net5.0 --launch-profile web
 ```
 
 or 
 
 ```
-dotnet run -f netcoreapp3.1 --launch-profile web
+dotnet run -f net6.0 --launch-profile web
 ```
 
 ## Enabling Auto Setup Feature

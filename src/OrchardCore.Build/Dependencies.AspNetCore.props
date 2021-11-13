@@ -1,43 +1,55 @@
 <Project>
 
+  <!-- Default TFMs to use when building and packaging -->
   <PropertyGroup>
-    <DefaultTargetFramework>net5.0</DefaultTargetFramework>
-    <AspNetCoreTargetFrameworks Condition="'$(AspNetCoreTargetFrameworks)' == ''">net5.0;netcoreapp3.1</AspNetCoreTargetFrameworks>
+
+    <!-- TFM used when coding in Visual Studio and when creating templates -->
+    <DefaultTargetFramework>net6.0</DefaultTargetFramework>
+    
+    <!-- TFMs used to build the abstractions and modules-->
+    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net6.0;net5.0;netcoreapp3.1</CommonTargetFrameworks>
   </PropertyGroup>
 
+  <!-- Detect if the solution is opened in VS to limit the TFMs that are analyzed by Roslyn for performance reasons -->
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingByReSharper)' == 'true'">
-    <AspNetCoreTargetFrameworks>$(DefaultTargetFramework)</AspNetCoreTargetFrameworks>
+    <CommonTargetFrameworks>$(DefaultTargetFramework)</CommonTargetFrameworks>
   </PropertyGroup>
 
+  <!-- These versions are used for the NuGet packages that are dependent on the current TFM (default = net6.0) -->
   <PropertyGroup>
-    <AspNetCoreVersion>5.0.10</AspNetCoreVersion>
-    <MicrosoftExtensionsVersion>5.0.1</MicrosoftExtensionsVersion>
+    <AspNetCorePackagesVersion>6.0.0</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>6.0.0</MicrosoftExtensionsPackagesVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <AspNetCorePackagesVersion>5.0.12</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>5.0.1</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <AspNetCoreVersion>3.1.19</AspNetCoreVersion>
-    <MicrosoftExtensionsVersion>3.1.19</MicrosoftExtensionsVersion>
+    <AspNetCorePackagesVersion>3.1.21</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>3.1.21</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCorePackagesVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCorePackagesVersion)" />
   </ItemGroup>
 
   <!-- 'Microsoft.Extensions' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
-    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsPackagesVersion)" />
   </ItemGroup>
 
 </Project>

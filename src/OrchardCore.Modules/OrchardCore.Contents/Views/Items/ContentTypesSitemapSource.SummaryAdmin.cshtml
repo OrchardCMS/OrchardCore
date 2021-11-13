@@ -10,7 +10,7 @@
         .Select(x => x.DisplayName);
 
     var limitedDisplayName = allRoutableContentTypes
-        .FirstOrDefault(cdt => cdt.Name == Model.Value.LimitedContentType.ContentTypeName)
+        .FirstOrDefault(cdt => cdt.Name == Model.Value.LimitedContentType.ContentTypeName)?
         .DisplayName;
 }
 
