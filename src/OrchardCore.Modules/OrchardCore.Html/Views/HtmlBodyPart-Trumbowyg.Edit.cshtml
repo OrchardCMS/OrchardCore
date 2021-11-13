@@ -42,7 +42,14 @@ else
         {
             <text>
             var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
-            langs['_dir'] = '@culture.GetLanguageDirection()';
+
+            if (!langs) {
+                cloned = { 
+                    ...jQuery.trumbowyg.langs['en'],
+                    _dir: '@culture.GetLanguageDirection()'
+                };
+                jQuery.trumbowyg.langs['@culture.TwoLetterISOLanguageName'] = cloned;
+            }
             </text>
         }
         @if (!string.IsNullOrEmpty(trumbowygSettings.Options))
