@@ -2,15 +2,15 @@
 @inject OrchardCore.DisplayManagement.IDisplayManager<UserIndexOptions> UserOptionsDisplayManager
 
 <div class="mb-0" style="display:none" id="actions">
-    <span class="dropdown mt-1">
+    <div class="dropdown mt-1">
         <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             @T["Actions"]
         </button>
-        <span class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
             @{
                 dynamic bulkActions = await UserOptionsDisplayManager.BuildDisplayAsync(Model, null, "BulkActions");
                 @await DisplayAsync(bulkActions.Content)
             }
-        </span>
-    </span>
+        </ul>
+    </div>
 </div>

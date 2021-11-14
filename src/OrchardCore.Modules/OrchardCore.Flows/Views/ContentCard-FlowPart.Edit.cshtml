@@ -36,10 +36,10 @@
                         <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </button>
-                        <div class="dropdown-menu dropdown-menu-end">
+                        <ul class="dropdown-menu dropdown-menu-end">
                             @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                             {
-                                <a class="dropdown-item insert-widget btn-sm"
+                                <li><a class="dropdown-item insert-widget btn-sm"
                                    data-target-id="@Model.TargetId"
                                    data-html-field-prefix="@Model.HtmlFieldPrefix"
                                    data-prefixes-name="@Model.PrefixesName"
@@ -48,9 +48,9 @@
                                    data-part-name="@Model.CollectionPartName"
                                    data-contenttypes-name="@Model.ContentTypesName"
                                    data-widget-type="@type.Name"
-                                   href="javascript:;">@type.DisplayName</a>
+                                   href="javascript:;">@type.DisplayName</a></li>
                             }
-                        </div>
+                        </ul>
                     </div>
                 }
             </div>

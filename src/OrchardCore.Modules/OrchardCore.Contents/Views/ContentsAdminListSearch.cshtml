@@ -9,13 +9,13 @@
             data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
         </button>
-        <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-end</text>}"
+        <ul class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-end</text>}"
             aria-labelledby="filter-dropdown">
-            <a class="dropdown-item" href="?q=status:Draft">@T["Only draft items"]</a>
-            <a class="dropdown-item" href="?q=status:Published">@T["Only published items"]</a>
-            <a class="dropdown-item" href="?q=status:Owner">@T["Owned by me"]</a>
-            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-target="#modalContentOptionsFilterSyntax">@T["Filter syntax"]</a>
-        </div>
+            <li><a class="dropdown-item" href="?q=status:Draft">@T["Only draft items"]</a></li>
+            <li><a class="dropdown-item" href="?q=status:Published">@T["Only published items"]</a></li>
+            <li><a class="dropdown-item" href="?q=status:Owner">@T["Owned by me"]</a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-target="#modalContentOptionsFilterSyntax">@T["Filter syntax"]</a></li>
+        </ul>
     </div>
     <input asp-for="OriginalSearchText" type="hidden"></input>
 

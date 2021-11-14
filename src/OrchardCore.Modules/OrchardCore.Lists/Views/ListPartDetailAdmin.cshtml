@@ -33,12 +33,12 @@ else
                         <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
                         </button>
-                        <div class="dropdown-menu @if (CultureInfo.CurrentUICulture.IsRightToLeft()) {<text>dropdown-menu-end</text>}" aria-labelledby="filter-dropdown">
+                        <ul class="dropdown-menu @if (CultureInfo.CurrentUICulture.IsRightToLeft()) {<text>dropdown-menu-end</text>}" aria-labelledby="filter-dropdown">
                             @* Latest not surfaced here to be consistent with the main content items list filter. *@
-                            <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
-                            <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
-                            <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
-                        </div>
+                            <li><a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a></li>
+                            <li><a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a></li>
+                            <li><a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a></li>
+                        </ul>
                         <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
                         <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel.Status" class="form-control" type="hidden" />
                         <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel.DisplayText" class="form-control" placeholder="@T["Search"]" type="search" autofocus />

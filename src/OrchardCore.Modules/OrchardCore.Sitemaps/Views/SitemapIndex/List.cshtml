@@ -44,17 +44,17 @@
                         </div>
                     </div>
                         <div class="mb-3 col-2 mb-n1" style="display:none" id="actions">
-                            <span class="dropdown float-end mt-1">
+                            <div class="dropdown float-end mt-1">
                                 <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     @T["Actions"]
                                 </button>
-                                <span class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
                                     @foreach (var item in Model.Options.ContentsBulkAction)
                                     {
-                                        <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+                                        <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
                                     }
-                                </span>
-                            </span>
+                                </ul>
+                            </div>
                         </div>
                 </div>
             </li>
@@ -79,11 +79,11 @@
                                 <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="visually-hidden">@T["Toggle Dropdown"]</span>
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a asp-action="Toggle"
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a asp-action="Toggle"
                                     asp-route-sitemapId="@entry.SitemapId"
-                                    class="dropdown-item btn-sm" data-url-af="UnsafeUrl">@(entry.Enabled ? T["Disable"] : T["Enable"])</a>
-                                </div>
+                                    class="dropdown-item btn-sm" data-url-af="UnsafeUrl">@(entry.Enabled ? T["Disable"] : T["Enable"])</a></li>
+                                </ul>
                             </div>
                         </div>
                         <a class="@(entry.Enabled ? "" : "text-muted")" asp-action="Edit" asp-route-sitemapId="@entry.SitemapId">@entry.Name</a>

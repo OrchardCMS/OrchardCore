@@ -16,11 +16,11 @@
                     <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Bulk Actions"]
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
-                        <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a>
-                        <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a>
-                        <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a>
-                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                        <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a></li>
+                        <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a></li>
+                        <li><a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
