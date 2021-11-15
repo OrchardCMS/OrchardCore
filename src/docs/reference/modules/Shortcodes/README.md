@@ -161,7 +161,7 @@ Example
 ```
 [asset_url]my-image.jpg[/asset_url]
 ```
-This will return an relative url of `/my-tenant/media/my-image.jpg` for the file `my-image.jpg` in the site's media folder.
+This will return a relative url of `/my-tenant/media/my-image.jpg` for the file `my-image.jpg` in the site's media folder.
 
 The following parameters can be used:
 

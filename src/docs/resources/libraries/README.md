@@ -20,6 +20,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 2.15.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.26.0 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
 | [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | 2.2.60 | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
+| [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 1.1.1 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
 | [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 2.15.1 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [MiniProfiler](https://github.com/MiniProfiler/dotnet) | A simple but effective mini-profiler for ASP.NET (and Core) websites | 4.2.22 | [MIT](https://github.com/MiniProfiler/dotnet/blob/main/LICENSE.txt) |
 | [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.16.1 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
@@ -49,7 +50,7 @@ The below table lists the different libraries used as Resources:
 | [jquery-resizable-dom](https://github.com/RickStrahl/jquery-resizable) | jQuery plug-in to make DOM components resizable. | 0.35.0 | [MIT](https://github.com/RickStrahl/jquery-resizable/blob/master/LICENSE.md) |
 | [js-cookie](https://github.com/js-cookie/js-cookie) | A simple, lightweight JavaScript API for handling browser cookies. | 3.0.1 | [MIT](https://github.com/js-cookie/js-cookie/blob/master/LICENSE) |
 | [Material icons](https://github.com/marella/material-icons) | Latest icon fonts and CSS for self-hosting material design icons. | 1.7.0 | [Apache-2.0](https://github.com/marella/material-icons/blob/main/LICENSE) |
-| [Monaco Editor](https://microsoft.github.io/monaco-editor) | Lightweight source code editor | 0.29.1 | [MIT](https://github.com/microsoft/monaco-editor/blob/main/LICENSE.md) |
+| [Monaco Editor](https://microsoft.github.io/monaco-editor) | Lightweight source code editor | 0.30.1 | [MIT](https://github.com/microsoft/monaco-editor/blob/main/LICENSE.md) |
 | [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 2.10.2 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
 | [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.14.0 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
 | [Trumbowyg](https://github.com/Alex-D/Trumbowyg) | A lightweight and amazing WYSIWYG JavaScript editor. | 2.25.1 | [MIT](https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE) |
