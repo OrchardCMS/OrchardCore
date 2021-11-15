@@ -20,7 +20,7 @@
 .ta-badge {
     @extend .bg-light;
 
-    background-color: darken(#f8f9fa, 5%);
+    background-color: darken(#f8f9fa, 5%) !important;
     color: $gray-700;
 }
 

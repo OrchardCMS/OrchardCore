@@ -27813,7 +27813,7 @@ html[data-theme=default] .ta-badge {
   color: #495057;
 }
 html[dir][data-theme=default] .ta-badge {
-  background-color: #e9ecef;
+  background-color: #e9ecef !important;
 }
 html[data-theme=default] .ta-navbar-brand span:last-child {
   font-weight: bold;
@@ -31581,7 +31581,7 @@ html[dir][data-theme=darkmode] .form-check-input {
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  border: 1px solid rgba(0, 0, 0, 0.25);
+  border: 1px solid #3c4144;
 }
 html[dir][data-theme=darkmode] .form-check-input[type=checkbox] {
   border-radius: 0.25em;
@@ -35134,7 +35134,7 @@ html[dir][data-theme=darkmode] .list-group-item-action:active {
 html[data-theme=darkmode] .list-group-item {
   position: relative;
   display: block;
-  color: #181a1b;
+  color: #fff;
   text-decoration: none;
 }
 html[dir][data-theme=darkmode] .list-group-item {
@@ -57168,7 +57168,7 @@ html[data-theme=darkmode] .ta-navbar-top a {
   text-decoration: none;
 }
 html[dir][data-theme=darkmode] .ta-badge {
-  background-color: #0c0d0e;
+  background-color: #0c0d0e !important;
 }
 html[data-theme=darkmode] .ta-navbar-brand span:last-child {
   font-weight: bold;
