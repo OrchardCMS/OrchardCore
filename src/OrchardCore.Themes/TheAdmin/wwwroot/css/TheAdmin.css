@@ -58577,7 +58577,7 @@ html[data-theme=darkmode] .nav-pills .nav-link.active:hover,
 html[data-theme=darkmode] .nav-pills .nav-item.open .nav-link,
 html[data-theme=darkmode] .nav-pills .nav-item.open .nav-link:focus,
 html[data-theme=darkmode] .nav-pills .nav-item.open .nav-link:hover {
-  color: #fff;
+  color: #000;
 }
 html[data-theme=darkmode] .breadcrumb a {
   color: #fff;
