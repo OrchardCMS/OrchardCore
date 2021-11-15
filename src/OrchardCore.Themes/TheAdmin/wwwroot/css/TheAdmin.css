@@ -28921,11 +28921,16 @@ html[dir][data-theme=default] .preload * {
 html[data-theme=default] body {
   height: 100%;
   font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  color: var(--bs-white);
 }
 html[dir][data-theme=default] body {
   margin-bottom: 40px;
   cursor: default;
+}
+html[data-theme=default] a {
+  text-decoration: none;
+}
+html[data-theme=default] a:hover {
+  text-decoration: underline;
 }
 html[dir][data-theme=default] .cursor-move {
   cursor: move;
@@ -29045,6 +29050,9 @@ html[data-theme=default] [dir=ltr] .btn-dropdown > .btn-group {
 }
 html[data-theme=default] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
+}
+html[data-theme=default] .btn:hover, html[data-theme=default] .button:hover {
+  text-decoration: none;
 }
 html[dir][data-theme=default] .bg-primary {
   background-color: #f8f9fa !important;
@@ -58276,11 +58284,16 @@ html[dir][data-theme=darkmode] .preload * {
 html[data-theme=darkmode] body {
   height: 100%;
   font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  color: var(--bs-white);
 }
 html[dir][data-theme=darkmode] body {
   margin-bottom: 40px;
   cursor: default;
+}
+html[data-theme=darkmode] a {
+  text-decoration: none;
+}
+html[data-theme=darkmode] a:hover {
+  text-decoration: underline;
 }
 html[dir][data-theme=darkmode] .cursor-move {
   cursor: move;
@@ -58400,6 +58413,9 @@ html[data-theme=darkmode] [dir=ltr] .btn-dropdown > .btn-group {
 }
 html[data-theme=darkmode] [dir=rtl] .btn-dropdown > .btn-group {
   right: calc(-14px + 50%);
+}
+html[data-theme=darkmode] .btn:hover, html[data-theme=darkmode] .button:hover {
+  text-decoration: none;
 }
 html[dir][data-theme=darkmode] .bg-primary {
   background-color: #1b1e1f !important;
@@ -58621,18 +58637,6 @@ html[dir][data-theme=darkmode] .alert-light {
 }
 html[dir][data-theme=darkmode] .alert-dark {
   background-color: #181a1b;
-}
-html[data-theme=darkmode] .list-group-item-action {
-  color: #fff;
-}
-html[data-theme=darkmode] .list-group-item-action:hover, html[data-theme=darkmode] .list-group-item-action:focus {
-  color: #fff;
-}
-html[dir][data-theme=darkmode] .list-group-item-action:hover, html[dir][data-theme=darkmode] .list-group-item-action:focus {
-  background-color: rgba(140, 130, 115, 0.13);
-}
-html[data-theme=darkmode] .list-group-item-action .list-group-item-heading {
-  color: #fff;
 }
 html[dir][data-theme=darkmode] .card-header {
   background-color: #1b1e1f;

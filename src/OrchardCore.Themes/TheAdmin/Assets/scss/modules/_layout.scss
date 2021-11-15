@@ -10,7 +10,14 @@ body {
     cursor: default;
     height: 100%;
     font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    color: var(--bs-white);
+}
+
+a {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 @include cursor-class(move);
@@ -165,4 +172,9 @@ svg {
     >  .btn-group {
         right: calc(-14px + 50%);
     }
+}
+
+
+.btn:hover {
+    text-decoration: none;
 }
