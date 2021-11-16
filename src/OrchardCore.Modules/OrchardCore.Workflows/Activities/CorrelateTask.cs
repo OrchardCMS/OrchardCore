@@ -9,13 +9,13 @@ namespace OrchardCore.Workflows.Activities
 {
     public class CorrelateTask : TaskActivity
     {
-        private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         private readonly IStringLocalizer S;
 
-        public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CorrelateTask> localizer)
+        public CorrelateTask(IStringLocalizer<CorrelateTask> localizer, IWorkflowExpressionEvaluator expressionEvaluator)
         {
-            _scriptEvaluator = scriptEvaluator;
             S = localizer;
+            _expressionEvaluator = expressionEvaluator;
         }
 
         public override string Name => nameof(CorrelateTask);
@@ -37,7 +37,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var value = (await _scriptEvaluator.EvaluateAsync(Value, workflowContext))?.Trim();
+            var value = (await _expressionEvaluator.EvaluateAsync(Value, workflowContext, null))?.Trim();
             workflowContext.CorrelationId = value;
 
             return Outcomes("Done");
