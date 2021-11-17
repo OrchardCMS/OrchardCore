@@ -3,7 +3,30 @@
 
 <div class="form-group" asp-validation-class-for="Value">
     <label asp-for="Value">@T["Value"]</label>
-    <input type="text" asp-for="Value" class="form-control code" />
+    <textarea type="text" asp-for="Value" class="form-control " ></textarea>
     <span asp-validation-for="Value"></span>
-    <span class="hint">@T["The value to correlate workflow instances with. With Liquid support."]</span>
+    <span class="hint">@T["The value to correlate workflow instances with. With Javascript support."]</span>
 </div>
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script at="Foot">
+    $(function () {
+        var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Value)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "javascript" },
+        });
+
+        editor.on('change', function(cmEditor){
+            cmEditor.save();
+        });
+    });
+</script>
