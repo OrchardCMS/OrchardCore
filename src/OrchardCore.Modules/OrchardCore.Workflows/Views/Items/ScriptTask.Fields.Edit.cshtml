@@ -10,43 +10,44 @@
 
 <div class="form-group" asp-validation-class-for="Script">
     <label asp-for="Script">@T["Script"]</label>
-    <textarea asp-for="Script" class="form-control" placeholder="e.g. js: setOutcome('Done');"></textarea>
+    <div id="@Html.IdFor(x => x.Script)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
+     <textarea asp-for="Script" hidden>@Html.Raw(Model.Script)</textarea>
     <span asp-validation-for="Script"></span>
     <span class="hint">@T["The script to execute. Make sure to call `setOutcome` with any of the specified available outcomes at least once."]</span>
 </div>
 
 <script asp-name="monaco" depends-on="admin" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-        $(document).ready(function () {
-            require(['vs/editor/editor.main'], function () {
-                var settings=  {
-                      "automaticLayout": true,
-                      "language": "Javascript"
-                    };
+    $(document).ready(function () {
+        require(['vs/editor/editor.main'], function () {
+            var settings=  {
+                  "automaticLayout": true,
+                  "language": "javascript"
+                };
 
-                var html = document.getElementsByTagName("html")[0];
-                const mutationObserver = new MutationObserver(setTheme);
-                mutationObserver.observe(html, { attributes: true });
+            var html = document.getElementsByTagName("html")[0];
+            const mutationObserver = new MutationObserver(setTheme);
+            mutationObserver.observe(html, { attributes: true });
 
-                function setTheme() {
-                    var theme = html.dataset.theme;
-                    if (theme === "darkmode") {
-                        monaco.editor.setTheme('vs-dark')
-                    } else {
-                        monaco.editor.setTheme('vs')
-                    }
+            function setTheme() {
+                var theme = html.dataset.theme;
+                if (theme === "darkmode") {
+                    monaco.editor.setTheme('vs-dark')
+                } else {
+                    monaco.editor.setTheme('vs')
                 }
+            }
 
-                setTheme();
+            setTheme();
 
-                var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Script)'), settings);
-                var textArea = document.getElementById('@Html.IdFor(x => x.Script)');
+            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Script)_editor'), settings);
+            var textArea = document.getElementById('@Html.IdFor(x => x.Script)');
 
-                editor.getModel().setValue(textArea.value);
+            editor.getModel().setValue(textArea.value);
 
-                window.addEventListener("submit", function () {
-                    textArea.value = editor.getValue();
-                });
+            window.addEventListener("submit", function () {
+                textArea.value = editor.getValue();
             });
         });
+    });
 </script>
