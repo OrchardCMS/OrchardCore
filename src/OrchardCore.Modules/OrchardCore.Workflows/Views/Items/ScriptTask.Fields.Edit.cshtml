@@ -15,26 +15,38 @@
     <span class="hint">@T["The script to execute. Make sure to call `setOutcome` with any of the specified available outcomes at least once."]</span>
 </div>
 
-<style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
-<script asp-name="codemirror-mode-javascript" at="Foot"></script>
-<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
-<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
-<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
-<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-name="monaco" depends-on="admin" at="Foot"></script>
+<script at="Foot" depends-on="monaco">
+        $(document).ready(function () {
+            require(['vs/editor/editor.main'], function () {
+                var settings=  {
+                      "automaticLayout": true,
+                      "language": "Javascript"
+                    };
 
-<script at="Foot">
-    $(function () {
-        var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Script)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "javascript" },
-        });
+                var html = document.getElementsByTagName("html")[0];
+                const mutationObserver = new MutationObserver(setTheme);
+                mutationObserver.observe(html, { attributes: true });
 
-        editor.on('change', function(cmEditor){
-            cmEditor.save();
+                function setTheme() {
+                    var theme = html.dataset.theme;
+                    if (theme === "darkmode") {
+                        monaco.editor.setTheme('vs-dark')
+                    } else {
+                        monaco.editor.setTheme('vs')
+                    }
+                }
+
+                setTheme();
+
+                var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Script)'), settings);
+                var textArea = document.getElementById('@Html.IdFor(x => x.Script)');
+
+                editor.getModel().setValue(textArea.value);
+
+                window.addEventListener("submit", function () {
+                    textArea.value = editor.getValue();
+                });
+            });
         });
-    });
 </script>
