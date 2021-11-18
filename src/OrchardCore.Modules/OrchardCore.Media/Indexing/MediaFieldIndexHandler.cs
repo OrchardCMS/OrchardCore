@@ -51,16 +51,13 @@ namespace OrchardCore.Media.Indexing
                         using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
                         if (fileStream != null)
                         {
-                            var fileTexts = _mediaFileTextProviders
-                                .Where(provider => provider.CanHandle(path))
-                                .Select(provider => provider.GetText(path, fileStream));
+                            var fileText = _mediaFileTextProviders
+                                .FirstOrDefault(provider => provider.CanHandle(path))
+                                ?.GetText(path, fileStream);
 
-                            foreach (var fileText in fileTexts)
+                            foreach (var key in context.Keys)
                             {
-                                foreach (var key in context.Keys)
-                                {
                                     context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, fileIndexingOptions);
-                                }
                             }
                         }
                     }
