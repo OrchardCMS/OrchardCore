@@ -51,6 +51,8 @@ namespace OrchardCore.Media.Indexing
                         using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
                         if (fileStream != null)
                         {
+                            // Only index the file text with the provider at the top of the dependency chain, i.e.
+                            // allow overriding providers.
                             var fileText = _mediaFileTextProviders
                                 .FirstOrDefault(provider => provider.CanHandle(path))
                                 ?.GetText(path, fileStream);
