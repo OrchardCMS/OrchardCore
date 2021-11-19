@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
@@ -26,18 +27,28 @@ namespace OrchardCore.Documents
             IDistributedCache distributedCache,
             IDistributedLock distributedLock,
             IMemoryCache memoryCache,
-            IOptionsMonitor<DocumentOptions> options)
-            : base(distributedCache, memoryCache, options)
+            IOptionsMonitor<DocumentOptions> options,
+            ILogger<DocumentManager<TDocument>> logger)
+            : base(distributedCache, memoryCache, options, logger)
         {
             _isVolatile = true;
             _distributedLock = distributedLock;
         }
 
-        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
+        public async Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
         {
-            if (updateAsync == null)
+            if (_isDistributed)
             {
-                return Task.CompletedTask;
+                try
+                {
+                    _ = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+                }
+                catch
+                {
+                    await DocumentStore.CancelAsync();
+
+                    throw new InvalidOperationException($"Can't update the '{typeof(TDocument).Name}' if not able to access the distributed cache");
+                }
             }
 
             _updateDelegateAsync += () => updateAsync();
@@ -79,8 +90,6 @@ namespace OrchardCore.Documents
                     }
                 }
             });
-
-            return Task.CompletedTask;
         }
     }
 }

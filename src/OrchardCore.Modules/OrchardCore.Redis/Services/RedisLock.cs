@@ -81,6 +81,11 @@ namespace OrchardCore.Redis.Services
             if (_redis.Database == null)
             {
                 await _redis.ConnectAsync();
+                if (_redis.Database == null)
+                {
+                    _logger.LogError("Fails to check whether the named lock '{LockName}' is already acquired.", _prefix + key);
+                    return false;
+                }
             }
 
             try
@@ -100,6 +105,11 @@ namespace OrchardCore.Redis.Services
             if (_redis.Database == null)
             {
                 await _redis.ConnectAsync();
+                if (_redis.Database == null)
+                {
+                    _logger.LogError("Fails to acquire the named lock '{LockName}'.", _prefix + key);
+                    return false;
+                }
             }
 
             try
@@ -116,11 +126,6 @@ namespace OrchardCore.Redis.Services
 
         private async ValueTask ReleaseAsync(string key)
         {
-            if (_redis.Database == null)
-            {
-                await _redis.ConnectAsync();
-            }
-
             try
             {
                 await _redis.Database.LockReleaseAsync(_prefix + key, _hostName);
