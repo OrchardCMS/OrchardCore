@@ -58,9 +58,14 @@ See [Docker documentation](https://docs.docker.com/engine/reference/commandline/
 
 The documentation can be accessed here: <https://docs.orchardcore.net/>
 
-## Code of Conduct
+## Helpful Links
 
-See [CODE-OF-CONDUCT](./CODE-OF-CONDUCT.md)
+| Topic | Link |
+| :---- | :--- |
+| Code of Conduct | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) |
+| Coding Style | [coding-style.md](coding-style.md) |
+| Contributors | [Contributors.md](Contributors.md) |
+| Guidelines for Contributors | [CONTRIBUTING.md](CONTRIBUTING.md) |
 
 ## .NET Foundation
 
