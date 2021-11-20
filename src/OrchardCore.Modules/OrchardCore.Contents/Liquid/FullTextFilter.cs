@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.Liquid
             if (input.Type == FluidValues.Array)
             {
                 var contentItems = new List<ContentItem>();
-                foreach (var objValue in input.Enumerate())
+                foreach (var objValue in input.Enumerate(ctx))
                 {
                     var contentItem = GetContentItem(objValue);
                     if (contentItem != null)
