@@ -2452,6 +2452,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "scil",
+      "name": "scil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2786775?v=4",
+      "profile": "https://github.com/scil",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
