@@ -51,7 +51,7 @@ namespace OrchardCore.Contents.Liquid
                     aspects.Add(await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem));
                 }
 
-                // When returning segments seperate them so multiple segments are indexed individually.
+                // When returning segments separate them so multiple segments are indexed individually.
                 return new ArrayValue(aspects.SelectMany(x => x.Segments).Where(x => !String.IsNullOrEmpty(x)).Select(x => new StringValue(x + ' ')));
             }
             else

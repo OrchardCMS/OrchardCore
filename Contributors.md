@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-261-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-264-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -358,6 +358,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/andrewjcarney"><img src="https://avatars.githubusercontent.com/u/6652459?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Andrew Carney</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=andrewjcarney" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/evaldsen"><img src="https://avatars.githubusercontent.com/u/90476086?v=4?s=100" width="100px;" alt=""/><br /><sub><b>evaldsen</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=evaldsen" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/wordshop-git"><img src="https://avatars.githubusercontent.com/u/58780682?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Wordshop</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=wordshop-git" title="Code">💻</a></td>
+    <td align="center"><a href="https://bandism.net/"><img src="https://avatars.githubusercontent.com/u/22633385?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Ikko Ashimine</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=eltociear" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/dannoh"><img src="https://avatars.githubusercontent.com/u/1886686?v=4?s=100" width="100px;" alt=""/><br /><sub><b>dannoh</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=dannoh" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/scil"><img src="https://avatars.githubusercontent.com/u/2786775?v=4?s=100" width="100px;" alt=""/><br /><sub><b>scil</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=scil" title="Code">💻</a></td>
   </tr>
 </table>
 

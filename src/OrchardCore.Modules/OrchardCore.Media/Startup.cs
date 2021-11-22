@@ -401,6 +401,21 @@ namespace OrchardCore.Media
 </table>";
                 d.Categories = new string[] { "HTML Content", "Media" };
             });
+
+            services.AddShortcode<AssetUrlShortcodeProvider>("asset_url", d =>
+            {
+                d.DefaultValue = "[asset_url] [/asset_url]";
+                d.Hint = "Return a url from the media library.";
+                d.Usage =
+@"[asset_url]foo.jpg[/asset_url]<br>
+<table>
+  <tr>
+    <td>Args:</td>
+    <td>width, height, mode</td>
+  </tr>
+</table>";
+                d.Categories = new string[] { "HTML Content", "Media" };
+            });
         }
     }
 }

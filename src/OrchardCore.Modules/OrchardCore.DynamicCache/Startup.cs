@@ -6,6 +6,7 @@ using OrchardCore.DynamicCache.EventHandlers;
 using OrchardCore.DynamicCache.Services;
 using OrchardCore.DynamicCache.TagHelpers;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DynamicCache
@@ -15,6 +16,13 @@ namespace OrchardCore.DynamicCache
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly IShellConfiguration _shellConfiguration;
+
+        public Startup(IShellConfiguration shellConfiguration)
+        {
+            _shellConfiguration = shellConfiguration;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDynamicCacheService, DefaultDynamicCacheService>();
@@ -27,7 +35,9 @@ namespace OrchardCore.DynamicCache
             services.AddSingleton<DynamicCacheTagHelperService>();
             services.AddTagHelpers<DynamicCacheTagHelper>();
             services.AddTagHelpers<CacheDependencyTagHelper>();
+
             services.AddTransient<IConfigureOptions<CacheOptions>, CacheOptionsConfiguration>();
+            services.Configure<DynamicCacheOptions>(_shellConfiguration.GetSection("OrchardCore_DynamicCache"));
         }
     }
 }

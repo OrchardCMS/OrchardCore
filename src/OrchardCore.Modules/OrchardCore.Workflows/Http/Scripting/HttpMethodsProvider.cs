@@ -95,7 +95,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                     using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
                     {
                         // Async read of the request body is mandatory.
-                        return sr.ReadToEndAsync().GetAwaiter().GetResult();
+                        return sr.ReadToEnd();
                     }
                 })
             };
@@ -180,7 +180,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                                 using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
                                 {
                                     // Async read of the request body is mandatory.
-                                    json = sr.ReadToEndAsync().GetAwaiter().GetResult();
+                                    json = sr.ReadToEnd();
                                 }
 
                                 try
