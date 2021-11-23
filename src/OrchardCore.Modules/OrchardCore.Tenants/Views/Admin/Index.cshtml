@@ -1,4 +1,5 @@
 @model AdminIndexViewModel
+@using System
 @using Microsoft.AspNetCore.Http
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
@@ -16,7 +17,14 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        var hostString = host != null ? new HostString(host, Context.Request.Host.Port != null ? (int)Context.Request.Host.Port : 80) : Context.Request.Host;
+        
+        // When developping we append the current port assuming it should never use port 80 or 443
+        if (Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
+        {
+            host = String.Concat(host, ":", Context.Request.Host.Port.ToString());
+        }
+
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
         if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
@@ -37,7 +45,14 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        var hostString = host != null ? new HostString(host, Context.Request.Host.Port != null ? (int)Context.Request.Host.Port : 80) : Context.Request.Host;
+
+        // When developping we append the current port assuming it should never use port 80 or 443
+        if (Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
+        {
+            host = String.Concat(host, ":", Context.Request.Host.Port.ToString());
+        }
+
+        var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
         if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
