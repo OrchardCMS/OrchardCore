@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Http
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
+@inject Microsoft.AspNetCore.Hosting.IHostEnvironment env
 
 @{
     var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase;
@@ -20,7 +21,7 @@
         
         // if first host set is not specifying a port.
         // When developping we append the current port assuming it should never use port 80 or 443
-        if (!host.Contains(":") && Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
+        if (env.IsDevelopment() && !host.Contains(":") && Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
         {
             host = String.Concat(host, ":", Context.Request.Host.Port.ToString());
         }
@@ -49,7 +50,7 @@
 
         // if first host set is not specifying a port.
         // When developping we append the current port assuming it should never use port 80 or 443
-        if (!host.Contains(":") && Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
+        if (env.IsDevelopment() && !host.Contains(":") && Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
         {
             host = String.Concat(host, ":", Context.Request.Host.Port.ToString());
         }
