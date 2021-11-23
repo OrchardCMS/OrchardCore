@@ -30,7 +30,7 @@
             queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
 
-        return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
+        return $"{Context.Request.Scheme}://{hostString}:{Context.Request.Host.Port + pathString + queryString}";
     }
 
     public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
