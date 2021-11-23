@@ -24,7 +24,8 @@ In addition, you will need to specify the name of your Azure Key Vault and optio
 In the `Program.cs`, add `AddOrchardCoreAzureKeyVault()` to the Generic Host in `CreateHostBuilder()`.
 
 ```csharp
-using OrchardCore.Azure.KeyVault.Extensions;;
+using OrchardCore.Configuration.KeyVault.Extensions;
+
 public class Program
 {
     public static Task Main(string[] args)
