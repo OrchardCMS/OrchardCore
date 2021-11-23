@@ -2461,6 +2461,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "woter1832",
+      "name": "arcotek-ltd",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68354513?v=4",
+      "profile": "https://github.com/woter1832",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
