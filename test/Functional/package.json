@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "cypress": "^9.0.0",
+    "cypress": "^9.1.0",
     "cypress-orchardcore": "file:cypress-commands",
     "faker": "^5.5.3",
     "fs-extra": "^10.0.0"
