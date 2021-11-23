@@ -18,8 +18,9 @@
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
         
+        // if first host set is not specifying a port.
         // When developping we append the current port assuming it should never use port 80 or 443
-        if (Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
+        if (!host.Contains(":") && Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
         {
             host = String.Concat(host, ":", Context.Request.Host.Port.ToString());
         }
@@ -46,8 +47,9 @@
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
+        // if first host set is not specifying a port.
         // When developping we append the current port assuming it should never use port 80 or 443
-        if (Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
+        if (!host.Contains(":") && Context.Request.Host.Port != 80 && Context.Request.Host.Port != 443)
         {
             host = String.Concat(host, ":", Context.Request.Host.Port.ToString());
         }
