@@ -16,7 +16,7 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
+        var hostString = host != null ? new HostString(host, Context.Request.Host.Port != null ? (int)Context.Request.Host.Port : 80) : Context.Request.Host;
 
         var pathString = originalPathBase;
         if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
@@ -30,14 +30,14 @@
             queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
 
-        return $"{Context.Request.Scheme}://{hostString}:{Context.Request.Host.Port + pathString + queryString}";
+        return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
     }
 
     public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
+        var hostString = host != null ? new HostString(host, Context.Request.Host.Port != null ? (int)Context.Request.Host.Port : 80) : Context.Request.Host;
 
         var pathString = originalPathBase;
         if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
@@ -45,7 +45,7 @@
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        return $"{Context.Request.Scheme}://{hostString}:{Context.Request.Host.Port + pathString.Value}";
+        return $"{Context.Request.Scheme}://{hostString + pathString.Value}";
     }
 }
 
