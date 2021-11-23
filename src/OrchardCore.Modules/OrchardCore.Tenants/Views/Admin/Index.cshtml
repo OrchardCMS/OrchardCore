@@ -45,7 +45,7 @@
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        return $"{Context.Request.Scheme}://{hostString.Value + pathString.Value}";
+        return $"{Context.Request.Scheme}://{hostString}:{Context.Request.Host.Port + pathString.Value}";
     }
 }
 
