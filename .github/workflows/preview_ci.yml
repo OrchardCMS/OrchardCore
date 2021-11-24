@@ -76,7 +76,8 @@ jobs:
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.
+        cp -R ./src/OrchardCore.Cms.Web/Localization ./.build/release/Localization
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
         docker push orchardproject/orchardcore-cms-linux:dev
     - name: Deploy preview docker image for windows
@@ -85,6 +86,7 @@ jobs:
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
+        Copy-Item -Path "./src/OrchardCore.Cms.Web/Localization" -Destination "./.build/release/Localization" -Recurse
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-windows:dev
