@@ -1,5 +1,4 @@
 @model AdminIndexViewModel
-@using System
 @using Microsoft.AspNetCore.Http
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
@@ -17,13 +16,6 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        
-        if (host != null)
-        {
-            host = host.Split(':').FirstOrDefault();
-            host = String.Concat(host, ":", Context.Request.Host.Port.ToString());
-        }
-
         var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
@@ -44,14 +36,7 @@
     public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        
-        if (host != null)
-        {
-            host = host.Split(':').FirstOrDefault();
-            host = String.Concat(host, ":", Context.Request.Host.Port.ToString());
-        }
-        
+        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();       
         var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;
@@ -60,7 +45,7 @@
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        return $"{Context.Request.Scheme}://{hostString + pathString.Value}";
+        return $"{Context.Request.Scheme}://{hostString.Value + pathString.Value}";
     }
 }
 
