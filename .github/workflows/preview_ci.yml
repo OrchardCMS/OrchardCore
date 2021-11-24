@@ -76,7 +76,7 @@ jobs:
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
         cp -R ./src/OrchardCore.Cms.Web/Localization ./.build/release/Localization
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
         docker push orchardproject/orchardcore-cms-linux:dev
