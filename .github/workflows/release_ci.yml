@@ -98,7 +98,6 @@ jobs:
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
         dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
-        Copy-Item -Path "./src/OrchardCore.Cms.Web/Localization" -Destination "./.build/release/Localization" -Recurse
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }} .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-windows:latest 
