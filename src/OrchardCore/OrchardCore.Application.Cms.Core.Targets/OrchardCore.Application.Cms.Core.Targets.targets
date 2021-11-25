@@ -32,13 +32,6 @@
       DestinationFolder="Localization\%(RecursiveDir)"
       Condition="'@(PackageTranslationFiles)' != ''"
       SkipUnchangedFiles="true" />
-
-    <ItemGroup>
-      <LocalizationFiles Include="Localization\**" Exclude="$(DefaultItemExcludes)" />
-      <ResolvedFileToPublish Include="@(LocalizationFiles)">
-        <RelativePath>Localization\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-      </ResolvedFileToPublish>
-    </ItemGroup>
   </Target>
 
   <Target Name="PublishTranslationFiles" BeforeTargets="GetCopyToPublishDirectoryItems">
