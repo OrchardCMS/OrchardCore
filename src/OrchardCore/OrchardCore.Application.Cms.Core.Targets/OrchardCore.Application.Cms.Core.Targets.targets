@@ -41,4 +41,12 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="PublishTranslationFiles" BeforeTargets="GetCopyToPublishDirectoryItems">
+    <Message Text="Publishing translation files: $(MSBuildProjectName)" Importance="high" />
+    <ItemGroup>
+      <_WebProjectGeneratedContent Include="Localization\**" Exclude="$(DefaultItemExcludes)">
+      </_WebProjectGeneratedContent>
+    </ItemGroup>
+  </Target>
+
 </Project>
