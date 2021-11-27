@@ -1,7 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 #if (UseNLog)
 using OrchardCore.Logging;
 #endif
@@ -9,31 +5,34 @@ using OrchardCore.Logging;
 using Serilog;
 #endif
 
-namespace OrchardCore.Templates.Cms.Web
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+var builder = WebApplication.CreateBuilder(args);
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging => logging.ClearProviders())
-#if (UseSerilog)
-                .UseSerilog((hostingContext, configBuilder) =>
-                    {
-                        configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
-                        .Enrich.FromLogContext();
-                    })
-#endif
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
 #if (UseNLog)
-                    webBuilder.UseNLogWeb();
+builder.WebHost.UseNLogWeb();
 #endif
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+#if (UseSerilog)
+builder.WebHost.UseSerilog((hostingContext, configBuilder) =>
+                {
+                    configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
+                    .Enrich.FromLogContext();
+                })
+#endif
+
+builder.Services.AddOrchardCms().AddSetupFeatures("OrchardCore.AutoSetup");
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseStaticFiles();
+
+#if (UseSerilog)
+app.UseOrchardCore(c => c.UseSerilogTenantNameLogging());
+#else
+app.UseOrchardCore();
+#endif
+
+app.Run();
