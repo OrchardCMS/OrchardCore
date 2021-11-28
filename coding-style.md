@@ -27,4 +27,4 @@ The general rule we follow is "_use Visual Studio defaults_".
     - Using braces is always accepted, and required if any block of an `if`/`else if`/.../`else` compound statement uses braces or if a single statement body spans multiple lines.
     - Braces may be omitted only if the body of *every* block associated with an `if`/`else if`/.../`else` compound statement is placed on a single line.
 
-An [EditorConfig](https://editorconfig.org "EditorConfig homepage") file (`.editorconfig`) has been provided at the root of the sqlclient repository, enabling C# auto-formatting conforming to the above guidelines.
+An [EditorConfig](https://editorconfig.org "EditorConfig homepage") file (`.editorconfig`) has been provided at the root of the OrchardCore repository, enabling C# auto-formatting conforming to the above guidelines.
