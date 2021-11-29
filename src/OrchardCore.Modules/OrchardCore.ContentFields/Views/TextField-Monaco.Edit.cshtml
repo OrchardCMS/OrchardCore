@@ -49,6 +49,13 @@
             window.addEventListener("submit", function () {
                 textArea.value = editor.getValue();
             });
+            //for preview
+             if(document.getElementById("previewButton")){
+                    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
+                    textArea.value = editor.getValue();
+                    $(document).trigger('contentpreview:render');
+                });
+             }
         });
     });
 </script>
