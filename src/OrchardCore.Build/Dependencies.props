@@ -17,7 +17,7 @@
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="2.2.4" />
-    <PackageManagement Include="GraphQL" Version="2.4.0" />
+    <PackageManagement Include="GraphQL" Version="4.6.1" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2035" />
     <PackageManagement Include="HtmlSanitizer" Version="6.0.453" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00015" />
