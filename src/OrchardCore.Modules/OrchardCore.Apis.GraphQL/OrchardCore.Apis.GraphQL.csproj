@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GraphQL.NewtonsoftJson" Version="4.6.1" />
     <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 

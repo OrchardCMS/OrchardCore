@@ -72,7 +72,7 @@ namespace OrchardCore.Apis.GraphQL
 
         public static IServiceProvider ResolveServiceProvider<T>(this IResolveFieldContext<T> context)
         {
-            return ((GraphQLContext)context.UserContext).ServiceProvider;
+            return context.RequestServices;
         }
     }
 }

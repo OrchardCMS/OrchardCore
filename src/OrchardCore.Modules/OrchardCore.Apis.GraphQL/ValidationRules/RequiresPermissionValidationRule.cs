@@ -13,6 +13,14 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     public class RequiresPermissionValidationRule : IValidationRule
     {
         public static readonly string ErrorCode = "Unauthorized";
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IStringLocalizer<RequiresPermissionValidationRule> _localizer;
+
+        public RequiresPermissionValidationRule(IAuthorizationService authorizationService, IStringLocalizer<RequiresPermissionValidationRule> localizer)
+        {
+            _authorizationService = authorizationService;
+            _localizer = localizer;
+        }
 
         public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
@@ -23,16 +31,12 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                 {
                     if (astType.OperationType == OperationType.Mutation)
                     {
-                        var authorizationManager = graphQLContext.ServiceProvider.GetService<IAuthorizationService>();
-
-                        if (!authorizationManager.AuthorizeAsync(graphQLContext.User, Permissions.ExecuteGraphQLMutations).GetAwaiter().GetResult())
+                        if (!_authorizationService.AuthorizeAsync(graphQLContext.User, Permissions.ExecuteGraphQLMutations).GetAwaiter().GetResult())
                         {
-                            var localizer = graphQLContext.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
-
                             validationContext.ReportError(new ValidationError(
                                 validationContext.Document.OriginalQuery,
                                 ErrorCode,
-                                localizer["Authorization is required to access {0}.", astType.Name],
+                                _localizer["Authorization is required to access {0}.", astType.Name],
                                 astType));
                         }
                     }
@@ -45,12 +49,10 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
                         if (fieldDef.HasPermissions() && !Authorize(fieldDef, graphQLContext))
                         {
-                            var localizer = graphQLContext.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
-
                             validationContext.ReportError(new ValidationError(
                                 validationContext.Document.OriginalQuery,
                                 ErrorCode,
-                                localizer["Authorization is required to access the field. {0}", objectFieldAst.Name],
+                                _localizer["Authorization is required to access the field. {0}", objectFieldAst.Name],
                                 objectFieldAst));
                         }
                     }
@@ -61,24 +63,20 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
                       if (fieldDef.HasPermissions() && !Authorize(fieldDef, graphQLContext))
                       {
-                          var localizer = graphQLContext.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
-
                           validationContext.ReportError(new ValidationError(
                               validationContext.Document.OriginalQuery,
                               ErrorCode,
-                              localizer["Authorization is required to access the field. {0}", fieldAst.Name],
+                              _localizer["Authorization is required to access the field. {0}", fieldAst.Name],
                               fieldAst));
                       }
                   })));
         }
 
-        private static bool Authorize(IProvideMetadata type, GraphQLContext context)
+        private bool Authorize(IProvideMetadata type, GraphQLContext context)
         {
-            var authorizationManager = context.ServiceProvider.GetService<IAuthorizationService>();
-
             // awaitable IValidationRule in graphql dotnet is coming soon:
             // https://github.com/graphql-dotnet/graphql-dotnet/issues/1140
-            return type.GetPermissions().All(x => authorizationManager.AuthorizeAsync(context.User, x.Permission, x.Resource).GetAwaiter().GetResult());
+            return type.GetPermissions().All(x => _authorizationService.AuthorizeAsync(context.User, x.Permission, x.Resource).GetAwaiter().GetResult());
         }
     }
 }

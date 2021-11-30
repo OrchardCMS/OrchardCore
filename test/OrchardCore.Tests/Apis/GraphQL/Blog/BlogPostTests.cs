@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Autoroute.Models;
@@ -267,7 +268,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder.WithField("contentItemId");
                 });
 
-            Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["code"]);
+            Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["number"].ToString());
         }
     }
 }

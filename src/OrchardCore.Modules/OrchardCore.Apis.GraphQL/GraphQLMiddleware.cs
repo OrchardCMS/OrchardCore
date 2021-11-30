@@ -26,7 +26,7 @@ namespace OrchardCore.Apis.GraphQL
         private readonly RequestDelegate _next;
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
-
+        private readonly IDocumentWriter _writer;
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
         private readonly static MediaType _jsonMediaType = new MediaType("application/json");
         private readonly static MediaType _graphQlMediaType = new MediaType("application/graphql");
@@ -34,11 +34,13 @@ namespace OrchardCore.Apis.GraphQL
         public GraphQLMiddleware(
             RequestDelegate next,
             GraphQLSettings settings,
-            IDocumentExecuter executer)
+            IDocumentExecuter executer,
+            IDocumentWriter writer)
         {
             _next = next;
             _settings = settings;
             _executer = executer;
+            _writer = writer;
         }
 
         public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService)
@@ -175,10 +177,8 @@ namespace OrchardCore.Apis.GraphQL
                 _.Schema = schema;
                 _.Query = queryToExecute;
                 _.OperationName = request.OperationName;
-                // TODO: check inputs and exceptions
                 _.Inputs = ToInputs(request.Variables);
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
-                ////_.ExposeExceptions = _settings.ExposeExceptions;
                 _.ValidationRules = DocumentValidator.CoreRules
                                     .Concat(context.RequestServices.GetServices<IValidationRule>());
                 _.ComplexityConfiguration = new ComplexityConfiguration
@@ -189,27 +189,19 @@ namespace OrchardCore.Apis.GraphQL
                 };
                 _.Listeners.Add(dataLoaderDocumentListener);
                 _.RequestServices = context.RequestServices;
+                _.ThrowOnUnhandledException = true;
             });
 
             context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
                 ? HttpStatusCode.OK
-                : result.Errors.Any(x => x.Code == RequiresPermissionValidationRule.ErrorCode)
+                : result.Errors.Any(x => (x is ValidationError && (x as ValidationError).Number == RequiresPermissionValidationRule.ErrorCode))
                     ? HttpStatusCode.Unauthorized
                     : HttpStatusCode.BadRequest);
 
             context.Response.ContentType = "application/json";
 
             // changed in V4
-            // Asynchronous write to the response body is mandatory.
-            byte[] encodedBytes;
-            if (result.Errors == null)
-            {
-                encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(new { data = ((ExecutionNode)result.Data)?.ToValue() }).ToString());
-            }
-            else
-            {
-                encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(new { errors = result.Errors }).ToString());
-            }
+            var encodedBytes = _utf8Encoding.GetBytes(await _writer.WriteToStringAsync(result));
             await context.Response.Body.WriteAsync(encodedBytes, 0, encodedBytes.Length);
         }
 

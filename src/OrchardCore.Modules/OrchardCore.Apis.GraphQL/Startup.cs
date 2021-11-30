@@ -2,10 +2,12 @@ using System;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
+using GraphQL.NewtonsoftJson;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,13 +37,19 @@ namespace OrchardCore.Apis.GraphQL
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            ////services.AddSingleton<ISchema, GraphQLSchema>();
+            services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
             services.AddSingleton<ISchemaFactory, SchemaService>();
             services.AddScoped<IValidationRule, MaxNumberOfResultsValidationRule>();
             services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
+
+            services.AddSingleton<IErrorInfoProvider>(services =>
+            {
+                var settings = services.GetRequiredService<IOptions<GraphQLSettings>>();
+                return new ErrorInfoProvider(new ErrorInfoProviderOptions { ExposeExceptionStackTrace = settings.Value.ExposeExceptions });
+            });
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
@@ -64,7 +72,6 @@ namespace OrchardCore.Apis.GraphQL
                 {
                     HttpContext = ctx,
                     User = ctx.User,
-                    ServiceProvider = ctx.RequestServices
                 };
                 c.ExposeExceptions = exposeExceptions;
                 c.MaxDepth = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 20;

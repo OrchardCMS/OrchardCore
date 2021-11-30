@@ -27,8 +27,7 @@ namespace OrchardCore.Media.GraphQL
                 .Resolve(x =>
                 {
                     var paths = x.Page(x.Source.Paths);
-                    var context = (GraphQLContext)x.UserContext;
-                    var mediaFileStore = context.ServiceProvider.GetService<IMediaFileStore>();
+                    var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
                     return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
                 });
         }

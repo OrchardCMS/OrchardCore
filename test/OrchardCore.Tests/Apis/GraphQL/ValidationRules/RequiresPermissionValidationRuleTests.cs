@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Conversion;
+using GraphQL.Execution;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +39,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+            var result = JObject.FromObject(JObject.FromObject(new { data = ((ExecutionNode)executionResult.Data)?.ToValue() }));
             Assert.Equal("Fantastic Fox Hates Permissions", result["data"]["test"]["noPermissions"].ToString());
         }
 
@@ -59,7 +60,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+            var result = JObject.FromObject(JObject.FromObject(new { data = ((ExecutionNode)executionResult.Data)?.ToValue() }));
             Assert.Equal(expectedFieldValue, result["data"]["test"][fieldName].ToString());
         }
 
@@ -94,7 +95,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             var executionResult = await executer.ExecuteAsync(options);
 
             Assert.Null(executionResult.Errors);
-            var result = JObject.FromObject(executionResult);
+            var result = JObject.FromObject(JObject.FromObject(new { data = ((ExecutionNode)executionResult.Data)?.ToValue() }));
             Assert.Equal("Fantastic Fox Loves Multiple Permissions", result["data"]["test"]["permissionMultiple"].ToString());
         }
 
@@ -112,7 +113,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             });
 
             services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
-
+            services.AddLocalization();
             var serviceProvider = services.BuildServiceProvider();
 
             return new ExecutionOptions
@@ -121,7 +122,6 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                 Schema = new ValidationSchema(),
                 UserContext = new GraphQLContext
                 {
-                    ServiceProvider = serviceProvider,
                     User = new ClaimsPrincipal(new StubIdentity())
                 },
                 ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>())

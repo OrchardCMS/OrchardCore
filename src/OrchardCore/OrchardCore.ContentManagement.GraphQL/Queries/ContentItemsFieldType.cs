@@ -79,14 +79,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             JObject where = null;
             if (context.HasArgument("where"))
             {
-                where = JObject.FromObject(context.Arguments["where"]);
+                where = JObject.FromObject(context.Arguments["where"].Value);
             }
 
-            var session = graphContext.ServiceProvider.GetService<ISession>();
+            var session = context.RequestServices.GetService<ISession>();
 
             var preQuery = session.Query<ContentItem>();
 
-            var filters = graphContext.ServiceProvider.GetServices<IGraphQLFilter<ContentItem>>();
+            var filters = context.RequestServices.GetServices<IGraphQLFilter<ContentItem>>();
 
             foreach (var filter in filters)
             {
@@ -128,15 +128,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             IPredicateQuery predicateQuery = new PredicateQuery(
                 dialect: session.Store.Configuration.SqlDialect,
-                shellSettings: context.ServiceProvider.GetService<ShellSettings>(),
-                propertyProviders: context.ServiceProvider.GetServices<IIndexPropertyProvider>());
+                shellSettings: fieldContext.RequestServices.GetService<ShellSettings>(),
+                propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>());
 
             // Create the default table alias
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));
             predicateQuery.CreateTableAlias(nameof(ContentItemIndex), defaultTableAlias);
 
             // Add all provided table alias to the current predicate query
-            var providers = context.ServiceProvider.GetServices<IIndexAliasProvider>();
+            var providers = fieldContext.RequestServices.GetServices<IIndexAliasProvider>();
             var indexes = new Dictionary<string, IndexAlias>(StringComparer.OrdinalIgnoreCase);
             var indexAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -364,7 +364,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         {
             if (context.HasPopulatedArgument("orderBy"))
             {
-                var orderByArguments = JObject.FromObject(context.Arguments["orderBy"]);
+                var orderByArguments = JObject.FromObject(context.Arguments["orderBy"].Value);
 
                 if (orderByArguments != null)
                 {

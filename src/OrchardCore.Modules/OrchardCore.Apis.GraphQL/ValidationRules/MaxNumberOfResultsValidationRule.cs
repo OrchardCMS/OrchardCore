@@ -12,12 +12,16 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         private readonly int _maxNumberOfResults;
         private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
+        private readonly IStringLocalizer<MaxNumberOfResultsValidationRule> _localizer;
+        private readonly ILogger<MaxNumberOfResultsValidationRule> _logger;
 
-        public MaxNumberOfResultsValidationRule(IOptions<GraphQLSettings> options)
+        public MaxNumberOfResultsValidationRule(IOptions<GraphQLSettings> options, IStringLocalizer<MaxNumberOfResultsValidationRule> localizer, ILogger<MaxNumberOfResultsValidationRule> logger)
         {
             var settings = options.Value;
             _maxNumberOfResults = settings.MaxNumberOfResults;
             _maxNumberOfResultsValidationMode = settings.MaxNumberOfResultsValidationMode;
+            _localizer = localizer;
+            _logger = logger;
         }
 
         public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
@@ -45,8 +49,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
                     if (value.HasValue && value > _maxNumberOfResults)
                     {
-                        var localizer = context.ServiceProvider.GetService<IStringLocalizer<MaxNumberOfResultsValidationRule>>();
-                        var errorMessage = localizer["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
+                        var errorMessage = _localizer["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
 
                         if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
                         {
@@ -58,8 +61,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                         }
                         else
                         {
-                            var logger = context.ServiceProvider.GetService<ILogger<MaxNumberOfResultsValidationMode>>();
-                            logger.LogInformation(errorMessage);
+                            _logger.LogInformation(errorMessage);
                             arg = new Argument(arg.NameNode, new IntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
                         }
                     }
