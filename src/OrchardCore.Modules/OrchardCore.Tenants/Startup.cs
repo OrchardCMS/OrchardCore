@@ -6,15 +6,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
 using OrchardCore.Tenants.Controllers;
+using OrchardCore.Tenants.Deployment;
+using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants
@@ -148,6 +153,8 @@ namespace OrchardCore.Tenants
             services.AddScoped<FeatureProfilesManager>();
             services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
             services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
+
+            services.AddRecipeExecutionStep<FeatureProfilesStep>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -181,6 +188,17 @@ namespace OrchardCore.Tenants
                 pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Delete/{name}",
                 defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Delete) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Tenants.FeatureProfiles")]
+    public class FeatureProfilesDeployementStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllFeatureProfilesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllFeatureProfilesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllFeatureProfilesDeploymentStepDriver>();
         }
     }
 }

@@ -214,7 +214,7 @@ namespace OrchardCore.Navigation
             var firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
             var lastPage = Math.Min(totalPageCount, Page + (numberOfPagesToShow / 2));
 
-            var pageKey = String.IsNullOrEmpty(PagerId) ? "page" : PagerId;
+            var pageKey = String.IsNullOrEmpty(PagerId) ? "pagenum" : PagerId;
 
             shape.Classes.Add("pager");
             shape.Metadata.Alternates.Clear();
