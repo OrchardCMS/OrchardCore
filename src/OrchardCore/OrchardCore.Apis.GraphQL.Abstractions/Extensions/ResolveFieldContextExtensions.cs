@@ -11,11 +11,21 @@ namespace OrchardCore.Apis.GraphQL
 {
     public static class ResolveFieldContextExtensions
     {
-        public static bool HasPopulatedArgument<TSource>(this ResolveFieldContext<TSource> source, string argumentName)
+        public static bool HasPopulatedArgument(this IResolveFieldContext source, string argumentName)
         {
             if (source.Arguments?.ContainsKey(argumentName) ?? false)
             {
-                return !string.IsNullOrEmpty(source.Arguments[argumentName]?.ToString());
+                return !string.IsNullOrEmpty(source.Arguments[argumentName].Value?.ToString());
+            };
+
+            return false;
+        }
+
+        public static bool HasPopulatedArgument<TSource>(this IResolveFieldContext<TSource> source, string argumentName)
+        {
+            if (source.Arguments?.ContainsKey(argumentName) ?? false)
+            {
+                return !string.IsNullOrEmpty(source.Arguments[argumentName].Value?.ToString());
             };
 
             return false;
@@ -29,7 +39,7 @@ namespace OrchardCore.Apis.GraphQL
                 .Argument<IntGraphType, int>("skip", "the number of elements to skip", 0);
         }
 
-        public static IEnumerable<TSource> Page<T, TSource>(this ResolveFieldContext<T> context, IEnumerable<TSource> source)
+        public static IEnumerable<TSource> Page<T, TSource>(this IResolveFieldContext<T> context, IEnumerable<TSource> source)
         {
             var skip = context.GetArgument<int>("skip");
             var first = context.GetArgument<int>("first");
@@ -60,7 +70,7 @@ namespace OrchardCore.Apis.GraphQL
             return source;
         }
 
-        public static IServiceProvider ResolveServiceProvider<T>(this ResolveFieldContext<T> context)
+        public static IServiceProvider ResolveServiceProvider<T>(this IResolveFieldContext<T> context)
         {
             return ((GraphQLContext)context.UserContext).ServiceProvider;
         }

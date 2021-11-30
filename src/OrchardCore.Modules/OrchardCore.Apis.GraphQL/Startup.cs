@@ -2,7 +2,7 @@ using System;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
-using GraphQL.Http;
+using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -35,9 +35,8 @@ namespace OrchardCore.Apis.GraphQL
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IDependencyResolver, RequestServicesDependencyResolver>();
+            ////services.AddSingleton<ISchema, GraphQLSchema>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
             services.AddSingleton<ISchemaFactory, SchemaService>();

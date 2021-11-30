@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 using GraphQL.Validation;
@@ -12,47 +14,62 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         public static readonly string ErrorCode = "Unauthorized";
 
-        public INodeVisitor Validate(ValidationContext validationContext)
+        public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
-            var context = (GraphQLContext)validationContext.UserContext;
+            var graphQLContext = (GraphQLContext)validationContext.UserContext;
 
-            return new EnterLeaveListener(_ =>
-            {
-                _.Match<Operation>(op =>
+            return Task.FromResult((INodeVisitor)new NodeVisitors(
+                new MatchingNodeVisitor<Operation>((astType, context) =>
                 {
-                    if (op.OperationType == OperationType.Mutation)
+                    if (astType.OperationType == OperationType.Mutation)
                     {
-                        var authorizationManager = context.ServiceProvider.GetService<IAuthorizationService>();
+                        var authorizationManager = graphQLContext.ServiceProvider.GetService<IAuthorizationService>();
 
-                        if (!authorizationManager.AuthorizeAsync(context.User, Permissions.ExecuteGraphQLMutations).GetAwaiter().GetResult())
+                        if (!authorizationManager.AuthorizeAsync(graphQLContext.User, Permissions.ExecuteGraphQLMutations).GetAwaiter().GetResult())
                         {
-                            var localizer = context.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
+                            var localizer = graphQLContext.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
 
                             validationContext.ReportError(new ValidationError(
-                                validationContext.OriginalQuery,
+                                validationContext.Document.OriginalQuery,
                                 ErrorCode,
-                                localizer["Authorization is required to access {0}.", op.Name],
-                                op));
+                                localizer["Authorization is required to access {0}.", astType.Name],
+                                astType));
                         }
                     }
-                });
-
-                _.Match<Field>(fieldAst =>
+                }),
+                new MatchingNodeVisitor<ObjectField>((objectFieldAst, context) =>
                 {
-                    var fieldDef = validationContext.TypeInfo.GetFieldDef();
-
-                    if (fieldDef.HasPermissions() && !Authorize(fieldDef, context))
+                    if (context.TypeInfo.GetArgument()?.ResolvedType.GetNamedType() is IComplexGraphType argumentType)
                     {
-                        var localizer = context.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
+                        var fieldDef = argumentType.GetField(objectFieldAst.Name);
 
-                        validationContext.ReportError(new ValidationError(
-                            validationContext.OriginalQuery,
-                            ErrorCode,
-                            localizer["Authorization is required to access the field. {0}", fieldAst.Name],
-                            fieldAst));
+                        if (fieldDef.HasPermissions() && !Authorize(fieldDef, graphQLContext))
+                        {
+                            var localizer = graphQLContext.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
+
+                            validationContext.ReportError(new ValidationError(
+                                validationContext.Document.OriginalQuery,
+                                ErrorCode,
+                                localizer["Authorization is required to access the field. {0}", objectFieldAst.Name],
+                                objectFieldAst));
+                        }
                     }
-                });
-            });
+                }),
+                  new MatchingNodeVisitor<Field>((fieldAst, context) =>
+                  {
+                      var fieldDef = validationContext.TypeInfo.GetFieldDef();
+
+                      if (fieldDef.HasPermissions() && !Authorize(fieldDef, graphQLContext))
+                      {
+                          var localizer = graphQLContext.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
+
+                          validationContext.ReportError(new ValidationError(
+                              validationContext.Document.OriginalQuery,
+                              ErrorCode,
+                              localizer["Authorization is required to access the field. {0}", fieldAst.Name],
+                              fieldAst));
+                      }
+                  })));
         }
 
         private static bool Authorize(IProvideMetadata type, GraphQLContext context)

@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Http;
 namespace OrchardCore.Apis.GraphQL
 {
     /// <summary>
-    /// Provides an implementation of <see cref="IDependencyResolver"/> by
+    /// Provides an implementation of <see cref="IServiceProvider"/> by
     /// resolving the HttpContext request services when a type is resolved.
     /// This should be registered as Singleton.
     /// </summary>
-    internal class RequestServicesDependencyResolver : IDependencyResolver
+    internal class RequestServicesDependencyResolver : IServiceProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -18,18 +18,11 @@ namespace OrchardCore.Apis.GraphQL
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public T Resolve<T>()
+        public object GetService(Type serviceType)
         {
-            return (T)Resolve(typeof(T));
-        }
-
-        public object Resolve(Type type)
-        {
-            var serviceType = _httpContextAccessor.HttpContext.RequestServices.GetService(type);
-
             if (serviceType == null)
             {
-                return Activator.CreateInstance(type);
+                return Activator.CreateInstance(serviceType);
             }
 
             return serviceType;

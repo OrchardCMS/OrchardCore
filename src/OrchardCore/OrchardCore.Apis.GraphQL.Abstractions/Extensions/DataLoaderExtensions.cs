@@ -13,7 +13,7 @@ namespace OrchardCore.Apis.GraphQL
 
             foreach (var key in keys)
             {
-                tasks.Add(dataLoader.LoadAsync(key));
+                tasks.Add((Task<T>)dataLoader.LoadAsync(key));
             }
 
             return Task.WhenAll(tasks);

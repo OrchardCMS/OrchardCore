@@ -1,28 +1,37 @@
 using System;
+using GraphQL;
 using GraphQL.Conversion;
+using GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL
 {
-    public class OrchardFieldNameConverter : IFieldNameConverter
+    public class OrchardFieldNameConverter : INameConverter
     {
-        private readonly IFieldNameConverter _defaultConverter = new CamelCaseFieldNameConverter();
+        private readonly INameConverter _defaultConverter = new CamelCaseNameConverter();
 
-        public string NameFor(string field, Type parentType)
+        // todo: custom argument name?
+        public string NameForArgument(string argumentName, IComplexGraphType parentGraphType, FieldType field)
         {
-            var attributes = parentType?.GetCustomAttributes(typeof(GraphQLFieldNameAttribute), true);
+            return _defaultConverter.NameForArgument(argumentName, parentGraphType, field);
+        }
+
+        // TODO: check functionality
+        public string NameForField(string fieldName, IComplexGraphType parentGraphType)
+        {
+            var attributes = parentGraphType?.GetType().GetCustomAttributes(typeof(GraphQLFieldNameAttribute), true);
 
             if (attributes != null)
             {
                 foreach (GraphQLFieldNameAttribute attribute in attributes)
                 {
-                    if (attribute.Field == field)
+                    if (attribute.Field == fieldName)
                     {
                         return attribute.Mapped;
                     }
                 }
             }
 
-            return _defaultConverter.NameFor(field, parentType);
+            return _defaultConverter.NameForField(fieldName, parentGraphType);
         }
     }
 }

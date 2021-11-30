@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,7 @@ namespace OrchardCore.ContentManagement.GraphQL
 {
     public static class DataLoaderExtensions
     {
-        public static IDataLoader<string, ContentItem> GetOrAddPublishedContentItemByIdDataLoader<T>(this ResolveFieldContext<T> context)
+        public static IDataLoader<string, ContentItem> GetOrAddPublishedContentItemByIdDataLoader<T>(this IResolveFieldContext<T> context)
         {
             var serviceProvider = context.ResolveServiceProvider();
 

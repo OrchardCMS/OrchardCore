@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -174,10 +175,11 @@ namespace OrchardCore.Apis.GraphQL
                 _.Schema = schema;
                 _.Query = queryToExecute;
                 _.OperationName = request.OperationName;
-                _.Inputs = request.Variables.ToInputs();
+                // TODO: check inputs and exceptions
+                _.Inputs = ToInputs(request.Variables);
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
-                _.ExposeExceptions = _settings.ExposeExceptions;
-                _.ValidationRules = DocumentValidator.CoreRules()
+                ////_.ExposeExceptions = _settings.ExposeExceptions;
+                _.ValidationRules = DocumentValidator.CoreRules
                                     .Concat(context.RequestServices.GetServices<IValidationRule>());
                 _.ComplexityConfiguration = new ComplexityConfiguration
                 {
@@ -196,8 +198,17 @@ namespace OrchardCore.Apis.GraphQL
 
             context.Response.ContentType = "application/json";
 
+            // changed in V4
             // Asynchronous write to the response body is mandatory.
-            var encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(result).ToString());
+            byte[] encodedBytes;
+            if (result.Errors == null)
+            {
+                encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(new { data = ((ExecutionNode)result.Data)?.ToValue() }).ToString());
+            }
+            else
+            {
+                encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(new { errors = result.Errors }).ToString());
+            }
             await context.Response.Body.WriteAsync(encodedBytes, 0, encodedBytes.Length);
         }
 
@@ -228,6 +239,63 @@ namespace OrchardCore.Apis.GraphQL
             // Asynchronous write to the response body is mandatory.
             var encodedBytes = _utf8Encoding.GetBytes(JObject.FromObject(errorResult).ToString());
             await context.Response.Body.WriteAsync(encodedBytes, 0, encodedBytes.Length);
+        }
+
+        /// <summary>
+        /// Copied from GraphQL.NET 2.4
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static Inputs ToInputs(JObject obj)
+        {
+            var variables = GetValue(obj) as Dictionary<string, object>
+                            ?? new Dictionary<string, object>();
+            return new Inputs(variables);
+        }
+
+        public static object GetValue(object value)
+        {
+            if (value is JObject objectValue)
+            {
+                var output = new Dictionary<string, object>();
+                foreach (var kvp in objectValue)
+                {
+                    output.Add(kvp.Key, GetValue(kvp.Value));
+                }
+                return output;
+            }
+
+            if (value is JProperty propertyValue)
+            {
+                return new Dictionary<string, object>
+                {
+                    { propertyValue.Name, GetValue(propertyValue.Value) }
+                };
+            }
+
+            if (value is JArray arrayValue)
+            {
+                return arrayValue.Children().Aggregate(new List<object>(), (list, token) =>
+                {
+                    list.Add(GetValue(token));
+                    return list;
+                });
+            }
+
+            if (value is JValue rawValue)
+            {
+                var val = rawValue.Value;
+                if (val is long l)
+                {
+                    if (l >= int.MinValue && l <= int.MaxValue)
+                    {
+                        return (int)l;
+                    }
+                }
+                return val;
+            }
+
+            return value;
         }
     }
 }

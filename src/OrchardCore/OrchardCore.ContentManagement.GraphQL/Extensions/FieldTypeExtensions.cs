@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GraphQL.Types;
+using GraphQL.Utilities;
 
 namespace OrchardCore.ContentManagement.GraphQL
 {
@@ -22,11 +23,7 @@ namespace OrchardCore.ContentManagement.GraphQL
                 return null;
             }
 
-            if (fieldType.Metadata == null)
-            {
-                fieldType.Metadata = new Dictionary<string, object>();
-            }
-
+            // todo: test, removed metadata null check
             if (!fieldType.HasMetadata(name))
             {
                 fieldType.Metadata.Add(name, value);

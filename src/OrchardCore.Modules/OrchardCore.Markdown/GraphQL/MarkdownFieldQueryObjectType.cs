@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -36,7 +37,7 @@ namespace OrchardCore.Markdown.GraphQL
                 .ResolveLockedAsync(ToHtml);
         }
 
-        private static async Task<object> ToHtml(ResolveFieldContext<MarkdownField> ctx)
+        private static async Task<object> ToHtml(IResolveFieldContext<MarkdownField> ctx)
         {
             if (string.IsNullOrEmpty(ctx.Source.Markdown))
             {

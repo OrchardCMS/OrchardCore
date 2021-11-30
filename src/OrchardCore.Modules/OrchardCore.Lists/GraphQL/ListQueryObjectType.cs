@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,8 +36,8 @@ namespace OrchardCore.Lists.GraphQL
                     var accessor = serviceProvider.GetRequiredService<IDataLoaderContextAccessor>();
 
                     var dataLoader = accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>("ContainedPublishedContentItems", x => LoadPublishedContentItemsForListAsync(x, session));
-
-                    return (await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId))
+                    var dataLoaderResult = (dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId));
+                    return (await dataLoaderResult.GetResultAsync())
                                 .Skip(g.GetArgument<int>("skip"))
                                 .Take(g.GetArgument<int>("first"));
                 });
