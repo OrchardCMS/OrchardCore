@@ -67,7 +67,7 @@
                     <i class="fa fa-plus" aria-hidden="true"></i>
                 </button>
                 <div class="dropdown-menu">
-                    @if (widgetContentTypes.Count() == 0)
+                    @if (!widgetContentTypes.Any())
                     {
                         <a class="dropdown-item add-widget btn-sm" href="javascript:;">@T["No widgets found."]</a>
                     }
