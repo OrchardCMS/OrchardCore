@@ -4,7 +4,7 @@
   <PropertyGroup>
 
     <!-- TFM used when coding in Visual Studio and when creating templates -->
-    <DefaultTargetFramework>net6.0</DefaultTargetFramework>
+    <DefaultTargetFramework>net5.0</DefaultTargetFramework>
     
     <!-- TFMs used to build the abstractions and modules-->
     <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net6.0;net5.0;netcoreapp3.1</CommonTargetFrameworks>
