@@ -188,6 +188,7 @@ namespace OrchardCore.Apis.GraphQL
                     FieldImpact = _settings.FieldImpact
                 };
                 _.Listeners.Add(dataLoaderDocumentListener);
+                _.RequestServices = context.RequestServices;
             });
 
             context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
