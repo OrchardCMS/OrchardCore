@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GraphQL;
-using GraphQL.Types;
 using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries

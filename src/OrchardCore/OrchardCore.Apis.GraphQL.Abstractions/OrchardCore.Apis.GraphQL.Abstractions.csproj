@@ -17,8 +17,8 @@
 
   <ItemGroup>
     <PackageReference Include="GraphQL" />
-    <PackageReference Include="GraphQL.DataLoader" Version="4.6.1" />
-    <PackageReference Include="GraphQL.MicrosoftDI" Version="4.6.1" />
+    <PackageReference Include="GraphQL.DataLoader" />
+    <PackageReference Include="GraphQL.MicrosoftDI" />
   </ItemGroup>
 
   <ItemGroup>

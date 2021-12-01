@@ -5,7 +5,6 @@ using GraphQL.Language.AST;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Apis.GraphQL.ValidationRules
@@ -24,7 +23,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
-            var graphQLContext = (GraphQLContext)validationContext.UserContext;
+            var graphQLContext = (GraphQLUserContext)validationContext.UserContext;
 
             return Task.FromResult((INodeVisitor)new NodeVisitors(
                 new MatchingNodeVisitor<Operation>((astType, context) =>
@@ -72,7 +71,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                   })));
         }
 
-        private bool Authorize(IProvideMetadata type, GraphQLContext context)
+        private bool Authorize(IProvideMetadata type, GraphQLUserContext context)
         {
             // awaitable IValidationRule in graphql dotnet is coming soon:
             // https://github.com/graphql-dotnet/graphql-dotnet/issues/1140

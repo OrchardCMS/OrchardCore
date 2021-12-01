@@ -23,7 +23,6 @@ namespace OrchardCore.ContentManagement.GraphQL
                 return null;
             }
 
-            // todo: test, removed metadata null check
             if (!fieldType.HasMetadata(name))
             {
                 fieldType.Metadata.Add(name, value);

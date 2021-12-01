@@ -14,6 +14,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
     public class BlogPostTests
     {
         [Fact]
+
         public async Task ShouldListAllBlogs()
         {
             using (var context = new BlogContext())

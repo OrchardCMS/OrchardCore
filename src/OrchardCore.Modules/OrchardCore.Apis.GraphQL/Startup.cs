@@ -41,6 +41,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
+
             services.AddSingleton<ISchemaFactory, SchemaService>();
             services.AddScoped<IValidationRule, MaxNumberOfResultsValidationRule>();
             services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
@@ -68,9 +69,8 @@ namespace OrchardCore.Apis.GraphQL
                     maxNumberOfResultsValidationMode = _hostingEnvironment.IsDevelopment() ? MaxNumberOfResultsValidationMode.Enabled : MaxNumberOfResultsValidationMode.Disabled;
                 }
 
-                c.BuildUserContext = ctx => new GraphQLContext
+                c.BuildUserContext = ctx => new GraphQLUserContext
                 {
-                    HttpContext = ctx,
                     User = ctx.User,
                 };
                 c.ExposeExceptions = exposeExceptions;

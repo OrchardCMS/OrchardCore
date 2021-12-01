@@ -44,7 +44,7 @@ namespace OrchardCore.Markdown.GraphQL
                 return ctx.Source.Markdown;
             }
 
-            var serviceProvider = ctx.ResolveServiceProvider();
+            var serviceProvider = ctx.RequestServices;
             var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
 

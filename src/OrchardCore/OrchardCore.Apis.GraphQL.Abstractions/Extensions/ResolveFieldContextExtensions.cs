@@ -47,7 +47,7 @@ namespace OrchardCore.Apis.GraphQL
 
             if (last == 0 && first == 0)
             {
-                first = context.ResolveServiceProvider().GetService<IOptions<GraphQLSettings>>().Value.DefaultNumberOfResults;
+                first = context.RequestServices.GetService<IOptions<GraphQLSettings>>().Value.DefaultNumberOfResults;
             }
 
             if (last > 0)

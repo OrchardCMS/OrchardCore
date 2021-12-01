@@ -73,6 +73,16 @@ namespace OrchardCore.Apis.GraphQL.Services
                     NameConverter = new OrchardFieldNameConverter(),
                 };
 
+                foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
+                {
+                    schema.RegisterType(type);
+                }
+
+                foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
+                {
+                    schema.RegisterType(type);
+                }
+
                 foreach (var builder in _schemaBuilders)
                 {
                     var identifier = await builder.GetIdentifierAsync();
@@ -86,16 +96,7 @@ namespace OrchardCore.Apis.GraphQL.Services
                     await builder.BuildAsync(schema);
                 }
 
-                foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
-                {
-                    schema.RegisterType(type);
-                }
-
-                foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
-                {
-                    schema.RegisterType(type);
-                }
-
+        
                 // Clean Query, Mutation and Subscription if they have no fields
                 // to prevent GraphQL configuration errors.
 

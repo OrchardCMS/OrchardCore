@@ -67,8 +67,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private async Task<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
         {
-            var graphContext = (GraphQLContext)context.UserContext;
-
             var versionOption = VersionOptions.Published;
 
             if (context.HasPopulatedArgument("status"))
@@ -79,6 +77,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             JObject where = null;
             if (context.HasArgument("where"))
             {
+                // context.Arguments[].Value is never null in GraphQL.NET 4
                 where = JObject.FromObject(context.Arguments["where"].Value);
             }
 
@@ -99,8 +98,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             query = FilterContentType(query, context);
             query = OrderBy(query, context);
 
-            var contentItemsQuery = FilterWhereArguments(query, where, context, session, graphContext);
-            contentItemsQuery = PageQuery(contentItemsQuery, context, graphContext);
+            var contentItemsQuery = FilterWhereArguments(query, where, context, session);
+            contentItemsQuery = PageQuery(contentItemsQuery, context);
 
             var contentItems = await contentItemsQuery.ListAsync();
 
@@ -116,8 +115,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             IQuery<ContentItem, ContentItemIndex> query,
             JObject where,
             IResolveFieldContext fieldContext,
-            ISession session,
-            GraphQLContext context)
+            ISession session)
         {
             if (where == null)
             {
@@ -184,7 +182,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentQuery;
         }
 
-        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, IResolveFieldContext context, GraphQLContext graphQLContext)
+        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, IResolveFieldContext context)
         {
             var first = context.GetArgument<int>("first");
 
@@ -219,8 +217,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private static IQuery<ContentItem, ContentItemIndex> FilterContentType(IQuery<ContentItem, ContentItemIndex> query, IResolveFieldContext context)
         {
-            var contentType = ((ListGraphType)context.FieldDefinition.ResolvedType).ResolvedType.Name;
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
+            var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
             return query.Where(q => q.ContentType == contentType);
         }
 
@@ -274,7 +276,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 // figure out table aliases for collapsed parts and ones with the part suffix removed by the dsl
                 if (tableAlias == null || !tableAlias.EndsWith("Part", StringComparison.OrdinalIgnoreCase))
                 {
-                    var whereArgument = fieldContext?.FieldDefinition?.Arguments.FirstOrDefault(x => x.Name == "where");
+                    var whereArgument = fieldContext?.FieldDefinition.Arguments.FirstOrDefault(x => x.Name == "where");
 
                     if (whereArgument != null)
                     {

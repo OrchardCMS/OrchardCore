@@ -62,7 +62,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Text field",
                     FieldType = typeof(StringGraphType),
                     UnderlyingType = typeof(TextField),
-                    FieldAccessor = field => (String)field.Content.Text
+                    FieldAccessor = field => (string)field.Content.Text
                 }
             },
             {
@@ -82,6 +82,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Multi text field",
                     FieldType = typeof(ListGraphType<StringGraphType>),
                     UnderlyingType = typeof(MultiTextField),
+                    // (string[]) can not be converted directly from content.values
                     FieldAccessor = field => ((JArray)field.Content.Values)?.ToObject<string[]>()
                 }
             }

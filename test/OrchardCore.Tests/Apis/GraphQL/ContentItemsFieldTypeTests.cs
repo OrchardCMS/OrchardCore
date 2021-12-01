@@ -243,7 +243,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
 
                 services.Build();
-
                 var context = CreateAnimalFieldContext(services);
 
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
@@ -405,7 +404,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             return new ResolveFieldContext
             {
                 Arguments = new Dictionary<string, ArgumentValue>(),
-                UserContext = new GraphQLContext(),
+                UserContext = new GraphQLUserContext(),
                 FieldDefinition = new FieldType
                 {
                     Name = "Inputs",

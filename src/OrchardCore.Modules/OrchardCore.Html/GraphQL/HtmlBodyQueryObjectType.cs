@@ -34,9 +34,8 @@ namespace OrchardCore.Html.GraphQL
 
         private static async Task<object> RenderHtml(IResolveFieldContext<HtmlBodyPart> ctx)
         {
-            var serviceProvider = ctx.ResolveServiceProvider();
-            var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
-            var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
+            var shortcodeService = ctx.RequestServices.GetRequiredService<IShortcodeService>();
+            var contentDefinitionManager = ctx.RequestServices.GetRequiredService<IContentDefinitionManager>();
 
             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart"));
@@ -52,8 +51,8 @@ namespace OrchardCore.Html.GraphQL
                     HtmlBodyPart = ctx.Source,
                     ContentItem = ctx.Source.ContentItem
                 };
-                var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
-                var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
+                var liquidTemplateManager = ctx.RequestServices.GetRequiredService<ILiquidTemplateManager>();
+                var htmlEncoder = ctx.RequestServices.GetService<HtmlEncoder>();
 
                 html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) });
             }

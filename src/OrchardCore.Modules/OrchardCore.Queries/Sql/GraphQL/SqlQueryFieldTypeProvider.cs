@@ -142,7 +142,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -179,7 +179,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 ResolvedType = typetype.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");
