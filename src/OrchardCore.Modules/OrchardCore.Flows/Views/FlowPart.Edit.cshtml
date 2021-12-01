@@ -165,8 +165,6 @@
                         destNameGuid = destGuid.replaceAll('_', '.');
 
                         if (source.length > 0) {
-
-                            alert("source and dest");
                             inputs.each(function (index, item) {
                                 $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
                                 $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
@@ -174,7 +172,6 @@
 
                         } else {
 
-                            alert("dest");
                             inputs.each(function (index, item) {
                                 $(this).attr('id', destGuid + $(this).attr('id'));
                                 $(this).attr('name', destNameGuid  + $(this).attr('name'));
@@ -183,7 +180,6 @@
 
                     }
                     else if (source.length > 0) {
-                        alert("source");
                         inputs.each(function (index, item) {
                             $(this).attr('id', $(this).attr('id').replace(sourceGuid, '') );
                             $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
