@@ -17,8 +17,9 @@ $(function () {
 
     var prefix = htmlFieldPrefix + '-' + zone + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
     var contentTypesName = $(this).data("contenttypes-name");
+    var contentItemsName = $(this).data("contentitems-name");
     $.ajax({
-      url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
+      url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
     }).done(function (data) {
       var result = JSON.parse(data);
       $(document.getElementById(targetId)).append(result.Content);
@@ -42,8 +43,9 @@ $(function () {
 
     var prefix = htmlFieldPrefix + '-' + zone + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
     var contentTypesName = $(this).data("contenttypes-name");
+    var contentItemsName = $(this).data("contentitems-name");
     $.ajax({
-      url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
+      url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&zonesName=" + zonesName + "&zone=" + zone + "&targetId=" + targetId + "&parentContentType=" + parentContentType + "&partName=" + partName
     }).done(function (data) {
       var result = JSON.parse(data);
       $(result.Content).insertBefore(target);
