@@ -31,7 +31,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
             {
                 if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
                 {
-                    var context = (GraphQLContext)validationContext.UserContext;
+                    var context = (GraphQLUserContext)validationContext.UserContext;
 
                     int? value = null;
 
