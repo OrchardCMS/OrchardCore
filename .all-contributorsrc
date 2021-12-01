@@ -2443,6 +2443,33 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "dannoh",
+      "name": "dannoh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1886686?v=4",
+      "profile": "https://github.com/dannoh",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "scil",
+      "name": "scil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2786775?v=4",
+      "profile": "https://github.com/scil",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "woter1832",
+      "name": "arcotek-ltd",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68354513?v=4",
+      "profile": "https://github.com/woter1832",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
