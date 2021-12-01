@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Filters.Core</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Filters Core</Title>
+    <Description>$(OCCMSDescription)
+    
+    Core implementation for core Parsers and Filters module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="YesSql.Core" />
+    <PackageReference Include="YesSql.Filters.Query" />
+  </ItemGroup>
+</Project>

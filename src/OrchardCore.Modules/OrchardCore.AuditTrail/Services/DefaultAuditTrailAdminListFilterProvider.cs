@@ -9,6 +9,7 @@ using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
+using OrchardCore.Filters.Core.Parsers.DateTimeParser;
 using OrchardCore.Modules;
 using Parlot;
 using YesSql;
