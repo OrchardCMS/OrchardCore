@@ -159,7 +159,7 @@
                     var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
                     sourceNameGuid = sourceGuid.replaceAll('_', '.');
 
-                    if (destination.length) {
+                    if (destination.length > 0) {
 
                         var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
                         destNameGuid = destGuid.replaceAll('_', '.');
