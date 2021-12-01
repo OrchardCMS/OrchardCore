@@ -19,7 +19,7 @@
     <PackageManagement Include="Fluid.Core" Version="2.2.5" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2035" />
-    <PackageManagement Include="HtmlSanitizer" Version="6.0.453" />
+    <PackageManagement Include="HtmlSanitizer" Version="7.0.470" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00015" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00015" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00015" />
