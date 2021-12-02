@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using GraphQL.Types;
-using GraphQL.Utilities;
 
 namespace OrchardCore.ContentManagement.GraphQL
 {

@@ -266,6 +266,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         {
             foreach (var entry in where.Properties())
             {
+                // new typed arguments return default null values
+                if (entry.Value.Type == JTokenType.Undefined || entry.Value.Type == JTokenType.Null)
+                {
+                    continue;
+                }
+
                 IPredicate expression = null;
 
                 var values = entry.Name.Split('_', 2);

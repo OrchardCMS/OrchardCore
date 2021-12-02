@@ -29,7 +29,6 @@ namespace OrchardCore.Apis.GraphQL
         private readonly RequestDelegate _next;
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
-        private readonly IDocumentWriter _writer;
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
         private readonly static MediaType _jsonMediaType = new MediaType("application/json");
         private readonly static MediaType _graphQlMediaType = new MediaType("application/graphql");
@@ -37,13 +36,11 @@ namespace OrchardCore.Apis.GraphQL
         public GraphQLMiddleware(
             RequestDelegate next,
             GraphQLSettings settings,
-            IDocumentExecuter executer,
-            IDocumentWriter writer)
+            IDocumentExecuter executer)
         {
             _next = next;
             _settings = settings;
             _executer = executer;
-            _writer = writer;
         }
 
         public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService, IDocumentWriter documentWriter)
@@ -81,8 +78,6 @@ namespace OrchardCore.Apis.GraphQL
 
         private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService, IDocumentWriter documentWriter)
         {
-           
-
             GraphQLRequest request = null;
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
@@ -152,7 +147,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.Schema = schema;
                 _.Query = queryToExecute;
                 _.OperationName = request.OperationName;
-                _.Inputs = ToInputs(request.Variables);
+                _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ValidationRules = DocumentValidator.CoreRules
                                     .Concat(context.RequestServices.GetServices<IValidationRule>());
@@ -164,7 +159,6 @@ namespace OrchardCore.Apis.GraphQL
                 };
                 _.Listeners.Add(dataLoaderDocumentListener);
                 _.RequestServices = context.RequestServices;
-                _.ThrowOnUnhandledException = true;
             });
 
             context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
@@ -176,7 +170,7 @@ namespace OrchardCore.Apis.GraphQL
             context.Response.ContentType = MediaTypeNames.Application.Json;
 
             // changed in V4
-            var encodedBytes = _utf8Encoding.GetBytes(await _writer.WriteToStringAsync(result));
+            var encodedBytes = _utf8Encoding.GetBytes(await documentWriter.WriteToStringAsync(result));
             await context.Response.Body.WriteAsync(encodedBytes, 0, encodedBytes.Length); // documentWriter causes problems when querying _schema
         }
 
@@ -208,63 +202,6 @@ namespace OrchardCore.Apis.GraphQL
             }
 
             return request;
-        }
-
-        /// <summary>
-        /// Copied from GraphQL.NET 2.4
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static Inputs ToInputs(JObject obj)
-        {
-            var variables = GetValue(obj) as Dictionary<string, object>
-                            ?? new Dictionary<string, object>();
-            return new Inputs(variables);
-        }
-
-        public static object GetValue(object value)
-        {
-            if (value is JObject objectValue)
-            {
-                var output = new Dictionary<string, object>();
-                foreach (var kvp in objectValue)
-                {
-                    output.Add(kvp.Key, GetValue(kvp.Value));
-                }
-                return output;
-            }
-
-            if (value is JProperty propertyValue)
-            {
-                return new Dictionary<string, object>
-                {
-                    { propertyValue.Name, GetValue(propertyValue.Value) }
-                };
-            }
-
-            if (value is JArray arrayValue)
-            {
-                return arrayValue.Children().Aggregate(new List<object>(), (list, token) =>
-                {
-                    list.Add(GetValue(token));
-                    return list;
-                });
-            }
-
-            if (value is JValue rawValue)
-            {
-                var val = rawValue.Value;
-                if (val is long l)
-                {
-                    if (l >= int.MinValue && l <= int.MaxValue)
-                    {
-                        return (int)l;
-                    }
-                }
-                return val;
-            }
-
-            return value;
         }
     }
 }

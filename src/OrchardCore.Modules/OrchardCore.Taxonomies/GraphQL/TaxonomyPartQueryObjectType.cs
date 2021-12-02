@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using GraphQL;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;

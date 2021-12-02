@@ -10,6 +10,13 @@ namespace OrchardCore.Apis.GraphQL.Queries
 
     public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>
     {
+        // arguments of typed input graph types return typed object, without additional input fields (_in, _contains,..)
+        // so we return dictionary as it was before.
+        public override object ParseDictionary(IDictionary<string, object> value)
+        {
+            return value;
+        }
+
         // Applies to all types
         public static Dictionary<string, string> EqualityOperators = new Dictionary<string, string>
         {

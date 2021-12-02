@@ -3,11 +3,9 @@ using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
 using GraphQL.NewtonsoftJson;
-using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -37,8 +35,8 @@ namespace OrchardCore.Apis.GraphQL
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
+            services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
 

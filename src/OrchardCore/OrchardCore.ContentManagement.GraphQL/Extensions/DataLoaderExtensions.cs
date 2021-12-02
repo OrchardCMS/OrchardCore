@@ -12,7 +12,6 @@ namespace OrchardCore.ContentManagement.GraphQL
 {
     public static class DataLoaderExtensions
     {
-        // TODO: check if return type should really be IDataLoader<string, IEnumerable<ContentItem>>  as in ag/graphql4 branch? 
         public static IDataLoader<string, IEnumerable<ContentItem>> GetOrAddPublishedContentItemByIdDataLoader<T>(this IResolveFieldContext<T> context)
         {
             var accessor = context.RequestServices.GetRequiredService<IDataLoaderContextAccessor>();

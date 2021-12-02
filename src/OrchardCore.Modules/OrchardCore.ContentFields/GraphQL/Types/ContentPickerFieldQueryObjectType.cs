@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL;

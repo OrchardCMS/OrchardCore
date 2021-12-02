@@ -18,7 +18,6 @@
   <ItemGroup>
     <PackageReference Include="GraphQL" />
     <PackageReference Include="GraphQL.DataLoader" />
-    <PackageReference Include="GraphQL.MicrosoftDI" />
   </ItemGroup>
 
   <ItemGroup>
