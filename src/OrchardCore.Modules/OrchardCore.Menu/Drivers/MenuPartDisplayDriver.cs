@@ -48,8 +48,8 @@ namespace OrchardCore.Menu.Drivers
                 {
                     if (!menuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
                     {
-                        _logger.LogWarning("The menu item content item with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType);
-                        await _notifier.WarningAsync(H["The menu item content item with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]);
+                        _logger.LogWarning("The menu item content item with id {ContentItemId} has no matching {ContentType} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType);
+                        await _notifier.WarningAsync(H["The menu item content item with id {ContentItemId} has no matching {ContentType} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]);
                         notify = true;
                     }
                 }
