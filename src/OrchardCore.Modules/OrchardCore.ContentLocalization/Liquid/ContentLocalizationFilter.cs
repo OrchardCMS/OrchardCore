@@ -28,7 +28,7 @@ namespace OrchardCore.ContentLocalization.Liquid
             {
                 // List of content item ids
 
-                var localizationSets = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
+                var localizationSets = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
 
                 return FluidValue.Create(await _contentLocalizationManager.GetItemsForSetsAsync(localizationSets, locale), ctx.Options);
             }
