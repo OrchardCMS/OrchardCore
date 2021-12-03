@@ -7,7 +7,7 @@ By default the `Content Definitions` are stored in the database.
 When the `File Content Definition` feature is enabled it stores content definitions in a `ContentDefinition.json` file 
 at the root of each tenants `App_Data` folder, e.g. `App_Data/Sites/Default/ContentDefinition.json` for the default tenant.
 
-The `File Content Definition` can be very useful during the Development phase of a project.
+The `File Content Definition` feature can be very useful during the Development phase of a project.
 
 As you move your site to a Production phase you may wish to disable the feature and store the Content Definitions in the database.
 
