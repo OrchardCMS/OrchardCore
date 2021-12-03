@@ -2443,6 +2443,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "dannoh",
+      "name": "dannoh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1886686?v=4",
+      "profile": "https://github.com/dannoh",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
