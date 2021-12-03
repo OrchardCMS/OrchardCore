@@ -1,15 +1,15 @@
 # Understanding Content Definition Stores
 
-Content Definitions are a record of the Content Types, Content Parts, and Content Fields used by a tenant.
+`Content Definitions` are a record of the `Content Types`, `Content Parts`, and `Content Fields` used by a tenant.
 
 By default the `Content Definitions` are stored in the database.
 
 When the `File Content Definition` feature is enabled it stores content definitions in a `ContentDefinition.json` file 
 at the root of each tenants `App_Data` folder, e.g. `App_Data/Sites/Default/ContentDefinition.json` for the default tenant.
 
-The `File Content Definition` feature can be very useful during the Development phase of a project.
+The `File Content Definition` feature can be very useful during the `Development` phase of a project.
 
-As you move your site to a Production phase you may wish to disable the feature and store the Content Definitions in the database.
+As you move your site to a `Production` phase you may wish to disable the feature and store the `Content Definitions` in the database.
 
 To migrate your `ContentDefinition.json` file to the database use the following procedure:
 
@@ -38,5 +38,5 @@ This will download a file called `ContentDefinitions.zip` to your computer.
 
 ## Summary
 
-You just learnt how to create a Deployment Plan to migrate from the `File Content Definition` feature.
+You just learnt how to create a `Deployment Plan` to migrate from the `File Content Definition` feature.
 
