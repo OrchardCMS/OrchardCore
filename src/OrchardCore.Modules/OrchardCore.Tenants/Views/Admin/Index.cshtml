@@ -16,7 +16,16 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
+
+        var hostString = Context.Request.Host;
+        if (host != null)
+        {
+            hostString = new HostString(host);
+            if (Context.Request.Host.Port.HasValue)
+            {
+                hostString = new HostString(hostString.Host, Context.Request.Host.Port.Value);
+            }
+        }
 
         var pathString = originalPathBase;
         if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
@@ -37,7 +46,16 @@
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();       
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
+
+        var hostString = Context.Request.Host;
+        if (host != null)
+        {
+            hostString = new HostString(host);
+            if (Context.Request.Host.Port.HasValue)
+            {
+                hostString = new HostString(hostString.Host, Context.Request.Host.Port.Value);
+            }
+        }
 
         var pathString = originalPathBase;
         if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
