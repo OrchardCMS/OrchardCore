@@ -51,10 +51,10 @@
             });
             //for preview
              if(document.getElementById("previewButton")){
-                    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
+                editor.getModel().onDidChangeContent((event) => {
                     textArea.value = editor.getValue();
                     $(document).trigger('contentpreview:render');
-                });
+                }); 
              }
         });
     });

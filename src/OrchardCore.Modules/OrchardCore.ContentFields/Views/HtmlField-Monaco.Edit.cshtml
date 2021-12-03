@@ -46,7 +46,7 @@
 
             var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Html)_editor'), settings);
             var textArea = document.getElementById('@Html.IdFor(x => x.Html)');
-            
+
             editor.getModel().onDidChangeContent((event) => {
                 textArea.value = editor.getValue();
                 $(document).trigger('contentpreview:render');
@@ -75,17 +75,17 @@
             editor.addAction(shortcodesAction);
 
             editor.getModel().setValue(textArea.value);
-         
+
             window.addEventListener("submit", function () {
                 textArea.value = editor.getValue();
             });
             //for preview
-             if(document.getElementById("previewButton")){
-                    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
+            if(document.getElementById("previewButton")){
+                editor.getModel().onDidChangeContent((event) => {
                     textArea.value = editor.getValue();
                     $(document).trigger('contentpreview:render');
                 });
-             }
+            }
         });
     });
 </script>
