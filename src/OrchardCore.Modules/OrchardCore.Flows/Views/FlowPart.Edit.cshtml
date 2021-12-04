@@ -49,11 +49,14 @@
                         //Prefixes
                         HtmlFieldPrefix: htmlFieldPrefix,
                         PrefixValue: htmlFieldPrefix + '-' + (index++).ToString(),
-                        PrefixesId: widget.ContentItemId + "_" + Html.IdFor(x => x.Prefixes),
+                        PrefixesId: Html.IdFor(x => x.Prefixes),
                         PrefixesName: Html.NameFor(x => x.Prefixes),
                         //Content Types
-                        ContentTypesId: widget.ContentItemId + "_" + Html.IdFor(x => x.ContentTypes),
-                        ContentTypesName: Html.NameFor(x => x.ContentTypes)
+                        ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                        ContentTypesName: Html.NameFor(x => x.ContentTypes),
+                        //Content Items
+                        ContentItemsId: Html.IdFor(x => x.ContentItems),
+                        ContentItemsName: Html.NameFor(x => x.ContentItems)
                     );
                     @await DisplayAsync(contentCard)
                 }
@@ -80,6 +83,7 @@
                             data-html-field-prefix="@htmlFieldPrefix"
                             data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
                             data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                            data-contentitems-name="@Html.NameFor(x => x.ContentItems)"
                             data-widget-type="@type.Name"
                             data-flowmetadata="true"
                             data-parent-content-type="@parentContentType"
@@ -159,21 +163,18 @@
 
                     var inputs = widgetDragItem.children("input[name*='FlowPart']");
 
-                    var destination = $('#' + widgetItemDestId).closest('.widget-template')
-                    var source = $('#' + widgetItemSourceId).closest('.widget-template');
+                    var destination = $('#' + widgetItemDestId);
+                    var source = $('#' + widgetItemSourceId);
 
-                    var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.indexOf('_') + 1);
-
-                    var sourceNameGuid = source.children("input[name*='Prefixes']").val() + '.';
+                    var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
+                    sourceNameGuid = sourceGuid.replaceAll('_', '.');
 
                     if (destination.length > 0) {
 
-                        var destGuid = widgetItemDestId.substring(0, widgetItemDestId.indexOf('_') + 1);
+                        var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
+                        destNameGuid = destGuid.replaceAll('_', '.');
 
-                        var destNameGuid = destination.children("input[name*='Prefixes']").val() + '.';
-
-                        if (source.length) {
-
+                        if (source.length > 0) {
                             inputs.each(function (index, item) {
                                 $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
                                 $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
@@ -189,7 +190,6 @@
 
                     }
                     else if (source.length > 0) {
-
                         inputs.each(function (index, item) {
                             $(this).attr('id', $(this).attr('id').replace(sourceGuid, '') );
                             $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));

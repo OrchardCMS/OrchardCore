@@ -16,7 +16,7 @@
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="Fluid.Core" Version="2.2.0" />
+    <PackageManagement Include="Fluid.Core" Version="2.2.5" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2035" />
     <PackageManagement Include="HtmlSanitizer" Version="6.0.453" />
@@ -28,6 +28,7 @@
     <PackageManagement Include="Markdig" Version="0.26.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageManagement Include="MimeKit" Version="2.15.1" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
     <PackageManagement Include="Moq" Version="4.16.1" />
@@ -46,12 +47,11 @@
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.3" />
-    <PackageManagement Include="YesSql" Version="3.0.7" />
-    <PackageManagement Include="YesSql.Core" Version="3.0.7" />
-    <PackageManagement Include="YesSql.Abstractions" Version="3.0.7" />
-    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.0.7" />
-    <PackageManagement Include="YesSql.Filters.Query" Version="3.0.7" />
-    <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
+    <PackageManagement Include="YesSql" Version="3.0.9" />
+    <PackageManagement Include="YesSql.Core" Version="3.0.9" />
+    <PackageManagement Include="YesSql.Abstractions" Version="3.0.9" />
+    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.0.9" />
+    <PackageManagement Include="YesSql.Filters.Query" Version="3.0.9" />
     <PackageManagement Include="ZString" Version="2.4.3" />
   </ItemGroup>
 

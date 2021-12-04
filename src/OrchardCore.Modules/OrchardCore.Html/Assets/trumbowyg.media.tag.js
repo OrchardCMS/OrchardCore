@@ -18,7 +18,7 @@
                             mediaApp.selectedMedias = [];
                             var modal = $('#mediaModalBody').modal();
                             //disable an reset on click event over the button to avoid issue if press button multiple times or have multiple editor
-                            $('#mediaHtmlFieldSelectButton').off('click');
+                            $('#mediaBodySelectButton').off('click');
                             $('#mediaBodySelectButton').on('click', function (v) {
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
