@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Data;
 using YesSql.Indexes;
 
-namespace OrchardCore.ContentManagement.Records
+namespace OrchardCore.Autoroute.Indexes
 {
     public class AutoroutePartIndex : MapIndex
     {

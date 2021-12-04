@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentLocalization.Records;
+using OrchardCore.ContentLocalization.Indexes;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Lists.Models;

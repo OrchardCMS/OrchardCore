@@ -6,7 +6,7 @@ using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;

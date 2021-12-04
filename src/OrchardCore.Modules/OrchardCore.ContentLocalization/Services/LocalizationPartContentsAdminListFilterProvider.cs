@@ -1,5 +1,5 @@
 using System;
-using OrchardCore.ContentLocalization.Records;
+using OrchardCore.ContentLocalization.Indexes;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Services;

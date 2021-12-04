@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Rules;

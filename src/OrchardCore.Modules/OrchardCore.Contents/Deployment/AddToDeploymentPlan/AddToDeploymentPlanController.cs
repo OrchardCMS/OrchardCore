@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;

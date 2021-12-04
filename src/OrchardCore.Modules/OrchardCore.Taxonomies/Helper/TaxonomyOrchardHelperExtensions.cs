@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
-using OrchardCore.Taxonomies.Indexing;
+using OrchardCore.Taxonomies.Indexes;
 using YesSql;
 
 public static class TaxonomyOrchardHelperExtensions

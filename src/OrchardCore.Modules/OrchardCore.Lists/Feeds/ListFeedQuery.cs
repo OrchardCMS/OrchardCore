@@ -6,7 +6,7 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Feeds;
 using OrchardCore.Feeds.Models;
 using OrchardCore.Lists.Indexes;

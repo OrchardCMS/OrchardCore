@@ -6,7 +6,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
-using OrchardCore.Taxonomies.Indexing;
+using OrchardCore.Taxonomies.Indexes;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
 using YesSql;

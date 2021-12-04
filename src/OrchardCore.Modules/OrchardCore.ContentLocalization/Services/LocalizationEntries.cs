@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentLocalization.Records;
+using OrchardCore.ContentLocalization.Indexes;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Shell.Scope;
 using YesSql;

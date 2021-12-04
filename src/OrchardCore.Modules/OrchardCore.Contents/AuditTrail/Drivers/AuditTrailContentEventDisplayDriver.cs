@@ -7,7 +7,7 @@ using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Indexes;

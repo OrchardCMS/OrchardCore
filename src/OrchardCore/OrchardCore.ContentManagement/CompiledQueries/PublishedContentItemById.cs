@@ -1,6 +1,6 @@
 using System;
 using System.Linq.Expressions;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using YesSql;
 
 namespace OrchardCore.ContentManagement.CompiledQueries

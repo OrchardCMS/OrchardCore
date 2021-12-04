@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;

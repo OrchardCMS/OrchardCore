@@ -7,7 +7,7 @@ using Fluid.Values;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Liquid;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;

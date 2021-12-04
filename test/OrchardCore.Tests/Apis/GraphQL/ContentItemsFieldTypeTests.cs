@@ -13,7 +13,7 @@ using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Environment.Shell;
 using Xunit;
 using YesSql;

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using OrchardCore.ContentLocalization.Records;
+using OrchardCore.ContentLocalization.Indexes;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 
 namespace OrchardCore.ContentLocalization.GraphQL

@@ -1,4 +1,4 @@
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using YesSql.Sql;

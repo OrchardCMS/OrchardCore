@@ -1,7 +1,7 @@
 using System;
 using YesSql.Indexes;
 
-namespace OrchardCore.ContentManagement.Records
+namespace OrchardCore.ContentManagement.Indexes
 {
     public class ContentItemIndex : MapIndex
     {

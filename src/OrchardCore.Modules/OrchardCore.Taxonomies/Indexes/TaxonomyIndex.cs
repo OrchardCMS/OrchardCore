@@ -9,7 +9,7 @@ using OrchardCore.Data;
 using OrchardCore.Taxonomies.Fields;
 using YesSql.Indexes;
 
-namespace OrchardCore.Taxonomies.Indexing
+namespace OrchardCore.Taxonomies.Indexes
 {
     public class TaxonomyIndex : MapIndex
     {

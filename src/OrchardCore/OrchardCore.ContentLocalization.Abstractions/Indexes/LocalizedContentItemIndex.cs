@@ -10,7 +10,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
 using YesSql.Indexes;
 
-namespace OrchardCore.ContentLocalization.Records
+namespace OrchardCore.ContentLocalization.Indexes
 {
     public class LocalizedContentItemIndex : MapIndex
     {

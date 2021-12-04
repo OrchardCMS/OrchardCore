@@ -1,3 +1,4 @@
+using OrchardCore.ContentLocalization.Indexes;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;

@@ -5,7 +5,7 @@ using GraphQL.DataLoader;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using YesSql;
 using YesSql.Services;
 

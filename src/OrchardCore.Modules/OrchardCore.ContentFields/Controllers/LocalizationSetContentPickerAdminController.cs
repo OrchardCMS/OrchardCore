@@ -8,7 +8,7 @@ using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;

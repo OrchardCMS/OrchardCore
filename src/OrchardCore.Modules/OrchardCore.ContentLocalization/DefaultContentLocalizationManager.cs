@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentLocalization.Records;
+using OrchardCore.ContentLocalization.Indexes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Localization;

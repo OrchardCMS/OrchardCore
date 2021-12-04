@@ -1,9 +1,9 @@
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Data.Migration;
 using OrchardCore.Taxonomies.Fields;
-using OrchardCore.Taxonomies.Indexing;
+using OrchardCore.Taxonomies.Indexes;
 using OrchardCore.Taxonomies.Settings;
 using YesSql.Sql;
 

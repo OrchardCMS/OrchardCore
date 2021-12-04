@@ -13,7 +13,7 @@ using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.Environment.Shell;
 using YesSql;
 using Expression = OrchardCore.ContentManagement.GraphQL.Queries.Predicates.Expression;

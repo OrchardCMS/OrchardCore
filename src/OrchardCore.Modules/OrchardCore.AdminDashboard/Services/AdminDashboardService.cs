@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using OrchardCore.AdminDashboard.Indexes;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Indexes;
 using YesSql;
 
 namespace OrchardCore.AdminDashboard.Services
