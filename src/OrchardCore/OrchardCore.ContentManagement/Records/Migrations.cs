@@ -1,5 +1,4 @@
 using System;
-using OrchardCore.ContentManagement.Indexes;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -17,21 +16,21 @@ namespace OrchardCore.ContentManagement.Records
 
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.CreateMapIndexTable<Indexes.ContentItemIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                 .Column<bool>("Latest")
                 .Column<bool>("Published")
-                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
+                .Column<string>("ContentType", column => column.WithLength(Indexes.ContentItemIndex.MaxContentTypeSize))
                 .Column<DateTime>("ModifiedUtc", column => column.Nullable())
                 .Column<DateTime>("PublishedUtc", column => column.Nullable())
                 .Column<DateTime>("CreatedUtc", column => column.Nullable())
-                .Column<string>("Owner", column => column.Nullable().WithLength(ContentItemIndex.MaxOwnerSize))
-                .Column<string>("Author", column => column.Nullable().WithLength(ContentItemIndex.MaxAuthorSize))
-                .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
+                .Column<string>("Owner", column => column.Nullable().WithLength(Indexes.ContentItemIndex.MaxOwnerSize))
+                .Column<string>("Author", column => column.Nullable().WithLength(Indexes.ContentItemIndex.MaxAuthorSize))
+                .Column<string>("DisplayText", column => column.Nullable().WithLength(Indexes.ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId",
                     "DocumentId",
                     "ContentItemId",
@@ -40,7 +39,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
                     "DocumentId",
                     "ContentType",
@@ -51,7 +50,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
                     "DocumentId",
                     "Owner",
@@ -59,7 +58,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
                     "DocumentId",
                     "Author",
@@ -67,7 +66,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
                     "DocumentId",
                     "DisplayText",
@@ -81,7 +80,7 @@ namespace OrchardCore.ContentManagement.Records
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .AddColumn<string>("ContentItemVersionId", c => c.WithLength(26))
             );
 
@@ -90,8 +89,8 @@ namespace OrchardCore.ContentManagement.Records
 
         public int UpdateFrom2()
         {
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
-                .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
+                .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(Indexes.ContentItemIndex.MaxDisplayTextSize))
             );
 
             return 3;
@@ -186,7 +185,7 @@ namespace OrchardCore.ContentManagement.Records
         // This code can be removed in a later version.
         public int UpdateFrom5()
         {
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId",
                     "DocumentId",
                     "ContentItemId",
@@ -195,7 +194,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
                     "DocumentId",
                     "ContentType",
@@ -206,7 +205,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
                     "DocumentId",
                     "Owner",
@@ -214,7 +213,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
                     "DocumentId",
                     "Author",
@@ -222,7 +221,7 @@ namespace OrchardCore.ContentManagement.Records
                     "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+            SchemaBuilder.AlterIndexTable<Indexes.ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
                     "DocumentId",
                     "DisplayText",

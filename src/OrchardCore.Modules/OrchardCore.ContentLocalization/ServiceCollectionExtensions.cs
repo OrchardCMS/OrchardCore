@@ -23,9 +23,9 @@ namespace OrchardCore.ContentLocalization
 
             services.TryAddScoped<IContentLocalizationManager, DefaultContentLocalizationManager>();
 
-            services.AddScoped<LocalizedContentItemIndexProvider>();
-            services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<LocalizedContentItemIndexProvider>());
-            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<LocalizedContentItemIndexProvider>());
+            services.AddScoped<Indexes.LocalizedContentItemIndexProvider>();
+            services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<Indexes.LocalizedContentItemIndexProvider>());
+            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<Indexes.LocalizedContentItemIndexProvider>());
 
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentLocalizationHandler, ContentLocalizationPartHandlerCoordinator>();

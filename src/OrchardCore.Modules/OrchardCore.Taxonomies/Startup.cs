@@ -29,7 +29,6 @@ using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.GraphQL;
 using OrchardCore.Taxonomies.Handlers;
-using OrchardCore.Taxonomies.Indexes;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Liquid;
 using OrchardCore.Taxonomies.Models;
@@ -82,7 +81,7 @@ namespace OrchardCore.Taxonomies
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
 
-            services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, Indexes.TaxonomyIndexProvider>();
 
             // Terms.
             services.AddContentPart<TermPart>();
