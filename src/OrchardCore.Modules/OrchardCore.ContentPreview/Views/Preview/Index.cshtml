@@ -111,8 +111,8 @@
                     if (iframe && iframe.contentWindow) {
                         iframe.contentWindow.document.open();
                         iframe.contentWindow.document.write(data);
-                        iframe.contentWindow.document.close();
                         previewRenderData = data;
+                        iframe.contentWindow.document.close();
                     }
                     $(serverErrorWarning).hide();
                 })
