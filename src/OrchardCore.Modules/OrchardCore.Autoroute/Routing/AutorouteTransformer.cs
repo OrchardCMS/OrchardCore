@@ -12,7 +12,7 @@ namespace OrchardCore.Autoroute.Routing
         private readonly IAutorouteEntries _entries;
         private readonly AutorouteOptions _options;
 
-        public AutorouteTransformer123(IAutorouteEntries entries, IOptions<AutorouteOptions> options)
+        public AutorouteTransformer(IAutorouteEntries entries, IOptions<AutorouteOptions> options)
         {
             _entries = entries;
             _options = options.Value;
