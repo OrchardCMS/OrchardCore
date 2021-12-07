@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Models;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
@@ -21,16 +22,19 @@ namespace OrchardCore.Html.Handlers
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShortcodeService _shortcodeService;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
 
         public HtmlBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
             IShortcodeService shortcodeService,
+            IHtmlSanitizerService htmlSanitizerService,
             ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _shortcodeService = shortcodeService;
+            _htmlSanitizerService = htmlSanitizerService;
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
         }
@@ -66,6 +70,11 @@ namespace OrchardCore.Html.Handlers
                             ["ContentItem"] = part.ContentItem,
                             ["TypePartDefinition"] = contentTypePartDefinition
                         });
+
+                    if (settings.SanitizeHtml)
+                    {
+                        html = _htmlSanitizerService.Sanitize(html);
+                    }
 
                     bodyAspect.Body = new HtmlString(html);
                 }
