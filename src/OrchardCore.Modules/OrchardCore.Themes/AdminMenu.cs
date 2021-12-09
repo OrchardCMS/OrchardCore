@@ -1,35 +1,37 @@
-﻿using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
 using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Themes
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
-
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
-                .Add(T["Themes"], "10", themes => themes
+                .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
                     .AddClass("themes").Id("themes")
-                    .Permission(Permissions.ApplyTheme)
-                    .Add(T["Active Themes"], "0", installed => installed
+                    .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
                         .Action("Index", "Admin", new { area = "OrchardCore.Themes" })
                         .Permission(Permissions.ApplyTheme)
                         .LocalNav()
                     )
                 );
+
+            return Task.CompletedTask;
         }
     }
 }

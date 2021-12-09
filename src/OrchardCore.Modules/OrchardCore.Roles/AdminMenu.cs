@@ -1,33 +1,35 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
 using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Roles
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
-
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Security"], "5", security => security
-                        .Add(T["Roles"], "10", installed => installed
+            builder.Add(S["Security"], security => security
+                        .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
+                            .AddClass("roles").Id("roles")
                             .Action("Index", "Admin", "OrchardCore.Roles")
                             .Permission(Permissions.ManageRoles)
                             .LocalNav()
-                        )));
+                        ));
+
+            return Task.CompletedTask;
         }
     }
 }

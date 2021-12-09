@@ -1,123 +1,258 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.ViewModels;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Navigation;
+using OrchardCore.Routing;
+using OrchardCore.Settings;
+using YesSql;
 
 namespace OrchardCore.Lucene.Controllers
 {
     public class AdminController : Controller
     {
+        private readonly ISession _session;
         private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
+        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ISiteService _siteService;
+        private readonly dynamic New;
+        private readonly JavaScriptEncoder _javaScriptEncoder;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
+        private readonly ILogger _logger;
+        private readonly IOptions<TemplateOptions> _templateOptions;
 
         public AdminController(
+            ISession session,
+            IContentDefinitionManager contentDefinitionManager,
             LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
             IAuthorizationService authorizationService,
             LuceneAnalyzerManager luceneAnalyzerManager,
+            LuceneIndexSettingsService luceneIndexSettingsService,
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
             INotifier notifier,
-            IStringLocalizer<AdminController> s,
-            IHtmlLocalizer<AdminController> h,
-            ILogger<AdminController> logger)
+            ISiteService siteService,
+            IShapeFactory shapeFactory,
+            JavaScriptEncoder javaScriptEncoder,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            ILogger<AdminController> logger,
+            IOptions<TemplateOptions> templateOptions)
         {
+            _session = session;
             _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
+            _luceneIndexSettingsService = luceneIndexSettingsService;
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
+            _contentDefinitionManager = contentDefinitionManager;
             _notifier = notifier;
-            S = s;
-            H = h;
-            Logger = logger;
+            _siteService = siteService;
+
+            New = shapeFactory;
+            _javaScriptEncoder = javaScriptEncoder;
+            S = stringLocalizer;
+            H = htmlLocalizer;
+            _logger = logger;
+            _templateOptions = templateOptions;
         }
 
-        public ILogger Logger { get; }
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
-
-        public ActionResult Index()
-        {
-            var viewModel = new AdminIndexViewModel();
-
-            viewModel.Indexes = _luceneIndexManager.List().Select(s => new IndexViewModel { Name = s }).ToArray();
-
-            return View(viewModel);
-        }
-
-        public async Task<ActionResult> Create()
+        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            var model = new AdminEditViewModel
+            var indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
+
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var count = indexes.Count();
+            var results = indexes;
+
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                IndexName = "",
+                results = results.Where(q => q.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            results = results
+                .Skip(pager.GetStartIndex())
+                .Take(pager.PageSize).ToList();
+
+            // Maintain previous route data when generating page links
+            var routeData = new RouteData();
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+
+            var model = new AdminIndexViewModel
+            {
+                Indexes = results,
+                Options = options,
+                Pager = pagerShape
+            };
+
+            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Reset"], Value = nameof(ContentsBulkAction.Reset) },
+                new SelectListItem() { Text = S["Rebuild"], Value = nameof(ContentsBulkAction.Rebuild) },
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Create")]
-        public async Task<ActionResult> CreatePOST(AdminEditViewModel model)
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(AdminIndexViewModel model)
+        {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
+        public async Task<ActionResult> Edit(string indexName = null)
+        {
+            var IsCreate = String.IsNullOrWhiteSpace(indexName);
+            var settings = new LuceneIndexSettings();
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Forbid();
+            }
+
+            if (!IsCreate)
+            {
+                settings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
+
+                if (settings == null)
+                {
+                    return NotFound();
+                }
+            }
+
+            var model = new LuceneIndexSettingsViewModel
+            {
+                IsCreate = IsCreate,
+                IndexName = IsCreate ? "" : settings.IndexName,
+                AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
+                IndexLatest = settings.IndexLatest,
+                Culture = settings.Culture,
+                Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
+                Analyzers = _luceneAnalyzerManager.GetAnalyzers()
+                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
+                IndexedContentTypes = IsCreate ? _contentDefinitionManager.ListTypeDefinitions()
+                    .Select(x => x.Name).ToArray() : settings.IndexedContentTypes
+            };
+
+            return View(model);
+        }
+
+        [HttpPost, ActionName("Edit")]
+        public async Task<ActionResult> EditPost(LuceneIndexSettingsViewModel model, string[] indexedContentTypes)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ValidateModel(model);
 
-            if (_luceneIndexManager.Exists(model.IndexName))
+            if (model.IsCreate)
             {
-                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["An index named {0} already exists."]);
+                if (_luceneIndexManager.Exists(model.IndexName))
+                {
+                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", model.IndexName]);
+                }
+            }
+            else
+            {
+                if (!_luceneIndexManager.Exists(model.IndexName))
+                {
+                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", model.IndexName]);
+                }
             }
 
             if (!ModelState.IsValid)
             {
+                model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
+                model.Analyzers = _luceneAnalyzerManager.GetAnalyzers()
+                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name });
                 return View(model);
             }
 
-            try
+            if (model.IsCreate)
             {
-                // We call Rebuild in order to reset the index state cursor too in case the same index
-                // name was also used previously.
-                _luceneIndexingService.RebuildIndex(model.IndexName);
-                await _luceneIndexingService.ProcessContentItemsAsync();
+                try
+                {
+                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
+
+                    // We call Rebuild in order to reset the index state cursor too in case the same index
+                    // name was also used previously.
+                    await _luceneIndexingService.CreateIndexAsync(settings);
+                }
+                catch (Exception e)
+                {
+                    await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
+                    _logger.LogError(e, "An error occurred while creating an index.");
+                    return View(model);
+                }
+
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
             }
-            catch (Exception e)
+            else
             {
-                _notifier.Error(H["An error occurred while creating the index"]);
-                Logger.LogError(e, "An error occurred while creating an index");
-                return View(model);
+                try
+                {
+                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "" };
+
+                    await _luceneIndexingService.UpdateIndexAsync(settings);
+                }
+                catch (Exception e)
+                {
+                    await _notifier.ErrorAsync(H["An error occurred while editing the index."]);
+                    _logger.LogError(e, "An error occurred while editing an index.");
+                    return View(model);
+                }
+
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
             }
 
-            _notifier.Success(H["Index <em>{0}</em> created successfully", model.IndexName]);
-
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -125,20 +260,28 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(id))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
+
+            if (luceneIndexSettings != null)
             {
-                return NotFound();
+                if (!_luceneIndexManager.Exists(id))
+                {
+                    await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings);
+                    await _luceneIndexingService.ProcessContentItemsAsync(id);
+                }
+                else
+                {
+                    _luceneIndexingService.ResetIndex(id);
+                    await _luceneIndexingService.ProcessContentItemsAsync(id);
+                }
+
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", id]);
             }
 
-            _luceneIndexingService.ResetIndex(id);
-            await _luceneIndexingService.ProcessContentItemsAsync();
-
-            _notifier.Success(H["Index <em>{0}</em> resetted successfully", id]);
-
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -146,48 +289,56 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(id))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(id);
+
+            if (luceneIndexSettings != null)
+            {
+                await _luceneIndexingService.RebuildIndexAsync(id);
+                await _luceneIndexingService.ProcessContentItemsAsync(id);
+
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
+            }
+            else
             {
                 return NotFound();
             }
 
-            _luceneIndexingService.RebuildIndex(id);
-            await _luceneIndexingService.ProcessContentItemsAsync();
-
-            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
-
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
-        public async Task<ActionResult> Delete(AdminEditViewModel model)
+        public async Task<ActionResult> Delete(LuceneIndexSettingsViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            if (!_luceneIndexManager.Exists(model.IndexName))
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(model.IndexName);
+
+            if (luceneIndexSettings != null)
+            {
+                try
+                {
+                    await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
+
+                    await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+                }
+                catch (Exception e)
+                {
+                    await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
+                    _logger.LogError(e, "An error occurred while deleting the index " + model.IndexName);
+                }
+            }
+            else
             {
                 return NotFound();
             }
 
-            try
-            {
-                _luceneIndexManager.DeleteIndex(model.IndexName);
-
-                _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
-            }
-            catch(Exception e)
-            {
-                _notifier.Error(H["An error occurred while deleting the index"]);
-                Logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
-            }
-
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         public Task<IActionResult> Query(string indexName, string query)
@@ -201,15 +352,15 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            model.Indices = _luceneIndexManager.List().ToArray();
+            model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
             // Can't query if there are no indices
             if (model.Indices.Length == 0)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
 
             if (String.IsNullOrEmpty(model.IndexName))
@@ -232,54 +383,116 @@ namespace OrchardCore.Lucene.Controllers
                 model.Parameters = "{ }";
             }
 
-            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
-
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             await _luceneIndexManager.SearchAsync(model.IndexName, async searcher =>
             {
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(LuceneSettings.StandardAnalyzer);
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(model.IndexName));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
-                var templateContext = new TemplateContext();
                 var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
-                foreach (var parameter in parameters)
-                {
-                    templateContext.SetValue(parameter.Key, parameter.Value);
-                }
-
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, templateContext);
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
 
                 try
                 {
                     var parameterizedQuery = JObject.Parse(tokenizedContent);
-                    var docs = await _queryService.SearchAsync(context, parameterizedQuery);
-                    model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                    var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
+
+                    if (luceneTopDocs != null)
+                    {
+                        model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                        model.Count = luceneTopDocs.Count;
+                    }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    Logger.LogError(e, "Error while executing query");
-                    ModelState.AddModelError(nameof(model.DecodedQuery), "Invalid query");
+                    _logger.LogError(e, "Error while executing query");
+                    ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
                 }
 
                 stopwatch.Stop();
                 model.Elapsed = stopwatch.Elapsed;
-            });            
+            });
 
             return View(model);
         }
 
-        private void ValidateModel(AdminEditViewModel model)
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Forbid();
+            }
+
+            if (itemIds?.Count() > 0)
+            {
+                var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
+                var checkedContentItems = luceneIndexSettings.Where(x => itemIds.Contains(x.IndexName));
+                switch (options.BulkAction)
+                {
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.Remove:
+                        foreach (var item in checkedContentItems)
+                        {
+                            await _luceneIndexingService.DeleteIndexAsync(item.IndexName);
+                        }
+                        await _notifier.SuccessAsync(H["Indices successfully removed."]);
+                        break;
+                    case ContentsBulkAction.Reset:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!_luceneIndexManager.Exists(item.IndexName))
+                            {
+                                return NotFound();
+                            }
+
+                            _luceneIndexingService.ResetIndex(item.IndexName);
+                            await _luceneIndexingService.ProcessContentItemsAsync(item.IndexName);
+
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
+                        }
+                        break;
+                    case ContentsBulkAction.Rebuild:
+                        foreach (var item in checkedContentItems)
+                        {
+                            if (!_luceneIndexManager.Exists(item.IndexName))
+                            {
+                                return NotFound();
+                            }
+
+                            await _luceneIndexingService.RebuildIndexAsync(item.IndexName);
+                            await _luceneIndexingService.ProcessContentItemsAsync(item.IndexName);
+
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private void ValidateModel(LuceneIndexSettingsViewModel model)
+        {
+            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Count() < 1)
+            {
+                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
+            }
+
             if (String.IsNullOrWhiteSpace(model.IndexName))
             {
-                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["The index name is required."]);
+                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name is required."]);
             }
             else if (model.IndexName.ToSafeName() != model.IndexName)
             {
-                ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["The index name contains unallowed chars."]);
+                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name contains unallowed chars."]);
             }
         }
     }

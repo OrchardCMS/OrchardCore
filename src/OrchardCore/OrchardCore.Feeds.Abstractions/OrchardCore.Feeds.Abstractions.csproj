@@ -1,16 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>OrchardCore.Feeds</RootNamespace>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore Feeds Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for Feeds Module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Abstractions RSS</PackageTags>
+
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Mvc.Abstractions\OrchardCore.Mvc.Abstractions.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" />
+    <ProjectReference Include="..\OrchardCore.DisplayManagement.Abstractions\OrchardCore.DisplayManagement.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

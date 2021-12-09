@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace OrchardCore.Lucene
             _queryProviders = queryProviders;
         }
 
-        public Task<TopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
+        public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
         {
             var queryProp = queryObj["query"] as JObject;
 
@@ -38,32 +38,70 @@ namespace OrchardCore.Lucene
 
             string sortField = null;
             string sortOrder = null;
+            string sortType = null;
+            var sortFields = new List<SortField>();
 
             if (sortProperty != null)
             {
                 if (sortProperty.Type == JTokenType.String)
                 {
                     sortField = sortProperty.ToString();
+                    sortFields.Add(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"));
                 }
                 else if (sortProperty.Type == JTokenType.Object)
                 {
                     sortField = ((JProperty)sortProperty.First).Name;
                     sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
+                    sortType = ((JProperty)sortProperty.First).Value["type"]?.ToString();
+                    var sortFieldType = SortFieldType.STRING;
+                    if (sortType != null)
+                    {
+                        sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
+                    }
+
+                    sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
+                }
+                else if (sortProperty.Type == JTokenType.Array)
+                {
+                    foreach (var item in sortProperty.Children())
+                    {
+                        sortField = ((JProperty)item.First).Name;
+                        sortOrder = ((JProperty)item.First).Value["order"].ToString();
+                        sortType = ((JProperty)item.First).Value["type"]?.ToString();
+                        var sortFieldType = SortFieldType.STRING;
+                        if (sortType != null)
+                        {
+                            sortFieldType = (SortFieldType)Enum.Parse(typeof(SortFieldType), sortType.ToUpper());
+                        }
+
+                        sortFields.Add(new SortField(sortField, sortFieldType, sortOrder == "desc"));
+                    }
                 }
             }
 
-            TopDocs docs = context.IndexSearcher.Search(
-                query,
-                size + from,
-                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"))
-            );
+            LuceneTopDocs result = null;
+            TopDocs topDocs = null;
 
-            if (from > 0)
+            if (size > 0)
             {
-                docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
+                topDocs = context.IndexSearcher.Search(
+                    query,
+                    size + from,
+                    sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
+                );
+
+                if (from > 0)
+                {
+                    topDocs = new TopDocs(topDocs.TotalHits - from, topDocs.ScoreDocs.Skip(from).ToArray(), topDocs.MaxScore);
+                }
+
+                var collector = new TotalHitCountCollector();
+                context.IndexSearcher.Search(query, collector);
+
+                result = new LuceneTopDocs() { TopDocs = topDocs, Count = collector.TotalHits };
             }
 
-            return Task.FromResult(docs);
+            return Task.FromResult(result);
         }
 
         public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)
@@ -87,7 +125,6 @@ namespace OrchardCore.Lucene
 
         public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
         {
-
             if (string.IsNullOrEmpty(text))
             {
                 return new List<string>();

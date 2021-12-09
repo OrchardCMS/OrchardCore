@@ -4,13 +4,14 @@
 @model HttpRequestEventViewModel
 @inject IAntiforgery antiforgery
 
-<fieldset class="form-group" asp-validation-class-for="HttpMethod">
-    <label asp-for="HttpMethod">@T["HTTP Method"] <span asp-validation-for="HttpMethod"></span></label>
+<div class="form-group" asp-validation-class-for="HttpMethod">
+    <label asp-for="HttpMethod">@T["HTTP Method"]</label>
     <select asp-for="HttpMethod" class="form-control" asp-items="Model.GetAvailableHttpMethods()"></select>
+    <span asp-validation-for="HttpMethod"></span>
     <span class="hint">@T["The HTTP method to match."]</span>
-</fieldset>
+</div>
 
-<fieldset>
+<div>
     @{
         var antiforgeryTokenSet = antiforgery.GetTokens(Context);
     }
@@ -22,14 +23,25 @@
         <div class="input-group-append">
             <button class="btn btn-primary" type="button" id="generate-url-button" title="@T["Generate a new URL"]" data-generate-url="@Url.Action("GenerateUrl", "HttpWorkflow")" data-antiforgery-token="@antiforgeryTokenSet.RequestToken" data-antiforgery-header-name="@antiforgeryTokenSet.HeaderName">@T["Regenerate"]</button>
         </div>
+        <div class="input-group-append">
+            <span class="btn btn-secondary" onclick="select_all_and_copy(document.getElementById('workflow-url-text'))"><i class="fas fa-copy" aria-hidden="true"></i> @T["Copy"]</span>
+        </div>
     </div>
-    <span class="hint"><i class="fa fa-exclamation-triangle"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
-</fieldset>
+    <span class="hint"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <input type="checkbox" asp-for="ValidateAntiforgeryToken" />
     <label asp-for="ValidateAntiforgeryToken">@T["Validate Antiforgery Token"]</label>
     <span class="hint">@T["Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."]</span>
-</fieldset>
+</div>
 
-<script depends-on="jQuery" asp-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.js" type="text/javascript" at="Foot"></script>
+<div class="form-group">
+    <input type="number" asp-for="TokenLifeSpan" id="token-lifespan" class="form-control" />
+    <label asp-for="TokenLifeSpan">@T["Token Life Span"]</label>
+    <span class="hint"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>
+    <span class="hint">@T["Number of days to expire the token. 0 for the token to never expire"]</span>
+</div>
+
+<script depends-on="jQuery" asp-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.js" at="Foot"></script>
+<script asp-src="~/OrchardCore.Workflows/Scripts/crossbrowserclipboardcopy.min.js" debug-src="~/OrchardCore.Workflows/Scripts/crossbrowserclipboardcopy.js" at="Foot"></script>

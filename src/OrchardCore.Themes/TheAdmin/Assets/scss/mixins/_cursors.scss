@@ -1,0 +1,11 @@
+// Used to @include a cursor within a pre-existing class
+@mixin cursor($cursor-type) {
+    cursor: $cursor-type;
+}
+
+// Used to generate cursor classes
+@mixin cursor-class($cursor-type) {
+    .cursor-#{$cursor-type} {
+        cursor: $cursor-type;
+    }
+}

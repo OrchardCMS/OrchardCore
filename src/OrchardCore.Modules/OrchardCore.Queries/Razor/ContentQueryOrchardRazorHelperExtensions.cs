@@ -1,23 +1,24 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OrchardCore.DisplayManagement.Razor;
+using OrchardCore;
+using OrchardCore.ContentManagement;
 using OrchardCore.Queries;
 
-namespace OrchardCore.ContentManagement
+public static class ContentQueryOrchardRazorHelperExtensions
 {
-    public static class ContentQueryOrchardRazorHelperExtensions
+    public static Task<IEnumerable<ContentItem>> ContentQueryAsync(this IOrchardHelper orchardHelper, string queryName)
     {
-        public static async Task<IEnumerable<ContentItem>> ContentQueryAsync(this OrchardRazorHelper razorHelper, string queryName)
-        {
-            return await ContentQueryAsync(razorHelper, queryName, new Dictionary<string, object>());
-        }
+        return ContentQueryAsync(orchardHelper, queryName, new Dictionary<string, object>());
+    }
 
-        public static async Task<IEnumerable<ContentItem>> ContentQueryAsync(this OrchardRazorHelper razorHelper, string queryName, IDictionary<string, object> parameters)
-        {
-            var results = await razorHelper.QueryAsync(queryName, parameters);
-            var contentItems = new List<ContentItem>();
+    public static async Task<IEnumerable<ContentItem>> ContentQueryAsync(this IOrchardHelper orchardHelper, string queryName, IDictionary<string, object> parameters)
+    {
+        var results = await orchardHelper.QueryAsync(queryName, parameters);
+        var contentItems = new List<ContentItem>();
 
+        if (results != null)
+        {
             foreach (var result in results)
             {
                 if (!(result is ContentItem contentItem))
@@ -39,8 +40,43 @@ namespace OrchardCore.ContentManagement
 
                 contentItems.Add(contentItem);
             }
-
-            return contentItems;
         }
+
+        return contentItems;
+    }
+
+    public static async Task<IQueryResults> ContentQueryResultsAsync(this IOrchardHelper orchardHelper, string queryName, Dictionary<string, object> parameters)
+    {
+        var contentItems = new List<ContentItem>();
+        var queryResult = await orchardHelper.QueryResultsAsync(queryName, parameters);
+
+        if (queryResult.Items != null)
+        {
+            foreach (var item in queryResult.Items)
+            {
+                if (!(item is ContentItem contentItem))
+                {
+                    contentItem = null;
+
+                    if (item is JObject jObject)
+                    {
+                        contentItem = jObject.ToObject<ContentItem>();
+                    }
+                }
+
+                // If input is a 'JObject' but which not represents a 'ContentItem',
+                // a 'ContentItem' is still created but with some null properties.
+                if (contentItem?.ContentItemId == null)
+                {
+                    continue;
+                }
+
+                contentItems.Add(contentItem);
+            }
+
+            queryResult.Items = contentItems;
+        }
+
+        return queryResult;
     }
 }

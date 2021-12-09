@@ -27,6 +27,10 @@ namespace OrchardCore.Queries.Sql
             var BY = ToTerm("BY");
             var TRUE = ToTerm("TRUE");
             var FALSE = ToTerm("FALSE");
+            var AND = ToTerm("AND");
+            var OVER = ToTerm("OVER");
+            var UNION = ToTerm("UNION");
+            var ALL = ToTerm("ALL");
 
             //Non-terminals
             var Id = new NonTerminal("Id");
@@ -56,7 +60,11 @@ namespace OrchardCore.Queries.Sql
             var aliasOpt = new NonTerminal("aliasOpt");
             var tuple = new NonTerminal("tuple");
             var joinChainOpt = new NonTerminal("joinChainOpt");
+            var joinStatement = new NonTerminal("joinStatement");
             var joinKindOpt = new NonTerminal("joinKindOpt");
+            var joinConditions = new NonTerminal("joinConditions");
+            var joinCondition = new NonTerminal("joinCondition");
+            var joinConditionArgument = new NonTerminal("joinConditionArgument");
             var term = new NonTerminal("term");
             var unExpr = new NonTerminal("unExpr");
             var unOp = new NonTerminal("unOp");
@@ -72,12 +80,22 @@ namespace OrchardCore.Queries.Sql
             var optionalSemicolon = new NonTerminal("semiOpt");
             var statementList = new NonTerminal("stmtList");
             var functionArguments = new NonTerminal("funArgs");
-            var inStatement = new NonTerminal("inStmt");
             var boolean = new NonTerminal("boolean");
+            var overClauseOpt = new NonTerminal("overClauseOpt");
+            var overArgumentsOpt = new NonTerminal("overArgumentsOpt");
+            var overPartitionByClauseOpt = new NonTerminal("overPartitionByClauseOpt");
+            var overOrderByClauseOpt = new NonTerminal("overOrderByClauseOpt");
+            var unionStatementList = new NonTerminal("unionStmtList");
+            var unionStatement = new NonTerminal("unionStmt");
+            var unionClauseOpt = new NonTerminal("unionClauseOpt");
 
             //BNF Rules
             this.Root = statementList;
-            statementLine.Rule = statement + optionalSemicolon;
+            unionClauseOpt.Rule = Empty | UNION | UNION + ALL;
+            unionStatement.Rule = statement + unionClauseOpt;
+            unionStatementList.Rule = MakePlusRule(unionStatementList, unionStatement);
+
+            statementLine.Rule = unionStatementList + optionalSemicolon;
             optionalSemicolon.Rule = Empty | ";";
             statementList.Rule = MakePlusRule(statementList, statementLine);
 
@@ -106,10 +124,16 @@ namespace OrchardCore.Queries.Sql
             columnItemList.Rule = MakePlusRule(columnItemList, comma, columnItem);
             columnItem.Rule = columnSource + aliasOpt;
 
-            columnSource.Rule = funCall | Id;
+            columnSource.Rule = funCall + overClauseOpt | Id;
             fromClauseOpt.Rule = Empty | FROM + aliaslist + joinChainOpt;
-            joinChainOpt.Rule = Empty | joinKindOpt + JOIN + aliaslist + ON + Id + "=" + Id;
+
+            joinChainOpt.Rule = MakeStarRule(joinChainOpt, joinStatement);
+            joinStatement.Rule = joinKindOpt + JOIN + aliaslist + ON + joinConditions;
+            joinConditions.Rule = MakePlusRule(joinConditions, AND, joinCondition);
+            joinCondition.Rule = joinConditionArgument + "=" + joinConditionArgument;
+            joinConditionArgument.Rule = Id | boolean | string_literal | number | parameter;
             joinKindOpt.Rule = Empty | "INNER" | "LEFT" | "RIGHT";
+
             whereClauseOptional.Rule = Empty | "WHERE" + expression;
             groupClauseOpt.Rule = Empty | "GROUP" + BY + idlist;
             havingClauseOpt.Rule = Empty | "HAVING" + expression;
@@ -117,10 +141,15 @@ namespace OrchardCore.Queries.Sql
             limitClauseOpt.Rule = Empty | "LIMIT" + expression;
             offsetClauseOpt.Rule = Empty | "OFFSET" + expression;
 
+            overPartitionByClauseOpt.Rule = Empty | "PARTITION" + BY + columnItemList;
+            overOrderByClauseOpt.Rule = Empty | "ORDER" + BY + orderList;
+            overArgumentsOpt.Rule = Empty | overPartitionByClauseOpt + overOrderByClauseOpt;
+            overClauseOpt.Rule = Empty | OVER + "(" + overArgumentsOpt + ")";
+
             //Expression
             expressionList.Rule = MakePlusRule(expressionList, comma, expression);
-            expression.Rule = term | unExpr | binExpr | betweenExpr | parameter;
-            term.Rule = Id | boolean | string_literal | number | funCall | tuple | parSelectStatement | inStatement;
+            expression.Rule = term | unExpr | binExpr | betweenExpr | inExpr | parameter;
+            term.Rule = Id | boolean | string_literal | number | funCall | tuple | parSelectStatement;
             boolean.Rule = TRUE | FALSE;
             tuple.Rule = "(" + expressionList + ")";
             parSelectStatement.Rule = "(" + selectStatement + ")";
@@ -130,13 +159,13 @@ namespace OrchardCore.Queries.Sql
             binOp.Rule = ToTerm("+") | "-" | "*" | "/" | "%" //arithmetic
                        | "&" | "|" | "^"                     //bit
                        | "=" | ">" | "<" | ">=" | "<=" | "<>" | "!=" | "!<" | "!>"
-                       | "AND" | "OR" | "LIKE" | NOT + "LIKE" | "IN" | NOT + "IN";
+                       | "AND" | "OR" | "LIKE" | "NOT LIKE";
             betweenExpr.Rule = expression + notOpt + "BETWEEN" + expression + "AND" + expression;
+            inExpr.Rule = expression + notOpt + "IN" + "(" + functionArguments + ")";
             notOpt.Rule = Empty | NOT;
-            //funCall covers some psedo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
+            //funCall covers some pseudo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
             funCall.Rule = Id + "(" + functionArguments + ")";
-            functionArguments.Rule = selectStatement | expressionList | "*";
-            inStatement.Rule = expression + "IN" + "(" + expressionList + ")";
+            functionArguments.Rule = Empty | selectStatement | expressionList | "*";
             parameter.Rule = "@" + Id | "@" + Id + ":" + term;
 
             //Operators
@@ -150,7 +179,7 @@ namespace OrchardCore.Queries.Sql
 
             MarkPunctuation(",", "(", ")");
             MarkPunctuation(asOpt, optionalSemicolon);
-            //Note: we cannot declare binOp as transient because it includes operators "NOT LIKE", "NOT IN" consisting of two tokens. 
+            //Note: we cannot declare binOp as transient because it includes operators "NOT LIKE", "NOT IN" consisting of two tokens.
             // Transient non-terminals cannot have more than one non-punctuation child nodes.
             // Instead, we set flag InheritPrecedence on binOp , so that it inherits precedence value from it's children, and this precedence is used
             // in conflict resolution when binOp node is sitting on the stack

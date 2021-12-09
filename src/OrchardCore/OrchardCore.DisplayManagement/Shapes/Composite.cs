@@ -7,7 +7,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 {
     public class Composite : DynamicObject
     {
-        protected readonly Dictionary<object, object> _props = new Dictionary<object, object>();
+        protected readonly Dictionary<string, object> _properties = new Dictionary<string, object>();
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         protected virtual bool TryGetMemberImpl(string name, out object result)
         {
-            if (_props.TryGetValue(name, out result))
+            if (_properties.TryGetValue(name, out result))
             {
                 return true;
             }
@@ -32,7 +32,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         protected virtual bool TrySetMemberImpl(string name, object value)
         {
-            _props[name] = value;
+            _properties[name] = value;
             return true;
         }
 
@@ -64,55 +64,56 @@ namespace OrchardCore.DisplayManagement.Shapes
             return true;
         }
 
+        public virtual bool TryGetIndexImpl(string name, out object result)
+        {
+            if (name != null && TryGetMemberImpl(name, out result))
+            {
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
-            if (indexes.Length != 1)
+            if (indexes.Length == 1)
             {
-                return base.TryGetIndex(binder, indexes, out result);
+                var stringIndex = indexes[0] as string;
+
+                return TryGetIndexImpl(stringIndex, out result);
             }
-
-            var index = indexes.First();
-
-            if (_props.TryGetValue(index, out result))
-            {
-                return true;
-            }
-
-            // try to access an existing member
-            var strinIndex = index as string;
-
-            if (strinIndex != null && TryGetMemberImpl(strinIndex, out result))
-            {
-                return true;
-            }
-
-            return base.TryGetIndex(binder, indexes, out result);
+            // Returning false results in a RuntimeBinderException if the index supplied is not an existing string property name.
+            result = null;
+            return false;
         }
 
         public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
         {
-            if (indexes.Length != 1)
+            if (indexes.Length == 1)
             {
-                return base.TrySetIndex(binder, indexes, value);
+                // try to access an existing member.
+                var stringIndex = indexes[0] as string;
+
+                if (stringIndex != null && TrySetMemberImpl(stringIndex, value))
+                {
+                    return true;
+                }
+                else
+                {
+                    // Returning false results in a RuntimeBinderException if the index supplied is not an existing string property name.
+                    return false;
+                }
             }
-
-            var index = indexes[0];
-
-            // try to access an existing member
-            var strinIndex = index as string;
-
-            if (strinIndex != null && TrySetMemberImpl(strinIndex, value))
-            {
-                return true;
-            }
-
-            _props[indexes[0]] = value;
-            return true;
+            // Returning false results in a RuntimeBinderException if the index supplied is not an existing string property name.
+            return false;
         }
 
-        public IDictionary<object, object> Properties
+        public IDictionary<string, object> Properties
         {
-            get { return _props; }
+            get { return _properties; }
         }
 
         public static bool operator ==(Composite a, Nil b)
@@ -127,7 +128,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         protected bool Equals(Composite other)
         {
-            return Equals(_props, other._props);
+            return Equals(_properties, other._properties);
         }
 
         public override bool Equals(object obj)
@@ -149,13 +150,13 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override int GetHashCode()
         {
-            return (_props != null ? _props.GetHashCode() : 0);
+            return (_properties != null ? _properties.GetHashCode() : 0);
         }
     }
 
     public class Nil : DynamicObject
     {
-        static readonly Nil Singleton = new Nil();
+        private static readonly Nil Singleton = new Nil();
         public static Nil Instance { get { return Singleton; } }
 
         private Nil()
@@ -179,7 +180,6 @@ namespace OrchardCore.DisplayManagement.Shapes
             result = Nil.Instance;
             return true;
         }
-
 
         public override bool TryBinaryOperation(BinaryOperationBinder binder, object arg, out object result)
         {

@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
+using Fluid.Values;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DisplayManagement;
+using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Models;
@@ -18,98 +15,49 @@ namespace OrchardCore.Workflows.Expressions
 {
     public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
-        private readonly ILogger<LiquidWorkflowExpressionEvaluator> _logger;
+        private readonly ILogger _logger;
+        private readonly TemplateOptions _templateOptions;
 
         public LiquidWorkflowExpressionEvaluator(
-            IServiceProvider serviceProvider,
             ILiquidTemplateManager liquidTemplateManager,
-            IStringLocalizer<LiquidWorkflowExpressionEvaluator> localizer,
             IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
-            ILogger<LiquidWorkflowExpressionEvaluator> logger
+            ILogger<LiquidWorkflowExpressionEvaluator> logger,
+            IOptions<TemplateOptions> templateOptions
         )
         {
-            _serviceProvider = serviceProvider;
             _liquidTemplateManager = liquidTemplateManager;
             _workflowContextHandlers = workflowContextHandlers;
             _logger = logger;
-            T = localizer;
+            _templateOptions = templateOptions.Value;
         }
 
-        private IStringLocalizer T { get; }
-
-        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext)
+        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder)
         {
-            var templateContext = await CreateTemplateContextAsync(workflowContext);
+            var templateContext = new TemplateContext(_templateOptions);
             var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
 
-            await _workflowContextHandlers.InvokeAsync(async x => await x.EvaluatingExpressionAsync(expressionContext), _logger);
+            await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
 
-            var result = await _liquidTemplateManager.RenderAsync(expression.Expression, templateContext);
-            return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));
+            // Set WorkflowContext as a local scope property.
+            var result = await _liquidTemplateManager.RenderStringAsync(
+                expression.Expression,
+                encoder ?? NullEncoder.Default,
+                new Dictionary<string, FluidValue>() { ["Workflow"] = new ObjectValue(workflowContext) }
+                );
+
+            return String.IsNullOrWhiteSpace(result) ? default : (T)Convert.ChangeType(result, typeof(T));
         }
 
-        private async Task<TemplateContext> CreateTemplateContextAsync(WorkflowExecutionContext workflowContext)
+        public static Task<FluidValue> ToFluidValue(IDictionary<string, object> dictionary, string key, TemplateContext context)
         {
-            var context = new TemplateContext();
-            var services = _serviceProvider;
-
-            // Set WorkflowContext as the model.
-            context.MemberAccessStrategy.Register<WorkflowExecutionContext>();
-            context.SetValue(nameof(WorkflowExecutionContext), workflowContext);
-            context.SetValue("CorrelationId", workflowContext.CorrelationId);
-
-            // TODO: Add Liquid filters to easily access values from Input and Properties.
-            context.SetValue("Input", workflowContext.Input);
-            context.SetValue("Properties", workflowContext.Properties);
-
-            // TODO: For now, simply add each Input and Property to the context, with the risk of overwriting items with the same key.
-            // Add workflow input.
-            foreach (var item in workflowContext.Input)
+            if (!dictionary.ContainsKey(key))
             {
-                context.SetValue(item.Key, item.Value);
+                return Task.FromResult<FluidValue>(NilValue.Instance);
             }
 
-            // Add workflow properties.
-            foreach (var item in workflowContext.Properties)
-            {
-                context.SetValue(item.Key, item.Value);
-            }
-
-            // Add LastResult.
-            context.SetValue("LastResult", workflowContext.LastResult);
-
-            // Add services.
-            context.AmbientValues.Add("Services", services);
-
-            // Add UrlHelper, if we have an MVC Action context.
-            var actionContext = services.GetService<IActionContextAccessor>()?.ActionContext;
-            if (actionContext != null)
-            {
-                var urlHelperFactory = services.GetRequiredService<IUrlHelperFactory>();
-                var urlHelper = urlHelperFactory.GetUrlHelper(actionContext);
-                context.AmbientValues.Add("UrlHelper", urlHelper);
-            }
-
-            // Add ShapeFactory.
-            var shapeFactory = services.GetRequiredService<IShapeFactory>();
-            context.AmbientValues.Add("ShapeFactory", shapeFactory);
-
-            // Add View Localizer.
-            var localizer = services.GetRequiredService<IViewLocalizer>();
-            context.AmbientValues.Add("ViewLocalizer", localizer);
-
-            // TODO: Extract the request culture
-
-            // Give modules a chance to add more things to the template context.
-            foreach (var handler in services.GetServices<ILiquidTemplateEventHandler>())
-            {
-                await handler.RenderingAsync(context);
-            }
-
-            return context;
+            return Task.FromResult(FluidValue.Create(dictionary[key], context.Options));
         }
     }
 }

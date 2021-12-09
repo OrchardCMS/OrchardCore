@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
 using OrchardCore.XmlRpc.Services;
 
 namespace OrchardCore.XmlRpc
@@ -15,26 +15,26 @@ namespace OrchardCore.XmlRpc
             services.AddScoped<IXmlRpcWriter, XmlRpcWriter>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "XmlRpc",
                 areaName: "OrchardCore.XmlRpc",
-                template: "xmlrpc",
+                pattern: "xmlrpc",
                 defaults: new { controller = "Home", action = "Index" }
             );
         }
     }
 
     [Feature("OrchardCore.RemotePublishing")]
-    public class MetaWeblogStartup  : StartupBase
+    public class MetaWeblogStartup : StartupBase
     {
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "MetaWeblog",
                 areaName: "OrchardCore.XmlRpc",
-                template: "xmlrpc/metaweblog",
+                pattern: "xmlrpc/metaweblog",
                 defaults: new { controller = "MetaWeblog", action = "Manifest" }
             );
         }

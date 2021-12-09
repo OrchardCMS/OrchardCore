@@ -1,4 +1,3 @@
-﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -27,7 +26,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             get
             {
                 return _shape.Properties
-                    .Cast<DictionaryEntry>()
+                    .Cast<KeyValuePair<string, object>>()
                     .Select(entry => new KeyValuePairs(entry.Key, entry.Value))
                     .ToArray();
             }
@@ -36,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         [DebuggerDisplay(" { _shapeType == null ? _value : \"Shape: \" + _shapeType}", Name = "{_key,nq}")]
         public class KeyValuePairs
         {
-            public KeyValuePairs(object key, object value)
+            public KeyValuePairs(string key, object value)
             {
                 if (_value is IShape)
                 {
@@ -48,7 +47,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-            private object _key;
+            private string _key;
 
             [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             private object _shapeType;

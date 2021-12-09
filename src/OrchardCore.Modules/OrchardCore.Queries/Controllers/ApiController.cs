@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Queries.Controllers
 {
+    [Route("api/queries")]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -21,6 +24,7 @@ namespace OrchardCore.Queries.Controllers
         }
 
         [HttpPost, HttpGet]
+        [Route("{name}")]
         public async Task<IActionResult> Query(
             string name,
             string parameters)
@@ -39,10 +43,11 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
+            var queryParameters = parameters != null ?
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                : new Dictionary<string, object>();
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
-
             return new ObjectResult(result);
         }
     }

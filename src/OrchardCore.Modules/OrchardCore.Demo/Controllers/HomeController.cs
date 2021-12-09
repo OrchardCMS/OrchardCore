@@ -5,11 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.DeferredTasks;
 using OrchardCore.Demo.Models;
 using OrchardCore.Demo.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
+using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.Demo.Controllers
@@ -22,7 +22,6 @@ namespace OrchardCore.Demo.Controllers
         private readonly ILogger _logger;
         private readonly ITagCache _tagCache;
         private readonly IContentItemDisplayManager _contentDisplay;
-        private readonly IDeferredTaskEngine _deferredTaskEngine;
 
         public HomeController(
             ITestDependency testDependency,
@@ -31,10 +30,8 @@ namespace OrchardCore.Demo.Controllers
             ISession session,
             ILogger<HomeController> logger,
             ITagCache tagCache,
-            IContentItemDisplayManager contentDisplay,
-            IDeferredTaskEngine processingQueue)
+            IContentItemDisplayManager contentDisplay)
         {
-            _deferredTaskEngine = processingQueue;
             _session = session;
             _testDependency = testDependency;
             _contentManager = contentManager;
@@ -44,7 +41,7 @@ namespace OrchardCore.Demo.Controllers
             _contentDisplay = contentDisplay;
         }
 
-        dynamic Shape { get; set; }
+        private dynamic Shape { get; set; }
 
         public ActionResult Index()
         {
@@ -83,7 +80,7 @@ namespace OrchardCore.Demo.Controllers
         public async Task<ActionResult> Tag(string tag)
         {
             await _tagCache.RemoveTagAsync(tag);
-            return RedirectToAction("Tag", "Home", new { area = "OrchardCore.Demo" });
+            return RedirectToAction(nameof(Tag), "Home", new { area = "OrchardCore.Demo" });
         }
 
         public async Task<ActionResult> Display(string contentItemId)
@@ -97,7 +94,6 @@ namespace OrchardCore.Demo.Controllers
 
             return View("Display", contentItem);
         }
-
 
         public async Task<ActionResult> DisplayShape(string contentItemId)
         {
@@ -138,9 +134,9 @@ namespace OrchardCore.Demo.Controllers
 
         public string CreateTask()
         {
-            _deferredTaskEngine.AddTask(context =>
+            ShellScope.AddDeferredTask(scope =>
             {
-                var logger = context.ServiceProvider.GetService<ILogger<HomeController>>();
+                var logger = scope.ServiceProvider.GetService<ILogger<HomeController>>();
                 logger.LogError("Task deferred successfully");
                 return Task.CompletedTask;
             });

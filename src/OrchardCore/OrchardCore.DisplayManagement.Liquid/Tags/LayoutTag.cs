@@ -1,28 +1,28 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
-using OrchardCore.DisplayManagement.Razor;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class LayoutTag : ExpressionTag
+    public class LayoutTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression)
+        public static async ValueTask<Completion> WriteToAsync(Expression expression, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var name = (await expression.EvaluateAsync(context)).ToStringValue();
+            var services = ((LiquidTemplateContext)context).Services;
 
-            if (!context.AmbientValues.TryGetValue("LiquidPage", out dynamic page))
-            {
-                throw new ArgumentException("LiquidPage missing while invoking 'layout'");
-            }
+            var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
 
-            if (page is IRazorPage razorPage)
+            if (viewContext.View is RazorView razorView && razorView.RazorPage is Razor.IRazorPage razorPage)
             {
-                razorPage.ViewLayout = name;
+                razorPage.ViewLayout = (await expression.EvaluateAsync(context)).ToStringValue();
             }
 
             return Completion.Normal;

@@ -1,0 +1,13 @@
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@{
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "ContentCard_Edit";
+}
+
+@await DisplayAsync(Model)
+
+@{
+    var inputShape = await New.ContentCard_Fields_Edit(CardShape : Model);
+}
+@await DisplayAsync(inputShape)

@@ -5,25 +5,22 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class AddClassesTag : ExpressionArgumentsTag
+    public class AddClassesTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
+            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
             if (objectValue is IShape shape)
             {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-
-                var classes = arguments["classes"].Or(arguments.At(0));
+                var classes = await arguments.Item2.EvaluateAsync(context);
 
                 if (classes.Type == FluidValues.String)
                 {
-                    var values = classes.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var values = classes.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var value in values)
                     {
@@ -32,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
                 else if (classes.Type == FluidValues.Array)
                 {
-                    foreach (var value in classes.Enumerate())
+                    foreach (var value in classes.Enumerate(context))
                     {
                         shape.Classes.Add(value.ToStringValue());
                     }

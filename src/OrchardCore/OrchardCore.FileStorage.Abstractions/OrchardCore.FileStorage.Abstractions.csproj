@@ -1,8 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>OrchardCore.FileStorage</RootNamespace>
+
+     <!-- NuGet properties-->
+    <Title>OrchardCore FileStorage Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for FileStorage.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Abstractions</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
 </Project>

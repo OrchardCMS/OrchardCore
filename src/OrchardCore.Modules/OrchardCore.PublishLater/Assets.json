@@ -1,0 +1,9 @@
+[
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/publish-later.scss"
+    ],
+    "output": "wwwroot/Styles/publish-later.css"
+  }
+]

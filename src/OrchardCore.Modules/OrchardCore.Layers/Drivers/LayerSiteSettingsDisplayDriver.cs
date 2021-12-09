@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Settings;
@@ -13,7 +13,7 @@ namespace OrchardCore.Layers.Drivers
 {
     public class LayerSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LayerSettings>
     {
-        public const string GroupId = "layers";
+        public const string GroupId = "zones";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -55,7 +55,7 @@ namespace OrchardCore.Layers.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.Zones = model.Zones.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.Zones = (model.Zones ?? String.Empty).Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             return await EditAsync(settings, context);

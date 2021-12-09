@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.DisplayManagement;
@@ -25,7 +25,7 @@ namespace OrchardCore.Tests.DisplayManagement
             return Empty<object>();
         }
 
-        static INamedEnumerable<T> FromDictionary<T>(IDictionary<string, T> args)
+        private static INamedEnumerable<T> FromDictionary<T>(IDictionary<string, T> args)
         {
             return Arguments.FromT(args.Values, args.Keys);
         }

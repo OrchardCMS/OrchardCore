@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using OrchardCore.Markdown.Model;
 using OrchardCore.Indexing;
+using OrchardCore.Markdown.Models;
 
 namespace OrchardCore.Markdown.Indexing
 {
@@ -8,12 +8,15 @@ namespace OrchardCore.Markdown.Indexing
     {
         public override Task BuildIndexAsync(MarkdownBodyPart part, BuildPartIndexContext context)
         {
-            var options = context.Settings.ToOptions() 
-                | DocumentIndexOptions.Sanitize 
+            var options = context.Settings.ToOptions()
+                | DocumentIndexOptions.Sanitize
                 | DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Markdown, DocumentIndex.Types.Text, options));
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Markdown, options);
+            }
 
             return Task.CompletedTask;
         }

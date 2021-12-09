@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using OrchardCore.Autoroute.Model;
+using System.Threading.Tasks;
+using OrchardCore.Autoroute.Models;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Autoroute.Indexing
@@ -8,12 +8,15 @@ namespace OrchardCore.Autoroute.Indexing
     {
         public override Task BuildIndexAsync(AutoroutePart part, BuildPartIndexContext context)
         {
-            var options = context.Settings.ToOptions() 
+            var options = context.Settings.ToOptions()
                 & ~DocumentIndexOptions.Sanitize
                 & ~DocumentIndexOptions.Analyze
                 ;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Path, DocumentIndex.Types.Text, options));
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, part.Path, options);
+            }
 
             return Task.CompletedTask;
         }

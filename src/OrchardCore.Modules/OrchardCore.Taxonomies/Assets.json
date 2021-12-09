@@ -1,0 +1,34 @@
+[
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/menu.scss"
+    ],
+    "output": "wwwroot/Styles/menu.css"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/tags-editor.scss"
+    ],
+    "output": "wwwroot/Styles/tags-editor.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/jquery.mjs.nestedSortable.js"
+    ],
+    "output": "wwwroot/Scripts/menu.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/activate-links.js"
+    ],
+    "output": "wwwroot/Scripts/activate-links.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/tags-editor.js"
+    ],
+    "output": "wwwroot/Scripts/tags-editor.js"
+  }
+]

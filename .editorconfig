@@ -6,7 +6,7 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 
-[*.{json,csproj,props,targets}]
+[*.{json,yml,csproj,props,targets}]
 indent_size = 2
 
 [*.cs]
@@ -48,3 +48,6 @@ dotnet_style_collection_initializer                        = true : suggestion
 dotnet_style_coalesce_expression                           = true : suggestion
 dotnet_style_null_propagation                              = true : suggestion
 dotnet_style_explicit_tuple_names                          = true : suggestion
+
+trim_trailing_whitespace = true
+insert_final_newline = true

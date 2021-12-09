@@ -1,0 +1,62 @@
+@model OrchardCore.ContentFields.ViewModels.EditContentPickerFieldViewModel
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Serialization;
+
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
+    var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+    var partName = Model.PartFieldDefinition.PartDefinition.Name;
+    var fieldName = Model.PartFieldDefinition.Name;
+    var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "ContentPickerAdmin", action = "SearchContentItems", part = partName, field = fieldName });
+    var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+    var multiple = settings.Multiple.ToString().ToLowerInvariant();
+}
+
+<script asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-wrapper.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
+<style asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-wrapper.css" depends-on="vue-multiselect"></style>
+
+<label asp-for="ContentItemIds">@Model.PartFieldDefinition.DisplayName()</label>
+
+<div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
+
+    <div class="form-group">
+        <ul class="list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
+            <draggable v-model="arrayOfItems">
+                <li v-for="(item, i) in arrayOfItems"
+                    class="cursor-move list-group-item content-picker-default__list-item d-flex align-items-start justify-content-between"
+                    :key="item.id">
+                    <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span> <span v-show="!item.hasPublished" class="text-muted small">(@T["Not published"])</span></div>
+
+                    <div class="btn-group btn-group-sm align-items-center" role="group">
+                        <button v-on:click="remove(item)" type="button" class="btn btn-secondary content-picker-default__list-item__delete"><i class="fa fa-trash fa-sm" aria-hidden="true"></i></button>
+                    </div>
+                </li>
+            </draggable>
+        </ul>
+    </div>
+
+    <div class="form-group">
+        <div class="w-xl-50">
+            <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
+            <vue-multiselect v-model="value" :options="options" track-by="id"
+                             label="displayText" placeholder="@T["Type to search"]"
+                             @@search-change="asyncFind" @@select="onSelect"
+                             :searchable="true" :close-on-select="true" :reset-after="true"
+                             :show-labels="true" :hide-selected="@multiple"
+                             :disabled="isDisabled"
+                             select-label="@T["Select"]" deselect-label="@T["Remove"]">
+                <template slot="option" slot-scope="props">
+                    <div v-cloak><span>{{ props.option.displayText }}</span><span class="small ml-2" v-show="!props.option.hasPublished">(@T["Not published"])</span></div>
+                </template>
+                <template slot="noResult">
+                    @T["No result found"]
+                </template>
+            </vue-multiselect>
+            @if (!String.IsNullOrEmpty(settings.Hint))
+            {
+                <span class="hint">@settings.Hint</span>
+            }
+        </div>
+    </div>
+</div>
+<script at="Foot" depends-on="vue-multiselect-wrapper">initVueMultiselect(document.querySelector("#@vueElementId"))</script>

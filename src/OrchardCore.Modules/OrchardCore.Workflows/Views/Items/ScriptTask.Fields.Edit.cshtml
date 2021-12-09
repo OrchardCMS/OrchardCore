@@ -1,40 +1,40 @@
 @using OrchardCore.Workflows.ViewModels;
 @model ScriptTaskViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Title">
-    <label asp-for="Title">@T["Title"] <span asp-validation-for="Title"></span></label>
-    <input asp-for="Title" class="form-control" autofocus />
-    <span class="hint">@T["Optionally specify a title that describes the script."]</span>
-</fieldset>
-
-<fieldset class="form-group" asp-validation-class-for="AvailableOutcomes">
-    <label asp-for="AvailableOutcomes">@T["Available Outcomes"] <span asp-validation-for="AvailableOutcomes"></span></label>
+<div class="form-group" asp-validation-class-for="AvailableOutcomes">
+    <label asp-for="AvailableOutcomes">@T["Available Outcomes"]</label>
     <input asp-for="AvailableOutcomes" class="form-control" />
+    <span asp-validation-for="AvailableOutcomes"></span>
     <span class="hint">@T["A comma-separated list of available outcomes."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="Script">
-    <label asp-for="Script">@T["Script"] <span asp-validation-for="Script"></span></label>
+<div class="form-group" asp-validation-class-for="Script">
+    <label asp-for="Script">@T["Script"]</label>
     <textarea asp-for="Script" class="form-control" placeholder="e.g. js: setOutcome('Done');"></textarea>
+    <span asp-validation-for="Script"></span>
     <span class="hint">@T["The script to execute. Make sure to call `setOutcome` with any of the specified available outcomes at least once."]</span>
-</fieldset>
+</div>
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
 
 <script at="Foot">
-$(function () {
-    var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Script)'), {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "javascript" },
-      });
+    $(function () {
+        var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Script)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "javascript" },
+        });
 
-    editor.on('change', function (cm) {
-        document.getElementById('@Html.IdFor(x => x.Script)').value = cm.getValue();
+        editor.on('change', function(cmEditor){
+            cmEditor.save();
+        });
     });
-});
 </script>

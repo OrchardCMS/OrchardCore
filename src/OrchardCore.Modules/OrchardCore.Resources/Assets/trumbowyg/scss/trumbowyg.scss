@@ -19,7 +19,8 @@ $slow-transition-duration: 300ms !default;
     }
 }
 
-.trumbowyg-box {
+.trumbowyg-box,
+.trumbowyg-modal {
     *,
     *::before,
     *::after {
@@ -63,6 +64,7 @@ $slow-transition-duration: 300ms !default;
     resize: none;
     outline: none;
     overflow: auto;
+    user-select: text; // Avoid issues on iOS
 
     &.trumbowyg-autogrow-on-enter {
         transition: height $slow-transition-duration ease-out;
@@ -112,6 +114,7 @@ $slow-transition-duration: 300ms !default;
 .trumbowyg-box.trumbowyg-editor-hidden {
     .trumbowyg-textarea {
         display: block;
+        margin-bottom: 1px;
     }
     .trumbowyg-editor {
         display: none;
@@ -249,7 +252,11 @@ $slow-transition-duration: 300ms !default;
 }
 
 .trumbowyg-dropdown {
-    width: 200px;
+    max-width: 300px;
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: nowrap;
     border: 1px solid $light-color;
     padding: 5px 0;
     border-top: none;
@@ -265,7 +272,7 @@ $slow-transition-duration: 300ms !default;
         line-height: 35px;
         text-decoration: none;
         background: #FFF;
-        padding: 0 10px;
+        padding: 0 20px 0 10px;
         color: #333 !important;
         border: none;
         cursor: pointer;
@@ -403,9 +410,11 @@ $slow-transition-duration: 300ms !default;
         }
 
         input[type="checkbox"]{
-            left: 5px;
-            top: 5px;
+            left: 6px;
+            top: 6px;
             right: auto;
+            height: 16px;
+            width: 16px;
 
             + .trumbowyg-input-infos span{
                 width: auto;
@@ -571,6 +580,9 @@ body.trumbowyg-body-fullscreen {
         ul {
             list-style: disc;
         }
+        ol {
+            list-style: decimal;
+        }
         ul,
         ol {
             padding-left: 20px !important;
@@ -693,7 +705,7 @@ body.trumbowyg-body-fullscreen {
         }
     }
     .trumbowyg-fullscreen {
-        .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
+        .trumbowyg-button-pane .trumbowyg-button-group:not(:empty) .trumbowyg-fullscreen-button svg {
             color: $light-color;
             fill: transparent;
         }

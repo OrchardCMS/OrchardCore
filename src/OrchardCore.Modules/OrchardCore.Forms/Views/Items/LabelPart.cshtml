@@ -1,10 +1,8 @@
 @using OrchardCore.Forms.Models
 @model ShapeViewModel<LabelPart>
-@inject OrchardCore.ContentManagement.IContentManager ContentManager
+
 @{
     var contentItem = Model.Value.ContentItem;
     var formElementPart = contentItem.As<FormElementPart>();
-    var contentItemMetadata = await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-    var displayText = contentItemMetadata.DisplayText;
 }
-<label id="@formElementPart.Id" for="@Model.Value.For">@displayText</label>
+<label id="@formElementPart.Id" for="@Model.Value.For">@contentItem.DisplayText</label>

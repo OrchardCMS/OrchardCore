@@ -1,39 +1,43 @@
 @using OrchardCore.Liquid.ViewModels;
 @model LiquidPartViewModel
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/codemirror.min.js" depends-on="admin" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/javascript/javascript.min.js" at="Foot"></script>
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/simple.min.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/addon/mode/multiplex.min.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.26.0/mode/xml/xml.min.js" at="Foot"></script>
-
-<script asp-src="/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
-
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Liquid">@T["Body"]</label>
     <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
-    <span class="hint">@T["The body of the content item, in Liquid format."]</span>
-</fieldset>
+    <span class="hint">
+        @T["The body of the content item, in Liquid format."]
+        <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Liquid" target="_blank">@T["See documentation"]</a>
+    </span>
+</div>
 
 <script at="Foot">
-$(function () {
-    var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
+    $(function () {
+        var textArea = document.getElementById('@Html.IdFor(x => x.Liquid)');
 
-    if (textArea == null) {
-        return;
-    }
+        if (textArea == null) {
+            return;
+        }
 
-    var editor = CodeMirror.fromTextArea(textArea, {
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        mode: { name: "liquid" },
+        var editor = CodeMirror.fromTextArea(textArea, {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+
+        editor.on('change', function(cmEditor){
+            cmEditor.save();
+            $(document).trigger('contentpreview:render');
+        });
     });
-
-    editor.on('change', function (cm) {
-        document.getElementById('@Html.IdFor(x => x.Liquid)').value = cm.getValue();
-        $(document).trigger('contentpreview:render');
-    });
-});
 </script>

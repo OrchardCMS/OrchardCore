@@ -8,69 +8,84 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Documents;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Cache;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
+using OrchardCore.Rules;
 using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly ISiteService _siteService;
-		private readonly ILayerService _layerService;
-		private readonly IAuthorizationService _authorizationService;
-		private readonly ISession _session;
-		private readonly ISignal _signal;
-		private readonly INotifier _notifier;
+        private readonly ILayerService _layerService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly ISession _session;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
+        private readonly IDisplayManager<Condition> _conditionDisplayManager;
+        private readonly IDisplayManager<Rule> _ruleDisplayManager;
+        private readonly IConditionIdGenerator _conditionIdGenerator;
+        private readonly IEnumerable<IConditionFactory> _conditionFactories;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
+        private readonly INotifier _notifier;
 
-		public AdminController(
-			ISignal signal,
-			IAuthorizationService authorizationService,
-			ISession session,
-			ILayerService layerService,
+        public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             ISiteService siteService,
-			IStringLocalizer<AdminController> s,
-			IHtmlLocalizer<AdminController> h,
-			INotifier notifier
-			)
+            ILayerService layerService,
+            IAuthorizationService authorizationService,
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor,
+            IVolatileDocumentManager<LayerState> layerStateManager,
+            IDisplayManager<Condition> conditionDisplayManager,
+            IDisplayManager<Rule> ruleDisplayManager,
+            IConditionIdGenerator conditionIdGenerator,
+            IEnumerable<IConditionFactory> conditionFactories,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            INotifier notifier)
         {
-			_signal = signal;
-			_authorizationService = authorizationService;
-			_session = session;
-			_layerService = layerService;
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
-			S = s;
-			H = h;
-			_notifier = notifier;
-		}
+            _layerService = layerService;
+            _authorizationService = authorizationService;
+            _session = session;
+            _updateModelAccessor = updateModelAccessor;
+            _layerStateManager = layerStateManager;
+            _conditionDisplayManager = conditionDisplayManager;
+            _ruleDisplayManager = ruleDisplayManager;
+            _conditionIdGenerator = conditionIdGenerator;
+            _conditionFactories = conditionFactories;
+            _notifier = notifier;
+            S = stringLocalizer;
+            H = htmlLocalizer;
+        }
 
-		public IStringLocalizer S { get; }
-		public IHtmlLocalizer H { get; }
-
-		public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
-			if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-			{
-				return Unauthorized();
-			}
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            {
+                return Forbid();
+            }
 
-			var layers = await _layerService.GetLayersAsync();
-			var widgets = await _layerService.GetLayerWidgetsAsync(c => c.Latest == true);
+            var layers = await _layerService.GetLayersAsync();
+            var widgets = await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
 
-			var model = new LayersIndexViewModel { Layers = layers.Layers };
+            var model = new LayersIndexViewModel { Layers = layers.Layers.ToList() };
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
@@ -79,14 +94,14 @@ namespace OrchardCore.Layers.Controllers
 
             foreach (var widget in widgets.OrderBy(x => x.Position))
             {
-				var zone = widget.Zone;
-				List <dynamic> list;
-				if (!model.Widgets.TryGetValue(zone, out list))
-				{
-					model.Widgets.Add(zone, list = new List<dynamic>());
-				}
+                var zone = widget.Zone;
+                List<dynamic> list;
+                if (!model.Widgets.TryGetValue(zone, out list))
+                {
+                    model.Widgets.Add(zone, list = new List<dynamic>());
+                }
 
-                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, this, "SummaryAdmin"));
+                list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
             }
 
             return View(model);
@@ -95,173 +110,191 @@ namespace OrchardCore.Layers.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(LayersIndexViewModel model)
         {
-			if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-			{
-				return Unauthorized();
-			}
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            {
+                return Forbid();
+            }
 
-			return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
-		public async Task<IActionResult> Create()
-		{
-			if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-			{
-				return Unauthorized();
-			}
+        public async Task<IActionResult> Create()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            {
+                return Forbid();
+            }
 
-			return View();
-		}
+            return View();
+        }
 
-		[HttpPost, ActionName("Create")]
-		public async Task<IActionResult> CreatePost(LayerEditViewModel model)
-		{
-			if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-			{
-				return Unauthorized();
-			}
+        [HttpPost, ActionName("Create")]
+        public async Task<IActionResult> CreatePost(LayerEditViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            {
+                return Forbid();
+            }
 
-			var layers = await _layerService.GetLayersAsync();
+            var layers = await _layerService.LoadLayersAsync();
 
-			ValidateViewModel(model, layers, isNew: true);
+            ValidateViewModel(model, layers, isNew: true);
 
-			if (ModelState.IsValid)
-			{
-				layers.Layers.Add(new Layer
-				{
-					Name = model.Name,
-					Rule = model.Rule,
-					Description = model.Description
-				});
+            if (ModelState.IsValid)
+            {
+                var layer = new Layer
+                {
+                    Name = model.Name,
+                    Description = model.Description
+                };
 
-				await _layerService.UpdateAsync(layers);
+                layer.LayerRule = new Rule();
+                _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
 
-				return RedirectToAction("Index");
-			}
+                layers.Layers.Add(layer);
 
-			return View(model);			
-		}
+                await _layerService.UpdateAsync(layers);
 
-		public async Task<IActionResult> Edit(string name)
-		{
-			if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-			{
-				return Unauthorized();
-			}
+                return RedirectToAction(nameof(Index));
+            }
 
-			var layers = await _layerService.GetLayersAsync();
+            return View(model);
+        }
 
-			var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+        public async Task<IActionResult> Edit(string name)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            {
+                return Forbid();
+            }
 
-			if (layer == null)
-			{
-				return NotFound();
-			}
+            var layers = await _layerService.GetLayersAsync();
 
-			var model = new LayerEditViewModel
-			{
-				Name = layer.Name,
-				Rule = layer.Rule,
-				Description = layer.Description
-			};
+            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
-			return View(model);
-		}
+            if (layer == null)
+            {
+                return NotFound();
+            }
 
-		[HttpPost, ActionName("Edit")]
-		public async Task<IActionResult> EditPost(LayerEditViewModel model)
-		{
-			if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-			{
-				return Unauthorized();
-			}
+            dynamic rule = await _ruleDisplayManager.BuildDisplayAsync(layer.LayerRule, _updateModelAccessor.ModelUpdater, "Summary");
+            rule.ConditionId = layer.LayerRule.ConditionId;
 
-			var layers = await _layerService.GetLayersAsync();
+            var thumbnails = new Dictionary<string, dynamic>();
+            foreach (var factory in _conditionFactories)
+            {
+                var condition = factory.Create();
+                dynamic thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Condition = condition;
+                thumbnail.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name = name, type = factory.Name });
+                thumbnails.Add(factory.Name, thumbnail);
+            }
 
-			ValidateViewModel(model, layers, isNew: false);
+            var model = new LayerEditViewModel
+            {
+                Name = layer.Name,
+                Description = layer.Description,
+                LayerRule = rule,
+                Thumbnails = thumbnails,
+            };
 
-			if (ModelState.IsValid)
-			{
-				var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
+            return View(model);
+        }
 
-				if (layer == null)
-				{
-					return NotFound();
-				}
+        [HttpPost, ActionName("Edit")]
+        public async Task<IActionResult> EditPost(LayerEditViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            {
+                return Forbid();
+            }
 
-				layer.Name = model.Name;
-				layer.Rule = model.Rule;
-				layer.Description = model.Description;
+            var layers = await _layerService.LoadLayersAsync();
 
-				await _layerService.UpdateAsync(layers);
+            ValidateViewModel(model, layers, isNew: false);
 
-				return RedirectToAction("Index");
-			}
+            if (ModelState.IsValid)
+            {
+                var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
 
-			return View(model);
-		}
+                if (layer == null)
+                {
+                    return NotFound();
+                }
 
-		[HttpPost]
-		public async Task<IActionResult> Delete(string name)
-		{
-			if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-			{
-				return Unauthorized();
-			}
+                layer.Name = model.Name;
+                layer.Description = model.Description;
 
-			var layers = await _layerService.GetLayersAsync();
+                await _layerService.UpdateAsync(layers);
 
-			var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+                return RedirectToAction(nameof(Index));
+            }
 
-			if (layer == null)
-			{
-				return NotFound();
-			}
+            return View(model);
+        }
 
-			var widgets = await _layerService.GetLayerWidgetsAsync(c => c.Latest == true);
+        [HttpPost]
+        public async Task<IActionResult> Delete(string name)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            {
+                return Forbid();
+            }
 
-			if (!widgets.Any(x => String.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
-			{
-				layers.Layers.Remove(layer);
-				_notifier.Success(H["Layer deleted successfully."]);
-			}
-			else
-			{
-				_notifier.Error(H["The layer couldn't be deleted: you must remove any associated widgets first."]);
-			}
-			
-			return RedirectToAction("Index");
-		}
+            var layers = await _layerService.LoadLayersAsync();
 
-		[HttpPost]
-		public async Task<IActionResult> UpdatePosition(string contentItemId, double position, string zone)
-		{
-			if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
-			{
-				return StatusCode(401);
-			}
+            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
-			// Load the latest version first if any
-			var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+            if (layer == null)
+            {
+                return NotFound();
+            }
 
-			if (contentItem == null)
-			{
-				return StatusCode(404);
-			}
+            var widgets = await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
 
-			var layerMetadata = contentItem.As<LayerMetadata>();
+            if (!widgets.Any(x => String.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
+            {
+                layers.Layers.Remove(layer);
+                await _layerService.UpdateAsync(layers);
+                await _notifier.SuccessAsync(H["Layer deleted successfully."]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["The layer couldn't be deleted: you must remove any associated widgets first."]);
+            }
 
-			if (layerMetadata == null)
-			{
-				return StatusCode(403);
-			}
+            return RedirectToAction(nameof(Index));
+        }
 
-			layerMetadata.Position = position;
-			layerMetadata.Zone = zone;
+        [HttpPost]
+        public async Task<IActionResult> UpdatePosition(string contentItemId, double position, string zone)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
+            {
+                return StatusCode(401);
+            }
 
-			contentItem.Apply(layerMetadata);
+            // Load the latest version first if any
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-			_session.Save(contentItem);
+            if (contentItem == null)
+            {
+                return StatusCode(404);
+            }
+
+            var layerMetadata = contentItem.As<LayerMetadata>();
+
+            if (layerMetadata == null)
+            {
+                return StatusCode(403);
+            }
+
+            layerMetadata.Position = position;
+            layerMetadata.Zone = zone;
+
+            contentItem.Apply(layerMetadata);
+
+            _session.Save(contentItem);
 
             // In case the moved contentItem is the draft for a published contentItem we update it's position too.
             // We do that because we want the position of published and draft version to be the same.
@@ -286,34 +319,29 @@ namespace OrchardCore.Layers.Controllers
                 }
             }
 
-            // Clear the cache
-            _signal.SignalToken(LayerMetadataHandler.LayerChangeToken);
-			
-			if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-			{
-				return StatusCode(200); 
-			}
-			else
-			{
-				return RedirectToAction("Index");
-			}			
-		}
+            // The state will be updated once the ambient session is committed.
+            await _layerStateManager.UpdateAsync(new LayerState());
 
-		private void ValidateViewModel(LayerEditViewModel model, LayersDocument layers, bool isNew)
-		{
-			if (String.IsNullOrWhiteSpace(model.Name))
-			{
-				ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name is required."]);
-			}
-			else if (isNew && layers.Layers.Any(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
-			{
-				ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name already exists."]);
-			}
+            if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return StatusCode(200);
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
+        }
 
-			if (String.IsNullOrWhiteSpace(model.Rule))
-			{
-				ModelState.AddModelError(nameof(LayerEditViewModel.Rule), S["The rule is required."]);
-			}
-		}
-	}
+        private void ValidateViewModel(LayerEditViewModel model, LayersDocument layers, bool isNew)
+        {
+            if (String.IsNullOrWhiteSpace(model.Name))
+            {
+                ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name is required."]);
+            }
+            else if (isNew && layers.Layers.Any(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name already exists."]);
+            }
+        }
+    }
 }

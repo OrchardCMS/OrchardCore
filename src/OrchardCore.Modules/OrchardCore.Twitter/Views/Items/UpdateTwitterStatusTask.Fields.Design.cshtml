@@ -1,0 +1,9 @@
+@using OrchardCore.Workflows.Helpers;
+@using OrchardCore.Workflows.ViewModels;
+@using OrchardCore.Twitter.Workflows.Activities;
+
+@model ActivityViewModel<UpdateTwitterStatusTask>
+
+<header>
+    <h4><i class="fab fa-twitter" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Update Twitter Status"])</h4>
+</header>

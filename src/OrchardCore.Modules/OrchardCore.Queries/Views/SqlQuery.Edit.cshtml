@@ -1,25 +1,35 @@
 @model OrchardCore.Queries.Sql.ViewModels.SqlQueryViewModel
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.js" depends-on="admin" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/sql/sql.js" at="Foot"></script>
+<style asp-name="codemirror"></style>
+<style asp-name="codemirror-addon-hint-show-hint"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-sql" at="Foot"></script>
+<script asp-name="codemirror-addon-hint-sql-hint" at="Foot"></script>
 
-<fieldset class="form-check">
-    <label class="form-check-label">
-        <input asp-for="ReturnDocuments" type="checkbox" class="form-check-input" checked="@Model.ReturnDocuments" /> @T["Return Documents"]
-        <span class="hint">@T["Check to return the corresponding documents."]</span>
-    </label>
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="ReturnDocuments" checked="@Model.ReturnDocuments" />
+        <label class="custom-control-label" asp-for="ReturnDocuments">@T["Return Documents"]</label>
+        <span class="hint dashed">@T["Check to return the corresponding documents."]</span>
+    </div>
     <span class="hint">@T["When checked, the result has to be a list of document ids."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Query">@T["Query"]</label>
     <textarea asp-for="Query" rows="12" class="form-control"></textarea>
     <span class="hint">@T["The SQL query to execute."]</span>
-</fieldset>
+</div>
 
 <script at="Foot">
     $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-pgsql", lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-pgsql",
+            indentWithTabs: true, smartIndent: true, matchBrackets : true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
+            extraKeys: {"Ctrl-Space": "autocomplete"},
+            hintOptions: {tables: {
+              ContentItemIndex: ["DocumentId"]
+            }} });
     });
 </script>

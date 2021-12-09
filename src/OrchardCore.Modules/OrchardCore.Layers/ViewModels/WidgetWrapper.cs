@@ -11,6 +11,6 @@ namespace OrchardCore.Layers.ViewModels
         }
 
         public ContentItem Widget { get; set; }
-		public IShape Content { get; set; }
+        public IShape Content { get; set; }
     }
 }

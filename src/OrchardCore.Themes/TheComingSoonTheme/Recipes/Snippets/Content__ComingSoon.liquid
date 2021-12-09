@@ -1,0 +1,20 @@
+<div class="masthead">
+    <div class="masthead-content text-white py-5 py-md-0">
+        <div class="container-fluid px-4 px-lg-0">
+            <h1 class="fst-italic lh-1 mb-4">{{ Model.ContentItem }}</h1>
+            {% for item in Model.ContentItem.Content.FlowPart.Widgets %}
+            {{ item | shape_build_display | shape_render }}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="social-icons">
+    <div class="d-flex flex-row flex-lg-column justify-content-center align-items-center h-100 mt-3 mt-lg-0">
+        {% for socialicon in Model.ContentItem.Content.SocialIcons.ContentItems %}
+        <a class="btn btn-dark m-3" href="{{ socialicon.SocialIcon.Url.Text }}">
+            <i class="{{ socialicon.SocialIcon.IconClass.Text }}"></i>
+        </a>
+        {% endfor %}
+    </div>
+</div>

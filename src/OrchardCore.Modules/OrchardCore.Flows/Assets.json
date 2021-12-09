@@ -1,0 +1,14 @@
+[
+  {
+    "inputs": [
+      "Assets/js/flows.edit.js"
+    ],
+    "output": "wwwroot/Scripts/flows.edit.js"
+  },
+  {
+    "inputs": [
+      "Assets/scss/flows.edit.scss"
+    ],
+    "output": "wwwroot/Styles/flows.edit.css"
+  }
+]

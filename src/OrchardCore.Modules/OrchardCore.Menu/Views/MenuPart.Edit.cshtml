@@ -9,24 +9,25 @@
     The shape is created from MenuPartDisplayDriver
 *@
 
-<script asp-src="/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="admin"></script>
-<style asp-src="/OrchardCore.Menu/Styles/menu.min.css" debug-src="/OrchardCore.Menu/Styles/menu.css"></style>
+<script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<style asp-src="~/OrchardCore.Menu/Styles/menu.min.css" debug-src="~/OrchardCore.Menu/Styles/menu.css" depends-on="jQuery-ui"></style>
 
 @using OrchardCore.ContentManagement.Metadata.Settings;
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
-    var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "MenuItem");
+    var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "MenuItem");
     var canAddMenuItem = Model.MenuPart.ContentItem.Id != 0;
     var index = 0;
 }
 
-<nav class="admin-toolbar">
-    <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-toggle="modal" data-target="#modalMenuItems">
-        @T["Add Menu Item"]
-    </button>
-</nav>
-
+<div class="card mb-3">
+    <div class="card-body bg-primary p-3">
+        <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-toggle="modal" data-target="#modalMenuItems">
+            @T["Add Menu Item"]
+        </button>
+    </div>
+</div>
 <p>
     <ol id="menu">
         @foreach (var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
@@ -40,11 +41,11 @@
 </p>
 
 <!-- Modal -->
-<div class="modal fade" id="modalMenuItems" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalMenuItems" tabindex="-1" role="dialog" aria-labelledby="available-menu-items-title" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@T["Available Menu Items"]</h5>
+                <h5 class="modal-title" id="available-menu-items-title">@T["Available Menu Items"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -116,6 +117,4 @@
             window.onbeforeunload = function () { };
         });
     });
-
-
 </script>

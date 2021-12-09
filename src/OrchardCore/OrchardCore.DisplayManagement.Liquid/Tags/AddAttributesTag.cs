@@ -1,25 +1,26 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class AddAttributesTag : ExpressionArgumentsTag
+    public class AddAttributesTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
+            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
             if (objectValue is IShape shape)
             {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
+                var attributes = arguments.Item2;
 
-                foreach (var name in arguments.Names)
+                foreach (var attribute in attributes)
                 {
-                    shape.Attributes[name.Replace('_', '-')] = arguments[name].ToStringValue();
+                    shape.Attributes[attribute.Name.Replace('_', '-')] = (await attribute.Expression.EvaluateAsync(context)).ToStringValue();
                 }
             }
 

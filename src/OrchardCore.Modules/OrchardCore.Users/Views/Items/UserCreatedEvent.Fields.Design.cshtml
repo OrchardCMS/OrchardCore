@@ -1,0 +1,5 @@
+@model OrchardCore.Users.Workflows.ViewModels.UserEventViewModel<OrchardCore.Users.Workflows.Activities.UserCreatedEvent>
+
+<header>
+    <h4><i class="fa fa-user-plus" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["User Created"])</h4>
+</header>

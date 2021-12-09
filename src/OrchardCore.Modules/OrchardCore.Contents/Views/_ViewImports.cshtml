@@ -2,17 +2,37 @@
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 *@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Routing
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Localization
+@using OrchardCore.Contents.AuditTrail.ViewModels
+@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Metadata
 @using OrchardCore.ContentManagement.Display.ViewModels
+@using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Contents.Workflows.Activities
 @using OrchardCore.Contents.Workflows.ViewModels
+@using OrchardCore.Deployment.Services
 @using OrchardCore.DisplayManagement.Views
-@using OrchardCore.Deployment
+@using OrchardCore.Contents.AdminNodes
 @using OrchardCore.Contents.Deployment
+@using OrchardCore.Contents.Deployment.AddToDeploymentPlan
+@using OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
+@using OrchardCore.Contents.Deployment.Download
+@using OrchardCore.Contents.Sitemaps
 @using OrchardCore.Contents.ViewModels
-
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ViewModels
+@using OrchardCore.Entities
+@using OrchardCore.Localization
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.Sitemaps.Models
 @using OrchardCore.Workflows.Helpers
+@using System.Globalization
+
 @inherits OrchardCore.DisplayManagement.Razor.RazorPage<TModel>
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, OrchardCore.Contents.TagHelpers
 @addTagHelper *, OrchardCore.DisplayManagement
 @addTagHelper *, OrchardCore.ResourceManagement
-@addTagHelper *, OrchardCore.Contents

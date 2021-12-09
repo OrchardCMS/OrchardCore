@@ -1,40 +1,42 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
 using OrchardCore.Layers.Drivers;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Layers
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
-
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["Layers"], T["Layers"], layers => layers
+                .Add(S["Design"], design => design
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
                             .Permission(Permissions.ManageLayers)
                             .LocalNav()
-                        )))
-                .Add(T["Content"], content => content
-                    .Add(T["Layers"], T["Layers"], layers => layers
+                        ))
+                    .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
                         .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()
                     ));
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -9,7 +9,11 @@ namespace OrchardCore.ContentFields.Indexing
         public override Task BuildIndexAsync(DateField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(field.Value, DocumentIndex.Types.DateTime, options));
+
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key, field.Value, options);
+            }
 
             return Task.CompletedTask;
         }

@@ -1,4 +1,4 @@
-///<reference path="../../../../OrchardCore.Resources/Assets/jQuery/Typings/jquery-latest.d.ts" />
+///<reference path="../../../node_modules/@types/jquery/index.d.ts" />
 declare var jsPlumb: jsPlumbInstance;
 
 interface jsPlumbInstance {
@@ -34,7 +34,7 @@ interface jsPlumbInstance {
     getInstance(): jsPlumbInstance;
     getInstance(defaults: Defaults): jsPlumbInstance;
     getInstanceIndex(): number;
-    registerConnectionType(name: string, type: ConnectionType): jsPlumbInstance;
+    registerConnectionType(name: string, type: JSPConnectionType): jsPlumbInstance;
     batch(func: Function): jsPlumbInstance;
     getSelector(sel: string): any;
     getEndpoint(uuid: string): Endpoint;
@@ -57,7 +57,7 @@ interface Defaults {
     DragOptions?: DragOptions;
 }
 
-interface ConnectionType {
+interface JSPConnectionType {
     connector: string,
     paintStyle: PaintStyle,
     hoverPaintStyle: PaintStyle,

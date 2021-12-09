@@ -1,0 +1,21 @@
+{% zone "Header" %}
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/assets/img/post-bg.jpg" | href }}')">        
+        <div class="container position-relative px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <div class="site-heading">
+                        <h1>
+                            <i class="fas {{ Model.ContentItem.Content.Category.Icon.Text }} fa-xs" aria-hidden="true"></i>
+                            <span class="align-middle">{{ Model.ContentItem.DisplayText }}</span>
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endzone %}
+
+{{ Model.Content.ContentsMetadata | shape_render }}
+{{ Model.Content.TermPart | shape_render }}

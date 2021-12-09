@@ -1,44 +1,24 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+
+    <!-- NuGet properties-->
+    <Title>The Blog theme</Title>
+    <Description>$(OCCMSDescription)
+
+    Orchard Core CMS theme adapted for blogs.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Theme </PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\node_modules\**" />
-    <Compile Remove="wwwroot\scss\**" />
-    <Compile Remove="wwwroot\vendor\bootstrap\css\**" />
-    <EmbeddedResource Remove="wwwroot\node_modules\**" />
-    <EmbeddedResource Remove="wwwroot\scss\**" />
-    <EmbeddedResource Remove="wwwroot\vendor\bootstrap\css\**" />
-    <None Remove="wwwroot\node_modules\**" />
-    <None Remove="wwwroot\scss\**" />
-    <None Remove="wwwroot\vendor\bootstrap\css\**" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="wwwroot\about.html" />
-    <EmbeddedResource Remove="wwwroot\contact.html" />
-    <EmbeddedResource Remove="wwwroot\css\clean-blog.css" />
-    <EmbeddedResource Remove="wwwroot\css\clean-blog.min.css" />
-    <EmbeddedResource Remove="wwwroot\gulpfile.js" />
-    <EmbeddedResource Remove="wwwroot\index.html" />
-    <EmbeddedResource Remove="wwwroot\package-lock.json" />
-    <EmbeddedResource Remove="wwwroot\package.json" />
-    <EmbeddedResource Remove="wwwroot\post.html" />
-    <EmbeddedResource Remove="wwwroot\README.md" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

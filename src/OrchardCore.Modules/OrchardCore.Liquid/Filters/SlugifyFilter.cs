@@ -1,6 +1,6 @@
-﻿using Fluid;
-using Fluid.Values;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 
 namespace OrchardCore.Liquid.Filters
 {
@@ -12,12 +12,11 @@ namespace OrchardCore.Liquid.Filters
         {
             _slugService = slugService;
         }
-
-        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var text = input.ToStringValue();
 
-            return Task.FromResult<FluidValue>(new StringValue(_slugService.Slugify(text)));
+            return new StringValue(_slugService.Slugify(text));
         }
     }
 }

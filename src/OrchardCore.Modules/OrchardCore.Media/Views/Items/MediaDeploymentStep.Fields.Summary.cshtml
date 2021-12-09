@@ -1,0 +1,32 @@
+@model ShapeViewModel<MediaDeploymentStep>
+
+@{
+    var includeAll = Model.Value.IncludeAll;
+    var filePaths = Model.Value.FilePaths ?? Array.Empty<string>();
+    var directoryPaths = Model.Value.DirectoryPaths ?? Array.Empty<string>();
+}
+
+<h5>@T["Media"]</h5>
+
+@if (includeAll)
+{
+    <span class="badge badge-success">@T["All"]</span>
+}
+else if (filePaths.Length > 0 || directoryPaths.Length > 0)
+{
+    var paths = new List<string>(filePaths.Concat(
+        from directoryPath in directoryPaths
+        select $"{directoryPath}/*"
+    ));
+
+    paths.Sort();
+
+    foreach (var path in paths)
+    {
+        <span class="badge ta-badge">@path</span>
+    }
+}
+else
+{
+    <span class="badge badge-warning">@T["No media selected."]</span>
+}

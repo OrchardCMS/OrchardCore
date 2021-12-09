@@ -3,11 +3,20 @@
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AssemblyName>OrchardCore.Tests</AssemblyName>
-    <PackageId>OrchardCore.Tests</PackageId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\OrchardCore.Cms.Web\NLog.config" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\OrchardCore.Cms.Web\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\OrchardCore.Cms.Web\wwwroot\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Localization\PoFiles\EntryWithComments.po" />
@@ -21,6 +30,16 @@
     <None Remove="Localization\PoFiles\MultipleEntries.po" />
     <None Remove="Localization\PoFiles\PoeditHeader.po" />
     <None Remove="Localization\PoFiles\SimpleEntry.po" />
+    <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
+    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
+    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
+    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
+    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
+    <None Remove="Recipes\RecipeFiles\recipe1.json" />
+    <None Remove="Recipes\RecipeFiles\recipe2.json" />
+    <None Remove="Recipes\RecipeFiles\recipe3.json" />
+    <None Remove="Recipes\RecipeFiles\recipe4.json" />
+    <None Remove="Recipes\RecipeFiles\recipe5.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,10 +54,22 @@
     <EmbeddedResource Include="Localization\PoFiles\MultipleEntries.po" />
     <EmbeddedResource Include="Localization\PoFiles\PoeditHeader.po" />
     <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />
+    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
+    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
+    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
+    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe5.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe4.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />
+    <EmbeddedResource Include="Apis\Lucene\Recipes\luceneQueryTest.json" />
   </ItemGroup>
 
-  <!-- Necessary as we reference the Project and not the Package -->
-  <Import Project="..\..\src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.WebHooks\OrchardCore.WebHooks.csproj" />
@@ -53,33 +84,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Extensions\OrchardCore.Environment.Extensions.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Extensions.Abstractions\OrchardCore.Environment.Extensions.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Environment.Shell\OrchardCore.Environment.Shell.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Hosting.Console\OrchardCore.Hosting.Console.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Parser.Yaml\OrchardCore.Parser.Yaml.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Recipes.Implementations\OrchardCore.Recipes.Implementations.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Scripting.Core\OrchardCore.Scripting.Core.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="System.Linq.Async" />
     <PackageReference Include="Moq" />
     <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit.analyzers" />
+    <PackageReference Include="xunit.runner.visualstudio" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="$(DotNetXunitVersion)" />
   </ItemGroup>
 

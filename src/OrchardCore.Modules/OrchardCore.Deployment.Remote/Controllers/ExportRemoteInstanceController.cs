@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -12,6 +13,7 @@ using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Recipes.Models;
 using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
@@ -26,6 +28,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
             IAuthorizationService authorizationService,
@@ -33,24 +36,22 @@ namespace OrchardCore.Deployment.Remote.Controllers
             RemoteInstanceService service,
             IDeploymentManager deploymentManager,
             INotifier notifier,
-            IHtmlLocalizer<ExportRemoteInstanceController> h)
+            IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
             _session = session;
             _service = service;
             _notifier = notifier;
-            H = h;
+            H = localizer;
         }
 
-        public IHtmlLocalizer H { get; }
-
         [HttpPost]
-        public async Task<IActionResult> Execute(int id, string remoteInstanceId)
+        public async Task<IActionResult> Execute(int id, string remoteInstanceId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
@@ -72,9 +73,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
-                archiveFileName = Path.Combine(Path.GetTempPath(), filename);
+                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder);
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor());
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
 
                 if (System.IO.File.Exists(archiveFileName))
@@ -92,9 +93,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 using (var requestContent = new MultipartFormDataContent())
                 {
                     requestContent.Add(new StreamContent(
-                        new FileStream(archiveFileName, 
+                        new FileStream(archiveFileName,
                         FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1, FileOptions.Asynchronous | FileOptions.SequentialScan)
-                    ), 
+                    ),
                         nameof(ImportViewModel.Content), Path.GetFileName(archiveFileName));
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
                     requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
@@ -104,16 +105,21 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    _notifier.Success(H["Deployment executed successfully."]);
+                    await _notifier.SuccessAsync(H["Deployment executed successfully."]);
                 }
                 else
                 {
-                    _notifier.Error(H["An error occured while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+                    await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
                 }
             }
             finally
             {
                 System.IO.File.Delete(archiveFileName);
+            }
+
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                return this.LocalRedirect(returnUrl, true);
             }
 
             return RedirectToAction("Display", "DeploymentPlan", new { area = "OrchardCore.Deployment", id });

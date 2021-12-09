@@ -9,16 +9,22 @@ namespace OrchardCore.ContentFields.Indexing
     {
         public override Task BuildIndexAsync(NumericField field, BuildFieldIndexContext context)
         {
-            var settings = context.ContentPartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+            var settings = context.ContentPartFieldDefinition.GetSettings<NumericFieldSettings>();
             var options = context.Settings.ToOptions();
 
             if (settings.Scale == 0)
             {
-                context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry((int?)field.Value, DocumentIndex.Types.Integer, options));
+                foreach (var key in context.Keys)
+                {
+                    context.DocumentIndex.Set(key, (int?)field.Value, options);
+                }
             }
             else
             {
-                context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(field.Value, DocumentIndex.Types.Number, options));
+                foreach (var key in context.Keys)
+                {
+                    context.DocumentIndex.Set(key, field.Value, options);
+                }
             }
 
             return Task.CompletedTask;

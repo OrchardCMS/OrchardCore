@@ -1,13 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>OrchardCore.Liquid</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Liquid Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for liquid syntax.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Liquid</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fluid.Core" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    <PackageReference Include="Microsoft.Extensions.Options" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fluid.Core" />
+  </ItemGroup>
+
 </Project>

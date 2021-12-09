@@ -1,180 +1,287 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using OrchardCore.UI;
+using Newtonsoft.Json;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
-	[DebuggerTypeProxy(typeof(ShapeDebugView))]
-	public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
-	{
-		private List<string> _classes;
-		private Dictionary<string, string> _attributes;
-		private readonly List<IPositioned> _items = new List<IPositioned>();
-		private bool _sorted = false;
+    [DebuggerTypeProxy(typeof(ShapeDebugView))]
+    public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
+    {
+        private bool _sorted = false;
 
         public ShapeMetadata Metadata { get; } = new ShapeMetadata();
 
         public string Id { get; set; }
-		public IList<string> Classes => _classes = _classes ?? new List<string>();
-		public IDictionary<string, string> Attributes => _attributes = _attributes ?? new Dictionary<string, string>();
-		public IEnumerable<dynamic> Items => _items;
-		public bool HasItems => _items.Count > 0;
-		public string Position
-		{
-			get { return Metadata.Position; }
-			set { Metadata.Position = value; }
-		}
+        public string TagName { get; set; }
 
-		public virtual Shape Add(object item, string position = null)
-		{
-			if (item == null)
-			{
-				return this;
-			}
+        private List<string> _classes;
+        public IList<string> Classes => _classes ??= new List<string>();
 
-			if (position == null)
-			{
-				position = "";
-			}
+        private Dictionary<string, string> _attributes;
+        public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
 
-			_sorted = false;
+        private List<IPositioned> _items;
+        public IReadOnlyList<IPositioned> Items
+        {
+            get
+            {
+                _items ??= new List<IPositioned>();
 
-			if (item is IHtmlContent)
-			{
-				_items.Add(new PositionWrapper((IHtmlContent)item, position));
-			}
-			else if (item is string)
-			{
-				_items.Add(new PositionWrapper((string)item, position));
-			}
-			else
-			{
-				var shape = item as IPositioned;
-				if (shape != null)
-				{
-					if (position != null)
-					{
-						shape.Position = position;
-					}
+                if (!_sorted)
+                {
+                    _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+                    _sorted = true;
+                }
 
-					_items.Add(shape);
-				}
-			}
+                return _items;
+            }
+        }
 
-			return this;
-		}
+        public bool HasItems => _items != null && _items.Count > 0;
 
-		public Shape AddRange(IEnumerable<object> items, string position = null)
-		{
-			foreach (var item in items)
-			{
-				Add(item, position);
-			}
+        public string Position
+        {
+            get { return Metadata.Position; }
+            set { Metadata.Position = value; }
+        }
 
-			return this;
-		}
+        public virtual ValueTask<IShape> AddAsync(object item, string position)
+        {
+            if (item == null)
+            {
+                return new ValueTask<IShape>(this);
+            }
 
-		public void Remove(string shapeName)
-		{
-			for (var i = _items.Count - 1; i >= 0 ; i--)
-			{
+            if (position == null)
+            {
+                position = "";
+            }
+
+            _sorted = false;
+
+            _items ??= new List<IPositioned>();
+
+            if (item is IHtmlContent)
+            {
+                _items.Add(new PositionWrapper((IHtmlContent)item, position));
+            }
+            else if (item is string)
+            {
+                _items.Add(new PositionWrapper((string)item, position));
+            }
+            else
+            {
+                var shape = item as IPositioned;
+                if (shape != null)
+                {
+                    if (position != null)
+                    {
+                        shape.Position = position;
+                    }
+
+                    _items.Add(shape);
+                }
+            }
+
+            return new ValueTask<IShape>(this);
+        }
+
+        public void Remove(string shapeName)
+        {
+            if (_items == null)
+            {
+                return;
+            }
+
+            for (var i = _items.Count - 1; i >= 0; i--)
+            {
                 if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
                 {
                     _items.RemoveAt(i);
-					return;
-				}
-			}
-		}
+                    return;
+                }
+            }
+        }
 
-		public IShape Named(string shapeName)
-		{
-			for (var i = 0; i < _items.Count; i++)
-			{
+        public IShape Named(string shapeName)
+        {
+            if (_items == null)
+            {
+                return null;
+            }
+
+            for (var i = 0; i < _items.Count; i++)
+            {
                 if (_items[i] is IShape shape && shape.Metadata.Name == shapeName)
-				{
-					return shape;
-				}
-			}
+                {
+                    return shape;
+                }
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		IEnumerator<object> IEnumerable<object>.GetEnumerator()
-		{
-			if (!_sorted)
-			{
-				_items.Sort(FlatPositionComparer.Instance);
-				_sorted = true;
-			}
+        public IShape NormalizedNamed(string shapeName)
+        {
+            if (_items == null)
+            {
+                return null;
+            }
 
-			return _items.GetEnumerator();
-		}
+            for (var i = 0; i < _items.Count; i++)
+            {
+                if (_items[i] is IShape shape && shape.Metadata.Name?.Replace("__", "-") == shapeName)
+                {
+                    return shape;
+                }
+            }
 
-		public IEnumerator GetEnumerator()
-		{
-			if (!_sorted)
-			{
-				_items.Sort(FlatPositionComparer.Instance);
-				_sorted = true;
-			}
+            return null;
+        }
 
-			return _items.GetEnumerator();
-		}
+        IEnumerator<object> IEnumerable<object>.GetEnumerator()
+        {
+            if (_items == null)
+            {
+                return Enumerable.Empty<object>().GetEnumerator();
+            }
 
-		public override bool TryConvert(ConvertBinder binder, out object result)
-		{
-			result = Items;
+            if (!_sorted)
+            {
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+                _sorted = true;
+            }
 
-			if (binder.ReturnType == typeof(IEnumerable<object>) ||
-				binder.ReturnType == typeof(IEnumerable<dynamic>))
-			{
-				return true;
-			}
+            return _items.GetEnumerator();
+        }
 
-			return base.TryConvert(binder, out result);
-		}
+        public IEnumerator GetEnumerator()
+        {
+            if (_items == null)
+            {
+                return Enumerable.Empty<object>().GetEnumerator();
+            }
 
-		public static TagBuilder GetTagBuilder(dynamic shape, string defaultTag = "span")
-		{
-			string tagName = shape.Tag;
+            if (!_sorted)
+            {
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+                _sorted = true;
+            }
 
-			// Dont replace by ?? as shape.Tag is dynamic
-			if (tagName == null)
-			{
-				tagName = defaultTag;
-			}
+            return _items.GetEnumerator();
+        }
 
-			string id = shape.Id;
-			IEnumerable<string> classes = shape.Classes;
-			IDictionary<string, string> attributes = shape.Attributes;
+        public override bool TryConvert(ConvertBinder binder, out object result)
+        {
+            result = Items;
 
-			return GetTagBuilder(tagName, id, classes, attributes);
-		}
+            if (binder.ReturnType == typeof(IEnumerable<object>))
+            {
+                return true;
+            }
 
-		public static TagBuilder GetTagBuilder(string tagName, string id, IEnumerable<string> classes, IDictionary<string, string> attributes)
-		{
-			var tagBuilder = new TagBuilder(tagName);
+            return base.TryConvert(binder, out result);
+        }
 
-			if (attributes != null)
-			{
-				tagBuilder.MergeAttributes(attributes, false);
-			}
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        {
+            // In case AddAsync() is called on a dynamic object, to prevent Copmosite from seing it as a property assignment
+            if (binder.Name == "AddAsync")
+            {
+                result = AddAsync(args.Length > 0 ? args[0] : null, args.Length > 1 ? args[1].ToString() : "");
+                return true;
+            }
 
-			foreach (var cssClass in classes ?? Enumerable.Empty<string>())
-			{
-				tagBuilder.AddCssClass(cssClass);
-			}
+            return base.TryInvokeMember(binder, args, out result);
+        }
 
-			if (!string.IsNullOrWhiteSpace(id))
-			{
-				tagBuilder.Attributes["id"] = id;
-			}
-			return tagBuilder;
-		}
-	}
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            return TryGetMemberImpl(binder.Name, out result);
+        }
+
+        protected override bool TryGetMemberImpl(string name, out object result)
+        {
+            if (!base.TryGetMemberImpl(name, out result) || (null == result))
+            {
+                // Try to get a Named shape
+                result = Named(name);
+
+                if (result == null)
+                {
+                    result = NormalizedNamed(name.Replace("__", "-"));
+                }
+            }
+
+            return true;
+        }
+
+        protected override bool TrySetMemberImpl(string name, object value)
+        {
+            // We set the Shape real properties for Razor
+
+            if (name == "Id")
+            {
+                Id = value as string;
+
+                return true;
+            }
+            else if (name == "TagName")
+            {
+                TagName = value as string;
+
+                return true;
+            }
+            else if (name == "Attributes")
+            {
+                if (value is Dictionary<string, string> attributes)
+                {
+                    foreach (var attribute in attributes)
+                    {
+                        Attributes.TryAdd(attribute.Key, attribute.Value);
+                    }
+                }
+
+                if (value is string stringValue)
+                {
+                    attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
+
+                    foreach (var attribute in attributes)
+                    {
+                        Attributes.TryAdd(attribute.Key, attribute.Value);
+                    }
+                }
+            }
+            else if (name == "Classes")
+            {
+                if (value is List<string> classes)
+                {
+                    foreach (var item in classes)
+                    {
+                        Classes.Add(item);
+                    }
+                }
+
+                if (value is string stringValue)
+                {
+                    var values = stringValue.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var item in values)
+                    {
+                        Classes.Add(item);
+                    }
+                }
+            }
+
+            base.TrySetMemberImpl(name, value);
+
+            return true;
+        }
+    }
 }

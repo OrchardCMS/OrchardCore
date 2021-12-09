@@ -1,10 +1,10 @@
 using System;
-using System.Security.Cryptography.X509Certificates;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.OpenId.Recipes
 {
@@ -28,10 +28,10 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             var model = context.Step.ToObject<OpenIdClientSettingsStepModel>();
+            var settings = await _clientService.LoadSettingsAsync();
 
-            var settings = await _clientService.GetSettingsAsync();
             settings.Scopes = model.Scopes.Split(' ', ',');
-            settings.Authority = model.Authority;
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.CallbackPath = model.CallbackPath;
             settings.ClientId = model.ClientId;
             settings.ClientSecret = model.ClientSecret;
@@ -40,6 +40,8 @@ namespace OrchardCore.OpenId.Recipes
             settings.ResponseType = model.ResponseType;
             settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
             settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
+            settings.StoreExternalTokens = model.StoreExternalTokens;
+            settings.Parameters = model.Parameters;
 
             await _clientService.UpdateSettingsAsync(settings);
         }
@@ -48,7 +50,10 @@ namespace OrchardCore.OpenId.Recipes
     public class OpenIdClientSettingsStepModel
     {
         public string DisplayName { get; set; }
+
+        [Url]
         public string Authority { get; set; }
+
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string CallbackPath { get; set; }
@@ -57,5 +62,7 @@ namespace OrchardCore.OpenId.Recipes
         public string Scopes { get; set; }
         public string ResponseType { get; set; }
         public string ResponseMode { get; set; }
+        public bool StoreExternalTokens { get; set; }
+        public ParameterSetting[] Parameters { get; set; }
     }
 }

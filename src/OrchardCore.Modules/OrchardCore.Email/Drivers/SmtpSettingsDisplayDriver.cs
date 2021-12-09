@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
@@ -14,28 +14,28 @@ namespace OrchardCore.Email.Drivers
 {
     public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSettings>
     {
-        public const string GroupId = "smtp";
+        public const string GroupId = "email";
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly IShellHost _orchardHost;
-        private readonly ShellSettings _currentShellSettings;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public SmtpSettingsDisplayDriver(
-            IDataProtectionProvider dataProtectionProvider, 
-            IShellHost orchardHost, 
-            ShellSettings currentShellSettings,
+            IDataProtectionProvider dataProtectionProvider,
+            IShellHost shellHost,
+            ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
             _dataProtectionProvider = dataProtectionProvider;
-            _orchardHost = orchardHost;
-            _currentShellSettings = currentShellSettings;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(SmtpSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -48,20 +48,21 @@ namespace OrchardCore.Email.Drivers
             {
                 Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
                 {
-                    model.DefaultSender = section.DefaultSender;
-                    model.DeliveryMethod = section.DeliveryMethod;
-                    model.PickupDirectoryLocation = section.PickupDirectoryLocation;
-                    model.Host = section.Host;
-                    model.Port = section.Port;
-                    model.EnableSsl = section.EnableSsl;
-                    model.RequireCredentials = section.RequireCredentials;
-                    model.UseDefaultCredentials = section.UseDefaultCredentials;
-                    model.UserName = section.UserName;
-                    model.Password = section.Password;
+                    model.DefaultSender = settings.DefaultSender;
+                    model.DeliveryMethod = settings.DeliveryMethod;
+                    model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
+                    model.Host = settings.Host;
+                    model.Port = settings.Port;
+                    model.EncryptionMethod = settings.EncryptionMethod;
+                    model.AutoSelectEncryption = settings.AutoSelectEncryption;
+                    model.RequireCredentials = settings.RequireCredentials;
+                    model.UseDefaultCredentials = settings.UseDefaultCredentials;
+                    model.UserName = settings.UserName;
+                    model.Password = settings.Password;
                 }).Location("Content:5").OnGroup(GroupId)
             };
 
-            if (section?.DefaultSender != null)
+            if (settings?.DefaultSender != null)
             {
                 shapes.Add(Dynamic("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }
@@ -95,8 +96,8 @@ namespace OrchardCore.Email.Drivers
                     section.Password = protector.Protect(section.Password);
                 }
 
-                // Reload the tenant to apply the settings
-                _orchardHost.ReloadShellContext(_currentShellSettings);
+                // Release the tenant to apply the settings
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 
             return await EditAsync(section, context);

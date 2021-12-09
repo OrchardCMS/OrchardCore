@@ -1,25 +1,26 @@
+using System;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class ShapePositionTag : ExpressionArgumentsTag
+    public class ShapePositionTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
+            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
             if (objectValue is IShape shape)
             {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-                shape.Metadata.Position = arguments["position"].Or(arguments.At(0)).ToStringValue();
+                var position = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
+                shape.Metadata.Position = position;
             }
 
             return Completion.Normal;
         }
+
     }
 }

@@ -1,6 +1,7 @@
 [
   {
     "generateSourceMaps": false,
+    "generateRTL": true,
     "inputs": [
       "Assets/scss/media.scss"
     ],
@@ -8,20 +9,10 @@
   },
   {
     "inputs": [
-      "Assets/js/*.js"
+      "./node_modules/blueimp-file-upload/js/jquery.fileupload.js",
+      "./node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
+      "Assets/js/**/*.js"
     ],
     "output": "wwwroot/Scripts/media.js"
-  },
-  {
-    "inputs": [
-      "Assets/js/editors/trumbowyg.media.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg.media.js"
-  },
-  {
-    "inputs": [
-      "Assets/js/editors/simplemde.media.js"
-    ],
-    "output": "wwwroot/Scripts/simplemde.media.js"
   }
 ]

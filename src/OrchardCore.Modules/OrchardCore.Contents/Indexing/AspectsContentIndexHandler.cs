@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Indexing;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Indexing
 {
@@ -18,34 +19,28 @@ namespace OrchardCore.Contents.Indexing
         {
             var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
 
-            if (body != null)
+            if (body != null && body.Body != null)
             {
-                context.DocumentIndex.Entries.Add(
-                IndexingConstants.BodyAspectBodyKey,
-                new DocumentIndex.DocumentIndexEntry(
+                context.DocumentIndex.Set(
+                    IndexingConstants.BodyAspectBodyKey,
                     body.Body,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
             }
 
-            var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(context.ContentItem);
-
-            if (contentItemMetadata?.DisplayText != null)
-            {
-                context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextAnalyzedKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    contentItemMetadata.DisplayText,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+                context.ContentItem.DisplayText,
+                DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
 
-                context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    contentItemMetadata.DisplayText,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Store));
-            }
+                context.ContentItem.DisplayText,
+                DocumentIndexOptions.Store);
+
+            context.DocumentIndex.Set(
+                IndexingConstants.DisplayTextNormalizedKey,
+                context.ContentItem.DisplayText?.ReplaceDiacritics().ToLower(),
+                DocumentIndexOptions.Store);
         }
     }
 }

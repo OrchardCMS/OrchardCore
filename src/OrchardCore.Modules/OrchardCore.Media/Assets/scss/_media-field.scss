@@ -1,0 +1,56 @@
+.media-field-toolbar {
+    display: flex;
+
+    .selected-media-name {
+        margin: 0;
+    }
+
+    code {
+        flex-grow: 1;
+        padding: 4px;
+        white-space: nowrap;
+    }
+
+    .fileinput-button {
+        cursor: pointer;
+        margin: 0;
+        padding: 4px 8px;
+        border: 1px solid $secondary;
+
+        input {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+    }
+}
+
+@media (min-width: 992px) {
+    .media-anchor-modal {
+        .modal-lg {
+            max-width: 1200px;
+        }
+    }
+}
+
+.media-anchor-modal {
+    .img-modal {
+        max-height: 70vh;
+    }
+}
+
+.icon-media-anchor {
+    position: absolute;
+    line-height: 0px;
+    color: $white;
+    font-size: 1.875rem;
+
+    path
+    {
+        stroke:$black;
+        stroke-width: 10;
+    }
+}

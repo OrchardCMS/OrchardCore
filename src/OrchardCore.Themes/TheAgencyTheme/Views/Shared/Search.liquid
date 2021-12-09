@@ -1,0 +1,23 @@
+{% zone "Header" %}
+    <header class="masthead">
+        <div class="container">
+            <div class="masthead-subheading"></div>
+            <div class="masthead-heading text-uppercase">
+                {% assign search = "Search" | t %}
+                {% page_title search %}
+	          </div>
+        </div>
+    </header>
+{% endzone %}
+
+{{ Model.SearchForm | shape_render }}
+
+{% unless Model.SearchResults %}
+  {% if Model.Terms %}
+    {% helper "span", validation_for: "Terms", class: "alert alert-danger" %}
+  {% endif %}
+{% endunless %}
+
+{{ Model.SearchResults | shape_render }}
+
+{{ Model.Pager | shape_render }}

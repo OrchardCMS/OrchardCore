@@ -1,28 +1,21 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.Settings;
-using OrchardCore.Environment.Extensions;
 using System;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Admin
 {
     public class AdminThemeService : IAdminThemeService
     {
-        private const string CacheKey = "AdminThemeName";
-
-        private readonly IExtensionManager _extensionManager;
         private readonly ISiteService _siteService;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IExtensionManager _extensionManager;
 
         public AdminThemeService(
             ISiteService siteService,
-            IExtensionManager extensionManager,
-            IMemoryCache memoryCache
-            )
+            IExtensionManager extensionManager)
         {
             _siteService = siteService;
             _extensionManager = extensionManager;
-            _memoryCache = memoryCache;
         }
 
         public async Task<IExtensionInfo> GetAdminThemeAsync()
@@ -38,25 +31,15 @@ namespace OrchardCore.Admin
 
         public async Task SetAdminThemeAsync(string themeName)
         {
-            var site = await _siteService.GetSiteSettingsAsync();
+            var site = await _siteService.LoadSiteSettingsAsync();
             site.Properties["CurrentAdminThemeName"] = themeName;
-            //(site as IContent).ContentItem.Content.CurrentAdminThemeName = themeName;
-            _memoryCache.Set(CacheKey, themeName);
             await _siteService.UpdateSiteSettingsAsync(site);
         }
 
         public async Task<string> GetAdminThemeNameAsync()
         {
-            string themeName;
-            if (!_memoryCache.TryGetValue(CacheKey, out themeName))
-            {
-                var site = await _siteService.GetSiteSettingsAsync();
-                themeName = (string)site.Properties["CurrentAdminThemeName"];
-                // themeName = (string)(site as IContent).ContentItem.Content.CurrentAdminThemeName;
-                _memoryCache.Set(CacheKey, themeName);
-            }
-
-            return themeName;
+            var site = await _siteService.GetSiteSettingsAsync();
+            return (string)site.Properties["CurrentAdminThemeName"];
         }
     }
 }

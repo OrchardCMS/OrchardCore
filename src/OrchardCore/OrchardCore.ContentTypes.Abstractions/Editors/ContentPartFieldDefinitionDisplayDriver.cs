@@ -21,7 +21,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             // Prefix any driver with a unique name
             Prefix += "." + GetType().Name;
-        }        
+        }
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)
         {

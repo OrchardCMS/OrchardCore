@@ -1,32 +1,28 @@
 @model CreateTypeViewModel
 
-<h1>@RenderTitleSegments(T["New Content Type"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["New Content Type"])</h1></zone>
 
 <form asp-action="Create">
     @Html.ValidationSummary()
 
-    <fieldset class="form-group row">
-        <div class="col-md">
-            <label asp-for="DisplayName">@T["Display Name"]</label>
-            <input asp-for="DisplayName" class="form-control" autofocus/>
-            <span class="hint">@T["Name of the type as it will be displayed in screens."]</span>
-        </div>
-    </fieldset>
+    <div class="form-group">
+        <label asp-for="DisplayName">@T["Display Name"]</label>
+        <input asp-for="DisplayName" class="form-control w-md-25" autofocus />
+        <span class="hint">@T["Name of the type as it will be displayed on screens."]</span>
+    </div>
 
-    <fieldset class="form-group row">
-        <div class="col-sm">
-            <label asp-for="Name">@T["Technical Name"]</label>
-            <input asp-for="Name" class="form-control" />
-            <span class="hint">@T["Technical name of the type."]</span>
-        </div>
-    </fieldset>
+    <div class="form-group">
+        <label asp-for="Name">@T["Technical Name"]</label>
+        <input asp-for="Name" class="form-control w-md-25" />
+        <span class="hint">@T["Technical name of the type."]</span>
+    </div>
 
-    <fieldset class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Create"]</button>
-    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+    </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
 //<![CDATA[
     $(function(){
         var $name = $("#@Html.IdFor(m => m.Name)");
@@ -39,7 +35,7 @@
 
         var compute = function() {
             // stop processing automatically if altered by the user
-            if(nameAltered) {
+            if (nameAltered) {
                 return true;
             }
 

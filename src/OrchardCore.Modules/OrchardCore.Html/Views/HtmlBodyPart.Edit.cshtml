@@ -1,17 +1,48 @@
-@using OrchardCore.Html.ViewModels;
 @model HtmlBodyPartViewModel
 
-@{ 
-    // Morph the current shape to the correct editor shape based on its Editor property
-    var shape = Model as OrchardCore.DisplayManagement.IShape;
-    shape.Metadata.Wrappers.Clear();
-    shape.Metadata.Alternates.Clear();
-    shape.Metadata.Type = "HtmlBody_Editor";
-
-    if (!String.IsNullOrEmpty(Model.TypePartSettings.Editor))
-    {
-        shape.Metadata.Alternates.Add($"HtmlBody_Editor__{Model.TypePartSettings.Editor}");
-    }
+@{
+    var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 
-@await DisplayAsync(Model)
+@await DisplayAsync(await New.ShortcodeModal())
+
+<div class="form-group">
+    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
+    <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+    <span class="hint">@T["The body of the content item."]</span>
+</div>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-edit-closetag" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
+        @* When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
+        if (optionsTextArea) {
+            var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoCloseTags: true,
+                autoRefresh: true,
+                lineNumbers: true,
+                lineWrapping: true,
+                matchBrackets: true,
+                styleActiveLine: true,
+                mode: { name: "htmlmixed" }
+            });
+
+            initializeCodeMirrorShortcodeWrapper(editor);
+
+            editor.on('change', function(cmEditor){
+                cmEditor.save();
+                $(document).trigger('contentpreview:render');
+            });
+        }
+    });
+</script>

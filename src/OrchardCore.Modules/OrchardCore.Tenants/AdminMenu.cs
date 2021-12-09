@@ -1,44 +1,46 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
 using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Tenants
 {
     public class AdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer, ShellSettings shellSettings)
         {
             _shellSettings = shellSettings;
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
-
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             // Don't add the menu item on non-default tenants
             if (_shellSettings.Name != ShellHelper.DefaultShellName)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
-                .Add(T["Configuration"], "10", configuration => configuration
+                .Add(S["Configuration"], configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(T["Tenants"], "5", deployment => deployment
+                    .Add(S["Tenants"], S["Tenants"].PrefixPosition(), tenant => tenant
                         .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenants)
                         .LocalNav()
                     )
                 );
+
+            return Task.CompletedTask;
         }
     }
 }

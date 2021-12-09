@@ -1,9 +1,7 @@
 @model ContentItemViewModel
 @using OrchardCore.ContentManagement
-@inject IContentManager ContentManager
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var displayText = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).DisplayText;
-    Title.AddSegment(Html.Raw(Html.Encode(displayText)));
+    Title.AddSegment(Html.Raw(Html.Encode(contentItem.DisplayText)));
 }

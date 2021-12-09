@@ -1,29 +1,44 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Razor;
+using OrchardCore;
+using OrchardCore.Queries;
 
-namespace OrchardCore.Queries
+public static class QueryOrchardRazorHelperExtensions
 {
-    public static class QueryOrchardRazorHelperExtensions
+    public static Task<IEnumerable> QueryAsync(this IOrchardHelper orchardHelper, string queryName)
     {
-        public static async Task<IEnumerable<object>> QueryAsync(this OrchardRazorHelper razorHelper, string queryName)
+        return QueryAsync(orchardHelper, queryName, new Dictionary<string, object>());
+    }
+
+    public static async Task<IEnumerable> QueryAsync(this IOrchardHelper orchardHelper, string queryName, IDictionary<string, object> parameters)
+    {
+        var queryManager = orchardHelper.HttpContext.RequestServices.GetService<IQueryManager>();
+
+        var query = await queryManager.GetQueryAsync(queryName);
+
+        if (query == null)
         {
-            return await QueryAsync(razorHelper, queryName, new Dictionary<string, object>());
+            return null;
         }
 
-        public static async Task<IEnumerable<object>> QueryAsync(this OrchardRazorHelper razorHelper, string queryName, IDictionary<string, object> parameters)
+        var result = await queryManager.ExecuteQueryAsync(query, parameters);
+        return result.Items;
+    }
+
+    public static async Task<IQueryResults> QueryResultsAsync(this IOrchardHelper orchardHelper, string queryName, IDictionary<string, object> parameters)
+    {
+        var queryManager = orchardHelper.HttpContext.RequestServices.GetService<IQueryManager>();
+
+        var query = await queryManager.GetQueryAsync(queryName);
+
+        if (query == null)
         {
-            var queryManager = razorHelper.HttpContext.RequestServices.GetService<IQueryManager>();
-
-            var query = await queryManager.GetQueryAsync(queryName);
-
-            if (query == null)
-            {
-                return null;
-            }
-
-            return (IEnumerable<object>)await queryManager.ExecuteQueryAsync(query, parameters);
+            return null;
         }
+
+        var result = await queryManager.ExecuteQueryAsync(query, parameters);
+        return result;
     }
 }

@@ -1,0 +1,87 @@
+#mediaApp {
+    position: absolute;
+    top: 52px;
+    bottom: 0;
+    right: 0;
+    left: 259px;
+    transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+    background-color: $body-bg;
+    
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #495057;
+    }
+
+    #mediaContainer {
+        display: flex;
+        flex-direction: column; // on small screen #navigationApp and #mediaContainerstacked
+        height: 100%;
+        align-items: stretch;
+
+        #navigationApp {
+            border-right: $media-border-content;
+            border-top: $media-border-content;
+            flex-shrink: 0;
+        }
+
+        #mediaContainerMain {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+
+            .media-container-middle {
+                flex-grow: 1;
+                flex-shrink: 0;
+                overflow: auto;
+            }
+
+            .media-container-footer {
+                border-top: $media-border-content;
+            }
+        }
+    }
+    // on large screen they are side by side
+    @media only screen and ( min-width: 923px ) {
+        #mediaContainer {
+            flex-direction: row;
+
+            #mediaContainerMain {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+
+                .media-container-middle {
+                    flex-shrink: 1;
+                }
+            }
+        }
+        // we don't want left navigation 100% tall when on stacked over the thumbs list
+        #navigationApp {
+            height: 100%;
+            width: 240px;
+            overflow: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #495057 #EAEAEA;
+        }
+    }
+
+    .alert-info {
+        font-size: 0.875rem;
+    }
+
+    .message-warning {
+        padding: 20px;
+        margin-bottom: 8px;
+    }
+
+    a.disabled {
+        cursor: default;
+    }
+}
+
+.left-sidebar-compact #mediaApp {
+    left: 48px;
+}

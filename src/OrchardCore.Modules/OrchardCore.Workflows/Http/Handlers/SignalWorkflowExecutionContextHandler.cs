@@ -7,16 +7,16 @@ namespace OrchardCore.Workflows.Http.WorkflowContextProviders
 {
     public class SignalWorkflowExecutionContextHandler : WorkflowExecutionContextHandlerBase
     {
-        private readonly ISecurityTokenService _signalService;
+        private readonly ISecurityTokenService _securityTokenService;
 
-        public SignalWorkflowExecutionContextHandler(ISecurityTokenService signalService)
+        public SignalWorkflowExecutionContextHandler(ISecurityTokenService securityTokenService)
         {
-            _signalService = signalService;
+            _securityTokenService = securityTokenService;
         }
 
         public override Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context)
         {
-            context.ScopedMethodProviders.Add(new SignalMethodProvider(context.WorkflowContext, _signalService));
+            context.ScopedMethodProviders.Add(new SignalMethodProvider(context.WorkflowContext, _securityTokenService));
             return Task.CompletedTask;
         }
     }

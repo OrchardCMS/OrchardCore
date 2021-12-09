@@ -1,0 +1,45 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <Compile Remove="App_Data\**;Localization\**" />
+    <Content Remove="App_Data\**;Localization\**" />
+    <EmbeddedResource Remove="App_Data\**;Localization\**" />
+    <None Remove="App_Data\**;Localization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ResolvedFileToPublish Include="App_Data\**" Exclude="$(DefaultItemExcludes);App_Data\**\*.log">
+      <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+    </ResolvedFileToPublish>
+  </ItemGroup>
+
+  <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder" Condition="!Exists('wwwroot/.placeholder')">
+    <WriteLinesToFile Lines="" Encoding="Unicode" File="wwwroot/.placeholder" />
+  </Target>
+
+  <Target Name="MakeLocalizationFolder" BeforeTargets="Build" Condition="!Exists('Localization/.placeholder')">
+    <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
+  </Target>
+
+  <Target
+    Name="CopyPackageTranslationFiles"
+    Condition="'$(IsCrossTargetingBuild)' != 'true' and ('$(IsCrossTargetedBuild)' != 'true' or '$(TargetFrameworks' == '' or '$(TargetFrameworks.IndexOf($(TargetFramework)))' == '0')"
+    AfterTargets="Build">
+
+    <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="%(PackageTranslationFiles.FullPath)"
+      DestinationFolder="Localization\%(RecursiveDir)"
+      Condition="'@(PackageTranslationFiles)' != ''"
+      SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="PublishTranslationFiles" BeforeTargets="GetCopyToPublishDirectoryItems">
+    <Message Text="Publishing translation files: $(MSBuildProjectName)" Importance="high" />
+    <ItemGroup>
+      <_WebProjectGeneratedContent Include="Localization\**" Exclude="$(DefaultItemExcludes)">
+      </_WebProjectGeneratedContent>
+    </ItemGroup>
+  </Target>
+
+</Project>

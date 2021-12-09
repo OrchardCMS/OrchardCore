@@ -1,10 +1,15 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
-using System.Threading.Tasks;
+using OrchardCore.Contents;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Demo.Controllers
 {
+    [Route("api/demo")]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+    [ApiController]
     public class ContentApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -28,19 +33,18 @@ namespace OrchardCore.Demo.Controllers
             return new ObjectResult(contentItem);
         }
 
-        [Authorize]
         public async Task<IActionResult> GetAuthorizedById(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid("Api");
             }
 
             var contentItem = await _contentManager.GetAsync(id);
 
-            if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid("Api");
             }
 
             if (contentItem == null)
@@ -51,14 +55,13 @@ namespace OrchardCore.Demo.Controllers
             return new ObjectResult(contentItem);
         }
 
-        [Authorize]
-        [IgnoreAntiforgeryToken]
         [HttpPost]
-        public async Task<IActionResult> AddContent([FromBody]ContentItem contentItem)
+        [Authorize]
+        public async Task<IActionResult> AddContent(ContentItem contentItem)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid("Api");
             }
 
             await _contentManager.CreateAsync(contentItem);

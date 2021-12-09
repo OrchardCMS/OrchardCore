@@ -9,37 +9,37 @@ namespace OrchardCore.OpenId.YesSql.Models
     public class OpenIdToken
     {
         /// <summary>
-        /// Gets or sets the unique identifier
-        /// associated with the current token.
+        /// The name of the collection that is used for this type.
+        /// </summary>
+        public const string OpenIdCollection = "OpenId";
+
+        /// <summary>
+        /// Gets or sets the unique identifier associated with the current token.
         /// </summary>
         public string TokenId { get; set; }
 
-        /// Gets or sets the identifier of the application
-        /// associated with the current token.
+        /// <summary>
+        /// Gets or sets the identifier of the application associated with the current token.
         /// </summary>
         public string ApplicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the identifier of the authorization
-        /// associated with the current token.
+        /// Gets or sets the identifier of the authorization associated with the current token.
         /// </summary>
         public string AuthorizationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the date on which the token
-        /// will start to be considered valid.
+        /// Gets or sets the creation date of the current token.
         /// </summary>
-        public DateTimeOffset? CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the date on which the token
-        /// will no longer be considered valid.
+        /// Gets or sets the expiration date of the current token.
         /// </summary>
-        public DateTimeOffset? ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the physical identifier
-        /// associated with the current token.
+        /// Gets or sets the physical identifier associated with the current token.
         /// </summary>
         public int Id { get; set; }
 
@@ -51,10 +51,14 @@ namespace OrchardCore.OpenId.YesSql.Models
         public string Payload { get; set; }
 
         /// <summary>
-        /// Gets or sets the additional properties
-        /// associated with the current token.
+        /// Gets or sets the additional properties associated with the current token.
         /// </summary>
-        public virtual JObject Properties { get; set; }
+        public JObject Properties { get; set; }
+
+        /// <summary>
+        /// Gets or sets the redemption date of the current token.
+        /// </summary>
+        public DateTime? RedemptionDate { get; set; }
 
         /// <summary>
         /// Gets or sets the reference identifier associated

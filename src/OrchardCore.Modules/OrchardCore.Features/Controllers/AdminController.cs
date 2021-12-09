@@ -5,67 +5,61 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Admin;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
-using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
-using OrchardCore.Mvc.ActionConstraints;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Features.Controllers
 {
-    [Admin]
     public class AdminController : Controller
     {
-        private readonly IModuleService _moduleService;
         private readonly IExtensionManager _extensionManager;
-        private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
-            IModuleService moduleService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
-            IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             ShellSettings shellSettings,
-            INotifier notifier)
+            INotifier notifier,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
-            _moduleService = moduleService;
             _extensionManager = extensionManager;
-            _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
             _shellSettings = shellSettings;
             _notifier = notifier;
-
-            T = localizer;
+            H = localizer;
+            S = stringLocalizer;
         }
-
-        public IHtmlLocalizer T { get; }
 
         public async Task<ActionResult> Features()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures)) // , T["Not allowed to manage features."]
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+            var alwaysEnabledFeatures = await _shellFeaturesManager.GetAlwaysEnabledFeaturesAsync();
 
             var moduleFeatures = new List<ModuleFeature>();
-            foreach (var moduleFeatureInfo in _extensionManager
-                .GetFeatures()
-                .Where(f => !f.Extension.IsTheme() && FeatureIsAllowed(f)))
+
+            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync()).Where(f => !f.IsTheme());
+
+            foreach (var moduleFeatureInfo in features)
             {
                 var dependentFeatures = _extensionManager.GetDependentFeatures(moduleFeatureInfo.Id);
                 var featureDependencies = _extensionManager.GetFeatureDependencies(moduleFeatureInfo.Id);
@@ -74,9 +68,10 @@ namespace OrchardCore.Features.Controllers
                 {
                     Descriptor = moduleFeatureInfo,
                     IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
+                    IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
-                    DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList(),
+                    EnabledDependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id && enabledFeatures.Contains(x)).ToList(),
                     FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList()
                 };
 
@@ -85,100 +80,40 @@ namespace OrchardCore.Features.Controllers
 
             return View(new FeaturesViewModel
             {
-                Features = moduleFeatures,
-                IsAllowed = FeatureIsAllowed
+                Features = moduleFeatures
             });
         }
 
-        [HttpPost, ActionName("Features")]
-        [FormValueRequired("submit.BulkExecute")]
-        public async Task<ActionResult> FeaturesPOST(FeaturesBulkAction bulkAction, IList<string> featureIds, bool? force)
+        [HttpPost]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> Features(BulkActionViewModel model, bool? force)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            if (featureIds == null || !featureIds.Any())
+            if (model.FeatureIds == null || !model.FeatureIds.Any())
             {
-                ModelState.AddModelError("featureIds", T["Please select one or more features."].ToString());
+                ModelState.AddModelError(nameof(BulkActionViewModel.FeatureIds), S["Please select one or more features."]);
             }
 
             if (ModelState.IsValid)
             {
-                var availableFeatures = _extensionManager.GetFeatures();
-                var features = availableFeatures.Where(feature => FeatureIsAllowed(feature)).ToList();
-                var selectedFeatures = features.Where(x => featureIds.Contains(x.Id)).ToList();
-                var allEnabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync(); //features.Where(x => x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
-                var idFeaturesEnabled = allEnabledFeatures.Where(x => featureIds.Contains(x.Id)).ToList();
-                var allDisabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync(); // DisabledFeaturesAsync //features.Where(x => !x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
-                var idFeaturesDisabled = allDisabledFeatures.Where(x => featureIds.Contains(x.Id)).ToList();
+                var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                    .Where(f => !f.IsTheme() && model.FeatureIds.Contains(f.Id));
 
-                switch (bulkAction)
-                {
-                    case FeaturesBulkAction.None:
-                        break;
-                    case FeaturesBulkAction.Enable:
-                        var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
-                        foreach (var feature in enabledFeatures.ToList())
-                        {
-                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
-                            _notifier.Success(T["{0} was enabled", featureName]);
-                        }
-                        break;
-                    case FeaturesBulkAction.Disable:
-                        var disabledFeatures = await _shellFeaturesManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
-                        foreach (var feature in disabledFeatures.ToList())
-                        {
-                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
-                            _notifier.Success(T["{0} was disabled", featureName]);
-                        }
-                        break;
-                    case FeaturesBulkAction.Toggle:
-                        var enabledFeaturesToggle = await _shellFeaturesManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
-                        foreach (var feature in enabledFeaturesToggle.ToList())
-                        {
-                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
-                            _notifier.Success(T["{0} was enabled", featureName]);
-                        }
-
-                        var disabledFeaturesToggle = await _shellFeaturesManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
-                        foreach (var feature in disabledFeaturesToggle.ToList())
-                        {
-                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
-                            _notifier.Success(T["{0} was disabled", featureName]);
-                        }
-                        break;
-                    case FeaturesBulkAction.Update:
-                        //var featuresThatNeedUpdate = _dataMigrationManager.GetFeaturesThatNeedUpdate();
-                        //var selectedFeaturesThatNeedUpdate = selectedFeatures.Where(x => featuresThatNeedUpdate.Contains(x.Id));
-
-                        //foreach (var feature in selectedFeaturesThatNeedUpdate)
-                        //{
-                        //    var id = feature.Descriptor.Id;
-                        //    try
-                        //    {
-                        //        _dataMigrationManager.Update(id);
-                        //        _notifier.Success(T["The feature {0} was updated successfully", id]);
-                        //    }
-                        //    catch (Exception exception)
-                        //    {
-                        //        _notifier.Error(T["An error occurred while updating the feature {0}: {1}", id, exception.Message]);
-                        //    }
-                        //}
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                await EnableOrDisableFeaturesAsync(features, model.BulkAction, force);
             }
 
-            return RedirectToAction("Features");
+            return RedirectToAction(nameof(Features));
         }
 
         [HttpPost]
         public async Task<IActionResult> Disable(string id)
         {
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => FeatureIsAllowed(f) && f.Id == id);
+            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .FirstOrDefault(f => !f.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -191,9 +126,7 @@ namespace OrchardCore.Features.Controllers
 
             var nextUrl = Url.Action(nameof(Features));
 
-            await _shellFeaturesManager.DisableFeaturesAsync(new[] { feature }, force: true);
-
-            _notifier.Success(T["{0} was disabled", feature.Name ?? feature.Id]);
+            await EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, force: true);
 
             return Redirect(nextUrl);
         }
@@ -201,7 +134,8 @@ namespace OrchardCore.Features.Controllers
         [HttpPost]
         public async Task<IActionResult> Enable(string id)
         {
-            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => FeatureIsAllowed(f) && f.Id == id);
+            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+                .FirstOrDefault(f => !f.IsTheme() && f.Id == id);
 
             if (feature == null)
             {
@@ -214,22 +148,47 @@ namespace OrchardCore.Features.Controllers
 
             var nextUrl = Url.Action(nameof(Features));
 
-            await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
-
-            _notifier.Success(T["{0} was enabled", feature.Name ?? feature.Id]);
+            await EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, force: true);
 
             return Redirect(nextUrl);
         }
 
-        /// <summary>
-        /// Checks whether the feature is allowed for the current tenant
-        /// </summary>
-        private bool FeatureIsAllowed(IFeatureInfo feature)
+        private async Task EnableOrDisableFeaturesAsync(IEnumerable<IFeatureInfo> features, FeaturesBulkAction action, bool? force)
         {
-            // TODO: Implement white-list of modules allowed in the shell settings
+            switch (action)
+            {
+                case FeaturesBulkAction.None:
+                    break;
+                case FeaturesBulkAction.Enable:
+                    await _shellFeaturesManager.EnableFeaturesAsync(features, force == true);
+                    await NotifyAsync(features);
+                    break;
+                case FeaturesBulkAction.Disable:
+                    await _shellFeaturesManager.DisableFeaturesAsync(features, force == true);
+                    await NotifyAsync(features, enabled: false);
+                    break;
+                case FeaturesBulkAction.Toggle:
+                    // The features array has already been checked for validity.
+                    var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+                    var disabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync();
+                    var featuresToEnable = disabledFeatures.Intersect(features);
+                    var featuresToDisable = enabledFeatures.Intersect(features);
 
-            // Checks if the feature is only allowed on the Default tenant
-            return _shellSettings.Name == ShellHelper.DefaultShellName || !feature.DefaultTenantOnly;
+                    await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, force == true);
+                    await NotifyAsync(featuresToEnable);
+                    await NotifyAsync(featuresToDisable, enabled: false);
+                    return;
+                default:
+                    break;
+            }
+        }
+
+        private async ValueTask NotifyAsync(IEnumerable<IFeatureInfo> features, bool enabled = true)
+        {
+            foreach (var feature in features)
+            {
+                await _notifier.SuccessAsync(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
+            }
         }
     }
 }

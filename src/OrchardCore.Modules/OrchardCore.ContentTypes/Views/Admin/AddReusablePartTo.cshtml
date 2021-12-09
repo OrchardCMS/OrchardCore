@@ -2,69 +2,64 @@
 @{
     int i = 0;
 }
-<h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1>
+<zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1></zone>
 
 <form asp-action="AddReusablePartTo">
     @Html.ValidationSummary()
-    <fieldset class="form-group">
+    <div class="form-group">
 
-    @if (Model.PartSelections.Any())
-    {
-        <fieldset class="form-group">
-            <label for="DisplayName">@T["Display Name"]</label>
-            <input asp-for="DisplayName" class="form-control" autofocus />
-            <span class="hint">@T["Name of the reusable part as it will be displayed in screens."]</span>
-        </fieldset>
+        @if (Model.PartSelections.Any())
+        {
+            <div class="form-group">
+                <label for="DisplayName">@T["Display Name"]</label>
+                <input asp-for="DisplayName" class="form-control" autofocus />
+                <span class="hint">@T["Name of the reusable part as it will be displayed in screens."]</span>
+            </div>
 
-        <fieldset class="form-group">
-            <label for="Name">@T["Technical Name"]</label>
-            <input asp-for="Name" class="form-control" />
-            <span class="hint">@T["Technical name of the reusable part."]</span>
-        </fieldset>
+            <div class="form-group">
+                <label for="Name">@T["Technical Name"]</label>
+                <input asp-for="Name" class="form-control" />
+                <span class="hint">@T["Technical name of the reusable part."]</span>
+            </div>
 
-        <fieldset class="form-group">
-            <label for="Description">@T["Description"]</label>
-            <input asp-for="Description" class="form-control" />
-            <span class="hint">@T["Description of the reusable part."]</span>
-        </fieldset>
+            <div class="form-group">
+                <label for="Description">@T["Description"]</label>
+                <input asp-for="Description" class="form-control" />
+                <span class="hint">@T["Description of the reusable part."]</span>
+            </div>
 
-        <ul class="list-group">
-            @foreach (var partSelection in Model.PartSelections)
-            {
-                <li class="list-group-item">
-                    <div class="radio">
-                        <label asp-for="PartSelections[i].PartName">
-                            <input asp-for="SelectedPartName" id="@Html.IdFor(m => m.PartSelections[i].PartName)" value="@Model.PartSelections[i].PartName" type="radio" />
-                            @partSelection.PartDisplayName 
+            <ul class="list-group">
+                @foreach (var partSelection in Model.PartSelections)
+                {
+                    <li class="list-group-item">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" asp-for="SelectedPartName" id="@Html.IdFor(m => m.PartSelections[i].PartName)" value="@Model.PartSelections[i].PartName">
+                            <label class="custom-control-label" asp-for="PartSelections[i].PartName">@partSelection.PartDisplayName</label>
                             @if (!String.IsNullOrEmpty(partSelection.PartDescription))
                             {
-                                <span class="hint">@T["— {0}", partSelection.PartDescription]</span>
+                                <span class="hint dashed">@partSelection.PartDescription</span>
                             }
-                        </label>
-                    </div>
-                </li>
-
-                i++;
-            }
-        </ul>
-    }
-    else
-    {
-        <p class="alert alert-warning">@T["There are no available named parts."]</p>
-    }
-
-    </fieldset>
-    <fieldset class="form-group">
-    @if (Model.PartSelections.Any())
-    {
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
-    }
-        <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
-    </fieldset>
+                        </div>
+                    </li>
+                    i++;
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="alert alert-warning">@T["There are no available named parts."]</p>
+        }
+    </div>
+    <div class="form-group">
+        @if (Model.PartSelections.Any())
+        {
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        }
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
+    </div>
 </form>
 
-
-<script at="Foot" type="text/javascript">
+<script at="Foot">
 //<![CDATA[
     $(function(){
         var $name = $("#@Html.IdFor(m => m.Name)");
@@ -77,7 +72,7 @@
 
         var compute = function() {
             // stop processing automatically if altered by the user
-            if(nameAltered) {
+            if (nameAltered) {
                 return true;
             }
 

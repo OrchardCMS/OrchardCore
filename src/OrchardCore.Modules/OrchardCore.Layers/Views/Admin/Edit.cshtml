@@ -1,22 +1,38 @@
-﻿@model OrchardCore.Layers.ViewModels.LayerEditViewModel
+@model LayerEditViewModel
+@{
+    var routeValues = new RouteValueDictionary
+    {
+        { "area", "OrchardCore.Layers" },
+        { "controller", "LayerRule" },
+        { "name", Model.Name }
+    };
+    ViewData["ConditionRouteValues"] = routeValues;
 
-<h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1>
+    var orderUrl = Url.Action("UpdateOrder", "LayerRule");
+}
 
-<form asp-action="Edit" method="post">
-    <fieldset class="form-group" asp-validation-class-for="Name">
-        <label asp-for="Name">@T["Name"] <span asp-validation-for="Name"></span></label>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
+
+<form asp-action="Edit" method="post" class="no-multisubmit">
+    <div class="form-group" asp-validation-class-for="Name">
+        <label asp-for="Name">@T["Name"]</label>
         <input readonly="readonly" asp-for="Name" class="form-control" type="text" />
-    </fieldset>
+        <span asp-validation-for="Name"></span>
+    </div>
 
-    <fieldset class="form-group" asp-validation-class-for="Rule">
-        <label asp-for="Rule">@T["Rule"] <span asp-validation-for="Rule"></span></label>
-        <input asp-for="Rule" class="form-control" type="text" />
-    </fieldset>
-
-    <fieldset class="form-group" asp-validation-class-for="Description">
-        <label asp-for="Description">@T["Description"] <span asp-validation-for="Description"></span></label>
+    <div class="form-group" asp-validation-class-for="Description">
+        <label asp-for="Description">@T["Description"]</label>
         <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
-    </fieldset>
+        <span asp-validation-for="Description"></span>
+    </div>
 
-    <input class="button" type="submit" value="@T["Save"]" />
+    <div class="d-none" id="ruleOrderUrl" data-url="@orderUrl"></div>
+    <div class="d-none ruleorderparameters" data-param="name" data-value="@Model.Name"></div>
+    <div class="d-none" id="ruleOrderErrorMessage" data-message="@T["Error updating rule order"]"></div>
+
+    @await DisplayAsync(Model.LayerRule)
+
+    <input class="button mt-3" type="submit" value="@T["Save"]" />
 </form>
+
+@await DisplayAsync(await New.ConditionsModal(Thumbnails: Model.Thumbnails, Name: Model.Name))

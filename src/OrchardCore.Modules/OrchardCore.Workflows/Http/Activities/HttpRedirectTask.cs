@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fluid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -13,6 +15,7 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IStringLocalizer S;
 
         public HttpRedirectTask(
             IStringLocalizer<HttpRedirectTask> localizer,
@@ -20,15 +23,16 @@ namespace OrchardCore.Workflows.Http.Activities
             IWorkflowExpressionEvaluator expressionEvaluator
         )
         {
-            T = localizer;
+            S = localizer;
             _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(HttpRedirectTask);
-        public override LocalizedString Category => T["HTTP"];
+
+        public override LocalizedString DisplayText => S["Http Redirect Task"];
+
+        public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> Location
         {
@@ -44,14 +48,14 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var location = await _expressionEvaluator.EvaluateAsync(Location, workflowContext);
+            var location = await _expressionEvaluator.EvaluateAsync(Location, workflowContext, NullEncoder.Default);
 
-            _httpContextAccessor.HttpContext.Response.Redirect(location, Permanent);
+            _httpContextAccessor.HttpContext.Response.Redirect(location.ToUriComponents(), Permanent);
             _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
 
             return Outcomes("Done");

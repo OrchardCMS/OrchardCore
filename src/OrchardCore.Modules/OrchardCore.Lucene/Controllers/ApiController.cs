@@ -1,75 +1,101 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using YesSql;
+using OrchardCore.Mvc.Utilities;
+using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene.Controllers
 {
+    [Route("api/lucene")]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly LuceneQuerySource _luceneQuerySource;
-        private readonly ISession _session;
 
         public ApiController(
             IAuthorizationService authorizationService,
-            LuceneQuerySource luceneQuerySource,
-            ISession session)
+            LuceneQuerySource luceneQuerySource)
         {
             _authorizationService = authorizationService;
             _luceneQuerySource = luceneQuerySource;
-            _session = session;
         }
 
-        [HttpPost, HttpGet]
-        public async Task<IActionResult> Content(
-            string indexName,
-            string query,
-            string parameters)
+        [HttpGet]
+        [Route("content")]
+        public async Task<IActionResult> Content([FromQuery] LuceneQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid("Api");
             }
 
-            var luceneQuery = new LuceneQuery
+            var result = await LuceneQueryApiAsync(queryModel, returnContentItems: true);
+
+            return new ObjectResult(result);
+        }
+        
+        [HttpPost]
+        [Route("content")]
+        public async Task<IActionResult> ContentPost(LuceneQueryModel queryModel)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                Index = indexName,
-                Template = query,
-                ReturnContentItems = true
-            };
+                return this.ChallengeOrForbid();
+            }
 
-            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
-
-            var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+            var result = await LuceneQueryApiAsync(queryModel, returnContentItems: true);
 
             return new ObjectResult(result);
         }
 
-        [HttpPost, HttpGet]
-        public async Task<IActionResult> Documents(
-            string indexName,
-            string query,
-            string parameters)
+        [HttpGet]
+        [Route("documents")]
+        public async Task<IActionResult> Documents([FromQuery] LuceneQueryModel queryModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                return Unauthorized();
-            }
+                return this.ChallengeOrForbid();
+            } 
 
-            var luceneQuery = new LuceneQuery
-            {
-                Index = indexName,
-                Template = query
-            };
-
-            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
-
-            var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+            var result = await LuceneQueryApiAsync(queryModel);
 
             return new ObjectResult(result);
+        }
+
+        [HttpPost]
+        [Route("documents")]
+        public async Task<IActionResult> DocumentsPost(LuceneQueryModel queryModel)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            var result = await LuceneQueryApiAsync(queryModel);
+
+            return new ObjectResult(result);
+        }
+
+        private Task<Queries.IQueryResults> LuceneQueryApiAsync(LuceneQueryModel queryModel, bool returnContentItems = false)
+        {
+            var luceneQuery = new LuceneQuery
+            {
+                Index = queryModel.IndexName,
+                Template = queryModel.Query,
+                ReturnContentItems = returnContentItems
+            };
+
+            var queryParameters = queryModel.Parameters != null ?
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+                : new Dictionary<string, object>();
+
+            var result = _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+            return result;
         }
     }
 }

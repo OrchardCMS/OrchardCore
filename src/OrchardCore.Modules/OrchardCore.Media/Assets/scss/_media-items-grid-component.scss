@@ -1,0 +1,61 @@
+ol.media-items-grid {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+
+    &.row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    li {
+        margin-bottom: 16px;
+        cursor: pointer;
+        margin-left: 0;
+        margin-right: 1.9em;
+        border-radius: 0;
+
+        .inline-media-button {
+            color: $gray-700;
+            opacity: 0;
+            padding-top: 0px;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            border-radius: 0px;
+            margin-top: -32px;
+            transition: all 0.2s;
+            &.delete-button {
+                margin-right: 2.0rem;
+            }
+            &.edit-button {
+                margin-right: 3.8rem;
+            }
+        }
+
+        &.selected {
+            border: 1px solid $primary;
+        }
+
+        &.selected .inline-media-button, &:hover .inline-media-button {
+            opacity: 1;
+            margin-top: 0px;
+            transition: all 0.2s;
+        }
+    }
+
+    .thumb-container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+
+        img {
+            background: repeating-conic-gradient($gray-200 0% 25%, transparent 0% 50%) 50% / 10px 10px;
+        }
+    }
+
+    list-style: none;
+    padding-left: 0;
+}

@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 

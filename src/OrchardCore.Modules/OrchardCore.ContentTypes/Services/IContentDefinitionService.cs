@@ -1,14 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.ViewModels;
 
 namespace OrchardCore.ContentTypes.Services
 {
     public interface IContentDefinitionService
     {
+        IEnumerable<EditTypeViewModel> LoadTypes();
         IEnumerable<EditTypeViewModel> GetTypes();
+        EditTypeViewModel LoadType(string name);
         EditTypeViewModel GetType(string name);
         ContentTypeDefinition AddType(string name, string displayName);
         void RemoveType(string name, bool deleteContent);
@@ -18,7 +19,9 @@ namespace OrchardCore.ContentTypes.Services
         string GenerateContentTypeNameFromDisplayName(string displayName);
         string GenerateFieldNameFromDisplayName(string partName, string displayName);
 
+        IEnumerable<EditPartViewModel> LoadParts(bool metadataPartsOnly);
         IEnumerable<EditPartViewModel> GetParts(bool metadataPartsOnly);
+        EditPartViewModel LoadPart(string name);
         EditPartViewModel GetPart(string name);
         EditPartViewModel AddPart(CreatePartViewModel partViewModel);
         void RemovePart(string name);

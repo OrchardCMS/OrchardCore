@@ -1,64 +1,115 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
-using OrchardCore.DisplayManagement.Liquid.Filters;
+using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.Liquid.Ast;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class ShapePagerTag : ExpressionArgumentsTag
+    public class ShapePagerTag
     {
-        private static readonly string[] _properties = { "PreviousText", "NextText", "PreviousClass", "NextClass" };
-
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        private static readonly HashSet<string> _properties = new HashSet<string>
         {
-            var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue() as dynamic;
+            "Id", "PreviousText", "NextText", "PreviousClass", "NextClass", "TagName", "ItemTagName"
+        };
+
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        {
+            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue() as dynamic;
 
             if (objectValue is Shape shape)
             {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-
                 if (shape.Metadata.Type == "PagerSlim")
                 {
-                    foreach (var name in arguments.Names)
+                    foreach (var argument in arguments.Item2)
                     {
-                        var argument = arguments[name];
-                        var propertyName = LiquidViewFilters.LowerKebabToPascalCase(name);
+                        var propertyName = argument.Name.ToPascalCaseUnderscore();
 
                         if (_properties.Contains(propertyName))
                         {
-                            objectValue[propertyName] = argument.ToStringValue();
+                            objectValue[propertyName] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                         }
                     }
                 }
 
+                var expressions = new NamedExpressionList(arguments.Item2);
+
                 if (shape.Metadata.Type == "PagerSlim" || shape.Metadata.Type == "Pager")
                 {
-                    if (arguments.Names.Contains("item_classes"))
+                    if (expressions.HasNamed("item_classes"))
                     {
-                        var classes = arguments["item_classes"];
+                        var itemClasses = await expressions["item_classes"].EvaluateAsync(context);
 
-                        if (classes.Type == FluidValues.String)
+                        if (itemClasses.Type == FluidValues.String)
                         {
-                            var values = classes.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            var values = itemClasses.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                             foreach (var value in values)
                             {
                                 objectValue.ItemClasses.Add(value);
                             }
                         }
-
-                        else if (classes.Type == FluidValues.Array)
+                        else if (itemClasses.Type == FluidValues.Array)
                         {
-                            foreach (var value in classes.Enumerate())
+                            foreach (var value in itemClasses.Enumerate(context))
                             {
                                 objectValue.ItemClasses.Add(value.ToStringValue());
+                            }
+                        }
+                    }
+
+                    if (expressions.HasNamed("classes"))
+                    {
+                        var classes = await expressions["classes"].EvaluateAsync(context);
+
+                        if (classes.Type == FluidValues.String)
+                        {
+                            var values = classes.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                            foreach (var value in values)
+                            {
+                                objectValue.Classes.Add(value);
+                            }
+                        }
+                        else if (classes.Type == FluidValues.Array)
+                        {
+                            foreach (var value in classes.Enumerate(context))
+                            {
+                                objectValue.Classes.Add(value.ToStringValue());
+                            }
+                        }
+                    }
+
+                    if (expressions.HasNamed("attributes"))
+                    {
+                        var attributes = await expressions["attributes"].EvaluateAsync(context);
+
+                        if (attributes.Type == FluidValues.String)
+                        {
+                            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(attributes.ToStringValue());
+                            foreach (var value in values)
+                            {
+                                objectValue.Attributes.TryAdd(value.Key, value.Value);
+                            }
+                        }
+                    }
+
+                    if (expressions.HasNamed("item_attributes"))
+                    {
+                        var itemAttributes = await expressions["item_attributes"].EvaluateAsync(context);
+
+                        if (itemAttributes.Type == FluidValues.String)
+                        {
+                            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(itemAttributes.ToStringValue());
+                            foreach (var value in values)
+                            {
+                                objectValue.ItemAttributes.TryAdd(value.Key, value.Value);
                             }
                         }
                     }

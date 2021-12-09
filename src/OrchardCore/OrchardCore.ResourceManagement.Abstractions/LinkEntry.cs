@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.ResourceManagement
@@ -57,6 +57,8 @@ namespace OrchardCore.ResourceManagement
             }
             set { SetAttribute("href", value); }
         }
+
+        public bool AppendVersion { get; set; }
 
         public IHtmlContent GetTag()
         {

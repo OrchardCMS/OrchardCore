@@ -1,12 +1,19 @@
-﻿@model EditTypePartViewModel
-@using OrchardCore.ContentManagement.Metadata.Models
+@model EditTypePartViewModel
 @using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.DisplayManagement;
+
+@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
+@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
 
 @{
     var typePart = Model.TypePartDefinition;
+    var theme = await ThemeManager.GetThemeAsync();
+    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
+    var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
 }
 
-<h1>@RenderTitleSegments(T["Edit Part - {0}", Model.DisplayName])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Part - {0}", Model.DisplayName])</h1></zone>
 
 <div class="alert alert-success" role="alert">
     @T["Some part settings common to all types can also be defined at the <a href=\"{0}\">Part Definition</a> level.", Url.Action("EditPart", new { id = typePart.PartDefinition.Name })]
@@ -17,26 +24,112 @@
 
     @if (typePart.PartDefinition.IsReusable())
     {
-    <fieldset class="form-group">
-        <div class="row col-sm-6">
-            <label asp-for="DisplayName">@T["Display Name"]</label>
-            <input asp-for="DisplayName" class="form-control" />
+        <div class="form-group">
+            <div class="w-md-50">
+                <label asp-for="DisplayName">@T["Display Name"]</label>
+                <input asp-for="DisplayName" class="form-control" />
+            </div>
             <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
         </div>
-    </fieldset>
 
-    <fieldset class="form-group">
-        <div class="row col-sm-6">
-            <label asp-for="Description">@T["Description"]</label>
-            <input asp-for="Description" class="form-control" />
+        <div class="form-group">
+            <div class="w-md-50">
+                <label asp-for="Description">@T["Description"]</label>
+                <input asp-for="Description" class="form-control" />
+            </div>
             <span class="hint">@T["The description of the part as it will be displayed in screens."]</span>
         </div>
-    </fieldset>
     }
 
-    @await DisplayAsync(Model.Editor)
+    @if (Model.Shape.Content != null)
+    {
+        @if (Model.Shape.Shortcuts != null)
+        {
+            <div class="form-group">
+                @await DisplayAsync(Model.Shape.Shortcuts)
+            </div>
+        }
 
-    <fieldset class="form-group">
-        <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-    </fieldset>
+        <div class="form-group">
+            @await DisplayAsync(Model.Shape.Content)
+        </div>
+
+        @if (editorShapes.Any())
+        {
+            <div class="form-group">
+                <div class="w-100 w-md-50 pr-md-3">
+                    <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+                    <select asp-for="Editor" class="form-control" id="type-part-editor-select">
+                        @foreach (var editorShape in editorShapes)
+                        {
+                            dynamic shape = await Factory.CreateAsync(editorShape);
+                            shape.Editor = Model.Editor;
+                            @await DisplayAsync(shape)
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+
+        <div id="type-part-editor-container" class="form-group" style="display: none">
+            @await DisplayAsync(Model.Shape.Editor)
+        </div>
+
+        @if (displayShapes.Any())
+        {
+            <div class="form-group">
+                <div class="w-100 w-md-50 pr-md-3">
+                    <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
+                    <select asp-for="DisplayMode" class="form-control" id="type-part-display-select">
+                        @foreach (var displayShape in displayShapes)
+                        {
+                            dynamic shape = await Factory.CreateAsync(displayShape);
+                            shape.DisplayMode = Model.DisplayMode;
+                            @await DisplayAsync(shape)
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+
+        <div id="type-part-display-container" class="form-group" style="display: none">
+            @await DisplayAsync(Model.Shape.DisplayMode)
+        </div>
+    }
+
+    <div class="form-group">
+        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.TypePartDefinition.ContentTypeDefinition.Name">@T["Cancel"]</a>
+    </div>
 </form>
+
+<script at="Foot">
+    //<![CDATA[
+    $(function () {
+        $('.type-part-editor').hide();
+        $('#type-part-editor-container').show();
+
+        var typePartEditorSelect = $('#type-part-editor-select');
+        if (typePartEditorSelect.length > 0) {
+            $('.type-part-editor-' + typePartEditorSelect.val().toLowerCase()).show();
+
+            typePartEditorSelect.change(function () {
+                $('.type-part-editor').hide();
+                $('.type-part-editor-' + typePartEditorSelect.val().toLowerCase()).show();
+            });
+        }
+
+        $('.type-part-display').hide();
+        $('#type-part-display-container').show();
+        var typePartDisplaySelect = $('#type-part-display-select');
+        if (typePartDisplaySelect.length > 0) {
+            $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
+
+            typePartDisplaySelect.change(function () {
+                $('.type-part-display').hide();
+                $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
+            });
+        }
+    });
+    //]]>
+</script>

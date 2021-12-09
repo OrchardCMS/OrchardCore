@@ -1,0 +1,27 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Deployment.Deployment
+
+@model ShapeViewModel<DeploymentPlanDeploymentStep>
+
+@{
+    var includeAll = Model.Value.IncludeAll;
+    var deploymentPlanNames = Model.Value.DeploymentPlanNames;
+}
+
+<h5>@T["Deployment Plans"]</h5>
+
+@if (includeAll)
+{
+    <span class="badge badge-success">@T["All"]</span>
+}
+else if (deploymentPlanNames?.Length > 0)
+{
+    foreach (var deploymentPlanName in deploymentPlanNames)
+    {
+        <span class="badge ta-badge">@deploymentPlanName</span>
+    }
+}
+else
+{
+    <span class="badge badge-warning">@T["No deployment plan selected."]</span>
+}

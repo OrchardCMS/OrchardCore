@@ -3,7 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Fluid;
+using Fluid.Values;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement;
+using OrchardCore.Data;
 using OrchardCore.Liquid;
 using YesSql;
 
@@ -11,18 +15,21 @@ namespace OrchardCore.Queries.Sql
 {
     public class SqlQuerySource : IQuerySource
     {
-        private readonly IStore _store;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IDbConnectionAccessor _dbConnectionAccessor;
         private readonly ISession _session;
+        private readonly TemplateOptions _templateOptions;
 
         public SqlQuerySource(
-            IStore store,
             ILiquidTemplateManager liquidTemplateManager,
-            ISession session)
+            IDbConnectionAccessor dbConnectionAccessor,
+            ISession session,
+            IOptions<TemplateOptions> templateOptions)
         {
-            _store = store;
             _liquidTemplateManager = liquidTemplateManager;
+            _dbConnectionAccessor = dbConnectionAccessor;
             _session = session;
+            _templateOptions = templateOptions.Value;
         }
 
         public string Name => "Sql";
@@ -32,41 +39,40 @@ namespace OrchardCore.Queries.Sql
             return new SqlQuery();
         }
 
-        public async Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var sqlQuery = query as SqlQuery;
+            var sqlQueryResults = new SQLQueryResults();
 
-            var templateContext = new TemplateContext();
+            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default, 
+                parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
-            if (parameters != null)
+            var connection = _dbConnectionAccessor.CreateConnection();
+            var dialect = _session.Store.Configuration.SqlDialect;
+
+            if (!SqlParser.TryParse(tokenizedQuery, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
-                foreach (var parameter in parameters)
-                {
-                    templateContext.SetValue(parameter.Key, parameter.Value);
-                }
+                sqlQueryResults.Items = new object[0];
+                connection.Dispose();
+                return sqlQueryResults;
             }
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, templateContext);
-
-            var connection = _store.Configuration.ConnectionFactory.CreateConnection();
-            var dialect = SqlDialectFactory.For(connection);
-            
-            if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
-            {
-                return new object[0];
-            }
-                        
             if (sqlQuery.ReturnDocuments)
             {
                 IEnumerable<int> documentIds;
 
                 using (connection)
                 {
-                    connection.Open();
-                    documentIds = await connection.QueryAsync<int>(rawQuery, parameters);
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
+                    {
+                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters, transaction);
+                    }
                 }
 
-                return await _session.GetAsync<object>(documentIds.ToArray());
+                sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
+                return sqlQueryResults;
             }
             else
             {
@@ -74,8 +80,12 @@ namespace OrchardCore.Queries.Sql
 
                 using (connection)
                 {
-                    connection.Open();
-                    queryResults = await connection.QueryAsync(rawQuery);
+                    await connection.OpenAsync();
+
+                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
+                    {
+                        queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
+                    }
                 }
 
                 var results = new List<JObject>();
@@ -85,7 +95,8 @@ namespace OrchardCore.Queries.Sql
                     results.Add(JObject.FromObject(document));
                 }
 
-                return results;
+                sqlQueryResults.Items = results;
+                return sqlQueryResults;
             }
         }
     }

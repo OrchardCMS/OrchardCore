@@ -1,0 +1,8 @@
+{
+  "name": "orchardcore.markdown",
+  "version": "1.0.0",
+  "dependencies": {
+    "bootstrap": "4.6.1",
+    "easymde": "2.15.0"
+  }
+}

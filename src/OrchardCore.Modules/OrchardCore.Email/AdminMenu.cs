@@ -1,32 +1,36 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email.Drivers;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Email
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer<AdminMenu> T;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-                return;
+                return Task.CompletedTask;
 
             builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Settings"], settings => settings
-                       .Add(T["Smtp"], T["Smtp"], entry => entry
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                       .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
+                       .AddClass("email").Id("email")
                           .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
                           .Permission(Permissions.ManageEmailSettings)
                           .LocalNav()
                 )));
+
+            return Task.CompletedTask;
         }
     }
 }

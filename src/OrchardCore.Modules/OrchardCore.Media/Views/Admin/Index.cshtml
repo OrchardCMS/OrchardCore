@@ -1,11 +1,43 @@
-<script asp-src="/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable"></script>
-<style asp-src="/OrchardCore.Media/Styles/media.min.css" debug-src="/OrchardCore.Media/Styles/media.css"></style>
-<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot"></script>
-<script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.min.js" debug-src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.14.1/vuedraggable.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
+<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable, jQuery-ui"></script>
+<style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
 
 <script at="Foot">
-    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
+    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
+
+    @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
+    $(function () {
+        if (!$('.message').length) { return; };
+        var mediaAppInitialTop = 0;
+        var mediaAppLoaded = false;
+
+        var repositionMediaApp = function () {
+
+            var messagesHeight = 0;
+            $('.message').each(function () {
+                messagesHeight += $(this).outerHeight(true);
+            });
+
+            var newTop = mediaAppInitialTop + messagesHeight;
+
+            $('#mediaApp').css('top', newTop + 'px');
+        }
+
+        $(window).on('resize', function () {
+            if (mediaAppLoaded) {
+                repositionMediaApp();
+            }
+        });
+
+        // before moving we need to wait until the vuejs mediaapp is loaded.
+        var checkMediaAppIsLoaded = setInterval(function () {
+            if ($('#mediaApp').length) {
+                mediaAppInitialTop = $('#mediaApp').offset().top;
+                clearInterval(checkMediaAppIsLoaded);
+                mediaAppLoaded = true;
+                repositionMediaApp();
+            }
+        }, 100);
+    });
 </script>
 
-<h1>@RenderTitleSegments(T["Assets"])</h1>
+<h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>

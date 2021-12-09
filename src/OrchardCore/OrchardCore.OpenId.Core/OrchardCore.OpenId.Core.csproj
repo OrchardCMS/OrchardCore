@@ -1,14 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore OpenId Core</Title>
+    <Description>$(OCCMSDescription)
+
+    Core implementation for OpenId.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS OpenId</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="OpenIddict.Core" />
   </ItemGroup>
 

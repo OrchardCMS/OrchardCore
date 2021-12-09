@@ -1,21 +1,21 @@
-using System.Collections.Generic;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class PlacementInfo
     {
-        private static readonly char[] Delimiters = { ':', '#', '@' };
+        private static readonly char[] Delimiters = { ':', '#', '@', '%', '|' };
 
         public string Location { get; set; }
         public string Source { get; set; }
         public string ShapeType { get; set; }
+        public string DefaultPosition { get; set; }
         public AlternatesCollection Alternates { get; set; }
         public AlternatesCollection Wrappers { get; set; }
 
         public bool IsLayoutZone()
         {
-            return Location.StartsWith("/");
+            return Location.StartsWith("/", System.StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             var location = Location;
 
             // Strip the Layout marker
-            if(IsLayoutZone())
+            if (IsLayoutZone())
             {
                 location = location.Substring(1);
             }
@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             var contentDelimiter = Location.IndexOf(':');
             if (contentDelimiter == -1)
             {
-                return "";
+                return DefaultPosition ?? "";
             }
 
             var secondDelimiter = Location.IndexOfAny(Delimiters, contentDelimiter + 1);
@@ -100,6 +100,48 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
 
             return Location.Substring(groupDelimiter + 1, nextDelimiter - groupDelimiter - 1);
+        }
+
+        /// <summary>
+        /// Extracts the card information from a location string, or <c>null</c> if it is not present.
+        /// e.g., Content:12%search
+        /// </summary>
+        public string GetCard()
+        {
+            var cardDelimiter = Location.IndexOf('%');
+            if (cardDelimiter == -1)
+            {
+                return null;
+            }
+
+            var nextDelimiter = Location.IndexOfAny(Delimiters, cardDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                return Location.Substring(cardDelimiter + 1);
+            }
+
+            return Location.Substring(cardDelimiter + 1, nextDelimiter - cardDelimiter - 1);
+        }
+
+        /// <summary>
+        /// Extracts the column information from a location string, or <c>null</c> if it is not present.
+        /// e.g., Content:12!search
+        /// </summary>
+        public string GetColumn()
+        {
+            var colDelimeter = Location.IndexOf('|');
+            if (colDelimeter == -1)
+            {
+                return null;
+            }
+
+            var nextDelimiter = Location.IndexOfAny(Delimiters, colDelimeter + 1);
+            if (nextDelimiter == -1)
+            {
+                return Location.Substring(colDelimeter + 1);
+            }
+
+            return Location.Substring(colDelimeter + 1, nextDelimiter - colDelimeter - 1);
         }
     }
 }

@@ -1,25 +1,29 @@
 @model OrchardCore.Layers.ViewModels.LayerMetadataEditViewModel
 
-<fieldset class="form-group" asp-validation-class-for="LayerMetadata.Title">
-    <label asp-for="LayerMetadata.Title">@T["Title"] <span asp-validation-for="LayerMetadata.Title"></span></label>
-    <input asp-for="LayerMetadata.Title" class="form-control" type="text" />
-</fieldset>
+<div class="form-group" asp-validation-class-for="Title">
+    <label asp-for="Title">@T["Title"]</label>
+    <input asp-for="Title" class="form-control" type="text" />
+    <span asp-validation-for="Title"></span>
+</div>
 
-<fieldset class="form-check">
-    <label class="form-check-label">
-        <input asp-for="LayerMetadata.RenderTitle" type="checkbox" class="form-check-input content-preview-select" checked="@Model.LayerMetadata.RenderTitle" /> @T["Render title"]
-        <span class="hint">@T["— If checked, the title will be rendered with the widget."]</span>
-    </label>
-</fieldset>
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="LayerMetadata.RenderTitle" checked="@Model.LayerMetadata.RenderTitle">
+        <label class="custom-control-label" asp-for="LayerMetadata.RenderTitle">@T["Render title"]</label>
+        <span class="hint dashed">@T["If checked, the title will be rendered with the widget."]</span>
+    </div>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group" asp-validation-class-for="LayerMetadata.Layer">
     <label asp-for="LayerMetadata.Layer">@T["The layer the widget should be associated with."]</label>
     <select asp-for="LayerMetadata.Layer" class="form-control">
         @foreach (var layer in Model.Layers)
         {
-            <option value="@layer.Name" selected="@(Model.LayerMetadata.Layer == layer.Name)">@layer.Name</option>}
+            <option value="@layer.Name" selected="@(Model.LayerMetadata.Layer == layer.Name)">@layer.Name</option>
+        }
     </select>
-</fieldset>
+    <span asp-validation-for="LayerMetadata.Layer" class="text-danger"></span>
+</div>
 
 <input asp-for="LayerMetadata.Zone" type="hidden" />
 <input asp-for="LayerMetadata.Position" type="hidden" />

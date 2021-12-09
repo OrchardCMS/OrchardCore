@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Mvc</RootNamespace>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore DisplayManagement Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for DisplayManagement.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework DisplayManagement Abstractions</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

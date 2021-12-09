@@ -1,21 +1,26 @@
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace OrchardCore.ContentManagement
 {
     public class ContentItemConverter : JsonConverter
     {
+        private readonly JsonLoadSettings _jsonLoadSettings = new JsonLoadSettings
+        {
+            LineInfoHandling = LineInfoHandling.Ignore // defaults to loading which allocates quite a lot
+        };
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            ContentItem contentItem = (ContentItem)value;
+            var contentItem = (ContentItem)value;
             var o = new JObject();
 
             // Write all well-known properties
-            o.Add(new JProperty(nameof(ContentItem.Id), contentItem.Id));
             o.Add(new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId));
             o.Add(new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId));
             o.Add(new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType));
+            o.Add(new JProperty(nameof(ContentItem.DisplayText), contentItem.DisplayText));
             o.Add(new JProperty(nameof(ContentItem.Latest), contentItem.Latest));
             o.Add(new JProperty(nameof(ContentItem.Published), contentItem.Published));
             o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
@@ -53,9 +58,6 @@ namespace OrchardCore.ContentManagement
 
                 switch (propertyName)
                 {
-                    case nameof(ContentItem.Id) : 
-                        contentItem.Id = reader.ReadAsInt32() ?? 0;
-                        break;
                     case nameof(ContentItem.ContentItemId):
                         contentItem.ContentItemId = reader.ReadAsString();
                         break;
@@ -64,6 +66,9 @@ namespace OrchardCore.ContentManagement
                         break;
                     case nameof(ContentItem.ContentType):
                         contentItem.ContentType = reader.ReadAsString();
+                        break;
+                    case nameof(ContentItem.DisplayText):
+                        contentItem.DisplayText = reader.ReadAsString();
                         break;
                     case nameof(ContentItem.Latest):
                         contentItem.Latest = reader.ReadAsBoolean() ?? false;
@@ -87,15 +92,15 @@ namespace OrchardCore.ContentManagement
                         contentItem.Owner = reader.ReadAsString();
                         break;
                     default:
-                        var customProperty = JProperty.Load(reader);
+                        var customProperty = JProperty.Load(reader, _jsonLoadSettings);
                         contentItem.Data.Add(customProperty);
 
-                        // Skip reading a token as JPproperty.Load already did the next one
+                        // Skip reading a token as JProperty.Load already did the next one
                         skip = true;
                         break;
                 }
             }
-            
+
             return contentItem;
         }
 
@@ -104,5 +109,4 @@ namespace OrchardCore.ContentManagement
             return objectType == typeof(ContentItem);
         }
     }
-   
 }

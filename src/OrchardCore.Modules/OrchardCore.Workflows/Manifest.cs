@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Workflows",
-    Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "The Workflows module provides tools and APIs to create custom workflows",
     Category = "Workflows"
 )]
@@ -27,8 +27,16 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = "OrchardCore.Workflows.Timers",
-    Name = "Timer Workflow Activities",
+    Name = "Timer Workflows Activities",
     Description = "Provides timer-based services and activities.",
+    Dependencies = new[] { "OrchardCore.Workflows" },
+    Category = "Workflows"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Workflows.Session",
+    Name = "Session Workflows Activities",
+    Description = "Provides 'YesSql' Session-related activities.",
     Dependencies = new[] { "OrchardCore.Workflows" },
     Category = "Workflows"
 )]

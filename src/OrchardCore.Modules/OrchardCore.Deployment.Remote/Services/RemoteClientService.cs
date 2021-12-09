@@ -16,7 +16,7 @@ namespace OrchardCore.Deployment.Remote.Services
         private RemoteClientList _remoteClientList;
 
         public RemoteClientService(
-            ISession session, 
+            ISession session,
             IDataProtectionProvider dataProtectionProvider
             )
         {
@@ -79,7 +79,6 @@ namespace OrchardCore.Deployment.Remote.Services
 
         public async Task<bool> TryUpdateRemoteClient(string id, string clientName, string apiKey)
         {
-            var remoteClientList = await GetRemoteClientListAsync();
             var remoteClient = await GetRemoteClientAsync(id);
 
             if (remoteClient == null)

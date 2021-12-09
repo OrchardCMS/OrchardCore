@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.Forms.Helpers;
 
 namespace OrchardCore.Forms.Filters
@@ -14,7 +15,7 @@ namespace OrchardCore.Forms.Filters
             if (serializedModelState != null)
             {
                 // Only Import if we are viewing.
-                if (context.Result is ViewResult)
+                if (context.Result is ViewResult || context.Result is PageResult)
                 {
                     var modelState = ModelStateHelpers.DeserializeModelState(serializedModelState);
                     context.ModelState.Merge(modelState);

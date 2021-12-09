@@ -1,35 +1,38 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Title;
-using OrchardCore.Liquid.Ast;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class RenderTitleSegmentsTag : ArgumentsTag
+    public class RenderTitleSegmentsTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'page_title'");
-            }
+            var services = ((LiquidTemplateContext)context).Services;
 
-            var titleBuilder = ((IServiceProvider)services).GetRequiredService<IPageTitleBuilder>();
-            var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
+            var arguments = new NamedExpressionList(argumentsList);
 
-            var segment = new HtmlString(arguments["segment"].Or(arguments.At(0)).ToStringValue());
-            var position = arguments.HasNamed("position") ? arguments["position"].ToStringValue() : "0";
-            var separator = arguments.HasNamed("separator") ? new HtmlString(arguments["separator"].ToStringValue()) : null;
+            var titleBuilder = services.GetRequiredService<IPageTitleBuilder>();
 
-            titleBuilder.AddSegment(segment, position);
-            titleBuilder.GenerateTitle(separator).WriteTo(writer, HtmlEncoder.Default);
+            var segmentExpression = arguments["segment", 0] ?? throw new ArgumentException("page_title tag requires a segment argument");
+            var segment = (await segmentExpression.EvaluateAsync(context)).ToStringValue();
+
+            var positionExpression = arguments["position", 1];
+            var position = positionExpression == null ? "0" : (await positionExpression.EvaluateAsync(context)).ToStringValue();
+
+            var separatorExpression = arguments["separator", 2];
+            var separator = separatorExpression == null ? null : new HtmlString((await separatorExpression.EvaluateAsync(context)).ToStringValue());
+
+            titleBuilder.AddSegment(new HtmlString(segment), position);
+            titleBuilder.GenerateTitle(separator).WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;
         }
     }

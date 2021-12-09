@@ -1,43 +1,36 @@
-using System;
 using System.Threading.Tasks;
-using OrchardCore.Markdown.Model;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Markdown.Models;
+using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.Settings
 {
-    public class MarkdownBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class MarkdownBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<MarkdownBodyPart>
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(MarkdownBodyPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
             return Initialize<MarkdownBodyPartSettingsViewModel>("MarkdownBodyPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+                {
+                    var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
-                model.Editor = settings.Editor;
-                model.MarkdownBodyPartSettings = settings;
-            }).Location("Content");
+                    model.SanitizeHtml = settings.SanitizeHtml;
+                })
+                .Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(MarkdownBodyPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
             var model = new MarkdownBodyPartSettingsViewModel();
+            var settings = new MarkdownBodyPartSettings();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Editor))
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                context.Builder.WithSettings(new MarkdownBodyPartSettings { Editor = model.Editor });
+                settings.SanitizeHtml = model.SanitizeHtml;
+
+                context.Builder.WithSettings(settings);
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

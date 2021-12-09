@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
+using OrchardCore.Roles.Recipes;
 using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Deployment
@@ -11,47 +14,47 @@ namespace OrchardCore.Roles.Deployment
     public class AllRolesDeploymentSource : IDeploymentSource
     {
         private readonly RoleManager<IRole> _roleManager;
-        private readonly IRoleProvider _roleProvider;
+        private readonly IRoleService _roleService;
 
-        public AllRolesDeploymentSource(RoleManager<IRole> roleManager, IRoleProvider roleProvider)
+        public AllRolesDeploymentSource(RoleManager<IRole> roleManager, IRoleService roleService)
         {
             _roleManager = roleManager;
-            _roleProvider = roleProvider;
+            _roleService = roleService;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allRolesState = step as AllRolesDeploymentStep;
+            var allRolesStep = step as AllRolesDeploymentStep;
 
-            if (allRolesState == null)
+            if (allRolesStep == null)
             {
                 return;
             }
 
             // Get all roles
-            var allRoleNames = await _roleProvider.GetRoleNamesAsync();
-            var data = new JArray();
+            var allRoles = await _roleService.GetRolesAsync();
+            var permissions = new JArray();
             var tasks = new List<Task>();
 
-            foreach(var roleName in allRoleNames)
+            foreach (var role in allRoles)
             {
-                var task = _roleManager.FindByNameAsync(_roleManager.NormalizeKey(roleName)).ContinueWith(async roleTask =>
+                var currentRole = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(role.RoleName));
+
+                if (currentRole != null)
                 {
-                    var role = (Role) await roleTask;
-                    if (role != null)
-                    {
-                        data.Add(JObject.FromObject(role));
-                    }
-                });
-
-                tasks.Add(task);
+                    permissions.Add(JObject.FromObject(
+                        new RolesStepRoleModel
+                        {
+                            Name = currentRole.RoleName,
+                            Description = currentRole.RoleDescription,
+                            Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
+                        }));
+                }
             }
-
-            await Task.WhenAll(tasks);
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "Roles"),
-                new JProperty("Data", data)
+                new JProperty("Roles", permissions)
             ));
         }
     }

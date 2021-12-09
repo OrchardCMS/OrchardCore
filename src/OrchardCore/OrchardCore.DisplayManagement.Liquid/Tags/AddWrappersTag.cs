@@ -5,34 +5,31 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class AddWrappersTag : ExpressionArgumentsTag
+    public class AddWrappersTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, Expression expression, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var objectValue = (await expression.EvaluateAsync(context)).ToObjectValue();
+            var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
             if (objectValue is IShape shape)
             {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
+                var wrappers = (await arguments.Item2.EvaluateAsync(context));
 
-                var alternates = arguments["wrappers"].Or(arguments.At(0));
-
-                if (alternates.Type == FluidValues.String)
+                if (wrappers.Type == FluidValues.String)
                 {
-                    var values = alternates.ToStringValue().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    var values = wrappers.ToStringValue().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var value in values)
                     {
                         shape.Metadata.Wrappers.Add(value);
                     }
                 }
-                else if (alternates.Type == FluidValues.Array)
+                else if (wrappers.Type == FluidValues.Array)
                 {
-                    foreach (var value in alternates.Enumerate())
+                    foreach (var value in wrappers.Enumerate(context))
                     {
                         shape.Metadata.Wrappers.Add(value.ToStringValue());
                     }

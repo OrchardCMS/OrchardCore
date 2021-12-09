@@ -1,6 +1,5 @@
 @using OrchardCore.Mvc.Utilities;
 @using OrchardCore.ContentManagement
-@inject IContentManager ContentManager
 
 @{
 
@@ -12,7 +11,7 @@
     var tag = Tag(Model, "article");
 }
 
-<h1>@RenderTitleSegments((await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).DisplayText)</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(contentItem.DisplayText)</h1></zone>
 
 <article>
     <header>

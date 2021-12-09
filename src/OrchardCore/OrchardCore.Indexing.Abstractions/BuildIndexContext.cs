@@ -1,20 +1,21 @@
-﻿using OrchardCore.ContentManagement;
+using System.Collections.Generic;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Indexing
 {
     public class BuildIndexContext
     {
         public BuildIndexContext(
-            DocumentIndex documentIndex, 
-            ContentItem contentItem, 
-            string key)
+            DocumentIndex documentIndex,
+            ContentItem contentItem,
+            IList<string> keys)
         {
             ContentItem = contentItem;
             DocumentIndex = documentIndex;
-            Key = key;
+            Keys = keys;
         }
 
-        public string Key { get; }
+        public IList<string> Keys { get; }
         public ContentItem ContentItem { get; }
         public DocumentIndex DocumentIndex { get; }
     }

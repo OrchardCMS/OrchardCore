@@ -19,7 +19,7 @@ namespace OrchardCore.Queries.Recipes
         private readonly ILogger _logger;
 
         public QueryStep(
-            IQueryManager queryManager, 
+            IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
             ILogger<QueryStep> logger)
         {
@@ -37,7 +37,7 @@ namespace OrchardCore.Queries.Recipes
 
             var model = context.Step.ToObject<QueryStepModel>();
 
-            foreach(JObject token in model.Queries)
+            foreach (JObject token in model.Queries)
             {
                 var sourceName = token[nameof(Query.Source)].ToString();
                 var sample = _querySources.FirstOrDefault(x => x.Name == sourceName)?.Create();

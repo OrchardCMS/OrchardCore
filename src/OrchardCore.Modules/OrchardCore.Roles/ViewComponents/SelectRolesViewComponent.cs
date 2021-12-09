@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,22 +9,22 @@ namespace OrchardCore.Roles.ViewComponents
 {
     public class SelectRolesViewComponent : ViewComponent
     {
-        private readonly IRoleProvider _roleProvider;
+        private readonly IRoleService _roleService;
 
-        public SelectRolesViewComponent(IRoleProvider roleProvider)
+        public SelectRolesViewComponent(IRoleService roleService)
         {
-            _roleProvider = roleProvider;
+            _roleService = roleService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedRoles, string htmlName)
+        public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedRoles, string htmlName, IEnumerable<string> except = null)
         {
             if (selectedRoles == null)
             {
                 selectedRoles = new string[0];
             }
 
-            var roleSelections = await BuildRoleSelectionsAsync(selectedRoles);
-            
+            var roleSelections = await BuildRoleSelectionsAsync(selectedRoles, except);
+
             var model = new SelectRolesViewModel
             {
                 HtmlName = htmlName,
@@ -33,18 +34,22 @@ namespace OrchardCore.Roles.ViewComponents
             return View(model);
         }
 
-        private async Task<IList<Selection<string>>> BuildRoleSelectionsAsync(IEnumerable<string> selectedRoles)
+        private async Task<IList<Selection<string>>> BuildRoleSelectionsAsync(IEnumerable<string> selectedRoles, IEnumerable<string> except)
         {
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
-            var selections = roleNames.Select(x => new Selection<string>
+            var roleNames = await _roleService.GetRoleNamesAsync();
+
+            if (except != null)
+            {
+                roleNames = roleNames.Except(except, StringComparer.OrdinalIgnoreCase);
+            }
+
+            return roleNames.Select(x => new Selection<string>
             {
                 IsSelected = selectedRoles.Contains(x),
                 Item = x
             })
             .OrderBy(x => x.Item)
             .ToList();
-
-            return selections;
         }
     }
 

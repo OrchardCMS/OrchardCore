@@ -1,8 +1,7 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -13,33 +12,33 @@ namespace OrchardCore.Contents.Drivers
 {
     public class DateEditorDriver : ContentPartDisplayDriver<CommonPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILocalClock _localClock;
 
-        public DateEditorDriver(IContentDefinitionManager contentDefinitionManager, ILocalClock localClock)
+        public DateEditorDriver(ILocalClock localClock)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _localClock = localClock;
         }
 
-        public override IDisplayResult Edit(CommonPart part)
+        public override IDisplayResult Edit(CommonPart part, BuildPartEditorContext context)
         {
-            var settings = GetSettings(part);
+            var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
 
             if (settings.DisplayDateEditor)
             {
                 return Initialize<DateEditorViewModel>("CommonPart_Edit__Date", async model =>
                 {
-                    model.LocalDateTime = part.ContentItem.CreatedUtc.Value == null ? (DateTime?)null : (await _localClock.ConvertToLocalAsync(part.ContentItem.CreatedUtc.Value)).DateTime;
+                    model.LocalDateTime = part.ContentItem.CreatedUtc.HasValue
+                    ? (DateTime?)(await _localClock.ConvertToLocalAsync(part.ContentItem.CreatedUtc.Value)).DateTime
+                    : null;
                 });
             }
 
             return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(CommonPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(CommonPart part, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            var settings = GetSettings(part);
+            var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
 
             if (settings.DisplayDateEditor)
             {
@@ -56,14 +55,7 @@ namespace OrchardCore.Contents.Drivers
                 }
             }
 
-            return Edit(part);
-        }
-
-        public CommonPartSettings GetSettings(CommonPart part)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "CommonPart", StringComparison.Ordinal));
-            return contentTypePartDefinition.GetSettings<CommonPartSettings>();
+            return Edit(part, context);
         }
     }
 }

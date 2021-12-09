@@ -60,8 +60,7 @@ namespace OrchardCore.ContentManagement
         public DateTime? CreatedUtc { get; set; }
 
         /// <summary>
-        /// The name of the user who first created this content item version
-        /// and owns content rigths.
+        /// The user id of the user who first created this content item version.
         /// </summary>
         public string Owner { get; set; }
 
@@ -70,5 +69,14 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         public string Author { get; set; }
 
+        /// <summary>
+        /// The text representing this content item.
+        /// </summary>
+        public string DisplayText { get; set; }
+
+        public override string ToString()
+        {
+            return string.IsNullOrWhiteSpace(DisplayText) ? $"{ContentType} ({ContentItemId})" : DisplayText;
+        }
     }
 }

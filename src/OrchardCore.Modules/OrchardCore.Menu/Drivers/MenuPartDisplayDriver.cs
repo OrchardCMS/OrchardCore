@@ -5,30 +5,15 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
 
-namespace OrchardCore.Lists.Drivers
+namespace OrchardCore.Menu.Drivers
 {
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
-        private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public MenuPartDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager,
-            IServiceProvider serviceProvider
-            )
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-            _serviceProvider = serviceProvider;
-            _contentManager = contentManager;
-        }
 
         public override IDisplayResult Edit(MenuPart part)
         {
@@ -68,7 +53,7 @@ namespace OrchardCore.Lists.Drivers
         {
             ContentItem menuItem = null;
 
-            foreach(var index in indexes)
+            foreach (var index in indexes)
             {
                 menuItem = menuItems.MenuItems[index];
                 menuItems = menuItem.As<MenuItemsListPart>();
@@ -82,7 +67,7 @@ namespace OrchardCore.Lists.Drivers
 
             return newObj;
         }
-        
+
         private JObject ProcessItem(MenuItemsListPart originalItems, JObject item)
         {
             var contentItem = GetMenuItemAt(originalItems, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());

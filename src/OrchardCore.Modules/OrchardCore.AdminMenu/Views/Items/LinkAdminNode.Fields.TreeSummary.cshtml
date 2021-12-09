@@ -1,0 +1,5 @@
+@model ShapeViewModel<LinkAdminNode>
+
+<div class="@(Model.Value.Enabled ? "" : "disabled")">
+    <span>@Model.Value.LinkText  <code>@Model.Value.LinkUrl</code> <span class="text-muted dashed">@T["Link"]</span></span>
+</div>

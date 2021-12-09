@@ -1,0 +1,53 @@
+.upload {
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 2px;
+    border: 1px solid #ccc;
+    height: 60px;
+    font-size: 0.875rem;
+    user-select: none;
+    min-width: 300px;
+    flex-grow: 1;
+
+    @media only screen and ( min-width: 768px ) {
+        width: 300px;
+    }
+
+    .close-warning {
+        display: block;
+        float: right;
+        margin-top: -8px;
+        margin-right: -8px;
+        cursor: pointer;
+        padding: 2px 8px;
+    }
+
+    .upload-name {
+        padding-top: 0;
+        margin-bottom: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-right: 50px;
+    }
+
+    .progress-bar {
+        display: block;
+        margin-top: 15px;
+        height: 3px;
+        background-color: #007bff;
+    }
+
+    .error-message {
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-right: 50px;
+    }
+}
+
+.upload-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #856404;
+}

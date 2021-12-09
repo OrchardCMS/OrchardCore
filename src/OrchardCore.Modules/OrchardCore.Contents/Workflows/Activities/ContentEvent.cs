@@ -36,7 +36,6 @@ namespace OrchardCore.Contents.Workflows.Activities
             return !contentTypes.Any() || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
         }
 
-
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Halt();

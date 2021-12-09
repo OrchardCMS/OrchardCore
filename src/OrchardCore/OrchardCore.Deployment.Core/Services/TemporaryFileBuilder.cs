@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -10,7 +10,7 @@ namespace OrchardCore.Deployment.Core.Services
 
         public TemporaryFileBuilder(bool deleteOnDispose = true)
         {
-            Folder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Folder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             _deleteOnDispose = deleteOnDispose;
         }
 
@@ -27,9 +27,14 @@ namespace OrchardCore.Deployment.Core.Services
             }
         }
 
-        public async Task SetFileAsync(string subpath, byte[] content)
+        public async Task SetFileAsync(string subpath, Stream stream)
         {
-            var fullname = Path.Combine(Folder, subpath);
+            if (subpath.StartsWith('/'))
+            {
+                throw new InvalidOperationException("A virtual path is required");
+            }
+
+            var fullname = PathExtensions.Combine(Folder, subpath);
 
             var directory = new FileInfo(fullname).Directory;
 
@@ -40,7 +45,7 @@ namespace OrchardCore.Deployment.Core.Services
 
             using (var fs = File.Create(fullname, 4 * 1024, FileOptions.None))
             {
-                await fs.WriteAsync(content, 0, content.Length);
+                await stream.CopyToAsync(fs);
             }
         }
 

@@ -1,0 +1,12 @@
+@model dynamic
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Configure OpenID server settings"])</h1></zone>
+
+<form asp-action="Index" method="post" class="no-multisubmit">
+    @Html.ValidationSummary()
+    @await DisplayAsync(Model.Content)
+
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Update the server settings and reload the tenant"]</button>
+    </div>
+</form>

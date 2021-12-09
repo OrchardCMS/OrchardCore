@@ -1,0 +1,5 @@
+code { font-size: 1em; }
+
+div.codehilite > pre {
+    overflow-x: auto;
+}

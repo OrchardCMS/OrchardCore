@@ -1,0 +1,53 @@
+@use 'sass:math';
+
+:root[data-theme='default'] {
+    @import "modules/theme/default/_variables.scss";
+    @import "../../node_modules/bootstrap/scss/bootstrap";
+
+    @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
+    @import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
+
+    @import "mixins/_grid.scss";
+    @import "mixins/_sizes.scss";
+    @import "mixins/_cursors.scss";
+    @import "mixins/_word-wrap.scss";
+
+    @import "modules/admin/_messages.scss";
+    @import "modules/admin/_pager.scss";
+    @import "modules/admin/_grid.scss";
+    @import "modules/admin/_tabs.scss";
+    @import "modules/admin/_login.scss";
+    @import "modules/admin/_codemirror.scss";
+    @import "modules/admin/_trumbowyg.scss";
+    @import "modules/admin/_switch.scss";
+    @import "modules/admin/_jquery-ui.scss";
+    @import "modules/admin/_monaco.scss";
+
+    @import "modules/theme/default/_bootswatch.scss";
+}
+
+:root[data-theme='darkmode'] {
+    @import "modules/theme/darkmode/_variables.scss";
+    @import "../../node_modules/bootstrap/scss/bootstrap";
+
+    @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
+    @import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
+
+    @import "mixins/_grid.scss";
+    @import "mixins/_sizes.scss";
+    @import "mixins/_cursors.scss";
+    @import "mixins/_word-wrap.scss";
+
+    @import "modules/admin/_messages.scss";
+    @import "modules/admin/_pager.scss";
+    @import "modules/admin/_grid.scss";
+    @import "modules/admin/_tabs.scss";
+    @import "modules/admin/_login.scss";
+    @import "modules/admin/_codemirror.scss";
+    @import "modules/admin/_trumbowyg.scss";
+    @import "modules/admin/_switch.scss";
+    @import "modules/admin/_jquery-ui.scss";
+    @import "modules/admin/_monaco.scss";
+
+    @import "modules/theme/darkmode/_bootswatch.scss";
+} 

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- NuGet properties-->
+    <Title>OrchardCore GraphQL Client Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for GraphQL Client</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework GraphQL Client Abstractions</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+</Project>

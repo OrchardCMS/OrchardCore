@@ -1,13 +1,22 @@
-@{ 
+@using OrchardCore.ContentManagement
+@using OrchardCore.Contents
+@inject IAuthorizationService AuthorizationService
+
+@{
+    ContentItem contentItem = Model.ContentItem;
     var previewId = Guid.NewGuid();
+    var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem);
 }
 
-<a id="previewButton" target="_blank" class="publish-button btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.ContentPreview", id = previewId })">@T["Preview"]</a>
+@if (hasPreviewPermission)
+{
+    <a id="previewButton" target="_blank" class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.ContentPreview", id = previewId })">@T["Preview"]</a>
+}
 
-<div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview", new { area = "OrchardCore.ContentPreview" })" ></div>
+<div id="renderPreviewUrl" style="display:none" data-value="@Url.Action("Render", "Preview", new { area = "OrchardCore.ContentPreview" })"></div>
 <div id="contentItemType" style="display:none" data-value="@Model.ContentItem.ContentType"></div>
 <div id="previewId" style="display:none" data-value="@previewId"></div>
 <div id="previewContentItemId" style="display:none" data-value="@Model.ContentItem.ContentItemId"></div>
 <div id="previewContentItemVersionId" style="display:none" data-value="@Model.ContentItem.ContentItemVersionId"></div>
 
-<script asp-src="/OrchardCore.ContentPreview/Scripts/contentpreview.edit.js" depends-on="admin" at="Foot"></script>
+<script asp-name="contentpreview-edit" at="Foot"></script>

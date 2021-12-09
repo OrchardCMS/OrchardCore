@@ -1,0 +1,39 @@
+@model AuditTrailContentEventViewModel
+@using OrchardCore.Contents.AuditTrail.Services 
+@{
+    var contentItem = Model.ContentItem;
+    var versionNumber = Model.VersionNumber;
+}
+
+<a class="btn btn-sm btn-success" asp-action="Display" asp-controller="AuditTrailContent" asp-area="OrchardCore.Contents" asp-route-versionNumber="@Model.VersionNumber" asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId">@T["View"]</a>
+
+@if (contentItem.ContentItemVersionId != Model.LatestVersionId && Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Published)
+{ 
+    <a class="btn btn-sm btn-secondary"
+        asp-route-area="OrchardCore.Contents"
+        asp-controller="AuditTrailContent"
+        asp-action="Restore"
+        asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId"
+        data-title="@T["Restore to Version"]"
+        data-message="@T["Are you sure you want to restore to version {0}?", versionNumber]"
+        data-ok-text="@T["Yes"]"
+        data-cancel-text="@T["No"]"
+        data-url-af="UnsafeUrl RemoveUrl">
+        @T["Restore"]
+    </a>
+}
+@if (contentItem.ContentItemVersionId != Model.LatestVersionId && Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Removed)
+{ 
+    <a class="btn btn-sm btn-secondary"
+        asp-route-area="OrchardCore.Contents"
+        asp-controller="AuditTrailContent"
+        asp-action="Restore"
+        asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId"
+        data-title="@T["Restore content item"]"
+        data-message="@T["Are you sure you want to restore this content item?"]"
+        data-ok-text="@T["Yes"]"
+        data-cancel-text="@T["No"]"
+        data-url-af="UnsafeUrl RemoveUrl">
+        @T["Restore"]
+    </a>
+}

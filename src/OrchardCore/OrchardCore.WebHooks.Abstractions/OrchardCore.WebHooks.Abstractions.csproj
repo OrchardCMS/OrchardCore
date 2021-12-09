@@ -1,13 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>OrchardCore.WebHooks.Abstractions</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore WebHooks Abstractions</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Abstractions implementation for WebHooks module.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.DataAnnotations" />
   </ItemGroup>
 
 </Project>

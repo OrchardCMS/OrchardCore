@@ -12,6 +12,7 @@ namespace OrchardCore.Workflows.Activities
     public interface IActivity : IEntity
     {
         string Name { get; }
+        LocalizedString DisplayText { get; }
         LocalizedString Category { get; }
         new JObject Properties { get; set; }
         bool HasEditor { get; }

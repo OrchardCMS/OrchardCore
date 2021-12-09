@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Entities;
@@ -10,7 +11,12 @@ using OrchardCore.Settings;
 namespace OrchardCore.Layers.Deployment
 {
     public class AllLayersDeploymentSource : IDeploymentSource
-    {
+    {        
+        private readonly static JsonSerializer JsonSerializer = new JsonSerializer()
+        {
+            TypeNameHandling = TypeNameHandling.Auto
+        };
+
         private readonly ILayerService _layerService;
         private readonly ISiteService _siteService;
 
@@ -22,18 +28,18 @@ namespace OrchardCore.Layers.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allLayersState = step as AllLayersDeploymentStep;
+            var allLayersStep = step as AllLayersDeploymentStep;
 
-            if (allLayersState == null)
+            if (allLayersStep == null)
             {
                 return;
             }
 
             var layers = await _layerService.GetLayersAsync();
-
+            
             result.Steps.Add(new JObject(
                 new JProperty("name", "Layers"),
-                new JProperty("Layers", layers.Layers.Select(JObject.FromObject))
+                new JProperty("Layers", layers.Layers.Select(layer => JObject.FromObject(layer, JsonSerializer)))
             ));
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -41,8 +47,8 @@ namespace OrchardCore.Layers.Deployment
             // Adding Layer settings
             result.Steps.Add(new JObject(
                 new JProperty("name", "Settings"),
-                new JProperty("LayerSetings", siteSettings.As<LayerSettings>().Zones)
+                new JProperty("LayerSettings", JObject.FromObject(siteSettings.As<LayerSettings>()))
             ));
         }
-    }
+    }   
 }

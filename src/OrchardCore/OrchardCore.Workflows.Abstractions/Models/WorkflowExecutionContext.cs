@@ -1,16 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Models
 {
     public class WorkflowExecutionContext
     {
-        private readonly IEnumerable<IWorkflowExecutionContextHandler> _handlers;
-        private readonly ILogger<WorkflowExecutionContext> _logger;
-
         public WorkflowExecutionContext
         (
             WorkflowType workflowType,
@@ -20,14 +15,9 @@ namespace OrchardCore.Workflows.Models
             IDictionary<string, object> properties,
             IList<ExecutedActivity> executedActivities,
             object lastResult,
-            IEnumerable<ActivityContext> activities,
-            IEnumerable<IWorkflowExecutionContextHandler> handlers,
-            ILogger<WorkflowExecutionContext> logger
+            IEnumerable<ActivityContext> activities
         )
         {
-            _handlers = handlers;
-            _logger = logger;
-
             Input = input ?? new Dictionary<string, object>();
             Output = output ?? new Dictionary<string, object>();
             Properties = properties ?? new Dictionary<string, object>();
@@ -131,7 +121,6 @@ namespace OrchardCore.Workflows.Models
                         yield return parentActivityId;
                     }
                 }
-
             }
         }
     }

@@ -1,0 +1,9 @@
+﻿{
+  "MarkdownBodyPart": [
+    {
+      "place": "Content:10",
+      "displayType": "DetailAdmin",
+      "contentType": "DashboardWidget"
+    }
+  ]
+}

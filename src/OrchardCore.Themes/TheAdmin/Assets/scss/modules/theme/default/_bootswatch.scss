@@ -1,0 +1,55 @@
+// TheAdmin 1.0.0
+// Bootswatch
+
+// Variables ===================================================================
+@import "_admin-variables.scss";
+// Navbar ======================================================================
+@import "../../admin/_navbar.scss";
+
+.ta-navbar-top {
+    @extend .navbar-light;
+    color: $gray-800;
+
+    a {
+        color: $gray-700;
+        text-decoration: none;
+    }
+}
+
+.ta-badge {
+    @extend .badge-light !optional;
+
+    background-color: darken(#f8f9fa, 5%)
+}
+
+.ta-navbar-brand {
+    span:last-child {
+        font-weight: bold;
+        color: $gray-700;
+    }
+}
+
+@import "../../admin/_list.scss";
+@import "../../admin/_sidebar-menu.scss";
+// Layout ======================================================================
+@import "../../_layout.scss";
+
+.bg-primary {
+    background-color: #f8f9fa !important;
+}
+// Buttons =====================================================================
+
+// Typography ==================================================================
+
+// Tables ======================================================================
+
+// Forms =======================================================================
+@import "modules/admin/_forms.scss";
+
+// Navs ========================================================================
+
+// Indicators ==================================================================
+
+// Progress bars ===============================================================
+
+// Containers ==================================================================

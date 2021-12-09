@@ -1,0 +1,57 @@
+:root[data-theme='default'] {
+
+    @import "../../../../OrchardCore.Themes/TheAdmin/Assets/scss/modules/theme/default/_variables.scss";
+    @import "../../node_modules/bootstrap/scss/functions";
+    @import "../../node_modules/bootstrap/scss/variables";
+
+    #iconPickerModal {
+
+        .iconpicker-popover.popover {
+            width: 100%;
+            border: none;
+        }
+    
+        .iconpicker-items {
+            min-height: 258px;
+        }
+    
+        .iconpicker-item {
+            background-color: $body-bg;
+        }
+    }
+    
+    .remove-icon, .sample-icon {
+        width: 40px;
+    }
+
+    @import "fontawesome-iconpicker.scss";
+}
+
+:root[data-theme='darkmode'] {
+
+    @import "../../../../OrchardCore.Themes/TheAdmin/Assets/scss/modules/theme/darkmode/_variables.scss";
+    @import "../../node_modules/bootstrap/scss/functions";
+    @import "../../node_modules/bootstrap/scss/variables";
+
+    #iconPickerModal {
+
+        .iconpicker-popover.popover {
+            width: 100%;
+            border: none;
+        }
+    
+        .iconpicker-items {
+            min-height: 258px;
+        }
+    
+        .iconpicker-item {
+            background-color: $body-bg;
+        }
+    }
+    
+    .remove-icon, .sample-icon {
+        width: 40px;
+    }
+
+    @import "fontawesome-iconpicker.scss";
+}

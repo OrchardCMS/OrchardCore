@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.ContentLocalization</RootNamespace>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore ContentLocalization Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for ContentLocalization</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Localization Abstractions</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayLinkFieldViewModel
-@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentFields.Settings
 @using OrchardCore.Mvc.Utilities
 
 @{
@@ -7,8 +7,8 @@
 }
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
-    string text = Model.Field.Text;
+    var settings = Model.PartFieldDefinition.GetSettings<LinkFieldSettings>();
+    string text = Model.Text;
     switch (settings.LinkTextMode)
     {
         case LinkTextMode.Static:
@@ -18,20 +18,31 @@
             }
             else
             {
-                text = Model.Field.Url;
+                text = Model.Url;
             }
             break;
         case LinkTextMode.Url:
-            text = Model.Field.Url;
+            text = Model.Url;
             break;
         case LinkTextMode.Optional:
             if (String.IsNullOrWhiteSpace(text))
             {
-                text = Model.Field.Url;
+                text = Model.Url;
             }
             break;
     }
+
+    var href = Model.Url;
+    if (!string.IsNullOrEmpty(href))
+    {
+        if (href.StartsWith("~/", StringComparison.Ordinal))
+        {
+            href = Url.Content(href);
+        }
+
+        href = href.ToUriComponents();
+    }
 }
 <div class="field field-type-linkfield field-name-@name">
-    <a href="@Model.Field.Url">@text</a>
+    <a href="@href">@text</a>
 </div>

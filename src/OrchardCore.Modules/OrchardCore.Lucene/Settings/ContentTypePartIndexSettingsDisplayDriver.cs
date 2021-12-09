@@ -30,7 +30,7 @@ namespace OrchardCore.Lucene.Settings
             return Initialize<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
             {
                 model.ContentIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
-            }).Location("Content");
+            }).Location("Content:10");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -46,7 +46,7 @@ namespace OrchardCore.Lucene.Settings
 
             context.Builder.WithSettings(model.ContentIndexSettings);
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return await EditAsync(contentTypePartDefinition, context.Updater);
         }
     }
 }

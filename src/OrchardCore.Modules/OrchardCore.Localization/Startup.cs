@@ -4,45 +4,73 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Localization.Drivers;
+using OrchardCore.Localization.Models;
+using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Localization
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// Represents a localization module entry point.
     /// </summary>
     public class Startup : StartupBase
     {
+        public override int ConfigureOrder => -100;
+
+        /// <inheritdocs />
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
+            services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<ILocalizationService, LocalizationService>();
 
-            // Override the default localization file locations with Orchard specific ones
+            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        /// <inheritdocs />
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var siteSettings = serviceProvider.GetService<ISiteService>().GetSiteSettingsAsync().GetAwaiter().GetResult();
+            var localizationService = serviceProvider.GetService<ILocalizationService>();
+
+            var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
+            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
 
             var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-
-            // If no specific default culture is defined, use the system language by not calling SetDefaultCulture
-            if (!String.IsNullOrEmpty(siteSettings.Culture))
-            {
-                options.SetDefaultCulture(siteSettings.Culture);
-            }
-
-            if (siteSettings.SupportedCultures.Length > 0)
-            {
-                options
-                    .AddSupportedCultures(siteSettings.SupportedCultures)
-                    .AddSupportedUICultures(siteSettings.SupportedCultures)
-                    ;
-            }
+            options.SetDefaultCulture(defaultCulture);
+            options
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures)
+                ;
 
             app.UseRequestLocalization(options);
         }
     }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class LocalizationDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
+        }
+    }
+
+#if NET5_0_OR_GREATER
+    [Feature("OrchardCore.Localization.ContentLanguageHeader")]
+    public class ContentLanguageHeaderStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
+        }
+    }
+#endif
 }

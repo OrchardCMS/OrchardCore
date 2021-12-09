@@ -1,11 +1,11 @@
 @model EditQueryViewModel
 
-<fieldset class="form-group">
-    <button type="submit" class="publish-button btn btn-success">@T["Save"]</button>
+<div class="form-group">
+    <button type="submit" class="btn btn-primary save">@T["Save"]</button>
 
-    <a class="btn btn-secondary"
+    <a class="btn btn-secondary cancel"
+       role="button"
        asp-route-action="Index"
        asp-route-controller="Admin"
        asp-route-area="OrchardCore.Queries">@T["Cancel"]</a>
-
-</fieldset>
+</div>

@@ -1,1 +1,13 @@
-@string.Format("Dear {0}, please <a href=\"{1}\">click here</a> to confirm your account.", Model.User.UserName, Model.ConfirmEmailUrl)
+@model ConfirmEmailViewModel
+
+@{
+    Layout = "";
+}
+
+<p>
+@T["Dear {0},", Model.User.UserName]
+</p>
+
+<p>@T["Please <a href=\"{0}\">click here</a> to confirm your account.", Model.ConfirmEmailUrl]</p>
+
+<p>@T["Thank you"]</p>

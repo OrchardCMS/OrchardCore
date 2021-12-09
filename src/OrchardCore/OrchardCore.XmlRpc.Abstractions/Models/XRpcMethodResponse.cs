@@ -4,7 +4,10 @@ namespace OrchardCore.XmlRpc.Models
 {
     public class XRpcMethodResponse
     {
-        public XRpcMethodResponse() { Params = new List<XRpcData>(); }
+        public XRpcMethodResponse()
+        {
+            Params = new List<XRpcData>();
+        }
 
         public IList<XRpcData> Params { get; set; }
         public XRpcFault Fault { get; set; }

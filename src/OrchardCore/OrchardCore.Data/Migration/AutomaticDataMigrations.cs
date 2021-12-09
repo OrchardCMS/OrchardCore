@@ -1,21 +1,27 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Data.Migration
 {
     /// <summary>
-    /// Registers to OrchardShell.Activated in order to run migrations automatically
+    /// Represents a tenant event that will be registered to OrchardShell.Activated in order to run migrations automatically.
     /// </summary>
-    public class AutomaticDataMigrations : IModularTenantEvents
+    public class AutomaticDataMigrations : ModularTenantEvents
     {
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="AutomaticDataMigrations"/>.
+        /// </summary>
+        /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
+        /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         public AutomaticDataMigrations(
             IServiceProvider serviceProvider,
             ShellSettings shellSettings,
@@ -26,29 +32,17 @@ namespace OrchardCore.Data.Migration
             _logger = logger;
         }
 
-        public Task ActivatedAsync()
+        /// <inheritdocs />
+        public override Task ActivatingAsync()
         {
             if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
             {
+                _logger.LogDebug("Executing data migrations for shell '{Name}'", _shellSettings.Name);
+
                 var dataMigrationManager = _serviceProvider.GetService<IDataMigrationManager>();
                 return dataMigrationManager.UpdateAllFeaturesAsync();
             }
 
-            return Task.CompletedTask;
-        }
-
-        public Task ActivatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatingAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task TerminatedAsync()
-        {
             return Task.CompletedTask;
         }
     }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Records
 {
@@ -8,7 +8,7 @@ namespace OrchardCore.ContentManagement.Metadata.Records
     public class ContentPartFieldDefinitionRecord
     {
         /// <summary>
-        /// Gets or set the field name, e.g. BooleanField.
+        /// Gets or sets the field name, e.g. BooleanField.
         /// </summary>
         public string FieldName { get; set; }
 

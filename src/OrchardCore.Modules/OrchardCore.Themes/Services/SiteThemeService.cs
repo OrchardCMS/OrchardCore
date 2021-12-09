@@ -1,29 +1,21 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.Environment.Extensions;
-using OrchardCore.Settings;
 using System;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Extensions;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Themes.Services
 {
     public class SiteThemeService : ISiteThemeService
     {
-        private const string CacheKey = "CurrentThemeName";
-
-        private readonly IExtensionManager _extensionManager;
         private readonly ISiteService _siteService;
-
-        private readonly IMemoryCache _memoryCache;
+        private readonly IExtensionManager _extensionManager;
 
         public SiteThemeService(
             ISiteService siteService,
-            IExtensionManager extensionManager,
-            IMemoryCache memoryCache
-            )
+            IExtensionManager extensionManager)
         {
             _siteService = siteService;
             _extensionManager = extensionManager;
-            _memoryCache = memoryCache;
         }
 
         public async Task<IExtensionInfo> GetSiteThemeAsync()
@@ -39,24 +31,15 @@ namespace OrchardCore.Themes.Services
 
         public async Task SetSiteThemeAsync(string themeName)
         {
-            var site = await _siteService.GetSiteSettingsAsync();
+            var site = await _siteService.LoadSiteSettingsAsync();
             site.Properties["CurrentThemeName"] = themeName;
-            //(site as IContent).ContentItem.Content.CurrentThemeName = themeName;
-            _memoryCache.Set(CacheKey, themeName);
             await _siteService.UpdateSiteSettingsAsync(site);
         }
 
         public async Task<string> GetCurrentThemeNameAsync()
         {
-            string themeName;
-            if (!_memoryCache.TryGetValue(CacheKey, out themeName))
-            {
-                var site = await _siteService.GetSiteSettingsAsync();
-                themeName = (string)site.Properties["CurrentThemeName"];
-                _memoryCache.Set(CacheKey, themeName);
-            }
-
-            return themeName;
+            var site = await _siteService.GetSiteSettingsAsync();
+            return (string)site.Properties["CurrentThemeName"];
         }
     }
 }

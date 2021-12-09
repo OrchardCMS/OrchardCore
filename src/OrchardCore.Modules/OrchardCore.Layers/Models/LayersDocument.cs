@@ -1,10 +1,10 @@
 using System.Collections.Generic;
+using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Layers.Models
 {
-    public class LayersDocument
+    public class LayersDocument : Document
     {
-        public int Id { get; set; }
         public List<Layer> Layers { get; set; } = new List<Layer>();
     }
 }

@@ -6,15 +6,16 @@
     var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"SELECT * FROM ContentItemIndex"));
 }
 
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.js" depends-on="admin" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
-<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/sql/sql.js" at="Foot"></script>
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-sql" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["SQL Query"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
 
 <div asp-validation-summary="All" class="text-danger"></div>
 
-<form asp-action="Query" method="post">
+<form asp-action="Query" method="post" class="no-multisubmit">
     <div class="row">
         <div class="col-md-6">
 
@@ -22,7 +23,7 @@
                 <label asp-for="DecodedQuery">@T["Template"]</label>
                 <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
                 <span class="hint">@T["You can <a href=\"{0}\">click here</a> to query all content items.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Queries", Query = matchAllQuery }))]</span>
-                <span class="hint">@T["The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically.</a>"]</span>
+                <span class="hint">@T["The SQL query uses standard SQL92 syntax and is converted based on the actual database. Tables will be prefixed automatically."]</span>
             </div>
         </div>
         <div class="col-md-6">
@@ -32,7 +33,6 @@
                 <textarea asp-for="Parameters" rows="1" class="form-control"></textarea>
                 <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
             </div>
-
         </div>
     </div>
 

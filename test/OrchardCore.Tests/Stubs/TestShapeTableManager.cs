@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
@@ -6,16 +5,11 @@ using OrchardCore.Environment.Extensions;
 
 namespace OrchardCore.Tests.Stubs
 {
-    public class TestShapeTable : ShapeTable
-    {
-        public override IDictionary<string, ShapeBinding> Bindings { get; set; }
-    }
-
     public class TestShapeTableManager : IShapeTableManager
     {
-        private readonly TestShapeTable _defaultShapeTable;
+        private readonly ShapeTable _defaultShapeTable;
 
-        public TestShapeTableManager(TestShapeTable defaultShapeTable)
+        public TestShapeTableManager(ShapeTable defaultShapeTable)
         {
             _defaultShapeTable = defaultShapeTable;
         }
@@ -28,7 +22,7 @@ namespace OrchardCore.Tests.Stubs
 
     public class MockThemeManager : IThemeManager
     {
-        IExtensionInfo _dec;
+        private IExtensionInfo _dec;
         public MockThemeManager(IExtensionInfo des)
         {
             _dec = des;

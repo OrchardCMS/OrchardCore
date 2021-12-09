@@ -1,34 +1,36 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 using OrchardCore.Security;
 
 namespace OrchardCore.Recipes
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
-
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            builder.Add(T["Configuration"], configuration => configuration
+            builder.Add(S["Configuration"], configuration => configuration
                 .AddClass("recipes").Id("recipes")
-                .Add(T["Recipes"], "1", recipes => recipes
+                .Add(S["Recipes"], S["Recipes"].PrefixPosition(), recipes => recipes
                     .Permission(StandardPermissions.SiteOwner)
                     .Action("Index", "Admin", new { area = "OrchardCore.Recipes" })
                     .LocalNav())
                 );
+
+            return Task.CompletedTask;
         }
     }
 }

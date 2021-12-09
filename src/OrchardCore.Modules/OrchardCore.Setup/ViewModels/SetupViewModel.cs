@@ -13,6 +13,8 @@ namespace OrchardCore.Setup.ViewModels
         [SiteNameValid(maximumLength: 70)]
         public string SiteName { get; set; }
 
+        public string Description { get; set; }
+
         public string DatabaseProvider { get; set; }
 
         public string ConnectionString { get; set; }
@@ -28,7 +30,6 @@ namespace OrchardCore.Setup.ViewModels
         public string UserName { get; set; }
 
         [Required]
-        [EmailAddress]
         public string Email { get; set; }
 
         [DataType(DataType.Password)]
@@ -41,8 +42,12 @@ namespace OrchardCore.Setup.ViewModels
 
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }
 
+        public bool RecipeNamePreset { get; set; }
+
         public string RecipeName { get; set; }
 
         public string SiteTimeZone { get; set; }
+
+        public string Secret { get; set; }
     }
 }

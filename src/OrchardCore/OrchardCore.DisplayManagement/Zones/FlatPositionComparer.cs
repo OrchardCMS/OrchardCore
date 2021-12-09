@@ -1,14 +1,12 @@
-﻿using OrchardCore.DisplayManagement;
 using System;
 using System.Collections.Generic;
 
-namespace OrchardCore.UI
+namespace OrchardCore.DisplayManagement.Zones
 {
     public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
     {
-
         public static FlatPositionComparer Instance { get; private set; }
-        
+
         static FlatPositionComparer()
         {
             Instance = new FlatPositionComparer();
@@ -35,7 +33,7 @@ namespace OrchardCore.UI
 
             // null == "before"; "" == "0"
             x = x == null
-                ? "before." // in order to have before < null when 'before' is explicitely defined
+                ? "before." // in order to have before < null when 'before' is explicitly defined
                 : x.Trim().Length == 0 ? "0" : x.Trim(':').TrimEnd('.'); // ':' is _sometimes_ used as a partition identifier
             y = y == null
                 ? "before."
@@ -64,7 +62,7 @@ namespace OrchardCore.UI
                 }
 
                 // Non-int after int or greater x pos than y pos (which is an int)
-                if (!xIsInt || (yIsInt && xPos > yPos)) 
+                if (!xIsInt || (yIsInt && xPos > yPos))
                 {
                     return 1;
                 }
@@ -87,12 +85,19 @@ namespace OrchardCore.UI
         private static string NormalizeKnownPartitions(string partition)
         {
             if (partition.Length < 5) // known partitions are long
+            {
                 return partition;
+            }
 
             if (string.Compare(partition, "before", StringComparison.OrdinalIgnoreCase) == 0)
+            {
                 return "-9999";
+            }
+
             if (string.Compare(partition, "after", StringComparison.OrdinalIgnoreCase) == 0)
+            {
                 return "9999";
+            }
 
             return partition;
         }

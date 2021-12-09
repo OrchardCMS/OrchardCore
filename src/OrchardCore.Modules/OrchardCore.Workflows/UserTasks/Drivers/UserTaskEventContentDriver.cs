@@ -5,11 +5,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -22,15 +20,14 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 {
     public class UserTaskEventContentDriver : ContentDisplayDriver
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IWorkflowStore _workflowStore;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowManager _workflowManager;
         private readonly INotifier _notifier;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHtmlLocalizer H;
 
         public UserTaskEventContentDriver(
-            IContentDefinitionManager contentDefinitionManager, 
             IWorkflowStore workflowStore,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
@@ -38,17 +35,14 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             IHtmlLocalizer<UserTaskEventContentDriver> localizer,
             IHttpContextAccessor httpContextAccessor)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _workflowStore = workflowStore;
             _activityLibrary = activityLibrary;
             _workflowManager = workflowManager;
             _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
 
-            T = localizer;
+            H = localizer;
         }
-
-        private IHtmlLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentItem contentItem)
         {
@@ -59,37 +53,50 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                     model.Actions = actions;
                 }).Location("Actions:30"),
             };
-            
+
             return Combine(results.ToArray());
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var action = (string)httpContext.Request.Form["submit.Save"];
-            if (action?.StartsWith("user-task.") == true)
+            var action = (string)httpContext.Request.Form["submit.Save"] ?? httpContext.Request.Form["submit.Publish"];
+            if (action?.StartsWith("user-task.", StringComparison.Ordinal) == true)
             {
                 action = action.Substring("user-task.".Length);
 
                 var availableActions = await GetUserTaskActionsAsync(model.ContentItemId);
 
-                if(!availableActions.Contains(action))
+                if (!availableActions.Contains(action))
                 {
-                    _notifier.Error(T["Not authorized to trigger '{0}'", action]);
+                    await _notifier.ErrorAsync(H["Not authorized to trigger '{0}'.", action]);
                 }
                 else
                 {
-                    var input = new { UserAction = action };
-                    await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, model.ContentItemId);
+                    var contentEvent = new ContentEventContext()
+                    {
+                        Name = nameof(UserTaskEvent),
+                        ContentType = model.ContentType,
+                        ContentItemId = model.ContentItemId
+                    };
+
+                    var input = new Dictionary<string, object>
+                    {
+                        { ContentEventConstants.UserActionInputKey, action },
+                        { ContentEventConstants.ContentItemInputKey, model },
+                        { ContentEventConstants.ContentEventInputKey, contentEvent }
+                    };
+
+                    await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, correlationId: model.ContentItemId);
                 }
             }
 
-            return await EditAsync(model, updater);
+            return Edit(model);
         }
-        
+
         private async Task<IList<string>> GetUserTaskActionsAsync(string contentItemId)
         {
-            var workflows = await _workflowStore.ListAsync(nameof(UserTaskEvent), contentItemId);
+            var workflows = await _workflowStore.ListByActivityNameAsync(nameof(UserTaskEvent), contentItemId);
             var user = _httpContextAccessor.HttpContext.User;
             var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
             var actionsQuery =
@@ -105,7 +112,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
         private IEnumerable<string> GetUserTaskActions(WorkflowState workflowState, string activityId, IEnumerable<string> userRoles)
         {
-            if(workflowState.ActivityStates.TryGetValue(activityId, out var activityState))
+            if (workflowState.ActivityStates.TryGetValue(activityId, out var activityState))
             {
                 var activity = _activityLibrary.InstantiateActivity<UserTaskEvent>(nameof(UserTaskEvent), activityState);
 

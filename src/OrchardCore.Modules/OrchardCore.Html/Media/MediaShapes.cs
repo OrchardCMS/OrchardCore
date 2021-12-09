@@ -1,4 +1,3 @@
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 
 namespace OrchardCore.Html.Media
@@ -7,14 +6,19 @@ namespace OrchardCore.Html.Media
     {
         public void Discover(ShapeTableBuilder builder)
         {
-            builder.Describe("HtmlBody_Editor")
+            builder.Describe("HtmlBodyPart_Edit")
                 .OnDisplaying(displaying =>
                 {
-                    IShape editor = displaying.Shape;
+                    var editor = displaying.Shape;
 
-                    if (editor.Metadata.Alternates.Contains("HtmlBody_Editor__Wysiwyg"))
+                    if (editor.Metadata.Type == "HtmlBodyPart_Edit__Wysiwyg")
                     {
-                        editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlBody");
+                        editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlBodyPart");
+                    }
+
+                    if (editor.Metadata.Type == "HtmlBodyPart_Edit__Trumbowyg")
+                    {
+                        editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlBodyPart");
                     }
                 });
         }

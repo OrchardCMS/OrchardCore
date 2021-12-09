@@ -1,120 +1,53 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Documents;
 using OrchardCore.Modules;
-using YesSql;
 
 namespace OrchardCore.Settings.Services
 {
     /// <summary>
-    /// Implements <see cref="ISiteService"/> by storing the site as a Content Item.
+    /// Implements <see cref="ISiteService"/> by storing the site settings as a document.
     /// </summary>
     public class SiteService : ISiteService
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly ISignal _signal;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IDocumentManager<SiteSettings> _documentManager;
         private readonly IClock _clock;
-        private const string SiteCacheKey = "SiteService";
 
-        public SiteService(
-            ISignal signal,
-            IServiceProvider serviceProvider,
-            IMemoryCache memoryCache,
-            IClock clock)
+        public SiteService(IDocumentManager<SiteSettings> documentManager, IClock clock)
         {
-            _signal = signal;
-            _serviceProvider = serviceProvider;
+            _documentManager = documentManager;
             _clock = clock;
-            _memoryCache = memoryCache;
         }
 
-        /// <inheritdoc/>
-        public IChangeToken ChangeToken => _signal.GetToken(SiteCacheKey);
+        /// <summary>
+        /// Loads the site settings from the store for updating and that should not be cached.
+        /// </summary>
+        // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
+        public async Task<ISite> LoadSiteSettingsAsync() => await _documentManager.GetOrCreateMutableAsync(GetDefaultSettingsAsync);
 
-        /// <inheritdoc/>
-        public async Task<ISite> GetSiteSettingsAsync()
+        /// <summary>
+        /// Gets the site settings from the cache for sharing and that should not be updated.
+        /// </summary>
+        // Await as we can't cast 'Task<SiteSettings>' to 'Task<ISite>'.
+        public async Task<ISite> GetSiteSettingsAsync() => await _documentManager.GetOrCreateImmutableAsync(GetDefaultSettingsAsync);
+
+        /// <summary>
+        /// Updates the store with the provided site settings and then updates the cache.
+        /// </summary>
+        public Task UpdateSiteSettingsAsync(ISite site) => _documentManager.UpdateAsync(site as SiteSettings);
+
+        private Task<SiteSettings> GetDefaultSettingsAsync()
         {
-            ISite site;
-
-            if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
+            return Task.FromResult(new SiteSettings
             {
-                var session = GetSession();
-
-                site = await session.Query<SiteSettings>().FirstOrDefaultAsync();
-
-                if (site == null)
-                {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
-                        {
-                            site = new SiteSettings
-                            {
-                                SiteSalt = Guid.NewGuid().ToString("N"),
-                                SiteName = "My Orchard Project Application",
-                                PageSize = 10,
-                                MaxPageSize = 100,
-                                MaxPagedCount = 0,
-                                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
-                                Culture = ""
-                            };
-
-                            session.Save(site);
-                            _memoryCache.Set(SiteCacheKey, site);
-                            _signal.SignalToken(SiteCacheKey);
-                        }
-                    }
-                }
-                else
-                {
-                    _memoryCache.Set(SiteCacheKey, site);
-                    _signal.SignalToken(SiteCacheKey);
-                }
-            }
-
-            return site;
-        }
-
-        /// <inheritdoc/>
-        public async Task UpdateSiteSettingsAsync(ISite site)
-        {
-            var session = GetSession();
-
-            var existing = await session.Query<SiteSettings>().FirstOrDefaultAsync();
-
-            existing.BaseUrl = site.BaseUrl;
-            existing.Calendar = site.Calendar;
-            existing.Culture = site.Culture;
-            existing.SupportedCultures = site.SupportedCultures;
-            existing.HomeRoute = site.HomeRoute;
-            existing.MaxPagedCount = site.MaxPagedCount;
-            existing.MaxPageSize = site.MaxPageSize;
-            existing.PageSize = site.PageSize;
-            existing.Properties = site.Properties;
-            existing.ResourceDebugMode = site.ResourceDebugMode;
-            existing.SiteName = site.SiteName;
-            existing.SiteSalt = site.SiteSalt;
-            existing.SuperUser = site.SuperUser;
-            existing.TimeZoneId = site.TimeZoneId;
-            existing.UseCdn = site.UseCdn;
-
-            session.Save(existing);
-
-            _memoryCache.Set(SiteCacheKey, site);
-            _signal.SignalToken(SiteCacheKey);
-
-            return;
-        }
-
-        private YesSql.ISession GetSession()
-        {
-            var httpContextAccessor = _serviceProvider.GetService<IHttpContextAccessor>();
-            return httpContextAccessor.HttpContext.RequestServices.GetService<YesSql.ISession>();
+                SiteSalt = Guid.NewGuid().ToString("N"),
+                SiteName = "My Orchard Project Application",
+                PageTitleFormat = "{% page_title Site.SiteName, position: \"after\", separator: \" - \" %}",
+                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
+                PageSize = 10,
+                MaxPageSize = 100,
+                MaxPagedCount = 0
+            });
         }
     }
 }

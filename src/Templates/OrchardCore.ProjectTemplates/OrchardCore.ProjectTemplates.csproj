@@ -1,0 +1,98 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
+  <ItemGroup>
+    <PackageReference Remove="Microsoft.SourceLink.GitHub" />
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+    <IncludeBuildOutput>False</IncludeBuildOutput>
+    <IncludeSource>False</IncludeSource>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <EnableDefaultItems>False</EnableDefaultItems>
+    <!--
+      By default, nuget will not pack files / folders that being with a '.'.
+      This setting changes that so that the .template.config folder will be included.
+    -->
+    <NoDefaultExcludes>True</NoDefaultExcludes>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <PackageType>Template</PackageType>
+    <!--
+      The previous code used a nuget package to allow the 'RoslynCodeTaskFactory' (see the ReplaceFileText task definition below) to be used.
+      The latest versions of the build tooling have now incorporated the 'RoslynCodeTaskFactory' into its own codebase, and thus no package references are needed now.
+      This led to the NU5128 warning, which is now being ignored. See the following error message.
+      The error message is not accurate, as it indicates there is no content. It should say assemblies instead, since we have content but no assemblies.
+        NU5128 warning: Ignore since the project template package doesn't contain content or references to other packages.
+    -->
+    <NoWarn>CS8021,CS2008,NU5128</NoWarn>
+    <!--
+      Prevent the symbol package from being created as this nuget package doesn't have package refs or assemblies.
+      Otherwise, the following error will be thrown by `dotnet pack`: error NU5017: Cannot create a package that has no dependencies nor content.
+    -->
+    <IncludeSymbols>False</IncludeSymbols>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Code Generation Templates</Title>
+    <Description>$(OCFrameworkDescription)
+
+    OrchardCore Code Templates for dotnet new template configurations for creating new websites, themes and modules from the command shell.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="content\**" Exclude="**\.template.config.src\**" Pack="true">
+      <PackagePath>content\%(RecursiveDir)%(FileName)%(Extension)</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <UsingTask TaskName="ReplaceFileText" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <InputFilename ParameterType="System.String" Required="true" />
+      <OutputFilename ParameterType="System.String" Required="true" />
+      <MatchExpression ParameterType="System.String" Required="true" />
+      <ReplacementText ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            File.WriteAllText(
+                OutputFilename,
+                Regex.Replace(File.ReadAllText(InputFilename), MatchExpression, ReplacementText)
+                );
+          ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="TransformTemplateConfigs" BeforeTargets="Build" Condition="'$(TargetFramework)' == '$(DefaultTargetFramework)'">
+    <!--
+      For each template, copy its '.template.config.src' directory to '.template.config',
+      removing any earlier output at that location.
+    -->
+    <ItemGroup>
+      <_TemplateProjectFile Include="content\**\*.csproj" />
+      <_TemplateProjectDir Include="%(_TemplateProjectFile.RootDir)%(Directory)" />
+      <_TemplateConfigFileToCopy Include="%(_TemplateProjectDir.Identity).template.config.src\**">
+        <DestDir>%(Identity).template.config\</DestDir>
+      </_TemplateConfigFileToCopy>
+    </ItemGroup>
+
+    <RemoveDir Directories="%(_TemplateConfigFileToCopy.DestDir)" />
+    <Copy SourceFiles="@(_TemplateConfigFileToCopy)" DestinationFolder="%(DestDir)" />
+
+    <!--
+      Modify the .json files in the .template.config dirs to stamp MSBuild properties into them.
+    -->
+    <ItemGroup>
+      <GeneratedContent Include="@(_TemplateConfigFileToCopy)" Condition="'%(Extension)'=='.json'">
+        <OutputPath>%(DestDir)%(RecursiveDir)%(Filename)%(Extension)</OutputPath>
+      </GeneratedContent>
+    </ItemGroup>
+
+    <!-- Update the OrchardVersion in the templates to reflect the newly built version number. -->
+    <ReplaceFileText InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateOrchardVersion\}" ReplacementText="$(Version)" />
+    <!-- Replace the default target framework for the template based on which TFM is being built. The resulting nuget package should have templates with the correct corresponding TFM defaulted in the template. -->
+    <ReplaceFileText InputFilename="%(GeneratedContent.OutputPath)" OutputFilename="%(GeneratedContent.OutputPath)" MatchExpression="\$\{TemplateTargetFramework\}" ReplacementText="$(TargetFramework)" />
+  </Target>
+</Project>

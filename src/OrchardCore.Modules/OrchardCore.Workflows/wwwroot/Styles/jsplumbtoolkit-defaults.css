@@ -4,10 +4,19 @@
 */
 
 /* 
-    Default styles for jsPlumb Toolkit
+    Default styles for jsPlumb Toolkit/Community Editions.
 
-    Copyright 2017 https://jsplumbtoolkit.com
+    Copyright 2020 https://jsplumbtoolkit.com
 */
+
+/**
+jtk-connector is assigned to connector SVG elements. overflow:visible here ensures we dont have to take into account path
+width and overlay sizes when computing the size of the svg element. In the Community edition this is a change from
+2.14.0 onwards.
+ */
+.jtk-connector {
+    overflow:visible;
+}
 
 /* --------------------------------------------------------------------------------------------- */
 /* --- SURFACE WIDGET -------------------------------------------------------------------------- */
@@ -38,7 +47,7 @@
     as having `position:relative` so that the absolute positioned Nodes are drawn correctly.
 */
 [jtk-group-content] {
-    position: relative;
+    position:relative;
 }
 
 /*
@@ -49,6 +58,18 @@
     the issue has been fixed in more recent versions of Chrome, but the style is left here in case you come across
     the problem.
 */
+.jtk-node.jtk-drag {
+    /*-webkit-backface-visibility: hidden;*/
+}
+
+/*
+    Suppresses the pointer events on an element that was created by Katavorio in response to a drag in which the element
+    should first be cloned. Having this clone ignore pointer events means there is less chance that any other
+    mouse activity (such as click) on the original element will not be consumed by katavorio.
+ */
+.katavorio-clone-drag {
+    pointer-events:none;
+}
 
 /*
     Assigned to an element that is the `Container` in a `render` call.
@@ -64,6 +85,7 @@
     cursor: move;
     cursor: -moz-grab;
     cursor: -webkit-grab;
+
     /*
         For IE10+. As discussed on this page:
 
@@ -73,7 +95,8 @@
         then consumed the events so you don't have to be bothered by them. They've "done a lot of research"
         about this stuff and put together a really great default experience for everyone in the entire world.
     */
-    touch-action: none;
+    touch-action:none;
+
     /*
         Another Chrome issue that appears to have been fixed in later versions
         http://stackoverflow.com/questions/15464055/css-transition-effect-makes-image-blurry-moves-image-1px-in-chrome
@@ -111,7 +134,7 @@
     to be droppable on a Surface via its `registerDroppableNodes` method.
 */
 .jtk-surface-droppable-node {
-    touch-action: none;
+    touch-action:none;
 }
 
 /*
@@ -119,16 +142,16 @@
 */
 .jtk-surface-nopan {
     overflow: scroll !important;
-    cursor: default;
+    cursor:default;
 }
 
 /*
 Assigned to tile images in a tiled background
 */
 .jtk-surface-tile {
-    border: none;
-    outline: none;
-    margin: 0;
+    border:none;
+    outline:none;
+    margin:0;
     -webkit-transition: opacity .3s ease .15s;
     -moz-transition: opacity .3s ease .15s;
     -o-transition: opacity .3s ease .15s;
@@ -166,15 +189,15 @@ Assigned to tile images in a tiled background
     than the normal mode in which the selected parts of the UI are covered.
 */
 .jtk-lasso-mask {
-    position: fixed;
-    z-index: 20000;
-    display: none;
-    opacity: 0.5;
+    position:fixed;
+    z-index:20000;
+    display:none;
+    opacity:0.5;
     background-color: #07234E;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
 }
 
 /*
@@ -208,16 +231,16 @@ Assigned to tile images in a tiled background
     height: 20px;
 }
 
-    /*
+/*
     Hover styles for all pan buttons.
     On hover, change color, background color, font weight and opacity.
 */
-    .jtk-surface-pan-top:hover, .jtk-surface-pan-bottom:hover, .jtk-surface-pan-left:hover, .jtk-surface-pan-right:hover {
-        opacity: 0.6;
-        background-color: rgb(49, 119, 184);
-        color: white;
-        font-weight: bold;
-    }
+.jtk-surface-pan-top:hover, .jtk-surface-pan-bottom:hover, .jtk-surface-pan-left:hover, .jtk-surface-pan-right:hover {
+    opacity: 0.6;
+    background-color: rgb(49, 119, 184);
+    color: white;
+    font-weight: bold;
+}
 
 /*
     Specific styles for the left and right pan buttons.
@@ -308,12 +331,12 @@ Assigned to tile images in a tiled background
     font-weight: bold;
 }
 
-    /*
+/*
     The '-' symbol when the miniview is expanded
 */
-    .jtk-miniview-collapse:before {
-        content: "\2012";
-    }
+.jtk-miniview-collapse:before {
+    content: "\2012";
+}
 
 /*
     Assigned to the miniview element when it is collapsed.
@@ -327,20 +350,20 @@ Assigned to tile images in a tiled background
     width: 21px;
 }
 
-    /*
+/*
     Hide all children of the miniview (except the expand button) when it is collapsed so you don't see anything
     poking through under the + icon.
 */
-    .jtk-miniview-collapsed .jtk-miniview-element, .jtk-miniview-collapsed .jtk-miniview-panner {
-        visibility: hidden;
-    }
+.jtk-miniview-collapsed .jtk-miniview-element, .jtk-miniview-collapsed .jtk-miniview-panner {
+    visibility: hidden;
+}
 
-    /*
+/*
     The '+' symbol when the miniview is collapsed.
 */
-    .jtk-miniview-collapsed .jtk-miniview-collapse:before {
-        content: "+";
-    }
+.jtk-miniview-collapsed .jtk-miniview-collapse:before {
+    content: "+";
+}
 
 /*
     Hover state for the collapse/expand icon.
@@ -384,7 +407,7 @@ Assigned to tile images in a tiled background
 }
 
 .jtk-dialog-overlay-x {
-    max-height: 0;
+    max-height:0;
     transition: max-height 0.5s ease-in;
     -moz-transition: max-height 0.5s ease-in;
     -ms-transition: max-height 0.5s ease-in;
@@ -393,7 +416,7 @@ Assigned to tile images in a tiled background
 }
 
 .jtk-dialog-overlay-y {
-    max-width: 0;
+    max-width:0;
     transition: max-width 0.5s ease-in;
     -moz-transition: max-width 0.5s ease-in;
     -ms-transition: max-width 0.5s ease-in;
@@ -402,27 +425,27 @@ Assigned to tile images in a tiled background
 }
 
 .jtk-dialog-overlay-top {
-    top: 20px;
+    top:20px;
 }
 
 .jtk-dialog-overlay-bottom {
-    bottom: 20px;
+    bottom:20px;
 }
 
 .jtk-dialog-overlay-left {
-    left: 20px;
+    left:20px;
 }
 
 .jtk-dialog-overlay-right {
-    right: 20px;
+    right:20px;
 }
 
 .jtk-dialog-overlay-x.jtk-dialog-overlay-visible {
-    max-height: 1000px;
+    max-height:1000px;
 }
 
 .jtk-dialog-overlay-y.jtk-dialog-overlay-visible {
-    max-width: 1000px;
+    max-width:1000px;
 }
 
 /*
@@ -445,13 +468,13 @@ Assigned to tile images in a tiled background
     outline: 1px solid #ccc;
 }
 
-    /*
+/*
     Hover style for an individual button in a dialog.
 */
-    .jtk-dialog-button:hover {
-        color: white;
-        background-color: #234b5e;
-    }
+.jtk-dialog-button:hover {
+    color: white;
+    background-color: #234b5e;
+}
 
 /*
     The titlebar of a dialog.
@@ -463,21 +486,21 @@ Assigned to tile images in a tiled background
 }
 
 .jtk-dialog-content {
-    font-size: 12px;
-    text-align: left;
-    min-width: 250px;
+    font-size:12px;
+    text-align:left;
+    min-width:250px;
     margin: 0 14px;
 }
 
-    .jtk-dialog-content ul {
-        width: 100%;
-        padding-left: 0;
-    }
+.jtk-dialog-content ul {
+    width:100%;
+    padding-left:0;
+}
 
-    .jtk-dialog-content label {
-        cursor: pointer;
-        font-weight: inherit;
-    }
+.jtk-dialog-content label {
+    cursor: pointer;
+    font-weight: inherit;
+}
 
 .jtk-dialog-overlay input, .jtk-dialog-overlay textarea {
     background-color: #FFF;
@@ -490,14 +513,14 @@ Assigned to tile images in a tiled background
     margin-right: 6px;
 }
 
-    .jtk-dialog-overlay input:focus, .jtk-dialog-overlay textarea:focus {
-        background-color: #cbeae1;
-        border: 1px solid #83b8a8;
-        color: #333;
-        font-size: 14px;
-        font-style: normal;
-        outline: none;
-    }
+.jtk-dialog-overlay input:focus, .jtk-dialog-overlay textarea:focus {
+    background-color: #cbeae1;
+    border: 1px solid #83b8a8;
+    color: #333;
+    font-size: 14px;
+    font-style: normal;
+    outline: none;
+}
 
 /* -------------------------------------------------------------------------------------------- */
 /* --- DRAWING TOOLS -------------------------------------------------------------------------- */
@@ -567,7 +590,7 @@ Assigned to tile images in a tiled background
     not visible by defaut; enable if you need it.
 */
 .jtk-draw-drag {
-    display: none;
+    display:none;
     position: absolute;
     left: 50%;
     top: 50%;
@@ -590,35 +613,4 @@ Assigned to tile images in a tiled background
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-}
-
-.jtk-bezier-handle {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background-color: darkcyan;
-    cursor: move;
-    z-index: 10;
-}
-
-.jtk-bezier-handle-secondary {
-    cursor: default;
-    background-color: lightgreen;
-}
-
-.jtk-bezier-handle-secondary-source {
-    background-color: lavenderblush;
-}
-
-.jtk-bezier-guideline {
-    position: absolute;
-}
-
-    .jtk-bezier-guideline path {
-        stroke: darkcyan;
-        stroke-linewidth: 3;
-    }
-
-.jtk-connection-edit path {
-    stroke-dasharray: 2 2;
 }

@@ -1,7 +1,4 @@
 using System;
-using System.IO;
-using System.Text;
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -12,29 +9,29 @@ namespace OrchardCore.DynamicCache
     public class CachedShapeWrapperShapes : IShapeAttributeProvider
     {
         [Shape]
-        public IHtmlContent CachedShapeWrapper(dynamic Shape)
+        public IHtmlContent CachedShapeWrapper(IShape Shape)
         {
-            var sb = new StringBuilder();
-            var metadata = (ShapeMetadata) Shape.Metadata;
-            var cache = metadata.Cache();
-            
-            sb.AppendLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
-            sb.AppendLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
-            sb.AppendLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
-            sb.AppendLine($"       EXPIRES ON: {cache.ExpiresOn}");
-            sb.AppendLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
-            sb.AppendLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");
-            sb.AppendLine("-->");
-            
-            using (var sw = new StringWriter())
-            {
-                metadata.ChildContent.WriteTo(sw, HtmlEncoder.Default);
-                sb.AppendLine(sw.ToString());
-            }
-            
-            sb.AppendLine($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
+            // No need to optimize this code as it will be used for debugging purpose
 
-            return new HtmlString(sb.ToString());
+            var contentBuilder = new HtmlContentBuilder();
+            var metadata = Shape.Metadata;
+            var cache = metadata.Cache();
+
+            contentBuilder.AppendLine();
+            contentBuilder.AppendHtmlLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
+            contentBuilder.AppendHtmlLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
+            contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
+            contentBuilder.AppendHtmlLine($"       EXPIRES ON: {cache.ExpiresOn}");
+            contentBuilder.AppendHtmlLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
+            contentBuilder.AppendHtmlLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");
+            contentBuilder.AppendHtmlLine("-->");
+
+            contentBuilder.AppendHtml(metadata.ChildContent);
+
+            contentBuilder.AppendLine();
+            contentBuilder.AppendHtmlLine($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
+
+            return contentBuilder;
         }
     }
 }

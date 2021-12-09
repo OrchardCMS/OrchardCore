@@ -1,43 +1,58 @@
-﻿using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
 using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Demo
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
-
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
-                .Add(T["Demo"], "10", themes => themes
+                .Add(S["Demo"], "10", demo => demo
                     .AddClass("demo").Id("demo")
-                    .Add(T["This Menu Item 1.1"], "0", installed => installed
-                        .Add(T["This is Menu Item 1.1"])
-                        .Add(T["This is Menu Item 1.2"])
-                        .Add(T["This is Menu Item 1.2"])
+                    .Add(S["This Menu Item 1"], "0", item => item
+                        .Add(S["This is Menu Item 1.1"], subItem => subItem
+                            .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
+                        .Add(S["This is Menu Item 1.2"], subItem => subItem
+                            .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
+                        .Add(S["This is Menu Item 1.2"], subItem => subItem
+                            .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
                     )
-                    .Add(T["This Menu Item 2.1"], "0", installed => installed
-                        .Add(T["This is Menu Item 2.1"])
-                        .Add(T["This is Menu Item 2.2"])
-                        .Add(T["This is Menu Item 3.2"])
+                    .Add(S["This Menu Item 2"], "0", item => item
+                        .Add(S["This is Menu Item 2.1"], subItem => subItem
+                            .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
+                        .Add(S["This is Menu Item 2.2"], subItem => subItem
+                            .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
+                        .Add(S["This is Menu Item 3.2"], subItem => subItem
+                            .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
                     )
-                    .Add(T["This Menu Item 3.1"], "0", installed => installed
-                        .Add(T["This is Menu Item 3.1"])
-                        .Add(T["This is Menu Item 3.2"])
+                    .Add(S["This Menu Item 3"], "0", item => item
+                        .Add(S["This is Menu Item 3.1"], subItem => subItem
+                            .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
+                        .Add(S["This is Menu Item 3.2"], subItem => subItem
+                            .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
+
+                    )
+                    .Add(S["Todo (Liquid - Frontend)"], "0", item => item
+                        .Action("Index", "Todo", new { area = "OrchardCore.Demo" })
                     )
                 );
+
+            return Task.CompletedTask;
         }
     }
 }

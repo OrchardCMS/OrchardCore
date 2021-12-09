@@ -1,18 +1,26 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.HomeRoute.Routing;
+using OrchardCore.Modules;
+using OrchardCore.Routing;
 
 namespace OrchardCore.HomeRoute
 {
     public class Startup : StartupBase
     {
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override int Order => -150;
+
+        public override void ConfigureServices(IServiceCollection services)
         {
-            var inlineConstraintResolver = serviceProvider.GetService<IInlineConstraintResolver>();
-            routes.Routes.Add(new HomePageRoute(routes, inlineConstraintResolver));
+            services.AddSingleton<HomeRouteTransformer>();
+            services.AddSingleton<IShellRouteValuesAddressScheme, HomeRouteValuesAddressScheme>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapDynamicControllerRoute<HomeRouteTransformer>("/");
         }
     }
 }

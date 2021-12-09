@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.ResourceManagement
@@ -23,12 +24,7 @@ namespace OrchardCore.ResourceManagement
         /// <summary>
         /// Registers a specific resource url.
         /// </summary>
-        RequireSettings Include(string resourceType, string resourcePath, string resourceDebugPath);
-
-        /// <summary>
-        /// Registers a custom url.
-        /// </summary>
-        RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath, string relativeFromPath);
+        RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath);
 
         /// <summary>
         /// Registers a named resource.
@@ -36,15 +32,21 @@ namespace OrchardCore.ResourceManagement
         RequireSettings RegisterResource(string resourceType, string resourceName);
 
         /// <summary>
-        /// Registers a custom script tag on at the head.
+        /// Registers a custom script tag at the head.
         /// </summary>
         void RegisterHeadScript(IHtmlContent script);
 
         /// <summary>
-        /// Registers a custom script tag on at the foot.
+        /// Registers a custom script tag at the foot.
         /// </summary>
         /// <param name="script"></param>
         void RegisterFootScript(IHtmlContent script);
+
+        /// <summary>
+        /// Registers a custom style tag at the head.
+        /// </summary>
+        /// <param name="style"></param>
+        void RegisterStyle(IHtmlContent style);
 
         /// <summary>
         /// Registers a link tag.
@@ -87,28 +89,43 @@ namespace OrchardCore.ResourceManagement
         IEnumerable<IHtmlContent> GetRegisteredFootScripts();
 
         /// <summary>
+        /// Returns the registered style resources.
+        /// </summary>
+        IEnumerable<IHtmlContent> GetRegisteredStyles();
+
+        /// <summary>
         /// Renders the registered meta tags.
         /// </summary>
-        void RenderMeta(IHtmlContentBuilder builder);
+        void RenderMeta(TextWriter writer);
 
         /// <summary>
         /// Renders the registered header link tags.
         /// </summary>
-        void RenderHeadLink(IHtmlContentBuilder builder);
+        void RenderHeadLink(TextWriter writer);
 
         /// <summary>
         /// Renders the registered stylesheets.
         /// </summary>
-        void RenderStylesheet(IHtmlContentBuilder builder, RequireSettings settings);
+        void RenderStylesheet(TextWriter writer);
 
         /// <summary>
         /// Renders the registered header script tags.
         /// </summary>
-        void RenderHeadScript(IHtmlContentBuilder builder, RequireSettings settings);
+        void RenderHeadScript(TextWriter writer);
 
         /// <summary>
         /// Renders the registered footer script tags.
         /// </summary>
-        void RenderFootScript(IHtmlContentBuilder builder, RequireSettings settings);
+        void RenderFootScript(TextWriter writer);
+
+        /// <summary>
+        /// Renders the registered local script tags.
+        /// </summary>
+        void RenderLocalScript(RequireSettings settings, TextWriter writer);
+
+        /// <summary>
+        /// Renders the registered local style tags.
+        /// </summary>
+        void RenderLocalStyle(RequireSettings settings, TextWriter writer);
     }
 }

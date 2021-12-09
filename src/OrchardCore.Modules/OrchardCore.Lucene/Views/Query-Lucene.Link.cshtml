@@ -1,14 +1,14 @@
 @model dynamic
 @using OrchardCore.Lucene
-@inject LuceneIndexManager LuceneIndexManager
+@inject LuceneIndexSettingsService LuceneIndexSettingsService
 
-@{ 
-    var disabled = !LuceneIndexManager.List().Any();
+@{
+    var disabled = !(await LuceneIndexSettingsService.GetSettingsAsync()).Any();
 }
 <div class="card">
     <div class="card-body">
         <h4>@T["Lucene"]</h4>
-        <p class="hint">@T["Queries a Lucene index."]</p>    
+        <p class="hint">@T["Queries a Lucene index."]</p>
     </div>
     <div class="card-footer text-muted text-xs-right">
         <a disabled="@disabled" class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Admin" asp-route-id="@Model.Name" asp-area="OrchardCore.Queries">@T["Add"]</a>

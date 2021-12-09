@@ -4,7 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Menu.Models;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Menu
 {
@@ -15,15 +17,7 @@ namespace OrchardCore.Menu
             builder.Describe("Menu")
                 .OnProcessing(async context =>
                 {
-                    dynamic menu = context.Shape;
-                    string identifier = menu.ContentItemId ?? menu.Alias;
-
-                    if (String.IsNullOrEmpty(identifier))
-                    {
-                        return;
-                    }
-
-                    menu.Classes.Add("menu");
+                    var menu = context.Shape;
 
                     // Menu population is executed when processing the shape so that its value
                     // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
@@ -31,20 +25,31 @@ namespace OrchardCore.Menu
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-                    var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
+                    var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
-                    string contentItemId = menu.Alias != null
-                        ? await aliasManager.GetContentItemIdAsync(menu.Alias)
-                        : menu.ContentItemId;
+                    var contentItemId = menu.TryGetProperty("Alias", out object alias) && alias != null
+                        ? await handleManager.GetContentItemIdAsync(alias.ToString())
+                        : menu.TryGetProperty("ContentItemId", out object id)
+                            ? id.ToString()
+                            : null;
 
-                    ContentItem menuContentItem = await contentManager.GetAsync(contentItemId);
+                    if (contentItemId == null)
+                    {
+                        return;
+                    }
+
+                    menu.Classes.Add("menu");
+
+                    var menuContentItem = await contentManager.GetAsync(contentItemId);
 
                     if (menuContentItem == null)
                     {
                         return;
                     }
 
-                    menu.MenuName = (await contentManager.PopulateAspectAsync<ContentItemMetadata>(menuContentItem)).DisplayText;
+                    menu.Properties["ContentItem"] = menuContentItem;
+
+                    menu.Properties["MenuName"] = menuContentItem.DisplayText;
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
 
@@ -53,13 +58,14 @@ namespace OrchardCore.Menu
                         return;
                     }
 
-                    string differentiator = FormatName((string) menu.MenuName);
+                    var differentiator = FormatName(menu.GetProperty<string>("MenuName"));
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {
                         // Menu__[MenuName] e.g. Menu-MainMenu
                         menu.Metadata.Alternates.Add("Menu__" + differentiator);
-                        menu.Differentiator = differentiator;
+                        menu.Metadata.Differentiator = differentiator;
+                        menu.Classes.Add(("menu-" + differentiator).HtmlClassify());
                     }
 
                     // The first level of menu item shapes is created.
@@ -71,24 +77,24 @@ namespace OrchardCore.Menu
                         {
                             ContentItem = contentItem,
                             Level = 0,
-                            Menu = menu,
-                            Differentiator = differentiator
+                            Menu = menu
                         }));
 
-                        // Don't use Items.Add() or the collection won't be sorted
-                        menu.Add(shape);
-                    }
+                        shape.Metadata.Differentiator = differentiator;
 
+                        // Don't use Items.Add() or the collection won't be sorted
+                        await ((Shape)menu).AddAsync(shape);
+                    }
                 });
 
             builder.Describe("MenuItem")
                 .OnDisplaying(async context =>
                 {
-                    dynamic menuItem = context.Shape;
-                    ContentItem menuContentItem = menuItem.ContentItem;
-                    var menu = menuItem.Menu;
-                    int level = menuItem.Level;
-                    string differentiator = menuItem.Differentiator;
+                    var menuItem = context.Shape;
+                    var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
+                    var menu = menuItem.GetProperty<IShape>("Menu");
+                    var level = menuItem.GetProperty<int>("Level");
+                    var differentiator = menuItem.Metadata.Differentiator;
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
@@ -101,13 +107,14 @@ namespace OrchardCore.Menu
                             var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                             {
                                 ContentItem = contentItem,
-                                Level = 0,
-                                Menu = menu,
-                                Differentiator = differentiator
+                                Level = level + 1,
+                                Menu = menu
                             }));
 
+                            shape.Metadata.Differentiator = differentiator;
+
                             // Don't use Items.Add() or the collection won't be sorted
-                            menuItem.Add(shape);
+                            await menuItem.AddAsync(shape);
                         }
                     }
 
@@ -138,11 +145,11 @@ namespace OrchardCore.Menu
             builder.Describe("MenuItemLink")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic menuItem = displaying.Shape;
-                    int level = menuItem.Level;
-                    string differentiator = menuItem.Differentiator;
+                    var menuItem = displaying.Shape;
+                    var level = menuItem.GetProperty<int>("Level");
+                    var differentiator = menuItem.Metadata.Differentiator;
 
-                    ContentItem menuContentItem = menuItem.ContentItem;
+                    var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
 
                     var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
 
@@ -173,9 +180,9 @@ namespace OrchardCore.Menu
         /// </summary>
         /// <param name="alternateElement"></param>
         /// <returns></returns>
-        private string EncodeAlternateElement(string alternateElement)
+        private static string EncodeAlternateElement(string alternateElement)
         {
-            return alternateElement.Replace("-", "__").Replace(".", "_");
+            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
 
         /// <summary>

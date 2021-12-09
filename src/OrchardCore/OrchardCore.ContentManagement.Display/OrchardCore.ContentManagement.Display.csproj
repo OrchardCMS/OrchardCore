@@ -1,8 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore ContentManagement Display</Title>
+    <Description>$(OCCMSDescription)
+
+    DisplayManagement Library for ContentManagement. Provides implementation of DisplayManager for ContentItem and useful utilities classes for shapes, placement and Razor - related to ContentManagement.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement DisplayManagement</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />

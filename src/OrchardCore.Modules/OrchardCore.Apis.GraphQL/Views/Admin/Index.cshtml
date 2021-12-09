@@ -1,0 +1,62 @@
+<script asp-src="~/OrchardCore.Apis.GraphQL/Scripts/graphiql-orchard.js" at="Foot"></script>
+
+<style>
+    #graphiql {
+        position: absolute;
+        top: 52px;
+        bottom: 0;
+        right: 0;
+        left: 260px;
+        transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+    }
+
+    .loader {
+        position: absolute;
+        left: 46%;
+        top: 46%;
+        z-index: 1;
+        border: 5px solid #f3f3f3;
+        -webkit-animation: spin 1s linear infinite;
+        animation: spin 1s linear infinite;
+        border-top: 5px solid #555;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+    }
+
+    @@-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    :root .graphiql-container .CodeMirror {
+        height: 100% !important;
+    }
+
+    :root .graphiql-container .CodeMirror pre {
+        padding-left: unset;
+        line-height: unset;
+        margin: unset;
+        font-size: unset;
+        overflow: unset;
+    }
+</style>
+
+<div id="graphiql" data-introspection-url="@Href("~/api/graphql")">
+    <div class="loader"></div>
+</div>

@@ -9,9 +9,9 @@ namespace OrchardCore.Templates.Settings
 {
     public class TemplateContentTypeDefinitionDriver : ContentTypeDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<TemplateContentPartDefinitionDriver> S;
+        private readonly IStringLocalizer S;
 
-        public TemplateContentTypeDefinitionDriver(IStringLocalizer<TemplateContentPartDefinitionDriver> localizer)
+        public TemplateContentTypeDefinitionDriver(IStringLocalizer<TemplateContentTypeDefinitionDriver> localizer)
         {
             S = localizer;
         }
@@ -20,7 +20,7 @@ namespace OrchardCore.Templates.Settings
         {
             return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
             {
-                var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
+                var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
 
                 if (string.IsNullOrWhiteSpace(stereotype))
                 {
@@ -40,8 +40,7 @@ namespace OrchardCore.Templates.Settings
                         Key = $"{stereotype}_Summary__{contentTypeDefinition.Name}",
                         Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
                     });
-
-            }).Location("Content");
+            }).Location("Shortcuts");
         }
     }
 }

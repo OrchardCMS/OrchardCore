@@ -1,7 +1,7 @@
 @model OrchardCore.Layers.ViewModels.WidgetWrapper
 @using OrchardCore.Layers.Models
 
-@{ 
+@{
     var layerMetadata = Model.Widget.As<LayerMetadata>();
 }
 
@@ -9,7 +9,7 @@
     @if (layerMetadata.RenderTitle)
     {
     <div class="widget-container-title">
-        <h2>@layerMetadata.Title</h2>
+        <h2>@Model.Widget.DisplayText</h2>
     </div>
     }
 

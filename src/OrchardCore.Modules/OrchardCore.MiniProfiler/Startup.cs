@@ -5,14 +5,12 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Modules;
-using StackExchange.Profiling.Data;
 using YesSql;
 
 namespace OrchardCore.MiniProfiler
 {
     public class Startup : StartupBase
     {
-
         // Early in the pipeline to wrap all other middleware
         public override int Order => -500;
 
@@ -28,14 +26,14 @@ namespace OrchardCore.MiniProfiler
             services.AddMiniProfiler();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             app.UseMiniProfiler();
 
             var store = serviceProvider.GetService<IStore>();
 
-            var factory = store.Configuration.ConnectionFactory;
-            store.Configuration.ConnectionFactory = new MiniProfilerConnectionFactory(factory);
+            // Wrap the current factory with MiniProfilerConnectionFactory
+            store.Configuration.ConnectionFactory = new MiniProfilerConnectionFactory(store.Configuration.ConnectionFactory);
         }
     }
 }

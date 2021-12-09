@@ -1,0 +1,21 @@
+@model AdminNodeEditViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Node"])</h1></zone>
+
+<div asp-validation-summary="All"></div>
+<form asp-action="Create" method="post" class="no-multisubmit">
+    @await DisplayAsync(Model.Editor.Content)
+
+    <input type="hidden" asp-for="AdminMenuId" />
+    <input type="hidden" asp-for="AdminNodeId" />
+    <input type="hidden" asp-for="AdminNodeType" />
+
+    <div class="form-group">
+        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+        <a class="btn btn-secondary cancel"
+           role="button"
+           asp-route-controller="Node"
+           asp-route-action="List"
+           asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
+    </div>
+</form>

@@ -1,0 +1,83 @@
+@model dynamic
+
+@inject OrchardCore.DisplayManagement.IDisplayManager<MenuItem> MenuItemDisplayManager
+@inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
+
+@{
+    MenuItem menuItem = Model.MenuItem;
+    var menuType = menuItem.GetType();
+    var children = menuItem.Items;
+    var index = 0;
+
+    string disabledClass = "";
+    string toggleButtonText = T["Toggle"].Value;
+
+    var adminNode = menuItem as AdminNode;
+    if (adminNode != null)
+    {
+        disabledClass = adminNode.Enabled ? "" : "disabled-admin-node";
+        toggleButtonText = adminNode.Enabled ? T["Disable"].Value : T["Enable"].Value;
+    }
+}
+
+<li class="menu-item display-summary list-group-item" id="menu-id-@Model.Index" data-index="@Model.Index" data-treenode-id="@Model.MenuItem.UniqueId">
+    <div class="menu-item menu-item-title border rounded p-2 pl-3 mb-1 d-flex flex-row justify-content-between align-items-center @disabledClass" title="@Model.MenuItem.UniqueId">
+        @if (Model.Content.Items.Count < 1)
+        {
+            <div class="related">
+                <a asp-action="Delete"
+                    asp-controller="Node"
+                    asp-route-id="@Model.AdminMenuId"
+                    asp-route-treeNodeId="@Model.MenuItem.UniqueId"
+                    class="btn btn-danger btn-sm"
+                    data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+            </div>
+            <span class="text-warning">@T["Can't show the item of type: {0}. Maybe a required module has been disabled?", menuType]</span>
+        }
+        else
+        {
+            @await DisplayAsync(Model.Content)
+            <div class="related">
+                <a asp-action="Edit"
+                    asp-controller="Node"
+                    asp-route-id="@Model.AdminMenuId"
+                    asp-route-treeNodeId="@Model.MenuItem.UniqueId"
+                    class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+                <div class="btn-group btn-group-sm">
+                    <a asp-action="Delete"
+                        asp-controller="Node"
+                        asp-route-id="@Model.AdminMenuId"
+                        asp-route-treeNodeId="@Model.MenuItem.UniqueId"
+                        class="btn btn-danger" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                    <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">@T["Toggle Dropdown"]</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a asp-controller="Node"
+                            asp-action="Toggle"
+                            asp-route-id="@Model.AdminMenuId"
+                            asp-route-treeNodeId="@Model.MenuItem.UniqueId"
+                            class="dropdown-item btn-sm" data-url-af="UnsafeUrl">@toggleButtonText</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <ol class="menu-item menu-item-links">
+        @if (children != null)
+        {
+            var updater = ModelUpdaterAccessor.ModelUpdater;
+
+            @foreach (var child in children)
+            {
+                dynamic adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(child, updater, "TreeSummary");
+                adminNodeShape.AdminMenuId = Model.AdminMenuId;
+                adminNodeShape.MenuItem = child;
+                adminNodeShape.Index = Model.Index + "-" + index++;
+                @await DisplayAsync(adminNodeShape);
+            }
+        }
+    </ol>
+</li>

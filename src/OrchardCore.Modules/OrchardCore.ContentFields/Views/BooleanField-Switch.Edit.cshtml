@@ -1,16 +1,15 @@
 @model OrchardCore.ContentFields.ViewModels.EditBooleanFieldViewModel
-@using OrchardCore.ContentFields.Settings;
-@using OrchardCore.ContentManagement.Metadata.Models
+
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<BooleanFieldSettings>();
 }
-<fieldset class="form-group">
+<div class="form-group">
     <span class="switch">
         <input asp-for="Value" type="checkbox" class="switch switch-sm content-preview-select" checked="@Model.Value" />
         <label asp-for="Value">@(string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)</label>
     </span>
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
-        <span class="hint">@T["— {0}", settings.Hint]</span>
+        <span class="hint dashed">@settings.Hint</span>
     }
-</fieldset>
+</div>

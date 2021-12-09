@@ -1,15 +1,17 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Templates
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageTemplates = new Permission("ManageTemplates", "Manage templates");
+        public static readonly Permission ManageTemplates = new Permission("ManageTemplates", "Manage templates", isSecurityCritical: true);
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] { ManageTemplates };
+            return Task.FromResult(new[] { ManageTemplates }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

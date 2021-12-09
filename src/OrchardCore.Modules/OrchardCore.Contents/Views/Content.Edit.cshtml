@@ -1,12 +1,8 @@
-@*@using OrchardCore.Shapes*@
-@*@{
-        var tabs = (IEnumerable<string>)CoreShapes.HarvestAndSortTabs(Model.Content);
-        Display.LocalNavigation(Tabs: tabs);
-    }*@
+@using OrchardCore.DisplayManagement.Zones
 
-<style asp-src="/OrchardCore.Contents/Styles/Contents.min.css" debug-src="/OrchardCore.Contents/Styles/Contents.css"></style>
+<style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
-<div class="edit-container">
+<div class="edit-container @(Model.Sidebar != null ? "sidebar" : "")">
     <div class="edit-body">
         <div class="edit-item-primary">
             @if (Model.Content != null)
@@ -23,6 +19,8 @@
             }
         </div>
 
+        @if (Model.Actions != null)
+        {
         <div class="edit-item-secondary group">
             <div class="edit-item-actions form-group">
                 @await DisplayAsync(Model.Actions)
@@ -33,21 +31,25 @@
 
                 @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    <a id="button-cancel" href="@returnUrl" class="btn btn-secondary">@T["Cancel"]</a>
+                    <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
                 }
             </div>
         </div>
+        }
     </div>
-@if (Model.Sidebar != null)
-{
-    <div class="edit-sidebar-handler"></div>
-    <div class="edit-sidebar group">
-        @await DisplayAsync(Model.Sidebar)
-    </div>
-}
+    @if (Model.Sidebar != null)
+    {
+        <div class="edit-sidebar-handler"></div>
+        <div class="edit-sidebar group">
+            @await DisplayAsync(Model.Sidebar)
+        </div>
+    }
 </div>
 
-@if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+@if (Model.Actions != null)
 {
-    @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
+    @if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+    {
+        @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
+    }
 }

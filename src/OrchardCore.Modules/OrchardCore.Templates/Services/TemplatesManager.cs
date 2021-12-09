@@ -1,83 +1,37 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Documents;
 using OrchardCore.Templates.Models;
-using YesSql;
 
 namespace OrchardCore.Templates.Services
 {
     public class TemplatesManager
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly ISignal _signal;
-        private readonly ISession _session;
+        private readonly IDocumentManager<TemplatesDocument> _documentManager;
 
-        private const string CacheKey = nameof(TemplatesManager);
+        public TemplatesManager(IDocumentManager<TemplatesDocument> documentManager) => _documentManager = documentManager;
 
-        public TemplatesManager(IMemoryCache memoryCache, ISignal signal, ISession session)
-        {
-            _memoryCache = memoryCache;
-            _signal = signal;
-            _session = session;
-        }
+        /// <summary>
+        /// Loads the templates document from the store for updating and that should not be cached.
+        /// </summary>
+        public Task<TemplatesDocument> LoadTemplatesDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
-        public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
-
-        /// <inheritdoc/>
-        public async Task<TemplatesDocument> GetTemplatesDocumentAsync()
-        {
-            TemplatesDocument document;
-
-            if (!_memoryCache.TryGetValue(CacheKey, out document))
-            {
-                document = await _session.Query<TemplatesDocument>().FirstOrDefaultAsync();
-
-                if (document == null)
-                {
-                    lock (_memoryCache)
-                    {
-                        if (!_memoryCache.TryGetValue(CacheKey, out document))
-                        {
-                            document = new TemplatesDocument();
-
-                            _session.Save(document);
-                            _memoryCache.Set(CacheKey, document);
-                            _signal.SignalToken(CacheKey);
-                        }
-                    }
-                }
-                else
-                {
-                    _memoryCache.Set(CacheKey, document);
-                    _signal.SignalToken(CacheKey);
-                }
-            }
-
-            return document;
-        }
+        /// <summary>
+        /// Gets the templates document from the cache for sharing and that should not be updated.
+        /// </summary>
+        public Task<TemplatesDocument> GetTemplatesDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task RemoveTemplateAsync(string name)
         {
-            var document = await GetTemplatesDocumentAsync();
-
+            var document = await LoadTemplatesDocumentAsync();
             document.Templates.Remove(name);
-            _session.Save(document);
-
-            _memoryCache.Set(CacheKey, document);
-            _signal.SignalToken(CacheKey);
+            await _documentManager.UpdateAsync(document);
         }
-        
+
         public async Task UpdateTemplateAsync(string name, Template template)
         {
-            var document = await GetTemplatesDocumentAsync();
-
+            var document = await LoadTemplatesDocumentAsync();
             document.Templates[name] = template;
-            _session.Save(document);
-
-            _memoryCache.Set(CacheKey, document);
-            _signal.SignalToken(CacheKey);
+            await _documentManager.UpdateAsync(document);
         }
-
     }
 }

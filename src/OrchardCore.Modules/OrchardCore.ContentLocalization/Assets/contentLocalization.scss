@@ -1,0 +1,20 @@
+.content-localization {
+    box-shadow: 0 0 1px rgba(0,0,0,0.1);
+
+    .card,
+    .card:last-child .card-header {
+        border: none;
+    }
+
+    .btn {
+        width: 100%;
+        font-weight: bold;
+        color: #38503c;
+        padding: 0;
+    }
+
+    .btn-link:hover,
+    .btn-link:focus {
+        text-decoration: none;
+    }
+}

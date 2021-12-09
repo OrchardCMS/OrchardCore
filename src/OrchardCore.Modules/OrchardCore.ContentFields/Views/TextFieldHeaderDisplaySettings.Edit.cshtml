@@ -1,0 +1,13 @@
+@model OrchardCore.ContentFields.ViewModels.HeaderSettingsViewModel
+
+<div class="form-group field-display field-display-header">
+    <label asp-for="Level">@T["Select the header level to use"]</label>
+    <select asp-for="Level" class="form-control col-sm-3">
+        <option value="h1">@T["H1"]</option>
+        <option value="h2">@T["H2"]</option>
+        <option value="h3">@T["H3"]</option>
+        <option value="h4">@T["H4"]</option>
+        <option value="h5">@T["H5"]</option>
+        <option value="h6">@T["H6"]</option>
+    </select>
+</div>

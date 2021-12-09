@@ -12,6 +12,7 @@ namespace OrchardCore.Workflows.Scripting
         private readonly GlobalMethod _inputMethod;
         private readonly GlobalMethod _outputMethod;
         private readonly GlobalMethod _propertyMethod;
+        private readonly GlobalMethod _setPropertyMethod;
         private readonly GlobalMethod _resultMethod;
         private readonly GlobalMethod _correlationIdMethod;
 
@@ -32,7 +33,7 @@ namespace OrchardCore.Workflows.Scripting
             _inputMethod = new GlobalMethod
             {
                 Name = "input",
-                Method = serviceProvider => (Func<string, object>)(name => workflowContext.Input[name])
+                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Input.ContainsKey(name) ? workflowContext.Input[name] : null)
             };
 
             _outputMethod = new GlobalMethod
@@ -44,7 +45,13 @@ namespace OrchardCore.Workflows.Scripting
             _propertyMethod = new GlobalMethod
             {
                 Name = "property",
-                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Properties[name])
+                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Properties.ContainsKey(name) ? workflowContext.Properties[name] : null)
+            };
+
+            _setPropertyMethod = new GlobalMethod
+            {
+                Name = "setProperty",
+                Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Properties[name] = value)
             };
 
             _resultMethod = new GlobalMethod
@@ -62,7 +69,7 @@ namespace OrchardCore.Workflows.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            return new[] { _workflowMethod, _workflowIdMethod, _inputMethod, _outputMethod, _propertyMethod, _resultMethod, _correlationIdMethod };
+            return new[] { _workflowMethod, _workflowIdMethod, _inputMethod, _outputMethod, _propertyMethod, _resultMethod, _correlationIdMethod, _setPropertyMethod };
         }
     }
 }

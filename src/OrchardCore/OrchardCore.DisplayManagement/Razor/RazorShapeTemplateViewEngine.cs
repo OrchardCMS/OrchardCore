@@ -4,14 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
 
@@ -19,14 +24,23 @@ namespace OrchardCore.DisplayManagement.Razor
 {
     public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
     {
-        private readonly IOptions<MvcViewOptions> _viewEngine;
+        private readonly IOptions<MvcViewOptions> _options;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ViewContextAccessor _viewContextAccessor;
+        private readonly ITempDataProvider _tempDataProvider;
         private readonly List<string> _templateFileExtensions = new List<string>(new[] { RazorViewEngine.ViewExtension });
 
         public RazorShapeTemplateViewEngine(
             IOptions<MvcViewOptions> options,
-            IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders)
+            IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders,
+            IHttpContextAccessor httpContextAccessor,
+            ViewContextAccessor viewContextAccessor,
+            ITempDataProvider tempDataProvider)
         {
-            _viewEngine = options;
+            _options = options;
+            _httpContextAccessor = httpContextAccessor;
+            _viewContextAccessor = viewContextAccessor;
+            _tempDataProvider = tempDataProvider;
             _templateFileExtensions.AddRange(viewExtensionProviders.Select(x => x.ViewExtension));
         }
 
@@ -43,23 +57,25 @@ namespace OrchardCore.DisplayManagement.Razor
             var viewName = "/" + relativePath;
             viewName = Path.ChangeExtension(viewName, RazorViewEngine.ViewExtension);
 
-            if (displayContext.ViewContext.View != null)
+            var viewContext = _viewContextAccessor.ViewContext;
+
+            if (viewContext?.View != null)
             {
-                var htmlHelper = MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
-                return Task.FromResult(htmlHelper.Partial(viewName, displayContext.Value));
+                var viewData = new ViewDataDictionary(viewContext.ViewData);
+                viewData.TemplateInfo.HtmlFieldPrefix = displayContext.HtmlFieldPrefix;
+
+                var htmlHelper = MakeHtmlHelper(viewContext, viewData);
+                return htmlHelper.PartialAsync(viewName, displayContext.Value);
             }
             else
             {
-                // If the View is null, it means that the shape is being executed from a non-view origin / where no ViewContext was established by the view engine, but manually.
-                // Manually creating a ViewContext works when working with Shape methods, but not when the shape is implemented as a Razor view template.
-                // Horrible, but it will have to do for now.
                 return RenderRazorViewAsync(viewName, displayContext);
             }
         }
 
-        private async Task<IHtmlContent> RenderRazorViewAsync(string viewName, DisplayContext context)
+        private async Task<IHtmlContent> RenderRazorViewAsync(string viewName, DisplayContext displayContext)
         {
-            var viewEngines = _viewEngine.Value.ViewEngines;
+            var viewEngines = _options.Value.ViewEngines;
 
             if (viewEngines.Count == 0)
             {
@@ -69,28 +85,83 @@ namespace OrchardCore.DisplayManagement.Razor
                     typeof(IViewEngine).FullName));
             }
 
-            for (var i = 0; i < viewEngines.Count; i++)
-            {
-                var viewEngineResult = viewEngines[0].FindView(context.ViewContext, viewName, isMainPage: false);
-                if (viewEngineResult.Success)
+            var viewEngine = viewEngines[0];
+
+            var result = await RenderViewToStringAsync(viewName, displayContext.Value, viewEngine);
+
+            return new HtmlString(result);
+        }
+
+        public async Task<string> RenderViewToStringAsync(string viewName, object model, IViewEngine viewEngine)
+        {
+            var actionContext = await GetActionContextAsync();
+            var view = FindView(actionContext, viewName, viewEngine);
+
+            using var output = new ZStringWriter();
+            var viewContext = new ViewContext(
+                actionContext,
+                view,
+                new ViewDataDictionary(
+                    metadataProvider: new EmptyModelMetadataProvider(),
+                    modelState: new ModelStateDictionary())
                 {
-                    var bufferScope = context.ViewContext.HttpContext.RequestServices.GetRequiredService<IViewBufferScope>();
-                    var viewBuffer = new ViewBuffer(bufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
-                    using (var writer = new ViewBufferTextWriter(viewBuffer, context.ViewContext.Writer.Encoding))
-                    {
-                        // Forcing synchronous behavior so users don't have to await templates.
-                        var view = viewEngineResult.View;
-                        using (view as IDisposable)
-                        {
-                            var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
-                            await viewEngineResult.View.RenderAsync(viewContext);
-                            return viewBuffer;
-                        }
-                    }
-                }
+                    Model = model
+                },
+                new TempDataDictionary(
+                    actionContext.HttpContext,
+                    _tempDataProvider),
+                output,
+                new HtmlHelperOptions());
+
+            await view.RenderAsync(viewContext);
+
+            return output.ToString();
+        }
+
+        private IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
+        {
+            var getViewResult = viewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: true);
+            if (getViewResult.Success)
+            {
+                return getViewResult.View;
             }
 
-            return null;
+            var findViewResult = viewEngine.FindView(actionContext, viewName, isMainPage: true);
+            if (findViewResult.Success)
+            {
+                return findViewResult.View;
+            }
+
+            var searchedLocations = getViewResult.SearchedLocations.Concat(findViewResult.SearchedLocations);
+            var errorMessage = string.Join(
+                System.Environment.NewLine,
+                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations)); ;
+
+            throw new InvalidOperationException(errorMessage);
+        }
+
+        private async Task<ActionContext> GetActionContextAsync()
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            var actionContext = httpContext.RequestServices.GetService<IActionContextAccessor>()?.ActionContext;
+
+            if (actionContext != null)
+            {
+                return actionContext;
+            }
+
+            var routeData = new RouteData();
+            routeData.Routers.Add(new RouteCollection());
+
+            actionContext = new ActionContext(httpContext, routeData, new ActionDescriptor());
+            var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
+
+            foreach (var filter in filters)
+            {
+                await filter.OnActionExecutionAsync(actionContext);
+            }
+
+            return actionContext;
         }
 
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)

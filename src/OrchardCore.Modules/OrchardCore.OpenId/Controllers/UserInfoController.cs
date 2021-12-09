@@ -1,33 +1,28 @@
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using AspNet.Security.OpenIdConnect.Primitives;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
+using OpenIddict.Server.AspNetCore;
 using OrchardCore.Modules;
-using OrchardCore.OpenId.Filters;
-using OrchardCore.Users;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Controllers
 {
-    [Feature(OpenIdConstants.Features.Server)]
-    [OpenIdController, SkipStatusCodePages]
+    [Feature(OpenIdConstants.Features.Server), SkipStatusCodePages]
     public class UserInfoController : Controller
     {
-        private readonly IStringLocalizer<UserInfoController> T;
-        private readonly UserManager<IUser> _userManager;
+        private readonly IStringLocalizer S;
 
-        public UserInfoController(
-            IStringLocalizer<UserInfoController> localizer,
-            UserManager<IUser> userManager)
-        {
-            T = localizer;
-            _userManager = userManager;
-        }
+        public UserInfoController(IStringLocalizer<UserInfoController> localizer)
+            => S = localizer;
 
-        // GET/POST: /OrchardCore.OpenId/UserInfo/Me
+        // GET/POST: /connect/userinfo
         [AcceptVerbs("GET", "POST")]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
@@ -39,50 +34,135 @@ namespace OrchardCore.OpenId.Controllers
             // To prevent effective CSRF/session fixation attacks, this action MUST NOT return
             // an authentication cookie or try to establish an ASP.NET Core user session.
 
-            // Note: this controller doesn't use [Authorize] to prevent MVC Core from throwing
-            // an exception if the JWT/validation handler was not registered (e.g because the
+            var request = HttpContext.GetOpenIddictServerRequest();
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            // Note: this controller doesn't use [Authorize] to prevent MVC from throwing
+            // an exception if the OpenIddict server handler was not registered (e.g because the
             // OpenID server feature was not enabled or because the configuration was invalid).
-            var result = await HttpContext.AuthenticateAsync(OpenIdConstants.Schemes.Userinfo);
-            if (result?.Principal == null)
+            var principal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme))?.Principal;
+            if (principal == null)
             {
-                return Challenge(OpenIdConstants.Schemes.Userinfo);
+                return Challenge(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
-            var user = await _userManager.GetUserAsync(result.Principal);
-            if (user == null)
+            // Ensure the access token represents a user and not an application.
+            var type = principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
+            if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
             {
-                return Challenge(OpenIdConstants.Schemes.Userinfo);
+                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
+                {
+                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidRequest,
+                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                        S["The userinfo endpoint can only be used with access tokens representing users."]
+                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
-            var claims = new JObject();
+            var claims = new Dictionary<string, object>();
+
+            if (principal.HasScope(Scopes.Profile))
+            {
+                var preferredUsername = principal.FindFirst(Claims.PreferredUsername)?.Value;
+                if (!string.IsNullOrEmpty(preferredUsername))
+                {
+                    claims[Claims.PreferredUsername] = preferredUsername;
+                }
+
+                var name = principal.FindFirst(Claims.Name)?.Value ?? principal.FindFirst(ClaimTypes.Name)?.Value;
+                if (!string.IsNullOrEmpty(name))
+                {
+                    claims[Claims.Name] = name;
+                }
+
+                var familyName = principal.FindFirst(Claims.FamilyName)?.Value ?? principal.FindFirst(ClaimTypes.Surname)?.Value;
+                if (!string.IsNullOrEmpty(familyName))
+                {
+                    claims[Claims.FamilyName] = familyName;
+                }
+
+                var givenName = principal.FindFirst(Claims.GivenName)?.Value ?? principal.FindFirst(ClaimTypes.GivenName)?.Value;
+                if (!string.IsNullOrEmpty(givenName))
+                {
+                    claims[Claims.GivenName] = givenName;
+                }
+
+                var middleName = principal.FindFirst(Claims.MiddleName)?.Value;
+                if (!string.IsNullOrEmpty(middleName))
+                {
+                    claims[Claims.MiddleName] = middleName;
+                }
+
+                var picture = principal.FindFirst(Claims.Picture)?.Value;
+                if (!string.IsNullOrEmpty(picture))
+                {
+                    claims[Claims.Picture] = picture;
+                }
+
+                var updatedAtClaimValue = principal.FindFirst(Claims.UpdatedAt)?.Value;
+                if (!string.IsNullOrEmpty(updatedAtClaimValue))
+                {
+                    claims[Claims.UpdatedAt] = long.Parse(updatedAtClaimValue, CultureInfo.InvariantCulture);
+                }
+            }
 
             // Note: the "sub" claim is a mandatory claim and must be included in the JSON response.
-            claims[OpenIdConnectConstants.Claims.Subject] = await _userManager.GetUserIdAsync(user);
+            claims[Claims.Subject] = principal.GetUserIdentifier();
 
-            if (_userManager.SupportsUserEmail &&
-                result.Principal.HasClaim(OpenIdConnectConstants.Claims.Scope, OpenIdConnectConstants.Scopes.Email))
+            if (principal.HasScope(Scopes.Email))
             {
-                claims[OpenIdConnectConstants.Claims.Email] = await _userManager.GetEmailAsync(user);
-                claims[OpenIdConnectConstants.Claims.EmailVerified] = await _userManager.IsEmailConfirmedAsync(user);
+                var address = principal.FindFirst(Claims.Email)?.Value ?? principal.FindFirst(ClaimTypes.Email)?.Value;
+
+                if (!string.IsNullOrEmpty(address))
+                {
+                    claims[Claims.Email] = address;
+
+                    var status = principal.FindFirst(Claims.EmailVerified)?.Value;
+                    if (!string.IsNullOrEmpty(status))
+                    {
+                        claims[Claims.EmailVerified] = bool.Parse(status);
+                    }
+                }
             }
 
-            if (_userManager.SupportsUserPhoneNumber &&
-                result.Principal.HasClaim(OpenIdConnectConstants.Claims.Scope, OpenIdConnectConstants.Scopes.Phone))
+            if (principal.HasScope(Scopes.Phone))
             {
-                claims[OpenIdConnectConstants.Claims.PhoneNumber] = await _userManager.GetPhoneNumberAsync(user);
-                claims[OpenIdConnectConstants.Claims.PhoneNumberVerified] = await _userManager.IsPhoneNumberConfirmedAsync(user);
+                var phone = principal.FindFirst(Claims.PhoneNumber)?.Value ??
+                            principal.FindFirst(ClaimTypes.MobilePhone)?.Value ??
+                            principal.FindFirst(ClaimTypes.HomePhone)?.Value ??
+                            principal.FindFirst(ClaimTypes.OtherPhone)?.Value;
+
+                if (!string.IsNullOrEmpty(phone))
+                {
+                    claims[Claims.PhoneNumber] = phone;
+
+                    var status = principal.FindFirst(Claims.PhoneNumberVerified)?.Value;
+                    if (!string.IsNullOrEmpty(status))
+                    {
+                        claims[Claims.PhoneNumberVerified] = bool.Parse(status);
+                    }
+                }
             }
 
-            if (_userManager.SupportsUserRole &&
-                result.Principal.HasClaim(OpenIdConnectConstants.Claims.Scope, OpenIddictConstants.Scopes.Roles))
+            if (principal.HasScope(Scopes.Roles))
             {
-                claims[OpenIddictConstants.Claims.Roles] = JArray.FromObject(await _userManager.GetRolesAsync(user));
+                var roles = principal.FindAll(Claims.Role)
+                                     .Concat(principal.FindAll(ClaimTypes.Role))
+                                     .Select(claim => claim.Value)
+                                     .ToArray();
+
+                if (roles.Length != 0)
+                {
+                    claims["roles"] = roles;
+                }
             }
 
             // Note: the complete list of standard claims supported by the OpenID Connect specification
             // can be found here: http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
 
-            return Json(claims);
+            return Ok(claims);
         }
     }
 }

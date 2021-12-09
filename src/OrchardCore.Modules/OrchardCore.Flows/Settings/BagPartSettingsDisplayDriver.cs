@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -12,9 +11,10 @@ using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Settings
 {
-    public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IStringLocalizer S;
 
         public BagPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -24,18 +24,11 @@ namespace OrchardCore.Flows.Settings
             S = localizer;
         }
 
-        public IStringLocalizer S { get; set; }
-
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(BagPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
             return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", model =>
             {
-                model.BagPartSettings = contentTypePartDefinition.Settings.ToObject<BagPartSettings>();
+                model.BagPartSettings = contentTypePartDefinition.GetSettings<BagPartSettings>();
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = new NameValueCollection();
@@ -49,11 +42,6 @@ namespace OrchardCore.Flows.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(BagPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
             var model = new BagPartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.DisplayType);
@@ -64,8 +52,11 @@ namespace OrchardCore.Flows.Settings
             }
             else
             {
-                context.Builder.WithSetting(nameof(BagPartSettings.ContainedContentTypes), model.ContainedContentTypes);
-                context.Builder.WithSetting(nameof(BagPartSettings.DisplayType), model.DisplayType);
+                context.Builder.WithSettings(new BagPartSettings
+                {
+                    ContainedContentTypes = model.ContainedContentTypes,
+                    DisplayType = model.DisplayType
+                });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

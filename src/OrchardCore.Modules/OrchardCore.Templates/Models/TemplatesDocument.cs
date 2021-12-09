@@ -1,12 +1,12 @@
+using System;
 using System.Collections.Generic;
+using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Templates.Models
 {
-    public class TemplatesDocument
+    public class TemplatesDocument : Document
     {
-        public int Id { get; set; } // An identifier so that updates don't create new documents
-
-        public Dictionary<string, Template> Templates { get; } = new Dictionary<string, Template>();
+        public Dictionary<string, Template> Templates { get; set; } = new Dictionary<string, Template>(StringComparer.OrdinalIgnoreCase);
     }
 
     public class Template

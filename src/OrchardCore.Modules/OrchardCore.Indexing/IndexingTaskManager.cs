@@ -3,33 +3,57 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using OrchardCore.Modules;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentPreview;
+using OrchardCore.Data;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Modules;
 using YesSql;
 
 namespace OrchardCore.Indexing.Services
 {
-    public class IndexingTaskManager : IIndexingTaskManager, IDisposable
+    /// <summary>
+    /// This is a scoped service that enlists tasks to be stored in the database.
+    /// It enlists a final task using the current <see cref="ShellScope"/> such
+    /// that multiple calls to <see cref="CreateTaskAsync"/> can be done without incurring
+    /// a SQL query on every single one.
+    /// </summary>
+    public class IndexingTaskManager : IIndexingTaskManager
     {
         private readonly IClock _clock;
-        private readonly ISession _session;
+        private readonly IStore _store;
+        private readonly IDbConnectionAccessor _dbConnectionAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
+
         private readonly string _tablePrefix;
         private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
 
         public IndexingTaskManager(
-            ISession session,
             IClock clock,
+            ShellSettings shellSettings,
+            IStore store,
+            IDbConnectionAccessor dbConnectionAccessor,
+            IHttpContextAccessor httpContextAccessor,
             ILogger<IndexingTaskManager> logger)
         {
-            _session = session;
             _clock = clock;
-            Logger = logger;
+            _store = store;
+            _dbConnectionAccessor = dbConnectionAccessor;
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
 
-            _tablePrefix = session.Store.Configuration.TablePrefix;
+            _tablePrefix = shellSettings["TablePrefix"];
+
+            if (!String.IsNullOrEmpty(_tablePrefix))
+            {
+                _tablePrefix += '_';
+            }
         }
-
-        public ILogger Logger { get; set; }
 
         public Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type)
         {
@@ -38,10 +62,15 @@ namespace OrchardCore.Indexing.Services
                 throw new ArgumentNullException("contentItem");
             }
 
+            // Do not index a preview content item.
+            if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
+            {
+                return Task.CompletedTask;
+            }
+
             if (contentItem.Id == 0)
             {
-                // Ignore that case, when Update is called on a content item which has not be "created" yet
-
+                // Ignore that case, when Update is called on a content item which has not be "created" yet.
                 return Task.CompletedTask;
             }
 
@@ -52,105 +81,133 @@ namespace OrchardCore.Indexing.Services
                 Type = type
             };
 
-            lock (_tasksQueue)
+            if (_tasksQueue.Count == 0)
             {
-                _tasksQueue.Add(indexingTask);
+                var tasksQueue = _tasksQueue;
+
+                // Using a local var prevents the lambda from holding a ref on this scoped service.
+                ShellScope.AddDeferredTask(scope => FlushAsync(scope, tasksQueue));
             }
+
+            _tasksQueue.Add(indexingTask);
 
             return Task.CompletedTask;
         }
 
-        public void Dispose()
+        private static async Task FlushAsync(ShellScope scope, IEnumerable<IndexingTask> tasks)
         {
-            FlushAsync().Wait();
-        }
+            var localQueue = new List<IndexingTask>(tasks);
 
-        private async Task FlushAsync()
-        {
-            List<IndexingTask> localQueue;
+            var serviceProvider = scope.ServiceProvider;
 
-            lock (_tasksQueue)
+            var session = serviceProvider.GetService<YesSql.ISession>();
+            var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
+            var shellSettings = serviceProvider.GetService<ShellSettings>();
+            var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();
+            var tablePrefix = shellSettings["TablePrefix"];
+
+            if (!String.IsNullOrEmpty(tablePrefix))
             {
-                localQueue = new List<IndexingTask>(_tasksQueue);
+                tablePrefix += '_';
             }
 
-            if (!localQueue.Any())
+            var contentItemIds = new HashSet<string>();
+
+            // Remove duplicate tasks, only keep the last one
+            for (var i = localQueue.Count; i > 0; i--)
             {
-                return;
-            }
+                var task = localQueue[i - 1];
 
-            var transaction = _session.Demand();
-            var dialect = SqlDialectFactory.For(transaction.Connection);
-
-            try
-            {
-                var contentItemIds = new HashSet<string>();
-
-                // Remove duplicate tasks, only keep the last one
-                for (var i = localQueue.Count; i > 0; i--)
+                if (contentItemIds.Contains(task.ContentItemId))
                 {
-                    var task = localQueue[i - 1];
+                    localQueue.RemoveAt(i - 1);
+                }
+                else
+                {
+                    contentItemIds.Add(task.ContentItemId);
+                }
+            }
 
-                    if (contentItemIds.Contains(task.ContentItemId))
+            // At this point, content items ids should be unique in localQueue
+            var ids = localQueue.Select(x => x.ContentItemId).ToArray();
+            var table = $"{tablePrefix}{nameof(IndexingTask)}";
+
+            using (var connection = dbConnectionAccessor.CreateConnection())
+            {
+                await connection.OpenAsync();
+
+                using (var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel))
+                {
+                    var dialect = session.Store.Configuration.SqlDialect;
+
+                    try
                     {
-                        localQueue.RemoveAt(i - 1);
+                        if (logger.IsEnabled(LogLevel.Debug))
+                        {
+                            logger.LogDebug("Updating indexing tasks: {ContentItemIds}", String.Join(", ", tasks.Select(x => x.ContentItemId)));
+                        }
+
+                        // Page delete statements to prevent the limits from IN sql statements
+                        var pageSize = 100;
+
+                        var deleteCmd = $"delete from {dialect.QuoteForTableName(table)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
+
+                        do
+                        {
+                            var pageOfIds = ids.Take(pageSize).ToArray();
+
+                            if (pageOfIds.Any())
+                            {
+                                await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
+                                ids = ids.Skip(pageSize).ToArray();
+                            }
+                        } while (ids.Any());
+
+                        var insertCmd = $"insert into {dialect.QuoteForTableName(table)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
+                        await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
+
+                        transaction.Commit();
                     }
-                    else
+                    catch (Exception e)
                     {
-                        contentItemIds.Add(task.ContentItemId);
+                        transaction.Rollback();
+                        logger.LogError(e, "An error occurred while updating indexing tasks");
+
+                        throw;
                     }
                 }
-
-                // At this point, content items ids should be unique in _taskQueue
-                var ids = localQueue.Select(x => x.ContentItemId).ToArray();
-                var table = $"{_tablePrefix}{nameof(IndexingTask)}";
-
-                var deleteCmd = $"delete from {dialect.QuoteForTableName(table)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
-                await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = ids }, transaction);
-
-                var insertCmd = $"insert into {dialect.QuoteForTableName(table)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
-                await transaction.Connection.ExecuteAsync(insertCmd, _tasksQueue, transaction);
             }
-            catch(Exception e)
-            {
-                _session.Cancel();
-                Logger.LogError("An error occured while updating indexing tasks", e);
-                throw;
-            }
-
-            _tasksQueue.Clear();
         }
 
         public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(int afterTaskId, int count)
         {
-            await FlushAsync();
-
-            var transaction = _session.Demand();
-
-            try
+            using (var connection = _dbConnectionAccessor.CreateConnection())
             {
-                var dialect = SqlDialectFactory.For(transaction.Connection);
-                var sqlBuilder = dialect.CreateBuilder(_tablePrefix);
+                await connection.OpenAsync();
 
-                sqlBuilder.Select();
-                sqlBuilder.Table(nameof(IndexingTask));
-                sqlBuilder.Selector("*");
-
-                if (count > 0)
+                try
                 {
-                    sqlBuilder.Take(count.ToString());
+                    var dialect = _store.Configuration.SqlDialect;
+                    var sqlBuilder = dialect.CreateBuilder(_tablePrefix);
+
+                    sqlBuilder.Select();
+                    sqlBuilder.Table(nameof(IndexingTask));
+                    sqlBuilder.Selector("*");
+
+                    if (count > 0)
+                    {
+                        sqlBuilder.Take(count.ToString());
+                    }
+
+                    sqlBuilder.WhereAnd($"{dialect.QuoteForColumnName("Id")} > @Id");
+
+                    return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId });
                 }
-
-                sqlBuilder.WhereAlso($"{dialect.QuoteForColumnName("Id")} > @Id");
-
-                return await transaction.Connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId }, transaction);
-            }
-            catch (Exception e)
-            {
-                _session.Cancel();
-
-                Logger.LogError(e, "An error occured while reading indexing tasks");
-                throw;
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "An error occurred while reading indexing tasks");
+                    throw;
+                }
             }
         }
     }

@@ -1,0 +1,83 @@
+@model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
+    var trumbowygSettings = Model.PartFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
+}
+
+<script asp-name="trumbowyg-plugins" depends-on="admin" version="2" at="Foot"></script>
+<style asp-name="trumbowyg-plugins" version="2"></style>
+<script asp-name="trumbowyg-shortcodes" at="Foot"></script>
+@if (trumbowygSettings.InsertMediaWithUrl)
+{
+<script asp-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.url.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.url.js" depends-on="trumbowyg" at="Foot"></script>
+}
+else
+{
+<script asp-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
+}
+
+@await DisplayAsync(await New.ShortcodeModal())
+
+<div class="form-group">
+    <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
+    @if (culture.IsRightToLeft())
+    {
+        <div style="text-align:right">
+            <textarea asp-for="Html" class="form-control"></textarea>
+        </div>
+    }
+    else
+    {
+        <textarea asp-for="Html" class="form-control"></textarea>
+    }
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+</div>
+
+<script at="Foot">
+@{ 
+    if (culture.GetLanguageDirection() == LanguageDirection.RTL)
+    {
+        <text>
+        var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
+
+        if (!langs) {
+            cloned = { 
+                ...jQuery.trumbowyg.langs['en'],
+                _dir: '@culture.GetLanguageDirection()'
+            };
+            jQuery.trumbowyg.langs['@culture.TwoLetterISOLanguageName'] = cloned;
+        }
+        </text>
+    }
+}    
+    $(function () {
+        @if (!string.IsNullOrEmpty(trumbowygSettings.Options))
+        {
+            <text>
+            var settings = @Html.Raw(trumbowygSettings.Options);
+            settings['lang'] = '@culture.TwoLetterISOLanguageName';
+            </text>
+        }
+        else
+        {   
+            <text>
+            var settings = { 
+                lang: '@culture.TwoLetterISOLanguageName'
+            }
+            </text>
+        }
+
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
+            $(document).trigger('contentpreview:render');
+        });
+    });
+    $.trumbowyg.svgPath = '@Url.Content("~/OrchardCore.Resources/Styles/ui/icons.svg")';
+</script>

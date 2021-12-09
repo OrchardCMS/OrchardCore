@@ -15,6 +15,7 @@ namespace OrchardCore.Workflows.Activities
     public abstract class Activity : Entity, IActivity
     {
         public abstract string Name { get; }
+        public abstract LocalizedString DisplayText { get; }
         public abstract LocalizedString Category { get; }
         public virtual bool HasEditor => true;
 
@@ -100,39 +101,44 @@ namespace OrchardCore.Workflows.Activities
             return names.Select(x => new Outcome(x));
         }
 
+        protected ActivityExecutionResult Outcomes(string name)
+        {
+            return new ActivityExecutionResult(new string[] { name });
+        }
+
         protected ActivityExecutionResult Outcomes(params string[] names)
         {
-            return ActivityExecutionResult.FromOutcomes(names);
+            return new ActivityExecutionResult(names);
         }
 
         protected ActivityExecutionResult Outcomes(IEnumerable<string> names)
         {
-            return ActivityExecutionResult.FromOutcomes(names);
+            return new ActivityExecutionResult(names);
         }
 
         protected ActivityExecutionResult Halt()
         {
-            return ActivityExecutionResult.Halt();
+            return ActivityExecutionResult.Halted;
         }
 
         protected ActivityExecutionResult Noop()
         {
-            return ActivityExecutionResult.Noop();
+            return ActivityExecutionResult.Empty;
         }
 
-        protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName]string name = null)
+        protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName] string name = null)
         {
             var item = Properties[name];
             return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default;
         }
 
-        protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName]string name = null)
+        protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName] string name = null)
         {
             var item = Properties[name];
             return item != null ? (T)item.ToObject(type) : defaultValue != null ? defaultValue() : default;
         }
 
-        protected virtual void SetProperty(object value, [CallerMemberName]string name = null)
+        protected virtual void SetProperty(object value, [CallerMemberName] string name = null)
         {
             Properties[name] = JToken.FromObject(value);
         }

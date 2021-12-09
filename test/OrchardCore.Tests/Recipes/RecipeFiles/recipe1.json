@@ -1,0 +1,67 @@
+{
+  "name": "Recipe1",
+  "displayName": "Recipe 1",
+  "description": "",
+  "author": "Hisham Bin Ateya",
+  "website": "",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "test" ],
+  "tags": [],
+  "variables": {
+    "messageContentItemId": "[js:uuid()]",
+    "now": "[js: new Date().toISOString()]"
+  },
+  "steps": [
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Message",
+          "DisplayName": "Message",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Draftable": true,
+              "Versionable": true,
+              "Listable": true,
+              "Securable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Message",
+              "Name": "Message",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "5"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "[js: variables('messageContentItemId')]",
+          "ContentType": "Message",
+          "DisplayText": "Message",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "[js: variables('now')]",
+          "PublishedUtc": "[js: variables('now')]",
+          "CreatedUtc": "[js: variables('now')]",
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "Message": {},
+          "TitlePart": {
+            "Title": "[locale en]You have successfully registered![/locale][locale fr]Vous vous êtes inscrit avec succès![/locale]"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+@model ShapeViewModel<CustomSettingsDeploymentStep>
+
+@{
+    var includeAll = Model.Value.IncludeAll;
+    var settingsTypeNames = Model.Value.SettingsTypeNames;
+}
+
+<h5>@T["Custom Settings"]</h5>
+
+@if (includeAll)
+{
+    <span class="badge badge-success">@T["All"]</span>
+}
+else if (settingsTypeNames?.Length > 0)
+{
+    foreach (var settingsTypeName in settingsTypeNames)
+    {
+        <span class="badge ta-badge">@settingsTypeName</span>
+    }
+}
+else
+{
+    <span class="badge badge-warning">@T["No custom settings selected."]</span>
+}

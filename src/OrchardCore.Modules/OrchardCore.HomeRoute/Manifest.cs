@@ -2,12 +2,14 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Home Route",
-    Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
 
 [assembly: Feature(
     Id = "OrchardCore.HomeRoute",
+    Name = "Home Route",
+    Description = "Provides a way to set the route corresponding to the homepage of the site",
     Category = "Infrastructure"
 )]

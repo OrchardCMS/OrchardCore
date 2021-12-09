@@ -1,0 +1,52 @@
+.media-modal.modal-dialog,
+.media-modal .modal-content {
+    height: 95%;
+}
+
+.modal-content .modal-body #mediaApp {
+    position: static;
+    height: 100%;
+}
+
+.media-modal .modal-body {
+    height: 100%;
+    overflow-y: auto;
+    padding: 0; // to keep the line separating the dir browser from the thumbnails straight to the bottom.
+    
+     #mediaContainer {
+
+        #navigationApp {
+            border-right: none !important;
+        }
+
+        #mediaContainerMain {
+            border-left: $media-border-content;
+            margin-left: 0 !important;
+        }
+
+        #folder-tree a,
+        .breadcrumb-item a {
+            font-size: 0.9rem;
+        }
+    }
+}
+
+// By default bootstrap reduces the size of the modal when screen is under 992px.
+// We don't want that because it makes harder browsing media.
+@media only screen and ( min-width: 576px ) {
+    .modal-dialog.media-modal {
+        max-width: 992px;
+        padding-left: 17px;        
+    }
+}
+
+#createFolderModal, #renameMediaModal {
+    z-index: 100000; // required only because of the issue with z-index of trumbowyg on full screen.
+}
+
+.modal-body #media-pager {
+    .page-number, .media-first-button, .media-last-button {
+        display: none;
+    }
+}
+

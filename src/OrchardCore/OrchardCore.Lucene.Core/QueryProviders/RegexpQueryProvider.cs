@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
@@ -33,7 +31,7 @@ namespace OrchardCore.Lucene.QueryProviders
 
                     // TODO: Support flags
 
-                    var regexpQuery = new RegexpQuery(new Term(value.Value<string>()));
+                    var regexpQuery = new RegexpQuery(new Term(first.Name, value.Value<string>()));
 
                     if (obj.TryGetValue("boost", out var boost))
                     {

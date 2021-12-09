@@ -11,17 +11,18 @@ namespace OrchardCore.Workflows.Activities
     public class ForEachTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IStringLocalizer S;
 
         public ForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ForEachTask> localizer)
         {
             _scriptEvaluator = scriptEvaluator;
-            T = localizer;
+            S = localizer;
         }
-
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(ForEachTask);
-        public override LocalizedString Category => T["Control Flow"];
+
+        public override LocalizedString DisplayText => S["For Each Task"];
+
+        public override LocalizedString Category => S["Control Flow"];
 
         /// <summary>
         /// An expression evaluating to an enumerable object to iterate over.
@@ -61,7 +62,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Iterate"], T["Done"]);
+            return Outcomes(S["Iterate"], S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -81,6 +82,7 @@ namespace OrchardCore.Workflows.Activities
             }
             else
             {
+                Index = 0;
                 return Outcomes("Done");
             }
         }

@@ -7,14 +7,19 @@ namespace OrchardCore.ContentFields.Media
     {
         public void Discover(ShapeTableBuilder builder)
         {
-            builder.Describe("HtmlField_Editor")
+            builder.Describe("HtmlField_Edit")
                 .OnDisplaying(displaying =>
                 {
                     IShape editor = displaying.Shape;
 
-                    if (editor.Metadata.Alternates.Contains("HtmlField_Editor__Wysiwyg"))
+                    if (editor.Metadata.Type == "HtmlField_Edit__Wysiwyg")
                     {
-                        editor.Metadata.Wrappers.Add("Media_Wrapper__Body");
+                        editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlField");
+                    }
+
+                    if (editor.Metadata.Type == "HtmlField_Edit__Trumbowyg")
+                    {
+                        editor.Metadata.Wrappers.Add("Media_Wrapper__HtmlField");
                     }
                 });
         }

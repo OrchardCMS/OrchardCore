@@ -1,29 +1,29 @@
 @model EditPartViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 
 @{
     var orderedFields = Model.PartDefinition.Fields
-        .Select(field => new { Field = field, Order = int.Parse(field.Settings["Position"]?.ToString() ?? "0") })
+        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
         .OrderBy(x => x.Order)
         .Select(x => x.Field);
 }
-<h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1></zone>
 
 <form asp-action="EditPart">
     @Html.ValidationSummary()
 
-    <fieldset class="form-group">
-        <div class="row col-sm">
-            <label asp-for="Name">@T["Technical Name"]</label>
-            <input asp-for="Name" class="form-control" readonly />
-            <span class="hint">@T["Technical name of the part."]</span>
+    @if (Model.Editor.Shortcuts != null)
+    {
+        <div class="form-group">
+            @await DisplayAsync(Model.Editor.Shortcuts)
         </div>
-    </fieldset>
+    }
 
     @await DisplayAsync(Model.Editor)
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <h3>@T["Fields"]</h3>
 
         @if (Model.PartDefinition != null)
@@ -34,28 +34,28 @@
                     <li class="list-group-item">
                         <div class="properties">
                             <div class="related">
-                                <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
-                            @field.DisplayName() <span class="hint">@T["— {0}", field.FieldDefinition.Name.CamelFriendly()]</span>
+                            @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
                         </div>
                         <input type="hidden" name="OrderedFieldNames" value="@field.Name" />
                     </li>
                 }
             </ul>
         }
-    </fieldset>
-    <fieldset class="form-group">
-        <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
-    </fieldset>
+    </div>
+    <div class="form-group">
+        <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+    </div>
 
-    <fieldset class="form-group">
-        <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-        <button class="btn btn-danger" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
-    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+        <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
+    </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     //<![CDATA[
     $(function () {
         Sortable.create(document.getElementById("fields"));

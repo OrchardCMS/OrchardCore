@@ -10,7 +10,7 @@ namespace OrchardCore.Lists.Drivers
     {
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, ListPart part)
         {
-            context.For<ContentItemMetadata>(contentItemMetadata =>
+            return context.ForAsync<ContentItemMetadata>(contentItemMetadata =>
             {
                 contentItemMetadata.AdminRouteValues = new RouteValueDictionary
                 {
@@ -19,9 +19,9 @@ namespace OrchardCore.Lists.Drivers
                     {"Action", "Display"},
                     {"ContentItemId", context.ContentItem.ContentItemId}
                 };
-            });
 
-            return Task.CompletedTask;
+                return Task.CompletedTask;
+            });
         }
     }
 }

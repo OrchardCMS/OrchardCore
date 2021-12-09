@@ -1,0 +1,5 @@
+@model ShapeViewModel<PlaceholderAdminNode>
+
+<div class="@(Model.Value.Enabled ? "" : "disabled")">
+    <span>@Model.Value.LinkText <span class="text-muted dashed">@T["Placeholder"]</span></span>
+</div>

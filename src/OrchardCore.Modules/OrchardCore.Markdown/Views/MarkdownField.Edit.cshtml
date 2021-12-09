@@ -1,16 +1,20 @@
-﻿@model OrchardCore.Markdown.ViewModels.EditMarkdownFieldViewModel
+@model OrchardCore.Markdown.ViewModels.EditMarkdownFieldViewModel
+@using OrchardCore.ContentLocalization
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Markdown.Settings;
 
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<MarkdownFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
-<fieldset class="form-group">
+@await DisplayAsync(await New.ShortcodeModal())
+
+<div class="form-group">
     <label asp-for="Markdown">@Model.PartFieldDefinition.DisplayName()</label>
-    <input asp-for="Markdown" class="form-control content-preview-text" />
+    <input asp-for="Markdown" class="form-control content-preview-text shortcode-modal-input" dir="@culture.GetLanguageDirection()" />
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>
     }
-</fieldset>
+</div>

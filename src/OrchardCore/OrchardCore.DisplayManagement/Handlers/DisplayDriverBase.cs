@@ -14,13 +14,17 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Initialize<TModel>(Action<TModel> initialize) where TModel : class
         {
-            return Initialize<TModel>(shape => { initialize(shape); return Task.CompletedTask; });
+            return Initialize<TModel>(shape =>
+            {
+                initialize(shape);
+                return new ValueTask();
+            });
         }
 
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
         /// </summary>
-        public ShapeResult Initialize<TModel>(Func<TModel, Task> initializeAsync) where TModel : class
+        public ShapeResult Initialize<TModel>(Func<TModel, ValueTask> initializeAsync) where TModel : class
         {
             return Initialize<TModel>(
                 typeof(TModel).Name,
@@ -31,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
         /// </summary>
-        public ShapeResult Initialize<TModel>(string shapeType, Func<TModel, Task> initializeAsync) where TModel : class
+        public ShapeResult Initialize<TModel>(string shapeType, Func<TModel, ValueTask> initializeAsync) where TModel : class
         {
             return Factory(
                 shapeType,
@@ -39,13 +43,12 @@ namespace OrchardCore.DisplayManagement.Handlers
                 );
         }
 
-
         /// <summary>
         /// Creates a dynamic proxy for the specified model. Properties are copied to the new object.
         /// </summary>
         public ShapeResult Copy<TModel>(string shapeType, TModel model) where TModel : class
         {
-            return Dynamic(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, model));
+            return Factory(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, model));
         }
 
         /// <summary>
@@ -53,7 +56,11 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Initialize<TModel>(string shapeType, Action<TModel> initialize) where TModel : class
         {
-            return Initialize<TModel>(shapeType, shape => { initialize(shape); return Task.CompletedTask; });
+            return Initialize<TModel>(shapeType, shape =>
+            {
+                initialize(shape);
+                return new ValueTask();
+            });
         }
 
         /// <summary>
@@ -61,9 +68,13 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Dynamic(string shapeType, Func<dynamic, Task> initializeAsync)
         {
-            return Factory(shapeType, ctx =>
-                ctx.ShapeFactory.CreateAsync(shapeType, initializeAsync)
-            );
+            return Factory(shapeType,
+                async ctx =>
+                {
+                    dynamic shape = await ctx.ShapeFactory.CreateAsync(shapeType);
+                    await initializeAsync(shape);
+                    return shape;
+                });
         }
 
         /// <summary>
@@ -93,21 +104,21 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult View<TModel>(string shapeType, TModel model) where TModel : class
         {
-            return Factory(shapeType, ctx => Task.FromResult<IShape>(new ShapeViewModel<TModel>(model)));
+            return Factory(shapeType, ctx => new ValueTask<IShape>(new ShapeViewModel<TModel>(model)));
         }
 
         /// <summary>
-        /// If the shape needs to be rendered, it is created automatically from its type name and initialized with a <see param name="model" />
+        /// If the shape needs to be rendered, it is created automatically from its type name and initialized.
         /// </summary>
         public ShapeResult Shape(string shapeType, IShape shape)
         {
-            return Factory(shapeType, ctx => Task.FromResult(shape));
+            return Factory(shapeType, ctx => new ValueTask<IShape>(shape));
         }
 
         /// <summary>
         /// Creates a shape lazily.
         /// </summary>
-        public ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder)
+        public ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
         {
             return Factory(shapeType, shapeBuilder, null);
         }
@@ -117,7 +128,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Factory(string shapeType, Func<IBuildShapeContext, IShape> shapeBuilder)
         {
-            return Factory(shapeType, ctx => Task.FromResult(shapeBuilder(ctx)), null);
+            return Factory(shapeType, ctx => new ValueTask<IShape>(shapeBuilder(ctx)), null);
         }
 
         /// <summary>
@@ -127,7 +138,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// This method is ultimately called by all drivers to create a shape. It's made virtual
         /// so that any concrete driver can use it as a way to alter any returning shape from the drivers.
         /// </remarks>
-        public virtual ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
+        public virtual ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
             return new ShapeResult(shapeType, shapeBuilder, initializeAsync)
                 .Prefix(Prefix);
@@ -140,7 +151,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         public CombinedResult Combine(IEnumerable<IDisplayResult> results)
         {
-            return new CombinedResult( results );
+            return new CombinedResult(results);
         }
     }
 }

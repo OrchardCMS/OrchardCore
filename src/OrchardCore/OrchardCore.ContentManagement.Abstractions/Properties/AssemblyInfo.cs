@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -17,5 +17,4 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("258c4d94-8bbf-4b10-8e17-5376bb4ce4d5")]
-
-[assembly:InternalsVisibleTo("OrchardCore.ContentManagement")]
+[assembly: InternalsVisibleTo("OrchardCore.ContentManagement")]

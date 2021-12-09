@@ -1,0 +1,110 @@
+.action-bar {
+    border-bottom: $media-border-content; 
+
+    .media-filter {
+        margin-top: 3px;
+
+        .input-filter {
+            border-color: $gray-400;
+            border-right: none;
+            max-width: 80px;
+            padding-left: 32px;
+
+            &:focus, &:focus + .input-group-append > button {
+                border-color: $gray-700;
+            }
+        }
+
+        .input-group-append button {
+            border-color: $gray-400;
+            opacity: 1;
+            border-left: none;
+        }
+
+        .input-group-append button[disabled] {
+            color: transparent;
+        }
+
+        .icon-inside-input {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            z-index: $zindex-fixed;
+            pointer-events: none;
+            color: $gray-600;
+        }
+    }
+
+    /* Upload button */
+    .fileinput-button {
+        cursor: pointer;
+        margin: 0;
+        padding: 4px 12px 4px 8px;
+        border: 0;
+
+        svg {
+            margin-right: 6px;
+        }
+
+        input {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+    }
+    // hide glow on filter input
+    input[type="text"] {
+        outline: none;
+        box-shadow: none !important;
+    }
+}
+
+#breadcrumb {
+    background-color: transparent;
+    border-bottom: $media-border-content;
+    border-radius: 0px;
+    min-height: 50px;
+    font-size: 0.875rem;
+
+    .breadcrumb-path {
+        flex-grow: 1;
+
+        .breadcrumb-item {
+            display: inline-block;
+            
+            a {
+                color: $gray-700;
+            }
+        }
+    }
+
+
+    .breadcrumb-buttons {
+        justify-content: flex-start;
+        flex-grow: 1;
+        margin-top: -5px;
+
+        a {
+            border-radius: 0px !important;
+            color: $gray-700;
+        }
+    }
+}
+
+.visibility-buttons {
+    justify-content: flex-end;
+    flex-grow: 0;
+    margin-top: -5px;
+
+    button {
+        border-radius: 0px !important;
+        color: $gray-700;
+    }
+
+    .selected {
+        color: $primary;
+    }
+}

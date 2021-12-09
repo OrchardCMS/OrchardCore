@@ -1,0 +1,63 @@
+@model MediaDeploymentStepViewModel
+
+<h5>@T["Media"]</h5>
+
+<div class="form-group mt-4 mb-5">
+    <div class="row">
+        <div class="col">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IncludeAll"
+                           data-reverseToggle=".media-sel" />
+                    @T["Include all media."]
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="media-sel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
+    <div class="row">
+        <div class="col">
+            <span class="hint">@T["The media to add as part of the plan."]</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <partial name="../Shared/MediaStoreEntries.cshtml" model="@Model" />
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    function checkboxClicked(checkbox) {
+        var path = checkbox.value;
+
+        if (checkbox.checked) {
+            $(`li[data-path='${path}']`).collapse('hide');
+        } else {
+            $(`li[data-path='${path}']`).collapse('show');
+        }
+
+        $(`input[data-parent-value='${path}']:checked`).each(function () {
+            this.checked = false;
+
+            checkboxClicked(this);
+        });
+    }
+
+    $(function () {
+        $("[data-reverseToggle]").on("click", function () {
+            var state = this.checked;
+            if (state) {
+                $($(this).attr("data-reverseToggle")).collapse('hide');
+            } else {
+                $($(this).attr("data-reverseToggle")).collapse('show');
+            }
+        });
+
+        $("[data-parent-value]").on("click", function () {
+            checkboxClicked(this);
+        });
+    });
+</script>

@@ -3,46 +3,32 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    {% render_section "HeadMeta", required: false %}
-    <title>{% page_title Site.SiteName %}</title>
-    <!-- Custom fonts for this template -->
-    <link href="/TheAgencyTheme/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
-    <!-- Custom styles for this template -->
-    <link href="/TheAgencyTheme/css/agency-orchard.min.css" rel="stylesheet">
+    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
     {% resources type: "Meta" %}
+    {% link type:"image/x-icon", rel:"shortcut icon", href:"~/TheAgencyTheme/favicon.ico" %}
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+    {% style name:"font-awesome", version:"5", at:"Head" %}
+    {% style name:"theagencytheme-bootstrap-oc", version:"1" %}  
+    {% script name:"TheAgencyTheme-bootstrap-bundle", at:"Foot" %}    
+    {% script name:"TheAgencyTheme", at:"Foot" %}
+    {% resources type: "HeadScript" %}
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
-    {% resources type: "HeadScript" %}
+    {% render_section "HeadMeta", required: false %}
 </head>
 <body id="page-top" dir="{{ Culture.Dir }}">
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
         <div class="container">
-            <a class="navbar-brand js-scroll-trigger" href="{{ '~/#page-top' | href }}">{{ Site.SiteName }}</a>
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                Menu <i class="fa fa-bars"></i>
-            </button>
+            <a class="navbar-brand" href="{{ '~/#page-top' | href }}">{{ Site.SiteName }}</a>
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">{{ "Menu" | t }}<i class="fas fa-bars ms-1" aria-hidden="true"></i></button>
             {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_tag: "alias:main-menu" %}
         </div>
     </nav>
     {% render_section "Header", required: false %}
-    <div class="container" id="main">
-        {% render_section "Content" %}
-    </div>
+	{% render_section "Messages", required: false %}
+    {% render_section "Content" %}
     {% render_section "Footer", required: false %}
-    <!-- Bootstrap core JavaScript -->
-    <script src="/TheAgencyTheme/vendor/jquery/jquery.min.js"></script>
-    <script src="/TheAgencyTheme/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- Plugin JavaScript -->
-    <script src="/TheAgencyTheme/vendor/jquery-easing/jquery.easing.min.js"></script>
-    <!-- Contact form JavaScript -->
-    <script src="/TheAgencyTheme/js/jqBootstrapValidation.js"></script>
-    <script src="/TheAgencyTheme/js/contact_me.js"></script>
-    <!-- Custom scripts for this template -->
-    <script src="/TheAgencyTheme/js/agency.min.js"></script>
     {% resources type: "FootScript" %}
 </body>
 </html>

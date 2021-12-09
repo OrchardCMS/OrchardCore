@@ -22,7 +22,12 @@ namespace OrchardCore.Contents.Handlers
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
+            if (context.NoActiveVersionLeft)
+            {
+                return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
+            }
+
+            return Task.CompletedTask;
         }
 
         public override Task UnpublishedAsync(PublishContentContext context)
@@ -32,7 +37,7 @@ namespace OrchardCore.Contents.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
-            context.For<ContentItemMetadata>(metadata =>
+            return context.ForAsync<ContentItemMetadata>(metadata =>
             {
                 if (metadata.CreateRouteValues == null)
                 {
@@ -83,9 +88,9 @@ namespace OrchardCore.Contents.Handlers
                         {"ContentItemId", context.ContentItem.ContentItemId}
                     };
                 }
-            });
 
-            return Task.CompletedTask;
+                return Task.CompletedTask;
+            });
         }
     }
 }

@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Deployment
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageDeploymentPlan = new Permission("ManageDeploymentPlan", "Manage deployment plan");
-        public static readonly Permission Export = new Permission("Export", "Export Data");
-        public static readonly Permission Import = new Permission("Import", "Import Data");
+        public static readonly Permission ManageDeploymentPlan = CommonPermissions.ManageDeploymentPlan;
+        public static readonly Permission Export = CommonPermissions.Export;
+        public static readonly Permission Import = CommonPermissions.Import;
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] { ManageDeploymentPlan, Import, Export };
+            return Task.FromResult(new[] { ManageDeploymentPlan, Import, Export }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

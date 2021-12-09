@@ -2,42 +2,36 @@
 
   <!-- 
     This file is packaged with "OrchardCore.Application.Targets.nupkg" in "./build" such that any
-    Application that references it will embedd in its assembly a list of the referenced modules.
+    Application that references it will embed in its assembly a list of the referenced modules.
   -->
-
-  <Target Name="PublishRazorPagesFiles" BeforeTargets="BeforePublish">
-    <ItemGroup>
-      <RazorPagesFiles Include="Pages\**\*.cshtml" />
-      <ResolvedFileToPublish Include="@(RazorPagesFiles)" RelativePath="%(RazorPagesFiles.Identity)" />
-    </ItemGroup>
-  </Target>
 
   <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
     <MSBuild
-      Targets="GetModuleProject"
+      Targets="GetModuleProjectName"
       BuildInParallel="$(BuildInParallel)"
       Projects="@(_MSBuildProjectReferenceExistent)"
       Condition="'@(_MSBuildProjectReferenceExistent)' != ''"
       SkipNonexistentTargets="true"
       ContinueOnError="true">
 
-      <Output ItemName="ModuleProjects" TaskParameter="TargetOutputs" />
+      <Output ItemName="ModuleProjectNames" TaskParameter="TargetOutputs" />
     </MSBuild>
 
     <ItemGroup>
-      <ModuleProjectReferences Include="@(ModuleProjects)" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ModuleProjectNames Include="%(ModuleProjectReferences.FileName)" />
       <ModuleNames Include="@(ModulePackageNames);@(ModuleProjectNames)" />
     </ItemGroup>
 
     <ItemGroup>
-      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNameAttribute">
+      <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleNameAttribute" Condition="'@(ModuleNames)' != ''">
         <_Parameter1>%(ModuleNames.Identity)</_Parameter1>
       </AssemblyAttribute>
     </ItemGroup>
+  </Target>
+
+  <Target Name="NoWarnOnRazorViewImportedTypeConflicts" BeforeTargets="RazorCoreCompile">
+    <PropertyGroup>
+      <NoWarn>$(NoWarn);0436</NoWarn>
+    </PropertyGroup>
   </Target>
 
 </Project>

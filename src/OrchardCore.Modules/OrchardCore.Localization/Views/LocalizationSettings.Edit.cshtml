@@ -1,0 +1,79 @@
+@model LocalizationSettingsViewModel
+@using Newtonsoft.Json;
+@using System.Globalization;
+
+<p class="alert alert-warning col-xl-6">@T["The current tenant will be reloaded when the settings are saved."]</p>
+
+@{
+    // ['fr-FR', 'en-US']
+    var supportedCultures = JsonConvert.SerializeObject(Model.Cultures.Where(x => x.Supported).Select(c => c.CultureInfo.Name).ToArray());
+    var allCultures = JsonConvert.SerializeObject(Model.Cultures.Select(c => new { Name = c.CultureInfo.Name, DisplayName = !String.IsNullOrEmpty(c.CultureInfo.DisplayName) ? c.CultureInfo.DisplayName : c.CultureInfo.NativeName, Supported = c.Supported }).ToArray());
+    var defaultCulture = Model.Cultures.Where(x => x.IsDefault).FirstOrDefault().CultureInfo.Name;
+    var selectedCulture = Model.Cultures.Except(Model.Cultures.Where(x => x.Supported)).First().CultureInfo.Name;
+}
+
+<script asp-src="~/OrchardCore.Localization/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.Localization/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs"></script>
+
+<script at="Foot">
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(supportedCultures), '@defaultCulture', '@selectedCulture', @Html.Raw(allCultures));
+</script>
+
+<script type="text/x-template" id="options-table">
+    <div class="form-group">
+        <table class="table border-bottom">
+            <thead>
+                <tr>
+                    <th>@T["Culture"]</th>
+                    <th class="text-center">@T["Default culture"]</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(culture, index) in data" :key="index">
+                    <td>
+                        <span v-if="culture != ''">{{ culture }}</span>
+                        <span v-if="culture == ''">@CultureInfo.InvariantCulture.DisplayName</span>
+                        <input type="hidden" class="form-control" v-bind:value="culture" />
+                    </td>
+                    <td class="text-center align-middle">
+                        <div class="custom-control custom-radio ml-2">
+                            <input type="radio" class="custom-control-input" :id="'customRadio_' + index" v-bind:value="culture" v-model="defaultCulture">
+                            <label class="custom-control-label" title="Set as default" v-bind:for="'customRadio_' + index"></label>
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <a v-on:click="remove(index)" title="@T["Remove culture"]" href="javascript:void(0)" class="btn btn-secondary btn-sm" style="cursor:pointer">
+                            <i class="fas fa-trash" aria-hidden="true"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="row">
+            <div class="col">
+                <select v-model="selectedCulture" class="form-control col">
+                    <option v-for="(culture, index) in allCultures" v-bind:value="culture.Name" :key="index" v-if="!(culture.Supported)">
+                        {{ culture.Name }} ({{ culture.DisplayName }})
+                    </option>
+                </select>
+            </div>
+            <div class="col">
+                <a v-on:click="add()" href="javascript:void(0)" class="btn btn-success"><i class="fas fa-plus small" aria-hidden="true"></i> @T["Add culture"]</a>
+            </div>
+        </div>
+
+        <input class="form-control" id="@Html.IdFor(m => m.SupportedCultures)" name="@Html.NameFor(m => m.SupportedCultures)" type="hidden" v-bind:value="getSupportedCultures()" />
+        <input class="form-control" id="@Html.IdFor(m => m.DefaultCulture)" name="@Html.NameFor(m => m.DefaultCulture)" type="hidden" v-bind:value="getDefaultCulture()" />
+    </div>
+</script>
+
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
+
+    <div class="row">
+        <div class="col-xl-6">
+            <label>@T["Define which cultures are supported by the site."]</label>
+            <options-table :data="supportedCultures" :default-value="defaultCulture" :selectedCulture="selectedCulture" :list="allCultures" ></options-table>
+        </div>
+    </div>
+</div>

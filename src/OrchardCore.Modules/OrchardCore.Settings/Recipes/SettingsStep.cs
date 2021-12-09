@@ -27,7 +27,7 @@ namespace OrchardCore.Settings.Recipes
             }
 
             var model = context.Step;
-            var site = await _siteService.GetSiteSettingsAsync();
+            var site = await _siteService.LoadSiteSettingsAsync();
 
             foreach (JProperty property in model.Properties())
             {
@@ -41,52 +41,60 @@ namespace OrchardCore.Settings.Recipes
                         site.Calendar = property.Value.ToString();
                         break;
 
-                    case "Culture":
-                        site.Culture = property.Value.ToString();
-                        break;
-
-                    case "SupportedCultures":
-                        site.SupportedCultures = property.Value<string[]>();
-                        break;
-
                     case "MaxPagedCount":
-                        site.MaxPagedCount = property.Value<int>();
+                        site.MaxPagedCount = property.Value.Value<int>();
                         break;
 
                     case "MaxPageSize":
-                        site.MaxPageSize = property.Value<int>();
+                        site.MaxPageSize = property.Value.Value<int>();
                         break;
 
                     case "PageSize":
-                        site.PageSize = property.Value<int>();
+                        site.PageSize = property.Value.Value<int>();
                         break;
 
                     case "ResourceDebugMode":
-                        site.ResourceDebugMode = property.Value<ResourceDebugMode>();
+                        site.ResourceDebugMode = (ResourceDebugMode)property.Value.Value<int>();
                         break;
 
                     case "SiteName":
-                        site.SiteName = property.ToString();
+                        site.SiteName = property.Value.ToString();
+                        break;
+
+                    case "PageTitleFormat":
+                        site.PageTitleFormat = property.Value.ToString();
                         break;
 
                     case "SiteSalt":
-                        site.SiteSalt = property.ToString();
+                        site.SiteSalt = property.Value.ToString();
                         break;
 
                     case "SuperUser":
-                        site.SuperUser = property.ToString();
+                        site.SuperUser = property.Value.ToString();
                         break;
 
                     case "TimeZoneId":
-                        site.TimeZoneId = property.ToString();
+                        site.TimeZoneId = property.Value.ToString();
                         break;
 
                     case "UseCdn":
-                        site.UseCdn = property.Value<bool>();
+                        site.UseCdn = property.Value.Value<bool>();
+                        break;
+
+                    case "CdnBaseUrl":
+                        site.CdnBaseUrl = property.Value.ToString();
+                        break;
+
+                    case "AppendVersion":
+                        site.AppendVersion = property.Value.Value<bool>();
                         break;
 
                     case "HomeRoute":
                         site.HomeRoute = property.Value.ToObject<RouteValueDictionary>();
+                        break;
+
+                    case "CacheMode":
+                        site.CacheMode = (CacheMode)property.Value.Value<int>();
                         break;
 
                     default:

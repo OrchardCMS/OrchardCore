@@ -1,11 +1,10 @@
-using System.Globalization;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers
@@ -13,36 +12,37 @@ namespace OrchardCore.Settings.Drivers
     public class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     {
         public const string GroupId = "general";
-        private readonly INotifier _notifier;
+
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly IStringLocalizer S;
 
         public DefaultSiteSettingsDisplayDriver(
-            INotifier notifier,
             IShellHost shellHost,
             ShellSettings shellSettings,
-            IHtmlLocalizer<DefaultSiteSettingsDisplayDriver> h)
+            IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer
+            )
         {
-            _notifier = notifier;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            H = h;
+            S = stringLocalizer;
         }
 
-        IHtmlLocalizer H { get; set; }
-
-        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
+        public override IDisplayResult Edit(ISite site)
         {
-            return Task.FromResult<IDisplayResult>(
-                    Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
-                    {
-                        model.SiteName = site.SiteName;
-                        model.BaseUrl = site.BaseUrl;
-                        model.TimeZone = site.TimeZoneId;
-                        model.Culture = site.Culture;
-                        model.SiteCultures = site.SupportedCultures.Select(x => CultureInfo.GetCultureInfo(x));
-                    }).Location("Content:1").OnGroup(GroupId)
-            );
+            return Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
+            {
+                model.SiteName = site.SiteName;
+                model.PageTitleFormat = site.PageTitleFormat;
+                model.BaseUrl = site.BaseUrl;
+                model.TimeZone = site.TimeZoneId;
+                model.PageSize = site.PageSize;
+                model.UseCdn = site.UseCdn;
+                model.CdnBaseUrl = site.CdnBaseUrl;
+                model.ResourceDebugMode = site.ResourceDebugMode;
+                model.AppendVersion = site.AppendVersion;
+                model.CacheMode = site.CacheMode;
+            }).Location("Content:1").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
@@ -51,18 +51,29 @@ namespace OrchardCore.Settings.Drivers
             {
                 var model = new SiteSettingsViewModel();
 
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SiteName, t => t.BaseUrl, t => t.TimeZone, t => t.Culture))
+                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
                 {
                     site.SiteName = model.SiteName;
+                    site.PageTitleFormat = model.PageTitleFormat;
                     site.BaseUrl = model.BaseUrl;
                     site.TimeZoneId = model.TimeZone;
-                    site.Culture = model.Culture;
+                    site.PageSize = model.PageSize;
+                    site.UseCdn = model.UseCdn;
+                    site.CdnBaseUrl = model.CdnBaseUrl;
+                    site.ResourceDebugMode = model.ResourceDebugMode;
+                    site.AppendVersion = model.AppendVersion;
+                    site.CacheMode = model.CacheMode;
                 }
 
-                // We always reset the tenant for the default culture and also supported cultures to take effect
-                _shellHost.ReloadShellContext(_shellSettings);
+                if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out var baseUrl))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(site.BaseUrl), S["The Base url must be a fully qualified URL."]);
+                }
 
-                _notifier.Warning(H["The site has been restarted for the settings to take effect"]);
+                if (context.Updater.ModelState.IsValid)
+                {
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                }
             }
 
             return Edit(site);

@@ -1,19 +1,18 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Orchard</title>
-    @await RenderSectionAsync("Header", required: false)
+    <title>@ViewBag.Title - Orchard Core</title>
 </head>
 <body>
-    <h1>SAFE MODE</h1>
+    <h1>@T["SAFE MODE"]</h1>
+    @await RenderSectionAsync("Header", required: false)
     @await RenderBodyAsync()
 
     <hr />
     <footer>
         @await RenderSectionAsync("Footer", required: false)
-        <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
     </footer>
 </body>
 </html>

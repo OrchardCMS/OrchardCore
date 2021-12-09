@@ -2,7 +2,7 @@
 
   <!--
     This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
-    Module that references it will embedd in its assembly all assets files and mapping infos.
+    Module that references it will embed in its assembly all assets files and mapping infos.
     Here we use some msbuild properties that would not be evaluated in the `.props` file.
     It also prevents VS from adding / keeping some unnecessary lines in the project file.
   -->
@@ -26,6 +26,18 @@
     <EmbeddedResource Update="@(EmbeddedResource)" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
+  <Target Name="EnsureRazorSdk" BeforeTargets="BeforeBuild">
+    <Error
+      Condition="'@(RazorGenerate)' != '' and '$(ResolvedRazorCompileToolset)' != 'RazorSdk'"
+      Text="The 'Microsoft.NET.Sdk.Razor' SDK is required on Themes and Modules for Razor files to be precompiled." />
+  </Target>
+
+  <Target Name="NoWarnOnRazorViewImportedTypeConflicts" BeforeTargets="RazorCoreCompile">
+    <PropertyGroup>
+      <NoWarn>$(NoWarn);0436</NoWarn>
+    </PropertyGroup>
+  </Target>
+
   <Target Name="EmbeddModuleAssets" AfterTargets="AfterResolveReferences">
     <RemoveDuplicates Inputs="@(EmbeddedResource)">
       <Output TaskParameter="Filtered" ItemName="ModuleAssetFiles"/>
@@ -33,11 +45,11 @@
 
     <ItemGroup>
       <ModuleAssets
-        Include=".Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
+        Include="Areas\$(AssemblyName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
         Condition="'%(ModuleAssetFiles.Link)' == '' and '%(ModuleAssetFiles.Filename)' != ''"/>
 
       <ModuleAssets
-        Include=".Modules\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
+        Include="Areas\$(AssemblyName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
         Condition="'%(ModuleAssetFiles.Link)' != '' and '%(ModuleAssetFiles.Filename)' != ''" />
     </ItemGroup>
 
@@ -45,16 +57,16 @@
       <EmbeddedResource Remove="@(EmbeddedResource)" />
       <EmbeddedResource Include="@(ModuleAssetFiles)" />
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' == '' and '%(Extension)' != '.resx'">
-        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(RelativeDir)%(FileName)%(Extension)').Replace('\', '>').Replace('/', '>'))</LogicalName>
+        <LogicalName>$([System.String]::new('$(AssemblyName).%(RelativeDir)%(FileName)%(Extension)').Replace('\', '>').Replace('/', '>'))</LogicalName>
       </EmbeddedResource>
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != '' and '%(Extension)' != '.resx'">
-        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
+        <LogicalName>$([System.String]::new('$(AssemblyName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
       </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleMarkerAttribute">
-        <_Parameter1>$(MSBuildProjectName)</_Parameter1>
+        <_Parameter1>$(AssemblyName)</_Parameter1>
         <_Parameter2>$(ModuleType)</_Parameter2>
       </AssemblyAttribute>
       <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAssetAttribute">
@@ -72,9 +84,9 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="GetModuleProject" Returns="@(ModuleProject)">
+  <Target Name="GetModuleProjectName" Returns="@(ModuleProjectName)">
     <ItemGroup>
-      <ModuleProject Include="$(MSBuildProjectFullPath)" />
+      <ModuleProjectName Include="$(AssemblyName)" />
     </ItemGroup>
   </Target>
 

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Markdown</RootNamespace>
+     <!-- NuGet properties-->
+    <Title>OrchardCore Markdown Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for Markdown.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

@@ -1,9 +1,9 @@
-﻿using System.Text.Encodings.Web;
+using System.Text.Encodings.Web;
 using OrchardCore.ContentManagement;
+using OrchardCore.MetaWeblog;
+using OrchardCore.Title.Models;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
-using OrchardCore.MetaWeblog;
-using OrchardCore.Title.Model;
 
 namespace OrchardCore.Title.RemotePublishing
 {
@@ -29,10 +29,7 @@ namespace OrchardCore.Title.RemotePublishing
 
         public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
         {
-            if (contentItem.As<TitlePart>() != null)
-            {
-                contentItem.Alter<TitlePart>(x => x.Title = rpcStruct.Optional<string>("title"));
-            }
+            contentItem.DisplayText = rpcStruct.Optional<string>("title");
         }
     }
 }

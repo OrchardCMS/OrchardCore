@@ -6,6 +6,6 @@ namespace OrchardCore.Liquid
 {
     public interface ILiquidFilter
     {
-        Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx);
+        ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context);
     }
 }

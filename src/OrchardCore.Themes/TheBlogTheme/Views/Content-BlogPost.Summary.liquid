@@ -1,7 +1,7 @@
 <div class="post-preview">
     {% a display_for:Model.ContentItem %}
         <h2 class="post-title">
-            {{ Model.ContentItem.Content.TitlePart.Title }}
+            {{ Model.ContentItem.DisplayText }}
         </h2>
         <h3 class="post-subtitle">
             {{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}
@@ -10,7 +10,29 @@
     <p class="post-meta">
         {% assign format = "MMMM dd, yyyy" | t %}
         {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
-        {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+        {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Author }}</a> {{ "on {0}" | t: dateTime | raw }}
+  
+        <span class="term-badge">
+            {% assign categoryTerms = Model.ContentItem.Content.BlogPost.Category | taxonomy_terms %}
+            {% for categoryTerm in categoryTerms %}
+                {% a display_for:categoryTerm %}
+                    <span class="badge bg-secondary">
+                        <i class="{{ categoryTerm.Content.Category.Icon.Text }} fa-xs align-middle"></i>
+                        <span class="align-middle">{{ categoryTerm.DisplayText }}</span>
+                    </span>
+                {% enda %}
+            {% endfor %}
+
+            {% assign tagTerms = Model.ContentItem.Content.BlogPost.Tags | taxonomy_terms %}
+            {% for tagTerm in tagTerms %}
+                {% a display_for:tagTerm %}
+                    <span class="badge bg-secondary">
+                        <i class="fas fa-tag fa-xs fa-rotate-90 align-middle" aria-hidden="true"></i>
+                        <span class="align-middle">{{ tagTerm.DisplayText }}</span> 
+                    </span>
+                {% enda %}
+            {% endfor %}
+        </span>
     </p>
 </div>
-<hr />
+<hr class="my-4" />

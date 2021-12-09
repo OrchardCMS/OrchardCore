@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
@@ -12,12 +13,12 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
-using YesSql;
 
 namespace OrchardCore.Queries.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
@@ -25,7 +26,10 @@ namespace OrchardCore.Queries.Controllers
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
-        private readonly ISession _session;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
+        private readonly dynamic New;
 
         public AdminController(
             IDisplayManager<Query> displayManager,
@@ -37,42 +41,32 @@ namespace OrchardCore.Queries.Controllers
             INotifier notifier,
             IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
-            ISession session)
+            IUpdateModelAccessor updateModelAccessor)
         {
-            _session = session;
             _displayManager = displayManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
             _queryManager = queryManager;
             _querySources = querySources;
+            _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
             _notifier = notifier;
-
-            T = stringLocalizer;
+            S = stringLocalizer;
             H = htmlLocalizer;
         }
 
-        public dynamic New { get; set; }
-        public IStringLocalizer T { get; set; }
-        public IHtmlLocalizer H { get; set; }
-
-        public async Task<IActionResult> Index(QueryIndexOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            // default options
-            if (options == null)
-            {
-                options = new QueryIndexOptions();
-            }
-
             var queries = await _queryManager.ListQueriesAsync();
+            queries = queries.OrderBy(x => x.Name);
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -100,22 +94,36 @@ namespace OrchardCore.Queries.Controllers
 
             foreach (var query in results)
             {
-                model.Queries.Add(new QueryEntry {
+                model.Queries.Add(new QueryEntry
+                {
                     Query = query,
-                    Shape = await _displayManager.BuildDisplayAsync(query, this, "SummaryAdmin")
+                    Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
                 });
             }
 
+            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            };
+
             return View(model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(QueriesIndexViewModel model)
+        {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<IActionResult> Create(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
-            
+
             var query = _querySources.FirstOrDefault(x => x.Name == id)?.Create();
 
             if (query == null)
@@ -125,7 +133,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesCreateViewModel
             {
-                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: true),
+                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true),
                 SourceName = id
             };
 
@@ -137,9 +145,9 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
-            
+
             var query = _querySources.FirstOrDefault(x => x.Name == model.SourceName)?.Create();
 
             if (query == null)
@@ -147,14 +155,14 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: true);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
             if (ModelState.IsValid)
             {
                 await _queryManager.SaveQueryAsync(query.Name, query);
 
-                _notifier.Success(H["Query created successfully"]);
-                return RedirectToAction("Index");
+                await _notifier.SuccessAsync(H["Query created successfully."]);
+                return RedirectToAction(nameof(Index));
             }
 
             // If we got this far, something failed, redisplay form
@@ -167,7 +175,7 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var query = await _queryManager.GetQueryAsync(id);
@@ -181,8 +189,9 @@ namespace OrchardCore.Queries.Controllers
             {
                 SourceName = query.Source,
                 Name = query.Name,
-                Editor = await _displayManager.BuildEditorAsync(query, updater: this, isNew: false)
-            };   
+                Schema = query.Schema,
+                Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false)
+            };
 
             return View(model);
         }
@@ -192,24 +201,24 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            var query = await _queryManager.GetQueryAsync(model.Name);
+            var query = (await _queryManager.LoadQueryAsync(model.Name));
 
             if (query == null)
             {
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(query, updater: this, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             if (ModelState.IsValid)
             {
                 await _queryManager.SaveQueryAsync(model.Name, query);
 
-                _notifier.Success(H["Query updated successfully"]);
-                return RedirectToAction("Index");
+                await _notifier.SuccessAsync(H["Query updated successfully."]);
+                return RedirectToAction(nameof(Index));
             }
 
             model.Editor = editor;
@@ -223,10 +232,10 @@ namespace OrchardCore.Queries.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            var query = await _queryManager.GetQueryAsync(id);
+            var query = await _queryManager.LoadQueryAsync(id);
 
             if (query == null)
             {
@@ -235,9 +244,41 @@ namespace OrchardCore.Queries.Controllers
 
             await _queryManager.DeleteQueryAsync(id);
 
-            _notifier.Success(H["Query deleted successfully"]);
+            await _notifier.SuccessAsync(H["Query deleted successfully."]);
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
+            {
+                return Forbid();
+            }
+
+            if (itemIds?.Count() > 0)
+            {
+                var queriesList = await _queryManager.ListQueriesAsync();
+                var checkedContentItems = queriesList.Where(x => itemIds.Contains(x.Name));
+                switch (options.BulkAction)
+                {
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.Remove:
+                        foreach (var item in checkedContentItems)
+                        {
+                            await _queryManager.DeleteQueryAsync(item.Name);
+                        }
+                        await _notifier.SuccessAsync(H["Queries successfully removed."]);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

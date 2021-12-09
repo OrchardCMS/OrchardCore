@@ -1,112 +1,64 @@
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.OpenId.Services;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
-using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Drivers
 {
-    public class OpenIdValidationSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdValidationSettings>
+    public class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenIdValidationSettings>
     {
-        private const string SettingsGroupId = "OrchardCore.OpenId.Validation";
-
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IOpenIdValidationService _validationService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<OpenIdValidationSettingsDisplayDriver> T;
         private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
-        private readonly IShellSettingsManager _shellSettingsManager;
 
-        public OpenIdValidationSettingsDisplayDriver(
-            IAuthorizationService authorizationService,
-            IOpenIdValidationService validationService,
-            IHttpContextAccessor httpContextAccessor,
-            INotifier notifier,
-            IHtmlLocalizer<OpenIdValidationSettingsDisplayDriver> stringLocalizer,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
-            IShellSettingsManager shellSettingsManager)
-        {
-            _authorizationService = authorizationService;
-            _validationService = validationService;
-            _notifier = notifier;
-            _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
-            _shellSettingsManager = shellSettingsManager;
-            T = stringLocalizer;
-        }
+        public OpenIdValidationSettingsDisplayDriver(IShellHost shellHost)
+            => _shellHost = shellHost;
 
-        public override async Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
+        public override Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
+            => Task.FromResult<IDisplayResult>(Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
             {
-                return null;
-            }
-
-            return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", model =>
-            {
-                model.Authority = settings.Authority;
+                model.Authority = settings.Authority?.AbsoluteUri;
                 model.Audience = settings.Audience;
+                model.DisableTokenTypeValidation = settings.DisableTokenTypeValidation;
                 model.Tenant = settings.Tenant;
 
-                model.AvailableTenants = (from tenant in _shellSettingsManager.LoadSettings().AsParallel()
-                                          let provider = _shellHost.GetOrCreateShellContext(tenant).ServiceProvider
-                                          let descriptor = provider.GetRequiredService<ShellDescriptor>()
-                                          where descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server)
-                                          select tenant.Name).ToList();
-            }).Location("Content:2").OnGroup(SettingsGroupId);
-        }
+                var availableTenants = new List<string>();
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, BuildEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
-            {
-                return null;
-            }
-
-            if (context.GroupId == SettingsGroupId)
-            {
-                var model = new OpenIdValidationSettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.Authority = model.Authority?.Trim();
-                settings.Audience = model.Audience?.Trim();
-                settings.Tenant = model.Tenant;
-
-                foreach (var result in await _validationService.ValidateSettingsAsync(settings))
+                foreach (var shellSettings in _shellHost.GetAllSettings()
+                    .Where(s => s.State == TenantState.Running))
                 {
-                    if (result != ValidationResult.Success)
+                    var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+
+                    await shellScope.UsingAsync(scope =>
                     {
-                        var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
-                        context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
-                    }
+                        var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
+                        if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+                        {
+                            availableTenants.Add(shellSettings.Name);
+                        }
+                        return Task.CompletedTask;
+                    });
                 }
 
-                // If the settings are valid, reload the current tenant.
-                if (context.Updater.ModelState.IsValid)
-                {
-                    _shellHost.ReloadShellContext(_shellSettings);
-                }
-            }
+                model.AvailableTenants = availableTenants;
+            }).Location("Content:2"));
+
+        public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)
+        {
+            var model = new OpenIdValidationSettingsViewModel();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+            settings.Audience = model.Audience?.Trim();
+            settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
+            settings.Tenant = model.Tenant;
 
             return await EditAsync(settings, context);
         }

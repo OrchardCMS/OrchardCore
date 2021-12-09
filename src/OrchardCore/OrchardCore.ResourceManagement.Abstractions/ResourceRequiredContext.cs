@@ -1,5 +1,8 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -9,44 +12,40 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition Resource { get; set; }
         public RequireSettings Settings { get; set; }
+        public IFileVersionProvider FileVersionProvider { get; set; }
 
-        public IHtmlContent GetHtmlContent(RequireSettings baseSettings, string appPath)
+        public void WriteTo(TextWriter writer, string appPath)
         {
-            var combinedSettings = baseSettings == null ? Settings : baseSettings.Combine(Settings);
+            var tagBuilder = Resource.GetTagBuilder(Settings, appPath, FileVersionProvider);
 
-            var tagBuilder = Resource.GetTagBuilder(combinedSettings, appPath);
-
-            if (String.IsNullOrEmpty(combinedSettings.Condition))
+            if (String.IsNullOrEmpty(Settings.Condition))
             {
-                return tagBuilder;
+                tagBuilder.WriteTo(writer, NullHtmlEncoder.Default);
+                return;
             }
 
-            var builder = new HtmlContentBuilder();
-
-            if (combinedSettings.Condition == NotIE)
+            if (Settings.Condition == NotIE)
             {
-                builder.AppendHtml("<!--[if " + combinedSettings.Condition + "]>-->");
+                writer.Write("<!--[if " + Settings.Condition + "]>-->");
             }
             else
             {
-                builder.AppendHtml("<!--[if " + combinedSettings.Condition + "]>");
+                writer.Write("<!--[if " + Settings.Condition + "]>");
             }
 
-            builder.AppendHtml(tagBuilder);
+            tagBuilder.WriteTo(writer, NullHtmlEncoder.Default);
 
-            if (!string.IsNullOrEmpty(combinedSettings.Condition))
+            if (!string.IsNullOrEmpty(Settings.Condition))
             {
-                if (combinedSettings.Condition == NotIE)
+                if (Settings.Condition == NotIE)
                 {
-                    builder.AppendHtml("<!--<![endif]-->");
+                    writer.Write("<!--<![endif]-->");
                 }
                 else
                 {
-                    builder.AppendHtml("<![endif]-->");
+                    writer.Write("<![endif]-->");
                 }
             }
-
-            return builder;
         }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -13,15 +12,11 @@ namespace OrchardCore.Features.Recipes.Executors
     /// </summary>
     public class FeatureStep : IRecipeStepHandler
     {
-        private readonly IExtensionManager _extensionManager;
-        private readonly IShellFeaturesManager _shellFeatureManager;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
 
-        public FeatureStep(
-            IExtensionManager extensionManager,
-            IShellFeaturesManager shellFeatureManager)
+        public FeatureStep(IShellFeaturesManager shellFeaturesManager)
         {
-            _extensionManager = extensionManager;
-            _shellFeatureManager = shellFeatureManager;
+            _shellFeaturesManager = shellFeaturesManager;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -33,20 +28,14 @@ namespace OrchardCore.Features.Recipes.Executors
 
             var step = context.Step.ToObject<FeatureStepModel>();
 
-            var features = _extensionManager.GetFeatures();
+            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync());
 
-            if (step.Disable.Any())
+            var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true).ToList();
+            var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true).ToList();
+
+            if (featuresToDisable.Count > 0 || featuresToEnable.Count > 0)
             {
-                var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
-
-                await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
-            }
-
-            if (step.Enable.Any())
-            {
-                var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
-
-                await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
+                await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, true);
             }
         }
 

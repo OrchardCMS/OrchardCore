@@ -1,7 +1,11 @@
 @model OrchardCore.Users.ViewModels.RegisterViewModel
 
+@{
+    ViewLayout = "Layout__Login";
+}
+
 <h2>@T["Register"]</h2>
-<form asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+<form asp-controller="Registration" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
     <h4>@T["Create a new account."]</h4>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -33,9 +37,10 @@
             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
         </div>
     </div>
+    @await RenderSectionAsync("AfterRegister", required: false)
     <div class="form-group">
         <div class="col-md-offset-3 col-md-9">
-            <button type="submit" class="btn btn-default">@T["Register"]</button>
+            <button type="submit" class="btn btn-primary">@T["Register"]</button>
         </div>
     </div>
 </form>

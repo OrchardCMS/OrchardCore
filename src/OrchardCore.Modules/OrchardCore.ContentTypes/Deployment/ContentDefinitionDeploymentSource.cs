@@ -1,38 +1,44 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
-using YesSql;
 
 namespace OrchardCore.ContentTypes.Deployment
 {
     public class ContentDefinitionDeploymentSource : IDeploymentSource
     {
-        private readonly ISession _session;
+        private readonly IContentDefinitionStore _contentDefinitionStore;
 
-        public ContentDefinitionDeploymentSource(ISession session)
+        public ContentDefinitionDeploymentSource(IContentDefinitionStore contentDefinitionStore)
         {
-            _session = session;
+            _contentDefinitionStore = contentDefinitionStore;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is ContentDefinitionDeploymentStep contentDefitionStep))
+            if (!(step is ContentDefinitionDeploymentStep contentDefinitionStep))
             {
                 return;
             }
 
-            var contentTypeDefinitionRecord = await _session
-                .Query<ContentDefinitionRecord>()
-                .FirstOrDefaultAsync();
+            var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
+
+            var contentTypes = contentDefinitionStep.IncludeAll
+                ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords
+                : contentTypeDefinitionRecord.ContentTypeDefinitionRecords
+                    .Where(x => contentDefinitionStep.ContentTypes.Contains(x.Name));
+
+            var contentParts = contentDefinitionStep.IncludeAll
+                ? contentTypeDefinitionRecord.ContentPartDefinitionRecords
+                : contentTypeDefinitionRecord.ContentPartDefinitionRecords
+                        .Where(x => contentDefinitionStep.ContentParts.Contains(x.Name));
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "ContentDefinition"),
-                new JProperty("ContentTypes", JArray.FromObject(contentTypeDefinitionRecord.ContentTypeDefinitionRecords)),
-                new JProperty("ContentParts", JArray.FromObject(contentTypeDefinitionRecord.ContentPartDefinitionRecords))
+                new JProperty("ContentTypes", JArray.FromObject(contentTypes)),
+                new JProperty("ContentParts", JArray.FromObject(contentParts))
             ));
-
-            return;
         }
     }
 }

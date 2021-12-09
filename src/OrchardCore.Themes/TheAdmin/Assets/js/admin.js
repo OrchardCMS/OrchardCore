@@ -1,34 +1,91 @@
-function getConfirmRemoveMessage() {
-    return $('#confirmRemoveMessage').data('value');
+function confirmDialog({callback, ...options}) {
+    const defaultOptions = $('#confirmRemoveModalMetadata').data();
+    const { title, message, okText, cancelText, okClass, cancelClass } = $.extend({}, defaultOptions, options);
+
+    $('<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">\
+        <div class="modal-dialog modal-dialog-centered" role="document">\
+            <div class="modal-content">\
+                <div class="modal-header">\
+                    <h5 class="modal-title">' + title + '</h5>\
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button>\
+                </div>\
+                <div class="modal-body">\
+                    <p>' + message +'</p>\
+                </div>\
+                <div class="modal-footer">\
+                    <button id="modalOkButton" type="button" class="btn ' + okClass + '">' + okText + '</button>\
+                    <button id="modalCancelButton" type="button" class="btn ' + cancelClass + '" data-dismiss="modal">' + cancelText + '</button>\
+                </div>\
+            </div>\
+        </div>\
+    </div>').appendTo("body");
+    $("#confirmRemoveModal").modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+
+    $("#confirmRemoveModal").on('hidden.bs.modal', function () {
+        $("#confirmRemoveModal").remove();
+    });
+
+    $("#modalOkButton").click(function () {
+        callback(true);
+        $("#confirmRemoveModal").modal("hide");
+    });
+
+    $("#modalCancelButton").click(function () {
+        callback(false);
+        $("#confirmRemoveModal").modal("hide");
+    });
 }
 
-$(function () {
+// Prevents page flickering while downloading css
+$(window).on("load", function() {
     $("body").removeClass("preload");
 });
 
-
 $(function () {
-    $("body").on("click", "[itemprop~='RemoveUrl']", function () {
+    $("body").on("click", "[data-url-af~='RemoveUrl'], a[itemprop~='RemoveUrl']", function () {
+        var _this = $(this);
+        if(_this.filter("a[itemprop~='UnsafeUrl']").length == 1)
+        {
+            console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
+        }
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
-        if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
+        if (_this.filter("[data-url-af~='UnsafeUrl'], a[itemprop~='UnsafeUrl']").length == 1) {
             return false;
         }
+        confirmDialog({..._this.data(),
+             callback: function(resp) {
+                if (resp) {
+                    var url = _this.attr('href');
+                    if (url == undefined) {
+                        var form = _this.parents('form');
+                        // This line is reuired in case we used the FormValueRequiredAttribute
+                        form.append($("<input type=\"hidden\" name=\"" + _this.attr('name') + "\" value=\"" + _this.attr('value') + "\" />"));
+                        form.submit();
+                    }
+                    else {
+                        window.location = url;
+                    }
+                }
+            }});
 
-        // use a custom message if its set in data-message
-        var dataMessage = $(this).data('message');
-        if (dataMessage === undefined) {
-            dataMessage = getConfirmRemoveMessage();
-        }
-
-        return confirm(dataMessage);
+        return false;
     });
 });
 
 $(function () {
     var magicToken = $("input[name=__RequestVerificationToken]").first();
     if (magicToken) {
-        $("body").on("click", "a[itemprop~='UnsafeUrl'], a[data-unsafe-url]", function () {
+        $("body").on("click", "a[data-url-af~='UnsafeUrl'], a[itemprop~='UnsafeUrl']", function () {
             var _this = $(this);
+            if(_this.filter("a[itemprop~='UnsafeUrl']").length == 1)
+            {
+                console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
+            }
             var hrefParts = _this.attr("href").split("?");
             var form = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
             form.append(magicToken.clone());
@@ -46,26 +103,31 @@ $(function () {
             var unsafeUrlPrompt = _this.data("unsafe-url");
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
-                if (!confirm(unsafeUrlPrompt)) {
-                    return false;
-                }
+                confirmDialog({..._this.data(),
+                    callback: function(resp) {
+                        if (resp) {
+                            form.submit();
+                        }
+                    }
+                });
+
+                return false;
             }
 
-            if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
-                // use a custom message if its set in data-message
-                var dataMessage = _this.data('message');
-                if (dataMessage === undefined) {
-                    dataMessage = getConfirmRemoveMessage();
-                }
+            if (_this.filter("[data-url-af~='RemoveUrl'], a[itemprop~='RemoveUrl']").length == 1) {
+                confirmDialog({..._this.data(), 
+                    callback: function(resp) {
+                        if (resp) {
+                            form.submit();
+                        }
+                    }
+                });
 
-                if (!confirm(dataMessage)) {
-                    return false;
-                }
+                return false;
             }
 
             form.submit();
             return false;
-
         });
     }
 });
@@ -143,3 +205,22 @@ function isNumber(str) {
     return str.length === 1 && str.match(/[0-9]/i);
 }
 
+$('[data-bs-toggle="tooltip"]').tooltip();
+
+//Prevent multi submissions on forms
+$("body").on("submit", "form.no-multisubmit", function (e) {
+    var submittingClass = "submitting";
+    form = $(this);
+
+    if (form.hasClass(submittingClass)) {
+        e.preventDefault();
+        return;
+    }
+
+    form.addClass(submittingClass);
+
+    // safety-nest in case the form didn't refresh the page
+    setTimeout(function () {
+        form.removeClass(submittingClass);
+    }, 5000);
+});

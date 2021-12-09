@@ -2,57 +2,20 @@
 @using OrchardCore.Entities
 @using OrchardCore.Users.Models
 
-@{
-    var usersMustValidateEmail = Site.As<RegistrationSettings>().UsersMustValidateEmail;
-}
-
-<input asp-for="Id" type="hidden" />
-
-<div class="row">
-    <div class="form-group col-md-3" asp-validation-class-for="UserName">
-        <label asp-for="UserName">@T["User name"]</label>
-        <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fa fa-user"></i></span>
-            </div>
-            <input asp-for="UserName" class="form-control" autofocus />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="form-group col-md-3" asp-validation-class-for="Email">
-        <label asp-for="Email">@T["Email"]</label>
-        <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fa fa-envelope"></i></span>
-            </div>
-            <input asp-for="Email" class="form-control" type="email" />
-        </div>
-    </div>
-</div>
 @if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
-    <div class="form-group col-md-3">
-        <div class="form-check">
-            <input asp-for="EmailConfirmed" type="checkbox" class="form-check-input" />
-            <label asp-for="EmailConfirmed">@T["Email confirmed"]</label>
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input asp-for="EmailConfirmed" type="checkbox" class="custom-control-input" asp-is-disabled="@Model.IsEditingDisabled">
+            <label class="custom-control-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
         </div>
     </div>
 }
 
-<h6>@T["Roles"]</h6>
-<div class="form-group col-md-3">
-    @for (var i = 0; i < Model.Roles.Length; i++)
-    {
-        <div class="form-check">
-            <label class="form-check-label" asp-for="Roles[i].IsSelected">
-
-                <input class="form-check-input" type="checkbox" asp-for="Roles[i].IsSelected" />
-                <input type="hidden" asp-for="Roles[i].Role" />
-                @Model.Roles[i].Role
-            </label>
-        </div>
-    }
+<div class="form-group">
+    <div class="custom-control custom-switch">
+        <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" asp-is-disabled="@Model.IsEditingDisabled"/>
+        <label asp-for="IsEnabled" class="custom-control-label cursor-pointer">@T["Is enabled?"]</label>
+        <span class="hint dashed">@T["Uncheck to disable this user account."]</span>
+    </div>
 </div>

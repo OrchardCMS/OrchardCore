@@ -1,0 +1,49 @@
+@model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
+
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
+}
+
+<style asp-name="fontpickerStyle" at="Head" asp-src="~/OrchardCore.ContentFields/Styles/fontawesome-iconpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/fontawesome-iconpicker.css"></style>
+<style asp-name="fontpickerCustomStyle" at="Head" asp-src="~/OrchardCore.ContentFields/Styles/iconpicker-custom.css"></style>
+<script asp-name="fontpickerScript" asp-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/fontawesome-iconpicker.js" at="Foot" depends-on="jquery"></script>
+<script asp-name="iconpickerCustomScript" asp-src="~/OrchardCore.ContentFields/Scripts/iconpicker-custom.js" at="Foot"></script>
+
+<div class="form-group">
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+    <input type="hidden" asp-for="Text" id="@Html.IdFor(m=>m.Text)" />
+    <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
+        <div class="btn-group input-group">
+            <button type="button" class="btn btn-primary iconpicker-component">
+                <i class="fa fa-fw fa-heart" aria-hidden="true"></i>
+            </button>
+            <button type="button" id="@Html.IdForModel()" class="icp icp-dd btn btn-primary dropdown-toggle" data-selected="fa-car" data-toggle="dropdown">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <div class="dropdown-menu"></div>
+        </div>
+    </div>
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+</div>
+
+<script at="Foot">
+    $(function () {
+
+        $('#@Html.IdForModel()').iconpicker();
+
+        var storedIcon = $('#@Html.IdFor(m=>m.Text)').val();
+
+        if (storedIcon) {
+            $('#@Html.IdForModel()').data('iconpicker').update(storedIcon);
+        }
+
+        $('#@Html.IdForModel()').on('iconpickerSelected', function (e) {
+            $('#@Html.IdFor(m=>m.Text)').val(e.iconpickerInstance.options.fullClassFormatter(e.iconpickerValue));
+        });
+    });
+</script>

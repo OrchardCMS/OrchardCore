@@ -1,0 +1,132 @@
+@model AdminNodeListViewModel
+@inject OrchardCore.DisplayManagement.IDisplayManager<MenuItem> MenuItemDisplayManager
+@inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
+
+@{
+    var index = 0;
+}
+
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css"></style>
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1></zone>
+
+<nav class="card mb-3">
+    <div class="card-body bg-primary p-3">
+        <div class="form-group mb-n1">
+            <div class="dropdown float-right order-md-1">
+                <!-- Button trigger modal -->
+                <a asp-route-action="Create" class="btn btn-sm btn-primary" role="button" data-toggle="modal" data-target="#modalTreeNodes">
+                    @T["Add Node"]
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div asp-validation-summary="All"></div>
+
+<form id="presetForm" asp-action="List">
+    <div class="form-group">
+        @if (Model.AdminMenu.MenuItems.Any())
+        {
+            var updater = ModelUpdaterAccessor.ModelUpdater;
+
+            <ol id="menu" data-treenode-id="content-preset" class="list-group">
+                @foreach (var menuItem in Model.AdminMenu.MenuItems)
+                {
+                    if (menuItem != null)
+                    {
+                        dynamic adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TreeSummary");
+                        adminNodeShape.AdminMenuId = Model.AdminMenu.Id;
+                        adminNodeShape.MenuItem = menuItem;
+                        adminNodeShape.Index = index++;
+
+                        @await DisplayAsync(adminNodeShape)
+                    }
+                }
+            </ol>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0" role="alert">
+                @T["<strong>Nothing here!</strong> There are no nodes on this tree for the moment."]
+            </div>
+        }
+    </div>
+
+    <div class="form-group">
+        <a class="btn btn-secondary" asp-route-controller="menu" asp-route-action="List">@T["Back"]</a>
+    </div>
+</form>
+
+<!-- Modal -->
+<div class="modal fade" id="modalTreeNodes" tabindex="-1" role="dialog" aria-labelledby="admin-tree-nodes-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="admin-tree-nodes-title">@T["Available Admin Nodes"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card-columns">
+                    @foreach (var thumbnail in Model.Thumbnails)
+                    {
+                        thumbnail.Value.ContentTreePreset = Model.AdminMenu;
+                        thumbnail.Value.Type = thumbnail.Key;
+                        @await DisplayAsync(thumbnail.Value)
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the tree node."]"></div>
+
+<script at="Foot">
+    function moveNode(AdminMenuId, nodeToMoveId, destinationNodeId, position) {
+        var url = "@Url.Action("MoveNode", "Node", new { area = "OrchardCore.AdminMenu"})";
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                treeId: AdminMenuId,
+                nodeToMoveId: nodeToMoveId,
+                destinationNodeId: destinationNodeId,
+                position: position
+            },
+            success: function () {
+                location.reload(true);
+            },
+            error: function (error) {
+                alert($('#move-error-message').data("message"));
+            }
+        });
+    }
+
+    $(function () {
+        $('#menu')
+            .nestedSortable({
+                handle: 'div.menu-item-title',
+                items: 'li.menu-item',
+                toleranceElement: '> div.menu-item-title',
+                relocate: function (event, helper) {
+                    // get var required by rest api
+                    var AdminMenuId = '@Model.AdminMenu.Id';
+                    var nodeToMoveId = helper.item.data('treenode-id');
+                    var destinationNodeId = helper.item.parent().closest('[data-treenode-id]').data('treenode-id'); // get the id of the new parent
+                    var position = helper.item.index();
+
+                    // make request to rest api
+                    moveNode(AdminMenuId, nodeToMoveId, destinationNodeId, position);
+                }
+            });
+    });
+</script>

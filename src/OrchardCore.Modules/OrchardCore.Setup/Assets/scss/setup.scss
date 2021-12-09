@@ -1,5 +1,4 @@
-@import "src/OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/scss/bootstrap.scss";
-
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 .has-validation-error {
     @extend .text-danger;
@@ -22,4 +21,13 @@
 
 .form-control:invalid {
     outline: none;
+}
+
+.form-text {
+    display: block;
+}
+
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear {
+    display: none;
 }

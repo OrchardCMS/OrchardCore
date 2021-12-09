@@ -1,43 +1,45 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.CustomSettings
 {
     public class AdminMenu : INavigationProvider
     {
         private readonly CustomSettingsService _customSettingsService;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,
             CustomSettingsService customSettingsService)
         {
-            T = localizer;
+            S = localizer;
             _customSettingsService = customSettingsService;
         }
 
-        public IStringLocalizer T { get; set; }
-
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            foreach (var type in _customSettingsService.GetSettingsTypes())
+            foreach (var type in _customSettingsService.GetAllSettingsTypes())
             {
                 builder
-                    .Add(T["Configuration"], configuration => configuration
-                        .Add(T["Settings"], settings => settings
-                            .Add(new LocalizedString(type.DisplayName, type.DisplayName), layers => layers
+                    .Add(S["Configuration"], configuration => configuration
+                        .Add(S["Settings"], settings => settings
+                            .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = type.Name })
                                 .Permission(Permissions.CreatePermissionForType(type))
                                 .Resource(type.Name)
                                 .LocalNav()
                             )));
             }
+
+            return Task.CompletedTask;
         }
     }
 }

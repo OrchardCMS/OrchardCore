@@ -1,37 +1,23 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
     public class ShapeAttributeBindingStrategy : IShapeTableHarvester
     {
-        private static readonly ConcurrentDictionary<string, CallSite<Func<CallSite, object, dynamic>>> _getters =
-            new ConcurrentDictionary<string, CallSite<Func<CallSite, object, dynamic>>>();
-
-        private static readonly ConcurrentDictionary<MethodInfo, ParameterInfo[]> _parameters =
-            new ConcurrentDictionary<MethodInfo, ParameterInfo[]>();
-
-        private static readonly ConcurrentDictionary<Type, Func<dynamic, object>> _converters =
-            new ConcurrentDictionary<Type, Func<dynamic, object>>();
-
-
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
 
@@ -51,10 +37,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 var serviceType = shapeProvider.GetType();
 
-                IFeatureInfo feature = _typeFeatureProvider.GetFeatureForDependency(serviceType);
-                if (builder.ExcludedFeatureIds.Contains(feature.Id))
-                    continue;
-
                 foreach (var method in serviceType.GetMethods())
                 {
                     var customAttributes = method.GetCustomAttributes(typeof(ShapeAttribute), false).OfType<ShapeAttribute>();
@@ -73,142 +55,210 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                     .From(_typeFeatureProvider.GetFeatureForDependency(occurrence.ServiceType))
                     .BoundAs(
                         occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
-                        descriptor => CreateDelegate(occurrence, descriptor));
+                        CreateDelegate(occurrence));
             }
         }
 
         [DebuggerStepThrough]
-        private Func<DisplayContext, Task<IHtmlContent>> CreateDelegate(
-            ShapeAttributeOccurrence attributeOccurrence,
-            ShapeDescriptor descriptor)
+        private Func<DisplayContext, Task<IHtmlContent>> CreateDelegate(ShapeAttributeOccurrence attributeOccurrence)
         {
-			return context =>
-			{
-				var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
-				// oversimplification for the sake of evolving
-				return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
-			};
-        }
+            var type = attributeOccurrence.ServiceType;
+            var methodInfo = attributeOccurrence.MethodInfo;
+            var parameters = methodInfo.GetParameters();
 
-        private static Task<IHtmlContent> PerformInvokeAsync(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
-        {
-            var parameters = _parameters.GetOrAdd(methodInfo, m => m.GetParameters());
-            var arguments = parameters.Select(parameter => BindParameter(displayContext, parameter));
+            // Create an array of lambdas that will generate the value of each parameter. This prevents from having to test each name and type on every invocation.
+            var argumentBuilders = parameters.Select(parameter => BindParameter(parameter)).ToArray();
 
-            // Resolve the service the method is declared on
-            var returnValue = methodInfo.Invoke(serviceInstance, arguments.ToArray());
+            var methodWrapper = CreateMethodWrapper(type, methodInfo);
+
+            Func<object, DisplayContext, Task<IHtmlContent>> action;
 
             if (methodInfo.ReturnType == typeof(Task<IHtmlContent>))
             {
-                return (Task<IHtmlContent>)returnValue;
+                action = (s, d) =>
+                {
+                    var arguments = new object[argumentBuilders.Length];
+                    for (var i = 0; i < arguments.Length; i++)
+                    {
+                        arguments[i] = argumentBuilders[i](d);
+                    }
+
+                    return (Task<IHtmlContent>)methodWrapper(s, arguments);
+                };
             }
-            else if (methodInfo.ReturnType == typeof(IHtmlContent))
+            else if (attributeOccurrence.MethodInfo.ReturnType == typeof(IHtmlContent))
             {
-                return Task.FromResult((IHtmlContent)returnValue);
+                action = (s, d) =>
+                {
+                    var arguments = new object[argumentBuilders.Length];
+                    for (var i = 0; i < arguments.Length; i++)
+                    {
+                        arguments[i] = argumentBuilders[i](d);
+                    }
+
+                    return Task.FromResult((IHtmlContent)methodWrapper(s, arguments));
+                };
             }
-            else if (methodInfo.ReturnType != typeof(void))
+            else if (attributeOccurrence.MethodInfo.ReturnType != typeof(void))
             {
-                return Task.FromResult(CoerceHtmlContent(returnValue));
+                action = (s, d) =>
+                {
+                    var arguments = new object[argumentBuilders.Length];
+                    for (var i = 0; i < arguments.Length; i++)
+                    {
+                        arguments[i] = argumentBuilders[i](d);
+                    }
+
+                    return Task.FromResult(CoerceHtmlContent(methodWrapper(s, arguments)));
+                };
+            }
+            else
+            {
+                action = (s, d) => null;
             }
 
-            return Task.FromResult<IHtmlContent>(null);
+            return context =>
+            {
+                var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
+                return action(serviceInstance, context);
+            };
+        }
+
+        private static Func<object, object[], object> CreateMethodWrapper(Type type, MethodInfo method)
+        {
+            CreateParamsExpressions(method, out ParameterExpression argsExp, out Expression[] paramsExps);
+
+            var targetExp = Expression.Parameter(typeof(object), "target");
+            var castTargetExp = Expression.Convert(targetExp, type);
+            
+
+            LambdaExpression lambdaExp;
+
+            if (method.ReturnType != typeof(void))
+            {
+                var resultExp = Expression.Convert(Expression.Call(castTargetExp, method, paramsExps), typeof(object));
+                lambdaExp = Expression.Lambda(resultExp, targetExp, argsExp);
+            }
+            else
+            {
+                var constExp = Expression.Constant(null, typeof(object));
+                var blockExp = Expression.Block(Expression.Call(castTargetExp, method, paramsExps), constExp);
+                lambdaExp = Expression.Lambda(blockExp, targetExp, argsExp);
+            }
+
+            var lambda = lambdaExp.Compile();
+            return (Func<object, object[], object>)lambda;
+        }
+
+        private static void CreateParamsExpressions(MethodBase method, out ParameterExpression argsExp, out Expression[] paramsExps)
+        {
+            var parameters = method.GetParameters().Select(x => x.ParameterType).ToArray();
+
+            argsExp = Expression.Parameter(typeof(object[]), "args");
+            paramsExps = new Expression[parameters.Length];
+
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                var constExp = Expression.Constant(i, typeof(int));
+                var argExp = Expression.ArrayIndex(argsExp, constExp);
+                paramsExps[i] = Expression.Convert(argExp, parameters[i]);
+            }
         }
 
         private static IHtmlContent CoerceHtmlContent(object invoke)
         {
-            var htmlContent = invoke as IHtmlContent;
+            if (invoke == null)
+            {
+                return HtmlString.Empty;
+            }
 
-            if (htmlContent != null)
+            if (invoke is IHtmlContent htmlContent)
             {
                 return htmlContent;
             }
 
-            return invoke != null ? new HtmlString(invoke.ToString()) : null;
+            return new HtmlString(invoke.ToString());
         }
 
-        private static object BindParameter(DisplayContext displayContext, ParameterInfo parameter)
+        private static Func<DisplayContext, object> BindParameter(ParameterInfo parameter)
         {
             if (String.Equals(parameter.Name, "Shape", StringComparison.OrdinalIgnoreCase))
             {
-                return displayContext.Value;
+                return d => d.Value;
             }
 
             if (String.Equals(parameter.Name, "DisplayAsync", StringComparison.OrdinalIgnoreCase))
             {
-                return displayContext.DisplayAsync;
+                return d => d.DisplayHelper;
             }
 
             if (String.Equals(parameter.Name, "New", StringComparison.OrdinalIgnoreCase))
             {
-                return displayContext.ServiceProvider.GetService<IShapeFactory>();
+                return d => d.ServiceProvider.GetService<IShapeFactory>();
+            }
+
+            if (String.Equals(parameter.Name, "ShapeFactory", StringComparison.OrdinalIgnoreCase))
+            {
+                return d => d.ServiceProvider.GetService<IShapeFactory>();
             }
 
             if (String.Equals(parameter.Name, "Html", StringComparison.OrdinalIgnoreCase))
             {
-                return MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
+                return d =>
+                {
+                    var viewContextAccessor = d.ServiceProvider.GetRequiredService<ViewContextAccessor>();
+                    var viewContext = viewContextAccessor.ViewContext;
+
+                    return MakeHtmlHelper(viewContext, viewContext.ViewData);
+                };
             }
 
             if (String.Equals(parameter.Name, "DisplayContext", StringComparison.OrdinalIgnoreCase))
             {
-                return displayContext;
+                return d => d;
             }
 
-            if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType.IsAssignableFrom(typeof(UrlHelper)))
+            if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) && typeof(IUrlHelper).IsAssignableFrom(parameter.ParameterType))
             {
-                var urlHelperFactory = displayContext.ServiceProvider.GetService<IUrlHelperFactory>();
-                return urlHelperFactory.GetUrlHelper(displayContext.ViewContext);
+                return d =>
+                {
+                    var viewContextAccessor = d.ServiceProvider.GetRequiredService<ViewContextAccessor>();
+                    var viewContext = viewContextAccessor.ViewContext;
+
+                    var urlHelperFactory = d.ServiceProvider.GetService<IUrlHelperFactory>();
+                    return urlHelperFactory.GetUrlHelper(viewContext);
+                };
             }
 
-            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType == typeof(TextWriter))
+            // pre-calculate the default value 
+            var defaultValue = parameter.ParameterType.IsValueType ? Activator.CreateInstance(parameter.ParameterType) : null;
+
+            var isDateTimeType =
+                parameter.ParameterType == typeof(DateTime) ||
+                parameter.ParameterType == typeof(DateTime?) ||
+                parameter.ParameterType == typeof(DateTimeOffset) ||
+                parameter.ParameterType == typeof(DateTimeOffset?);
+
+            return d =>
             {
-                throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
-            }
+                if (!d.Value.Properties.TryGetValue(parameter.Name, out var result) || result == null)
+                {
+                    return defaultValue;
+                }
 
-            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType == typeof(Action<object>))
-            {
-                throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
-            }
+                if (parameter.ParameterType.IsAssignableFrom(result.GetType()))
+                {
+                    return result;
+                }
 
-            var getter = _getters.GetOrAdd(parameter.Name, n =>
-                CallSite<Func<CallSite, object, dynamic>>.Create(
-                Microsoft.CSharp.RuntimeBinder.Binder.GetMember(
-                CSharpBinderFlags.None, n, null, new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) })));
+                // Specific implementation for DateTimes
+                if (result.GetType() == typeof(string) && isDateTimeType)
+                {
+                    return DateTime.Parse((string)result);
+                }
 
-            object result = getter.Target(getter, displayContext.Value);
-
-            if (result == null)
-                return null;
-
-            if (parameter.ParameterType.IsAssignableFrom(result.GetType()))
-            {
-                return result;
-            }
-
-            // Specific implementation for DateTimes
-            if (result.GetType() == typeof(string) && (parameter.ParameterType == typeof(DateTime) || parameter.ParameterType == typeof(DateTime?)))
-            {
-                return DateTime.Parse((string)result);
-            }
-
-            return Convert.ChangeType(result, parameter.ParameterType);
-        }
-
-        static Func<dynamic, object> CompileConverter(Type targetType)
-        {
-            var valueParameter = Expression.Parameter(typeof(object), "value");
-
-            return Expression.Lambda<Func<object, object>>(
-                Expression.Convert(
-                    DynamicExpression.Dynamic(
-                        Microsoft.CSharp.RuntimeBinder.Binder.Convert(CSharpBinderFlags.ConvertExplicit, targetType, null),
-                                targetType,
-                                valueParameter
-                        ),
-                    typeof(object)),
-                valueParameter).Compile();
+                return Convert.ChangeType(result, parameter.ParameterType);
+            };
         }
 
         private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)

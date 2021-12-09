@@ -1,98 +1,247 @@
+using System;
 using Fluid;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
+using OrchardCore.ContentFields.Controllers;
+using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
+using OrchardCore.ContentFields.Indexing.SQL;
+using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data;
+using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.ContentFields
 {
     public class Startup : StartupBase
     {
-        static Startup()
+        private readonly AdminOptions _adminOptions;
+        
+        public Startup(IOptions<AdminOptions> adminOptions)
         {
-            // Registering both field types and shape types are necessary as they can 
-            // be accessed from inner properties.
-            
-            TemplateContext.GlobalMemberAccessStrategy.Register<BooleanField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<HtmlField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<LinkField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<NumericField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<TextField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTextFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DateTimeField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DateField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<TimeField>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
+            _adminOptions = adminOptions.Value;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<BooleanField>();
+                o.MemberAccessStrategy.Register<DisplayBooleanFieldViewModel>();
+                o.MemberAccessStrategy.Register<HtmlField>();
+                o.MemberAccessStrategy.Register<DisplayHtmlFieldViewModel>();
+                o.MemberAccessStrategy.Register<LinkField>();
+                o.MemberAccessStrategy.Register<DisplayLinkFieldViewModel>();
+                o.MemberAccessStrategy.Register<NumericField>();
+                o.MemberAccessStrategy.Register<DisplayNumericFieldViewModel>();
+                o.MemberAccessStrategy.Register<TextField>();
+                o.MemberAccessStrategy.Register<DisplayTextFieldViewModel>();
+                o.MemberAccessStrategy.Register<DateTimeField>();
+                o.MemberAccessStrategy.Register<DisplayDateTimeFieldViewModel>();
+                o.MemberAccessStrategy.Register<DateField>();
+                o.MemberAccessStrategy.Register<DisplayDateFieldViewModel>();
+                o.MemberAccessStrategy.Register<TimeField>();
+                o.MemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
+                o.MemberAccessStrategy.Register<MultiTextField>();
+                o.MemberAccessStrategy.Register<DisplayMultiTextFieldViewModel>();
+                o.MemberAccessStrategy.Register<UserPickerField>();
+                o.MemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
+                o.MemberAccessStrategy.Register<ContentPickerField>();
+                o.MemberAccessStrategy.Register<DisplayContentPickerFieldViewModel>();
+            });
+
             // Boolean Field
-            services.AddSingleton<ContentField, BooleanField>();
-            services.AddScoped<IContentFieldDisplayDriver, BooleanFieldDisplayDriver>();
+            services.AddContentField<BooleanField>()
+                .UseDisplayDriver<BooleanFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, BooleanFieldIndexHandler>();
 
             // Text Field
-            services.AddSingleton<ContentField, TextField>();
-            services.AddScoped<IContentFieldDisplayDriver, TextFieldDisplayDriver>();
+            services.AddContentField<TextField>()
+                .UseDisplayDriver<TextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TextFieldIndexHandler>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldTextAreaEditorSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldPredefinedListEditorSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldMonacoEditorSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldHeaderDisplaySettingsDriver>();
 
             // Html Field
-            services.AddSingleton<ContentField, HtmlField>();
-            services.AddScoped<IContentFieldDisplayDriver, HtmlFieldDisplayDriver>();
+            services.AddContentField<HtmlField>()
+                .UseDisplayDriver<HtmlFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldMonacoEditorSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
 
             // Link Field
-            services.AddSingleton<ContentField, LinkField>();
-            services.AddScoped<IContentFieldDisplayDriver, LinkFieldDisplayDriver>();
+            services.AddContentField<LinkField>()
+                .UseDisplayDriver<LinkFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
 
+            // MultiText Field
+            services.AddContentField<MultiTextField>()
+                .UseDisplayDriver<MultiTextFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, MultiTextFieldIndexHandler>();
+
             // Numeric Field
-            services.AddSingleton<ContentField, NumericField>();
-            services.AddScoped<IContentFieldDisplayDriver, NumericFieldDisplayDriver>();
+            services.AddContentField<NumericField>()
+                .UseDisplayDriver<NumericFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, NumericFieldIndexHandler>();
 
             // DateTime Field
-            services.AddSingleton<ContentField, DateTimeField>();
-            services.AddScoped<IContentFieldDisplayDriver, DateTimeFieldDisplayDriver>();
+            services.AddContentField<DateTimeField>()
+                .UseDisplayDriver<DateTimeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateTimeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, DateTimeFieldIndexHandler>();
 
             // Date Field
-            services.AddSingleton<ContentField, DateField>();
-            services.AddScoped<IContentFieldDisplayDriver, DateFieldDisplayDriver>();
+            services.AddContentField<DateField>()
+                .UseDisplayDriver<DateFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, DateFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, DateFieldIndexHandler>();
 
             // Time Field
-            services.AddSingleton<ContentField, TimeField>();
-            services.AddScoped<IContentFieldDisplayDriver, TimeFieldDisplayDriver>();
+            services.AddContentField<TimeField>()
+                .UseDisplayDriver<TimeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TimeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TimeFieldIndexHandler>();
 
             // Video field
-            services.AddSingleton<ContentField, YoutubeField>();
-            services.AddScoped<IContentFieldDisplayDriver, YoutubeFieldDisplayDriver>();
+            services.AddContentField<YoutubeField>()
+                .UseDisplayDriver<YoutubeFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, YoutubeFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, YoutubeFieldIndexHandler>();
+
+            // Content picker field
+            services.AddContentField<ContentPickerField>()
+                .UseDisplayDriver<ContentPickerFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
+            services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
+
+            // Migration, can be removed in a future release.
+            services.AddScoped<IDataMigration, Migrations>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "ContentPicker",
+                areaName: "OrchardCore.ContentFields",
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchContentItems",
+                defaults: new { controller = typeof(ContentPickerAdminController).ControllerName(), action = nameof(ContentPickerAdminController.SearchContentItems) }
+            );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.ContentLocalization")]
+    public class LocalizationSetContentPickerStartup : StartupBase
+    {
+        private readonly AdminOptions _adminOptions;
+
+        public LocalizationSetContentPickerStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddContentField<LocalizationSetContentPickerField>()
+                .UseDisplayDriver<LocalizationSetContentPickerFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LocalizationSetContentPickerFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "SearchLocalizationSets",
+                areaName: "OrchardCore.ContentFields",
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchLocalizationSets",
+                defaults: new { controller = typeof(LocalizationSetContentPickerAdminController).ControllerName(), action = nameof(LocalizationSetContentPickerAdminController.SearchLocalizationSets) }
+            );
+        }
+    }
+
+    [Feature("OrchardCore.ContentFields.Indexing.SQL")]
+    public class IndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDataMigration, Indexing.SQL.Migrations>();
+            services.AddScoped<IScopedIndexProvider, TextFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, BooleanFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, NumericFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateTimeFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, DateFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, ContentPickerFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, MultiTextFieldIndexProvider>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Users")]
+    public class UserPickerStartup : StartupBase
+    {
+        private readonly AdminOptions _adminOptions;
+
+        public UserPickerStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<UserPickerField>();
+                o.MemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
+                o.MemberAccessStrategy.Register<DisplayUserPickerFieldUserNamesViewModel>();
+            });
+
+            services.AddContentField<UserPickerField>()
+                .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
+                .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase));
+
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, UserPickerFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, UserPickerFieldIndexHandler>();
+            services.AddScoped<IUserPickerResultProvider, DefaultUserPickerResultProvider>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "SearchUsers",
+                areaName: "OrchardCore.ContentFields",
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchUsers",
+                defaults: new { controller = typeof(UserPickerAdminController).ControllerName(), action = nameof(UserPickerAdminController.SearchUsers) }
+            );
+        }
+    }
+
+    [Feature("OrchardCore.ContentFields.Indexing.SQL.UserPicker")]
+    public class UserPickerSqlIndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDataMigration, Indexing.SQL.UserPickerMigrations>();
+            services.AddScoped<IScopedIndexProvider, UserPickerFieldIndexProvider>();
         }
     }
 }

@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.ContentTypes.RecipeSteps
 {
     /// <summary>
-    /// This recipe step creates custom content definition.
+    /// This recipe step creates content definitions.
     /// </summary>
     public class ContentDefinitionStep : IRecipeStepHandler
     {
@@ -31,7 +31,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
             foreach (var contentType in step.ContentTypes)
             {
-                var newType = _contentDefinitionManager.GetTypeDefinition(contentType.Name)
+                var newType = _contentDefinitionManager.LoadTypeDefinition(contentType.Name)
                     ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
 
                 UpdateContentType(newType, contentType);
@@ -39,7 +39,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
             foreach (var contentPart in step.ContentParts)
             {
-                var newPart = _contentDefinitionManager.GetPartDefinition(contentPart.Name)
+                var newPart = _contentDefinitionManager.LoadPartDefinition(contentPart.Name)
                     ?? new ContentPartDefinition(contentPart.Name);
 
                 UpdateContentPart(newPart, contentPart);

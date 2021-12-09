@@ -1,6 +1,7 @@
 [
   {
     "generateSourceMaps": false,
+    "generateRTL": true,
     "inputs": [
       "Assets/scss/setup.scss"
     ],
@@ -8,10 +9,10 @@
   },
   {
     "inputs": [
-      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/jQuery/jquery-3.*.js",
-      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/popper.js",
-      "../../OrchardCore.Modules/OrchardCore.Resources/Assets/Bootstrap/Js/bootstrap.js",
-      "Assets/js/*.js"
+      "node_modules/jquery/dist/jquery.js",
+      "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
+      "Assets/js/setup.js",
+      "Assets/js/strength.js"
     ],
     "output": "wwwroot/Scripts/setup.js"
   }

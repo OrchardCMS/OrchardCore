@@ -7,75 +7,55 @@ namespace OrchardCore.Contents.Indexing
     {
         public Task BuildIndexAsync(BuildIndexContext context)
         {
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.ContentItemIdKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.ContentItemId, 
-                    DocumentIndex.Types.Text, 
-                    DocumentIndexOptions.Store));
+                context.ContentItem.ContentItemId,
+                DocumentIndexOptions.Store);
 
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.ContentItemVersionIdKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.ContentItemVersionId,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Store));
+                context.ContentItem.ContentItemVersionId,
+                DocumentIndexOptions.Store);
 
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.ContentTypeKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.ContentType,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Store));
+                context.ContentItem.ContentType,
+                DocumentIndexOptions.Store);
 
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.CreatedUtcKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.CreatedUtc,
-                    DocumentIndex.Types.DateTime,
-                    DocumentIndexOptions.Store));
+                context.ContentItem.CreatedUtc,
+                DocumentIndexOptions.Store);
 
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.LatestKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.Latest,
-                    DocumentIndex.Types.Boolean,
-                    DocumentIndexOptions.Store));
+                context.ContentItem.Latest,
+                DocumentIndexOptions.Store);
 
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.OwnerKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.Owner,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Store));
+                context.ContentItem.Owner,
+                DocumentIndexOptions.Store);
 
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.AuthorKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.Author,
-                    DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Store));
+                context.ContentItem.Author,
+                DocumentIndexOptions.Store);
 
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.ModifiedUtcKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.ModifiedUtc,
-                    DocumentIndex.Types.DateTime,
-                    DocumentIndexOptions.Store));
+                context.ContentItem.ModifiedUtc,
+                DocumentIndexOptions.Store);
 
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.PublishedKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.Published,
-                    DocumentIndex.Types.Boolean,
-                    DocumentIndexOptions.Store));
+                context.ContentItem.Published,
+                DocumentIndexOptions.Store);
 
-            context.DocumentIndex.Entries.Add(
+            context.DocumentIndex.Set(
                 IndexingConstants.PublishedUtcKey,
-                new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.PublishedUtc,
-                    DocumentIndex.Types.DateTime,
-                    DocumentIndexOptions.Store));
+                context.ContentItem.PublishedUtc,
+                DocumentIndexOptions.Store);
 
             return Task.CompletedTask;
         }

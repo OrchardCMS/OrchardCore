@@ -2,19 +2,19 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Lucene",
-    Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
 
 [assembly: Feature(
     Id = "OrchardCore.Lucene",
     Name = "Lucene",
     Description = "Creates Lucene indexes to support search scenarios, introduces a preconfigured container-enabled content type.",
-    Dependencies = new []
+    Dependencies = new[]
     {
         "OrchardCore.Indexing",
-        "OrchardCore.Liquid"
+        "OrchardCore.ContentTypes"
     },
     Category = "Content Management"
 )]
@@ -23,6 +23,14 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Lucene.Worker",
     Name = "Lucene Worker",
     Description = "Provides a background task to keep local indices in sync with other instances.",
-    Dependencies = new [] { "OrchardCore.Lucene" },
+    Dependencies = new[] { "OrchardCore.Lucene" },
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Lucene.ContentPicker",
+    Name = "Lucene Content Picker",
+    Description = "Provides a Lucene content picker field editor.",
+    Dependencies = new[] { "OrchardCore.Lucene", "OrchardCore.ContentFields" },
     Category = "Content Management"
 )]

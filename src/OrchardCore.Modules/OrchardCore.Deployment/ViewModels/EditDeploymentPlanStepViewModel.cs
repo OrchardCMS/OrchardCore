@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Deployment.ViewModels
 {
@@ -11,6 +11,5 @@ namespace OrchardCore.Deployment.ViewModels
 
         [BindNever]
         public DeploymentStep DeploymentStep { get; set; }
-
     }
 }

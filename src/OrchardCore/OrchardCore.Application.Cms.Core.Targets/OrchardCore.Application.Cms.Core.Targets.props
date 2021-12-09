@@ -1,0 +1,13 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <DefaultItemExcludes>$(DefaultItemExcludes);wwwroot\is-cache\**;wwwroot\ms-cache\**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <_InnerBuildProjects>
+      <Properties>IsCrossTargetedBuild=$(IsCrossTargetingBuild)</Properties>
+    </_InnerBuildProjects>
+  </ItemDefinitionGroup>
+
+</Project>

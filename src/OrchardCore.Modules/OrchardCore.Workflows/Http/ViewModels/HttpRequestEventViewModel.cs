@@ -10,9 +10,11 @@ namespace OrchardCore.Workflows.Http.ViewModels
         public string Url { get; set; }
         public bool ValidateAntiforgeryToken { get; set; }
 
+        public int TokenLifeSpan { get; set; }
+
         public IList<SelectListItem> GetAvailableHttpMethods()
         {
-            var availableHttpMethods = new[] { "GET", "POST", "PUT", "DELETE", "OPTIONS" };
+            var availableHttpMethods = new[] { "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" };
             return availableHttpMethods.Select(x => new SelectListItem { Text = x, Value = x }).ToList();
         }
     }

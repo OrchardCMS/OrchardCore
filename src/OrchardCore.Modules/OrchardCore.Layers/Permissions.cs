@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Layers
@@ -7,9 +9,9 @@ namespace OrchardCore.Layers
     {
         public static readonly Permission ManageLayers = new Permission("ManageLayers", "Manage layers");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] { ManageLayers };
+            return Task.FromResult(new[] { ManageLayers }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

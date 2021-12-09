@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ContentManagement
 {
@@ -9,19 +10,20 @@ namespace OrchardCore.ContentManagement
     /// </summary>
     public class ContentPartFactory : ITypeActivatorFactory<ContentPart>
     {
-        private ITypeActivator<ContentPart> ContentPartActivator = new GenericTypeActivator<ContentPart, ContentPart>();
+        private readonly ITypeActivator<ContentPart> ContentPartActivator = new GenericTypeActivator<ContentPart, ContentPart>();
 
         private readonly Dictionary<string, ITypeActivator<ContentPart>> _contentPartActivators;
 
-        public ContentPartFactory(IEnumerable<ContentPart> contentParts)
+        public ContentPartFactory(IOptions<ContentOptions> contentOptions)
         {
             _contentPartActivators = new Dictionary<string, ITypeActivator<ContentPart>>();
 
-            foreach (var contentPart in contentParts)
+            // Check content options for configured parts.
+            foreach (var partOption in contentOptions.Value.ContentPartOptions)
             {
-                var activatorType =  typeof(GenericTypeActivator<,>).MakeGenericType(contentPart.GetType(), typeof(ContentPart));
+                var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(partOption.Type, typeof(ContentPart));
                 var activator = (ITypeActivator<ContentPart>)Activator.CreateInstance(activatorType);
-                _contentPartActivators.Add(contentPart.GetType().Name, activator);
+                _contentPartActivators.Add(partOption.Type.Name, activator);
             }
         }
 

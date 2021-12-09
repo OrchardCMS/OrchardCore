@@ -1,4 +1,4 @@
-using System.Data;
+using System;
 using System.Data.Common;
 using StackExchange.Profiling.Data;
 using YesSql;
@@ -8,31 +8,21 @@ namespace OrchardCore.MiniProfiler
     internal class MiniProfilerConnectionFactory : IConnectionFactory
     {
         private readonly IConnectionFactory _factory;
+        private readonly static string ConnectionName = nameof(ProfiledDbConnection).ToLower();
+
+        public Type DbConnectionType => typeof(ProfiledDbConnection);
 
         public MiniProfilerConnectionFactory(IConnectionFactory factory)
         {
             _factory = factory;
         }
 
-        public void CloseConnection(IDbConnection connection)
+        public DbConnection CreateConnection()
         {
-            var profiledConnection = connection as ProfiledDbConnection;
-            if (profiledConnection != null)
-            {
-                _factory.CloseConnection(profiledConnection.WrappedConnection);
-            }
-        }
+            // Forward the call to the actual factory
+            var connection = _factory.CreateConnection();
 
-        public IDbConnection CreateConnection()
-        {
-            var connection = (DbConnection)_factory.CreateConnection();
-            SqlDialectFactory.SqlDialects[nameof(ContextProfiledDbConnection).ToLower()] = SqlDialectFactory.SqlDialects[connection.GetType().Name.ToLower()];
-            return new ContextProfiledDbConnection(connection, StackExchange.Profiling.MiniProfiler.DefaultOptions.ProfilerProvider);
-        }
-
-        public void Dispose()
-        {
-            _factory.Dispose();
+            return new ProfiledDbConnection(connection, new CurrentDbProfiler(() => StackExchange.Profiling.MiniProfiler.Current));
         }
     }
 }

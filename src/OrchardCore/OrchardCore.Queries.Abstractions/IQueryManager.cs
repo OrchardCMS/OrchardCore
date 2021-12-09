@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Queries
 {
+    /// <summary>
+    /// Contract for managing the query.
+    /// </summary>
     public interface IQueryManager
     {
         /// <summary>
@@ -24,7 +27,12 @@ namespace OrchardCore.Queries
         Task DeleteQueryAsync(string name);
 
         /// <summary>
-        /// Gets the <see cref="Query"/> instance with the specified name.
+        /// Returns the <see cref="Query"/> instance with the specified name for update.
+        /// </summary>
+        Task<Query> LoadQueryAsync(string name);
+
+        /// <summary>
+        /// Gets the <see cref="Query"/> instance with the specified name in read-only.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -34,7 +42,13 @@ namespace OrchardCore.Queries
         /// Executes a query.
         /// </summary>
         /// <param name="query">The query to execute.</param>
+        /// <param name="parameters">The parameters for the query.</param>
         /// <returns>The result of the query.</returns>
-        Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
+        Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
+
+        /// <summary>
+        /// Returns an unique identifier that is updated when queries have changed.
+        /// </summary>
+        Task<string> GetIdentifierAsync();
     }
 }

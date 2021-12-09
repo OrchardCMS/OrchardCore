@@ -1,37 +1,30 @@
-using System.IO;
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
+using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid.ViewModels;
 
 namespace OrchardCore.Liquid.Services
 {
     public class LiquidShapes : IShapeTableProvider
     {
-        private static async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
+        private readonly HtmlEncoder _htmlEncoder;
+
+        public LiquidShapes(HtmlEncoder htmlEncoder)
+        {
+            _htmlEncoder = htmlEncoder;
+        }
+
+        private async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
         {
             var model = shapeDisplayContext.Shape as LiquidPartViewModel;
             var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
-            var liquidPart = model.LiquidPart;
 
-            var templateContext = new TemplateContext();
-            templateContext.SetValue("ContentItem", liquidPart.ContentItem);
-            templateContext.MemberAccessStrategy.Register<LiquidPartViewModel>();
-            templateContext.Contextualize(shapeDisplayContext.DisplayContext);
-
-            using (var writer = new StringWriter())
-            {
-                await liquidTemplateManager.RenderAsync(liquidPart.Liquid, writer, HtmlEncoder.Default, templateContext);
-                model.Html = writer.ToString();
-            }
-
-            model.Liquid = liquidPart.Liquid;
-            model.LiquidPart = liquidPart;
-            model.ContentItem = liquidPart.ContentItem;
+            model.Html = await liquidTemplateManager.RenderStringAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
+                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
         }
 
         public void Discover(ShapeTableBuilder builder)

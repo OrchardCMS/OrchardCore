@@ -1,12 +1,15 @@
-# This Docker file is intended for the CI
-# A prerequisite is a published application in the .build/release  
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+LABEL stage=build-env
+WORKDIR /app
 
-FROM microsoft/dotnet:2.1-aspnetcore-runtime
+# Copy and build
+COPY ./src /app
+RUN dotnet publish /app/OrchardCore.Cms.Web -c Release -o ./build/release --framework net6.0
 
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 EXPOSE 80
 ENV ASPNETCORE_URLS http://+:80
-
 WORKDIR /app
-COPY .build/release .
-
+COPY --from=build-env /app/build/release .
 ENTRYPOINT ["dotnet", "OrchardCore.Cms.Web.dll"]

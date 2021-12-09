@@ -1,12 +1,17 @@
 {
   "devDependencies": {
-    "child_process": "^1.0.2",
-    "jest": "^22.4.3",
-    "jest-cli": "^22.4.3",
-    "puppeteer": "^1.4.0"
+    "cypress": "^9.1.1",
+    "cypress-orchardcore": "file:cypress-commands",
+    "faker": "^5.5.3",
+    "fs-extra": "^10.0.0"
   },
-  "dependencies": {},
   "scripts": {
-    "test": "jest"
+    "mvc:test": "cd mvc-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Mvc.Web', 'OrchardCore.Mvc.Web.dll')\"",
+    "mvc:cypress": "cd mvc-tests && cypress open",
+    "cms:build": "node -e \"require('cypress-orchardcore/dist/test-runner').build('../../src/OrchardCore.Cms.Web')\"",
+    "cms:host": "node -e \"require('cypress-orchardcore/dist/test-runner').host('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
+    "cms:test": "cd cms-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
+    "cms:cypress": "cd cms-tests && cypress open",
+    "gen:blog": "node -e \"require('./test_generator').generateBlogData()\""
   }
 }

@@ -1,0 +1,36 @@
+@inject DarkModeService DarkModeService;
+@{
+    var darkMode = await DarkModeService.IsDarkModeAsync();
+}
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme">
+<head>
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
+
+    <!-- Bootstrap CSS -->
+    <style asp-name="admin" version="1"></style>
+
+    <script asp-name="font-awesome" at="Foot" version="5"></script>
+    <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
+
+    <resources type="Header" />
+</head>
+<body>
+    <div class="ta-content ta-content-login">
+        @await RenderSectionAsync("Header", required: false)
+        @await RenderSectionAsync("Messages", required: false)
+
+        <div class="auth-wrapper">
+            @await RenderBodyAsync()
+        </div>
+    </div>
+
+    @await RenderSectionAsync("Footer", required: false)
+
+    <resources type="Footer" />
+</body>
+</html>
