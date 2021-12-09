@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.WebHooks
@@ -7,9 +9,9 @@ namespace OrchardCore.WebHooks
     {
         public static readonly Permission ManageWebHooks = new Permission("ManageWebHooks", "Manage webhooks");
 
-        public IEnumerable<Permission> GetPermissions()
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return new[] { ManageWebHooks };
+            return Task.FromResult(new[] { ManageWebHooks }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

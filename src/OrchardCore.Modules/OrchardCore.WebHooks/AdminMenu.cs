@@ -1,6 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Navigation;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.WebHooks
 {
@@ -13,11 +14,11 @@ namespace OrchardCore.WebHooks
 
         public IStringLocalizer T { get; set; }
 
-        public void BuildNavigation(string name, NavigationBuilder builder)
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             builder
@@ -29,6 +30,8 @@ namespace OrchardCore.WebHooks
                         .LocalNav()
                     )
                 );
+
+            return Task.CompletedTask;
         }
     }
 }
