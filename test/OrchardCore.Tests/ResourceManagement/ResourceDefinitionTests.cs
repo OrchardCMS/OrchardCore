@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -277,6 +278,176 @@ namespace OrchardCore.Tests.ResourceManagement
             Assert.Equal("style", tagBuilder.TagName);
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
             Assert.Equal("body { background-color: white; }", ReadIHtmlContent(tagBuilder.InnerHtml));
+        }
+
+        [Fact]
+        public void AbilityToSetUrlOnly()
+        {
+            // Arrange
+            var url = "~/OrchardCore.Resources/Scripts/test.js";
+
+            // Act
+            _resourceManifest
+                .DefineScript("test")
+                .SetUrl(url);
+
+            // Assert
+            var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
+
+            Assert.NotNull(resource.Url);
+            Assert.Null(resource.UrlDebug);
+        }
+
+        [Fact]
+        public void AbilityToSetDebugUrlOnly()
+        {
+            // Arrange
+            var url = "~/OrchardCore.Resources/Scripts/test.min.js";
+
+            // Act
+            _resourceManifest
+                .DefineScript("test")
+                .SetUrl(url, debug: true);
+
+            // Assert
+            var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
+
+            Assert.Null(resource.Url);
+            Assert.NotNull(resource.UrlDebug);
+        }
+
+        [Fact]
+        public void AbilityToSetBothUrlAndDebugUrl()
+        {
+            // Arrange
+            var url = "~/OrchardCore.Resources/Scripts/test.js";
+            var debugUrl = "~/OrchardCore.Resources/Scripts/test.min.js";
+
+            // Act
+            _resourceManifest
+                .DefineScript("test")
+                .SetUrl(url, debugUrl);
+
+            // Assert
+            var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
+
+            Assert.NotNull(resource.Url);
+            Assert.NotNull(resource.UrlDebug);
+        }
+
+        [Theory]
+        [InlineData("http://www.domain.com/test.js", false)]
+        [InlineData("https://www.domain.com/test.js", true)]
+        public void AbilityToSetCdnUrlOnly(string cdnUrl, bool supportsSSL)
+        {
+            // Arrange
+
+            // Act
+            _resourceManifest
+                .DefineScript("test")
+                .SetCdn(cdnUrl);
+
+            // Assert
+            var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
+
+            Assert.NotNull(resource.UrlCdn);
+            Assert.Null(resource.UrlCdnDebug);
+            Assert.Equal(supportsSSL, resource.CdnSupportsSsl);
+        }
+
+        [Theory]
+        [InlineData("http://www.domain.com/test.min.js", false)]
+        [InlineData("https://www.domain.com/test.min.js", true)]
+        public void AbilityToSetCdnDebugUrlOnly(string cdnUrl, bool supportsSSL)
+        {
+            // Arrange
+
+            // Act
+            _resourceManifest
+                .DefineScript("test")
+                .SetCdn(cdnUrl, debug: true);
+
+            // Assert
+            var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
+
+            Assert.Null(resource.UrlCdn);
+            Assert.NotNull(resource.UrlCdnDebug);
+            Assert.Equal(supportsSSL, resource.CdnSupportsSsl);
+        }
+
+        [Theory]
+        [InlineData("http://www.domain.com/test.js", "http://www.domain.com/test.min.js", false)]
+        [InlineData("https://www.domain.com/test.js", "https://www.domain.com/test.min.js", true)]
+        public void AbilityToSetBothCdnUrlAndCdnDebugUrl(string cdnUrl, string cdnDebugUrl, bool supportsSSL)
+        {
+            // Arrange
+
+            // Act
+            _resourceManifest
+                .DefineScript("test")
+                .SetCdn(cdnUrl, cdnDebugUrl);
+
+            // Assert
+            var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
+
+            Assert.NotNull(resource.UrlCdn);
+            Assert.NotNull(resource.UrlCdnDebug);
+            Assert.Equal(supportsSSL, resource.CdnSupportsSsl);
+        }
+
+        [Fact]
+        public void AbilityToSetCdnIntegrityOnly()
+        {
+            // Arrange
+            var cdnIntegrity = "sha384-kcAOn9fN4XSd+TGsNu2OQKSuV5ngOwt7tg73O4EpaD91QXvrfgvf0MR7/2dUjoI6";
+
+            // Act
+            _resourceManifest
+                .DefineScript("test")
+                .SetCdnIntegrity(cdnIntegrity);
+
+            // Assert
+            var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
+
+            Assert.NotNull(resource.CdnIntegrity);
+            Assert.Null(resource.CdnDebugIntegrity);
+        }
+
+        [Fact]
+        public void AbilityToSetCdnDebugIntegrityOnly()
+        {
+            // Arrange
+            var cdnIntegrity = "sha384-xewr6kSkq3dBbEtB6Z/3oFZmknWn7nHqhLVLrYgzEFRbU/DHSxW7K3B44yWUN60D";
+
+            // Act
+            _resourceManifest
+                .DefineScript("test")
+                .SetCdnIntegrity(cdnIntegrity, debug: true);
+
+            // Assert
+            var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
+
+            Assert.Null(resource.CdnIntegrity);
+            Assert.NotNull(resource.CdnDebugIntegrity);
+        }
+
+        [Fact]
+        public void AbilityToSetBothCdnIntegrityAndCdnDebugIntegrity()
+        {
+            // Arrange
+            var cdnIntegrity = "sha384-kcAOn9fN4XSd+TGsNu2OQKSuV5ngOwt7tg73O4EpaD91QXvrfgvf0MR7/2dUjoI6";
+            var cdnDebugIntegrity = "sha384-xewr6kSkq3dBbEtB6Z/3oFZmknWn7nHqhLVLrYgzEFRbU/DHSxW7K3B44yWUN60D";
+
+            // Act
+            _resourceManifest
+                .DefineScript("test")
+                .SetCdnIntegrity(cdnIntegrity, cdnDebugIntegrity);
+
+            // Assert
+            var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
+
+            Assert.NotNull(resource.CdnIntegrity);
+            Assert.NotNull(resource.CdnDebugIntegrity);
         }
 
         #region Helpers

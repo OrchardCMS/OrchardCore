@@ -67,9 +67,16 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public ResourceDefinition SetUrl(string url)
+        public ResourceDefinition SetUrl(string url, bool debug = false)
         {
-            return SetUrl(url, null);
+            if (String.IsNullOrEmpty(url))
+            {
+                ThrowArgumentNullException(nameof(url));
+            }
+
+            return debug
+                ? SetUrlInternal(null, url)
+                : SetUrlInternal(url, null);
         }
 
         public ResourceDefinition SetUrl(string url, string urlDebug)
@@ -78,43 +85,43 @@ namespace OrchardCore.ResourceManagement
             {
                 ThrowArgumentNullException(nameof(url));
             }
-            Url = url;
-            if (urlDebug != null)
+
+            if (String.IsNullOrEmpty(urlDebug))
             {
-                UrlDebug = urlDebug;
+                ThrowArgumentNullException(nameof(urlDebug));
             }
-            return this;
+
+            return SetUrlInternal(url, urlDebug);
         }
 
-        public ResourceDefinition SetCdn(string cdnUrl)
+        public ResourceDefinition SetCdn(string cdnUrl, bool debug = false, bool supportsSsl = false)
         {
-            return SetCdn(cdnUrl, null, null);
-        }
-
-        public ResourceDefinition SetCdn(string cdnUrl, string cdnUrlDebug)
-        {
-            return SetCdn(cdnUrl, cdnUrlDebug, null);
-        }
-
-        public ResourceDefinition SetCdnIntegrity(string cdnIntegrity)
-        {
-            return SetCdnIntegrity(cdnIntegrity, null);
-        }
-
-        public ResourceDefinition SetCdnIntegrity(string cdnIntegrity, string cdnDebugIntegrity)
-        {
-            if (String.IsNullOrEmpty(cdnIntegrity))
+            if (String.IsNullOrEmpty(cdnUrl))
             {
-                ThrowArgumentNullException(nameof(cdnIntegrity));
+                ThrowArgumentNullException(nameof(cdnUrl));
             }
-            CdnIntegrity = cdnIntegrity;
-            if (cdnDebugIntegrity != null)
-            {
-                CdnDebugIntegrity = cdnDebugIntegrity;
-            }
-            return this;
+
+            return debug
+                ? SetCdnInternal(null, cdnUrl, supportsSsl)
+                : SetCdnInternal(cdnUrl, null, supportsSsl);
         }
 
+        public ResourceDefinition SetCdn(string cdnUrl, string cdnUrlDebug, bool supportsSsl = false)
+        {
+            if (String.IsNullOrEmpty(cdnUrl))
+            {
+                ThrowArgumentNullException(nameof(cdnUrl));
+            }
+
+            if (String.IsNullOrEmpty(cdnUrlDebug))
+            {
+                ThrowArgumentNullException(nameof(cdnUrlDebug));
+            }
+
+            return SetCdnInternal(cdnUrl, cdnUrlDebug, supportsSsl);
+        }
+
+        [Obsolete("This method is deprecated, please use SetCdnIntegrity(string, string, bool) instead.")]
         public ResourceDefinition SetCdn(string cdnUrl, string cdnUrlDebug, bool? cdnSupportsSsl)
         {
             if (String.IsNullOrEmpty(cdnUrl))
@@ -131,6 +138,33 @@ namespace OrchardCore.ResourceManagement
                 CdnSupportsSsl = cdnSupportsSsl.Value;
             }
             return this;
+        }
+
+        public ResourceDefinition SetCdnIntegrity(string cdnIntegrity, bool debug = false)
+        {
+            if (String.IsNullOrEmpty(cdnIntegrity))
+            {
+                ThrowArgumentNullException(nameof(cdnIntegrity));
+            }
+
+            return debug
+                ? SetCdnIntegrityInternal(null, cdnIntegrity)
+                : SetCdnIntegrityInternal(cdnIntegrity, null);
+        }
+
+        public ResourceDefinition SetCdnIntegrity(string cdnIntegrity, string cdnDebugIntegrity)
+        {
+            if (String.IsNullOrEmpty(cdnIntegrity))
+            {
+                ThrowArgumentNullException(nameof(cdnIntegrity));
+            }
+
+            if (String.IsNullOrEmpty(cdnDebugIntegrity))
+            {
+                ThrowArgumentNullException(nameof(cdnDebugIntegrity));
+            }
+
+            return SetCdnIntegrityInternal(cdnIntegrity, cdnDebugIntegrity);
         }
 
         /// <summary>
@@ -378,6 +412,53 @@ namespace OrchardCore.ResourceManagement
         private static void ThrowArgumentNullException(string paramName)
         {
             throw new ArgumentNullException(paramName);
+        }
+
+        private ResourceDefinition SetUrlInternal(string url, string urlDebug)
+        {
+            if (url != null)
+            {
+                Url = url;
+            }
+
+            if (urlDebug != null)
+            {
+                UrlDebug = urlDebug;
+            }
+
+            return this;
+        }
+
+        private ResourceDefinition SetCdnInternal(string cdnUrl, string cdnDebugUrl, bool supportsSsl = false)
+        {
+            if (cdnUrl != null)
+            {
+                UrlCdn = cdnUrl;
+            }
+
+            if (cdnDebugUrl != null)
+            {
+                UrlCdnDebug = cdnDebugUrl;
+            }
+
+            CdnSupportsSsl = supportsSsl;
+
+            return this;
+        }
+
+        private ResourceDefinition SetCdnIntegrityInternal(string cdnIntegrity, string cdnDebugIntegrity)
+        {
+            if (cdnIntegrity != null)
+            {
+                CdnIntegrity = cdnIntegrity;
+            }
+
+            if (cdnDebugIntegrity != null)
+            {
+                CdnDebugIntegrity = cdnDebugIntegrity;
+            }
+
+            return this;
         }
     }
 }
