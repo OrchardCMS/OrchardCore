@@ -9,6 +9,18 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 //variables used in FlowPart.Edit sortable
 var widgetDragItem, lastContainer, widgetItemSourceId, widgetItemDestId;
 $(function () {
@@ -20,12 +32,20 @@ $(function () {
     var prefixesName = $(this).data("prefixes-name");
     var flowmetadata = $(this).data("flowmetadata");
     var parentContentType = $(this).data("parent-content-type");
-    var partName = $(this).data("part-name"); // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
+    var partName = $(this).data("part-name"); // Retrieve all index values knowing that some elements may have been moved / removed.
 
-    var prefix = htmlFieldPrefix + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
+    var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']").filter(function (i, e) {
+      return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
+    }).map(function (i, e) {
+      return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
+    }); // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
+
+    var index = indexes.length ? Math.max.apply(Math, _toConsumableArray(indexes)) + 1 : 0;
+    var prefix = htmlFieldPrefix + '-' + index.toString();
     var contentTypesName = $(this).data("contenttypes-name");
+    var contentItemsName = $(this).data("contentitems-name");
     $.ajax({
-      url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
+      url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
     }).done(function (data) {
       var result = JSON.parse(data);
       $(document.getElementById(targetId)).append(result.Content);
@@ -44,12 +64,20 @@ $(function () {
     var flowmetadata = $(this).data("flowmetadata");
     var prefixesName = $(this).data("prefixes-name");
     var parentContentType = $(this).data("parent-content-type");
-    var partName = $(this).data("part-name"); // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
+    var partName = $(this).data("part-name"); // Retrieve all index values knowing that some elements may have been moved / removed.
 
-    var prefix = htmlFieldPrefix + '-' + $('#' + targetId + " .widget-editor-body").length.toString();
+    var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']").filter(function (i, e) {
+      return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
+    }).map(function (i, e) {
+      return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
+    }); // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
+
+    var index = indexes.length ? Math.max.apply(Math, _toConsumableArray(indexes)) + 1 : 0;
+    var prefix = htmlFieldPrefix + '-' + index.toString();
     var contentTypesName = $(this).data("contenttypes-name");
+    var contentItemsName = $(this).data("contentitems-name");
     $.ajax({
-      url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
+      url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
     }).done(function (data) {
       var result = JSON.parse(data);
       $(result.Content).insertBefore(target);

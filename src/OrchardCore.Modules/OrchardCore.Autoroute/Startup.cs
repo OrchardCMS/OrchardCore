@@ -94,14 +94,14 @@ namespace OrchardCore.Autoroute
                 });
             });
 
-            services.AddSingleton<AutoRouteTransformer>();
-            services.AddSingleton<IShellRouteValuesAddressScheme, AutoRouteValuesAddressScheme>();
+            services.AddSingleton<AutorouteTransformer>();
+            services.AddSingleton<IShellRouteValuesAddressScheme, AutorouteValuesAddressScheme>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // The 1st segment prevents the transformer to be executed for the home.
-            routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{any}/{**slug}");
+            routes.MapDynamicControllerRoute<AutorouteTransformer>("/{any}/{**slug}");
         }
     }
 
