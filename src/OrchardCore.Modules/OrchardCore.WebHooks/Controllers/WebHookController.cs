@@ -94,7 +94,7 @@ namespace OrchardCore.WebHooks.Controllers
                 await ProcessWebHookAsync(model);
                 await _store.CreateWebHookAsync(model.WebHook);
 
-                _notifier.Success(H["Webhook created successfully"]);
+                await _notifier.SuccessAsync(H["Webhook created successfully"]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -149,7 +149,7 @@ namespace OrchardCore.WebHooks.Controllers
                 await ProcessWebHookAsync(model);
                 await _store.TryUpdateWebHook(model.WebHook);
 
-                _notifier.Success(H["Webhook updated successfully"]);
+                await _notifier.SuccessAsync(H["Webhook updated successfully"]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -176,7 +176,7 @@ namespace OrchardCore.WebHooks.Controllers
 
             await _store.DeleteWebHookAsync(id);
 
-            _notifier.Success(H["Webhook deleted successfully"]);
+            await _notifier.SuccessAsync(H["Webhook deleted successfully"]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -213,11 +213,11 @@ namespace OrchardCore.WebHooks.Controllers
 
             if (result == null || result.Status != IPStatus.Success)
             {
-                _notifier.Error(H["Failed to ping {0}. {1}", uri.Host, errorMessage]);
+                await _notifier.ErrorAsync(H["Failed to ping {0}. {1}", uri.Host, errorMessage]);
             }
             else
             {
-                _notifier.Success(H["Successfully pinged {0}", uri.Host]);
+                await _notifier.SuccessAsync(H["Successfully pinged {0}", uri.Host]);
             }
 
             return RedirectToAction(nameof(Index));
