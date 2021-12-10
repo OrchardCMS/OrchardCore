@@ -17,42 +17,54 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         [Fact]
         public async Task SendEmail_WithToHeader()
         {
+            // Arrange
             var message = new MailMessage
             {
                 To = "info@oc.com",
                 Subject = "Test",
                 Body = "Test Message"
             };
+
+            // Act
             var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
 
+            // Assert
             Assert.Contains("From: Your Name <youraddress@host.com>", content);
         }
 
         [Fact]
         public async Task SendEmail_WithCcHeader()
         {
+            // Arrange
             var message = new MailMessage
             {
                 Cc = "info@oc.com",
                 Subject = "Test",
                 Body = "Test Message"
             };
+
+            // Act
             var content = await SendEmailAsync(message);
 
+            // Assert
             Assert.Contains("Cc: info@oc.com", content);
         }
 
         [Fact]
         public async Task SendEmail_WithBccHeader()
         {
+            // Arrange
             var message = new MailMessage
             {
                 Bcc = "info@oc.com",
                 Subject = "Test",
                 Body = "Test Message"
             };
+
+            // Act
             var content = await SendEmailAsync(message);
 
+            // Assert
             Assert.Contains("Bcc: info@oc.com", content);
         }
 
