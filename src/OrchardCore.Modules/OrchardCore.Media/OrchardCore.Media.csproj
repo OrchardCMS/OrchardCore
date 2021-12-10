@@ -39,7 +39,7 @@
   <ItemGroup>
     <PackageReference Include="Shortcodes" />
     <PackageReference Include="SixLabors.ImageSharp.Web" />
-    <PackageReference Include="System.Linq.Async" Version="5.1.0" />
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 
 </Project>
