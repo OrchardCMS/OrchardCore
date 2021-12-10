@@ -179,6 +179,30 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
             Assert.Equal(address, mailboxAddress.Address);
         }
 
+        [Fact]
+        public async Task SendEmail_WithoutToAndCcAndBccHeaders_ShouldThrowsException()
+        {
+            // Arrange
+            var message = new MailMessage
+            {
+                Subject = "Test",
+                Body = "Test Message"
+            };
+            var settings = new SmtpSettings
+            {
+                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
+            };
+
+            var smtp = CreateSmtpService(settings);
+
+            // Act
+            var result = await smtp.SendAsync(message);
+
+            // Assert
+            Assert.True(result.Errors.Any());
+            Assert.Equal("SMTP settings must be configured before an email can be sent.", result.Errors.First());
+        }
+
         private async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
         {
             var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
@@ -191,16 +215,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
 
             Directory.CreateDirectory(pickupDirectoryPath);
 
-            var options = new Mock<IOptions<SmtpSettings>>();
-            options.Setup(o => o.Value).Returns(new SmtpSettings
+            var settings = new SmtpSettings
             {
                 DefaultSender = defaultSender,
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
                 PickupDirectoryLocation = pickupDirectoryPath
-            });
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            };
+            var smtp = CreateSmtpService(settings);
+
             var result = await smtp.SendAsync(message);
 
             Assert.True(result.Succeeded);
@@ -212,6 +234,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
             var content = File.ReadAllText(file.FullName);
 
             return content;
+        }
+
+        private static ISmtpService CreateSmtpService(SmtpSettings settings)
+        {
+            var options = new Mock<IOptions<SmtpSettings>>();
+            var logger = new Mock<ILogger<SmtpService>>();
+            var localizer = new Mock<IStringLocalizer<SmtpService>>();
+            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+
+            options.Setup(o => o.Value).Returns(settings);
+
+            return smtp;
         }
     }
 }
