@@ -117,7 +117,10 @@
                             </div>
                             <div class="d-inline">
                                 <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
-                                <span class="badge ta-badge font-weight-normal"><i class="fa fa-tag text-info" aria-hidden="true"></i> @(entry.Category ?? T["None"].Value)</span>
+                                @if(!string.IsNullOrEmpty(entry.Category))
+                                {
+                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-tag text-info" aria-hidden="true"></i> @entry.Category</span>
+                                }
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
                                 {
                                     <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info" aria-hidden="true"></i> @entry.ShellSettings["DatabaseProvider"]</span>
