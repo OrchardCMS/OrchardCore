@@ -6,7 +6,7 @@ namespace OrchardCore.Media.Indexing
 {
     public class MediaFileIndexingOptions
     {
-        private readonly Dictionary<string, Type> _mediaFileTextProviderRegistrations = new();
+        private readonly Dictionary<string, Type> _mediaFileTextProviderRegistrations = new Dictionary<string, Type>();
 
         public MediaFileIndexingOptions RegisterMediaFileTextProvider<TMediaFileTextProvider>(string fileExtension)
             where TMediaFileTextProvider : class, IMediaFileTextProvider
