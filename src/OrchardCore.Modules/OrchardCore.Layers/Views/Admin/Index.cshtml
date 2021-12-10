@@ -16,9 +16,7 @@
 
 <form id="undo-form" asp-action="UpdatePosition" method="post" class="no-multisubmit">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
         @T["Widget successfully moved. <a href=\"javascript:console.log('submit');$('#undo-form').submit();\"><strong>Undo</strong></a>."]
     </div>
     <input id="layer-undo-message-contentItemId" type="hidden" name="contentItemId" value="" />
