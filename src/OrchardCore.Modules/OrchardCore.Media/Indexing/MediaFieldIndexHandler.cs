@@ -1,6 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
+using System;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Indexing;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Settings;
@@ -13,14 +15,17 @@ namespace OrchardCore.Media.Indexing
         private const string FileTextKeySuffix = ".FileText";
 
         private readonly IMediaFileStore _mediaFileStore;
-        private readonly IEnumerable<IMediaFileTextProvider> _mediaFileTextProviders;
+        private readonly MediaFileIndexingOptions _mediaFileIndexingOptions;
+        private readonly IServiceProvider _serviceProvider;
 
         public MediaFieldIndexHandler(
             IMediaFileStore mediaFileStore,
-            IEnumerable<IMediaFileTextProvider> mediaFileTextProviders)
+            IOptions<MediaFileIndexingOptions> mediaFileIndexingOptions,
+            IServiceProvider serviceProvider)
         {
             _mediaFileStore = mediaFileStore;
-            _mediaFileTextProviders = mediaFileTextProviders;
+            _mediaFileIndexingOptions = mediaFileIndexingOptions.Value;
+            _serviceProvider = serviceProvider;
         }
 
         public async override Task BuildIndexAsync(MediaField field, BuildFieldIndexContext context)
@@ -41,25 +46,30 @@ namespace OrchardCore.Media.Indexing
                     }
                 }
 
-                if (_mediaFileTextProviders.Any())
+                if (_mediaFileIndexingOptions.AnyMediaFileTextProviders())
                 {
                     // It doesn't really makes sense to store file contents without analyzing them for search as well.
                     var fileIndexingOptions = options | DocumentIndexOptions.Analyze;
 
                     foreach (var path in field.Paths)
                     {
-                        using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
-                        if (fileStream != null)
-                        {
-                            // Only index the file text with the provider at the top of the dependency chain, i.e.
-                            // allow overriding providers.
-                            var fileText = _mediaFileTextProviders
-                                .FirstOrDefault(provider => provider.CanHandle(path))
-                                ?.GetText(path, fileStream);
+                        var extensionWithoutDot = Path.GetExtension(path).Substring(1);
+                        var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(extensionWithoutDot);
 
-                            foreach (var key in context.Keys)
+                        if (providerType != null)
+                        {
+                            using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
+
+                            if (fileStream != null)
                             {
+                                var fileText = _serviceProvider
+                                    .CreateInstance<IMediaFileTextProvider>(providerType)
+                                    .GetText(path, fileStream);
+
+                                foreach (var key in context.Keys)
+                                {
                                     context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, fileIndexingOptions);
+                                }
                             }
                         }
                     }

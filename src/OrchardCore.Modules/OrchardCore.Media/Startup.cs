@@ -153,7 +153,7 @@ namespace OrchardCore.Media
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
-            services.AddScoped<IMediaFileTextProvider, PdfMediaFileTextProvider>();
+            services.AddMediaFileTextProvider<PdfMediaFileTextProvider>("pdf");
 
             services.AddRecipeExecutionStep<MediaStep>();
 
