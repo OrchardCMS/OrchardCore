@@ -11,6 +11,7 @@ namespace OrchardCore.Flows.ViewModels
     {
         public string[] Prefixes { get; set; } = Array.Empty<string>();
         public string[] ContentTypes { get; set; } = Array.Empty<string>();
+        public string[] ContentItems { get; set; } = Array.Empty<string>();
 
         [BindNever]
         public BagPart BagPart { get; set; }
