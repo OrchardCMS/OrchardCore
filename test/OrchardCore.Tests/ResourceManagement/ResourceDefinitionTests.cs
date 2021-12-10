@@ -345,7 +345,7 @@ namespace OrchardCore.Tests.ResourceManagement
             // Act
             _resourceManifest
                 .DefineScript("test")
-                .SetCdn(cdnUrl);
+                .SetCdn(cdnUrl, supportsSsl: supportsSSL);
 
             // Assert
             var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
@@ -365,7 +365,7 @@ namespace OrchardCore.Tests.ResourceManagement
             // Act
             _resourceManifest
                 .DefineScript("test")
-                .SetCdn(cdnUrl, debug: true);
+                .SetCdn(cdnUrl, debug: true, supportsSsl: supportsSSL);
 
             // Assert
             var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
@@ -385,7 +385,7 @@ namespace OrchardCore.Tests.ResourceManagement
             // Act
             _resourceManifest
                 .DefineScript("test")
-                .SetCdn(cdnUrl, cdnDebugUrl);
+                .SetCdn(cdnUrl, cdnDebugUrl, supportsSsl: supportsSSL);
 
             // Assert
             var resource = _resourceManifest.GetResources("script").Values.ElementAt(0).ElementAt(0);
