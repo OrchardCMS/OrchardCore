@@ -36,7 +36,7 @@
     public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();       
         var hostString = host != null ? new HostString(host) : Context.Request.Host;
 
         var pathString = originalPathBase;

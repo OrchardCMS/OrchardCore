@@ -305,12 +305,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var currentFeatureProfile = shellSettings["FeatureProfile"];
 
-            var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
-                .Select(x => new SelectListItem(x.Key, x.Key, String.Equals(x.Key, currentFeatureProfile, StringComparison.OrdinalIgnoreCase))).ToList();
-            if (featureProfiles.Any())
-            {
-                featureProfiles.Insert(0, new SelectListItem(S["None"], String.Empty, currentFeatureProfile == String.Empty));
-            }
+            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
 
             var model = new EditTenantViewModel
             {
@@ -375,6 +370,7 @@ namespace OrchardCore.Tenants.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
             model.Recipes = recipes;
+            model.FeatureProfiles = await GetFeatureProfilesAsync(model.FeatureProfile);
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -400,14 +396,10 @@ namespace OrchardCore.Tenants.Controllers
             {
                 return NotFound();
             }
+
             var currentFeatureProfile = shellSettings["FeatureProfile"];
 
-            var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
-                .Select(x => new SelectListItem(x.Key, x.Key, String.Equals(x.Key, currentFeatureProfile, StringComparison.OrdinalIgnoreCase))).ToList();
-            if (featureProfiles.Any())
-            {
-                featureProfiles.Insert(0, new SelectListItem(S["None"], String.Empty, currentFeatureProfile == String.Empty));
-            }
+            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
 
             var model = new EditTenantViewModel
             {
@@ -506,6 +498,7 @@ namespace OrchardCore.Tenants.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
             model.Recipes = recipes;
+            model.FeatureProfiles = await GetFeatureProfilesAsync(model.FeatureProfile);
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -694,6 +687,20 @@ namespace OrchardCore.Tenants.Controllers
             {
                 model.DatabaseProvider = configurationDatabaseProvider;
             }
+        }
+
+        private async Task<List<SelectListItem>> GetFeatureProfilesAsync(string currentFeatureProfile)
+        {
+            var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
+                .Select(x => new SelectListItem(x.Key, x.Key, String.Equals(x.Key, currentFeatureProfile, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+            if (featureProfiles.Any())
+            {
+                featureProfiles.Insert(0, new SelectListItem(S["None"], String.Empty, currentFeatureProfile == String.Empty));
+            }
+
+            return featureProfiles;
         }
     }
 }
