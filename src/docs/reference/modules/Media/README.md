@@ -490,9 +490,9 @@ Media can be optionally indexed for search as well if files are referenced via M
 
 To set up indexing for Media do the following:
 
-1. For each Media Field open the field's editor from under the given content type's or content part's editor, and tick "Include this element in the index".
-2. When a content item of that type is published next time, Media content will be indexed as well. Check the name of the new Lucene field. You can do this by running a Lucene query for the given content type (can be done from the admin from under Search, Run Lucene Query): You should be able to see a new field named with the pattern "ContentPart.FieldTechnicalName", e.g. "BlogPost.Image".
-3. Configure the new field to be used for search. You can do this from the admin under Search, Settings, Search, and adding the name of the new field under "Default search fields" (arriving at something like "Content.ContentItem.FullText, BlogPost.Image").
+1. For each Media Field open the field's editor from under the given content type's or content part's editor, and tick "Include this element in the index", and tick both "Stored" and "Analyzed".
+2. When a content item of that type is published next time, Media content will be indexed as well. Check the name of the new Lucene field. You can do this by running a Lucene query for the given content type (can be done from the admin from under Search, Run Lucene Query): You should be able to see two new fields named with the pattern "ContentPart.FieldTechnicalName.MediaText" and "ContentPart.FieldTechnicalName.FileText", e.g. "BlogPost.File.MediaText" and "BlogPost.File.FileText".
+3. Configure the new field to be used for search. You can do this from the admin under Search, Settings, Search, and adding the name of the new field under "Default search fields" (arriving at something like "Content.ContentItem.FullText, BlogPost.File.MediaText, BlogPost.File.FileText").
 4. Try searching for content only available in the Media Text of selected media files, or referenced PDF files. You should see corresponding results.
 
 ## Videos
