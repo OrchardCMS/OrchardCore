@@ -36,19 +36,24 @@ namespace OrchardCore.Email.Services
 
         public async Task<SmtpResult> SendAsync(MailMessage message)
         {
-            if (_options?.DefaultSender == null)
-            {
-                return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
-            }
-
             try
             {
                 // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
-                message.From = String.IsNullOrWhiteSpace(message.From)
+                var senderAddress = String.IsNullOrWhiteSpace(message.From)
                     ? _options.DefaultSender
                     : message.From;
 
+                if (!String.IsNullOrWhiteSpace(senderAddress))
+                {
+                    message.From = senderAddress;
+                }
+
                 var mimeMessage = FromMailMessage(message);
+
+                if (mimeMessage.From.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
+                {
+                    return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
+                }
 
                 switch (_options.DeliveryMethod)
                 {
@@ -72,14 +77,16 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message)
         {
-            var senderAddress = String.IsNullOrWhiteSpace(message.Sender)
+            var submitterAddress = String.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender
                 : message.Sender;
 
-            var mimeMessage = new MimeMessage
+            var mimeMessage = new MimeMessage();
+
+            if (!String.IsNullOrEmpty(submitterAddress))
             {
-                Sender = MailboxAddress.Parse(senderAddress)
-            };
+                mimeMessage.Sender = MailboxAddress.Parse(submitterAddress);
+            }
 
             if (!string.IsNullOrWhiteSpace(message.From))
             {
