@@ -51,6 +51,11 @@ namespace OrchardCore.Email.Services
         /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
         public async Task<SmtpResult> SendAsync(MailMessage message)
         {
+            if (_options == null)
+            {
+                return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
+            }
+
             try
             {
                 // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
@@ -67,7 +72,7 @@ namespace OrchardCore.Email.Services
 
                 if (mimeMessage.From.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
                 {
-                    return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
+                    return SmtpResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
                 }
 
                 switch (_options.DeliveryMethod)

@@ -212,7 +212,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
 
             // Assert
             Assert.True(result.Errors.Any());
-            Assert.Equal("SMTP settings must be configured before an email can be sent.", result.Errors.First());
         }
 
         private async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
@@ -251,11 +250,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         private static ISmtpService CreateSmtpService(SmtpSettings settings)
         {
             var options = new Mock<IOptions<SmtpSettings>>();
+            options.Setup(o => o.Value).Returns(settings);
+
             var logger = new Mock<ILogger<SmtpService>>();
             var localizer = new Mock<IStringLocalizer<SmtpService>>();
             var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
-
-            options.Setup(o => o.Value).Returns(settings);
 
             return smtp;
         }
