@@ -24,7 +24,7 @@ namespace OrchardCore.Contents.Services
         public void Build(QueryEngineBuilder<ContentItem> builder)
         {
             builder
-                .WithNamedTerm("status", builder => builder
+                .WithNamedTerm("contentitem.status", builder => builder
                     .OneCondition((val, query, ctx) =>
                     {
                         var context = (ContentQueryContext)ctx;
@@ -77,7 +77,7 @@ namespace OrchardCore.Contents.Services
                     })
                     .AlwaysRun()
                 )
-                .WithNamedTerm("sort", builder => builder
+                .WithNamedTerm("contentitem.sort", builder => builder
                     .OneCondition((val, query) =>
                     {
                         if (Enum.TryParse<ContentsOrder>(val, true, out var contentsOrder))
@@ -124,7 +124,7 @@ namespace OrchardCore.Contents.Services
                     })
                     .AlwaysRun()
                 )
-                .WithNamedTerm("type", builder => builder
+                .WithNamedTerm("contentitem.contenttype", builder => builder
                     .OneCondition(async (contentType, query, ctx) =>
                     {
                         var context = (ContentQueryContext)ctx;
@@ -233,7 +233,7 @@ namespace OrchardCore.Contents.Services
                     })
                     .AlwaysRun()
                 )
-                .WithDefaultTerm("text", builder => builder
+                .WithDefaultTerm("contentitem.displaytext", builder => builder
                     .ManyCondition(
                         (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
                         (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.NotContains(val))
