@@ -13,6 +13,9 @@ using MimeKit;
 
 namespace OrchardCore.Email.Services
 {
+    /// <summary>
+    /// Represents a SMTP service that allows to send emails.
+    /// </summary>
     public class SmtpService : ISmtpService
     {
         private const string EmailExtension = ".eml";
@@ -23,6 +26,12 @@ namespace OrchardCore.Email.Services
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
 
+        /// <summary>
+        /// Initializes a new instance of a <see cref="SmtpService"/>.
+        /// </summary>
+        /// <param name="options">The <see cref="IOptions{SmtpSettings}"/>.</param>
+        /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
+        /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
         public SmtpService(
             IOptions<SmtpSettings> options,
             ILogger<SmtpService> logger,
@@ -34,9 +43,15 @@ namespace OrchardCore.Email.Services
             S = stringLocalizer;
         }
 
+        /// <summary>
+        /// Sends the specified message to an SMTP server for delivery.
+        /// </summary>
+        /// <param name="message">The message to be sent.</param>
+        /// <returns>A <see cref="SmtpResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
+        /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
         public async Task<SmtpResult> SendAsync(MailMessage message)
         {
-            if (_options?.DefaultSender == null)
+            if (_options == null)
             {
                 return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
@@ -44,11 +59,21 @@ namespace OrchardCore.Email.Services
             try
             {
                 // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
-                message.From = String.IsNullOrWhiteSpace(message.From)
+                var senderAddress = String.IsNullOrWhiteSpace(message.From)
                     ? _options.DefaultSender
                     : message.From;
 
+                if (!String.IsNullOrWhiteSpace(senderAddress))
+                {
+                    message.From = senderAddress;
+                }
+
                 var mimeMessage = FromMailMessage(message);
+
+                if (mimeMessage.From.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
+                {
+                    return SmtpResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
+                }
 
                 switch (_options.DeliveryMethod)
                 {
@@ -72,14 +97,16 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message)
         {
-            var senderAddress = String.IsNullOrWhiteSpace(message.Sender)
+            var submitterAddress = String.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender
                 : message.Sender;
 
-            var mimeMessage = new MimeMessage
+            var mimeMessage = new MimeMessage();
+
+            if (!String.IsNullOrEmpty(submitterAddress))
             {
-                Sender = MailboxAddress.Parse(senderAddress)
-            };
+                mimeMessage.Sender = MailboxAddress.Parse(submitterAddress);
+            }
 
             if (!string.IsNullOrWhiteSpace(message.From))
             {
