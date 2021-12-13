@@ -68,16 +68,29 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     var name = Src.ToLowerInvariant();
 
                     var definition = _resourceManager.InlineManifest.DefineScript(name);
-                    definition.SetUrl(Src, DebugSrc);
+
+                    if (String.IsNullOrEmpty(DebugSrc))
+                    {
+                        definition.SetUrl(Src);
+                    }
+                    else
+                    {
+                        definition.SetUrl(Src, DebugSrc);
+                    }
 
                     if (!String.IsNullOrEmpty(Version))
                     {
                         definition.SetVersion(Version);
                     }
 
-                    if (!String.IsNullOrEmpty(CdnSrc))
+                    if (!String.IsNullOrEmpty(CdnSrc) && !String.IsNullOrEmpty(DebugCdnSrc))
                     {
                         definition.SetCdn(CdnSrc, DebugCdnSrc);
+                    }
+                    else
+                    {
+                        var isDebug = !String.IsNullOrEmpty(DebugCdnSrc);
+                        definition.SetCdn(isDebug ? DebugCdnSrc : CdnSrc, debug: isDebug);
                     }
 
                     if (!String.IsNullOrEmpty(Culture))
@@ -224,16 +237,29 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // Inline declaration
 
                 var definition = _resourceManager.InlineManifest.DefineScript(Name);
-                definition.SetUrl(Src, DebugSrc);
+
+                if (String.IsNullOrEmpty(DebugSrc))
+                {
+                    definition.SetUrl(Src);
+                }
+                else
+                {
+                    definition.SetUrl(Src, DebugSrc);
+                }
 
                 if (!String.IsNullOrEmpty(Version))
                 {
                     definition.SetVersion(Version);
                 }
 
-                if (!String.IsNullOrEmpty(CdnSrc))
+                if (!String.IsNullOrEmpty(CdnSrc) && !String.IsNullOrEmpty(DebugCdnSrc))
                 {
                     definition.SetCdn(CdnSrc, DebugCdnSrc);
+                }
+                else
+                {
+                    var isDebug = !String.IsNullOrEmpty(DebugCdnSrc);
+                    definition.SetCdn(isDebug ? DebugCdnSrc : CdnSrc, debug: isDebug);
                 }
 
                 if (!String.IsNullOrEmpty(Culture))

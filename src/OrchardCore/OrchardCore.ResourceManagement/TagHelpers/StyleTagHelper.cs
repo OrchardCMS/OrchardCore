@@ -190,9 +190,14 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     definition.SetVersion(Version);
                 }
 
-                if (!String.IsNullOrEmpty(CdnSrc))
+                if (!String.IsNullOrEmpty(CdnSrc) && !String.IsNullOrEmpty(DebugCdnSrc))
                 {
                     definition.SetCdn(CdnSrc, DebugCdnSrc);
+                }
+                else
+                {
+                    var isDebug = !String.IsNullOrEmpty(DebugCdnSrc);
+                    definition.SetCdn(isDebug ? DebugCdnSrc : CdnSrc, debug: isDebug);
                 }
 
                 if (!String.IsNullOrEmpty(Culture))
