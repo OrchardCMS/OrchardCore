@@ -67,7 +67,7 @@ jobs:
           apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.
+        cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
@@ -75,7 +75,7 @@ jobs:
       with:
         name: functional-cms-sqlite-failure
         path: |
-          test/OrchardCore.Tests./cms-tests/cypress/screenshots
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
   
@@ -119,7 +119,7 @@ jobs:
           apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.
+        cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
@@ -127,7 +127,7 @@ jobs:
       with:
         name: functional-cms-postgresql-failure
         path: |
-          test/OrchardCore.Tests./cms-tests/cypress/screenshots
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
   
@@ -167,7 +167,7 @@ jobs:
           apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.
+        cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
@@ -175,7 +175,7 @@ jobs:
       with:
         name: functional-cms-mysql-failure
         path: |
-          test/OrchardCore.Tests./cms-tests/cypress/screenshots
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
 
@@ -214,7 +214,7 @@ jobs:
           apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
-        cd test/OrchardCore.Tests.
+        cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
@@ -222,6 +222,6 @@ jobs:
       with:
         name: functional-cms-mssql-failure
         path: |
-          test/OrchardCore.Tests./cms-tests/cypress/screenshots
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
