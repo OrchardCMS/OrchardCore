@@ -130,13 +130,13 @@ namespace OrchardCore.Tenants.Controllers
 
             switch (options.Status)
             {
-                case TenantsStatus.Disabled:
+                case TenantsState.Disabled:
                     entries = entries.Where(t => t.ShellSettings.State == TenantState.Disabled).ToList();
                     break;
-                case TenantsStatus.Running:
+                case TenantsState.Running:
                     entries = entries.Where(t => t.ShellSettings.State == TenantState.Running).ToList();
                     break;
-                case TenantsStatus.Uninitialized:
+                case TenantsState.Uninitialized:
                     entries = entries.Where(t => t.ShellSettings.State == TenantState.Uninitialized).ToList();
                     break;
             }
@@ -185,10 +185,10 @@ namespace OrchardCore.Tenants.Controllers
             model.Options.TenantsCategories.Insert(0, new SelectListItem(S["All"], DefaultCategory, selected: true));
 
             model.Options.TenantsStates = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["All states"], Value = nameof(TenantsStatus.All) },
-                new SelectListItem() { Text = S["Running"], Value = nameof(TenantsStatus.Running) },
-                new SelectListItem() { Text = S["Disabled"], Value = nameof(TenantsStatus.Disabled) },
-                new SelectListItem() { Text = S["Uninitialized"], Value = nameof(TenantsStatus.Uninitialized) }
+                new SelectListItem() { Text = S["All states"], Value = nameof(TenantsState.All) },
+                new SelectListItem() { Text = S["Running"], Value = nameof(TenantsState.Running) },
+                new SelectListItem() { Text = S["Disabled"], Value = nameof(TenantsState.Disabled) },
+                new SelectListItem() { Text = S["Uninitialized"], Value = nameof(TenantsState.Uninitialized) }
             };
 
             model.Options.TenantsSorts = new List<SelectListItem>() {

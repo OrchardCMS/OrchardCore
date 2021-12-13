@@ -51,7 +51,7 @@ namespace OrchardCore.Tenants.ViewModels
 
         public string Category { get; set; }
 
-        public TenantsStatus Status { get; set; }
+        public TenantsState Status { get; set; }
 
         public TenantsBulkAction BulkAction { get; set; }
 
@@ -69,7 +69,7 @@ namespace OrchardCore.Tenants.ViewModels
         public List<SelectListItem> TenantsBulkAction { get; set; }
     }
 
-    public enum TenantsStatus
+    public enum TenantsState
     {
         All,
         Running,
