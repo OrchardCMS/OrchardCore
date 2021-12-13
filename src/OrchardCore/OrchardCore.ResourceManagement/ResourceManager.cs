@@ -90,9 +90,22 @@ namespace OrchardCore.ResourceManagement
                 resourceDebugPath = _options.ContentBasePath + resourceDebugPath.Substring(1);
             }
 
-            return RegisterResource(
-                resourceType,
-                GetResourceKey(resourcePath, resourceDebugPath)).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
+            if (!String.IsNullOrEmpty(resourcePath) && !String.IsNullOrEmpty(resourceDebugPath))
+            {
+                return RegisterResource(
+                    resourceType,
+                    GetResourceKey(resourcePath, resourceDebugPath))
+                        .Define(d => d.SetUrl(resourcePath, resourceDebugPath));
+            }
+            else
+            {
+                var isDebug = !String.IsNullOrEmpty(resourceDebugPath);
+
+                return RegisterResource(
+                    resourceType,
+                    GetResourceKey(resourcePath, resourceDebugPath))
+                        .Define(d => d.SetUrl(isDebug ? resourceDebugPath : resourcePath, debug: isDebug));
+            }
         }
 
         public void RegisterHeadScript(IHtmlContent script)
