@@ -55,6 +55,6 @@ jobs:
       with:
         name: functional-test-failure
         path: |
-          test/Functional/cms-tests/cypress/screenshots
+          test/OrchardCore.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
   

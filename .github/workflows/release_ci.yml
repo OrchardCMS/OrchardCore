@@ -60,7 +60,7 @@ jobs:
     - name: Functional Tests
       if: matrix.os == 'ubuntu-latest'
       run: |
-        cd test/Functional
+        cd test/OrchardCore.Functional
         npm install
         npm run cms:test
         npm run mvc:test
@@ -69,7 +69,7 @@ jobs:
       with:
         name: Functional Test failure
         path: |
-          test/Functional/cms-tests/cypress/screenshots
+          test/OrchardCore.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
     - name: Deploy release NuGet packages
       if: matrix.os == 'ubuntu-latest'
