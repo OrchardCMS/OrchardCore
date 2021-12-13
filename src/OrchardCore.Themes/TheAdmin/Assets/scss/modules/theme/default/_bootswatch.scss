@@ -17,7 +17,7 @@
 }
 
 .ta-badge {
-    @extend .badge-light;
+    @extend .badge-light !optional;
 
     background-color: darken(#f8f9fa, 5%)
 }

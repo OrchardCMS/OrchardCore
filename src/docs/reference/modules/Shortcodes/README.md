@@ -135,7 +135,7 @@ Example
 ```
 [image alt="My lovely image"]my-image.jpg[/image]
 ```
-This will render an image tag for the file ```my-image.jpg``` in the site's media folder.
+This will render an image tag for the file `my-image.jpg` in the site's media folder.
 
 The following parameters can be used:
 
@@ -153,7 +153,29 @@ The following parameters can be used:
   - **stretch:** Stretches the resized image to fit the bounds of its container.
   - **crop:** Resizes the image using the same functionality as max then removes any image area falling outside the bounds of its container.
 
+### `[asset_url]`
 
+The [asset_url] shortcode returns a relative url from the site's media library.
+
+Example
+```
+[asset_url]my-image.jpg[/asset_url]
+```
+This will return a relative url of `/my-tenant/media/my-image.jpg` for the file `my-image.jpg` in the site's media folder.
+
+The following parameters can be used:
+
+- **format:** Change the file format from the original file. Can be jpeg, png, gif or bmp.
+- **quality:** Sets the encoding quality to use for jpeg images. The higher the quality, the larger the file size will be. The value can be from 0 to 100 and defaults to 75.
+- **width, height:** The width and height can be set to resize the image. The possible values are limited to prevent malicious clients from creating too many variations of the same image. The values can be 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048.
+- **mode:** The resize mode controls how the image is resized.  
+   The options are:
+  - **pad:** Pads the resized image to fit the bounds of its container. If only one dimension is passed, the original aspect ratio will be maintained.
+  - **boxpad:** Pads the image to fit the bounds of the container without resizing the original source. When downscaling, performs the same functionality as pad.
+  - **max** (Default): Constrains the resized image to fit the bounds of its container maintaining the original aspect ratio.
+  - **min:** Resizes the image until the shortest side reaches the given dimension. Upscaling is disabled in this mode and the original image will be returned if attempted.
+  - **stretch:** Stretches the resized image to fit the bounds of its container.
+  - **crop:** Resizes the image using the same functionality as max then removes any image area falling outside the bounds of its container.
 
 ### `[locale]`
 

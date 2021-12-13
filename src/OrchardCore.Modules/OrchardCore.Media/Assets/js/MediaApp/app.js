@@ -63,10 +63,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         folder.selected = true;
                     });
 
-                    bus.$on('beforeFolderAdded', function (folder) {
-                        self.loadFolder(folder);
-                    });
-
                     bus.$on('mediaListMoved', function (errorInfo) {                        
                         self.loadFolder(self.selectedFolder);
                         if (errorInfo) {

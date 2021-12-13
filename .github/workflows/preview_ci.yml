@@ -5,7 +5,7 @@ on:
       - '**/*.md'
       - 'mkdocs.yml'
       - 'src/docs/**/*'
-    branches: [ dev, main, release/** ]
+    branches: [ main, release/** ]
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -30,11 +30,17 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.*
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+        include-prerelease: true
     - name: Set build number 
       if: matrix.os == 'ubuntu-latest'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 16368 ))" >> $GITHUB_ENV
     - name: Build
       run: |
+        dotnet build --configuration Release --framework net6.0
         dotnet build --configuration Release --framework net5.0
         dotnet build --configuration Release --framework netcoreapp3.1
     - name: Unit Tests
@@ -70,7 +76,7 @@ jobs:
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
         docker push orchardproject/orchardcore-cms-linux:dev
     - name: Deploy preview docker image for windows
@@ -78,7 +84,7 @@ jobs:
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net5.0
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore --framework net6.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-windows:dev
