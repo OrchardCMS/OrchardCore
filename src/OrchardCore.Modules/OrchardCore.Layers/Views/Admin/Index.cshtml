@@ -45,7 +45,7 @@
                             @zone
                         </div>
                         <div class="layer-zone card-body" data-zone="@zone">
-                            @if (Model.Widgets.ContainsKey(zone) && Model.Widgets[zone].Count() > 0)
+                            @if (Model.Widgets.ContainsKey(zone) && Model.Widgets[zone].Any())
                             {
                                 <div class="form-group">
                                     <ul class="list-group zones">
@@ -73,7 +73,7 @@
                             }
                             @if (Model.Layers.Any())
                             {
-                                @if (widgetContentTypes.Count() > 0)
+                                @if (widgetContentTypes.Any())
                                 {
                                     <div class="btn-dropdown-wrapper w-100">
                                         <div class="btn-group btn-dropdown">

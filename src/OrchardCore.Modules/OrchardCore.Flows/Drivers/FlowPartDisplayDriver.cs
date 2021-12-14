@@ -64,6 +64,8 @@ namespace OrchardCore.Flows.Drivers
                 var containedContentTypes = GetContainedContentTypes(context.TypePartDefinition);
                 var notify = false;
 
+                var existingWidgets = new List<ContentItem>();
+
                 foreach (var widget in flowPart.Widgets)
                 {
                     if (!containedContentTypes.Any(c => c.Name == widget.ContentType))
@@ -72,9 +74,15 @@ namespace OrchardCore.Flows.Drivers
                         await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
                         notify = true;
                     }
+                    else
+                    {
+                        existingWidgets.Add(widget);
+                    }
                 }
 
-                if(notify)
+                flowPart.Widgets = existingWidgets;
+
+                if (notify)
                 {
                     await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
                 }
