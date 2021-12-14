@@ -122,16 +122,6 @@ namespace OrchardCore.Media.Drivers
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService
                 if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
                 {
-                    for (var i = 0; i < items.Count; i++)
-                    {
-                        if (items[i].IsNew)
-                        {
-                            var lastSlash = items[i].Path.LastIndexOf('/');
-                            var nameOnly = items[i].Path[(lastSlash + 1)..];
-                            items[i].AttachedFileName = nameOnly[36..]; // remove unique id from name
-                        }
-                    }
-
                     try
                     {
                         field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
