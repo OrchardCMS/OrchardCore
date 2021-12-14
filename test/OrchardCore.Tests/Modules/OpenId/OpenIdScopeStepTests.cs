@@ -21,7 +21,7 @@ namespace OrchardCore.Modules.OpenId.Tests
         private string GetRecipeFileContent(string recipeName)
         {
             return new EmbeddedFileProvider(GetType().Assembly)
-                .GetFileInfo($"Modules.OrchardCore.OpenId.RecipeFiles.{recipeName}.json")
+                .GetFileInfo($"Modules.OpenId.RecipeFiles.{recipeName}.json")
                 .ReadToEnd();
         }
 
