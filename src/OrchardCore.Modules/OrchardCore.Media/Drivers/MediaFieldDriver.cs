@@ -134,6 +134,7 @@ namespace OrchardCore.Media.Drivers
 
                     try
                     {
+                        field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
                         await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
                     }
                     catch (Exception e)
@@ -144,8 +145,6 @@ namespace OrchardCore.Media.Drivers
                 }
 
                 field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? new string[] { };
-
-                field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
 
                 var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
 
