@@ -39,7 +39,7 @@ Vue.component('mediaFieldThumbsContainer', {
                         <div class="media-container-main-item-title card-body">\
                             <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
                                 v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash" aria-hidden="true"></i></a>\
-                            <span class="media-filename card-text small text-danger" :title="media.name">{{ media.attachedFileName == null ? media.name : media.attachedFileName }}</span>\
+                            <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
                         </div>\
                    </div>\
             </li>\
