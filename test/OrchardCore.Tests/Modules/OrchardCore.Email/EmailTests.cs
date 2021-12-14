@@ -15,6 +15,60 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
     public class EmailTests
     {
         [Fact]
+        public async Task SendEmail_WithToHeader()
+        {
+            // Arrange
+            var message = new MailMessage
+            {
+                To = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message"
+            };
+
+            // Act
+            var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
+
+            // Assert
+            Assert.Contains("From: Your Name <youraddress@host.com>", content);
+        }
+
+        [Fact]
+        public async Task SendEmail_WithCcHeader()
+        {
+            // Arrange
+            var message = new MailMessage
+            {
+                Cc = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message"
+            };
+
+            // Act
+            var content = await SendEmailAsync(message);
+
+            // Assert
+            Assert.Contains("Cc: info@oc.com", content);
+        }
+
+        [Fact]
+        public async Task SendEmail_WithBccHeader()
+        {
+            // Arrange
+            var message = new MailMessage
+            {
+                Bcc = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message"
+            };
+
+            // Act
+            var content = await SendEmailAsync(message);
+
+            // Assert
+            Assert.Contains("Bcc: info@oc.com", content);
+        }
+
+        [Fact]
         public async Task SendEmail_WithDisplayName()
         {
             var message = new MailMessage
@@ -24,7 +78,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 Body = "Test Message"
             };
 
-            await SendEmailAsync("Your Name <youraddress@host.com>", message);
+            await SendEmailAsync(message, "Your Name <youraddress@host.com>");
         }
 
         [Fact]
@@ -36,7 +90,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 Subject = "Test",
                 Body = "Test Message"
             };
-            var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
+            var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
 
             Assert.Contains("From: Your Name <youraddress@host.com>", content);
         }
@@ -51,7 +105,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 Body = "Test Message",
                 From = "My Name <youraddress@host.com>",
             };
-            var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
+            var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
 
             Assert.Contains("From: My Name <youraddress@host.com>", content);
             Assert.Contains("Sender: Your Name <youraddress@host.com>", content);
@@ -67,7 +121,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 Body = "Test Message",
                 Sender = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
             };
-            var content = await SendEmailAsync("Sebastien Ros <sebastienros@gmail.com>", message);
+            var content = await SendEmailAsync(message, "Sebastien Ros <sebastienros@gmail.com>");
 
             Assert.Contains("From: Sebastien Ros <sebastienros@gmail.com>", content);
             Assert.Contains("Sender: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
@@ -83,7 +137,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 Body = "Test Message",
                 From = "sebastienros@gmail.com,hishamco_2007@hotmail.com"
             };
-            var content = await SendEmailAsync("Hisham Bin Ateya <hishamco_2007@hotmail.com>", message);
+            var content = await SendEmailAsync(message, "Hisham Bin Ateya <hishamco_2007@hotmail.com>");
 
             Assert.Contains("From: sebastienros@gmail.com, hishamco_2007@hotmail.com", content);
             Assert.Contains("Sender: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
@@ -100,7 +154,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 From = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
                 ReplyTo = "Hisham Bin Ateya <hishamco_2007@yahoo.com>",
             };
-            var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
+            var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
 
             Assert.Contains("From: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
             Assert.Contains("Reply-To: Hisham Bin Ateya <hishamco_2007@yahoo.com>", content);
@@ -116,7 +170,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 Body = "Test Message",
                 From = "Sebastien Ros <sebastienros@gmail.com>"
             };
-            var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
+            var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
 
             Assert.Contains("From: Sebastien Ros <sebastienros@gmail.com>", content);
             Assert.Contains("Reply-To: Sebastien Ros <sebastienros@gmail.com>", content);
@@ -137,7 +191,30 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
             Assert.Equal(address, mailboxAddress.Address);
         }
 
-        private async Task<string> SendEmailAsync(string defaultSender, MailMessage message)
+        [Fact]
+        public async Task SendEmail_WithoutToAndCcAndBccHeaders_ShouldThrowsException()
+        {
+            // Arrange
+            var message = new MailMessage
+            {
+                Subject = "Test",
+                Body = "Test Message"
+            };
+            var settings = new SmtpSettings
+            {
+                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
+            };
+
+            var smtp = CreateSmtpService(settings);
+
+            // Act
+            var result = await smtp.SendAsync(message);
+
+            // Assert
+            Assert.True(result.Errors.Any());
+        }
+
+        private async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
         {
             var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
 
@@ -149,16 +226,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
 
             Directory.CreateDirectory(pickupDirectoryPath);
 
-            var options = new Mock<IOptions<SmtpSettings>>();
-            options.Setup(o => o.Value).Returns(new SmtpSettings
+            var settings = new SmtpSettings
             {
                 DefaultSender = defaultSender,
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
                 PickupDirectoryLocation = pickupDirectoryPath
-            });
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            };
+            var smtp = CreateSmtpService(settings);
+
             var result = await smtp.SendAsync(message);
 
             Assert.True(result.Succeeded);
@@ -170,6 +245,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
             var content = File.ReadAllText(file.FullName);
 
             return content;
+        }
+
+        private static ISmtpService CreateSmtpService(SmtpSettings settings)
+        {
+            var options = new Mock<IOptions<SmtpSettings>>();
+            options.Setup(o => o.Value).Returns(settings);
+
+            var logger = new Mock<ILogger<SmtpService>>();
+            var localizer = new Mock<IStringLocalizer<SmtpService>>();
+            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+
+            return smtp;
         }
     }
 }
