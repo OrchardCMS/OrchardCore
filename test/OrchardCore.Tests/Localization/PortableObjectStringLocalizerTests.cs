@@ -13,11 +13,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrchardCore.Localization;
 using OrchardCore.Localization.PortableObject;
+using OrchardCore.Utilities.Tests;
 using Xunit;
 
-namespace OrchardCore.Tests.Localization
+namespace OrchardCore.Localization.Tests
 {
     public class PortableObjectStringLocalizerTests
     {

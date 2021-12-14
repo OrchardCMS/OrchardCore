@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 
-namespace OrchardCore.Tests.Stubs
+namespace OrchardCore.Stubs.Tests
 {
     public class StubExtensionManager : IExtensionManager
     {

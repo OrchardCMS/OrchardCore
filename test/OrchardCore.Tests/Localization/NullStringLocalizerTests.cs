@@ -5,7 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 using Xunit;
 
-namespace OrchardCore.Tests.Localization
+namespace OrchardCore.Localization.Tests
 {
     public class NullStringLocalizerTests
     {

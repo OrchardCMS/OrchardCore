@@ -1,11 +1,10 @@
 using System.IO;
 using System.Text.Encodings.Web;
 using OrchardCore.DisplayManagement.Liquid;
-using OrchardCore.DisplayManagement;
 using Xunit;
 using System;
 
-namespace OrchardCore.Tests.DisplayManagement
+namespace OrchardCore.DisplayManagement.Tests
 {
     public class ViewBufferTextWriterContentTests
     {

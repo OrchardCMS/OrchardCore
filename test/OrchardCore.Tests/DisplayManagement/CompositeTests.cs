@@ -1,7 +1,7 @@
 using OrchardCore.DisplayManagement.Shapes;
 using Xunit;
 
-namespace OrchardCore.Tests.DisplayManagement
+namespace OrchardCore.DisplayManagement.Tests
 {
     public class CompositeTests
     {

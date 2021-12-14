@@ -6,10 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Localization;
+using OrchardCore.Stubs.Tests;
+using OrchardCore.Utilities.Tests;
 using Xunit;
 
-namespace OrchardCore.Tests.Localization
+namespace OrchardCore.Localization.Tests
 {
     public class PortableObjectStringLocalizerFactoryTests
     {

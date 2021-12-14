@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 
-namespace OrchardCore.Tests.Stubs
+namespace OrchardCore.Stubs.Tests
 {
     public class TestShapeBindingsDictionary : Dictionary<string, ShapeBinding>
     {

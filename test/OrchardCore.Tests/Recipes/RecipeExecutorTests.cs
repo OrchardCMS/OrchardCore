@@ -20,7 +20,7 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
 using Xunit;
 
-namespace OrchardCore.Recipes
+namespace OrchardCore.Recipes.Tests
 {
     public class RecipeExecutorTests
     {

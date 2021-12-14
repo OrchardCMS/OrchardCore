@@ -1,7 +1,7 @@
 using System.IO;
 using Microsoft.Extensions.FileProviders;
 
-namespace OrchardCore.Tests.Utilities
+namespace OrchardCore.Utilities.Tests
 {
     public static class FileInfoExtensions
     {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Localization;
 
-namespace OrchardCore.Tests
+namespace OrchardCore.Stubs.Tests
 {
     public class StubPoFileLocationProvider : ILocalizationFileLocationProvider
     {

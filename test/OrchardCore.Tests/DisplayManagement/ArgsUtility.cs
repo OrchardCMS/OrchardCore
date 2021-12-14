@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Routing;
-using OrchardCore.DisplayManagement;
 
-namespace OrchardCore.Tests.DisplayManagement
+namespace OrchardCore.DisplayManagement.Tests
 {
     public static class ArgsUtility
     {

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.TestHost;
 using Xunit;
 
-namespace OrchardCore.Tests
+namespace OrchardCore.Utilities.Tests
 {
     internal static class StartupRunner
     {

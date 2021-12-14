@@ -4,10 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Moq;
-using OrchardCore.Modules;
 using Xunit;
 
-namespace OrchardCore.Tests.Modules
+namespace OrchardCore.Modules.Tests
 {
     public class PoweredByMiddlewareTests
     {

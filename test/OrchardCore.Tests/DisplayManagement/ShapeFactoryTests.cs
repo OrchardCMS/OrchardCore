@@ -9,10 +9,10 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Stubs.Tests;
 using Xunit;
 
-namespace OrchardCore.Tests.DisplayManagement
+namespace OrchardCore.DisplayManagement.Tests
 {
     public class ShapeFactoryTests
     {

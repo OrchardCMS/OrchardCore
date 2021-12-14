@@ -1,9 +1,8 @@
 using System;
 using System.Globalization;
-using OrchardCore.Localization;
 using Xunit;
 
-namespace OrchardCore.Tests.Localization
+namespace OrchardCore.Localization.Tests
 {
     public class CultureScopeTests
     {

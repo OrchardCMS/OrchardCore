@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Tests.Stubs
+namespace OrchardCore.Stubs.Tests
 {
     /// <summary>
     /// In memory file builder that uses a dictionary as virtual file system.

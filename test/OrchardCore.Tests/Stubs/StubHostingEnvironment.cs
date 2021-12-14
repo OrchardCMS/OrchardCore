@@ -2,7 +2,7 @@ using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
-namespace OrchardCore.Tests.Stubs
+namespace OrchardCore.Stubs.Tests
 {
     public class StubHostingEnvironment : IHostEnvironment
     {

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Tests.Security
+namespace OrchardCore.Security.Tests
 {
     public static class PermissionHandlerHelper
     {

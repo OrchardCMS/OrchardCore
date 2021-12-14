@@ -17,15 +17,15 @@ using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
-using OrchardCore.Tests.Workflows.Activities;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Activities.Tests;
 using OrchardCore.Workflows.Evaluators;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
 using Xunit;
 
-namespace OrchardCore.Tests.Workflows
+namespace OrchardCore.Workflows.Tests
 {
     public class WorkflowManagerTests
     {

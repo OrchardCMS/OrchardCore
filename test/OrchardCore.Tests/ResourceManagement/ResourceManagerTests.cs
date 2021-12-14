@@ -11,10 +11,9 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Options;
-using OrchardCore.ResourceManagement;
 using Xunit;
 
-namespace OrchardCore.Tests.ResourceManagement
+namespace OrchardCore.ResourceManagement.Tests
 {
     public class ResourceManagerTests
     {

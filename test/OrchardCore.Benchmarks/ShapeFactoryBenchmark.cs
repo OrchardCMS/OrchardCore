@@ -15,7 +15,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Modules.Manifest;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Stubs.Tests;
 
 namespace OrchardCore.Benchmark
 {
