@@ -10,7 +10,7 @@ using OrchardCore.Email;
 using OrchardCore.Email.Services;
 using Xunit;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Email
+namespace OrchardCore.Tests.Email
 {
     public class EmailTests
     {
