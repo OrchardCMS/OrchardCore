@@ -12,7 +12,7 @@ using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
-using OrchardCore.Tests.Modules.OrchardCore.Rules;
+using OrchardCore.Modules.Rules.Tests;
 
 namespace OrchardCore.Benchmark
 {
