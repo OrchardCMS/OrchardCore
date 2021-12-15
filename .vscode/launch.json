@@ -2,25 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (console debug) - net6.0",
-      "type": "coreclr",
+      "name": ".NET Core Launch (web debug) - dotnet watch - net6.0",
+      "type": "dotnetwatchattach",
       "request": "launch",
-      "preLaunchTask": "dotnet build debug - net6.0",
-      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net6.0/OrchardCore.Cms.Web.dll",
-      "args": [],
-      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "stopAtEntry": false
-    },
-    {
-      "name": ".NET Core Launch (web debug) - net6.0",
-      "type": "coreclr",
-      "request": "launch",
-      "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "dotnet build debug - net6.0",
-      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net6.0/OrchardCore.Cms.Web.dll",
+      "preLaunchTask": "dotnet watch - net6.0",
+      "postDebugTask": "terminatewatch",
+      "program": "OrchardCore.Cms.Web.exe",
       "args": [],
       "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
@@ -31,29 +18,6 @@
         "action": "openExternally",
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
-    },
-    {
-      "name": ".NET Core Launch (web release) - net6.0",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "dotnet build release - net6.0",
-      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/net6.0/OrchardCore.Cms.Web.dll",
-      "args": [],
-      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "stopAtEntry": false,
-      "serverReadyAction": {
-        "action": "openExternally",
-        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-      }
-    },
-    {
-      "name": ".NET Core Attach",
-      "type": "coreclr",
-      "request": "attach",
-      "processName": "OrchardCore.Cms.Web.exe"
     },
     {
       "name": "Gulp Debug",

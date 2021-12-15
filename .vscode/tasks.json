@@ -22,11 +22,50 @@
       }
     }
   },
+  "inputs": [
+    {
+      "id": "terminatewatchparam",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "watch"
+    }
+  ],
   "tasks": [
     {
-      "label": "dotnet run",
+      "label": "dotnet watch - net6.0",
+      "type": "process",
+      "command": "dotnet",
       "args": [
-        "cd ${workspaceRoot}/src/OrchardCore.Cms.Web & dotnet run"
+        "watch",
+        "run",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary",
+        "-f",
+        "net6.0"
+      ],
+      "options": {
+        "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web"
+      },
+      "isBackground": true,
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "terminatewatch",
+      "type": "shell",
+      "command": "echo ${input:terminatewatchparam}",
+      "problemMatcher": []
+    },
+    {
+      "label": "dotnet run",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceRoot}\\src\\OrchardCore.Cms.Web\\OrchardCore.Cms.Web.csproj",
+        "-f",
+        "net6.0"
       ]
     },
     {
@@ -65,24 +104,6 @@
         "--configuration",
         "Release"
       ]
-    },
-    {
-      "label": "dotnet watch - net6.0",
-      "type": "process",
-      "command": "dotnet",
-      "args": [
-        "watch",
-        "run",
-        "${workspaceRoot}/src/OrchardCore.Cms.Web",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary",
-        "-f",
-        "net6.0"
-      ],
-      "problemMatcher": "$msCompile",
-      "options": {
-        "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web"
-      }
     },
     {
       "label": "dotnet build debug - net6.0",
@@ -231,8 +252,10 @@
     },
     {
       "label": "gulp build",
+      "type": "shell",
+      "command": "gulp",
       "args": [
-        "gulp build"
+        "build"
       ],
       "problemMatcher": "$gulp-tsc"
     }
