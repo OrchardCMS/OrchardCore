@@ -1,0 +1,9 @@
+{
+  "baseUrl": "http://localhost:5000",
+  "video": false,
+  "orchard": {
+    "username":"admin",
+    "email": "admin@orchard.com",
+    "password": "Orchard1!"
+  }
+}
