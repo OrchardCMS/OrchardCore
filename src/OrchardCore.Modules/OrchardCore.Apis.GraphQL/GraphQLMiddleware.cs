@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
@@ -169,9 +168,18 @@ namespace OrchardCore.Apis.GraphQL
 
             context.Response.ContentType = MediaTypeNames.Application.Json;
 
-            // changed in V4
-            var encodedBytes = _utf8Encoding.GetBytes(await documentWriter.WriteToStringAsync(result));
-            await context.Response.Body.WriteAsync(encodedBytes, 0, encodedBytes.Length); // documentWriter causes problems when querying _schema
+            await WriteAsync(context.Response.Body, result, documentWriter);
+        }
+
+        private async Task WriteAsync<T>(Stream stream2, T value, IDocumentWriter documentWriter, CancellationToken cancellationToken = default)
+        {
+            // needs to be always async, otherwise __schema request is not working, direct write into response does not work as serialize is using sync method inside
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var stream = new MemoryStream();
+            await documentWriter.WriteAsync(stream, value);
+            stream.Seek(0, SeekOrigin.Begin);
+            await stream.CopyToAsync(stream2, cancellationToken);
         }
 
         private static GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
