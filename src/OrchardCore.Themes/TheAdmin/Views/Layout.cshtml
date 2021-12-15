@@ -43,7 +43,7 @@
                     @await RenderSectionAsync("NavbarTop", required: false)
                     @if (adminSettings.DisplayDarkMode)
                     {
-                        <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                        <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
                             @if (darkMode)
                             {
                                 <i class="fas fa-sun" aria-hidden="true"></i>
@@ -54,7 +54,7 @@
                             }
                         </a>
                     }
-                    <a href="@Url.Content("~/")" class="me-3" target="_blank" data-bs-toggle="tooltip" title="@T["Visit Site"]" role="button">
+                    <a href="@Url.Content("~/")" class="me-3" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
                         <i class="fa fa-fw fa-external-link" aria-hidden="true"></i>
                     </a>
                     @await DisplayAsync(await New.UserMenu())
