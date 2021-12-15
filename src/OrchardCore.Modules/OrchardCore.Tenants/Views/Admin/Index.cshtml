@@ -12,12 +12,10 @@
 
 @functions
 {
-    public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
+    private HostString BuildUrlWithHost(string host)
     {
-        var shellSettings = shellSettingsEntry.ShellSettings;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
         var hostString = Context.Request.Host;
+
         if (host != null)
         {
             hostString = new HostString(host);
@@ -26,6 +24,16 @@
                 hostString = new HostString(hostString.Host, Context.Request.Host.Port.Value);
             }
         }
+
+        return hostString;
+    }
+
+    private string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
+    {
+        var shellSettings = shellSettingsEntry.ShellSettings;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+        var hostString = BuildUrlWithHost(host);
 
         var pathString = originalPathBase;
         if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
@@ -42,20 +50,12 @@
         return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
     }
 
-    public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
+    private string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();       
 
-        var hostString = Context.Request.Host;
-        if (host != null)
-        {
-            hostString = new HostString(host);
-            if (Context.Request.Host.Port.HasValue)
-            {
-                hostString = new HostString(hostString.Host, Context.Request.Host.Port.Value);
-            }
-        }
+        var hostString = BuildUrlWithHost(host);
 
         var pathString = originalPathBase;
         if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
