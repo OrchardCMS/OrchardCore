@@ -86,15 +86,15 @@ namespace OrchardCore.ContentLocalization.Records
             ShellScope.AddDeferredTask(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var nullContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>(c => c.Latest.Equals(null)).ListAsync();
+                var localizedContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>().ListAsync();
 
-                var nullContentItemsDict = nullContentItems.ToDictionary(k => k.ContentItemId, v => v);
+                //var localizedContentItemsDict = localizedContentItems.ToDictionary(k => k.Id, v => v.Id);
 
-                var contentItems = await session.Query<ContentItem, ContentItemIndex>(c => c.Id.IsIn(nullContentItemsDict.Keys)).ListAsync();
-                foreach (var nullContentItem in nullContentItems)
+                //var contentItems = await session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId.Equals(localizedContentItemsDict.Keys.ToList())).ListAsync();
+                foreach (var localizedContentItem in localizedContentItems)
                 {
-                    nullContentItem.Latest = contentItems.Where(c => c.Id == nullContentItem.Id).FirstOrDefault().Latest;
-                    session.Save(nullContentItem);
+                    localizedContentItem.Latest = localizedContentItem.ContentItem.Latest;
+                    session.Save(localizedContentItem);
                 }
             });
 
