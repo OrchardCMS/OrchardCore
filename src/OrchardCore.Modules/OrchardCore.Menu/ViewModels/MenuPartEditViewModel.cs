@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.ViewModels
@@ -9,5 +11,8 @@ namespace OrchardCore.Menu.ViewModels
 
         [BindNever]
         public MenuPart MenuPart { get; set; }
+
+        [BindNever]
+        public IEnumerable<ContentTypeDefinition> MenuItemContentTypes { get; set; }
     }
 }

@@ -37,7 +37,7 @@ namespace OrchardCore.Flows.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string targetId, bool flowmetadata, string parentContentType, string partName)
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowmetadata, string parentContentType, string partName)
         {
             if (String.IsNullOrWhiteSpace(id))
             {
@@ -88,7 +88,10 @@ namespace OrchardCore.Flows.Controllers
                 PrefixesName: prefixesName,
                 //ContentTypes
                 ContentTypesId: contentTypesName.Replace('.', '_'),
-                ContentTypesName: contentTypesName
+                ContentTypesName: contentTypesName,
+                //ContentItems
+                ContentItemsId: contentItemsName.Replace('.', '_'),
+                ContentItemsName: contentItemsName
             );
             //Only Add ColumnSize Property if Part has FlowMetadata
             if (flowmetadata)
