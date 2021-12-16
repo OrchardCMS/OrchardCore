@@ -88,9 +88,6 @@ namespace OrchardCore.ContentLocalization.Records
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
                 var localizedContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>().ListAsync();
 
-                //var localizedContentItemsDict = localizedContentItems.ToDictionary(k => k.Id, v => v.Id);
-
-                //var contentItems = await session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId.Equals(localizedContentItemsDict.Keys.ToList())).ListAsync();
                 foreach (var localizedContentItem in localizedContentItems)
                 {
                     localizedContentItem.Latest = localizedContentItem.ContentItem.Latest;
