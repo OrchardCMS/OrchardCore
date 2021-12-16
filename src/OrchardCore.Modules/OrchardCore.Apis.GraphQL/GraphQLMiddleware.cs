@@ -176,10 +176,12 @@ namespace OrchardCore.Apis.GraphQL
             // needs to be always async, otherwise __schema request is not working, direct write into response does not work as serialize is using sync method inside
             cancellationToken.ThrowIfCancellationRequested();
 
-            var stream = new MemoryStream();
-            await documentWriter.WriteAsync(stream, value);
-            stream.Seek(0, SeekOrigin.Begin);
-            await stream.CopyToAsync(stream2, cancellationToken);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                await documentWriter.WriteAsync(stream, value);
+                stream.Seek(0, SeekOrigin.Begin);
+                await stream.CopyToAsync(stream2, cancellationToken);
+            }
         }
 
         private static GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
