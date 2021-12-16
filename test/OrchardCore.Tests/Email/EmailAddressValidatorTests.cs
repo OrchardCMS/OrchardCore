@@ -1,7 +1,7 @@
 using OrchardCore.Email;
 using Xunit;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Email
+namespace OrchardCore.Tests.Email
 {
     public class EmailAddressValidatorTests
     {
