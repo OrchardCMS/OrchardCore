@@ -1,7 +1,14 @@
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Models;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
+using YesSql;
+using YesSql.Services;
 using YesSql.Sql;
 
 namespace OrchardCore.ContentLocalization.Records
@@ -40,7 +47,7 @@ namespace OrchardCore.ContentLocalization.Records
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 3;
+            return 4;
         }
 
         // This code can be removed in a later version.
@@ -70,6 +77,28 @@ namespace OrchardCore.ContentLocalization.Records
             );
 
             return 3;
+        }
+
+        // Migrate null LocalizedContentItemIndex Latest column.
+        public int UpdateFrom3()
+        {
+            // Defer this until after the subsequent migrations have succeded as the schema has changed.
+            ShellScope.AddDeferredTask(async scope =>
+            {
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                var nullContentItems = await session.Query<ContentItem, LocalizedContentItemIndex>(c => c.Latest.Equals(null)).ListAsync();
+
+                var nullContentItemsDict = nullContentItems.ToDictionary(k => k.ContentItemId, v => v);
+
+                var contentItems = await session.Query<ContentItem, ContentItemIndex>(c => c.Id.IsIn(nullContentItemsDict.Keys)).ListAsync();
+                foreach (var nullContentItem in nullContentItems)
+                {
+                    nullContentItem.Latest = contentItems.Where(c => c.Id == nullContentItem.Id).FirstOrDefault().Latest;
+                    session.Save(nullContentItem);
+                }
+            });
+
+            return 4;
         }
     }
 }
