@@ -162,7 +162,7 @@ namespace OrchardCore.Apis.GraphQL
 
             context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
                 ? HttpStatusCode.OK
-                : result.Errors.Any(x => (x is ValidationError && (x as ValidationError).Number == RequiresPermissionValidationRule.ErrorCode))
+                : result.Errors.Any(x => x is ValidationError ve && ve.Number == RequiresPermissionValidationRule.ErrorCode)
                     ? HttpStatusCode.Unauthorized
                     : HttpStatusCode.BadRequest);
 
