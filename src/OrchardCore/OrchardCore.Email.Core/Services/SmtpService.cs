@@ -56,6 +56,8 @@ namespace OrchardCore.Email.Services
                 return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
 
+            SmtpResult result;
+            var response = default(string);
             try
             {
                 // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
@@ -78,7 +80,7 @@ namespace OrchardCore.Email.Services
                 switch (_options.DeliveryMethod)
                 {
                     case SmtpDeliveryMethod.Network:
-                        await SendOnlineMessage(mimeMessage);
+                        response = await SendOnlineMessage(mimeMessage);
                         break;
                     case SmtpDeliveryMethod.SpecifiedPickupDirectory:
                         await SendOfflineMessage(mimeMessage, _options.PickupDirectoryLocation);
@@ -87,12 +89,16 @@ namespace OrchardCore.Email.Services
                         throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
                 }
 
-                return SmtpResult.Success;
+                result = SmtpResult.Success;
             }
             catch (Exception ex)
             {
-                return SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
+                result = SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]); 
             }
+
+            result.Response = response;
+
+            return result;
         }
 
         private MimeMessage FromMailMessage(MailMessage message)
@@ -204,7 +210,7 @@ namespace OrchardCore.Email.Services
 
             return false;
         }
-        private async Task SendOnlineMessage(MimeMessage message)
+        private async Task<string> SendOnlineMessage(MimeMessage message)
         {
             var secureSocketOptions = SecureSocketOptions.Auto;
 
@@ -243,8 +249,12 @@ namespace OrchardCore.Email.Services
                         await client.AuthenticateAsync(_options.UserName, _options.Password);
                     }
                 }
-                await client.SendAsync(message);
+
+                var response = await client.SendAsync(message);
+
                 await client.DisconnectAsync(true);
+
+                return response;
             }
         }
 
