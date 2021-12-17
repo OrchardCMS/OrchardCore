@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
+using OrchardCore.Lucene;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
-using OrchardCore.Queries;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Tests.Apis.Lucene
 {

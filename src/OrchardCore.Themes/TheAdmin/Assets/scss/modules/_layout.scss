@@ -66,11 +66,11 @@ body {
 }
 
 .properties {
-    @extend .w-100;
+    @extend .w-100 !optional;
 }
 
 .related {
-    @extend .float-right;
+    @extend .float-right !optional;
 }
 
 // No transitions on load

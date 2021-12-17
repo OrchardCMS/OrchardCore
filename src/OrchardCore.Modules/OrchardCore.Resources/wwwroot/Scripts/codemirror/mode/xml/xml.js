@@ -293,6 +293,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       };
     }
 
+    function lower(tagName) {
+      return tagName && tagName.toLowerCase();
+    }
+
     function Context(state, tagName, startOfLine) {
       this.prev = state.context;
       this.tagName = tagName || "";
@@ -315,7 +319,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         parentTagName = state.context.tagName;
 
-        if (!config.contextGrabbers.hasOwnProperty(parentTagName) || !config.contextGrabbers[parentTagName].hasOwnProperty(nextTagName)) {
+        if (!config.contextGrabbers.hasOwnProperty(lower(parentTagName)) || !config.contextGrabbers[lower(parentTagName)].hasOwnProperty(lower(nextTagName))) {
           return;
         }
 
@@ -351,7 +355,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function closeTagNameState(type, stream, state) {
       if (type == "word") {
         var tagName = stream.current();
-        if (state.context && state.context.tagName != tagName && config.implicitlyClosed.hasOwnProperty(state.context.tagName)) popContext(state);
+        if (state.context && state.context.tagName != tagName && config.implicitlyClosed.hasOwnProperty(lower(state.context.tagName))) popContext(state);
 
         if (state.context && state.context.tagName == tagName || config.matchClosing === false) {
           setStyle = "tag";
@@ -393,7 +397,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             tagStart = state.tagStart;
         state.tagName = state.tagStart = null;
 
-        if (type == "selfcloseTag" || config.autoSelfClosers.hasOwnProperty(tagName)) {
+        if (type == "selfcloseTag" || config.autoSelfClosers.hasOwnProperty(lower(tagName))) {
           maybePopContext(state, tagName);
         } else {
           maybePopContext(state, tagName);
@@ -480,7 +484,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             if (context.tagName == tagAfter[2]) {
               context = context.prev;
               break;
-            } else if (config.implicitlyClosed.hasOwnProperty(context.tagName)) {
+            } else if (config.implicitlyClosed.hasOwnProperty(lower(context.tagName))) {
               context = context.prev;
             } else {
               break;
@@ -489,8 +493,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         } else if (tagAfter) {
           // Opening tag spotted
           while (context) {
-            var grabbers = config.contextGrabbers[context.tagName];
-            if (grabbers && grabbers.hasOwnProperty(tagAfter[2])) context = context.prev;else break;
+            var grabbers = config.contextGrabbers[lower(context.tagName)];
+            if (grabbers && grabbers.hasOwnProperty(lower(tagAfter[2]))) context = context.prev;else break;
           }
         }
 

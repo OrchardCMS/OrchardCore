@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
-using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -29,16 +28,22 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<CreateOpenIdApplicationViewModel>();
+            var model = context.Step.ToObject<OpenIdApplicationStepModel>();
+            var app = await _applicationManager.FindByClientIdAsync(model.ClientId);
+            var descriptor = new OpenIdApplicationDescriptor();
+            var isNew = true;
 
-            var descriptor = new OpenIdApplicationDescriptor
+            if (app != null)
             {
-                ClientId = model.ClientId,
-                ClientSecret = model.ClientSecret,
-                ConsentType = model.ConsentType,
-                DisplayName = model.DisplayName,
-                Type = model.Type
-            };
+                isNew = false;
+                await _applicationManager.PopulateAsync(app, descriptor);
+            }
+
+            descriptor.ClientId = model.ClientId;
+            descriptor.ClientSecret = model.ClientSecret;
+            descriptor.ConsentType = model.ConsentType;
+            descriptor.DisplayName = model.DisplayName;
+            descriptor.Type = model.Type;
 
             if (model.AllowAuthorizationCodeFlow)
             {
@@ -73,7 +78,6 @@ namespace OrchardCore.OpenId.Recipes
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
             }
-            
             if (model.AllowAuthorizationCodeFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
@@ -98,20 +102,40 @@ namespace OrchardCore.OpenId.Recipes
                     descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
                 }
             }
-
-            descriptor.PostLogoutRedirectUris.UnionWith(
-                from uri in model.PostLogoutRedirectUris?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-                select new Uri(uri, UriKind.Absolute));
-
-            descriptor.RedirectUris.UnionWith(
-                from uri in model.RedirectUris?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-                select new Uri(uri, UriKind.Absolute));
-
-            descriptor.Roles.UnionWith(model.RoleEntries
-                .Where(role => role.Selected)
-                .Select(role => role.Name));
-
-            await _applicationManager.CreateAsync(descriptor);
+            if (!string.IsNullOrWhiteSpace(model.PostLogoutRedirectUris))
+            {
+                descriptor.PostLogoutRedirectUris.UnionWith(
+                    model.PostLogoutRedirectUris
+                        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(u => new Uri(u, UriKind.Absolute)));
+            }
+            if (!string.IsNullOrWhiteSpace(model.RedirectUris))
+            {
+                descriptor.RedirectUris.UnionWith(
+                    model.RedirectUris
+                        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(u => new Uri(u, UriKind.Absolute)));
+            }
+            if (model.RoleEntries != null)
+            {
+                descriptor.Roles.UnionWith(
+                    model.RoleEntries
+                        .Select(role => role.Name));
+            }
+            if (model.ScopeEntries != null)
+            {
+                descriptor.Permissions.UnionWith(
+                    model.ScopeEntries
+                        .Select(scope => OpenIddictConstants.Permissions.Prefixes.Scope + scope.Name));
+            }
+            if (isNew)
+            {
+                await _applicationManager.CreateAsync(descriptor);
+            }
+            else
+            {
+                await _applicationManager.UpdateAsync(app, descriptor);
+            }
         }
     }
 }

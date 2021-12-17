@@ -8,7 +8,7 @@ namespace OrchardCore.Contents.Services
     /// </summary>
     public class ContentTypeFilterNode : TermOperationNode
     {
-        public ContentTypeFilterNode(string selectedContentType) : base("type", new UnaryNode(selectedContentType))
+        public ContentTypeFilterNode(string selectedContentType) : base("type", new UnaryNode(selectedContentType, OperateNodeQuotes.None))
         {
         }
 

@@ -88,9 +88,9 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpGet]
         public async Task<IActionResult> List(
-            [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult, 
+            [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
             ContentOptionsViewModel options,
-            PagerParameters pagerParameters, 
+            PagerParameters pagerParameters,
             string contentTypeId = "")
         {
             var context = _httpContextAccessor.HttpContext;
@@ -320,42 +320,42 @@ namespace OrchardCore.Contents.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
-                                _notifier.Warning(H["Couldn't publish selected content."]);
+                                await _notifier.WarningAsync(H["Couldn't publish selected content."]);
                                 await _session.CancelAsync();
                                 return Forbid();
                             }
 
                             await _contentManager.PublishAsync(item);
                         }
-                        _notifier.Success(H["Content published successfully."]);
+                        await _notifier.SuccessAsync(H["Content published successfully."]);
                         break;
                     case ContentsBulkAction.Unpublish:
                         foreach (var item in checkedContentItems)
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
-                                _notifier.Warning(H["Couldn't unpublish selected content."]);
+                                await _notifier.WarningAsync(H["Couldn't unpublish selected content."]);
                                 await _session.CancelAsync();
                                 return Forbid();
                             }
 
                             await _contentManager.UnpublishAsync(item);
                         }
-                        _notifier.Success(H["Content unpublished successfully."]);
+                        await _notifier.SuccessAsync(H["Content unpublished successfully."]);
                         break;
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, item))
                             {
-                                _notifier.Warning(H["Couldn't remove selected content."]);
+                                await _notifier.WarningAsync(H["Couldn't remove selected content."]);
                                 await _session.CancelAsync();
                                 return Forbid();
                             }
 
                             await _contentManager.RemoveAsync(item);
                         }
-                        _notifier.Success(H["Content removed successfully."]);
+                        await _notifier.SuccessAsync(H["Content removed successfully."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -398,7 +398,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content draft has been saved."]
                     : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
             });
@@ -426,7 +426,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content has been published."]
                     : H["Your {0} has been published.", typeDefinition.DisplayName]);
             });
@@ -461,7 +461,7 @@ namespace OrchardCore.Contents.Controllers
 
             if ((!string.IsNullOrEmpty(returnUrl)) && (!stayOnSamePage))
             {
-                return LocalRedirect(returnUrl);
+                return this.LocalRedirect(returnUrl, true);
             }
 
             var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
@@ -523,7 +523,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content draft has been saved."]
                     : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
             });
@@ -552,7 +552,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content has been published."]
                     : H["Your {0} has been published.", typeDefinition.DisplayName]);
             });
@@ -592,7 +592,7 @@ namespace OrchardCore.Contents.Controllers
             }
             else
             {
-                return LocalRedirect(returnUrl);
+                return this.LocalRedirect(returnUrl, true);
             }
         }
 
@@ -617,13 +617,13 @@ namespace OrchardCore.Contents.Controllers
             }
             catch (InvalidOperationException)
             {
-                _notifier.Warning(H["Could not clone the content item."]);
-                return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+                await _notifier.WarningAsync(H["Could not clone the content item."]);
+                return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
             }
 
-            _notifier.Information(H["Successfully cloned. The clone was saved as a draft."]);
+            await _notifier.InformationAsync(H["Successfully cloned. The clone was saved as a draft."]);
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -647,12 +647,12 @@ namespace OrchardCore.Contents.Controllers
 
                 await _contentManager.DiscardDraftAsync(contentItem);
 
-                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["The draft has been removed."]
                     : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -671,12 +671,12 @@ namespace OrchardCore.Contents.Controllers
 
                 await _contentManager.RemoveAsync(contentItem);
 
-                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["That content has been removed."]
                     : H["That {0} has been removed.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -699,14 +699,14 @@ namespace OrchardCore.Contents.Controllers
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
-                _notifier.Success(H["That content has been published."]);
+                await _notifier.SuccessAsync(H["That content has been published."]);
             }
             else
             {
-                _notifier.Success(H["That {0} has been published.", typeDefinition.DisplayName]);
+                await _notifier.SuccessAsync(H["That {0} has been published.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -729,14 +729,14 @@ namespace OrchardCore.Contents.Controllers
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
-                _notifier.Success(H["The content has been unpublished."]);
+                await _notifier.SuccessAsync(H["The content has been unpublished."]);
             }
             else
             {
-                _notifier.Success(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
+                await _notifier.SuccessAsync(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
             }
 
-            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction(nameof(List));
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
         }
     }
 }

@@ -9,13 +9,13 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0
+dotnet new -i OrchardCore.ProjectTemplates::1.1.0
 ```
 
-This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
+This will use the most stable release of Orchard Core. In order to use the latest `main` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
+dotnet new -i OrchardCore.ProjectTemplates::1.1.0-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
@@ -44,7 +44,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.0.0
+                         Default: 1.1.0
 ```
 
 Logging can be ignored with this command:
@@ -137,7 +137,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.0.0
+                         Default: 1.1.0
 ```
 
 ```CMD

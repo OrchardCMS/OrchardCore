@@ -12,15 +12,44 @@ namespace OrchardCore.Environment.Shell
         private readonly IExtensionManager _extensionManager;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly IShellDescriptorFeaturesManager _shellDescriptorFeaturesManager;
+        private readonly IEnumerable<IFeatureValidationProvider> _featureValidators;
 
         public ShellFeaturesManager(
             IExtensionManager extensionManager,
             ShellDescriptor shellDescriptor,
-            IShellDescriptorFeaturesManager shellDescriptorFeaturesManager)
+            IShellDescriptorFeaturesManager shellDescriptorFeaturesManager,
+            IEnumerable<IFeatureValidationProvider> featureValidators)
         {
             _extensionManager = extensionManager;
             _shellDescriptor = shellDescriptor;
             _shellDescriptorFeaturesManager = shellDescriptorFeaturesManager;
+            _featureValidators = featureValidators;
+        }
+
+        public async Task<IEnumerable<IFeatureInfo>> GetAvailableFeaturesAsync()
+        {
+            var features = _extensionManager.GetFeatures();
+            var result = new List<IFeatureInfo>();
+            foreach(var feature in features)
+            {
+                var isFeatureValid = true;
+                foreach (var validator in _featureValidators)
+                {
+                    isFeatureValid = await validator.IsFeatureValidAsync(feature.Id);
+                    // When a feature is marked as invalid it cannot be reintroduced.
+                    if (!isFeatureValid)
+                    {
+                        break;
+                    }
+                }
+
+                if (isFeatureValid)
+                {
+                    result.Add(feature);
+                }
+            }
+
+            return result;
         }
 
         public Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync()

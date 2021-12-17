@@ -9,12 +9,10 @@ namespace OrchardCore.Environment.Extensions
         public static IServiceCollection AddExtensionManagerHost(this IServiceCollection services)
         {
             services.AddSingleton<IExtensionManager, ExtensionManager>();
-            {
-                services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
-                services.AddSingleton<IFeaturesProvider, FeaturesProvider>();
-                services.AddSingleton<IExtensionDependencyStrategy, ExtensionDependencyStrategy>();
-                services.AddSingleton<IExtensionPriorityStrategy, ExtensionPriorityStrategy>();
-            }
+            services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
+            services.AddSingleton<IFeaturesProvider, FeaturesProvider>();
+            services.AddSingleton<IExtensionDependencyStrategy, ExtensionDependencyStrategy>();
+            services.AddSingleton<IExtensionPriorityStrategy, ExtensionPriorityStrategy>();
 
             return services;
         }

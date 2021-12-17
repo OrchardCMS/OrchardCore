@@ -24,11 +24,10 @@ Do some housekeeping on GitHub in the [main repo](https://github.com/OrchardCMS/
 
 Update the source so everything looks like on the new version.
 
-- [ ] Create a `release/<version name>` branch out of `dev`.
+- [ ] Create a `release/<version name>` branch out of `main`.
 - [ ] Update code generation templates in `OrchardCore.ProjectTemplates`.
 - [ ] Update the `OrchardCore.Commons.props` file: Update `VersionPrefix` for release versions (like "1.0.0") and `VersionSuffix` for pre-release versions (like "rc2", for the full version to be e.g. "1.0.0-rc2").
 - [ ] Update module versions in `ManifestConstants`.
-- [ ] Change docker version in _.travis.yml_ and _appveyor.yml_.
 
 ### Test the release
 
@@ -44,7 +43,6 @@ Make sure everything works all right.
 
 Update everything in the [Translations project](https://github.com/OrchardCMS/OrchardCore.Translations). Only do this once all the code changes are done since localized strings can change until then.
 
-- [ ] Update `packageVersion` and/or `versionPrefix` in _appveyor.yml_.
 - [ ] Update .po files with [PoExtractor](https://github.com/lukaskabrt/PoExtractor). This will also update [Crowdin](https://crowdin.com/project/orchard-core).
 - [ ] Publish the new version on NuGet.
 - [ ] Update the `OrchardCore.Translations.All` package reference in the main repo's _src/OrchardCore.Build/Dependencies.props_ file to refer to the new NuGet package.
@@ -67,7 +65,7 @@ Do the harder parts of making the release public. This should come after everyth
     - Merges to `master` need two approvals so you'll need to create a pull request.
     - Merge it as a merge commit, not squash merge.
 - [ ] Tag `master` with the full version name, including the prefix and suffix (e.g. "1.0.0-rc2").
-- [ ] Test the [guides](https://docs.orchardcore.net/en/dev/docs/guides/) with the packages now automatically published to NuGet. Test at least the following guides:
+- [ ] Test the [guides](https://docs.orchardcore.net/en/latest/docs/guides/) with the packages now automatically published to NuGet. Test at least the following guides:
     - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/dev/docs/guides/create-modular-application-mvc/)
     - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/dev/docs/guides/create-cms-application/)
     - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/dev/docs/guides/decoupled-cms/)
@@ -77,7 +75,7 @@ Do the harder parts of making the release public. This should come after everyth
 
 Let the whole world know about our shiny new release. Savor this part! These steps will make the release public so only do them once everything else is ready.
 
-- [ ] Update the documentation to mention the version in all places where the latest version is referenced, for example, but not limited to (do a search for the package version string): [Status in the root README](https://docs.orchardcore.net/en/dev/#status), CLI templates, commands, the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/dev/docs/guides/decoupled-cms/) guide.
+- [ ] Update the documentation to mention the version in all places where the latest version is referenced, for example, but not limited to (do a search for the package version string): [Status in the root README](https://docs.orchardcore.net/en/latest/#status), CLI templates, commands, the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/docs/guides/decoupled-cms/) guide.
 - [ ] Update the tagged [release](https://github.com/OrchardCMS/OrchardCore/releases) on GitHub: Change its title to something more descriptive (e.g. "Orchard Core 1.0.0 RC 2"), add a link in its description to the release notes in the documentation (something like `For details on this version see the [release notes in the documentation](link here).`). Add a link to this release under [Status in the root README](https://docs.orchardcore.net/en/dev/#status).
 - [ ] Publish a blog post on the website.
 - [ ] Ask to publish a blog post on [DevBlogs](https://devblogs.microsoft.com/).

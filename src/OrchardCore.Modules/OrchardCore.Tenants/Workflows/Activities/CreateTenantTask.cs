@@ -78,6 +78,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> FeatureProfile
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(S["Done"], S["Failed"]);
@@ -108,6 +114,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var connectionString = (await ExpressionEvaluator.EvaluateAsync(ConnectionString, workflowContext, null))?.Trim();
             var tablePrefix = (await ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
+            var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
 
             // Creates a default shell settings based on the configuration.
             shellSettings = ShellSettingsManager.CreateDefaultSettings();
@@ -144,6 +151,11 @@ namespace OrchardCore.Tenants.Workflows.Activities
             if (!string.IsNullOrEmpty(recipeName))
             {
                 shellSettings["RecipeName"] = recipeName;
+            }
+
+            if (!string.IsNullOrEmpty(featureProfile))
+            {
+                shellSettings["FeatureProfile"] = featureProfile;
             }
 
             shellSettings["Secret"] = Guid.NewGuid().ToString();

@@ -40,6 +40,7 @@ namespace OrchardCore.OpenId.Recipes
             settings.ResponseType = model.ResponseType;
             settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
             settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
+            settings.StoreExternalTokens = model.StoreExternalTokens;
             settings.Parameters = model.Parameters;
 
             await _clientService.UpdateSettingsAsync(settings);
@@ -61,6 +62,7 @@ namespace OrchardCore.OpenId.Recipes
         public string Scopes { get; set; }
         public string ResponseType { get; set; }
         public string ResponseMode { get; set; }
+        public bool StoreExternalTokens { get; set; }
         public ParameterSetting[] Parameters { get; set; }
     }
 }

@@ -297,7 +297,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(name);
 
-            _notifier.Success(H["Shortcode template deleted successfully."]);
+            await _notifier.SuccessAsync(H["Shortcode template deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -324,7 +324,7 @@ namespace OrchardCore.Shortcodes.Controllers
                         {
                             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(item.Key);
                         }
-                        _notifier.Success(H["Shortcode templates successfully removed."]);
+                        await _notifier.SuccessAsync(H["Shortcode templates successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

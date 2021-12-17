@@ -20,5 +20,7 @@ namespace OrchardCore.Tenants.ViewModels
         public string TablePrefix { get; set; }
 
         public string RecipeName { get; set; }
+
+        public string FeatureProfile { get; set; }
     }
 }

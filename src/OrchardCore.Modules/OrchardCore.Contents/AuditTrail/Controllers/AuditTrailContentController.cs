@@ -113,16 +113,16 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             var result = await _contentManager.RestoreAsync(contentItem);
             if (!result.Succeeded)
             {
-                _notifier.Warning(H["'{0}' was not restored, the version is not valid.", contentItem.DisplayText]);
+                await _notifier.WarningAsync(H["'{0}' was not restored, the version is not valid.", contentItem.DisplayText]);
                 foreach (var error in result.Errors)
                 {
-                    _notifier.Warning(new LocalizedHtmlString(error.ErrorMessage, error.ErrorMessage));
+                    await _notifier.WarningAsync(new LocalizedHtmlString(error.ErrorMessage, error.ErrorMessage));
                 }
 
                 return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
             }
 
-            _notifier.Success(H["'{0}' has been restored.", contentItem.DisplayText]);
+            await _notifier.SuccessAsync(H["'{0}' has been restored.", contentItem.DisplayText]);
 
             return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });
         }

@@ -18,7 +18,7 @@ There are different ways to create sites and modules for Orchard Core. You can l
 
 In this guide we will use our [Code Generation Templates](../../getting-started/templates/). You can install the latest stable release of the templates using this command:
 
-```dotnet new -i OrchardCore.ProjectTemplates::1.0.0-*```
+```dotnet new -i OrchardCore.ProjectTemplates::1.1.0-*```
 
 !!! note
     To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`

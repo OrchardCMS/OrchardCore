@@ -53,7 +53,7 @@ namespace OrchardCore.Users.Drivers
             return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
             {
                 // The current user can only view their roles if they have list users, to prevent listing roles when managing their own profile.
-                if (String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase) && 
+                if (String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase) &&
                     !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers))
                 {
                     return;
@@ -68,10 +68,10 @@ namespace OrchardCore.Users.Drivers
                 var roleEntries = new List<RoleEntry>();
                 foreach(var roleName in roleNames)
                 {
-                    var roleEntry = new RoleEntry 
-                    { 
-                        Role = roleName, 
-                        IsSelected = userRoleNames.Contains(roleName, StringComparer.OrdinalIgnoreCase) 
+                    var roleEntry = new RoleEntry
+                    {
+                        Role = roleName,
+                        IsSelected = userRoleNames.Contains(roleName, StringComparer.OrdinalIgnoreCase)
                     };
 
                     if (!authorizedRoleNames.Contains(roleName, StringComparer.OrdinalIgnoreCase))
@@ -82,7 +82,7 @@ namespace OrchardCore.Users.Drivers
                     roleEntries.Add(roleEntry);
                 }
 
-                model.Roles = roleEntries.ToArray();                
+                model.Roles = roleEntries.ToArray();
             })
             .Location("Content:1.10");
         }
@@ -133,7 +133,7 @@ namespace OrchardCore.Users.Drivers
                             // Make sure we always have at least one administrator account
                             if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
                             {
-                                _notifier.Warning(H["Cannot remove administrator role from the only administrator."]);
+                                await _notifier.WarningAsync(H["Cannot remove administrator role from the only administrator."]);
                                 continue;
                             }
                             else

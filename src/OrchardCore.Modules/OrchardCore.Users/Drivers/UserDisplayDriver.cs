@@ -93,7 +93,7 @@ namespace OrchardCore.Users.Drivers
                 var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>(); ;
                 if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
                 {
-                    _notifier.Warning(H["Cannot disable the only administrator."]);
+                    await _notifier.WarningAsync(H["Cannot disable the only administrator."]);
                 }
                 else
                 {

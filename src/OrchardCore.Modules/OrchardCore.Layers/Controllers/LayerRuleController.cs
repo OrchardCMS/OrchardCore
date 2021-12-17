@@ -131,7 +131,7 @@ namespace OrchardCore.Layers.Controllers
                 _conditionIdGenerator.GenerateUniqueId(condition);
                 conditionGroup.Conditions.Add(condition);
                 await _layerService.UpdateAsync(layers);
-                _notifier.Success(H["Condition added successfully."]);
+                await _notifier.SuccessAsync(H["Condition added successfully."]);
                 return RedirectToAction(nameof(Edit), "Admin", new { name = model.Name });
             }
 
@@ -200,11 +200,11 @@ namespace OrchardCore.Layers.Controllers
             if (ModelState.IsValid)
             {
                 await _layerService.UpdateAsync(layers);
-                _notifier.Success(H["Condition updated successfully."]);
+                await _notifier.SuccessAsync(H["Condition updated successfully."]);
                 return RedirectToAction(nameof(Edit), "Admin", new { name = model.Name });
             }
 
-            _notifier.Error(H["The condition has validation errors."]);
+            await _notifier.ErrorAsync(H["The condition has validation errors."]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form
@@ -238,7 +238,7 @@ namespace OrchardCore.Layers.Controllers
             conditionParent.Conditions.Remove(condition);
             await _layerService.UpdateAsync(layers);
 
-            _notifier.Success(H["Condition deleted successfully."]);
+            await _notifier.SuccessAsync(H["Condition deleted successfully."]);
 
             return RedirectToAction(nameof(Edit), "Admin", new { name = name });
         }
@@ -265,14 +265,14 @@ namespace OrchardCore.Layers.Controllers
             if (condition == null || conditionParent == null || toCondition == null || !(toCondition is ConditionGroup toGroupCondition))
             {
                 return NotFound();
-            }              
+            }
 
             conditionParent.Conditions.Remove(condition);
             toGroupCondition.Conditions.Insert(toPosition, condition);
 
-            await _layerService.UpdateAsync(layers);   
+            await _layerService.UpdateAsync(layers);
 
-            return Ok();  
+            return Ok();
         }
 
         private Condition FindCondition(Condition condition, string conditionId)

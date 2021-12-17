@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
-using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -27,20 +26,37 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdScopeStepViewModel>();
-            var descriptor = new OpenIdScopeDescriptor
+            var model = context.Step.ToObject<OpenIdScopeStepModel>();
+            var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
+            var descriptor = new OpenIdScopeDescriptor();
+            var isNew = true;
+
+            if (scope != null)
             {
-                Description = model.Description,
-                Name = model.ScopeName,
-                DisplayName = model.DisplayName
-            };
+                isNew = false;
+                await _scopeManager.PopulateAsync(scope, descriptor);
+            }
+
+            descriptor.Description = model.Description;
+            descriptor.Name = model.ScopeName;
+            descriptor.DisplayName = model.DisplayName;
 
             if (!string.IsNullOrEmpty(model.Resources))
             {
-                descriptor.Resources.UnionWith(model.Resources.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
+                descriptor.Resources.Clear();
+                descriptor.Resources.UnionWith(
+                    model.Resources
+                        .Split(' ', StringSplitOptions.RemoveEmptyEntries));
             }
 
-            await _scopeManager.CreateAsync(descriptor);
+            if (isNew)
+            {
+                await _scopeManager.CreateAsync(descriptor);
+            }
+            else
+            {
+                await _scopeManager.UpdateAsync(scope, descriptor);
+            }
         }
     }
 }
