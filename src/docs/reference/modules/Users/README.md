@@ -22,8 +22,8 @@ If you want to specify custom paths to access the authentication related urls, y
       "LoginPath": "Login",
       "LogoffPath": "Users/LogOff",
       "ChangePasswordUrl": "ChangePassword",
-      "ExternalLoginsUrl": "ExternalLogins",
-      "ChangePasswordConfirmationPath": "ChangePasswordConfirmation"
+      "ChangePasswordConfirmationUrl": "ChangePasswordConfirmation",
+      "ExternalLoginsUrl": "ExternalLogins"
     }
   }
 ```

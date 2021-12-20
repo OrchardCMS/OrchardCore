@@ -79,7 +79,7 @@ namespace OrchardCore.Users
             routes.MapAreaControllerRoute(
                 name: "ChangePasswordConfirmation",
                 areaName: "OrchardCore.Users",
-                pattern: userOptions.ChangePasswordConfirmationPath,
+                pattern: userOptions.ChangePasswordConfirmationUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePasswordConfirmation) }
             );
 
