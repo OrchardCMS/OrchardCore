@@ -13,7 +13,7 @@
 
     a {
         color: $gray-300;
-        text-decoration: none;
+        text-decoration: none !important;
     }
 }
 
@@ -275,4 +275,16 @@
 
 .card-header {
     background-color: #1b1e1f;
+}
+
+// Buttons
+
+@each $color, $value in $theme-colors {
+    .btn-#{$color} {
+        color: #FFF;
+    }
+
+    .btn-#{$color}:hover, .btn-#{$color}:focus {
+        color: #FFF;
+    }
 }

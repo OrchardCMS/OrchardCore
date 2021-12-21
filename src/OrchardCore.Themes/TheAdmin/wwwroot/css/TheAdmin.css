@@ -27802,7 +27802,7 @@ html[data-theme=default] .ta-navbar-top {
 }
 html[data-theme=default] .ta-navbar-top a {
   color: #495057;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 html[data-theme=default] .ta-badge {
   color: #495057;
@@ -29048,6 +29048,9 @@ html[data-theme=default] [dir=rtl] .btn-dropdown > .btn-group {
 }
 html[data-theme=default] .btn:hover, html[data-theme=default] .button:hover {
   text-decoration: none;
+}
+html[data-theme=default] .dropdown-item:hover {
+  text-decoration: none !important;
 }
 html[dir][data-theme=default] .bg-primary {
   background-color: #f8f9fa !important;
@@ -57168,7 +57171,7 @@ html[data-theme=darkmode] .ta-navbar-top {
 }
 html[data-theme=darkmode] .ta-navbar-top a {
   color: #dee2e6;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 html[dir][data-theme=darkmode] .ta-badge {
   background-color: #0c0d0e !important;
@@ -58412,6 +58415,9 @@ html[data-theme=darkmode] [dir=rtl] .btn-dropdown > .btn-group {
 html[data-theme=darkmode] .btn:hover, html[data-theme=darkmode] .button:hover {
   text-decoration: none;
 }
+html[data-theme=darkmode] .dropdown-item:hover {
+  text-decoration: none !important;
+}
 html[dir][data-theme=darkmode] .bg-primary {
   background-color: #1b1e1f !important;
 }
@@ -58635,4 +58641,52 @@ html[dir][data-theme=darkmode] .alert-dark {
 }
 html[dir][data-theme=darkmode] .card-header {
   background-color: #1b1e1f;
+}
+html[data-theme=darkmode] .btn-primary, html[data-theme=darkmode] .button {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-primary:hover, html[data-theme=darkmode] .button:hover, html[data-theme=darkmode] .btn-primary:focus, html[data-theme=darkmode] .button:focus {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-secondary {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-secondary:hover, html[data-theme=darkmode] .btn-secondary:focus {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-success {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-success:hover, html[data-theme=darkmode] .btn-success:focus {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-info {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-info:hover, html[data-theme=darkmode] .btn-info:focus {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-warning {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-warning:hover, html[data-theme=darkmode] .btn-warning:focus {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-danger {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-danger:hover, html[data-theme=darkmode] .btn-danger:focus {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-light {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-light:hover, html[data-theme=darkmode] .btn-light:focus {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-dark {
+  color: #FFF;
+}
+html[data-theme=darkmode] .btn-dark:hover, html[data-theme=darkmode] .btn-dark:focus {
+  color: #FFF;
 }
