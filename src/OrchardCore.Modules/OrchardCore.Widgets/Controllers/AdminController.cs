@@ -29,7 +29,7 @@ namespace OrchardCore.Widgets.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string zonesName, string zone, string targetId, string parentContentType, string partName)
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string zonesName, string zone, string targetId, string parentContentType, string partName)
         {
             if (String.IsNullOrWhiteSpace(id))
             {
@@ -67,6 +67,9 @@ namespace OrchardCore.Widgets.Controllers
                 //ContentTypes
                 ContentTypesId: contentTypesName.Replace('.', '_'),
                 ContentTypesName: contentTypesName,
+                //ContentItems
+                ContentItemsId: contentItemsName.Replace('.', '_'),
+                ContentItemsName: contentItemsName,
                 //Zones
                 ZonesId: zonesName.Replace('.', '_'),
                 ZonesName: zonesName

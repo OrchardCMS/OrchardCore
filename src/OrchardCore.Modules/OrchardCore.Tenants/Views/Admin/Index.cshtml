@@ -12,11 +12,20 @@
 
 @functions
 {
-    public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
+    private string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase, bool appendQuery = true)
     {
         var shellSettings = shellSettingsEntry.ShellSettings;
         var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
+
+        var hostString = Context.Request.Host;
+        if (host != null)
+        {
+            hostString = new HostString(host);
+            if (Context.Request.Host.Port.HasValue)
+            {
+                hostString = new HostString(hostString.Host, Context.Request.Host.Port.Value);
+            }
+        }
 
         var pathString = originalPathBase;
         if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
@@ -25,27 +34,12 @@
         }
 
         var queryString = QueryString.Empty;
-        if (!String.IsNullOrEmpty(shellSettingsEntry.Token))
+        if (appendQuery && !String.IsNullOrEmpty(shellSettingsEntry.Token))
         {
             queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
 
         return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
-    }
-
-    public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
-    {
-        var shellSettings = shellSettingsEntry.ShellSettings;
-        var host = shellSettings.RequestUrlHost?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();       
-        var hostString = host != null ? new HostString(host) : Context.Request.Host;
-
-        var pathString = originalPathBase;
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
-        {
-            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
-        }
-
-        return $"{Context.Request.Scheme}://{hostString.Value + pathString.Value}";
     }
 }
 
@@ -159,7 +153,7 @@
                                 <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm edit">@T["Edit"]</a>
                                 @if (entry.ShellSettings.State == TenantState.Running)
                                 {
-                                    <a class="btn btn-info btn-sm view" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank">@T["View"]</a>
+                                    <a class="btn btn-info btn-sm view" href="@GetEncodedUrl(entry, originalPathBase, appendQuery:false)" target="_blank">@T["View"]</a>
                                 }
                                 @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                                 {

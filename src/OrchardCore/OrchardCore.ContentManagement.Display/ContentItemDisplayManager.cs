@@ -58,6 +58,11 @@ namespace OrchardCore.ContentManagement.Display
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
+            if (contentTypeDefinition == null)
+            {
+                throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
+            }
+
             var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
             var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
             var actualShapeType = stereotype ?? "Content";
@@ -103,6 +108,11 @@ namespace OrchardCore.ContentManagement.Display
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
+            if (contentTypeDefinition == null)
+            {
+                throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
+            }
+
             var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
 
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
@@ -139,6 +149,12 @@ namespace OrchardCore.ContentManagement.Display
             }
 
             var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
+            
+            if (contentTypeDefinition == null)
+            {
+                throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
+            }
+
             var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
             var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
