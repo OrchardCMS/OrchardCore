@@ -1,75 +1,70 @@
+using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace OrchardCore.Liquid.Services
 {
     public class SlugService : ISlugService
     {
+        private const char Hyphen = '-';
+
+        private static readonly char[] _allowedSymbols = new char[] { Hyphen, '_', '~' };
+
         public string Slugify(string text)
         {
-            if (string.IsNullOrEmpty(text))
+            if (String.IsNullOrEmpty(text))
             {
                 return text;
             }
 
-            var sb = new StringBuilder();
+            var slug = new StringBuilder();
+            var appendHyphen = false;
+            var normalizedText = text.ToLowerInvariant().Normalize(NormalizationForm.FormKD);
 
-            var stFormKD = text.Trim().ToLower().Normalize(NormalizationForm.FormKD);
-            foreach (var t in stFormKD)
+            for (var i = 0; i < normalizedText.Length; i++)
             {
-                // Allowed symbols
-                if (t == '-' || t == '_' || t == '~')
+                var currentChar = normalizedText[i];
+
+                if (CharUnicodeInfo.GetUnicodeCategory(normalizedText[i]) == UnicodeCategory.NonSpacingMark)
                 {
-                    sb.Append(t);
                     continue;
                 }
 
-                var uc = CharUnicodeInfo.GetUnicodeCategory(t);
-                switch (uc)
+                if (Char.IsLetterOrDigit(currentChar))
                 {
-                    case UnicodeCategory.LowercaseLetter:
-                    case UnicodeCategory.OtherLetter:
-                    case UnicodeCategory.DecimalDigitNumber:
-                        // Keep letters and digits
-                        sb.Append(t);
-                        break;
-                    case UnicodeCategory.NonSpacingMark:
-                        // Remove diacritics
-                        break;
-                    default:
-                        // Replace all other chars with dash
-                        sb.Append('-');
-                        break;
+                    slug.Append(currentChar);
+
+                    appendHyphen = true;
                 }
-            }
-
-            var slug = sb.ToString().Normalize(NormalizationForm.FormC);
-
-            // Simplifies dash groups
-            for (var i = 0; i < slug.Length - 1; i++)
-            {
-                if (slug[i] == '-')
+                else if(_allowedSymbols.Contains(currentChar))
                 {
-                    var j = 0;
-                    while (i + j + 1 < slug.Length && slug[i + j + 1] == '-')
+                    if (currentChar == Hyphen)
                     {
-                        j++;
+                        if (appendHyphen && i != normalizedText.Length - 1)
+                        {
+                            slug.Append(currentChar);
+
+                            appendHyphen = false;
+                        }
                     }
-                    if (j > 0)
+                    else
                     {
-                        slug = slug.Remove(i + 1, j);
+                        slug.Append(currentChar);
+                    }
+                }
+                else
+                {
+                    if (appendHyphen)
+                    {
+                        slug.Append(Hyphen);
+
+                        appendHyphen = false;
                     }
                 }
             }
 
-            if (slug.Length > 1000)
-            {
-                slug = slug.Substring(0, 1000);
-            }
-
-            slug = slug.Trim('-', '_', '.');
-
-            return slug;
+            return slug.ToString().Normalize(NormalizationForm.FormC);
         }
     }
 }
