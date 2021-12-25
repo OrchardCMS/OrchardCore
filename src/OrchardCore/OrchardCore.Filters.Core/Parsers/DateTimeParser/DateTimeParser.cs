@@ -6,7 +6,7 @@ using Parlot;
 using Parlot.Fluent;
 using static Parlot.Fluent.Parsers;
 
-namespace OrchardCore.AuditTrail.Services
+namespace OrchardCore.Filters.Core.Parsers.DateTimeParser
 {
     public readonly struct BuildExpressionContext
     {
@@ -197,7 +197,7 @@ namespace OrchardCore.AuditTrail.Services
                     var context = (DateTimeParseContext)ctx;
                     var dateValue = x.ToString();
 
-                    // Try o, primarily for times, and fall back to local timezone                    
+                    // Try o, primarily for times, and fall back to local timezone
                     if (DateTimeOffset.TryParseExact(dateValue, "yyyy-MM-dd'T'HH:mm:ss.FFFK", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
                     {
                         return new DateNode2(dateTimeOffset.UtcDateTime);

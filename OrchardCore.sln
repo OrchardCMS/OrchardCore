@@ -429,6 +429,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Themes", "Orcha
 		src\OrchardCore.Themes\Directory.Build.targets = src\OrchardCore.Themes\Directory.Build.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Filters.Core", "src\OrchardCore\OrchardCore.Filters.Core\OrchardCore.Filters.Core.csproj", "{DB2B35CA-4F46-4679-8D64-D6FC16F93BFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1139,6 +1141,10 @@ Global
 		{D00CF459-396D-49C9-92E2-3FD3C2A59847}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D00CF459-396D-49C9-92E2-3FD3C2A59847}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D00CF459-396D-49C9-92E2-3FD3C2A59847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB2B35CA-4F46-4679-8D64-D6FC16F93BFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB2B35CA-4F46-4679-8D64-D6FC16F93BFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB2B35CA-4F46-4679-8D64-D6FC16F93BFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB2B35CA-4F46-4679-8D64-D6FC16F93BFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1337,6 +1343,7 @@ Global
 		{2BC850C3-9846-47E1-9068-AC0A8E5537AC} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
 		{85EF279B-8F35-476D-9BBD-F503F20712B5} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
 		{21F459C1-494E-41C9-B221-6C102774A47F} = {184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}
+		{DB2B35CA-4F46-4679-8D64-D6FC16F93BFE} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
