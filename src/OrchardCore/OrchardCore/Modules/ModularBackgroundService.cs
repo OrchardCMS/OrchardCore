@@ -53,8 +53,7 @@ namespace OrchardCore.Modules
             _lazyBuildDisabled = configuration
                 .GetSection("OrchardCore")
                 .GetSectionCompat("OrchardCore_Shells_LazyBuild")
-                .GetSectionCompat("Disable")
-                .Get<bool>();
+                .GetValue("Disabled", true);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
