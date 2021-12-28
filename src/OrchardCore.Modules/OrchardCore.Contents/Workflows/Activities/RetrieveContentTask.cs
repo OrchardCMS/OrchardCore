@@ -44,7 +44,10 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to retrieve the content item.");
             }
 
-            workflowContext.CorrelationId = contentItem.ContentItemId;
+            if (string.IsNullOrEmpty(workflowContext.CorrelationId))
+            {
+                workflowContext.CorrelationId = contentItem.ContentItemId;
+            }
             workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
             workflowContext.LastResult = contentItem;
 
