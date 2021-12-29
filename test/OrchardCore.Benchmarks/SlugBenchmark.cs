@@ -15,7 +15,7 @@ namespace OrchardCore.Benchmark
         }
 
         /*
-         * Summary 24th November 2021
+         * Summary 24th December 2021
          *
          * BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19042.1415 (20H2/October2020Update)
          * Intel Core i7-3687U CPU 2.10GHz(Ivy Bridge), 1 CPU, 4 logical and 2 physical cores
