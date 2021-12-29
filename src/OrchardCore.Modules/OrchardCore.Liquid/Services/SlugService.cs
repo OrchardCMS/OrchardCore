@@ -26,7 +26,7 @@ namespace OrchardCore.Liquid.Services
             {
                 var currentChar = normalizedText[i];
 
-                if (CharUnicodeInfo.GetUnicodeCategory(normalizedText[i]) == UnicodeCategory.NonSpacingMark)
+                if (CharUnicodeInfo.GetUnicodeCategory(currentChar) == UnicodeCategory.NonSpacingMark)
                 {
                     continue;
                 }
