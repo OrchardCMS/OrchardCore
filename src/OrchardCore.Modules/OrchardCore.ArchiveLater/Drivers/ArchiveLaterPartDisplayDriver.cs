@@ -68,7 +68,7 @@ namespace OrchardCore.ArchiveLater.Drivers
             viewModel.ScheduledArchiveUtc = part.ScheduledArchiveUtc;
             viewModel.ScheduledArchiveLocalDateTime = part.ScheduledArchiveUtc.HasValue
                 ? (await _localClock.ConvertToLocalAsync(part.ScheduledArchiveUtc.Value)).DateTime
-                : null;
+                : (DateTime?)null;
         }
     }
 }
