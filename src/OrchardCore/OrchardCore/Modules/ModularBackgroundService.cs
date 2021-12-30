@@ -18,6 +18,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
+using OrchardCore.Abstractions.BackgroundTasks;
 
 namespace OrchardCore.Modules
 {
@@ -36,7 +37,7 @@ namespace OrchardCore.Modules
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         private readonly IClock _clock;
-        private readonly bool _lazyBuildDisabled;
+        private readonly BackgroundServiceOptions _options;
 
         public ModularBackgroundService(
             IShellHost shellHost,
@@ -50,10 +51,11 @@ namespace OrchardCore.Modules
             _logger = logger;
             _clock = clock;
 
-            _lazyBuildDisabled = configuration
+            _options = configuration
                 .GetSection("OrchardCore")
-                .GetSectionCompat("OrchardCore_Shells_LazyBuild")
-                .GetValue("Disabled", true);
+                .GetSectionCompat("OrchardCore_BackgroundService")
+                .Get<BackgroundServiceOptions>()
+                ?? new BackgroundServiceOptions();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -63,7 +65,7 @@ namespace OrchardCore.Modules
                 _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
-            if (_lazyBuildDisabled)
+            if (_options.ShellWarmup)
             {
                 // Ensure all ShellContext are loaded and available.
                 await _shellHost.InitializeAsync();
@@ -122,7 +124,7 @@ namespace OrchardCore.Modules
                     
                     var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                    if (!_lazyBuildDisabled && shellScope.ShellContext.Pipeline == null)
+                    if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
                     {
                         break;
                     }
@@ -208,7 +210,7 @@ namespace OrchardCore.Modules
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                if (!_lazyBuildDisabled && shellScope.ShellContext.Pipeline == null)
+                if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
                 {
                     return;
                 }
@@ -301,7 +303,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && (_lazyBuildDisabled || s.Pipeline != null)).ToArray();
+            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && (_options.ShellWarmup || s.Pipeline != null)).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
