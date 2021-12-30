@@ -147,7 +147,10 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (_stateIdentifier != state.Identifier)
                 {
-                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId).ListAsync();
+                    var indexes = await Session
+                        .QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
 
                     // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                     // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -199,7 +202,11 @@ namespace OrchardCore.Autoroute.Services
                 {
                     var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
 
-                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null).ListAsync();
+                    var indexes = await Session
+                        .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
+
                     var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
                     {
                         DocumentId = i.DocumentId
