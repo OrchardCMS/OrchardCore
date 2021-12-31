@@ -81,12 +81,20 @@ namespace OrchardCore.Autoroute.Services
 
         protected void AddEntries(IEnumerable<AutorouteEntry> entries)
         {
+            var entriesByContainer = _paths.Values
+                .Where(x => !String.IsNullOrEmpty(x.ContainedContentItemId))
+                .ToLookup(x => x.ContentItemId);
+
             // Evict all entries related to a container item from autoroute entries.
             // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
             foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
             {
-                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId &&
-                    !String.IsNullOrEmpty(x.ContainedContentItemId));
+                if (!entriesByContainer.Contains(entry.ContentItemId))
+                {
+                    continue;
+                }
+
+                var entriesToRemove = entriesByContainer[entry.ContentItemId];
 
                 _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
                 _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
