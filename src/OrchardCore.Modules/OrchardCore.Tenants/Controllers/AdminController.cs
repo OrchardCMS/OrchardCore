@@ -20,7 +20,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
-using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -125,7 +124,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (!String.IsNullOrWhiteSpace(options.Category) && options?.Category != DefaultCategory)
             {
-                entries = entries.Where(t => t.Category == options.Category).ToList();
+                entries = entries.Where(t => t.Category.Equals(options.Category, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             switch (options.Status)
@@ -182,7 +181,10 @@ namespace OrchardCore.Tenants.Controllers
                 .Select(t => new SelectListItem(t.Key, t.Key))
                 .ToList();
 
-            model.Options.TenantsCategories.Insert(0, new SelectListItem(S["All"], DefaultCategory, selected: true));
+            model.Options.TenantsCategories.Insert(0, new SelectListItem(
+                S["All"],
+                DefaultCategory,
+                selected: String.IsNullOrEmpty(options.Category) || options.Category == DefaultCategory));
 
             model.Options.TenantsStates = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["All states"], Value = nameof(TenantsState.All) },
