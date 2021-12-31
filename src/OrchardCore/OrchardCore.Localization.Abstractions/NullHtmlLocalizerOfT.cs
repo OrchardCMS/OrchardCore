@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 
@@ -7,7 +9,7 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Minimalistic HTML-aware localizer that does nothing.
     /// </summary>
-    /// <typeparam name="T">The <see cref="System.Type"/> to provide strings for.</typeparam>
+    /// <typeparam name="T">The <see cref="Type"/> to provide strings for.</typeparam>
     public class NullHtmlLocalizer<T> : IHtmlLocalizer<T>
     {
         /// <inheritdoc/>
@@ -27,5 +29,10 @@ namespace OrchardCore.Localization
         /// <inheritdoc/>
         public LocalizedString GetString(string name, params object[] arguments)
             => NullHtmlLocalizer.Instance.GetString(name, arguments);
+
+        /// <inheritdoc/>
+        [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
+        public IHtmlLocalizer WithCulture(CultureInfo culture)
+            => NullHtmlLocalizer.Instance.WithCulture(culture);
     }
 }

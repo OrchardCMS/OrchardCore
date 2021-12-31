@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization
@@ -6,7 +8,7 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Minimalistic localizer that does nothing.
     /// </summary>
-    /// <typeparam name="T">The <see cref="System.Type"/> to provide strings for.</typeparam>
+    /// <typeparam name="T">The <see cref="Type"/> to provide strings for.</typeparam>
     public class NullStringLocalizer<T> : IStringLocalizer<T>
     {
         /// <inheritdoc/>
@@ -18,5 +20,10 @@ namespace OrchardCore.Localization
         /// <inheritdoc/>
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
             => NullStringLocalizer.Instance.GetAllStrings(includeParentCultures);
+
+        /// <inheritdoc/>
+        [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
+        public IStringLocalizer WithCulture(CultureInfo culture)
+            => NullStringLocalizer.Instance.WithCulture(culture);
     }
 }

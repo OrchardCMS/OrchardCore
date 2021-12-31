@@ -63,7 +63,6 @@ namespace OrchardCore.Localization
 
         /// <inheritdoc/>
         [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
-        public IStringLocalizer WithCulture(CultureInfo culture)
-            => NullStringLocalizer.Instance.WithCulture(culture);
+        public IHtmlLocalizer WithCulture(CultureInfo culture) => Instance;
     }
 }
