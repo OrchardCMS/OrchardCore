@@ -8,6 +8,7 @@ namespace OrchardCore.Liquid.Services
     public class SlugService : ISlugService
     {
         private const char Hyphen = '-';
+        private const int MaxLength = 1000;
 
         private static readonly char[] _allowedSymbols = new char[] { Hyphen, '_', '~' };
 
@@ -63,8 +64,9 @@ namespace OrchardCore.Liquid.Services
                     }
                 }
             }
-
-            return slug.ToString().Normalize(NormalizationForm.FormC);
+            return slug
+                .ToString()[..Math.Min(slug.Length, MaxLength)]
+                .Normalize(NormalizationForm.FormC);
         }
     }
 }
