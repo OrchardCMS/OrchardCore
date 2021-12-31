@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.Indexing
                 }
 
                 var userNames = field.GetUserNames();
-                foreach(var userName in userNames)
+                foreach (var userName in userNames)
                 {
                     foreach (var key in context.Keys)
                     {

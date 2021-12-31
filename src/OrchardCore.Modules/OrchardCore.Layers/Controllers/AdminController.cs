@@ -44,7 +44,7 @@ namespace OrchardCore.Layers.Controllers
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
-        
+
         public AdminController(
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
@@ -109,7 +109,7 @@ namespace OrchardCore.Layers.Controllers
                 {
                     model.Widgets.Add(zone, list = new List<dynamic>());
                 }
-                
+
                 if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
                 {
                     list.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));

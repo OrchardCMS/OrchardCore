@@ -40,7 +40,7 @@ namespace OrchardCore.ContentFields.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                settings.Hint= model.Hint;
+                settings.Hint = model.Hint;
                 settings.Required = model.Required;
                 settings.Multiple = model.Multiple;
                 settings.DisplayAllUsers = model.DisplayAllUsers;

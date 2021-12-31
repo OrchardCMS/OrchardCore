@@ -29,7 +29,7 @@ namespace OrchardCore.Seo.Drivers
         private IContentManager _contentManager;
 
         public SeoMetaSettingsHandler(
-            IMediaFileStore mediaFileStore, 
+            IMediaFileStore mediaFileStore,
             ISiteService siteService,
             IActionContextAccessor actionContextAccessor,
             IHttpContextAccessor httpContextAccessor,
@@ -37,12 +37,12 @@ namespace OrchardCore.Seo.Drivers
             )
         {
             _mediaFileStore = mediaFileStore;
-            _siteService = siteService;  
+            _siteService = siteService;
             _actionContextAccessor = actionContextAccessor;
             _httpContextAccessor = httpContextAccessor;
-            _urlHelperFactory = urlHelperFactory; 
+            _urlHelperFactory = urlHelperFactory;
         }
-        
+
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
             return context.ForAsync<SeoAspect>(async aspect =>
@@ -121,7 +121,7 @@ namespace OrchardCore.Seo.Drivers
                 if (String.IsNullOrEmpty(aspect.OpenGraphAppId))
                 {
                     aspect.OpenGraphAppId = metaSettings.Content.SocialMetaSettings?.OpenGraphAppId?.Text.ToString();
-                }                
+                }
 
                 if (String.IsNullOrEmpty(aspect.OpenGraphImage))
                 {
@@ -129,12 +129,12 @@ namespace OrchardCore.Seo.Drivers
                     {
                         if (!String.IsNullOrEmpty(defaultImage))
                         {
-                            aspect.OpenGraphImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));   
+                            aspect.OpenGraphImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));
                         }
                     }
                     else
                     {
-                        aspect.OpenGraphImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(openGraphImage));    
+                        aspect.OpenGraphImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(openGraphImage));
                     }
                 }
 
@@ -176,7 +176,7 @@ namespace OrchardCore.Seo.Drivers
                 if (String.IsNullOrEmpty(aspect.TwitterCreator))
                 {
                     aspect.TwitterCreator = twitterCreator;
-                }                
+                }
 
                 if (String.IsNullOrEmpty(aspect.TwitterImage))
                 {
@@ -184,12 +184,12 @@ namespace OrchardCore.Seo.Drivers
                     {
                         if (!String.IsNullOrEmpty(defaultImage))
                         {
-                            aspect.TwitterImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));   
+                            aspect.TwitterImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));
                         }
                     }
                     else
                     {
-                        aspect.TwitterImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(twitterImage));    
+                        aspect.TwitterImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(twitterImage));
                     }
                 }
 

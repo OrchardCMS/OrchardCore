@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -88,7 +88,7 @@ namespace OrchardCore.Users.Drivers
             var isEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
                     String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
 
-            if (!isEditingDisabled &&!model.IsEnabled && user.IsEnabled)
+            if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)
             {
                 var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>(); ;
                 if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
@@ -99,7 +99,7 @@ namespace OrchardCore.Users.Drivers
                 {
                     user.IsEnabled = model.IsEnabled;
                     var userContext = new UserContext(user);
-                        // TODO This handler should be invoked through the create or update methods.
+                    // TODO This handler should be invoked through the create or update methods.
                     // otherwise it will not be invoked when a workflow, or other operation, changes this value.
                     await _userEventHandlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
                 }

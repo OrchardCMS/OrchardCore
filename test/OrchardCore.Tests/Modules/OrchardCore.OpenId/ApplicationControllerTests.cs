@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -48,7 +47,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var mockOpenIdScopeManager = new Mock<IOpenIdScopeManager>();
             object[] mockData = new object[0];
-            mockOpenIdScopeManager.Setup(m => m.ListAsync(null,null,default)).Returns(mockData.ToAsyncEnumerable());
+            mockOpenIdScopeManager.Setup(m => m.ListAsync(null, null, default)).Returns(mockData.ToAsyncEnumerable());
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
                 Mock.Of<ISiteService>(),

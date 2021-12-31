@@ -30,7 +30,7 @@ namespace OrchardCore.Environment.Shell
         {
             var features = _extensionManager.GetFeatures();
             var result = new List<IFeatureInfo>();
-            foreach(var feature in features)
+            foreach (var feature in features)
             {
                 var isFeatureValid = true;
                 foreach (var validator in _featureValidators)

@@ -150,7 +150,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                 {
                     Dictionary<string, object> result = null;
 
-                    if(httpContextAccessor.HttpContext != null)
+                    if (httpContextAccessor.HttpContext != null)
                     {
                         var method = httpContextAccessor.HttpContext.Request.Method;
                         if (method.Equals("POST", StringComparison.OrdinalIgnoreCase) || method.Equals("PUT", StringComparison.OrdinalIgnoreCase) || method.Equals("PATCH", StringComparison.OrdinalIgnoreCase))
@@ -160,14 +160,14 @@ namespace OrchardCore.Workflows.Http.Scripting
                                 var formData = httpContextAccessor.HttpContext.Request.Form;
 
                                 // If we can parse first request form element key as JSON then we throw
-                                if(isValidJSON(formData.First().Key.ToString()))
+                                if (isValidJSON(formData.First().Key.ToString()))
                                 {
                                     throw new Exception("Invalid form data passed in the request. The data passed was JSON while it should be form data.");
                                 }
 
                                 try
                                 {
-                                    result = formData.ToDictionary(x => x.Key, x => (object) x.Value);
+                                    result = formData.ToDictionary(x => x.Key, x => (object)x.Value);
                                 }
                                 catch
                                 {
@@ -199,7 +199,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
                             try
                             {
-                                result = queryData.ToDictionary(x => x.Key, x => (object) x.Value);
+                                result = queryData.ToDictionary(x => x.Key, x => (object)x.Value);
 
                                 // We never need to keep the Workflow token
                                 result.Remove("token");
