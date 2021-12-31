@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.Localization
         [InlineData("20 minutes ago", 20, "{0} minute ago", "{0} minutes ago")]
         public void HtmlNullLocalizerSupportsPlural(string expected, int count, string singular, string plural, params object[] arguments)
         {
-            var localizer = new NullHtmlLocalizerFactory().Create(typeof(object));
+            var localizer = NullHtmlLocalizer.Instance;
 
             using (var writer = new StringWriter())
             {
@@ -44,7 +44,7 @@ namespace OrchardCore.Tests.Localization
         [InlineData("20 minutes ago", 20, "{0} minute ago", "{0} minutes ago")]
         public void StringNullLocalizerSupportsPlural(string expected, int count, string singular, string plural, params object[] arguments)
         {
-            var localizer = new NullStringLocalizerFactory().Create(typeof(object));
+            var localizer = NullStringLocalizer.Instance;
 
             var value = localizer.Plural(count, singular, plural, arguments).Value;
             Assert.Equal(expected, value);
