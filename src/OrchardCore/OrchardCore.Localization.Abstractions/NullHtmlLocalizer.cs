@@ -6,12 +6,19 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization
 {
+    /// <summary>
+    /// Minimalistic HTML-aware localizer that does nothing.
+    /// </summary>
     public class NullHtmlLocalizer : IHtmlLocalizer
     {
         private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n == 1) ? 0 : 1;
 
+        /// <summary>
+        /// Returns the shared instance of <see cref="NullHtmlLocalizer"/>.
+        /// </summary>
         public static NullHtmlLocalizer Instance { get; } = new NullHtmlLocalizer();
 
+        /// <inheritdoc/>
         public LocalizedHtmlString this[string name]
         {
             get
@@ -22,6 +29,7 @@ namespace OrchardCore.Localization
             }
         }
 
+        /// <inheritdoc/>
         public LocalizedHtmlString this[string name, params object[] arguments]
         {
             get
@@ -41,15 +49,19 @@ namespace OrchardCore.Localization
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
             => NullStringLocalizer.Instance.GetAllStrings(includeParentCultures);
 
+        /// <inheritdoc/>
         public LocalizedString GetString(string name)
             => NullStringLocalizer.Instance.GetString(name);
 
+        /// <inheritdoc/>
         public LocalizedString GetString(string name, params object[] arguments)
             => NullStringLocalizer.Instance.GetString(name, arguments);
 
+        /// <inheritdoc/>
         [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
         public IStringLocalizer WithCulture(CultureInfo culture)
             => NullStringLocalizer.Instance.WithCulture(culture);

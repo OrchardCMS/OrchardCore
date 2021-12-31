@@ -6,14 +6,22 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization
 {
+    /// <summary>
+    /// Minimalistic localizer that does nothing.
+    /// </summary>
     public class NullStringLocalizer : IStringLocalizer
     {
         private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n == 1) ? 0 : 1;
 
+        /// <summary>
+        /// Returns the shared instance of <see cref="NullStringLocalizer"/>.
+        /// </summary>
         public static NullStringLocalizer Instance { get; } = new NullStringLocalizer();
 
+        /// <inheritdoc/>
         public LocalizedString this[string name] => new LocalizedString(name, name, false);
 
+        /// <inheritdoc/>
         public LocalizedString this[string name, params object[] arguments]
         {
             get
@@ -35,13 +43,17 @@ namespace OrchardCore.Localization
             }
         }
 
+        /// <inheritdoc/>
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
             => Enumerable.Empty<LocalizedString>();
 
+        /// <inheritdoc/>
         public LocalizedString GetString(string name) => this[name];
 
+        /// <inheritdoc/>
         public LocalizedString GetString(string name, params object[] arguments) => this[name, arguments];
 
+        /// <inheritdoc/>
         [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
         public IStringLocalizer WithCulture(CultureInfo culture) => Instance;
     }
