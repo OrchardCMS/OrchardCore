@@ -11,8 +11,8 @@ using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
-using OrchardCore.Settings;
 using OrchardCore.Routing;
+using OrchardCore.Settings;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.AuditTrail.Controllers

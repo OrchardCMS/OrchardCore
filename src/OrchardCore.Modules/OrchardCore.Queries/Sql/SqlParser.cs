@@ -462,7 +462,7 @@ namespace OrchardCore.Queries.Sql
             IList<string> arguments;
             var tempBuilder = _builder;
 
-            if (funCall.ChildNodes[1].ChildNodes.Count == 0) 
+            if (funCall.ChildNodes[1].ChildNodes.Count == 0)
             {
                 arguments = Array.Empty<string>();
             }
@@ -619,7 +619,8 @@ namespace OrchardCore.Queries.Sql
                     {
                         EvaluateFunCall(funCallOrId);
                         var overClauseOpt = columnSource.ChildNodes[1];
-                        if (overClauseOpt.ChildNodes.Count > 0) {
+                        if (overClauseOpt.ChildNodes.Count > 0)
+                        {
                             EvaluateOverClauseOptional(overClauseOpt);
                         }
                     }
@@ -730,10 +731,12 @@ namespace OrchardCore.Queries.Sql
             var hasOverPartitionByClause = overPartitionByClauseOpt.ChildNodes.Count > 0;
             var hasOverOrderByClause = overOrderByClauseOpt.ChildNodes.Count > 0;
 
-            if (hasOverPartitionByClause) {
+            if (hasOverPartitionByClause)
+            {
                 _builder.Append("PARTITION BY ");
                 var columnItemList = overPartitionByClauseOpt.ChildNodes[2];
-                for (var i = 0; i < columnItemList.ChildNodes.Count; i++) {
+                for (var i = 0; i < columnItemList.ChildNodes.Count; i++)
+                {
                     if (i > 0)
                     {
                         _builder.Append(", ");
@@ -746,7 +749,8 @@ namespace OrchardCore.Queries.Sql
 
             if (hasOverOrderByClause)
             {
-                if (hasOverPartitionByClause) {
+                if (hasOverPartitionByClause)
+                {
                     _builder.Append(" ");
                 }
 
@@ -763,7 +767,8 @@ namespace OrchardCore.Queries.Sql
                     var id = orderMember.ChildNodes[0];
                     EvaluateSelectId(id);
                     var orderDirOpt = orderMember.ChildNodes[1];
-                    if (orderDirOpt.ChildNodes.Count > 0) {
+                    if (orderDirOpt.ChildNodes.Count > 0)
+                    {
                         _builder.Append(" ").Append(orderDirOpt.ChildNodes[0].Term.Name);
                     }
                 }

@@ -68,7 +68,7 @@ namespace OrchardCore.Media.Core
                 {
                     await stream.CopyToAsync(fileStream, StreamCopyBufferSize);
                     await stream.FlushAsync();
-                    
+
                     if (fileStream.Length == 0)
                     {
                         throw new Exception($"Error retrieving file (length equals 0 byte) : {cachePath}");

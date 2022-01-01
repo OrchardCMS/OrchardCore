@@ -130,7 +130,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
             var targetExp = Expression.Parameter(typeof(object), "target");
             var castTargetExp = Expression.Convert(targetExp, type);
-            
+
 
             LambdaExpression lambdaExp;
 

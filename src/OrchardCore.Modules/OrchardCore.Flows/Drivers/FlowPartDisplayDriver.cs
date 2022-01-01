@@ -59,7 +59,7 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
         {
-            return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), async model =>  
+            return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), async model =>
             {
                 var containedContentTypes = GetContainedContentTypes(context.TypePartDefinition);
                 var notify = false;

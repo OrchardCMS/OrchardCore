@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene.Controllers
@@ -38,7 +36,7 @@ namespace OrchardCore.Lucene.Controllers
 
             return new ObjectResult(result);
         }
-        
+
         [HttpPost]
         [Route("content")]
         public async Task<IActionResult> ContentPost(LuceneQueryModel queryModel)
@@ -60,7 +58,7 @@ namespace OrchardCore.Lucene.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
                 return this.ChallengeOrForbid();
-            } 
+            }
 
             var result = await LuceneQueryApiAsync(queryModel);
 

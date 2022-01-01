@@ -7,7 +7,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.MiniProfiler
 {

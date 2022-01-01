@@ -23,10 +23,12 @@ namespace OrchardCore.Tests.Apis.Lucene
                 // Act
                 var index = "ArticleIndex";
                 // { "from": 0, "size": 2, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText.Normalized^2", "HtmlBodyPart"], "query": "orchard*" } } }
-                var dynamicQuery = new {
+                var dynamicQuery = new
+                {
                     from = 0,
                     size = 2,
-                    query = new {
+                    query = new
+                    {
                         simple_query_string = new
                         {
                             analyze_wildcard = true,
