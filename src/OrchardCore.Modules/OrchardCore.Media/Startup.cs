@@ -137,7 +137,7 @@ namespace OrchardCore.Media
                 .AddProcessor<TokenCommandProcessor>();
 
             services.AddScoped<MediaTokenSettingsUpdater>();
-            services.AddScoped<IMediaTokenService, MediaTokenService>();
+            services.AddSingleton<IMediaTokenService, MediaTokenService>();
             services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
             services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
