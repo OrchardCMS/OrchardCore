@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Cysharp.Text;
 
 namespace OrchardCore.Liquid.Services
 {
@@ -10,8 +11,6 @@ namespace OrchardCore.Liquid.Services
         private const char Hyphen = '-';
         private const int MaxLength = 1000;
 
-        private static readonly char[] _allowedSymbols = new char[] { Hyphen, '_', '~' };
-
         public string Slugify(string text)
         {
             if (String.IsNullOrEmpty(text))
@@ -19,13 +18,14 @@ namespace OrchardCore.Liquid.Services
                 return text;
             }
 
-            var slug = new StringBuilder();
             var appendHyphen = false;
-            var normalizedText = text.ToLowerInvariant().Normalize(NormalizationForm.FormKD);
+            var normalizedText = text.Normalize(NormalizationForm.FormKD);
+
+            using var slug = ZString.CreateStringBuilder();
 
             for (var i = 0; i < normalizedText.Length; i++)
             {
-                var currentChar = normalizedText[i];
+                var currentChar = Char.ToLowerInvariant(normalizedText[i]);
 
                 if (CharUnicodeInfo.GetUnicodeCategory(currentChar) == UnicodeCategory.NonSpacingMark)
                 {
@@ -38,21 +38,17 @@ namespace OrchardCore.Liquid.Services
 
                     appendHyphen = true;
                 }
-                else if(_allowedSymbols.Contains(currentChar))
+                else if (currentChar is Hyphen)
                 {
-                    if (currentChar == Hyphen)
-                    {
-                        if (appendHyphen && i != normalizedText.Length - 1)
-                        {
-                            slug.Append(currentChar);
-
-                            appendHyphen = false;
-                        }
-                    }
-                    else
+                    if (appendHyphen && i != normalizedText.Length - 1)
                     {
                         slug.Append(currentChar);
+                        appendHyphen = false;
                     }
+                }
+                else if (currentChar == '_' || currentChar == '~')
+                {
+                    slug.Append(currentChar);
                 }
                 else
                 {
@@ -64,9 +60,8 @@ namespace OrchardCore.Liquid.Services
                     }
                 }
             }
-            return slug
-                .ToString()[..Math.Min(slug.Length, MaxLength)]
-                .Normalize(NormalizationForm.FormC);
+
+            return new string(slug.AsSpan()[..Math.Min(slug.Length, MaxLength)]).Normalize(NormalizationForm.FormC);
         }
     }
 }

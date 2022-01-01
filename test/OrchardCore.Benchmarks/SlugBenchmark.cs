@@ -7,7 +7,7 @@ namespace OrchardCore.Benchmark
     [MemoryDiagnoser]
     public class SlugBenchmark
     {
-        private static readonly ISlugService _slugService;
+        private static readonly SlugService _slugService;
 
         static SlugBenchmark()
         {
@@ -33,9 +33,15 @@ namespace OrchardCore.Benchmark
          */
 
         [Benchmark]
-        public void EvaluateSlugify()
+        public void EvaluateSlugifyWithShortSlug()
         {
             _slugService.Slugify("Je veux aller à Saint-Étienne");
+        }
+
+	    [Benchmark]
+        public void EvaluateSlugifyWithLongSlug()
+        {
+            _slugService.Slugify("Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne");
         }
     }
 }
