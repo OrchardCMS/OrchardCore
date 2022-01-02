@@ -178,13 +178,13 @@ namespace OrchardCore.Tenants.Controllers
             model.Options.TenantsCategories = allSettings
                 .GroupBy(t => t["Category"])
                 .Where(t => !String.IsNullOrEmpty(t.Key))
-                .Select(t => new SelectListItem(t.Key, t.Key, String.Equals(model.Category, t.Key, StringComparison.OrdinalIgnoreCase)))
+                .Select(t => new SelectListItem(t.Key, t.Key, String.Equals(options.Category, t.Key, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             model.Options.TenantsCategories.Insert(0, new SelectListItem(
                 S["All"],
                 String.Empty,
-                selected: String.IsNullOrEmpty(options.Category) || options.Category == DefaultCategory));
+                selected: String.IsNullOrEmpty(options.Category) || model.Options.Category == DefaultCategory));
 
             model.Options.TenantsStates = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["All states"], Value = nameof(TenantsState.All) },
