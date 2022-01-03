@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -13,9 +14,11 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
+using OrchardCore.Abstractions.BackgroundTasks;
 
 namespace OrchardCore.Modules
 {
@@ -34,17 +37,25 @@ namespace OrchardCore.Modules
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         private readonly IClock _clock;
+        private readonly BackgroundServiceOptions _options;
 
         public ModularBackgroundService(
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
             ILogger<ModularBackgroundService> logger,
-            IClock clock)
+            IClock clock,
+            Microsoft.Extensions.Configuration.IConfiguration configuration)
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
             _clock = clock;
+
+            _options = configuration
+                .GetSection("OrchardCore")
+                .GetSectionCompat("OrchardCore_BackgroundService")
+                .Get<BackgroundServiceOptions>()
+                ?? new BackgroundServiceOptions();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -53,6 +64,12 @@ namespace OrchardCore.Modules
             {
                 _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
+
+            if (_options.ShellWarmup)
+            {
+                // Ensure all ShellContext are loaded and available.
+                await _shellHost.InitializeAsync();
+            }
 
             while (GetRunningShells().Count() < 1)
             {
@@ -104,10 +121,10 @@ namespace OrchardCore.Modules
                     {
                         break;
                     }
-
+                    
                     var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                    if (shellScope.ShellContext.Pipeline == null)
+                    if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
                     {
                         break;
                     }
@@ -193,7 +210,7 @@ namespace OrchardCore.Modules
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                if (shellScope.ShellContext.Pipeline == null)
+                if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
                 {
                     return;
                 }
@@ -286,7 +303,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && s.Pipeline != null).ToArray();
+            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && (_options.ShellWarmup || s.Pipeline != null)).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
