@@ -5,20 +5,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
-using OrchardCore.Abstractions.BackgroundTasks;
 
 namespace OrchardCore.Modules
 {
@@ -35,27 +33,22 @@ namespace OrchardCore.Modules
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly BackgroundServiceOptions _options;
         private readonly ILogger _logger;
         private readonly IClock _clock;
-        private readonly BackgroundServiceOptions _options;
 
         public ModularBackgroundService(
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
+            IOptions<BackgroundServiceOptions> options,
             ILogger<ModularBackgroundService> logger,
-            IClock clock,
-            Microsoft.Extensions.Configuration.IConfiguration configuration)
+            IClock clock)
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
+            _options = options.Value;
             _logger = logger;
             _clock = clock;
-
-            _options = configuration
-                .GetSection("OrchardCore")
-                .GetSectionCompat("OrchardCore_BackgroundService")
-                .Get<BackgroundServiceOptions>()
-                ?? new BackgroundServiceOptions();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -121,7 +114,7 @@ namespace OrchardCore.Modules
                     {
                         break;
                     }
-                    
+
                     var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
                     if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)

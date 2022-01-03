@@ -1,4 +1,4 @@
-namespace OrchardCore.Abstractions.BackgroundTasks
+namespace OrchardCore.Modules
 {
     public class BackgroundServiceOptions
     {

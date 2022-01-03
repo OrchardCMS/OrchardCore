@@ -94,6 +94,10 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices.AddHostedService<ModularBackgroundService>();
 
+            builder.ApplicationServices
+                .AddOptions<BackgroundServiceOptions>()
+                .BindConfiguration("OrchardCore:OrchardCore_BackgroundService");
+
             return builder;
         }
     }
