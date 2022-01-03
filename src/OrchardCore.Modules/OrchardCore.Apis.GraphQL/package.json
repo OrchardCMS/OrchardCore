@@ -16,7 +16,7 @@
     "@babel/core": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
     "@babel/preset-react": "^7.16.5",
-    "@babel/preset-typescript": "^7.16.5",
+    "@babel/preset-typescript": "^7.16.7",
     "assert": "^2.0.0",
     "css-loader": "^6.5.1",
     "null-loader": "^4.0.1",
