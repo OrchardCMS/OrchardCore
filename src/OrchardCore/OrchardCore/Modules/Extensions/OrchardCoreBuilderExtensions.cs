@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -96,7 +97,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.ApplicationServices
                 .AddOptions<BackgroundServiceOptions>()
-                .BindConfiguration("OrchardCore:OrchardCore_BackgroundService");
+                .Configure<IConfiguration>((options, config) => config
+                    .Bind("OrchardCore:OrchardCore_BackgroundService", options));
 
             return builder;
         }
