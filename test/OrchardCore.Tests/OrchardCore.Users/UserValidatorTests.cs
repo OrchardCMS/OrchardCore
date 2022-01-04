@@ -1,14 +1,10 @@
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using Moq;
-using OrchardCore.Security;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using Xunit;
 
 namespace OrchardCore.Tests.OrchardCore.Users

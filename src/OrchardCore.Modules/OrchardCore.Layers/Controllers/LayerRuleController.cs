@@ -11,8 +11,8 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
-using OrchardCore.Settings;
 using OrchardCore.Rules;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Layers.Controllers
 {

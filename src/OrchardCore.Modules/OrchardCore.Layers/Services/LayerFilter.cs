@@ -120,9 +120,9 @@ namespace OrchardCore.Layers.Services
                         continue;
                     }
 
-                    if(contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
+                    if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
                     {
-                        var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);           
+                        var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 
                         widgetContent.Classes.Add("widget");
                         widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
@@ -139,7 +139,7 @@ namespace OrchardCore.Layers.Services
                         var contentZone = layout.Zones[widget.Zone];
 
                         await contentZone.AddAsync(wrapper, "");
-                    }                 
+                    }
                 }
             }
 

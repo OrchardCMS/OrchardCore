@@ -1,21 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
 
 namespace OrchardCore.GitHub.Configuration
 {
@@ -80,12 +75,12 @@ namespace OrchardCore.GitHub.Configuration
                 var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
                 // This was added to support better error messages from the GitHub OAuth provider
-                if(payload.RootElement.TryGetProperty("error", out var error))
+                if (payload.RootElement.TryGetProperty("error", out var error))
                 {
                     var output = new StringBuilder();
                     output.Append(error);
 
-                    if(payload.RootElement.TryGetProperty("error_description", out var description))
+                    if (payload.RootElement.TryGetProperty("error_description", out var description))
                     {
                         output.Append(' ');
                         output.Append(description);

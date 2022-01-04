@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Controllers
 {
