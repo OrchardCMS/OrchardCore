@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
@@ -32,17 +33,20 @@ namespace OrchardCore.Modules
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly BackgroundServiceOptions _options;
         private readonly ILogger _logger;
         private readonly IClock _clock;
 
         public ModularBackgroundService(
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
+            IOptions<BackgroundServiceOptions> options,
             ILogger<ModularBackgroundService> logger,
             IClock clock)
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
+            _options = options.Value;
             _logger = logger;
             _clock = clock;
         }
@@ -53,6 +57,12 @@ namespace OrchardCore.Modules
             {
                 _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
+
+            if (_options.ShellWarmup)
+            {
+                // Ensure all ShellContext are loaded and available.
+                await _shellHost.InitializeAsync();
+            }
 
             while (GetRunningShells().Count() < 1)
             {
@@ -107,7 +117,7 @@ namespace OrchardCore.Modules
 
                     var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                    if (shellScope.ShellContext.Pipeline == null)
+                    if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
                     {
                         break;
                     }
@@ -193,7 +203,7 @@ namespace OrchardCore.Modules
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
 
-                if (shellScope.ShellContext.Pipeline == null)
+                if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
                 {
                     return;
                 }
@@ -286,7 +296,7 @@ namespace OrchardCore.Modules
 
         private IEnumerable<ShellContext> GetRunningShells()
         {
-            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && s.Pipeline != null).ToArray();
+            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && (_options.ShellWarmup || s.Pipeline != null)).ToArray();
         }
 
         private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)

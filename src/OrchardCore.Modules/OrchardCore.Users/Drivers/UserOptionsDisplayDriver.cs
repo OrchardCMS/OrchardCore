@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using OrchardCore.Users.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {

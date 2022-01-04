@@ -94,7 +94,7 @@ namespace OrchardCore.Seo.Drivers
                     var relativeUrl = urlHelper.RouteUrl(contentItemMetadata.DisplayRouteValues);
                     aspect.Canonical = urlHelper.ToAbsoluteUrl(relativeUrl);
                 }
-                
+
                 // OpenGraph
                 if (part.OpenGraphImage?.Paths?.Length > 0)
                 {
