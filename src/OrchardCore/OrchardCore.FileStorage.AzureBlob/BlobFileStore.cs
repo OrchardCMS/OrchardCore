@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.StaticFiles;
@@ -64,14 +65,13 @@ namespace OrchardCore.FileStorage.AzureBlob
             {
                 var blob = GetBlobReference(path);
 
-                if (!await blob.ExistsAsync())
-                {
-                    return null;
-                }
-
                 var properties = await blob.GetPropertiesAsync();
 
                 return new BlobFile(path, properties.Value.ContentLength, properties.Value.LastModified);
+            }
+            catch (RequestFailedException ex) when (ex.ErrorCode == "BlobNotFound") // Instead of ExistsAsync() check which is 'slow' if we're expecting to find the blob 
+            {
+                return null;
             }
             catch (Exception ex)
             {
