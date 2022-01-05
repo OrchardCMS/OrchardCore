@@ -49,7 +49,7 @@ namespace OrchardCore.Environment.Shell
 
                     var feauterProfiles = await featureProfilesService.GetFeatureProfilesAsync();
 
-                    foreach (var featureProfileName in featureProfile.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                    foreach (var featureProfileName in featureProfile.Split(',', StringSplitOptions.RemoveEmptyEntries))
                     {
                         if (feauterProfiles.TryGetValue(featureProfileName, out var featureProfile))
                         {

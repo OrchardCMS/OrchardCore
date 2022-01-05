@@ -285,7 +285,7 @@ namespace OrchardCore.Tenants.Controllers
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
             //var currentFeatureProfile = shellSettings["FeatureProfile"];
-            var currentFeatureProfiles = shellSettings["FeatureProfile"]?.Split(';');
+            var currentFeatureProfiles = shellSettings["FeatureProfile"]?.Split(',');
 
             var featureProfileItems = await GetFeatureProfilesAsync(currentFeatureProfiles);
 
@@ -341,7 +341,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["FeatureProfile"] = string.Join(';', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -378,7 +378,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            var currentFeatureProfiles = shellSettings["FeatureProfile"]?.Split(';');
+            var currentFeatureProfiles = shellSettings["FeatureProfile"]?.Split(',');
 
             var featureProfileItems = await GetFeatureProfilesAsync(currentFeatureProfiles);
 
@@ -443,7 +443,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Description"] = model.Description;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = string.Join(';', model.FeatureProfiles);
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles);
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet
@@ -676,7 +676,7 @@ namespace OrchardCore.Tenants.Controllers
         private async Task<List<SelectListItem>> GetFeatureProfilesAsync(IEnumerable<string> currentFeatureProfiles)
         {
             var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
-                .Select(x => new SelectListItem(x.Key, x.Key, currentFeatureProfiles != null && currentFeatureProfiles.Contains(x.Key, StringComparer.OrdinalIgnoreCase)))
+                .Select(x => new SelectListItem(x.Value.Name ?? x.Key, x.Key, currentFeatureProfiles != null && currentFeatureProfiles.Contains(x.Key, StringComparer.OrdinalIgnoreCase)))
                 .ToList();
 
             return featureProfiles;

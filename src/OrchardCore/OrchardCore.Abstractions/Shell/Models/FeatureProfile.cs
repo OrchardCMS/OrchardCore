@@ -6,11 +6,15 @@ namespace OrchardCore.Environment.Shell.Models
 {
     public class FeatureProfile
     {
-        public JObject Properties { get; set; } = new JObject();
+        public string Id { get; set; }
 
         public string Name { get; set; }
 
         public List<FeatureRule> FeatureRules = new List<FeatureRule>();
+
+        // should we inherit from Entity instead?
+        public JObject Properties { get; set; } = new JObject();
+
     }
 
     public class FeatureRule

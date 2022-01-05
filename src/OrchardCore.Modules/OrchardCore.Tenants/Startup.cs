@@ -7,9 +7,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Distributed;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Mvc.Core.Utilities;
@@ -19,6 +21,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
 using OrchardCore.Tenants.Controllers;
 using OrchardCore.Tenants.Deployment;
+using OrchardCore.Tenants.Drivers;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
 
@@ -154,6 +157,8 @@ namespace OrchardCore.Tenants
             services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
             services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
 
+            services.AddScoped<IDisplayManager<FeatureProfile>, DisplayManager<FeatureProfile>>();
+            services.AddScoped<IDisplayDriver<FeatureProfile>, FeatureProfileDisplayDriver>();
             services.AddRecipeExecutionStep<FeatureProfilesStep>();
         }
 
