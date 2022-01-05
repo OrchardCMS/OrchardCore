@@ -26,8 +26,6 @@ namespace OrchardCore.Tenants.Controllers
 {
     public class AdminController : Controller
     {
-        private static readonly string DefaultCategory = "All";
-
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
@@ -122,7 +120,7 @@ namespace OrchardCore.Tenants.Controllers
                      (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
-            if (!String.IsNullOrWhiteSpace(options.Category) && options?.Category != DefaultCategory)
+            if (!String.IsNullOrWhiteSpace(options.Category))
             {
                 entries = entries.Where(t => t.Category.Equals(options.Category, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -184,7 +182,7 @@ namespace OrchardCore.Tenants.Controllers
             model.Options.TenantsCategories.Insert(0, new SelectListItem(
                 S["All"],
                 String.Empty,
-                selected: String.IsNullOrEmpty(options.Category) || model.Options.Category == DefaultCategory));
+                selected: String.IsNullOrEmpty(options.Category)));
 
             model.Options.TenantsStates = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["All states"], Value = nameof(TenantsState.All) },
