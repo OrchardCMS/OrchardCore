@@ -81,7 +81,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var model = new FeatureProfilesIndexViewModel
             {
-                FeatureProfiles = featureProfiles.Select(x => new FeatureProfileEntry { Name = x.Key, FeatureProfile = x.Value }).ToList(),
+                FeatureProfiles = featureProfiles.Select(x => new FeatureProfileEntry { Name = x.Value.Name ?? x.Key, FeatureProfile = x.Value, Id = x.Key }).ToList(),
                 Options = options,
                 Pager = pagerShape
             };
@@ -109,7 +109,10 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            return View(new FeatureProfileViewModel());
+            return View(new FeatureProfileViewModel()
+            {
+                Id = IdGenerator.GenerateId()
+            });
         }
 
         [HttpPost, ActionName("Create")]
@@ -120,57 +123,37 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            List<FeatureRule> featureRules = null;
-
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
-                {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["The name is mandatory."]);
-                }
-                else
-                {
-                    var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+               var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 
-                    if (featureProfilesDocument.FeatureProfiles.ContainsKey(model.Name))
+                if (featureProfilesDocument.FeatureProfiles.Any(x => x.Key != model.Id && (x.Value.Name ?? x.Key).Equals(model.Name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["A feature profile with the same name already exists."]);
+                }
+
+                try
+                {
+                    var featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+
+                    var template = new FeatureProfile
                     {
-                        ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["A profile with the same name already exists."]);
-                    }
-                }
+                        FeatureRules = featureRules,
+                        Name = model.Name,
+                    };
 
-                if (String.IsNullOrEmpty(model.FeatureRules))
-                {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["The feature rules are mandatory."]);
-                }
-                else
-                {
-                    try
+                    await _featureProfilesManager.UpdateFeatureProfileAsync(model.Id, template);
+
+                    if (submit == "SaveAndContinue")
                     {
-                        featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+                        return RedirectToAction(nameof(Edit), new { name = model.Id });
                     }
-                    catch (Exception)
-                    {
-                        ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
-                    }
-                }
-            }
-
-            if (ModelState.IsValid)
-            {
-                var template = new FeatureProfile
-                {
-                    FeatureRules = featureRules
-                };
-
-                await _featureProfilesManager.UpdateFeatureProfileAsync(model.Name, template);
-
-                if (submit == "SaveAndContinue")
-                {
-                    return RedirectToAction(nameof(Edit), new { name = model.Name });
-                }
-                else
-                {
+                    
                     return RedirectToAction(nameof(Index));
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
                 }
             }
 
@@ -178,25 +161,31 @@ namespace OrchardCore.Tenants.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(string name)
+        public async Task<IActionResult> Edit(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
             {
                 return Forbid();
             }
 
-            var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
-
-            if (!featureProfilesDocument.FeatureProfiles.ContainsKey(name))
+            if(string.IsNullOrEmpty(id))
             {
-                return RedirectToAction(nameof(Create), new { name });
+                return NotFound();
             }
 
-            var featureProfile = featureProfilesDocument.FeatureProfiles[name];
+            var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+
+            if (!featureProfilesDocument.FeatureProfiles.ContainsKey(id))
+            {
+                return RedirectToAction(nameof(Create), new { id });
+            }
+
+            var featureProfile = featureProfilesDocument.FeatureProfiles[id];
 
             var model = new FeatureProfileViewModel
             {
-                Name = name,
+                Id = id,
+                Name = featureProfile.Name ?? id,
                 FeatureRules = JsonConvert.SerializeObject(featureProfile.FeatureRules, Formatting.Indented)
             };
 
@@ -204,69 +193,55 @@ namespace OrchardCore.Tenants.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string sourceName, FeatureProfileViewModel model, string submit)
+        public async Task<IActionResult> Edit(FeatureProfileViewModel model, string submit)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
             {
                 return Forbid();
             }
 
-            var featureProfilesDocument = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
-
-            if (!featureProfilesDocument.FeatureProfiles.ContainsKey(sourceName))
-            {
-                return NotFound();
-            }
-
-            List<FeatureRule> featureRules = null;
-
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                var featureProfilesDocument = await _featureProfilesManager.LoadFeatureProfilesDocumentAsync();
+
+                if (!featureProfilesDocument.FeatureProfiles.TryGetValue(model.Id, out FeatureProfile feature))
                 {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["The name is mandatory."]);
+                    return NotFound();
                 }
-                else if (!String.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
-                    && featureProfilesDocument.FeatureProfiles.ContainsKey(model.Name))
+
+                if (featureProfilesDocument.FeatureProfiles.Any(x => x.Key != model.Id && (x.Value.Name ?? x.Key).Equals(model.Name, StringComparison.OrdinalIgnoreCase)))
                 {
                     ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["A feature profile with the same name already exists."]);
                 }
-
-                if (String.IsNullOrEmpty(model.FeatureRules))
-                {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["The feature rules are mandatory."]);
-                }
-                else
-                {
-                    try
-                    {
-                        featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
-                    }
-                    catch (Exception)
-                    {
-                        ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
-                    }
-                }
+               
             }
 
             if (ModelState.IsValid)
             {
-                var featureProfile = new FeatureProfile
+                try
                 {
-                    FeatureRules = featureRules
-                };
+                    var featureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
 
-                await _featureProfilesManager.RemoveFeatureProfileAsync(sourceName);
+                    var featureProfile = new FeatureProfile
+                    {
+                        Name = model.Name,
+                        FeatureRules = featureRules
+                    };
 
-                await _featureProfilesManager.UpdateFeatureProfileAsync(model.Name, featureProfile);
+                    await _featureProfilesManager.RemoveFeatureProfileAsync(model.Id);
 
-                if (submit == "SaveAndContinue")
-                {
-                    return RedirectToAction(nameof(Edit), new { name = model.Name });
-                }
-                else
-                {
+                    await _featureProfilesManager.UpdateFeatureProfileAsync(model.Id, featureProfile);
+
+                    if (submit == "SaveAndContinue")
+                    {
+                        return RedirectToAction(nameof(Edit), new { name = model.Name, id = model.Id });
+                    }
+
                     return RedirectToAction(nameof(Index));
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError(nameof(FeatureProfileViewModel.FeatureRules), S["Invalid json supplied."]);
                 }
             }
 

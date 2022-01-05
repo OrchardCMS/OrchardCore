@@ -37,10 +37,12 @@
             <span class="hint">@T["You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."]</span>
         </div>
     </div>
-    <h6>
-        @T["Recipe"]
-        <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
-    </h6>
+
+    <blockquote class="blockquote">
+      <h4 class="mb-0">@T["Recipe"]</h4>
+      <footer class="blockquote-footer">@T["Optionally specify which presets should be used for the Setup experience."]</footer>
+    </blockquote>
+
     <div class="row recipes" asp-validation-class-for="RecipeName">
         <div class="form-group col-md-6">
             <select asp-for="RecipeName" class="form-control">
@@ -55,10 +57,12 @@
             </select>
         </div>
     </div>
-    <h6>
-        @T["Database Presets"]
-        <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
-    </h6>
+
+    <blockquote class="blockquote">
+      <h4 class="mb-0">@T["Database Presets"]</h4>
+      <footer class="blockquote-footer">@T["Optionally specify which presets should be used for the Setup experience."]</footer>
+    </blockquote>
+
     <div class="row">
         @if (!Model.DatabaseConfigurationPreset)
         {
@@ -91,16 +95,15 @@
         </div>
     }
 
-    @if (Model.FeatureProfiles.Any())
+    @if (Model.FeatureProfileItems.Any())
     {
-        <h6>
-            @T["Feature profile"]
-            <span class="text-muted form-text small">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
-        </h6>
-        <div class="row" asp-validation-class-for="FeatureProfile">
-            <div class="form-group col-md-6">
-                <select asp-for="FeatureProfile" asp-items="Model.FeatureProfiles" class="form-control"></select>
-            </div>
+        <blockquote class="blockquote">
+          <h4 class="mb-0">@T["Feature profiles"]</h4>
+        </blockquote>
+
+        <div class="form-group" asp-validation-class-for="FeatureProfiles">
+            <label asp-for="FeatureProfiles">@T["Optionally specify which feature profile should be applied to this tenant."]</label>
+            <select asp-for="FeatureProfiles" asp-items="Model.FeatureProfileItems" class="form-control"></select>
         </div>
     }
 

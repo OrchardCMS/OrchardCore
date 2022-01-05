@@ -21,8 +21,8 @@ namespace OrchardCore.Tenants.ViewModels
         public string TablePrefix { get; set; }
 
         public string RecipeName { get; set; }
-        public string FeatureProfile { get; set; }
-        public List<SelectListItem> FeatureProfiles { get; set; }
+        public string[] FeatureProfiles { get; set; }
+        public List<SelectListItem> FeatureProfileItems { get; set; }
 
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }
 

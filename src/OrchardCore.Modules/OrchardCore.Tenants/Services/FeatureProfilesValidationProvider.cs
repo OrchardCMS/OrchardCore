@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Tenants.Services
 {
     public class FeatureProfilesValidationProvider : IFeatureValidationProvider
     {
@@ -49,7 +52,7 @@ namespace OrchardCore.Environment.Shell
 
                     var feauterProfiles = await featureProfilesService.GetFeatureProfilesAsync();
 
-                    foreach (var featureProfileName in featureProfile.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                    foreach(var featureProfileName in featureProfile.Split(';', StringSplitOptions.RemoveEmptyEntries))
                     {
                         if (feauterProfiles.TryGetValue(featureProfileName, out var featureProfile))
                         {
@@ -57,8 +60,8 @@ namespace OrchardCore.Environment.Shell
 
                             continue;
                         }
-
-                        _featureProfileLookup = (true, null);
+             
+                         _featureProfileLookup = (true, null);
                     }
 
                 });

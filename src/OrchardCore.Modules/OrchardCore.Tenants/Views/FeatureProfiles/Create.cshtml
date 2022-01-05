@@ -9,6 +9,7 @@
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
+    <input type="hidden" asp-for="Id" />
     <div class="row">
         <div class="col-12 col-md-6">
             <div class="form-group" asp-validation-class-for="Name">

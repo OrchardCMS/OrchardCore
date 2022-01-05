@@ -37,10 +37,10 @@
 
     @if (Model.CanEditDatabasePresets)
     {
-        <h6>
+        <h4>
             @T["Recipe"]
             <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
-        </h6>
+        </h4>
         <div class="row recipes" asp-validation-class-for="RecipeName">
             <div class="form-group col-md-6">
                 <select asp-for="RecipeName" class="form-control">
@@ -56,10 +56,10 @@
             </div>
         </div>
 
-        <h6>
+        <h4>
             @T["Database Presets"]
             <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
-        </h6>
+        </h4>
         <div class="row">
             @if (!Model.DatabaseConfigurationPreset)
             {
@@ -94,16 +94,14 @@
         }
     }
 
-    @if (Model.FeatureProfiles.Any())
+    @if (Model.FeatureProfileItems.Any())
     {
-        <h6>
-            @T["Feature profile"]
-            <span class="text-muted form-text small">@T["Optionally specify which feature profile should be applied to this tenant."]</span>
-        </h6>
-        <div class="row" asp-validation-class-for="FeatureProfile">
-            <div class="form-group col-md-6">
-                <select asp-for="FeatureProfile" asp-items="Model.FeatureProfiles" class="form-control"></select>
-            </div>
+        <h4>
+            @T["Feature profiles"]
+        </h4>
+        <div class="form-group" asp-validation-class-for="FeatureProfiles">
+            <label asp-for="FeatureProfiles">@T["Optionally specify which feature profile should be applied to this tenant."]</label>
+            <select asp-for="FeatureProfiles" asp-items="Model.FeatureProfileItems" class="form-control"></select>
         </div>
     }
 
