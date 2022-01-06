@@ -28,13 +28,8 @@ namespace OrchardCore.Modules.Tenants.Tests
 
         public AdminControllerTests() => SeedTenants();
 
-        [Theory]
-        [InlineData("Tenant3", "", "example1.com", false)]
-        [InlineData("Tenant4", "", "example2.com", false)]
-        [InlineData("Tenant5", "tenant1", "example1.com", false)]
-        [InlineData("Tenant6", "tenant1", "example2.com", true)]
-        [InlineData("Tenant7", "tenant2", "example2.com", true)]
-        public async Task CreateTenant(string name, string urlPrefix, string hostname, bool isValid)
+        [Fact]
+        public async Task CreateTenantShouldChecksHostnameIfItAlreadyUsedInMultipleHostnames()
         {
             // Arrange
             var shellHostMock = new Mock<IShellHost>();
@@ -94,22 +89,27 @@ namespace OrchardCore.Modules.Tenants.Tests
             };
             var viewModel = new EditTenantViewModel
             {
-                Name = name,
-                RequestUrlPrefix = urlPrefix,
-                RequestUrlHost = hostname,
+                Name = "Tenant8",
+                RequestUrlHost = "example1.com, example2.com",
                 FeatureProfile = "Feature Profile"
             };
 
-            // Act
+            // Act & Assert
             var result = await controller.Create(viewModel);
 
-            // Assert
-            Assert.Equal(isValid, controller.ModelState.IsValid);
+            Assert.True(controller.ModelState.IsValid);
 
-            if (!isValid)
+            viewModel = new EditTenantViewModel
             {
-                Assert.Equal("A tenant with the same host and prefix already exists.", controller.ModelState.First().Value.Errors.First().ErrorMessage);
-            }
+                Name = "Tenant9",
+                RequestUrlHost = "example1.com",
+                FeatureProfile = "Feature Profile"
+            };
+
+            result = await controller.Create(viewModel);
+
+            Assert.False(controller.ModelState.IsValid);
+            Assert.Equal("A tenant with the same host and prefix already exists.", controller.ModelState.First().Value.Errors.First().ErrorMessage);
         }
 
         private void SeedTenants()
@@ -117,18 +117,6 @@ namespace OrchardCore.Modules.Tenants.Tests
             _shellSettings.Add(new ShellSettings
             {
                 Name = ShellHelper.DefaultShellName
-            });
-            _shellSettings.Add(new ShellSettings
-            {
-                Name = "Tenant1",
-                RequestUrlPrefix = "tenant1",
-                RequestUrlHost = "example1.com"
-            });
-            _shellSettings.Add(new ShellSettings
-            {
-                Name = "Tenant2",
-                RequestUrlPrefix = "",
-                RequestUrlHost = "example1.com,example2.com"
             });
         }
     }
