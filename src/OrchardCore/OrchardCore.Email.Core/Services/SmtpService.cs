@@ -163,7 +163,7 @@ namespace OrchardCore.Email.Services
             {
                 body.HtmlBody = message.Body;
             }
-            
+
             if (message.IsBodyText)
             {
                 body.TextBody = message.BodyText;
@@ -175,7 +175,7 @@ namespace OrchardCore.Email.Services
                 if (attachment.Stream != null)
                 {
                     body.Attachments.Add(attachment.Filename, attachment.Stream);
-                }            
+                }
             }
 
             mimeMessage.Body = body.ToMessageBody();

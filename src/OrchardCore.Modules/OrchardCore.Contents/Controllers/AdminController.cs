@@ -26,8 +26,8 @@ using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
-using YesSql.Services;
 using YesSql.Filters.Query;
+using YesSql.Services;
 
 namespace OrchardCore.Contents.Controllers
 {

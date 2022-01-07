@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Controllers
 {

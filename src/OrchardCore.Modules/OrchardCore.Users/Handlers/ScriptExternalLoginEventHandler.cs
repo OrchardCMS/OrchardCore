@@ -9,7 +9,6 @@ using OrchardCore.Entities;
 using OrchardCore.Scripting;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Handlers
 {
