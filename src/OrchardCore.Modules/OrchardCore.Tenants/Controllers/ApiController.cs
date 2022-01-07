@@ -38,7 +38,6 @@ namespace OrchardCore.Tenants.Controllers
         private readonly ISetupService _setupService;
         private readonly IClock _clock;
         private readonly IEmailAddressValidator _emailAddressValidator;
-        private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IdentityOptions _identityOptions;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IStringLocalizer S;
@@ -52,7 +51,6 @@ namespace OrchardCore.Tenants.Controllers
             ISetupService setupService,
             IClock clock,
             IEmailAddressValidator emailAddressValidator,
-            IFeatureProfilesService featureProfilesService,
             IOptions<IdentityOptions> identityOptions,
             IEnumerable<DatabaseProvider> databaseProviders,
             IStringLocalizer<ApiController> stringLocalizer)
@@ -65,7 +63,6 @@ namespace OrchardCore.Tenants.Controllers
             _setupService = setupService;
             _clock = clock;
             _emailAddressValidator = emailAddressValidator;
-            _featureProfilesService = featureProfilesService;
             _identityOptions = identityOptions.Value;
             _databaseProviders = databaseProviders;
             S = stringLocalizer;
@@ -105,26 +102,7 @@ namespace OrchardCore.Tenants.Controllers
             shellSettings["RecipeName"] = model.RecipeName;
             shellSettings["FeatureProfile"] = model.FeatureProfile;
 
-            if (!String.IsNullOrWhiteSpace(model.FeatureProfile))
-            {
-                var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
-                if (!featureProfiles.ContainsKey(model.FeatureProfile))
-                {
-                    ModelState.AddModelError(nameof(CreateApiViewModel.FeatureProfile), S["The feature profile does not exist.", model.FeatureProfile]);
-                }
-            }
-            if (String.IsNullOrWhiteSpace(shellSettings.RequestUrlHost) && String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
-            {
-                ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
-            }
-
-            if (!String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
-            {
-                if (shellSettings.RequestUrlPrefix.Contains('/'))
-                {
-                    ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
-                }
-            }
+            await this.ValidateModelAsync(model);
 
             if (ModelState.IsValid)
             {

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -30,7 +29,6 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ShellSettings _currentShellSettings;
         private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly IDataProtectionProvider _dataProtectorProvider;
@@ -47,7 +45,6 @@ namespace OrchardCore.Tenants.Controllers
             IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IAuthorizationService authorizationService,
-            ShellSettings currentShellSettings,
             IFeatureProfilesService featureProfilesService,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             IDataProtectionProvider dataProtectorProvider,
@@ -62,7 +59,6 @@ namespace OrchardCore.Tenants.Controllers
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
-            _currentShellSettings = currentShellSettings;
             _dataProtectorProvider = dataProtectorProvider;
             _featureProfilesService = featureProfilesService;
             _recipeHarvesters = recipeHarvesters;
@@ -82,7 +78,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -207,7 +203,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -272,7 +268,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -313,14 +309,14 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
 
             if (ModelState.IsValid)
             {
-                await ValidateViewModel(model, true);
+                await this.ValidateModelAsync(model);
             }
 
             if (ModelState.IsValid)
@@ -363,7 +359,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -418,14 +414,14 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
 
             if (ModelState.IsValid)
             {
-                await ValidateViewModel(model, false);
+                await this.ValidateModelAsync(model, newTenant: false);
             }
 
             var shellSettings = _shellHost.GetAllSettings()
@@ -490,7 +486,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -530,7 +526,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -563,7 +559,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -586,66 +582,6 @@ namespace OrchardCore.Tenants.Controllers
             await _shellHost.ReloadShellContextAsync(shellSettings);
 
             return Redirect(redirectUrl);
-        }
-
-        private async Task ValidateViewModel(EditTenantViewModel model, bool newTenant)
-        {
-            var selectedProvider = _databaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
-
-            if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.ConnectionString), S["The connection string is mandatory for this provider."]);
-            }
-
-            if (String.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
-            }
-
-            if (!String.IsNullOrWhiteSpace(model.FeatureProfile))
-            {
-                var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
-                if (!featureProfiles.ContainsKey(model.FeatureProfile))
-                {
-                    ModelState.AddModelError(nameof(EditTenantViewModel.FeatureProfile), S["The feature profile does not exist.", model.FeatureProfile]);
-                }
-            }
-
-            var allSettings = _shellHost.GetAllSettings();
-
-            if (newTenant && allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
-            }
-
-            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
-            }
-
-            if (!IsDefaultShell() && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
-            }
-
-            var allOtherShells = allSettings.Where(t => !string.Equals(t.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-            if (allOtherShells.Any(t => String.Equals(t.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && (t.RequestUrlHost?.Contains(model.RequestUrlHost, StringComparison.OrdinalIgnoreCase) ?? false)))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
-            }
-
-            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
-            {
-                if (model.RequestUrlPrefix.Contains('/'))
-                {
-                    ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
-                }
-            }
-        }
-
-        private bool IsDefaultShell()
-        {
-            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
 
         private void SetConfigurationShellValues(EditTenantViewModel model)
