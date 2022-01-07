@@ -138,10 +138,10 @@ $(function () {
     $('input[data-bs-toggle="collapse"]').each(function () {
         // Prevent bootstrap from altering its behavior
         // c.f. https://github.com/twbs/bootstrap/issues/21079
-        $(this).removeAttr('data-toggle');
+        $(this).removeAttr('data-bs-toggle');
 
         // Expand the section if necessary
-        var target = $($(this).data('target'));
+        var target = $($(this).data('bs-target'));
         if ($(this).prop('checked')) {
             target.addClass('visible');
         }
@@ -160,10 +160,10 @@ $(function () {
     $('input[data-bs-toggle="collapse active"]').each(function () {
         // Prevent bootstrap from altering its behavior for inputs that hide target when input value is checked
         // c.f. https://github.com/twbs/bootstrap/issues/21079
-        $(this).removeAttr("data-toggle");
+        $(this).removeAttr("data-bs-toggle");
 
         // Expand the section if necessary
-        var target = $($(this).data('target'));
+        var target = $($(this).data('bs-target'));
         if (!$(this).prop('checked')) {
             target.addClass('show');
         }
