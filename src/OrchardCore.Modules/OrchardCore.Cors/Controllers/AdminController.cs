@@ -107,7 +107,7 @@ namespace OrchardCore.Cors.Controllers
                     AllowedHeaders = settingViewModel.AllowedHeaders,
                     AllowedMethods = settingViewModel.AllowedMethods,
                     AllowedOrigins = settingViewModel.AllowedOrigins,
-                    IsDefaultPolicy =settingViewModel.IsDefaultPolicy
+                    IsDefaultPolicy = settingViewModel.IsDefaultPolicy
 
                 });
             }

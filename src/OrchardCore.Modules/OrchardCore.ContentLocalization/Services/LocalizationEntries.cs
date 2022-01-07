@@ -135,7 +135,10 @@ namespace OrchardCore.ContentLocalization.Services
             {
                 if (_stateIdentifier != state.Identifier)
                 {
-                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId).ListAsync();
+                    var indexes = await Session
+                        .QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
 
                     // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                     // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -189,7 +192,11 @@ namespace OrchardCore.ContentLocalization.Services
                 {
                     var state = await _localizationStateManager.GetOrCreateImmutableAsync();
 
-                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null).ListAsync();
+                    var indexes = await Session
+                        .QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
+
                     var entries = indexes.Select(i => new LocalizationEntry
                     {
                         DocumentId = i.DocumentId,

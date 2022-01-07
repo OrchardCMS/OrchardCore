@@ -59,7 +59,7 @@ namespace OrchardCore.Contents.Drivers
                     var displayType = ctx.Shape.Metadata.DisplayType;
 
                     if (!String.IsNullOrEmpty(displayType) && displayType != "Detail")
-                    {                        
+                    {
                         ctx.Shape.Metadata.Alternates.Add($"ContentsMetadata_{ctx.Shape.Metadata.DisplayType}");
 
                         if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))

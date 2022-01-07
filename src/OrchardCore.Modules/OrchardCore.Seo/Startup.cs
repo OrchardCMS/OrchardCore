@@ -1,15 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Title;
 using OrchardCore.Modules;
 using OrchardCore.Seo.Drivers;
 using OrchardCore.Seo.Models;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.SeoMeta.Settings;
-using OrchardCore.ContentTypes.Editors;
 
 namespace OrchardCore.Seo
 {

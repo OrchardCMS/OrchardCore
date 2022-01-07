@@ -80,7 +80,7 @@ namespace OrchardCore.DataProtection.Azure
                 {
                     _logger.LogDebug("Testing data protection container {ContainerName} existence", containerName);
                     var _blobContainer = new BlobContainerClient(connectionString, containerName);
-                    var response =  _blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).GetAwaiter().GetResult();
+                    var response = _blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).GetAwaiter().GetResult();
                     _logger.LogDebug("Data protection container {ContainerName} created.", containerName);
                 }
                 catch (Exception)

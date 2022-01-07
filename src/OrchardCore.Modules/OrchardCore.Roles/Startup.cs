@@ -87,5 +87,5 @@ namespace OrchardCore.Roles
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllRolesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllRolesDeploymentStepDriver>();
         }
-    }    
+    }
 }
