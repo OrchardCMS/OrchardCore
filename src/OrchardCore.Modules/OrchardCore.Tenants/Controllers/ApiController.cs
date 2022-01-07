@@ -79,11 +79,6 @@ namespace OrchardCore.Tenants.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
-            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
-            {
-                ModelState.AddModelError(nameof(CreateApiViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
-            }
-
             // Creates a default shell settings based on the configuration.
             var shellSettings = _shellSettingsManager.CreateDefaultSettings();
 
