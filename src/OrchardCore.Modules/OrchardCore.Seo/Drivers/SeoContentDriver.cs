@@ -16,7 +16,7 @@ using Shortcodes;
 namespace OrchardCore.Seo.Drivers
 {
     public class SeoContentDriver : ContentDisplayDriver
-    {       
+    {
         private readonly IContentManager _contentManager;
         private readonly IPageTitleBuilder _pageTitleBuilder;
         private readonly IResourceManager _resourceManager;
@@ -54,7 +54,7 @@ namespace OrchardCore.Seo.Drivers
             }
 
             var aspect = await _contentManager.PopulateAspectAsync<SeoAspect>(contentItem);
-            
+
             if (!aspect.Render)
             {
                 return null;
@@ -75,13 +75,13 @@ namespace OrchardCore.Seo.Drivers
             }
 
             if (!String.IsNullOrEmpty(aspect.MetaKeywords))
-            {                   
+            {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "keywords",
                     Content = await RenderAsync(aspect.MetaKeywords, contentItem)
                 });
-            }    
+            }
 
             if (!String.IsNullOrEmpty(aspect.Canonical))
             {
@@ -93,21 +93,21 @@ namespace OrchardCore.Seo.Drivers
             }
 
             if (!String.IsNullOrEmpty(aspect.MetaRobots))
-            {                   
+            {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
                     Name = "robots",
                     Content = await RenderAsync(aspect.MetaRobots, contentItem)
                 });
-            }                        
+            }
 
-            foreach(var customMetaTag in aspect.CustomMetaTags)
+            foreach (var customMetaTag in aspect.CustomMetaTags)
             {
                 // Generate a new meta entry as the builder is preopulated.
                 _resourceManager.RegisterMeta(new MetaEntry(
-                    await RenderAsync(customMetaTag.Name, contentItem), 
-                    await RenderAsync(customMetaTag.Property, contentItem), 
-                    await RenderAsync(customMetaTag.Content, contentItem), 
+                    await RenderAsync(customMetaTag.Name, contentItem),
+                    await RenderAsync(customMetaTag.Property, contentItem),
+                    await RenderAsync(customMetaTag.Content, contentItem),
                     await RenderAsync(customMetaTag.HttpEquiv, contentItem),
                     await RenderAsync(customMetaTag.Charset, contentItem)));
             }
@@ -117,7 +117,7 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:type", 
+                    Property = "og:type",
                     Content = await RenderAsync(aspect.OpenGraphType, contentItem)
                 });
             }
@@ -126,25 +126,25 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:title", 
+                    Property = "og:title",
                     Content = await RenderAsync(aspect.OpenGraphTitle, contentItem)
                 });
-            }  
+            }
 
             if (!String.IsNullOrEmpty(aspect.OpenGraphDescription))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:description", 
+                    Property = "og:description",
                     Content = await RenderAsync(aspect.OpenGraphDescription, contentItem)
                 });
-            }  
-            
+            }
+
             if (!String.IsNullOrEmpty(aspect.OpenGraphImage))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:image", 
+                    Property = "og:image",
                     Content = await RenderAsync(aspect.OpenGraphImage, contentItem)
                 });
             }
@@ -153,34 +153,34 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:image:alt", 
+                    Property = "og:image:alt",
                     Content = await RenderAsync(aspect.OpenGraphImageAlt, contentItem)
                 });
-            }  
+            }
 
             if (!String.IsNullOrEmpty(aspect.OpenGraphUrl))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:url", 
+                    Property = "og:url",
                     Content = await RenderAsync(aspect.OpenGraphUrl, contentItem)
                 });
-            }   
+            }
 
             if (!String.IsNullOrEmpty(aspect.OpenGraphSiteName))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:site_name", 
+                    Property = "og:site_name",
                     Content = await RenderAsync(aspect.OpenGraphSiteName, contentItem)
                 });
-            }       
+            }
 
             if (!String.IsNullOrEmpty(aspect.OpenGraphAppId))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "fb:app_id", 
+                    Property = "fb:app_id",
                     Content = await RenderAsync(aspect.OpenGraphAppId, contentItem)
                 });
             }
@@ -189,7 +189,7 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "og:locale", 
+                    Property = "og:locale",
                     Content = await RenderAsync(aspect.OpenGraphLocale, contentItem)
                 });
             }
@@ -199,7 +199,7 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "twitter:card", 
+                    Property = "twitter:card",
                     Content = await RenderAsync(aspect.TwitterCard, contentItem)
                 });
             }
@@ -208,28 +208,28 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Property = "twitter:site", 
+                    Property = "twitter:site",
                     Content = await RenderAsync(aspect.TwitterSite, contentItem)
                 });
-            } 
+            }
 
             if (!String.IsNullOrEmpty(aspect.TwitterTitle))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Name = "twitter:title", 
+                    Name = "twitter:title",
                     Content = await RenderAsync(aspect.TwitterTitle, contentItem)
                 });
-            }     
+            }
 
             if (!String.IsNullOrEmpty(aspect.TwitterDescription))
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Name = "twitter:description", 
+                    Name = "twitter:description",
                     Content = await RenderAsync(aspect.TwitterDescription, contentItem)
                 });
-            }                                    
+            }
 
             if (!String.IsNullOrEmpty(aspect.TwitterImage))
             {
@@ -253,7 +253,7 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Name = "twitter:creator", 
+                    Name = "twitter:creator",
                     Content = await RenderAsync(aspect.TwitterCreator, contentItem)
                 });
             }
@@ -262,7 +262,7 @@ namespace OrchardCore.Seo.Drivers
             {
                 _resourceManager.RegisterMeta(new MetaEntry
                 {
-                    Name = "twitter:url", 
+                    Name = "twitter:url",
                     Content = await RenderAsync(aspect.TwitterUrl, contentItem)
                 });
             }

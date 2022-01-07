@@ -162,7 +162,7 @@ namespace OrchardCore.Media.Services
 
             if (!(await _fileStore.GetDirectoryContentAsync(previousDirPath).AnyAsync()))
             {
-                await _fileStore.TryDeleteDirectoryAsync(previousDirPath);                
+                await _fileStore.TryDeleteDirectoryAsync(previousDirPath);
             }
         }
     }

@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                         }
                         else if (itemClasses.Type == FluidValues.Array)
                         {
-                            foreach (var value in itemClasses.Enumerate())
+                            foreach (var value in itemClasses.Enumerate(context))
                             {
                                 objectValue.ItemClasses.Add(value.ToStringValue());
                             }
@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                         }
                         else if (classes.Type == FluidValues.Array)
                         {
-                            foreach (var value in classes.Enumerate())
+                            foreach (var value in classes.Enumerate(context))
                             {
                                 objectValue.Classes.Add(value.ToStringValue());
                             }

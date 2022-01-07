@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
                 else if (alternates.Type == FluidValues.Array)
                 {
-                    foreach (var value in alternates.Enumerate())
+                    foreach (var value in alternates.Enumerate(context))
                     {
                         shape.Metadata.Alternates.Add(value.ToStringValue());
                     }

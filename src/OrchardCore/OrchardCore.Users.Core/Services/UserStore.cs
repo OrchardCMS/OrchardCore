@@ -234,7 +234,7 @@ namespace OrchardCore.Users.Services
                 {
                     return IdentityResult.Failed();
                 }
-                
+
                 _session.Save(user);
                 await _session.SaveChangesAsync();
                 await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);

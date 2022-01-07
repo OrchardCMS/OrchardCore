@@ -20,7 +20,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
-using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -657,12 +656,12 @@ namespace OrchardCore.Tenants.Controllers
 
             model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(configurationShellConnectionString) || !string.IsNullOrEmpty(configurationDatabaseProvider);
 
-            if(!string.IsNullOrEmpty(configurationShellConnectionString))
+            if (!string.IsNullOrEmpty(configurationShellConnectionString))
             {
                 model.ConnectionString = configurationShellConnectionString;
             }
 
-            if(!string.IsNullOrEmpty(configurationDatabaseProvider))
+            if (!string.IsNullOrEmpty(configurationDatabaseProvider))
             {
                 model.DatabaseProvider = configurationDatabaseProvider;
             }

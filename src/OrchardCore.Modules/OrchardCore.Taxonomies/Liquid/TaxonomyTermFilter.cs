@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,7 +40,7 @@ namespace OrchardCore.Taxonomies.Liquid
             else if (input.Type == FluidValues.Array)
             {
                 taxonomyContentItemId = arguments.At(0).ToStringValue();
-                termContentItemIds = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
+                termContentItemIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
             }
             else
             {

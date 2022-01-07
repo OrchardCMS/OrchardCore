@@ -15,7 +15,7 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
-    public class NotifyFilter : IActionFilter, IAsyncResultFilter,IPageFilter
+    public class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
     {
         public const string CookiePrefix = "orch_notify";
         private readonly INotifier _notifier;

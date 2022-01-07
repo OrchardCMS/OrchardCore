@@ -28,7 +28,7 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
         }
 
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
-            =>  new object[][]
+            => new object[][]
                 {
                     new object[] { "Sqlite", "" }
                 };

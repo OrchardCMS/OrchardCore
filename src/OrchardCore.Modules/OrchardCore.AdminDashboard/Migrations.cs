@@ -59,6 +59,6 @@ namespace OrchardCore.AdminDashboard
             );
 
             return 3;
-        }        
+        }
     }
 }
