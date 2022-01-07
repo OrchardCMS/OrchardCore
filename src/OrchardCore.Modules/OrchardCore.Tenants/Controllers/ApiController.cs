@@ -31,7 +31,6 @@ namespace OrchardCore.Tenants.Controllers
     public class ApiController : Controller
     {
         private readonly IShellHost _shellHost;
-        private readonly ShellSettings _currentShellSettings;
         private readonly IAuthorizationService _authorizationService;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IDataProtectionProvider _dataProtectorProvider;
@@ -44,7 +43,6 @@ namespace OrchardCore.Tenants.Controllers
 
         public ApiController(
             IShellHost shellHost,
-            ShellSettings currentShellSettings,
             IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,
             IDataProtectionProvider dataProtectorProvider,
@@ -56,7 +54,6 @@ namespace OrchardCore.Tenants.Controllers
             IStringLocalizer<ApiController> stringLocalizer)
         {
             _shellHost = shellHost;
-            _currentShellSettings = currentShellSettings;
             _authorizationService = authorizationService;
             _dataProtectorProvider = dataProtectorProvider;
             _shellSettingsManager = shellSettingsManager;
@@ -72,7 +69,7 @@ namespace OrchardCore.Tenants.Controllers
         [Route("create")]
         public async Task<IActionResult> Create(CreateApiViewModel model)
         {
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -131,7 +128,7 @@ namespace OrchardCore.Tenants.Controllers
         [Route("setup")]
         public async Task<ActionResult> Setup(SetupApiViewModel model)
         {
-            if (!IsDefaultShell())
+            if (!this.IsDefaultShell())
             {
                 return this.ChallengeOrForbid("Api");
             }
@@ -281,11 +278,6 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             return Ok(executionId);
-        }
-
-        private bool IsDefaultShell()
-        {
-            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
 
         private string GetEncodedUrl(ShellSettings shellSettings, string token)
