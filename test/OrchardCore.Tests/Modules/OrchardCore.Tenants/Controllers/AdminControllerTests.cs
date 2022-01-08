@@ -139,7 +139,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
         {
             var serviceProvider = new Mock<IServiceProvider>();
             var urlHelperFactoryMock = Mock.Of<IUrlHelperFactory>();
-            var stringLocalizerMock = new Mock<IStringLocalizer>();
+            var stringLocalizerMock = new Mock<IStringLocalizer<EditTenantViewModel>>();
 
             stringLocalizerMock
                 .Setup(l => l[It.IsAny<string>()])
@@ -161,7 +161,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 .Setup(x => x.GetService(typeof(IEnumerable<DatabaseProvider>)))
                 .Returns(Enumerable.Empty<DatabaseProvider>());
             serviceProvider
-                .Setup(x => x.GetService(typeof(IStringLocalizer)))
+                .Setup(x => x.GetService(typeof(IStringLocalizer<EditTenantViewModel>)))
                 .Returns(stringLocalizerMock.Object);
             serviceProvider
                 .Setup(x => x.GetService(typeof(IUrlHelperFactory)))
@@ -172,7 +172,6 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
             serviceProvider
                 .Setup(x => x.GetService(typeof(ITempDataDictionaryFactory)))
                 .Returns(new TempDataDictionaryFactory(Mock.Of<ITempDataProvider>()));
-            //urlHelperFactoryMock.Setup(uf => uf.GetUrlHelper(It.IsAny<ActionContext>())).Returns<ActionContext>(c => new UrlHelper(new ActionContext()));
 
             return serviceProvider.Object;
         }
