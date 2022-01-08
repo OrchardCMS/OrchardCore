@@ -1,8 +1,5 @@
-using System.IO;
-using System.Reflection;
 using Microsoft.Extensions.Hosting;
 using NLog;
-using NLog.Config;
 using NLog.LayoutRenderers;
 using NLog.Web;
 
@@ -17,24 +14,12 @@ namespace OrchardCore.Logging
             builder.ConfigureAppConfiguration((context, configuration) =>
             {
                 var environment = context.HostingEnvironment;
-                environment.ConfigureNLog($"{environment.ContentRootPath}{Path.DirectorySeparatorChar}NLog.config");
-                LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
+                NLog.LogManager.Setup()
+                    .LoadConfigurationFromFile(System.IO.Path.Combine(environment.ContentRootPath, "NLog.config"))
+                    .LoadConfiguration(configBuilder => configBuilder.Configuration.Variables["configDir"] = environment.ContentRootPath);
             });
 
             return builder;
-        }
-    }
-
-    // Waiting for NLog to use `IHostEnvironment`.
-    internal static class AspNetExtensions
-    {
-        public static LoggingConfiguration ConfigureNLog(this IHostEnvironment env, string configFileRelativePath)
-        {
-            ConfigurationItemFactory.Default.RegisterItemsFromAssembly(typeof(AspNetExtensions).GetTypeInfo().Assembly);
-            LogManager.AddHiddenAssembly(typeof(AspNetExtensions).GetTypeInfo().Assembly);
-            var fileName = Path.Combine(env.ContentRootPath, configFileRelativePath);
-            LogManager.LoadConfiguration(fileName);
-            return LogManager.Configuration;
         }
     }
 }
