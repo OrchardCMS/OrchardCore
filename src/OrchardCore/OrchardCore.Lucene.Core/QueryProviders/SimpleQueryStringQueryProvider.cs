@@ -21,11 +21,11 @@ namespace OrchardCore.Lucene.QueryProviders
             var weight = 1.0f;
             var weights = fields.ToDictionary(field => field, field => weight);
 
-            foreach(var field in fields)
+            foreach (var field in fields)
             {
                 var fieldWeightArray = field.Split('^', 2);
 
-                if(fieldWeightArray.Length > 1 && Single.TryParse(fieldWeightArray[1], out weight))
+                if (fieldWeightArray.Length > 1 && Single.TryParse(fieldWeightArray[1], out weight))
                 {
                     weights.Remove(field);
                     weights.Add(fieldWeightArray[0], weight);

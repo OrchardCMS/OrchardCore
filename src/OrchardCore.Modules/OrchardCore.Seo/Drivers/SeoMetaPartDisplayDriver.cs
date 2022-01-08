@@ -1,19 +1,19 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Seo.Models;
 using OrchardCore.Seo.ViewModels;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using OrchardCore.ResourceManagement;
-using Microsoft.Extensions.Localization;
-using OrchardCore.ContentManagement.Display.Models;
-using System.Collections.Generic;
 
 namespace OrchardCore.Seo.Drivers
 {

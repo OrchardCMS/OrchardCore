@@ -24,17 +24,17 @@ namespace OrchardCore.ContentManagement
         public static TElement Get<TElement>(this ContentElement contentElement, string name) where TElement : ContentElement
         {
             var result = contentElement.Get(typeof(TElement), name);
-            
+
             if (result == null)
             {
                 return null;
             }
-            
+
             if (result is TElement te)
             {
                 return te;
             }
-            
+
             throw new InvalidCastException($"Failed casting content to '{typeof(TElement).Name}', check you have registered your content part with AddContentPart?");
         }
 
