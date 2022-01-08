@@ -76,7 +76,6 @@ namespace OrchardCore.Media.Processing
             return AddQueryString(path.AsSpan(0, pathIndex), processingCommands);
         }
 
-#if NET6_0_OR_GREATER // fast version with structs
         private void ParseQuery(
             string queryString,
             out Dictionary<string, StringValues> processingCommands,
@@ -114,30 +113,6 @@ namespace OrchardCore.Media.Processing
                 otherCommands = otherCommandAccumulator.GetResults();
             }
         }
-#else // slower version until NET 6 is the default
-        private void ParseQuery(
-            string queryString,
-            out Dictionary<string, StringValues> processingCommands,
-            out Dictionary<string, StringValues> otherCommands)
-        {
-            var parsed = QueryHelpers.ParseQuery(queryString);
-            processingCommands = new Dictionary<string, StringValues>();
-            otherCommands = null;
-
-            foreach (var command in parsed)
-            {
-                if (_knownCommands.Contains(command.Key))
-                {
-                    processingCommands[command.Key] = command.Value;
-                }
-                else
-                {
-                    otherCommands ??= new Dictionary<string, StringValues>();
-                    otherCommands[command.Key] = command.Value;
-                }
-            }
-        }
-#endif
 
         public bool TryValidateToken(IDictionary<string, string> commands, string token)
         {
