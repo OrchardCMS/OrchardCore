@@ -33,7 +33,7 @@ namespace OrchardCore.ArchiveLater
                     nameof(ArchiveLaterPartIndex.ScheduledArchiveDateTimeUtc))
             );
 
-            return 2;
+            return 1;
         }
     }
 }
