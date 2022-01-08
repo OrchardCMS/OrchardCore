@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
@@ -105,7 +101,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                     foreach (IShape item in shapeItems)
                     {
                         if (item is IShape shapeItem && _shapes.Add(shapeItem))
-                        {                
+                        {
                             // Recurse for more shapes.
                             FindShapesInProperties(shapeItem);
                         }

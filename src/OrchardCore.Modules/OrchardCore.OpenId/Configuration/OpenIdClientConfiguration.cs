@@ -103,7 +103,7 @@ namespace OrchardCore.OpenId.Configuration
                 var parameters = settings.Parameters;
                 options.Events.OnRedirectToIdentityProvider = (context) =>
                 {
-                    foreach(var parameter in parameters)
+                    foreach (var parameter in parameters)
                     {
                         context.ProtocolMessage.SetParameter(parameter.Name, parameter.Value);
                     }

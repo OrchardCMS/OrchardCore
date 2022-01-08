@@ -7,12 +7,12 @@ using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Routing
 {
-    public class AutoRouteTransformer : DynamicRouteValueTransformer
+    public class AutorouteTransformer : DynamicRouteValueTransformer
     {
         private readonly IAutorouteEntries _entries;
         private readonly AutorouteOptions _options;
 
-        public AutoRouteTransformer(IAutorouteEntries entries, IOptions<AutorouteOptions> options)
+        public AutorouteTransformer(IAutorouteEntries entries, IOptions<AutorouteOptions> options)
         {
             _entries = entries;
             _options = options.Value;

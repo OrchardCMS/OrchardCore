@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -17,8 +16,8 @@ namespace OrchardCore.Resources
 
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
-        private const string codeMirrorVersion = "5.64.0";
-        private const string monacoEditorVersion = "0.30.0";
+        private const string codeMirrorVersion = "5.65.0";
+        private const string monacoEditorVersion = "0.31.1";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
 
@@ -88,16 +87,16 @@ namespace OrchardCore.Resources
                 .DefineScript("jQuery-ui")
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery-ui.min.js", "~/OrchardCore.Resources/Scripts/jquery-ui.js")
-                .SetCdn("https://code.jquery.com/ui/1.13.0/jquery-ui.min.js", "https://code.jquery.com/ui/1.13.0/jquery-ui.js")
-                .SetCdnIntegrity("sha384-GH7wmqAxDa43XGS89eXGbziWEki6l/Smy1U+dAI7ZbxlrLsmal+hLlTMqoPIIg1V", "sha384-cBRE6iZwT9o/buXdjHQ/TMfB7uovhk0R+i+mvd4V5Megxs9NuMohD10dapiJLXzK")
-                .SetVersion("1.13.0");
+                .SetCdn("https://code.jquery.com/ui/1.12.1/jquery-ui.min.js", "https://code.jquery.com/ui/1.12.1/jquery-ui.js")
+                .SetCdnIntegrity("sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX", "sha384-JPbtLYL10d/Z1crlc6GGGGM3PavCzzoUJ1UxH0bXHOfguWHQ6XAWrIzW+MBGGXe5")
+                .SetVersion("1.12.1");
 
             manifest
                 .DefineStyle("jQuery-ui")
                 .SetUrl("~/OrchardCore.Resources/Styles/jquery-ui.min.css", "~/OrchardCore.Resources/Styles/jquery-ui.css")
-                .SetCdn("https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.min.css", "https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css")
-                .SetCdnIntegrity("sha384-4vXwlbgoOH+UNlFm20DKdiE8h0L96TmokCQp3FgdVeL5lUdCJfBw7vhUTZ8vyzCy", "sha384-CLsRyzXUTzleuCd/L6fyVpHFk9de5Xpnl2SoE2lOAmPPkrh8pPnB+QlpmSgGXjg1")
-                .SetVersion("1.13.0");
+                .SetCdn("https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css", "https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css")
+                .SetCdnIntegrity("sha384-kcAOn9fN4XSd+TGsNu2OQKSuV5ngOwt7tg73O4EpaD91QXvrfgvf0MR7/2dUjoI6", "sha384-xewr6kSkq3dBbEtB6Z/3oFZmknWn7nHqhLVLrYgzEFRbU/DHSxW7K3B44yWUN60D")
+                .SetVersion("1.12.1");
 
             manifest
                 .DefineScript("jQuery-ui-i18n")
@@ -227,7 +226,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn(codeMirrorUrl + "codemirror.min.js", codeMirrorUrl + "codemirror.js")
-                .SetCdnIntegrity("sha384-EHgRfTYf/UVwKC7GZSYXRKe6qpHVG+k4h3ZFyCtnLSgDj54TTaQpruS8s28W61Ct", "sha384-ne0BPbnDkNs2i0EKuWMke0Q8NkB7XqFrDCxlHA1gO8VUa0+thFLqv7YL/y7fHfhF")
+                .SetCdnIntegrity("sha384-PUGzdyI4n4aIOAbYGObxFYnmOpapiEx7SgYJ3ShL9REjK3MiEZHxhXNDCARRDoSu", "sha384-wIqlyiDCjoeMxHMs808s9W1r5ylkiI6fQiLs56TXm8GhWCO8TRzHzen8tbpdF6X8")
                 .SetVersion(codeMirrorVersion);
 
             manifest

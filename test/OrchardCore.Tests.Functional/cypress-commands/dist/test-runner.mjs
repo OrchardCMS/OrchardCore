@@ -1,7 +1,3 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
 // This module was originally build by the OrchardCore team
 const child_process = require("child_process");
 const fs = require("fs-extra");
@@ -25,7 +21,7 @@ function deleteDirectory(dir) {
 }
 
 // Host the dotnet application, does not rebuild
-function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net5.0' }={}) {
+function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net6.0' }={}) {
   if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
     global.log("Application already built, skipping build");
   } else {
@@ -57,7 +53,7 @@ function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net5
 }
 
 // combines the functions above, useful when triggering tests from CI
-function e2e(dir, assembly, { dotnetVersion='net5.0' }={}) {
+function e2e(dir, assembly, { dotnetVersion='net6.0' }={}) {
   deleteDirectory(path.join(dir, "App_Data_Tests"));
   var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
@@ -77,7 +73,4 @@ function e2e(dir, assembly, { dotnetVersion='net5.0' }={}) {
   });
 }
 
-exports.build = build;
-exports.deleteDirectory = deleteDirectory;
-exports.e2e = e2e;
-exports.host = host;
+export { build, deleteDirectory, e2e, host };

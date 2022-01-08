@@ -383,7 +383,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Settings.Core",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentPreview.Abstractions", "src\OrchardCore\OrchardCore.ContentPreview.Abstractions\OrchardCore.ContentPreview.Abstractions.csproj", "{57EA05E8-0275-4163-8FD1-2B244E396F91}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Tests.Functional", "test\Functional\OrchardCore.Tests.Functional.csproj", "{2CA507BD-5517-4CD2-8F30-093AC5D11EBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Tests.Functional", "test\OrchardCore.Tests.Functional\OrchardCore.Tests.Functional.csproj", "{2CA507BD-5517-4CD2-8F30-093AC5D11EBA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Placements", "src\OrchardCore.Modules\OrchardCore.Placements\OrchardCore.Placements.csproj", "{5F94223B-CD69-47E1-B4AE-DEA03CBC4D3D}"
 EndProject
