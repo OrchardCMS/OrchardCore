@@ -8,14 +8,14 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 #if (UseNLog)
-builder.WebHost.UseNLogWeb();
+builder.Host.UseNLogWeb();
 #endif
 #if (UseSerilog)
-builder.WebHost.UseSerilog((hostingContext, configBuilder) =>
+builder.Host.UseSerilog((hostingContext, configBuilder) =>
                 {
                     configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
                     .Enrich.FromLogContext();
-                })
+                });
 #endif
 
 builder.Services.AddOrchardCms().AddSetupFeatures("OrchardCore.AutoSetup");
