@@ -53,8 +53,7 @@ namespace OrchardCore.Media.Indexing
 
                     foreach (var path in field.Paths)
                     {
-                        var extensionWithoutDot = Path.GetExtension(path).Substring(1);
-                        var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(extensionWithoutDot);
+                        var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
 
                         if (providerType != null)
                         {

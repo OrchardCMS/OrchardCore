@@ -6,7 +6,8 @@ namespace OrchardCore.Media.Indexing
 {
     public class MediaFileIndexingOptions
     {
-        private readonly Dictionary<string, Type> _mediaFileTextProviderRegistrations = new Dictionary<string, Type>(StringComparison.OrdinalIgnoreCase);
+        private readonly Dictionary<string, Type> _mediaFileTextProviderRegistrations =
+            new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
 
         public MediaFileIndexingOptions RegisterMediaFileTextProvider<TMediaFileTextProvider>(string fileExtension)
             where TMediaFileTextProvider : class, IMediaFileTextProvider
@@ -39,12 +40,12 @@ namespace OrchardCore.Media.Indexing
 
         private static string NormalizeFileExtension(string fileExtension)
         {
-            if (fileExtension.StartsWith('.'))
+            if (!fileExtension.StartsWith('.'))
             {
-                throw new ArgumentException("The file extension should be just the extension and not start with a dot.");
+                throw new ArgumentException("The file extension should start with a dot.");
             }
 
-            return fileExtension.ToUpperInvariant();
+            return fileExtension;
         }
     }
 }
