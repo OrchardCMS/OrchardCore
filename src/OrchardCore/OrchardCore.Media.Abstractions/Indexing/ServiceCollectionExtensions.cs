@@ -19,10 +19,10 @@ namespace OrchardCore.Media.Indexing
         /// The file extension of those files, without a leading dot, that the given <see
         /// cref="IMediaFileTextProvider"/> implementation will process.
         /// </param>
-        public static void AddMediaFileTextProvider<TMediaFileTextProvider>(this IServiceCollection services, string fileExtension)
+        public static IServiceCollection AddMediaFileTextProvider<TMediaFileTextProvider>(this IServiceCollection services, string fileExtension)
             where TMediaFileTextProvider : class, IMediaFileTextProvider
         {
-            services.Configure<MediaFileIndexingOptions>(options => options.RegisterMediaFileTextProvider<TMediaFileTextProvider>(fileExtension));
+            return services.Configure<MediaFileIndexingOptions>(options => options.RegisterMediaFileTextProvider<TMediaFileTextProvider>(fileExtension));
         }
     }
 }
