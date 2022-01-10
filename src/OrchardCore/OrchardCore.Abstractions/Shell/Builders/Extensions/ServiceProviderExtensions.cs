@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.Workflows.Helpers
+namespace OrchardCore.Environment.Shell.Builders
 {
     public static class ServiceProviderExtensions
     {
