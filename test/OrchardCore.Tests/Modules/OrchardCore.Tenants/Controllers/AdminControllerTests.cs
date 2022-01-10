@@ -52,11 +52,76 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
         }
 
         [Fact]
-        public async Task CreateTenantShouldChecksHostnameIfItAlreadyUsedInMultipleHostnames()
+        public async Task CreateTenant()
         {
             // Arrange
+            var tenants = new List<(string Name, string UrlPrefix, string Hostname, bool IsValid)>
+            {
+                ("Tenant1", "tenant1", "example1.com", true),
+                ("Tenant2", "", "example1.com,example2.com", true),
+                ("Tenant3", "tenant1", "example1.com", false),
+                ("Tenant4", "", "example1.com", false),
+                ("Tenant5", "", "example2.com", false),
+                ("Tenant6", "tenant1", "example2.com", true),
+                ("Tenant7", "tenant2", "example2.com", true),
+                ("Tenant8", "tenant1", "example3.com", true),
+                ("Tenant9", "tenant2", "example3.com", true)
+            };
+
+            // Act & Assert
+            foreach (var (Name, UrlPrefix, Hostname, IsValid) in tenants)
+            {
+                var controller = CreateController();
+
+                await CreateTenantAsync(controller, Name, UrlPrefix, Hostname);
+
+                Assert.True(IsValid == controller.ModelState.IsValid, $"Fail in {Name}");
+            }
+        }
+
+        [Fact]
+        public async Task CreateTenantShouldChecksHostnameIfItAlreadyUsedInMultipleHostnames()
+        {
+            // Arrange & Act & Assert
+            var controller = CreateController();
+
+            await CreateTenantAsync(controller, "Tenant10", String.Empty, "example4.com, example5.com");
+
+            Assert.True(controller.ModelState.IsValid);
+
+            controller = CreateController();
+
+            await CreateTenantAsync(controller, "Tenant11", String.Empty, "example5.com");
+
+            Assert.False(controller.ModelState.IsValid);
+            Assert.Equal("A tenant with the same host and prefix already exists.", controller.ModelState.First().Value.Errors.First().ErrorMessage);
+        }
+
+        private async static Task<IActionResult> CreateTenantAsync(AdminController controller, string name, string urlPrefix, string urlHost)
+        {
+            var viewModel = new EditTenantViewModel
+            {
+                Name = name,
+                RequestUrlPrefix = urlPrefix,
+                RequestUrlHost = urlHost,
+                FeatureProfile = "Feature Profile"
+            };
+
+            return await controller.Create(viewModel);
+        }
+
+        private AdminController CreateController()
+        {
             var shellSettingsManagerMock = new Mock<IShellSettingsManager>();
-            shellSettingsManagerMock.Setup(sm => sm.CreateDefaultSettings()).Returns(new ShellSettings());
+            shellSettingsManagerMock.Setup(sm => sm.CreateDefaultSettings())
+                .Returns(() =>
+                {
+                    return new ShellSettings
+                    {
+                        Name = ShellHelper.DefaultShellName,
+                        State = TenantState.Running
+                    };
+                });
 
             var authServiceMock = new Mock<IAuthorizationService>(MockBehavior.Strict);
 
@@ -94,27 +159,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 }
             };
 
-            // Act & Assert
-            var result = await CreateTenantAsync(controller, "Tenant1", "example1.com, example2.com");
-
-            Assert.True(controller.ModelState.IsValid);
-
-            result = await CreateTenantAsync(controller, "Tenant2", "example1.com");
-
-            Assert.False(controller.ModelState.IsValid);
-            Assert.Equal("A tenant with the same host and prefix already exists.", controller.ModelState.First().Value.Errors.First().ErrorMessage);
-        }
-
-        private async static Task<IActionResult> CreateTenantAsync(AdminController controller, string name, string url)
-        {
-            var viewModel = new EditTenantViewModel
-            {
-                Name = name,
-                RequestUrlHost = url,
-                FeatureProfile = "Feature Profile"
-            };
-
-            return await controller.Create(viewModel);
+            return controller;
         }
 
         private void SeedTenants()
