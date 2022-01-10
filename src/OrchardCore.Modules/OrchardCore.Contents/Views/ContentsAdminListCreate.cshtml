@@ -16,7 +16,7 @@
                     <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="bulk-action-menu-button">
                         @foreach (var item in Model.CreatableTypes)
                         {
-                            <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>
+                            <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[Html.Encode(item.Text)]</a>
                         }
                     </div>
                 </div>
