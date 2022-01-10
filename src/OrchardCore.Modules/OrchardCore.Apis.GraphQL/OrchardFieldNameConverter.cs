@@ -9,11 +9,13 @@ namespace OrchardCore.Apis.GraphQL
     {
         private readonly INameConverter _defaultConverter = new CamelCaseNameConverter();
 
-        public string NameForArgument(string fieldName, IComplexGraphType parentGraphType, FieldType field)
+        // todo: custom argument name?
+        public string NameForArgument(string argumentName, IComplexGraphType parentGraphType, FieldType field)
         {
-            return _defaultConverter.NameForArgument(fieldName, parentGraphType, field);
+            return _defaultConverter.NameForArgument(argumentName, parentGraphType, field);
         }
 
+        // TODO: check functionality
         public string NameForField(string fieldName, IComplexGraphType parentGraphType)
         {
             var attributes = parentGraphType?.GetType().GetCustomAttributes(typeof(GraphQLFieldNameAttribute), true);
@@ -22,7 +24,6 @@ namespace OrchardCore.Apis.GraphQL
             {
                 foreach (GraphQLFieldNameAttribute attribute in attributes)
                 {
-
                     if (attribute.Field == fieldName)
                     {
                         return attribute.Mapped;

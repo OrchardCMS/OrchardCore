@@ -6,7 +6,6 @@ using GraphQL.NewtonsoftJson;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,15 +39,16 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
+
+            services.AddSingleton<ISchemaFactory, SchemaService>();
+            services.AddScoped<IValidationRule, MaxNumberOfResultsValidationRule>();
+            services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
+
             services.AddSingleton<IErrorInfoProvider>(services =>
             {
                 var settings = services.GetRequiredService<IOptions<GraphQLSettings>>();
                 return new ErrorInfoProvider(new ErrorInfoProviderOptions { ExposeExceptionStackTrace = settings.Value.ExposeExceptions });
             });
-
-            services.AddSingleton<ISchemaFactory, SchemaService>();
-            services.AddScoped<IValidationRule, MaxNumberOfResultsValidationRule>();
-            services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();

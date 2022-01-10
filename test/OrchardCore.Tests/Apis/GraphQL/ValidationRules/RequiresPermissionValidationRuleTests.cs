@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Conversion;
+using GraphQL.Execution;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Authorization;
@@ -123,7 +124,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             });
 
             services.AddScoped<IValidationRule, RequiresPermissionValidationRule>();
-
+            services.AddLocalization();
             var serviceProvider = services.BuildServiceProvider();
 
             return new ExecutionOptions
@@ -132,7 +133,6 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                 Schema = new ValidationSchema(),
                 UserContext = new GraphQLUserContext
                 {
-                    //ServiceProvider = serviceProvider,
                     User = new ClaimsPrincipal(new StubIdentity())
                 },
                 ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>())

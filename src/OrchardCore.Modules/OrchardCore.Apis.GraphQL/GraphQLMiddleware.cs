@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
@@ -15,7 +16,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
@@ -28,7 +28,6 @@ namespace OrchardCore.Apis.GraphQL
         private readonly RequestDelegate _next;
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
-
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
         private readonly static MediaType _jsonMediaType = new MediaType("application/json");
         private readonly static MediaType _graphQlMediaType = new MediaType("application/graphql");
@@ -78,8 +77,6 @@ namespace OrchardCore.Apis.GraphQL
 
         private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService, IDocumentWriter documentWriter)
         {
-           
-
             GraphQLRequest request = null;
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
@@ -151,7 +148,6 @@ namespace OrchardCore.Apis.GraphQL
                 _.OperationName = request.OperationName;
                 _.Inputs = request.Variables.ToInputs();
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
-                _.RequestServices = context.RequestServices;
                 _.ValidationRules = DocumentValidator.CoreRules
                                     .Concat(context.RequestServices.GetServices<IValidationRule>());
                 _.ComplexityConfiguration = new ComplexityConfiguration
@@ -161,16 +157,31 @@ namespace OrchardCore.Apis.GraphQL
                     FieldImpact = _settings.FieldImpact
                 };
                 _.Listeners.Add(dataLoaderDocumentListener);
+                _.RequestServices = context.RequestServices;
             });
 
             context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
                 ? HttpStatusCode.OK
-                : result.Errors.Any(x => x.Code == RequiresPermissionValidationRule.ErrorCode)
+                : result.Errors.Any(x => x is ValidationError ve && ve.Number == RequiresPermissionValidationRule.ErrorCode)
                     ? HttpStatusCode.Unauthorized
                     : HttpStatusCode.BadRequest);
 
             context.Response.ContentType = MediaTypeNames.Application.Json;
-            await documentWriter.WriteAsync(context.Response.Body, result);
+
+            await WriteAsync(context.Response.Body, result, documentWriter);
+        }
+
+        private async Task WriteAsync<T>(Stream stream2, T value, IDocumentWriter documentWriter, CancellationToken cancellationToken = default)
+        {
+            // needs to be always async, otherwise __schema request is not working, direct write into response does not work as serialize is using sync method inside
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                await documentWriter.WriteAsync(stream, value);
+                stream.Seek(0, SeekOrigin.Begin);
+                await stream.CopyToAsync(stream2, cancellationToken);
+            }
         }
 
         private static GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)

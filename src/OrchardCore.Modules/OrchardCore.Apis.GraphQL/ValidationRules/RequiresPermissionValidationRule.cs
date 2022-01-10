@@ -26,14 +26,13 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         public async Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
-            var operationType = OperationType.Query;
+            // shouldn't we access UserContext from validationcontext inside MatchingNodeVisitor actions?
             var userContext = (GraphQLUserContext)validationContext.UserContext;
 
             return await Task.FromResult(new NodeVisitors(
                 new MatchingNodeVisitor<Operation>(async (astType, validationContext) =>
                 {
-                    operationType = astType.OperationType;
-                    await AuthorizeOperationAsync(astType, validationContext, userContext, operationType, astType.Name);
+                    await AuthorizeOperationAsync(astType, validationContext, userContext, astType.OperationType, astType.Name);
                 }),
                 new MatchingNodeVisitor<ObjectField>(async (objectFieldAst, validationContext) =>
                 {
@@ -58,18 +57,6 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
             ));
         }
 
-
-        //private static bool Authorize(IProvideMetadata type, GraphQLUserContext context)
-        //{
-        //    //var authorizationManager = context.ServiceProvider.GetService<IAuthorizationService>();
-
-        //    //// awaitable IValidationRule in graphql dotnet is coming soon:
-        //    //// https://github.com/graphql-dotnet/graphql-dotnet/issues/1140
-        //    //return type.GetPermissions().All(x => authorizationManager.AuthorizeAsync(context.User, x.Permission, x.Resource).GetAwaiter().GetResult());
-
-
-        //}
-
         private async Task AuthorizeOperationAsync(INode node, ValidationContext validationContext, GraphQLUserContext userContext, OperationType? operationType, string operationName)
         {
             if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, Permissions.ExecuteGraphQLMutations)))
@@ -84,7 +71,8 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         private async Task AuthorizeNodePermissionAsync(INode node, IFieldType fieldType, ValidationContext validationContext, GraphQLUserContext userContext)
         {
-            if (!fieldType.HasPermissions()) {
+            if (!fieldType.HasPermissions())
+            {
                 return;
             }
 
@@ -98,7 +86,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                 if (!authorizationResult)
                     AddPermissionValidationError(validationContext, node, fieldType.Name);
             }
-            else 
+            else
             {
                 var tasks = new List<Task<bool>>(permissions.Count());
 

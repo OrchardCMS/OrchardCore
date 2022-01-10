@@ -15,14 +15,16 @@ namespace OrchardCore.Apis.GraphQL.Services
     public class SchemaService : ISchemaFactory
     {
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
+        private readonly IServiceProvider _serviceProvider;
         private readonly SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
         private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new ConcurrentDictionary<ISchemaBuilder, string>();
 
         private ISchema _schema;
 
-        public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders)
+        public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders, IServiceProvider serviceProvider)
         {
             _schemaBuilders = schemaBuilders;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<ISchema> GetSchemaAsync()
@@ -63,7 +65,7 @@ namespace OrchardCore.Apis.GraphQL.Services
 
                 var serviceProvider = ShellScope.Services;
 
-                var schema = new Schema(new SelfActivatingServiceProvider(serviceProvider))
+                var schema = new Schema(new SelfActivatingServiceProvider(_serviceProvider))
                 {
                     Query = new ObjectGraphType { Name = "Query" },
                     Mutation = new ObjectGraphType { Name = "Mutation" },

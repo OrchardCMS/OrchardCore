@@ -77,12 +77,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             JObject where = null;
             if (context.HasArgument("where"))
             {
-                var whereArgument = context.Arguments["where"];
-
-                if (whereArgument.Value != null)
-                {
-                    where = JObject.FromObject(whereArgument.Value);
-                }
+                // context.Arguments[].Value is never null in GraphQL.NET 4
+                where = JObject.FromObject(context.Arguments["where"].Value);
             }
 
             var session = context.RequestServices.GetService<ISession>();
@@ -270,6 +266,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         {
             foreach (var entry in where.Properties())
             {
+                // new typed arguments return default null values
+                if (entry.Value.Type == JTokenType.Undefined || entry.Value.Type == JTokenType.Null)
+                {
+                    continue;
+                }
+
                 IPredicate expression = null;
 
                 var values = entry.Name.Split('_', 2);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.GraphQL.Types;
 using OrchardCore.ContentManagement;
@@ -81,7 +82,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Multi text field",
                     FieldType = typeof(ListGraphType<StringGraphType>),
                     UnderlyingType = typeof(MultiTextField),
-                    FieldAccessor = field => (string[]) field.Content.Values
+                    FieldAccessor = field => ((JArray)field.Content.Values)?.ToObject<string[]>()
                 }
             }
         };
