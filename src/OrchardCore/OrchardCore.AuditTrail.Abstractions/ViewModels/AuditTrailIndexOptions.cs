@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -53,6 +52,6 @@ namespace OrchardCore.AuditTrail.ViewModels
         public List<SelectListItem> AuditTrailSorts { get; set; } = new List<SelectListItem>();
 
         [BindNever]
-        public List<SelectListItem> AuditTrailDates { get; set; }   = new List<SelectListItem>();
+        public List<SelectListItem> AuditTrailDates { get; set; } = new List<SelectListItem>();
     }
 }

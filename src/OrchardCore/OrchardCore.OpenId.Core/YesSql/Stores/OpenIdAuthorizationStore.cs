@@ -146,7 +146,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
                 index => index.ApplicationId == client && index.Subject == subject &&
-                         index.Status == status && index.Type == type, 
+                         index.Status == status && index.Type == type,
                 collection: OpenIdCollection).ToAsyncEnumerable();
         }
 

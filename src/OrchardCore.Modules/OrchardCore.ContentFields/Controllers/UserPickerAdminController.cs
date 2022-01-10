@@ -44,14 +44,14 @@ namespace OrchardCore.ContentFields.Controllers
             {
                 return BadRequest("Part, field and contentType are required parameters");
             }
-            
+
             var contentItem = await _contentManager.NewAsync(contentType);
             contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
-            }            
+            }
 
             var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
                 .FirstOrDefault(f => f.Name == field);

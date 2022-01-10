@@ -62,7 +62,7 @@ namespace OrchardCore.Media.Drivers
                 {
                     if (field.MediaTexts != null)
                     {
-                        for(var i = 0; i < itemPaths.Count(); i++)
+                        for (var i = 0; i < itemPaths.Count(); i++)
                         {
                             if (i >= 0 && i < field.MediaTexts.Length)
                             {
@@ -77,7 +77,7 @@ namespace OrchardCore.Media.Drivers
                     var anchors = field.GetAnchors();
                     if (anchors != null)
                     {
-                        for(var i = 0; i < itemPaths.Count(); i++)
+                        for (var i = 0; i < itemPaths.Count(); i++)
                         {
                             if (i >= 0 && i < anchors.Length)
                             {
