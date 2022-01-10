@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.Media.Indexing
 {
@@ -31,11 +30,6 @@ namespace OrchardCore.Media.Indexing
             }
 
             return null;
-        }
-
-        public bool AnyMediaFileTextProviders()
-        {
-            return _mediaFileTextProviderRegistrations.Any();
         }
 
         private static string NormalizeFileExtension(string fileExtension)

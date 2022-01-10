@@ -46,29 +46,26 @@ namespace OrchardCore.Media.Indexing
                     }
                 }
 
-                if (_mediaFileIndexingOptions.AnyMediaFileTextProviders())
+                // It doesn't really makes sense to store file contents without analyzing them for search as well.
+                var fileIndexingOptions = options | DocumentIndexOptions.Analyze;
+
+                foreach (var path in field.Paths)
                 {
-                    // It doesn't really makes sense to store file contents without analyzing them for search as well.
-                    var fileIndexingOptions = options | DocumentIndexOptions.Analyze;
+                    var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
 
-                    foreach (var path in field.Paths)
+                    if (providerType != null)
                     {
-                        var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
+                        using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
 
-                        if (providerType != null)
+                        if (fileStream != null)
                         {
-                            using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
+                            var fileText = _serviceProvider
+                                .CreateInstance<IMediaFileTextProvider>(providerType)
+                                .GetText(path, fileStream);
 
-                            if (fileStream != null)
+                            foreach (var key in context.Keys)
                             {
-                                var fileText = _serviceProvider
-                                    .CreateInstance<IMediaFileTextProvider>(providerType)
-                                    .GetText(path, fileStream);
-
-                                foreach (var key in context.Keys)
-                                {
-                                    context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, fileIndexingOptions);
-                                }
+                                context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, fileIndexingOptions);
                             }
                         }
                     }
