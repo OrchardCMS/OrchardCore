@@ -17,14 +17,14 @@ namespace OrchardCore.Media.Indexing
         public MediaFileIndexingOptions RegisterMediaFileTextProvider(string fileExtension, Type providerType)
         {
             // Deliberate overwrite behavior so you can override registrations.
-            _mediaFileTextProviderRegistrations[NormalizeFileExtension(fileExtension)] = providerType;
+            _mediaFileTextProviderRegistrations[ValidateFileExtension(fileExtension)] = providerType;
 
             return this;
         }
 
         public Type GetRegisteredMediaFileTextProvider(string fileExtension)
         {
-            if (_mediaFileTextProviderRegistrations.TryGetValue(NormalizeFileExtension(fileExtension), out var providerType))
+            if (_mediaFileTextProviderRegistrations.TryGetValue(ValidateFileExtension(fileExtension), out var providerType))
             {
                 return providerType;
             }
@@ -32,7 +32,7 @@ namespace OrchardCore.Media.Indexing
             return null;
         }
 
-        private static string NormalizeFileExtension(string fileExtension)
+        private static string ValidateFileExtension(string fileExtension)
         {
             if (!fileExtension.StartsWith('.'))
             {
