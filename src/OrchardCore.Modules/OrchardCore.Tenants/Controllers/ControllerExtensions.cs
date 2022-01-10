@@ -11,9 +11,9 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
 {
-    internal static class ControllerExtensions
+    public static class ControllerExtensions
     {
-        internal static async Task ValidateModelAsync<TViewModel>(this Controller controller, TViewModel model, bool newTenant = true) where TViewModel : TenantViewModel
+        public static async Task ValidateModelAsync<TViewModel>(this Controller controller, TViewModel model, bool newTenant = true) where TViewModel : TenantViewModel
         {
             var shellHost = controller.HttpContext.RequestServices.GetService<IShellHost>();
             var featureProfilesService = controller.HttpContext.RequestServices.GetService<IFeatureProfilesService>();
