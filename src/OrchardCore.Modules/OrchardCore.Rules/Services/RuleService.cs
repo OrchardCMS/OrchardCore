@@ -14,7 +14,7 @@ namespace OrchardCore.Rules.Services
 
         public async ValueTask<bool> EvaluateAsync(Rule rule)
         {
-            foreach(var childCondition in rule.Conditions)
+            foreach (var childCondition in rule.Conditions)
             {
                 var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
                 if (!await evaluator.EvaluateAsync(childCondition))
@@ -29,7 +29,7 @@ namespace OrchardCore.Rules.Services
             }
 
             // This rule requires all conditions to be evaluated as true.
-            return false;            
+            return false;
         }
     }
 }

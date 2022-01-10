@@ -31,7 +31,7 @@ namespace OrchardCore.ContentLocalization
                 var settings = (await siteService.GetSiteSettingsAsync()).As<ContentRequestCultureProviderSettings>();
                 if (settings.SetCookie)
                 {
-                     culturePickerService.SetContentCulturePickerCookie(localization.Culture);
+                    culturePickerService.SetContentCulturePickerCookie(localization.Culture);
                 }
 
                 return new ProviderCultureResult(localization.Culture);

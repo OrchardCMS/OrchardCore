@@ -36,7 +36,7 @@ namespace OrchardCore.Menu.Drivers
             _notifier = notifier;
             _logger = logger;
         }
-        
+
         public override IDisplayResult Edit(MenuPart part)
         {
             return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
@@ -54,7 +54,7 @@ namespace OrchardCore.Menu.Drivers
                     }
                 }
 
-                if(notify)
+                if (notify)
                 {
                     await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
                 }

@@ -118,7 +118,7 @@ namespace OrchardCore.Autoroute.Drivers
                 {
                     var path = model.Path.Trim('/');
                     var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
-                    
+
                     var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
                     if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId && x.ContainedContentItemId != model.ContentItem.ContentItemId))
                     {

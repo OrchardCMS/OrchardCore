@@ -8,9 +8,9 @@ using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Spatial.Drivers;
+using OrchardCore.Spatial.Fields;
 using OrchardCore.Spatial.Indexing;
 using OrchardCore.Spatial.ViewModels;
-using OrchardCore.Spatial.Fields;
 
 namespace OrchardCore.Spatial
 {

@@ -51,10 +51,10 @@ namespace OrchardCore.AuditTrail.Services.Models
             {
                 var stringLocalizer = (IStringLocalizer)sp.GetService(typeof(IStringLocalizer<>).MakeGenericType(typeof(TLocalizer)));
                 return selectListItem(stringLocalizer, opt, model);
-            };;
+            }; ;
 
             return this;
-        }        
+        }
 
         /// <summary>
         /// Sets this query option as the default which will be applied when no option has been selected.
@@ -72,5 +72,5 @@ namespace OrchardCore.AuditTrail.Services.Models
 
             return option;
         }
-    }  
+    }
 }

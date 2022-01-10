@@ -16,20 +16,20 @@
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="Fluid.Core" Version="2.2.8" />
+    <PackageManagement Include="Fluid.Core" Version="2.2.13" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2037" />
-    <PackageManagement Include="HtmlSanitizer" Version="6.0.453" />
+    <PackageManagement Include="HtmlSanitizer" Version="7.0.473" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00015" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00015" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00015" />
     <PackageManagement Include="Lucene.Net.Spatial" Version="4.8.0-beta00015" />
-    <PackageManagement Include="MailKit" Version="2.15.0" />
+    <PackageManagement Include="MailKit" Version="3.0.0" />
     <PackageManagement Include="Markdig" Version="0.26.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageManagement Include="MimeKit" Version="2.15.1" />
+    <PackageManagement Include="MimeKit" Version="3.0.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
     <PackageManagement Include="Moq" Version="4.16.1" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
@@ -39,20 +39,20 @@
     <PackageManagement Include="NodaTime" Version="3.0.9" />
     <PackageManagement Include="OpenIddict.AspNetCore" Version="3.1.1" />
     <PackageManagement Include="OpenIddict.Core" Version="3.1.1" />
-    <PackageManagement Include="OrchardCore.Translations.All" Version="1.1.0" />
+    <PackageManagement Include="OrchardCore.Translations.All" Version="1.2.0" />
     <PackageManagement Include="Serilog.AspNetCore" Version="4.1.0" />
-    <PackageManagement Include="Shortcodes" Version="1.3.0" />
-    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.4" />
+    <PackageManagement Include="Shortcodes" Version="1.3.3" />
+    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.5" />
     <PackageManagement Include="System.Linq.Async" Version="5.1.0" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.3" />
-    <PackageManagement Include="YesSql" Version="3.0.10" />
-    <PackageManagement Include="YesSql.Core" Version="3.0.10" />
-    <PackageManagement Include="YesSql.Abstractions" Version="3.0.10" />
-    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.0.10" />
-    <PackageManagement Include="YesSql.Filters.Query" Version="3.0.10" />
-    <PackageManagement Include="ZString" Version="2.4.3" />
+    <PackageManagement Include="YesSql" Version="3.0.12" />
+    <PackageManagement Include="YesSql.Core" Version="3.0.12" />
+    <PackageManagement Include="YesSql.Abstractions" Version="3.0.12" />
+    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.0.12" />
+    <PackageManagement Include="YesSql.Filters.Query" Version="3.0.12" />
+    <PackageManagement Include="ZString" Version="2.4.4" />
   </ItemGroup>
 
 </Project>

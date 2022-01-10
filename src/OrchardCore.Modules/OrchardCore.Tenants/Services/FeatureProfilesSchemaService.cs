@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NJsonSchema;
@@ -39,7 +38,7 @@ namespace OrchardCore.Tenants.Services
                     Description = "The rule to apply to this expression"
                 };
 
-                foreach(var ruleOption in _featureProfilesRuleOptions.Rules.Keys)
+                foreach (var ruleOption in _featureProfilesRuleOptions.Rules.Keys)
                 {
                     ruleProperty.Enumeration.Add(ruleOption);
                 }

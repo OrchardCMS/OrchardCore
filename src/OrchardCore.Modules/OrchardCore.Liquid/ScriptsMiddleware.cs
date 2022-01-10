@@ -59,7 +59,7 @@ namespace OrchardCore.Liquid
                         etag = Guid.NewGuid().ToString("n");
                         bytes = Encoding.UTF8.GetBytes(script);
                     }
-                   
+
                     httpContext.Response.Headers[HeaderNames.CacheControl] = cacheControl;
                     httpContext.Response.Headers[HeaderNames.ContentType] = "application/javascript";
                     httpContext.Response.Headers[HeaderNames.ETag] = etag;

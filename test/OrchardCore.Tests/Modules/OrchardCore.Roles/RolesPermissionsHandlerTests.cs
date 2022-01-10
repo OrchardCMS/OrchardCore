@@ -125,7 +125,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
         {
             var roleManager = RolesMockHelper.MockRoleManager<IRole>();
 
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
                 roleManager.Setup(m => m.FindByNameAsync(role.RoleName)).ReturnsAsync(role);
             }

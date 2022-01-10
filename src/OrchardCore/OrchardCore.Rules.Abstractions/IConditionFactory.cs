@@ -15,6 +15,6 @@ namespace OrchardCore.Rules
             => new TCondition()
             {
                 Name = this.Name
-            };     
+            };
     }
 }
