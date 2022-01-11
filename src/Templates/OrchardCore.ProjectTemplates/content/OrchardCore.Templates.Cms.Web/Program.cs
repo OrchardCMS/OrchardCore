@@ -18,7 +18,7 @@ builder.Host.UseSerilog((hostingContext, configBuilder) =>
                 });
 #endif
 
-builder.Services.AddOrchardCms().AddSetupFeatures("OrchardCore.AutoSetup");
+builder.Services.AddOrchardCms();
 
 var app = builder.Build();
 
