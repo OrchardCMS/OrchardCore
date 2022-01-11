@@ -184,7 +184,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
         {
             var serviceProvider = new Mock<IServiceProvider>();
             var urlHelperFactoryMock = Mock.Of<IUrlHelperFactory>();
-            var stringLocalizerMock = new Mock<IStringLocalizer<ControllerExtensions>>();
+            var stringLocalizerMock = new Mock<IStringLocalizer<EditTenantViewModel>>();
 
             stringLocalizerMock
                 .Setup(l => l[It.IsAny<string>()])
@@ -206,7 +206,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 .Setup(x => x.GetService(typeof(IEnumerable<DatabaseProvider>)))
                 .Returns(Enumerable.Empty<DatabaseProvider>());
             serviceProvider
-                .Setup(x => x.GetService(typeof(IStringLocalizer<ControllerExtensions>)))
+                .Setup(x => x.GetService(typeof(IStringLocalizer<EditTenantViewModel>)))
                 .Returns(stringLocalizerMock.Object);
             serviceProvider
                 .Setup(x => x.GetService(typeof(IUrlHelperFactory)))

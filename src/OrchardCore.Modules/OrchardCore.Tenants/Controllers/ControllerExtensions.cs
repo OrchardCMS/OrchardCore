@@ -18,7 +18,7 @@ namespace OrchardCore.Tenants.Controllers
             var shellHost = controller.HttpContext.RequestServices.GetService<IShellHost>();
             var featureProfilesService = controller.HttpContext.RequestServices.GetService<IFeatureProfilesService>();
             var databaseProviders = controller.HttpContext.RequestServices.GetServices<DatabaseProvider>();
-            var S = controller.HttpContext.RequestServices.GetService<IStringLocalizer<ControllerExtensions>>();
+            var S = controller.HttpContext.RequestServices.GetService<IStringLocalizer<TViewModel>>();
 
             var selectedProvider = databaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
 
