@@ -60,7 +60,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var allOtherShells = allSettings.Where(t => !String.Equals(t.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-            if (allOtherShells.Any(t => String.Equals(t.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && (t.RequestUrlHost?.Contains(model.RequestUrlHost, StringComparison.OrdinalIgnoreCase) ?? false)))
+            if (allOtherShells.Any(t => (model.RequestUrlPrefix?.Trim()?.Equals(t.RequestUrlPrefix, StringComparison.OrdinalIgnoreCase) ?? false) && (t.RequestUrlHost?.Contains(model.RequestUrlHost, StringComparison.OrdinalIgnoreCase) ?? false)))
             {
                 controller.ModelState.AddModelError(nameof(TenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
             }

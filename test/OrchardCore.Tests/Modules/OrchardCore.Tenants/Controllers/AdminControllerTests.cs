@@ -65,7 +65,8 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 ("Tenant6", "tenant1", "example2.com", true),
                 ("Tenant7", "tenant2", "example2.com", true),
                 ("Tenant8", "tenant1", "example3.com", true),
-                ("Tenant9", "tenant2", "example3.com", true)
+                ("Tenant9", "tenant2", "example3.com", true),
+                ("Tenant10", null, "example4.com", true)
             };
 
             // Act & Assert
@@ -75,7 +76,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
 
                 await CreateTenantAsync(controller, Name, UrlPrefix, Hostname);
 
-                Assert.True(IsValid == controller.ModelState.IsValid, $"Fail in {Name}");
+                Assert.True(IsValid == controller.ModelState.IsValid);
             }
         }
 
@@ -85,13 +86,13 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
             // Arrange & Act & Assert
             var controller = CreateController();
 
-            await CreateTenantAsync(controller, "Tenant10", String.Empty, "example4.com, example5.com");
+            await CreateTenantAsync(controller, "Tenant11", String.Empty, "example5.com, example6.com");
 
             Assert.True(controller.ModelState.IsValid);
 
             controller = CreateController();
 
-            await CreateTenantAsync(controller, "Tenant11", String.Empty, "example5.com");
+            await CreateTenantAsync(controller, "Tenant12", String.Empty, "example6.com");
 
             Assert.False(controller.ModelState.IsValid);
             Assert.Equal("A tenant with the same host and prefix already exists.", controller.ModelState.First().Value.Errors.First().ErrorMessage);
