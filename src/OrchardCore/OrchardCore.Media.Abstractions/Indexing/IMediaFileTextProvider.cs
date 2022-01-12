@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Media.Indexing
 {
@@ -13,6 +14,6 @@ namespace OrchardCore.Media.Indexing
         /// <param name="path">The full relative path of the media file.</param>
         /// <param name="fileStream">The <see cref="Stream"/> that can be used to access the file's content.</param>
         /// <returns>The textual representation of the media file.</returns>
-        string GetText(string path, Stream fileStream);
+        Task<string> GetTextAsync(string path, Stream fileStream);
     }
 }
