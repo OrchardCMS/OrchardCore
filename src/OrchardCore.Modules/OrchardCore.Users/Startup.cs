@@ -222,6 +222,8 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
             services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
 
+            services.AddScoped<DefaultControllerService>();
+
             services.AddSingleton<IUsersAdminListFilterParser>(sp =>
             {
                 var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
@@ -237,8 +239,6 @@ namespace OrchardCore.Users
             });
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
-            services.AddTransient<DefaultControllerService>();
-
         }
     }
 
