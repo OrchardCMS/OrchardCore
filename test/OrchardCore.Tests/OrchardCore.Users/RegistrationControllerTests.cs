@@ -182,7 +182,21 @@ namespace OrchardCore.Tests.OrchardCore.Users
             mockDisplayHelper.Setup(x => x.ShapeExecuteAsync(It.IsAny<IShape>()))
                 .ReturnsAsync(HtmlString.Empty);
 
+            var mockSignInManager = MockSignInManager(mockUserManager.Object);
+
+            var controllerService = new DefaultControllerService(
+                mockSmtpService,
+                mockDisplayHelper.Object,
+                HtmlEncoder.Default,
+                Enumerable.Empty<IRegistrationFormEvents>(),
+                userService.Object,
+                mockSiteService,
+                mockSignInManager.Object,
+                mockUserManager.Object,
+                Mock.Of<ILogger<DefaultControllerService>>());
+
             var controller = new RegistrationController(
+                controllerService,
                 mockUserManager.Object,
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
@@ -213,7 +227,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Returns(userService.Object);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(SignInManager<IUser>)))
-                .Returns(MockSignInManager(mockUserManager.Object).Object);
+                .Returns(mockSignInManager.Object);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(ITempDataDictionaryFactory)))
                 .Returns(Mock.Of<ITempDataDictionaryFactory>());
