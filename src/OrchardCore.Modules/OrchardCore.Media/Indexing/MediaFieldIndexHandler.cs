@@ -59,9 +59,9 @@ namespace OrchardCore.Media.Indexing
 
                         if (fileStream != null)
                         {
-                            var fileText = _serviceProvider
+                            var fileText = await _serviceProvider
                                 .CreateInstance<IMediaFileTextProvider>(providerType)
-                                .GetText(path, fileStream);
+                                .GetTextAsync(path, fileStream);
 
                             foreach (var key in context.Keys)
                             {
