@@ -237,6 +237,7 @@ namespace OrchardCore.Users
             });
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
+            services.AddTransient<DefaultControllerService>();
 
         }
     }

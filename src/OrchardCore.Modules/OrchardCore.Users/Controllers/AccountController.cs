@@ -31,6 +31,7 @@ namespace OrchardCore.Users.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private readonly DefaultControllerService _controllerService;
         private readonly IUserService _userService;
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
@@ -47,6 +48,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IStringLocalizer S;
 
         public AccountController(
+            DefaultControllerService controllerService,
             IUserService userService,
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
@@ -62,6 +64,7 @@ namespace OrchardCore.Users.Controllers
             IDataProtectionProvider dataProtectionProvider,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
         {
+            _controllerService = controllerService;
             _signInManager = signInManager;
             _userManager = userManager;
             _userService = userService;
@@ -470,13 +473,13 @@ namespace OrchardCore.Users.Controllers
 
                         if (noInformationRequired)
                         {
-                            iUser = await this.RegisterUser(new RegisterViewModel()
+                            iUser = await _controllerService.RegisterUser(this, new RegisterViewModel()
                             {
                                 UserName = externalLoginViewModel.UserName,
                                 Email = externalLoginViewModel.Email,
                                 Password = null,
                                 ConfirmPassword = null
-                            }, S["Confirm your account"], _logger);
+                            }, S["Confirm your account"]);
 
                             // If the registration was successful we can link the external provider and redirect the user
                             if (iUser != null)
@@ -586,7 +589,8 @@ namespace OrchardCore.Users.Controllers
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
-                iUser = await this.RegisterUser(new RegisterViewModel() { UserName = model.UserName, Email = model.Email, Password = model.Password, ConfirmPassword = model.ConfirmPassword }, S["Confirm your account"], _logger);
+                iUser = await _controllerService.RegisterUser(this, new RegisterViewModel() { UserName = model.UserName, Email = model.Email, Password = model.Password, ConfirmPassword = model.ConfirmPassword }, S["Confirm your account"]);
+
                 if (iUser is null)
                 {
                     ModelState.AddModelError(string.Empty, "Registration Failed.");
