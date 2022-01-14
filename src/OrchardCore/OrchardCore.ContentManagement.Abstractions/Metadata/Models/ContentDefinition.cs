@@ -1,7 +1,7 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
 {
@@ -24,7 +24,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             }
 
             var namedSettings = NamedSettings;
-            
+
             if (!namedSettings.TryGetValue(typeof(T), out var result))
             {
                 var typeName = typeof(T).Name;

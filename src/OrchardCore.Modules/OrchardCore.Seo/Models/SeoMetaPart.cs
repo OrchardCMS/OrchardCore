@@ -1,8 +1,8 @@
 using System;
-using OrchardCore.ContentManagement;
-using OrchardCore.ResourceManagement;
-using OrchardCore.Media.Fields;
 using System.ComponentModel;
+using OrchardCore.ContentManagement;
+using OrchardCore.Media.Fields;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Seo.Models
 {
@@ -26,18 +26,18 @@ namespace OrchardCore.Seo.Models
 
         public MediaField DefaultSocialImage { get; set; }
 
-        
+
         public MediaField OpenGraphImage { get; set; }
         public string OpenGraphType { get; set; }
-        public string OpenGraphTitle { get; set; } 
-        public string OpenGraphDescription { get; set; } 
+        public string OpenGraphTitle { get; set; }
+        public string OpenGraphDescription { get; set; }
 
         public MediaField TwitterImage { get; set; }
         public string TwitterTitle { get; set; }
         public string TwitterDescription { get; set; }
         public string TwitterCard { get; set; }
         public string TwitterCreator { get; set; }
-        public string TwitterSite { get; set; }        
+        public string TwitterSite { get; set; }
 
         public string GoogleSchema { get; set; }
     }

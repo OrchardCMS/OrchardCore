@@ -209,7 +209,7 @@ namespace OrchardCore.Placements.Controllers
                     await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
                 }
             }
-            catch(JsonReaderException jsonException)
+            catch (JsonReaderException jsonException)
             {
                 await _notifier.ErrorAsync(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
                 return View(viewModel);

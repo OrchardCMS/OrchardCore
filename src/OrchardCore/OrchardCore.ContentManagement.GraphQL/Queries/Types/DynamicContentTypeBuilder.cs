@@ -38,12 +38,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 var partName = part.Name;
 
                 // This builder only handles parts with fields.
-                if (!part.PartDefinition.Fields.Any()) 
+                if (!part.PartDefinition.Fields.Any())
                 {
                     continue;
                 }
 
-                if (_contentOptions.ShouldSkip(part)) 
+                if (_contentOptions.ShouldSkip(part))
                 {
                     continue;
                 }
@@ -58,7 +58,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                             if (fieldType != null)
                             {
-                                if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name)) 
+                                if (_contentOptions.ShouldSkip(fieldType.Type, fieldType.Name))
                                 {
                                     continue;
                                 }

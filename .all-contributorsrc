@@ -2470,6 +2470,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "ShaneCourtrille",
+      "name": "Shane Courtrille",
+      "avatar_url": "https://avatars.githubusercontent.com/u/121610?v=4",
+      "profile": "https://github.com/ShaneCourtrille",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
