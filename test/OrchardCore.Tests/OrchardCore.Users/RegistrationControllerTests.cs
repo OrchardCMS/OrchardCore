@@ -184,16 +184,14 @@ namespace OrchardCore.Tests.OrchardCore.Users
 
             var mockSignInManager = MockSignInManager(mockUserManager.Object);
 
-            var controllerService = new DefaultControllerService(
+            var controllerService = new DefaultUserControllerService(
                 mockSmtpService,
-                mockDisplayHelper.Object,
-                HtmlEncoder.Default,
                 Enumerable.Empty<IRegistrationFormEvents>(),
                 userService.Object,
                 mockSiteService,
                 mockSignInManager.Object,
                 mockUserManager.Object,
-                Mock.Of<ILogger<DefaultControllerService>>());
+                Mock.Of<ILogger<DefaultUserControllerService>>());
 
             var controller = new RegistrationController(
                 controllerService,

@@ -222,7 +222,7 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayManager<UserIndexOptions>, DisplayManager<UserIndexOptions>>();
             services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
 
-            services.AddScoped<DefaultControllerService>();
+            services.AddScoped<DefaultUserControllerService>();
 
             services.AddSingleton<IUsersAdminListFilterParser>(sp =>
             {

@@ -31,7 +31,7 @@ namespace OrchardCore.Users.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly DefaultControllerService _controllerService;
+        private readonly DefaultUserControllerService _userControllerService;
         private readonly IUserService _userService;
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
@@ -48,7 +48,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IStringLocalizer S;
 
         public AccountController(
-            DefaultControllerService controllerService,
+            DefaultUserControllerService userControllerService,
             IUserService userService,
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
@@ -64,7 +64,7 @@ namespace OrchardCore.Users.Controllers
             IDataProtectionProvider dataProtectionProvider,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
         {
-            _controllerService = controllerService;
+            _userControllerService = userControllerService;
             _signInManager = signInManager;
             _userManager = userManager;
             _userService = userService;
@@ -473,7 +473,7 @@ namespace OrchardCore.Users.Controllers
 
                         if (noInformationRequired)
                         {
-                            iUser = await _controllerService.RegisterUser(this, new RegisterViewModel()
+                            iUser = await _userControllerService.RegisterUser(Url, new RegisterViewModel()
                             {
                                 UserName = externalLoginViewModel.UserName,
                                 Email = externalLoginViewModel.Email,
@@ -589,7 +589,7 @@ namespace OrchardCore.Users.Controllers
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
-                iUser = await _controllerService.RegisterUser(this, new RegisterViewModel() { UserName = model.UserName, Email = model.Email, Password = model.Password, ConfirmPassword = model.ConfirmPassword }, S["Confirm your account"]);
+                iUser = await _userControllerService.RegisterUser(Url, new RegisterViewModel() { UserName = model.UserName, Email = model.Email, Password = model.Password, ConfirmPassword = model.ConfirmPassword }, S["Confirm your account"]);
 
                 if (iUser is null)
                 {

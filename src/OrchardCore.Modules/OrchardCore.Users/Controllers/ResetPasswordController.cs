@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -20,7 +21,7 @@ namespace OrchardCore.Users.Controllers
     [Feature("OrchardCore.Users.ResetPassword")]
     public class ResetPasswordController : Controller
     {
-        private readonly DefaultControllerService _controllerService;
+        private readonly ISmtpService _smtpService;
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
@@ -29,7 +30,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IStringLocalizer S;
 
         public ResetPasswordController(
-            DefaultControllerService controllerService,
+            ISmtpService smtpService,
             IUserService userService,
             UserManager<IUser> userManager,
             ISiteService siteService,
@@ -37,7 +38,7 @@ namespace OrchardCore.Users.Controllers
             ILogger<ResetPasswordController> logger,
             IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents)
         {
-            _controllerService = controllerService;
+            _smtpService = smtpService;
             _userService = userService;
             _userManager = userManager;
             _siteService = siteService;
@@ -85,7 +86,7 @@ namespace OrchardCore.Users.Controllers
                 user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
                 var resetPasswordUrl = Url.Action("ResetPassword", "ResetPassword", new { code = user.ResetToken }, HttpContext.Request.Scheme);
                 // send email with callback link
-                await _controllerService.SendEmailAsync(user.Email, S["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
+                await _smtpService.SendAsync(user.Email, S["Reset your password"], new LostPasswordViewModel() { User = user, LostPasswordUrl = resetPasswordUrl });
 
                 var context = new PasswordRecoveryContext(user);
 
