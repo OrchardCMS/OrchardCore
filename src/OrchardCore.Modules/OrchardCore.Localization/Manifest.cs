@@ -15,7 +15,6 @@ using OrchardCore.Modules.Manifest;
     Category = "Internationalization"
 )]
 
-#if NET5_0_OR_GREATER
 [assembly: Feature(
     Id = "OrchardCore.Localization.ContentLanguageHeader",
     Name = "Content Language Header",
@@ -23,4 +22,3 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.Localization" },
     Category = "Internationalization"
 )]
-#endif
