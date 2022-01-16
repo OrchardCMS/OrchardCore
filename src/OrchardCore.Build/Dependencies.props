@@ -52,7 +52,7 @@
     <PackageManagement Include="YesSql.Abstractions" Version="3.0.10" />
     <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.0.10" />
     <PackageManagement Include="YesSql.Filters.Query" Version="3.0.10" />
-    <PackageManagement Include="ZString" Version="2.4.3" />
+    <PackageManagement Include="ZString" Version="2.4.4" />
   </ItemGroup>
 
 </Project>
