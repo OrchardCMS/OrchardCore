@@ -607,7 +607,7 @@ namespace OrchardCore.Tenants.Controllers
             {
                 var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
 
-                foreach(var featureProfile in model.FeatureProfiles)
+                foreach (var featureProfile in model.FeatureProfiles)
                 {
                     if (!featureProfiles.ContainsKey(featureProfile))
                     {
