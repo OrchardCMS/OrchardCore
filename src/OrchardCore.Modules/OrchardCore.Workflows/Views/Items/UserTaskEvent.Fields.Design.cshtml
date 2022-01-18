@@ -1,4 +1,3 @@
-@using Microsoft.AspNetCore.Html
 @using OrchardCore.Workflows.UserTasks.Activities;
 @model ActivityViewModel<UserTaskEvent>
 
@@ -9,7 +8,7 @@
 @if (Model.Activity.Actions.Any())
 {
     <span>@T["Request any user action of <em>{0}</em>", string.Join(", ", Model.Activity.Actions)]</span><br />
-    <span>@T["Required roles: <em>{0}</em>", Model.Activity.Roles.Any() ? (IHtmlContent)Html.Encode(string.Join(", ", Model.Activity.Roles)) : (IHtmlContent)T["Any"]]</span>
+    <span>@T["Required roles: <em>{0}</em>", Model.Activity.Roles.Any() ? Html.Raw(Html.Encode(string.Join(", ", Model.Activity.Roles))) : T["Any"]]</span>
 }
 else
 {
