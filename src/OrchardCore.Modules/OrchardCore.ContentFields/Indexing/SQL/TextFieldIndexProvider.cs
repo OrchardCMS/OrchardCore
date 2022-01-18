@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.Indexing;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
@@ -90,6 +91,10 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         {
                             continue;
                         }
+
+                        var contentIndexSettings = fieldDefinition.GetSettings<ContentIndexSettings>();
+                        if (!contentIndexSettings.Included)
+                            continue;
 
                         var field = jField.ToObject<TextField>();
 
