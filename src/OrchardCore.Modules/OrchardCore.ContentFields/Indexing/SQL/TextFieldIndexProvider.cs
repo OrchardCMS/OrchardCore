@@ -94,7 +94,9 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
                         var contentIndexSettings = fieldDefinition.GetSettings<ContentIndexSettings>();
                         if (!contentIndexSettings.Included)
+                        {
                             continue;
+                        }                            
 
                         var field = jField.ToObject<TextField>();
 
