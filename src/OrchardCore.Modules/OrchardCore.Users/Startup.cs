@@ -75,6 +75,14 @@ namespace OrchardCore.Users
                 pattern: userOptions.ChangePasswordUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
+
+            routes.MapAreaControllerRoute(
+                name: "ChangePasswordConfirmation",
+                areaName: "OrchardCore.Users",
+                pattern: userOptions.ChangePasswordConfirmationUrl,
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePasswordConfirmation) }
+            );
+
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
