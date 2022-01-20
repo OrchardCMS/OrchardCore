@@ -2,7 +2,7 @@
 
 We follow a similar coding style as [dotnet/runtime](https://github.com/dotnet/runtime).
 
-For non code files (xml, etc), our current best guidance is consistency. When editing files, keep new code and changes consistent with the style in the files. For new files, it should conform to the style for that component. If there is a completely new component, anything that is reasonably broadly accepted is fine.
+For non-code files (xml, etc), our current best guidance is consistency. When editing files, keep new code and changes consistent with the style in the files. For new files, it should conform to the style for that component. If there is a completely new component, anything that is reasonably broadly accepted is fine.
 
 The general rule we follow is "_use Visual Studio defaults_".
 
