@@ -453,6 +453,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       cx.state.localVars = null;
     }
 
+    pushcontext.lex = pushblockcontext.lex = true;
+
     function popcontext() {
       cx.state.localVars = cx.state.context.vars;
       cx.state.context = cx.state.context.prev;
