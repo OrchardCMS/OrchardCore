@@ -3,8 +3,8 @@
 <div class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="ContentIndexSettings.Included" data-toggle="collapse" data-target="#index-settings" checked="@Model.ContentIndexSettings.Included" />
-        <label class="custom-control-label" asp-for="ContentIndexSettings.Included">@T["Include this element in the index"]</label>
-        <span class="hint dashed">@T["Check to include the value of this element in the index."]</span>
+        <label class="custom-control-label" asp-for="ContentIndexSettings.Included">@T["Include this element in the Lucene index"]</label>
+        <span class="hint dashed">@T["Check to include the value of this element in the Lucene index."]</span>
     </div>
     <div id="index-settings" class="collapse">
 
@@ -19,6 +19,11 @@
             <label class="custom-control-label" asp-for="ContentIndexSettings.Analyzed">@T["Analyzed"]</label>
             <span class="hint dashed">@T["Check to analyze the value as readable text."]</span>
         </div>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="ContentIndexSettings.SQLIncluded" checked="@Model.ContentIndexSettings.SQLIncluded" />
+        <label class="custom-control-label" asp-for="ContentIndexSettings.SQLIncluded">@T["Include this element in the SQL index"]</label>
+        <span class="hint dashed">@T["Check to include the value of this element in the SQL index."]</span>
     </div>
 </div>
 

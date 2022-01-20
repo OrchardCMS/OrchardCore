@@ -87,7 +87,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         }
 
                         var contentIndexSettings = fieldDefinition.GetSettings<ContentIndexSettings>();
-                        if (!contentIndexSettings.Included)
+                        if (!contentIndexSettings.SQLIncluded)
                         {
                             continue;
                         }
