@@ -38,6 +38,8 @@ namespace OrchardCore.Tenants.Drivers
 
             return Task.FromResult<IDisplayResult>(Initialize<FeatureProfileViewModel>(nameof(FeatureProfileViewModel), vm =>
             {
+                // For backward compatibility, we use the name as id where id does not exists
+                // the id is immutable whereas the name is mutable
                 vm.Id = model.Id ?? model.Name;
                 vm.Name = model.Name;
                 vm.FeatureRules = JsonConvert.SerializeObject(model.FeatureRules, Formatting.Indented);
@@ -77,14 +79,10 @@ namespace OrchardCore.Tenants.Drivers
 
         private static bool FeatureExists(FeatureProfile model, FeatureProfilesDocument featureProfilesDocument, bool isNew)
         {
+            // For backward compatibility, we use the key value as the name when the new name property isn't set
             var profiles = featureProfilesDocument.FeatureProfiles.Where(x => (x.Value.Name ?? x.Key).Equals(model.Name, StringComparison.OrdinalIgnoreCase));
 
-            if (isNew)
-            {
-                return profiles.Any();
-            }
-
-            return profiles.Any(x => x.Key != model.Id);
+            return profiles.Any(x => isNew || x.Key != model.Id);
         }
     }
 }

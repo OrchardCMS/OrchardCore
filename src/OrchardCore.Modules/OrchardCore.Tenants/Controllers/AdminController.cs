@@ -611,7 +611,7 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     if (!featureProfiles.ContainsKey(featureProfile))
                     {
-                        ModelState.AddModelError(nameof(EditTenantViewModel.FeatureProfiles), S["The feature profile does not exist.", model.FeatureProfiles]);
+                        ModelState.AddModelError(nameof(EditTenantViewModel.FeatureProfiles), S["The feature profile {0} does not exist.", model.FeatureProfiles]);
                     }
                 }
 
@@ -621,7 +621,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (newTenant && allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
+                ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists."]);
             }
 
             if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
@@ -637,7 +637,7 @@ namespace OrchardCore.Tenants.Controllers
             var allOtherShells = allSettings.Where(tenant => !string.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase));
             if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && String.Equals(tenant.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
             {
-                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
+                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]);
             }
 
             if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))

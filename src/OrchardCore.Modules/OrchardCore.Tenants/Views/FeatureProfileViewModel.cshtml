@@ -18,8 +18,8 @@
     <div class="col-12">
         <div class="form-group" asp-validation-class-for="FeatureRules">
             <label asp-for="FeatureRules">@T["Rules"]</label>
-            <div class="form-control" style="min-height: 400px;">
-                <div id="@Html.IdFor(x => x.FeatureRules)_editor" asp-for="FeatureRules" style="min-height: 385px;"  dir="@Orchard.CultureDir()" data-schema="@schema"></div>
+            <div class="form-control" style="min-height: 25rem;">
+                <div id="@Html.IdFor(x => x.FeatureRules)_editor" asp-for="FeatureRules" class="h-100"  dir="@Orchard.CultureDir()" data-schema="@schema"></div>
             </div>
             <textarea asp-for="FeatureRules" hidden></textarea>
             <span asp-validation-for="FeatureRules"></span>

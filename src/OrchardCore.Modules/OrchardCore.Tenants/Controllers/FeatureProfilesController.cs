@@ -150,14 +150,14 @@ namespace OrchardCore.Tenants.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
-            {
-                return Forbid();
-            }
-
             if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
+            {
+                return Forbid();
             }
 
             var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();

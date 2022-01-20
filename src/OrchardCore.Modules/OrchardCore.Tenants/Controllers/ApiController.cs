@@ -110,7 +110,7 @@ namespace OrchardCore.Tenants.Controllers
                 var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
                 if (!featureProfiles.ContainsKey(model.FeatureProfile))
                 {
-                    ModelState.AddModelError(nameof(CreateApiViewModel.FeatureProfile), S["The feature profile does not exist.", model.FeatureProfile]);
+                    ModelState.AddModelError(nameof(CreateApiViewModel.FeatureProfile), S["The feature profile {0} does not exist.", model.FeatureProfile]);
                 }
             }
             if (String.IsNullOrWhiteSpace(shellSettings.RequestUrlHost) && String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
