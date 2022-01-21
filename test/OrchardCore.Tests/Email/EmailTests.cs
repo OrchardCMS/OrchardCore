@@ -214,6 +214,30 @@ namespace OrchardCore.Tests.Email
             Assert.True(result.Errors.Any());
         }
 
+        [Fact]
+        public async Task SendOfflineEmailHasNoResponse()
+        {
+            // Arrange
+            var message = new MailMessage
+            {
+                To = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message"
+            };
+            var settings = new SmtpSettings
+            {
+                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
+            };
+
+            var smtp = CreateSmtpService(settings);
+
+            // Act
+            var result = await smtp.SendAsync(message);
+
+            // Assert
+            Assert.Null(result.Response);
+        }
+
         private async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
         {
             var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");

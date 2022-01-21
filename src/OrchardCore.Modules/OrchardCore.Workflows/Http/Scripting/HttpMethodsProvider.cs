@@ -174,7 +174,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                                     throw new Exception("Invalid form data passed in the request.");
                                 }
                             }
-                            else if (HasJsonContentType(httpContextAccessor.HttpContext.Request))
+                            else if (httpContextAccessor.HttpContext.Request.HasJsonContentType())
                             {
                                 string json;
                                 using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
@@ -231,41 +231,6 @@ namespace OrchardCore.Workflows.Http.Scripting
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Checks the Content-Type header for JSON types.
-        /// This method needs to be removed after we drop support for netcoreapp3.1
-        /// It is now part of net5.0 see :
-        /// https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httprequestjsonextensions.hasjsoncontenttype?view=aspnetcore-5.0
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        private static bool HasJsonContentType(HttpRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (!MediaTypeHeaderValue.TryParse(request.ContentType, out var mt))
-            {
-                return false;
-            }
-
-            // Matches application/json
-            if (mt.MediaType.Equals("application/json", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            // Matches +json, e.g. application/ld+json
-            if (mt.Suffix.Equals("json", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

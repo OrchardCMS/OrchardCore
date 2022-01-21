@@ -9,8 +9,8 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Workflows.Activities;
-using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Options;
 
 namespace OrchardCore.Workflows.Services

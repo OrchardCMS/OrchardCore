@@ -1,7 +1,8 @@
 # Liquid (`OrchardCore.Liquid`)
 
 This module provides a way to create templates securely from the admin site.  
-For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>
+For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>.
+Liquid syntax is powered by Fluid. Check <https://github.com/sebastienros/fluid> for extra examples and custom filters.
 
 ## General concepts
 

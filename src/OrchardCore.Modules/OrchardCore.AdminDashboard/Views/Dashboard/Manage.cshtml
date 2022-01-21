@@ -32,12 +32,13 @@
             <ul class="dropdown-menu dropdown-menu-end scrollable" aria-labelledby="bulk-action-menu-button">
                 @foreach (var item in Model.Creatable)
                 {
-                    <li><a class="dropdown-item add-list-widget btn-sm" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a></li>
+                    <li><a class="dropdown-item add-list-widget btn-sm" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[Html.Encode(item.Text)]</a></li>
                 }
             </ul>
         </div>
     }
 </div>
+<zone Name="Title"><h1 class="float-left">@RenderTitleSegments(T["Dashboard"])</h1></zone>
 <div class="clearfix"></div>
 
 <div id="dashboard-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
