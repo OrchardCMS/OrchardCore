@@ -39,9 +39,16 @@ namespace OrchardCore.Media.Indexing
                 {
                     foreach (var key in context.Keys)
                     {
-                        foreach (var mediaText in field.MediaTexts)
+                        if (field.MediaTexts != null)
                         {
-                            context.DocumentIndex.Set(key + MediaTextKeySuffix, mediaText, options);
+                            foreach (var mediaText in field.MediaTexts)
+                            {
+                                context.DocumentIndex.Set(key + MediaTextKeySuffix, mediaText, options);
+                            }
+                        }
+                        else
+                        {
+                            context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
                         }
                     }
                 }
