@@ -95,6 +95,13 @@ namespace OrchardCore.Taxonomies
             var taxonomyControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
+                name: "Taxonomies.Localize",
+                areaName: "OrchardCore.Taxonomies",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Localize/{containerContentItemId}/{contentItemId}/{targetCulture}",
+                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Localize) }
+            );
+
+            routes.MapAreaControllerRoute(
                 name: "Taxonomies.Create",
                 areaName: "OrchardCore.Taxonomies",
                 pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Create/{id}",
@@ -104,16 +111,18 @@ namespace OrchardCore.Taxonomies
             routes.MapAreaControllerRoute(
                 name: "Taxonomies.Edit",
                 areaName: "OrchardCore.Taxonomies",
-                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Edit/{taxonomyContentItemId}/{taxonomyItemId}",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Edit/{containerContentItemId}/{taxonomyItemId}",
                 defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "Taxonomies.Delete",
                 areaName: "OrchardCore.Taxonomies",
-                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Delete/{containerContentItemId}/{taxonomyItemId}",
                 defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Delete) }
             );
+
+
         }
     }
 

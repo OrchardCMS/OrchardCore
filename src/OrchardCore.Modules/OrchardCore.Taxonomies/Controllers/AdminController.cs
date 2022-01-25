@@ -142,9 +142,81 @@ namespace OrchardCore.Taxonomies.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
 
-        public async Task<IActionResult> Edit(string taxonomyContentItemId, string taxonomyItemId)
+        public async Task<IActionResult> Localize(string containerContentItemId, string contentItemId, string targetCulture)
         {
-            var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
+            var taxonomy = await _contentManager.GetAsync(containerContentItemId, VersionOptions.Latest);
+
+            if (taxonomy == null)
+            {
+                return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
+            {
+                return Forbid();
+            }
+
+            // Look for the target taxonomy item in the hierarchy
+            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, contentItemId);
+
+            // Couldn't find targeted taxonomy item
+            if (taxonomyItem == null)
+            {
+                return NotFound();
+            }
+
+            var contentItem = taxonomyItem.ToObject<ContentItem>();
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = containerContentItemId);
+
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+
+            model.TaxonomyContentItemId = containerContentItemId;
+            model.TaxonomyItemId = contentItemId;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ActionName("Localize")]
+        public async Task<IActionResult> LocalizePost(string containerContentItemId, string contentItemId, string targetCulture)
+        {
+            var taxonomy = await _contentManager.GetAsync(containerContentItemId, VersionOptions.Latest);
+
+            if (taxonomy == null)
+            {
+                return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
+            {
+                return Forbid();
+            }
+
+            // Look for the target taxonomy item in the hierarchy
+            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, contentItemId);
+
+            // Couldn't find targeted taxonomy item
+            if (taxonomyItem == null)
+            {
+                return NotFound();
+            }
+
+            var contentItem = taxonomyItem.ToObject<ContentItem>();
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = containerContentItemId);
+
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+
+            model.TaxonomyContentItemId = containerContentItemId;
+            model.TaxonomyItemId = contentItemId;
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Edit(string containerContentItemId, string taxonomyItemId)
+        {
+            var taxonomy = await _contentManager.GetAsync(containerContentItemId, VersionOptions.Latest);
 
             if (taxonomy == null)
             {
@@ -167,11 +239,11 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
             contentItem.Weld<TermPart>();
-            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = containerContentItemId);
 
             dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
-            model.TaxonomyContentItemId = taxonomyContentItemId;
+            model.TaxonomyContentItemId = containerContentItemId;
             model.TaxonomyItemId = taxonomyItemId;
 
             return View(model);
@@ -248,7 +320,7 @@ namespace OrchardCore.Taxonomies.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(string taxonomyContentItemId, string taxonomyItemId)
+        public async Task<IActionResult> Delete(string containerContentItemId, string taxonomyItemId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
             {
@@ -261,11 +333,11 @@ namespace OrchardCore.Taxonomies.Controllers
 
             if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
             {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
+                taxonomy = await _contentManager.GetAsync(containerContentItemId, VersionOptions.Latest);
             }
             else
             {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
+                taxonomy = await _contentManager.GetAsync(containerContentItemId, VersionOptions.DraftRequired);
             }
 
             if (taxonomy == null)
@@ -287,7 +359,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             await _notifier.SuccessAsync(H["Taxonomy item deleted successfully."]);
 
-            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = containerContentItemId });
         }
 
         private JObject FindTaxonomyItem(JObject contentItem, string taxonomyItemId)
