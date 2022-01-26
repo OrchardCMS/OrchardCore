@@ -146,35 +146,9 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             var taxonomy = await _contentManager.GetAsync(containerContentItemId, VersionOptions.Latest);
 
-            if (taxonomy == null)
-            {
-                return NotFound();
-            }
+            // TODO 
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
-            {
-                return Forbid();
-            }
-
-            // Look for the target taxonomy item in the hierarchy
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, contentItemId);
-
-            // Couldn't find targeted taxonomy item
-            if (taxonomyItem == null)
-            {
-                return NotFound();
-            }
-
-            var contentItem = taxonomyItem.ToObject<ContentItem>();
-            contentItem.Weld<TermPart>();
-            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = containerContentItemId);
-
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
-
-            model.TaxonomyContentItemId = containerContentItemId;
-            model.TaxonomyItemId = contentItemId;
-
-            return View(model);
+            return View();
         }
 
         [HttpPost]
@@ -183,35 +157,9 @@ namespace OrchardCore.Taxonomies.Controllers
         {
             var taxonomy = await _contentManager.GetAsync(containerContentItemId, VersionOptions.Latest);
 
-            if (taxonomy == null)
-            {
-                return NotFound();
-            }
+            // TODO 
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
-            {
-                return Forbid();
-            }
-
-            // Look for the target taxonomy item in the hierarchy
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, contentItemId);
-
-            // Couldn't find targeted taxonomy item
-            if (taxonomyItem == null)
-            {
-                return NotFound();
-            }
-
-            var contentItem = taxonomyItem.ToObject<ContentItem>();
-            contentItem.Weld<TermPart>();
-            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = containerContentItemId);
-
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
-
-            model.TaxonomyContentItemId = containerContentItemId;
-            model.TaxonomyItemId = contentItemId;
-
-            return View(model);
+            return View();
         }
 
         public async Task<IActionResult> Edit(string containerContentItemId, string taxonomyItemId)
