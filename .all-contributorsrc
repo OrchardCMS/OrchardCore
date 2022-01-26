@@ -2488,6 +2488,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "optiklab",
+      "name": "Anton Yarkov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/934368?v=4",
+      "profile": "http://optiklab.github.io/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
