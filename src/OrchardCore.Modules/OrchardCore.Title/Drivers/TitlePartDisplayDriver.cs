@@ -45,7 +45,6 @@ namespace OrchardCore.Title.Drivers
             })
             .Location("Detail", "Header:5")
             .Location("Summary", "Header:5");
-
         }
 
         public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
@@ -62,7 +61,7 @@ namespace OrchardCore.Title.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title) && await IsEditableOptionProvider(context))
+            if (await IsEditableOptionProvider(context) && await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
             {
                 var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
                 if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
