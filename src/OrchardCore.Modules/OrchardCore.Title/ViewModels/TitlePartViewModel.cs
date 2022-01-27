@@ -16,5 +16,8 @@ namespace OrchardCore.Title.ViewModels
 
         [BindNever]
         public TitlePartSettings Settings { get; set; }
+
+        [BindNever]
+        public bool IsEditable { get; set; }
     }
 }

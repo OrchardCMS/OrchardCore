@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -13,10 +15,17 @@ namespace OrchardCore.Title.Drivers
     public class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
     {
         private readonly IStringLocalizer S;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-        public TitlePartDisplayDriver(IStringLocalizer<TitlePartDisplayDriver> localizer)
+        public TitlePartDisplayDriver(
+            IStringLocalizer<TitlePartDisplayDriver> localizer,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             S = localizer;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;          
         }
 
         public override IDisplayResult Display(TitlePart titlePart, BuildPartDisplayContext context)
@@ -41,18 +50,19 @@ namespace OrchardCore.Title.Drivers
 
         public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
         {
-            return Initialize<TitlePartViewModel>(GetEditorShapeType(context), model =>
+            return Initialize<TitlePartViewModel>(GetEditorShapeType(context), async model =>
             {
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
                 model.ContentItem = titlePart.ContentItem;
                 model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
+                model.IsEditable = await IsEditableOptionProvider(context);
             });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
+            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title) && await IsEditableOptionProvider(context))
             {
                 var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
                 if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
@@ -67,5 +77,9 @@ namespace OrchardCore.Title.Drivers
 
             return Edit(model, context);
         }
+
+        private async Task<bool> IsEditableOptionProvider(BuildPartEditorContext context) =>
+            await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditTitlePart) ||
+            context.IsNew;
     }
 }

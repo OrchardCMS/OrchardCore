@@ -6,6 +6,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Title.Drivers;
 using OrchardCore.Title.Handlers;
 using OrchardCore.Title.Indexing;
@@ -34,6 +35,7 @@ namespace OrchardCore.Title
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, TitlePartSettingsDisplayDriver>();
 
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
     }
 }
