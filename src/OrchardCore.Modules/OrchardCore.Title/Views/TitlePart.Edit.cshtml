@@ -6,7 +6,7 @@
 
 @{
     var culture = await Orchard.GetContentCultureAsync(Model.TitlePart.ContentItem);
-    var disabled = Model.Settings?.Options == TitlePartOptions.GeneratedDisabled || !Model.IsEditable;
+    var disabled = Model.Settings?.Options == TitlePartOptions.GeneratedDisabled || !Model.IsEditable; 
 }
 @if (Model.Settings?.Options != TitlePartOptions.GeneratedHidden)
 {

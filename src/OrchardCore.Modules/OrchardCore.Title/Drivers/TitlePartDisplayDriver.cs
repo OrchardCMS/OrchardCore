@@ -1,15 +1,14 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.Contents.Security;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Title.Drivers
 {
@@ -26,7 +25,7 @@ namespace OrchardCore.Title.Drivers
         {
             S = localizer;
             _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;          
+            _authorizationService = authorizationService;
         }
 
         public override IDisplayResult Display(TitlePart titlePart, BuildPartDisplayContext context)
@@ -78,8 +77,13 @@ namespace OrchardCore.Title.Drivers
             return Edit(model, context);
         }
 
-        private async Task<bool> IsEditableOptionProvider(TitlePart model, BuildPartEditorContext context) =>
-            await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditTitlePart, model.ContentItem ) ||          
-            context.IsNew;
+        private async Task<bool> IsEditableOptionProvider(TitlePart model, BuildPartEditorContext context)
+        {
+            return await _authorizationService.AuthorizeAsync(
+                _httpContextAccessor.HttpContext.User,
+                Permissions.EditTitlePart,
+                model.ContentItem) ||
+                context.IsNew;
+        }
     }
 }

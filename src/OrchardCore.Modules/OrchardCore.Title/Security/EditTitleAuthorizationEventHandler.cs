@@ -8,12 +8,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Title.Security
 {
-    public class EditTitleAuthorizationEventHandler : AuthorizationHandler<PermissionRequirement>    
+    public class EditTitleAuthorizationEventHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public EditTitleAuthorizationEventHandler(IServiceProvider serviceProvider) =>
+        public EditTitleAuthorizationEventHandler(IServiceProvider serviceProvider)
+        {
             _serviceProvider = serviceProvider;
+        }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
@@ -22,7 +24,7 @@ namespace OrchardCore.Title.Security
             if (requirement.Permission.Name != Permissions.EditTitlePart.Name) return;
 
             var contentItem = context.Resource as ContentItem;
-            if (contentItem == null)  return;
+            if (contentItem == null) return;
 
             if (!await authorizationService.AuthorizeAsync(context.User, EditContent, context.Resource))
             {
