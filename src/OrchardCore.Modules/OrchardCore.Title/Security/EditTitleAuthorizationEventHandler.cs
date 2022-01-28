@@ -19,7 +19,6 @@ namespace OrchardCore.Title.Security
         {
             var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
 
-
             if (requirement.Permission.Name != Permissions.EditTitlePart.Name) return;
 
             var contentItem = context.Resource as ContentItem;
@@ -29,7 +28,6 @@ namespace OrchardCore.Title.Security
             {
                 context.Fail();
             }
-            
         }
     }
 }
