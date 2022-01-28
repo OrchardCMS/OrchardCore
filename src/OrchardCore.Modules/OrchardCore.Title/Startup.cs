@@ -2,6 +2,7 @@ using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.Contents.Security;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
@@ -18,6 +19,11 @@ namespace OrchardCore.Title
 {
     public class Startup : StartupBase
     {
+        static Startup() =>
+            ContentTypePermissionsHelper.PermissionTemplates.Add(
+                Permissions.EditTitlePart.Name,
+                Permissions.EditTitlePartTemplate);
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
