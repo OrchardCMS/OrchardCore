@@ -1,4 +1,5 @@
 using Fluid;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -12,6 +13,7 @@ using OrchardCore.Title.Drivers;
 using OrchardCore.Title.Handlers;
 using OrchardCore.Title.Indexing;
 using OrchardCore.Title.Models;
+using OrchardCore.Title.Security;
 using OrchardCore.Title.Settings;
 using OrchardCore.Title.ViewModels;
 
@@ -25,7 +27,7 @@ namespace OrchardCore.Title
                 Permissions.EditTitlePartTemplate);
 
         public override void ConfigureServices(IServiceCollection services)
-        {
+        {           
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<TitlePartViewModel>();
@@ -38,8 +40,8 @@ namespace OrchardCore.Title
                 .AddHandler<TitlePartHandler>();
 
             services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, TitlePartSettingsDisplayDriver>();
-
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, TitlePartSettingsDisplayDriver>();           
+            services.AddScoped<IAuthorizationHandler, EditTitleAuthorizationEventHandler>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
         }

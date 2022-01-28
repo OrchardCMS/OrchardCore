@@ -10,7 +10,7 @@ namespace OrchardCore.Title
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission EditTitlePart = new Permission(nameof(EditTitlePart), "Edit any titles.");
-        internal static readonly Permission EditTitlePartTemplate = new Permission("Create_{0}", "Create {0}", new[] { EditTitlePart });
+        internal static readonly Permission EditTitlePartTemplate = new Permission("EditTitle_{0}", "Edit the title of {0}", new[] { EditTitlePart });
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
             new[]
