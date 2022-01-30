@@ -302,16 +302,16 @@ namespace OrchardCore.ContentManagement.Display
 
                     nameResult.Displaying(ctx =>
                     {
-                        // ContentPart_Named_Edit__[PartType]
-                        // eg ContentPart.ServicePart.Named.Edit
+                        // ContentPartName_Edit__[PartType]
+                        // eg ContentPartName.ServicePart.Edit
                         ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{partTypeName}");
 
-                        // ContentPart_Named_Edit_[ContentType]_[PartType]
-                        // e.g. ContentPart-LandingPage-ServicePart.Named.Edit
+                        // ContentPartName_Edit__[ContentType]_[PartType]
+                        // e.g. ContentPartName-LandingPage-ServicePart.Edit
                         ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{contentType}__{partTypeName}");
 
-                        // ContentPart_Named_Edit__[ContentType]__[PartName]
-                        // e.g. ContentPart-LandingPage-BillingService.Named.Edit ContentPart-LandingPage-HelplineService.Named.Edit
+                        // ContentPartName_Edit__[ContentType]__[PartName]
+                        // e.g. ContentPartName-LandingPage-BillingService.Edit ContentPartName-LandingPage-HelplineService.Edit
                         ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{contentType}__{partName}");
                     });
 
@@ -466,17 +466,17 @@ namespace OrchardCore.ContentManagement.Display
 
                     nameResult.Displaying(ctx =>
                     {
-                        // ContentPart_Named_Edit__[PartType]
-                        // eg ContentPart.ServicePart.Named.Edit
+                        // ContentPartName_Edit__[PartType]
+                        // eg ContentPartName.ServicePart.Edit
                         ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{partTypeName}");
 
-                        // ContentPart_Named_Edit_[ContentType]_[PartType]
-                        // e.g. ContentPart-LandingPage-ServicePart.Named.Edit
+                        // ContentPartName_Edit_[ContentType]_[PartType]
+                        // e.g. ContentPartName-LandingPage-ServicePart.Edit
                         ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{contentType}__{partTypeName}");
 
 
-                        // ContentPart_Named_Edit__[ContentType]__[PartName]
-                        // e.g. ContentPart-LandingPage-BillingService.Named.Edit ContentPart-LandingPage-HelplineService.Named.Edit
+                        // ContentPartName_Edit__[ContentType]__[PartName]
+                        // e.g. ContentPartName-LandingPage-BillingService.Edit ContentPartName-LandingPage-HelplineService.Edit
                         ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{contentType}__{partName}");
 
                     });
