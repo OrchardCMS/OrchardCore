@@ -240,15 +240,7 @@ namespace OrchardCore.ContentManagement.Display
 
                 var typePartShapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
 
-                if (isNamedPart)
-                {
-                    typePartShapeResult.Differentiator($"{contentTypeDefinition.Name}-{partName}");
-                }
-                else
-                {
-                    typePartShapeResult.Differentiator(partName);
-                }
-
+                typePartShapeResult.Differentiator($"{contentTypeDefinition.Name}-{partName}");
                 typePartShapeResult.Name(partName);
                 typePartShapeResult.Location($"Parts:{partPosition}");
 
@@ -405,15 +397,7 @@ namespace OrchardCore.ContentManagement.Display
                 var shapeType = "ContentPart_Edit";
                 var typePartShapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
 
-                if (isNamedPart)
-                {
-                    typePartShapeResult.Differentiator($"{contentTypeDefinition.Name}-{partName}");
-                }
-                else
-                {
-                    typePartShapeResult.Differentiator(partName);
-                }
-
+                typePartShapeResult.Differentiator($"{contentTypeDefinition.Name}-{partName}");
                 typePartShapeResult.Name(partName);
                 typePartShapeResult.Location($"Parts:{partPosition}");
 
