@@ -55,13 +55,13 @@ namespace OrchardCore.Title.Drivers
                 model.TitlePart = titlePart;
                 model.ContentItem = titlePart.ContentItem;
                 model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-                model.IsEditable = await IsEditableOptionProvider(titlePart, context);
+                model.IsEditable = await IsTitleEditableAsync(titlePart, context);
             });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            if (await IsEditableOptionProvider(model, context) && await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
+            if (await IsTitleEditableAsync(model, context) && await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
             {
                 var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
                 if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
