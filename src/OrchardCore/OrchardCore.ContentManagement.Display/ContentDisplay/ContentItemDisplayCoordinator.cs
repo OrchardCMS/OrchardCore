@@ -226,21 +226,18 @@ namespace OrchardCore.ContentManagement.Display
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partTypeName = typePartDefinition.PartDefinition.Name;
+                var partName = typePartDefinition.Name;
                 var contentType = typePartDefinition.ContentTypeDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partTypeName);
-                var part = (ContentPart)contentItem.Get(activator.Type, typePartDefinition.Name) ?? activator.CreateInstance();
-                var partName = typePartDefinition.Name;
-                var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && typePartDefinition.Name != typePartDefinition.PartDefinition.Name;
+                var part = (ContentPart)contentItem.Get(activator.Type, partName) ?? activator.CreateInstance();
+                var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
                 var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
-
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
                 var shapeType = "ContentPart_Edit";
-
                 var typePartShapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
-
-                typePartShapeResult.Differentiator($"{contentTypeDefinition.Name}-{partName}");
+                typePartShapeResult.Differentiator($"{contentType}-{partName}");
                 typePartShapeResult.Name(partName);
                 typePartShapeResult.Location($"Parts:{partPosition}");
 
@@ -273,7 +270,7 @@ namespace OrchardCore.ContentManagement.Display
 
                 typePartShape.Properties["ContentPart"] = part;
                 typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
-                partsShape.Properties[typePartDefinition.Name] = typePartShape;
+                partsShape.Properties[partName] = typePartShape;
 
                 if (isNamedPart)
                 {
@@ -287,10 +284,9 @@ namespace OrchardCore.ContentManagement.Display
                             Description = typePartDefinition.Description()
                         })));
 
-                    nameResult.Differentiator($"{contentTypeDefinition.Name}-{partName}");
-
+                    nameResult.Differentiator($"{contentType}-{partName}");
                     nameResult.Name(partName);
-                    nameResult.Location($"Parts.{typePartDefinition.Name}.Header");
+                    nameResult.Location($"Parts.{partName}.Header");
 
                     nameResult.Displaying(ctx =>
                     {
@@ -318,7 +314,7 @@ namespace OrchardCore.ContentManagement.Display
                 }
 
 
-                context.DefaultZone = $"Parts.{typePartDefinition.Name}";
+                context.DefaultZone = $"Parts.{partName}";
                 context.DefaultPosition = partPosition;
 
                 var partDisplayDrivers = _contentPartDisplayDriverResolver.GetEditorDrivers(partTypeName, typePartDefinition.Editor());
@@ -336,7 +332,7 @@ namespace OrchardCore.ContentManagement.Display
                     var fieldName = partFieldDefinition.Name;
                     var fieldPosition = partFieldDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
 
-                    context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
+                    context.DefaultZone = $"Parts.{partName}:{fieldPosition}";
                     var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetEditorDrivers(partFieldDefinition.FieldDefinition.Name, partFieldDefinition.Editor());
                     await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
@@ -384,20 +380,19 @@ namespace OrchardCore.ContentManagement.Display
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partTypeName = typePartDefinition.PartDefinition.Name;
+                var partName = typePartDefinition.Name;
                 var contentType = typePartDefinition.ContentTypeDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partTypeName);
-                var part = (ContentPart)contentItem.Get(activator.Type, typePartDefinition.Name) ?? activator.CreateInstance();
-                var partName = typePartDefinition.Name;
-                var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && typePartDefinition.Name != typePartDefinition.PartDefinition.Name;
+                var part = (ContentPart)contentItem.Get(activator.Type, partName) ?? activator.CreateInstance();
+                var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
                 var partPosition = typePartDefinition.GetSettings<ContentTypePartSettings>().Position ?? "before";
-
                 part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
                 var shapeType = "ContentPart_Edit";
                 var typePartShapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
 
-                typePartShapeResult.Differentiator($"{contentTypeDefinition.Name}-{partName}");
+                typePartShapeResult.Differentiator($"{contentType}-{partName}");
                 typePartShapeResult.Name(partName);
                 typePartShapeResult.Location($"Parts:{partPosition}");
 
@@ -430,7 +425,7 @@ namespace OrchardCore.ContentManagement.Display
 
                 typePartShape.Properties["ContentPart"] = part;
                 typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
-                partsShape.Properties[typePartDefinition.Name] = typePartShape;
+                partsShape.Properties[partName] = typePartShape;
 
                 if (isNamedPart)
                 {
@@ -444,9 +439,9 @@ namespace OrchardCore.ContentManagement.Display
                             Description = typePartDefinition.Description()
                         })));
 
-                    nameResult.Differentiator($"{contentTypeDefinition.Name}-{partName}");
+                    nameResult.Differentiator($"{contentType}-{partName}");
                     nameResult.Name(partName);
-                    nameResult.Location($"Parts.{typePartDefinition.Name}.Header");
+                    nameResult.Location($"Parts.{partName}.Header");
 
                     nameResult.Displaying(ctx =>
                     {
@@ -466,7 +461,6 @@ namespace OrchardCore.ContentManagement.Display
                     });
 
                     await nameResult.ApplyAsync(context);
-
                     var namedPartShape = nameResult.Shape;
 
                     // If it's not set to hide in placement, set properties
@@ -477,7 +471,7 @@ namespace OrchardCore.ContentManagement.Display
                     }
                 }
 
-                context.DefaultZone = $"Parts.{typePartDefinition.Name}:{partPosition}";
+                context.DefaultZone = $"Parts.{partName}:{partPosition}";
                 var partDisplayDrivers = _contentPartDisplayDriverResolver.GetEditorDrivers(partTypeName, typePartDefinition.Editor());
                 await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
@@ -493,7 +487,7 @@ namespace OrchardCore.ContentManagement.Display
                     var fieldName = partFieldDefinition.Name;
                     var fieldPosition = partFieldDefinition.GetSettings<ContentPartFieldSettings>().Position ?? "before";
 
-                    context.DefaultZone = $"Parts.{typePartDefinition.Name}:{fieldPosition}";
+                    context.DefaultZone = $"Parts.{partName}:{fieldPosition}";
                     var fieldDisplayDrivers = _contentFieldDisplayDriverResolver.GetEditorDrivers(partFieldDefinition.FieldDefinition.Name, partFieldDefinition.Editor());
                     await fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
