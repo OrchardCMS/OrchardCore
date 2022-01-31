@@ -77,7 +77,7 @@ namespace OrchardCore.Title.Drivers
             return Edit(model, context);
         }
 
-        private async Task<bool> IsEditableOptionProvider(TitlePart model, BuildPartEditorContext context)
+        private async Task<bool> IsTitleEditableAsync(TitlePart model, BuildPartEditorContext context)
         {
             return context.IsNew || await _authorizationService.AuthorizeAsync(
                 _httpContextAccessor.HttpContext.User,
