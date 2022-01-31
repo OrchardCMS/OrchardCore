@@ -10,6 +10,11 @@ namespace OrchardCore.Title
         public static readonly Permission EditTitlePart = new Permission(nameof(EditTitlePart), "Edit any titles.");
         internal static readonly Permission EditTitlePartTemplate = new Permission("EditTitle_{0}", "Edit the title of {0}", new[] { EditTitlePart });
 
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        {
+            return Task.FromResult(new[] { EditTitlePart }.AsEnumerable());
+        }
+
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[]
@@ -20,11 +25,6 @@ namespace OrchardCore.Title
                     Permissions = new[] { EditTitlePart },
                 },
             };
-        }
-
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[] { EditTitlePart }.AsEnumerable());
         }
     }
 }

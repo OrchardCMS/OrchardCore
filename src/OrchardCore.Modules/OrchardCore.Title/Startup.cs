@@ -27,7 +27,7 @@ namespace OrchardCore.Title
                 Permissions.EditTitlePartTemplate);
 
         public override void ConfigureServices(IServiceCollection services)
-        {           
+        {
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<TitlePartViewModel>();
@@ -40,7 +40,7 @@ namespace OrchardCore.Title
                 .AddHandler<TitlePartHandler>();
 
             services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, TitlePartSettingsDisplayDriver>();           
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, TitlePartSettingsDisplayDriver>();
             services.AddScoped<IAuthorizationHandler, EditTitleAuthorizationEventHandler>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();

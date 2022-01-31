@@ -79,11 +79,10 @@ namespace OrchardCore.Title.Drivers
 
         private async Task<bool> IsEditableOptionProvider(TitlePart model, BuildPartEditorContext context)
         {
-            return await _authorizationService.AuthorizeAsync(
+            return context.IsNew || await _authorizationService.AuthorizeAsync(
                 _httpContextAccessor.HttpContext.User,
                 Permissions.EditTitlePart,
-                model.ContentItem) ||
-                context.IsNew;
+                model.ContentItem);
         }
     }
 }
