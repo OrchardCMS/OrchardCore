@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -73,10 +74,18 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
             foreach (var (Name, UrlPrefix, Hostname, IsValid) in tenants)
             {
                 var controller = CreateController();
+                var viewModel = new EditTenantViewModel
+                {
+                    Name = Name,
+                    RequestUrlPrefix = UrlPrefix,
+                    RequestUrlHost = Hostname,
+                    FeatureProfile = "Feature Profile"
+                };
+                var isModelValid = ValidateModel(viewModel, out _);
 
-                await CreateTenantAsync(controller, Name, UrlPrefix, Hostname);
+                await controller.Create(viewModel);
 
-                Assert.True(IsValid == controller.ModelState.IsValid);
+                Assert.True(IsValid == isModelValid);
             }
         }
 
@@ -85,30 +94,35 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
         {
             // Arrange & Act & Assert
             var controller = CreateController();
+            var viewModel = new EditTenantViewModel
+            {
+                Name = "Tenant11",
+                RequestUrlPrefix = String.Empty,
+                RequestUrlHost = "example5.com, example6.com",
+                FeatureProfile = "Feature Profile"
+            };
+            var isModelValid = ValidateModel(viewModel, out _);
 
-            await CreateTenantAsync(controller, "Tenant11", String.Empty, "example5.com, example6.com");
+            await controller.Create(viewModel);
 
-            Assert.True(controller.ModelState.IsValid);
+            Assert.True(isModelValid);
 
             controller = CreateController();
 
-            await CreateTenantAsync(controller, "Tenant12", String.Empty, "example6.com");
-
-            Assert.False(controller.ModelState.IsValid);
-            Assert.Equal("A tenant with the same host and prefix already exists.", controller.ModelState.First().Value.Errors.First().ErrorMessage);
-        }
-
-        private async static Task<IActionResult> CreateTenantAsync(AdminController controller, string name, string urlPrefix, string urlHost)
-        {
-            var viewModel = new EditTenantViewModel
+            viewModel = new EditTenantViewModel
             {
-                Name = name,
-                RequestUrlPrefix = urlPrefix,
-                RequestUrlHost = urlHost,
+                Name = "Tenant12",
+                RequestUrlPrefix = String.Empty,
+                RequestUrlHost = "example6.com",
                 FeatureProfile = "Feature Profile"
             };
 
-            return await controller.Create(viewModel);
+            isModelValid = ValidateModel(viewModel, out var validationResults);
+
+            await controller.Create(viewModel);
+
+            Assert.False(isModelValid);
+            Assert.Equal("A tenant with the same host and prefix already exists.", validationResults.First().ErrorMessage);
         }
 
         private AdminController CreateController()
@@ -145,6 +159,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 Enumerable.Empty<DatabaseProvider>(),
                 authServiceMock.Object,
                 _featureProfilesServiceMock.Object,
+                _shellSettings.First(),
                 Enumerable.Empty<IRecipeHarvester>(),
                 Mock.Of<IDataProtectionProvider>(),
                 new Clock(),
@@ -185,7 +200,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
         {
             var serviceProvider = new Mock<IServiceProvider>();
             var urlHelperFactoryMock = Mock.Of<IUrlHelperFactory>();
-            var stringLocalizerMock = new Mock<IStringLocalizer>();
+            var stringLocalizerMock = new Mock<IStringLocalizer<TenantViewModel>>();
 
             stringLocalizerMock
                 .Setup(l => l[It.IsAny<string>()])
@@ -207,7 +222,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 .Setup(x => x.GetService(typeof(IEnumerable<DatabaseProvider>)))
                 .Returns(Enumerable.Empty<DatabaseProvider>());
             serviceProvider
-                .Setup(x => x.GetService(typeof(IStringLocalizer<>).MakeGenericType(typeof(OrchardCore.Tenants.Controllers.ControllerExtensions))))
+                .Setup(x => x.GetService(typeof(IStringLocalizer<TenantViewModel>)))
                 .Returns(stringLocalizerMock.Object);
             serviceProvider
                 .Setup(x => x.GetService(typeof(IUrlHelperFactory)))
@@ -220,6 +235,20 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 .Returns(new TempDataDictionaryFactory(Mock.Of<ITempDataProvider>()));
 
             return serviceProvider.Object;
+        }
+
+        private bool ValidateModel(TenantViewModel model, out ICollection<ValidationResult> validationResults)
+        {
+            var context = new ValidationContext(model);
+            var serviceProvider = CreateServices();
+
+            validationResults = new List<ValidationResult>();
+
+            context.InitializeServiceProvider(t => serviceProvider.GetService(t));
+
+            var isValid = Validator.TryValidateObject(model, context, validationResults);
+
+            return isValid;
         }
     }
 }
