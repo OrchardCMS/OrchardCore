@@ -23,7 +23,7 @@
 
 <div class="btn-group btn-group-sm" role="group">
     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        @T[Model.Size + "%"]
+        @T[Html.Encode(Model.Size + "%")] @* Allows for custom string representations like half, quarter, ...*@
     </button>
     <div class="dropdown-menu btn-group-toggle" data-toggle="buttons">
         <label class="btn btn-secondary dropdown-item @(Model.Size == 25 ? "active" : null)">
