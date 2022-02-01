@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -24,6 +23,7 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 using OrchardCore.Tenants.Controllers;
 using OrchardCore.Tenants.ViewModels;
+using OrchardCore.Tests.Utilities;
 using Xunit;
 
 namespace OrchardCore.Modules.Tenants.Controllers.Tests
@@ -81,7 +81,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                     RequestUrlHost = Hostname,
                     FeatureProfile = "Feature Profile"
                 };
-                var isModelValid = ValidateModel(viewModel, out _);
+                var isModelValid = ModelValidator.Validate(viewModel, out _, controller.HttpContext.RequestServices);
 
                 await controller.Create(viewModel);
 
@@ -101,7 +101,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 RequestUrlHost = "example5.com, example6.com",
                 FeatureProfile = "Feature Profile"
             };
-            var isModelValid = ValidateModel(viewModel, out _);
+            var isModelValid = ModelValidator.Validate(viewModel, out _, controller.HttpContext.RequestServices);
 
             await controller.Create(viewModel);
 
@@ -117,12 +117,12 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 FeatureProfile = "Feature Profile"
             };
 
-            isModelValid = ValidateModel(viewModel, out var validationResults);
+            isModelValid = ModelValidator.Validate(viewModel, out var errors, controller.HttpContext.RequestServices);
 
             await controller.Create(viewModel);
 
             Assert.False(isModelValid);
-            Assert.Equal("A tenant with the same host and prefix already exists.", validationResults.First().ErrorMessage);
+            Assert.Equal("A tenant with the same host and prefix already exists.", errors.First().ErrorMessage);
         }
 
         private AdminController CreateController()
@@ -235,20 +235,6 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 .Returns(new TempDataDictionaryFactory(Mock.Of<ITempDataProvider>()));
 
             return serviceProvider.Object;
-        }
-
-        private bool ValidateModel(TenantViewModel model, out ICollection<ValidationResult> validationResults)
-        {
-            var context = new ValidationContext(model);
-            var serviceProvider = CreateServices();
-
-            validationResults = new List<ValidationResult>();
-
-            context.InitializeServiceProvider(t => serviceProvider.GetService(t));
-
-            var isValid = Validator.TryValidateObject(model, context, validationResults);
-
-            return isValid;
         }
     }
 }
