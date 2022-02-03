@@ -13,8 +13,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -271,8 +269,8 @@ namespace OrchardCore.Users.Controllers
                 {
                     if (Url.IsLocalUrl(returnUrl))
                     {
-                        _notifier.Success(H["Your password has been changed successfully."]);
-                        return Redirect(returnUrl);
+                        await _notifier.SuccessAsync(H["Your password has been changed successfully."]);
+                        return this.Redirect(returnUrl, true);
                     }
                     else
                     {
@@ -324,7 +322,7 @@ namespace OrchardCore.Users.Controllers
                     input: input, correlationId: ((User)user).UserId);
             }
 
-            return RedirectToLocal(returnUrl);
+            return RedirectToLocal(returnUrl.ToUriComponents());
         }
 
         [HttpPost]
@@ -363,11 +361,17 @@ namespace OrchardCore.Users.Controllers
 
             if (result.Succeeded)
             {
+                await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+
                 var identityResult = await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
                 if (!identityResult.Succeeded)
                 {
                     _logger.LogError("Error updating the external authentication tokens.");
                 }
+            }
+            else
+            {
+                await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
             }
 
             return result;
@@ -417,13 +421,20 @@ namespace OrchardCore.Users.Controllers
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
                 if (!string.IsNullOrWhiteSpace(email))
+                {
                     iUser = await _userManager.FindByEmailAsync(email);
+                }
 
                 ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
 
                 if (iUser != null)
                 {
+                    if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
+                    {
+                        return RedirectToAction("ConfirmEmailSent", new { Area = "OrchardCore.Users", Controller = "Registration", ReturnUrl = returnUrl });
+                    }
+
                     // Link external login to an existing user
                     ViewData["UserName"] = iUser.UserName;
                     ViewData["Email"] = email;

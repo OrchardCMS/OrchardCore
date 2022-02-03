@@ -149,7 +149,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 adminMenu.MenuItems.Add(treeNode);
                 await _adminMenuService.SaveAsync(adminMenu);
 
-                _notifier.Success(H["Admin node added successfully."]);
+                await _notifier.SuccessAsync(H["Admin node added successfully."]);
                 return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
             }
 
@@ -229,11 +229,11 @@ namespace OrchardCore.AdminMenu.Controllers
 
                 await _adminMenuService.SaveAsync(adminMenu);
 
-                _notifier.Success(H["Admin node updated successfully."]);
+                await _notifier.SuccessAsync(H["Admin node updated successfully."]);
                 return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
             }
 
-            _notifier.Error(H["The admin node has validation errors."]);
+            await _notifier.ErrorAsync(H["The admin node has validation errors."]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form
@@ -270,7 +270,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            _notifier.Success(H["Admin node deleted successfully."]);
+            await _notifier.SuccessAsync(H["Admin node deleted successfully."]);
 
             return RedirectToAction(nameof(List), new { id });
         }
@@ -302,7 +302,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            _notifier.Success(H["Admin node toggled successfully."]);
+            await _notifier.SuccessAsync(H["Admin node toggled successfully."]);
 
             return RedirectToAction(nameof(List), new { id = id });
         }

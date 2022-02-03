@@ -4,7 +4,10 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Modules
 {
-    public static class RunningShellTableExtensions
+    // Not public because it wouldn't match tenants with an URL prefix later in the request pipeline. Mostly to be used
+    // from ModularTenantContainerMiddleware.
+    // For details see: https://github.com/OrchardCMS/OrchardCore/pull/10779#discussion_r758741155.
+    internal static class RunningShellTableExtensions
     {
         public static ShellSettings Match(this IRunningShellTable table, HttpContext httpContext)
         {

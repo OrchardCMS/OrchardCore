@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 using OrchardCore.Logging;
 #endif
 
-
 namespace OrchardCore.Templates.Cms.Web
 {
     public class Startup

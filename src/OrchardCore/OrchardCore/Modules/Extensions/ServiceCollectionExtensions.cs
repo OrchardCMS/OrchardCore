@@ -152,6 +152,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(shellServices =>
             {
                 shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
+                shellServices.AddNullFeatureProfilesService();
+                shellServices.AddFeatureValidation();
+                shellServices.ConfigureFeatureProfilesRuleOptions();
             });
         }
 
@@ -207,19 +210,26 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var fileProvider = serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
 
-                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
-
-                options.RequestPath = "";
-                options.FileProvider = fileProvider;
-
                 var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-                
-                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}");
+                // Cache static files for a year as they are coming from embedded resources and should not vary.
+                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-maxage={TimeSpan.FromDays(365.25).TotalSeconds}");
 
-                // Cache static files for a year as they are coming from embedded resources and should not vary
-                options.OnPrepareResponse = ctx =>
+                // Use the current options values but without mutating the resolved instance.
+                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
+                options = new StaticFileOptions
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                    RequestPath = String.Empty,
+                    FileProvider = fileProvider,
+                    RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
+                    ContentTypeProvider = options.ContentTypeProvider,
+                    DefaultContentType = options.DefaultContentType,
+                    ServeUnknownFileTypes = options.ServeUnknownFileTypes,
+                    HttpsCompression = options.HttpsCompression,
+
+                    OnPrepareResponse = ctx =>
+                    {
+                        ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                    },
                 };
 
                 app.UseStaticFiles(options);
@@ -394,9 +404,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     return;
                 }
 
-                // Cover Chrome 50-69, because some versions are broken by SameSite=None, 
+                // Cover Chrome 50-69, because some versions are broken by SameSite=None,
                 // and none in this range require it.
-                // Note: this covers some pre-Chromium Edge versions, 
+                // Note: this covers some pre-Chromium Edge versions,
                 // but pre-Chromium Edge does not require SameSite=None.
                 if (userAgent.Contains("Chrome/5") || userAgent.Contains("Chrome/6"))
                 {

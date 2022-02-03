@@ -93,7 +93,7 @@ namespace OrchardCore.OpenId.Controllers
 
             await _serverService.UpdateSettingsAsync(settings);
 
-            _notifier.Success(H["OpenID server configuration successfully updated."]);
+            await _notifier.SuccessAsync(H["OpenID server configuration successfully updated."]);
 
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
 

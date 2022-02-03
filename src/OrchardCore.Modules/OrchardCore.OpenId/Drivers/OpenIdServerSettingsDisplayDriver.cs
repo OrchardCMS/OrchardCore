@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 using static OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel;
 
 namespace OrchardCore.OpenId.Drivers

@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
+using OrchardCore.Lucene;
 using OrchardCore.Tests.Apis.Context;
 using Xunit;
-using OrchardCore.Queries;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Tests.Apis.Lucene
 {
@@ -23,10 +23,12 @@ namespace OrchardCore.Tests.Apis.Lucene
                 // Act
                 var index = "ArticleIndex";
                 // { "from": 0, "size": 2, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText.Normalized^2", "HtmlBodyPart"], "query": "orchard*" } } }
-                var dynamicQuery = new {
+                var dynamicQuery = new
+                {
                     from = 0,
                     size = 2,
-                    query = new {
+                    query = new
+                    {
                         simple_query_string = new
                         {
                             analyze_wildcard = true,

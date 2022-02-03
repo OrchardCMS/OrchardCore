@@ -5,5 +5,5 @@ namespace OrchardCore.Rules
         bool IOperatorComparer.Compare(ConditionOperator conditionOperator, object a, object b)
             => Compare((TConditionOperator)conditionOperator, (TCompare)a, (TCompare)b);
         public abstract bool Compare(TConditionOperator conditionOperator, TCompare a, TCompare b);
-    }  
+    }
 }

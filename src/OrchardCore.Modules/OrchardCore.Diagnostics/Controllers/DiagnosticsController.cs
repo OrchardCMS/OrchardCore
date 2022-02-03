@@ -6,6 +6,7 @@ namespace OrchardCore.Diagnostics.Controllers
 {
     public class DiagnosticsController : Controller
     {
+        [IgnoreAntiforgeryToken]
         public IActionResult Error(int? status)
         {
             // Most commonly used error messages

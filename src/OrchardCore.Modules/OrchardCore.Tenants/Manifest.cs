@@ -30,3 +30,11 @@ using OrchardCore.Modules.Manifest;
     Category = "Distributed",
     DefaultTenantOnly = true
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Tenants.FeatureProfiles",
+    Name = "Tenant Feature Profiles",
+    Description = "Provides a way to manage available features for each tenant.",
+    Category = "Infrastructure",
+    DefaultTenantOnly = true
+)]

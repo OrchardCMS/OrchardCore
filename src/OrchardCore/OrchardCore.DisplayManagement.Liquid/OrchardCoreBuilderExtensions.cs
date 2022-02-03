@@ -92,7 +92,7 @@ namespace Microsoft.Extensions.DependencyInjection
                                 nameof(HttpRequest.ContentLength) => NumberValue.Create(request.ContentLength ?? 0),
                                 nameof(HttpRequest.Cookies) => new ObjectValue(new CookieCollectionWrapper(request.Cookies)),
                                 nameof(HttpRequest.Headers) => new ObjectValue(new HeaderDictionaryWrapper(request.Headers)),
-                                nameof(HttpRequest.Query) => new ObjectValue(request.Query),
+                                nameof(HttpRequest.Query) => new ObjectValue(new QueryCollection(request.Query.ToDictionary(kv => kv.Key, kv => kv.Value))),
                                 nameof(HttpRequest.Form) => request.HasFormContentType ? (FluidValue)new ObjectValue(request.Form) : NilValue.Instance,
                                 nameof(HttpRequest.Protocol) => new StringValue(request.Protocol),
                                 nameof(HttpRequest.Path) => new StringValue(request.Path.Value),
@@ -102,6 +102,13 @@ namespace Microsoft.Extensions.DependencyInjection
                                 nameof(HttpRequest.Scheme) => new StringValue(request.Scheme),
                                 nameof(HttpRequest.Method) => new StringValue(request.Method),
                                 nameof(HttpRequest.RouteValues) => new ObjectValue(new RouteValueDictionaryWrapper(request.RouteValues)),
+
+                                // Provides correct escaping to reconstruct a request or redirect URI.
+                                "UriHost" => new StringValue(request.Host.ToUriComponent(), encode: false),
+                                "UriPath" => new StringValue(request.Path.ToUriComponent(), encode: false),
+                                "UriPathBase" => new StringValue(request.PathBase.ToUriComponent(), encode: false),
+                                "UriQueryString" => new StringValue(request.QueryString.ToUriComponent(), encode: false),
+
                                 _ => NilValue.Instance
                             };
                         }

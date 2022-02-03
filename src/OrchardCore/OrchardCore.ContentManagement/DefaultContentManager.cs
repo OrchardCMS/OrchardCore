@@ -735,12 +735,12 @@ namespace OrchardCore.ContentManagement
         public async Task<ContentItem> CloneAsync(ContentItem contentItem)
         {
             var cloneContentItem = await NewAsync(contentItem.ContentType);
+            cloneContentItem.DisplayText = contentItem.DisplayText;
             await CreateAsync(cloneContentItem, VersionOptions.Draft);
 
             var context = new CloneContentContext(contentItem, cloneContentItem);
 
             context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
-            context.CloneContentItem.DisplayText = contentItem.DisplayText;
 
             await Handlers.InvokeAsync((handler, context) => handler.CloningAsync(context), context, _logger);
 

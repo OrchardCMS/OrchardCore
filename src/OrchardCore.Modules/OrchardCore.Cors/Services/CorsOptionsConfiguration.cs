@@ -1,7 +1,7 @@
+using System.Linq;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Linq;
 
 namespace OrchardCore.Cors.Services
 {
@@ -71,7 +71,7 @@ namespace OrchardCore.Cors.Services
                     }
                 });
 
-                if(corsPolicy.IsDefaultPolicy)
+                if (corsPolicy.IsDefaultPolicy)
                 {
                     options.DefaultPolicyName = corsPolicy.Name;
                 }

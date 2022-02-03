@@ -15,6 +15,7 @@ namespace OrchardCore.Tenants.Workflows.Drivers
             model.ConnectionStringExpression = activity.ConnectionString.Expression;
             model.TablePrefixExpression = activity.TablePrefix.Expression;
             model.RecipeNameExpression = activity.RecipeName.Expression;
+            model.FeatureProfileExpression = activity.FeatureProfile.Expression;
         }
 
         protected override void UpdateActivity(CreateTenantTaskViewModel model, CreateTenantTask activity)
@@ -26,6 +27,7 @@ namespace OrchardCore.Tenants.Workflows.Drivers
             activity.ConnectionString = new WorkflowExpression<string>(model.ConnectionStringExpression);
             activity.TablePrefix = new WorkflowExpression<string>(model.TablePrefixExpression);
             activity.RecipeName = new WorkflowExpression<string>(model.RecipeNameExpression);
+            activity.FeatureProfile = new WorkflowExpression<string>(model.FeatureProfileExpression);
         }
     }
 }

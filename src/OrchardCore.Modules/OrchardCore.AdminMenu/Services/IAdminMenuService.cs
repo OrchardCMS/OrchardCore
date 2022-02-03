@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using OrchardCore.AdminMenu.Models;
 
 namespace OrchardCore.AdminMenu.Services
 {

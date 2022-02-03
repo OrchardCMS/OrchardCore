@@ -14,7 +14,16 @@
     <select asp-for="UsersCanRegister" class="form-control">
         @foreach (UserRegistrationType option in Enum.GetValues(typeof(UserRegistrationType)))
         {
-            <option value="@option" selected="@(Model.UsersCanRegister == option)">@T[option.ToString()]</option>
+            <option value="@option" selected="@(Model.UsersCanRegister == option)">
+                @{
+                    switch (option)
+                    {
+                        case UserRegistrationType.NoRegistration: @T["NoRegistration"]; break;
+                        case UserRegistrationType.AllowRegistration: @T["AllowRegistration"]; break;
+                        case UserRegistrationType.AllowOnlyExternalUsers: @T["AllowOnlyExternalUsers"]; break;
+                    }
+                }
+            </option>
         }
     </select>
     <span asp-validation-for="UsersCanRegister"></span>

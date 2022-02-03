@@ -61,7 +61,7 @@
       ]
     },
     {
-      "label": "Web App: Dotnet Build Debug - net5.0",
+      "label": "Web App: Dotnet Build Debug - net6.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -70,12 +70,12 @@
         "-c",
         "Debug",
         "-f",
-        "net5.0"
+        "net6.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Rebuild Debug - net5.0",
+      "label": "Web App: Dotnet Rebuild Debug - net6.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -85,12 +85,12 @@
         "-c",
         "Debug",
         "-f",
-        "net5.0"
+        "net6.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Build Release - net5.0",
+      "label": "Web App: Dotnet Build Release - net6.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -99,7 +99,7 @@
         "-c",
         "Release",
         "-f",
-        "net5.0"
+        "net6.0"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -126,7 +126,7 @@
       ]
     },
     {
-      "label": "Dotnet Publish (self-contained) - net5.0",
+      "label": "Dotnet Publish (self-contained) - net6.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -140,7 +140,7 @@
           "win-x64",
           "--self-contained",
           "--framework",
-          "net5.0",
+          "net6.0",
           "--output",
           ".\\.build\\release"
         ]
@@ -154,14 +154,14 @@
         "linux-x64",
         "--self-contained",
         "--framework",
-        "net5.0",
+        "net6.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Dotnet Publish (framework dependent) - net5.0",
+      "label": "Dotnet Publish (framework dependent) - net6.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -176,7 +176,7 @@
           "--self-contained",
           "false",
           "--framework",
-          "net5.0",
+          "net6.0",
           "--output",
           ".\\.build\\release"
         ]
@@ -191,24 +191,24 @@
         "--self-contained",
         "false",
         "--framework",
-        "net5.0",
+        "net6.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Publish (self-contained) - net5.0",
+      "label": "Web App: Dotnet Publish (self-contained) - net6.0",
       "dependsOn": [
         "Cleanup build folder",
-        "Dotnet Publish (self-contained) - net5.0"
+        "Dotnet Publish (self-contained) - net6.0"
       ]
     },
     {
-      "label": "Web App: Dotnet Publish (framework dependent) - net5.0",
+      "label": "Web App: Dotnet Publish (framework dependent) - net6.0",
       "dependsOn": [
         "Cleanup build folder",
-        "Dotnet Publish (framework dependent) - net5.0"
+        "Dotnet Publish (framework dependent) - net6.0"
       ]
     },
     {

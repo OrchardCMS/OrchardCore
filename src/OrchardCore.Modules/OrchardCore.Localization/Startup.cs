@@ -31,7 +31,9 @@ namespace OrchardCore.Localization
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ILocalizationService, LocalizationService>();
 
-            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
+            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
+                AddDataAnnotationsPortableObjectLocalization();
+
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
         }
 
@@ -60,6 +62,15 @@ namespace OrchardCore.Localization
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
+        }
+    }
+
+    [Feature("OrchardCore.Localization.ContentLanguageHeader")]
+    public class ContentLanguageHeaderStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
         }
     }
 }

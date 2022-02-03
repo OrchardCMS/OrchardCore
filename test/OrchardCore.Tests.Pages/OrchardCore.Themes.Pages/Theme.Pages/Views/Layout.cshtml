@@ -16,7 +16,7 @@
 </head>
 <body dir="@Orchard.CultureDir()">
     @await RenderSectionAsync("Header", required: false)
-    <main role="main" class="container">
+    <main class="container">
         @await RenderSectionAsync("Messages", required: false)
         @await RenderBodyAsync()
     </main>

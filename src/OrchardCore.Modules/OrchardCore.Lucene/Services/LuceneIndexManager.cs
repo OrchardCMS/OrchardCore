@@ -231,9 +231,9 @@ namespace OrchardCore.Lucene
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        if (entry.Value != null && Int32.TryParse(entry.Value.ToString(), out var value))
+                        if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
                         {
-                            doc.Add(new Int32Field(entry.Name, value, store));
+                            doc.Add(new Int64Field(entry.Name, value, store));
                         }
                         else
                         {

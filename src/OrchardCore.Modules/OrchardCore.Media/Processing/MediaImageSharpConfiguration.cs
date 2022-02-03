@@ -38,7 +38,7 @@ namespace OrchardCore.Media.Processing
                 {
                     if (context.Commands.TryGetValue(TokenCommandProcessor.TokenCommand, out var tokenString))
                     {
-                        var mediaTokenService =  context.Context.RequestServices.GetRequiredService<IMediaTokenService>();
+                        var mediaTokenService = context.Context.RequestServices.GetRequiredService<IMediaTokenService>();
                         // The token must now be validated against the HMAC of the other commands.
                         // Use the Raw value, not the parsed value.
                         var token = context.Commands["token"];

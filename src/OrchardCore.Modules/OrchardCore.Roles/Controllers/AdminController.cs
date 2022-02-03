@@ -106,7 +106,7 @@ namespace OrchardCore.Roles.Controllers
                 var result = await _roleManager.CreateAsync(role);
                 if (result.Succeeded)
                 {
-                    _notifier.Success(H["Role created successfully."]);
+                    await _notifier.SuccessAsync(H["Role created successfully."]);
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -141,17 +141,17 @@ namespace OrchardCore.Roles.Controllers
 
             if (result.Succeeded)
             {
-                _notifier.Success(H["Role deleted successfully."]);
+                await _notifier.SuccessAsync(H["Role deleted successfully."]);
             }
             else
             {
                 await _documentStore.CancelAsync();
 
-                _notifier.Error(H["Could not delete this role."]);
+                await _notifier.ErrorAsync(H["Could not delete this role."]);
 
                 foreach (var error in result.Errors)
                 {
-                    _notifier.Error(H[error.Description]);
+                    await _notifier.ErrorAsync(H[error.Description]);
                 }
             }
 
@@ -219,7 +219,7 @@ namespace OrchardCore.Roles.Controllers
 
             await _roleManager.UpdateAsync(role);
 
-            _notifier.Success(H["Role updated successfully."]);
+            await _notifier.SuccessAsync(H["Role updated successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

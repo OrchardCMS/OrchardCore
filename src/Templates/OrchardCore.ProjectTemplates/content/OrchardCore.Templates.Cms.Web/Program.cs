@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,10 +13,12 @@ namespace OrchardCore.Templates.Cms.Web
 {
     public class Program
     {
-        public static Task Main(string[] args)
-            => BuildHost(args).RunAsync();
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
 
-        public static IHost BuildHost(string[] args) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(logging => logging.ClearProviders())
 #if (UseSerilog)
@@ -27,11 +28,12 @@ namespace OrchardCore.Templates.Cms.Web
                         .Enrich.FromLogContext();
                     })
 #endif
-                .ConfigureWebHostDefaults(webBuilder => webBuilder
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
 #if (UseNLog)
-                    .UseNLogWeb()
+                    webBuilder.UseNLogWeb();
 #endif
-                    .UseStartup<Startup>()
-                ).Build();
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

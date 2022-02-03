@@ -4,7 +4,9 @@ The auto-setup module allows to automatically install the application/tenants on
 
 ## JSON Configuration Parameters
 
+Auto-Setup parameters are defined in appsettings.json. Example excerpt:
 ```json
+"OrchardCore": {
     "OrchardCore_AutoSetup": {
     "AutoSetupPath": "",
     "Tenants": [
@@ -100,13 +102,7 @@ For testing purposes, you may add the above environment variables into a "web" p
 Then, start the web app project with the following command:
 
 ```
-dotnet run -f net5.0 --launch-profile web
-```
-
-or 
-
-```
-dotnet run -f netcoreapp3.1 --launch-profile web
+dotnet run --launch-profile web
 ```
 
 ## Enabling Auto Setup Feature
@@ -159,3 +155,8 @@ Lock configuration parameters are optional and can be set via environment variab
 "OrchardCore__OrchardCore_AutoSetup__LockOptions__LockTimeout": "10000"
 "OrchardCore__OrchardCore_AutoSetup__LockOptions__LockExpiration": "10000"
 ```
+
+## Additional information
+Please refer to separate sections for additional information on setup:
+
+- [OrchardCore.Setup - setting up an empty site](../Setup/README.md)

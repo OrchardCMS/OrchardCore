@@ -1,4 +1,5 @@
-/// <reference path="monaco.d.ts">
+/// <reference path="../../node_modules/monaco-editor/monaco.d.ts" />
+
 const liquidTags = [
     'if',
     'else',

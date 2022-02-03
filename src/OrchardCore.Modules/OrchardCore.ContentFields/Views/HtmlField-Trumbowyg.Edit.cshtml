@@ -46,9 +46,15 @@ else
     if (culture.GetLanguageDirection() == LanguageDirection.RTL)
     {
         <text>
-        @* set dir while keeping trumbowg translations dictionary intact *@
         var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
-        langs['_dir'] = '@culture.GetLanguageDirection()';
+
+        if (!langs) {
+            cloned = { 
+                ...jQuery.trumbowyg.langs['en'],
+                _dir: '@culture.GetLanguageDirection()'
+            };
+            jQuery.trumbowyg.langs['@culture.TwoLetterISOLanguageName'] = cloned;
+        }
         </text>
     }
 }    
