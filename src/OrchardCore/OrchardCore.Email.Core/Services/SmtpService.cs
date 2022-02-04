@@ -210,7 +210,8 @@ namespace OrchardCore.Email.Services
 
             return false;
         }
-        private async Task<string> SendOnlineMessage(MimeMessage message)
+
+        protected virtual async Task<string> SendOnlineMessage(MimeMessage message)
         {
             var secureSocketOptions = SecureSocketOptions.Auto;
 
