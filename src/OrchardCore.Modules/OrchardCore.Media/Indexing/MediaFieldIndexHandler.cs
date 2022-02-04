@@ -33,7 +33,7 @@ namespace OrchardCore.Media.Indexing
             var options = context.Settings.ToOptions();
             var settings = context.ContentPartFieldDefinition.GetSettings<MediaFieldSettings>();
 
-            if (field.Paths.Length > 0)
+            if (field.Paths?.Length > 0)
             {
                 if (settings.AllowMediaText)
                 {
