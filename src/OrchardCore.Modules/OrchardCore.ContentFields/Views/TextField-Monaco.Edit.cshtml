@@ -49,13 +49,11 @@
             window.addEventListener("submit", function () {
                 textArea.value = editor.getValue();
             });
-            //for preview
-             if(document.getElementById("previewButton")){
-                editor.getModel().onDidChangeContent((event) => {
-                    textArea.value = editor.getValue();
-                    $(document).trigger('contentpreview:render');
-                }); 
-             }
+            editor.getModel().onDidChangeContent((event) => {
+                 textArea.value = editor.getValue();
+                 $(document).trigger('contentpreview:render');
+            }); 
+             
         });
     });
 </script>
