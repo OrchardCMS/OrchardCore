@@ -3,8 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Email
 {
+    /// <summary>
+    /// Validates an email address.
+    /// </summary>
     public class EmailAddressAttribute : ValidationAttribute
     {
+        /// <inheritdoc/>
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
