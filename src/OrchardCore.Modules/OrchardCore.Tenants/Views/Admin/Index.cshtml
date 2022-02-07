@@ -91,7 +91,8 @@
                 </div>
                 <div class="form-group col mb-n1 filter">
                     <div class="btn-group float-right mt-1">
-                        <select asp-for="Options.Filter" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick mr-2" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["State"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.Category" asp-items="@Model.Options.TenantsCategories" class="selectpicker show-tick mr-2" data-header="@T["Filter by category"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Category"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.Status" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick mr-2" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["State"]" data-style="btn-sm"></select>
                         <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
                     </div>
                 </div>
@@ -110,6 +111,10 @@
                             </div>
                             <div class="d-inline">
                                 <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                                @if(!string.IsNullOrEmpty(entry.Category))
+                                {
+                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-tag text-info" aria-hidden="true"></i> @entry.Category</span>
+                                }
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
                                 {
                                     <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info" aria-hidden="true"></i> @entry.ShellSettings["DatabaseProvider"]</span>
