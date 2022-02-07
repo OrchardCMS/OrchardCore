@@ -56,7 +56,7 @@ namespace OrchardCore.Tenants.ViewModels
 
             if (!String.IsNullOrWhiteSpace(FeatureProfile))
             {
-                var featureProfiles = featureProfilesService.GetFeatureProfilesAsync().Result;
+                var featureProfiles = featureProfilesService.GetFeatureProfilesAsync().GetAwaiter().GetResult();
                 if (!featureProfiles.ContainsKey(FeatureProfile))
                 {
                     yield return new ValidationResult(S["The feature profile does not exist."], new[] { nameof(FeatureProfile) });
