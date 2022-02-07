@@ -6,7 +6,7 @@
   "description": "A GraphiQL module for OrchardCore.",
   "dependencies": {
     "graphiql": "^1.4.2",
-    "graphiql-explorer": "^0.6.3",
+    "graphiql-explorer": "^0.9.0",
     "graphql": "^15.5.0",
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
