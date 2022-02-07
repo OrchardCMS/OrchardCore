@@ -21,8 +21,8 @@ namespace OrchardCore.Liquid.Services
         private readonly IServiceProvider _serviceProvider;
 
         public LiquidTemplateManager(
-            IMemoryCache memoryCache, 
-            LiquidViewParser liquidViewParser, 
+            IMemoryCache memoryCache,
+            LiquidViewParser liquidViewParser,
             IOptions<TemplateOptions> templateOptions,
             IServiceProvider serviceProvider
             )
@@ -125,7 +125,7 @@ namespace OrchardCore.Liquid.Services
         public bool Validate(string template, out IEnumerable<string> errors)
         {
             var success = _liquidViewParser.TryParse(template, out _, out var error);
-            errors = new [] { error };
+            errors = new[] { error };
             return success;
         }
     }

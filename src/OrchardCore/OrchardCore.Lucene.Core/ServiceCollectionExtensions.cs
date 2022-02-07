@@ -38,7 +38,7 @@ namespace OrchardCore.Lucene
             services.AddSingleton<ILuceneBooleanFilterProvider, TermFilterProvider>();
             services.AddSingleton<ILuceneBooleanFilterProvider, TermsFilterProvider>();
             services.AddSingleton<ILuceneBooleanFilterProvider, WildcardFilterProvider>();
-            
+
             return services;
         }
     }

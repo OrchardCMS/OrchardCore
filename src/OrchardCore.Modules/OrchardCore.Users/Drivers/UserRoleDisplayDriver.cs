@@ -66,7 +66,7 @@ namespace OrchardCore.Users.Drivers
                 var userRoleNames = await _userRoleStore.GetRolesAsync(user, default(CancellationToken));
 
                 var roleEntries = new List<RoleEntry>();
-                foreach(var roleName in roleNames)
+                foreach (var roleName in roleNames)
                 {
                     var roleEntry = new RoleEntry
                     {

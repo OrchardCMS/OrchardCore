@@ -1,6 +1,4 @@
-using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules.ViewModels
 {

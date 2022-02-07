@@ -75,6 +75,14 @@ namespace OrchardCore.Users
                 pattern: userOptions.ChangePasswordUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
+
+            routes.MapAreaControllerRoute(
+                name: "ChangePasswordConfirmation",
+                areaName: "OrchardCore.Users",
+                pattern: userOptions.ChangePasswordConfirmationUrl,
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePasswordConfirmation) }
+            );
+
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
@@ -455,7 +463,7 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<ResetPasswordDeploymentStartup, ResetPasswordDeploymentStartup>(S => S["Reset Password settings"], S => S["Exports the Reset Password settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<ResetPasswordSettings, ResetPasswordDeploymentStartup>(S => S["Reset Password settings"], S => S["Exports the Reset Password settings."]);
         }
     }
 

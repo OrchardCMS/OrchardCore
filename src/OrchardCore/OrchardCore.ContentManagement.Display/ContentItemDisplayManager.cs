@@ -149,7 +149,7 @@ namespace OrchardCore.ContentManagement.Display
             }
 
             var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
-            
+
             if (contentTypeDefinition == null)
             {
                 throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");

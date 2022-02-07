@@ -55,7 +55,7 @@ namespace OrchardCore.Tenants.Controllers
             IFeatureProfilesService featureProfilesService,
             IOptions<IdentityOptions> identityOptions,
             IEnumerable<DatabaseProvider> databaseProviders,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<ApiController> stringLocalizer)
         {
             _shellHost = shellHost;
             _currentShellSettings = currentShellSettings;
