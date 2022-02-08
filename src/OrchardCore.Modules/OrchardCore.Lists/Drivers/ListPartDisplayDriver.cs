@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
@@ -20,16 +23,22 @@ namespace OrchardCore.Lists.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
         public ListPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
             IContainerService containerService,
-            IUpdateModelAccessor updateModelAccessor
+            IUpdateModelAccessor updateModelAccessor,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _containerService = containerService;
             _updateModelAccessor = updateModelAccessor;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
@@ -75,6 +84,7 @@ namespace OrchardCore.Lists.Drivers
                         model.Context = context;
                         model.EnableOrdering = settings.EnableOrdering;
                         model.Pager = await context.New.PagerSlim(pager);
+                        model.IsContentCreatable = await IsContentCreatable(model.ContainedContentTypeDefinitions.ToList()[0]);
                     })
                     .Location("DetailAdmin", "Content:10"),
                     Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
@@ -98,6 +108,14 @@ namespace OrchardCore.Lists.Drivers
             var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
             return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+        }
+
+        private async Task<bool> IsContentCreatable(ContentTypeDefinition contentItem)
+        {
+            return await _authorizationService.AuthorizeAsync(
+                _httpContextAccessor.HttpContext.User,
+                CommonPermissions.EditContent,
+                contentItem);
         }
     }
 }
