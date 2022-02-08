@@ -54,9 +54,12 @@ else
                                 <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
                                     @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
                                 </a>
-                                <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                                    @T["Create {0}", contentTypeDefinition.DisplayName]
-                                </a>
+                                @if (Model.IsContentCreatable)
+                                {
+                                    <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
+                                        @T["Create {0}", contentTypeDefinition.DisplayName]
+                                    </a>
+                                }
                             }
                             else
                             {
