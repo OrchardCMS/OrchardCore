@@ -1,0 +1,82 @@
+@model ShapeViewModel<BackgroundJobExecution>
+@using System.Globalization
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.BackgroundJobs.Helpers
+@{
+    var executionUtc = Model.Value.Schedule.ExecutionUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
+    var state = Model.Value.State;
+}
+
+@if (Model.Value.State.StatusHistory.Count > 1)
+{
+    var href = $"#collapse{Model.Value.BackgroundJob.BackgroundJobId}";
+    var id = $"collapse{Model.Value.BackgroundJob.BackgroundJobId}";
+    <a href="@href" data-toggle="collapse" class="text-decoration-none">
+        <span class="badge badge-@GetStatusCss(state.CurrentStatus) font-weight-normal mr-1">
+            @T.GetLocalizedStatus(state.CurrentStatus)
+        </span>
+        <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: executionUtc, Format: "g"))">
+            <time datetime="@executionUtc">@await DisplayAsync(await New.Timespan(Utc: Model.Value.Schedule.ExecutionUtc))</time>
+        </span>
+        <span class="badge bg-secondary font-weight-normal text-white">@T["History"]</span>
+    </a>
+    
+    var history = Model.Value.State.StatusHistory.ToArray().Reverse().Skip(1);
+    <div class="collapse" id="@id">
+        @foreach(var status in history)
+        {
+            var changedUtc = status.ChangedUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
+            <div>
+                <span class="badge badge-@GetStatusCss(status.Status) font-weight-normal mr-1">
+                    @T.GetLocalizedStatus(status.Status)
+                </span>   
+                
+                <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: changedUtc, Format: "g"))">
+                    <time datetime="@executionUtc">@await DisplayAsync(await New.Timespan(Utc: status.ChangedUtc))</time>
+                </span> 
+            </div>
+        }
+    </div>
+} 
+else
+{
+    <span class="badge badge-@GetStatusCss(state.CurrentStatus) font-weight-normal mr-1">
+        @T.GetLocalizedStatus(state.CurrentStatus)
+    </span>
+    <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: executionUtc, Format: "g"))">
+        <time datetime="@executionUtc">@await DisplayAsync(await New.Timespan(Utc: Model.Value.Schedule.ExecutionUtc))</time>
+    </span>   
+}
+
+@functions
+{
+    string GetStatusCss(BackgroundJobStatus status)
+    {
+        var statusCss = String.Empty;
+
+        switch (status)
+        {
+            case BackgroundJobStatus.Retrying:
+                statusCss = "warning";
+                break;
+            case BackgroundJobStatus.Executed:
+                statusCss = "success";
+                break;
+            case BackgroundJobStatus.Scheduled:
+            case BackgroundJobStatus.Queued:
+            case BackgroundJobStatus.Cancelled:
+            case BackgroundJobStatus.Executing:
+                statusCss = "info";
+                break;
+            case BackgroundJobStatus.Failed:
+                statusCss = "danger";
+                break;
+
+            default:
+                statusCss = "secondary";
+                break;
+        }
+
+        return statusCss;
+    }
+}

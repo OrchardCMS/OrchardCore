@@ -1,0 +1,16 @@
+@model ShapeViewModel<BackgroundJobExecution>
+
+@*TODO this turns into a Correlation Id link *@
+@*<span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary" aria-hidden="true"></i> <a href="@(FullRequestPath)&Options.BackgroundJobName=@Model.Value.BackgroundJob.Name" data-toggle="tooltip" title="@T["Background job"]">@Model.Value.BackgroundJob.Name</a></span>*@
+@{
+    var correlationId = Model.Value.BackgroundJob.CorrelationId;
+    var repeatCorrelationId = Model.Value.BackgroundJob.RepeatCorrelationId;
+}
+@if(!String.IsNullOrEmpty(correlationId))
+{
+    <a href="?q=correlationid:@correlationId" class="">@T["Correlated jobs"]</a>
+}
+@if(!String.IsNullOrEmpty(repeatCorrelationId))
+{
+    <a href="?q=repeatcorrelationid:@repeatCorrelationId" class="">@T["Correlated job repetitions"]</a>
+}

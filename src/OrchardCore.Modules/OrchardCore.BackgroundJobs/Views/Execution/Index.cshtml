@@ -1,0 +1,12 @@
+@model BackgroundJobsIndexViewModel
+@{
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.BackgroundJobs.Count - 1;
+}
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Background Jobs"])</h1></zone>
+
+<form asp-action="Index" method="post" class="no-multisubmit">
+    @await DisplayAsync(Model)
+</form>

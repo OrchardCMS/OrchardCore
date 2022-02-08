@@ -1,0 +1,12 @@
+@model ShapeViewModel<BackgroundJobExecution>
+@{
+    var state = Model.Value.State;
+    var schedule = Model.Value.Schedule as RepeatCrontabSchedule;
+}
+
+@if (state.CurrentStatus <= BackgroundJobStatus.Queued)
+{
+    <span class="badge ta-badge font-weight-normal">
+        <i class="fas fa-clock text-secondary" aria-hidden="true"></i><span class="ml-1">@T["Crontab {0}", schedule.RepeatCrontab]</span>
+    </span>
+}

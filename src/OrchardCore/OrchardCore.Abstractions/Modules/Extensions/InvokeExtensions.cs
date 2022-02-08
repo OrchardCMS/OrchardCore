@@ -7,6 +7,7 @@ namespace OrchardCore.Modules
 {
     public static class InvokeExtensions
     {
+        #region synchronous
         /// <summary>
         /// Safely invoke methods by catching non fatal exceptions and logging them
         /// </summary>
@@ -102,6 +103,10 @@ namespace OrchardCore.Modules
 
             return results;
         }
+
+        #endregion
+
+        #region Asynchronous
 
         /// <summary>
         /// Safely invoke methods by catching non fatal exceptions and logging them
@@ -271,6 +276,182 @@ namespace OrchardCore.Modules
             return results;
         }
 
+        #endregion
+
+        #region Asynchronous value
+
+        /// <summary>
+        /// Safely invoke methods by catching non fatal exceptions and logging them
+        /// </summary>
+        public static async ValueTask InvokeValueAsync<TEvents>(this IEnumerable<TEvents> events, Func<TEvents, ValueTask> dispatch, ILogger logger)
+        {
+            foreach (var sink in events)
+            {
+                try
+                {
+                    await dispatch(sink);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Safely invoke methods by catching non fatal exceptions and logging them
+        /// </summary>
+        public static async ValueTask InvokeValueAsync<TEvents, T1>(this IEnumerable<TEvents> events, Func<TEvents, T1, ValueTask> dispatch, T1 arg1, ILogger logger)
+        {
+            foreach (var sink in events)
+            {
+                try
+                {
+                    await dispatch(sink, arg1);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Safely invoke methods by catching non fatal exceptions and logging them
+        /// </summary>
+        public static async ValueTask InvokeValueAsync<TEvents, T1, T2>(this IEnumerable<TEvents> events, Func<TEvents, T1, T2, ValueTask> dispatch, T1 arg1, T2 arg2, ILogger logger)
+        {
+            foreach (var sink in events)
+            {
+                try
+                {
+                    await dispatch(sink, arg1, arg2);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Safely invoke methods by catching non fatal exceptions and logging them
+        /// </summary>
+        public static async ValueTask InvokeValueAsync<TEvents, T1, T2, T3>(this IEnumerable<TEvents> events, Func<TEvents, T1, T2, T3, ValueTask> dispatch, T1 arg1, T2 arg2, T3 arg3, ILogger logger)
+        {
+            foreach (var sink in events)
+            {
+                try
+                {
+                    await dispatch(sink, arg1, arg2, arg3);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Safely invoke methods by catching non fatal exceptions and logging them
+        /// </summary>
+        public static async ValueTask InvokeValueAsync<TEvents, T1, T2, T3, T4>(this IEnumerable<TEvents> events, Func<TEvents, T1, T2, T3, T4, ValueTask> dispatch, T1 arg1, T2 arg2, T3 arg3, T4 arg4, ILogger logger)
+        {
+            foreach (var sink in events)
+            {
+                try
+                {
+                    await dispatch(sink, arg1, arg2, arg3, arg4);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Safely invoke methods by catching non fatal exceptions and logging them
+        /// </summary>
+        public static async ValueTask InvokeValueAsync<TEvents, T1, T2, T3, T4, T5>(this IEnumerable<TEvents> events, Func<TEvents, T1, T2, T3, T4, T5, ValueTask> dispatch, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, ILogger logger)
+        {
+            foreach (var sink in events)
+            {
+                try
+                {
+                    await dispatch(sink, arg1, arg2, arg3, arg4, arg5);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+        }
+
+        public static async ValueTask<IEnumerable<TResult>> InvokeValueAsync<TEvents, TResult>(this IEnumerable<TEvents> events, Func<TEvents, ValueTask<TResult>> dispatch, ILogger logger)
+        {
+            var results = new List<TResult>();
+
+            foreach (var sink in events)
+            {
+                try
+                {
+                    var result = await dispatch(sink);
+                    results.Add(result);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+
+            return results;
+        }
+
+        public static async ValueTask<IEnumerable<TResult>> InvokeValueAsync<TEvents, T1, TResult>(this IEnumerable<TEvents> events, Func<TEvents, T1, ValueTask<TResult>> dispatch, T1 arg1, ILogger logger)
+        {
+            var results = new List<TResult>();
+
+            foreach (var sink in events)
+            {
+                try
+                {
+                    var result = await dispatch(sink, arg1);
+                    results.Add(result);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+
+            return results;
+        }
+
+        public static async ValueTask<IEnumerable<TResult>> InvokeValueAsync<TEvents, TResult>(this IEnumerable<TEvents> events, Func<TEvents, ValueTask<IEnumerable<TResult>>> dispatch, ILogger logger)
+        {
+            var results = new List<TResult>();
+
+            foreach (var sink in events)
+            {
+                try
+                {
+                    var result = await dispatch(sink);
+                    results.AddRange(result);
+                }
+                catch (Exception ex)
+                {
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
+                }
+            }
+
+            return results;
+        }
+
+        #endregion
+
+        #region Helpers
+
         public static void HandleException(Exception ex, ILogger logger, string sourceType, string method)
         {
             if (IsLogged(ex))
@@ -290,5 +471,7 @@ namespace OrchardCore.Modules
         {
             return !ex.IsFatal();
         }
+
+        #endregion
     }
 }

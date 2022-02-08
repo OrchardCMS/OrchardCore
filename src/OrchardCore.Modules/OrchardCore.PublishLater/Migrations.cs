@@ -23,37 +23,37 @@ namespace OrchardCore.PublishLater
                 .Attachable()
                 .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 
-            SchemaBuilder.CreateMapIndexTable<PublishLaterPartIndex>(table => table
-                .Column<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
-            );
+            //SchemaBuilder.CreateMapIndexTable<PublishLaterPartIndex>(table => table
+            //    .Column<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
+            //);
 
-            SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
-                    "DocumentId",
-                    nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
-            );
+            //SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
+            //    .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
+            //        "DocumentId",
+            //        nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
+            //);
 
             // Shortcut other migration steps on new content definition schemas.
             return 2;
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom1()
-        {
-            // The 'ScheduledPublishUtc' column and related index are kept on existing databases,
-            // this because dropping an index and altering a column don't work on all providers.
+        //public int UpdateFrom1()
+        //{
+        //    // The 'ScheduledPublishUtc' column and related index are kept on existing databases,
+        //    // this because dropping an index and altering a column don't work on all providers.
 
-            SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
-            );
+        //    SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
+        //        .AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
+        //    );
 
-            SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
-                    "DocumentId",
-                    nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
-            );
+        //    SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
+        //        .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
+        //            "DocumentId",
+        //            nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
+        //    );
 
-            return 2;
-        }
+        //    return 2;
+        //}
     }
 }

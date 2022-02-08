@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.BackgroundJobs;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -94,6 +96,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static OrchardCoreBuilder AddBackgroundService(this OrchardCoreBuilder builder)
         {
             builder.ApplicationServices.AddHostedService<ModularBackgroundService>();
+
+            builder.ApplicationServices.AddSingleton<IBackgroundJobQueue, BackgroundJobQueue>();
+            builder.ApplicationServices.AddHostedService<ModularBackgroundJobService>();
 
             return builder;
         }

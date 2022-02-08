@@ -1,0 +1,8 @@
+@model ShapeViewModel<LogJob2>
+@inject  IBackgroundJobService Service;
+@{
+    var job = await Service.GetByIdAsync(Model.Value.BackgroundJobId);
+    var formatted = String.Format(Model.Value.Message, job.State.CreatedUtc.GetValueOrDefault());
+}
+<span>@T["Log a message"]</span>
+<span>@formatted</span>

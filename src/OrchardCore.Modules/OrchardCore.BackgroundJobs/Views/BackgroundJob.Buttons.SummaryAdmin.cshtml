@@ -1,0 +1,21 @@
+@model ShapeViewModel<BackgroundJobExecution>
+@{
+    var model = Model.Value;
+    var backgroundJobId = model.BackgroundJob.BackgroundJobId;
+    var backgroundJobName = model.BackgroundJob.Name;
+    var currentStatus = model.State.CurrentStatus;
+}
+@if (currentStatus == BackgroundJobStatus.Scheduled)
+{
+    <a asp-action="Cancel" asp-route-id="@backgroundJobId" asp-route-name="@backgroundJobName" asp-route-returnurl="@FullRequestPath" class="btn btn-secondary btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Execute now"]" data-message="@T["Are you sure you want to cancel this job?"]">@T["Cancel"]</a>      
+}
+else if (currentStatus == BackgroundJobStatus.Queued || currentStatus == BackgroundJobStatus.Executing)
+{
+    <span>@T["In progress"]</span>
+}
+else
+{
+    <a asp-action="ExecuteNow" asp-route-id="@backgroundJobId" asp-route-name="@backgroundJobName" asp-route-returnurl="@FullRequestPath" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl" data-title="@T["Execute now"]" data-message="@T["Are you sure you want to execute this job now?"]">@T["Execute Now"]</a>  
+    <a asp-action="Delete" asp-route-id="@backgroundJobId" asp-route-name="@backgroundJobName" asp-route-returnurl="@FullRequestPath" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" >@T["Delete"]</a>  
+}
+

@@ -1,0 +1,8 @@
+@model ShapeViewModel<PublishLaterBackgroundJob>
+@using OrchardCore.ContentManagement
+@inject IContentManager ContentManager
+@{
+    var contentItem = await ContentManager.GetAsync(Model.Value.CorrelationId, VersionOptions.Latest);
+}
+<span class="mr-1">@T["Publish Content Item Later"]</span>
+<a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath"/>

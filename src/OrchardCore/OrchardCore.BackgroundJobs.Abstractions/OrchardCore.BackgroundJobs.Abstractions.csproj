@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.BackgroundJobs</RootNamespace>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore Background Jobs Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for OrchardCore Background Jobs.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Background Jobs</PackageTags>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ncrontab" />
+    <PackageReference Include="YesSql.Abstractions" />
+    <PackageReference Include="YesSql.Filters.Query" />
+  </ItemGroup>
+
+</Project>
