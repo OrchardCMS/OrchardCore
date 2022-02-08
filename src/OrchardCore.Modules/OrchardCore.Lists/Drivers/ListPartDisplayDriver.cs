@@ -84,7 +84,7 @@ namespace OrchardCore.Lists.Drivers
                         model.Context = context;
                         model.EnableOrdering = settings.EnableOrdering;
                         model.Pager = await context.New.PagerSlim(pager);
-                        model.IsContentCreatable = await IsContentCreatable(model.ContainedContentTypeDefinitions.ToList()[0]);
+                        model.IsContentCreatable = await IsContentCreatableAsync(model.ContainedContentTypeDefinitions.ToList()[0]);
                     })
                     .Location("DetailAdmin", "Content:10"),
                     Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
@@ -110,12 +110,12 @@ namespace OrchardCore.Lists.Drivers
             return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }
 
-        private async Task<bool> IsContentCreatable(ContentTypeDefinition contentItem)
+        private async Task<bool> IsContentCreatableAsync(ContentTypeDefinition contentTypeDefinition)
         {
             return await _authorizationService.AuthorizeAsync(
                 _httpContextAccessor.HttpContext.User,
                 CommonPermissions.EditContent,
-                contentItem);
+                contentTypeDefinition);
         }
     }
 }
