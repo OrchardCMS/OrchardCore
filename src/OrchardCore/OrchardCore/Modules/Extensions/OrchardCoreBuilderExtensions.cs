@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.BackgroundTasks;
@@ -97,9 +97,14 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices.AddHostedService<ModularBackgroundService>();
 
+            builder.ApplicationServices
+                .AddOptions<BackgroundServiceOptions>()
+                .Configure<IConfiguration>((options, config) => config
+                    .Bind("OrchardCore:OrchardCore_BackgroundService", options));
+
             builder.ApplicationServices.AddSingleton<IBackgroundJobQueue, BackgroundJobQueue>();
             builder.ApplicationServices.AddHostedService<ModularBackgroundJobService>();
-
+            
             return builder;
         }
     }

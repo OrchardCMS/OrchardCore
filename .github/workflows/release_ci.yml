@@ -33,14 +33,6 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: "15"
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.*
-    - name: Setup .NET Core 5.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.*
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
@@ -52,8 +44,6 @@ jobs:
     - name: Build
       run: |
         dotnet build --configuration Release --framework net6.0
-        dotnet build --configuration Release --framework net5.0
-        dotnet build --configuration Release --framework netcoreapp3.1
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 

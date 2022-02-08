@@ -65,7 +65,6 @@ namespace OrchardCore.Localization
         }
     }
 
-#if NET5_0_OR_GREATER
     [Feature("OrchardCore.Localization.ContentLanguageHeader")]
     public class ContentLanguageHeaderStartup : StartupBase
     {
@@ -74,5 +73,4 @@ namespace OrchardCore.Localization
             services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
         }
     }
-#endif
 }
