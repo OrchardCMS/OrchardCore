@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Theming
         /// <summary>
         /// Gets or sets the theme name.
         /// </summary>
-        /// <remarks>Avoid to use the theme name acciedently. <see cref="ThemeSelectorResult"/> is using the theme identifier instead.</remarks>
+        /// <remarks>Avoid to use the theme name accidentally. <see cref="ThemeSelectorResult"/> is using the theme identifier instead.</remarks>
         public string ThemeName { get; set; }
     }
 }
