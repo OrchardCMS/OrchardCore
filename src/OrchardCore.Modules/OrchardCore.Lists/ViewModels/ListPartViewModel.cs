@@ -15,6 +15,5 @@ namespace OrchardCore.Lists.ViewModels
         public BuildPartDisplayContext Context { get; set; }
         public dynamic Pager { get; set; }
         public bool EnableOrdering { get; set; }
-        public bool IsContentCreatable { get; set; }
     }
 }
