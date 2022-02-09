@@ -80,7 +80,7 @@ namespace OrchardCore.Email.Services
                 switch (_options.DeliveryMethod)
                 {
                     case SmtpDeliveryMethod.Network:
-                        response = await SendOnlineMessage(mimeMessage);
+                        response = await SendOnlineMessageAsync(mimeMessage);
                         break;
                     case SmtpDeliveryMethod.SpecifiedPickupDirectory:
                         await SendOfflineMessage(mimeMessage, _options.PickupDirectoryLocation);
@@ -211,7 +211,7 @@ namespace OrchardCore.Email.Services
             return false;
         }
 
-        protected virtual async Task<string> SendOnlineMessage(MimeMessage message)
+        protected virtual async Task<string> SendOnlineMessageAsync(MimeMessage message)
         {
             var secureSocketOptions = SecureSocketOptions.Auto;
 
