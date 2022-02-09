@@ -30,12 +30,11 @@ Enabling UseCdn will configure the `IResourceManager` to provide any scripts or 
 ### ResourceDebugMode
 
 When enabled will serve scripts or styles, that have a CDN configured, or a debug-src, from the local server in non minified format.  
-This will also disabled the CdnBaseUrl prepending.
+This will also disable the CdnBaseUrl prepending.
 
 ### CdnBaseUrl
 
-When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will
-be disabled in `ResourceDebugMode`
+When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will be disabled in `ResourceDebugMode`
 
 ## Named Resources
 
