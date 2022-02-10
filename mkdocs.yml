@@ -135,6 +135,7 @@ nav:
               - Flow: docs/reference/modules/Flow/README.md
               - Bag: docs/reference/modules/Flow/BagPart.md
               - Publish Later: docs/reference/modules/PublishLater/README.md
+              - SEO Meta: docs/reference/modules/Seo/README.md
           - Content Fields: docs/reference/modules/ContentFields/README.md
           - Content Preview: docs/reference/modules/ContentPreview/README.md
           - Content Localization: docs/reference/modules/ContentLocalization/README.md

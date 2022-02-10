@@ -55,6 +55,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
   - [Flow](modules/Flow/README.md) 
   - [Bag](modules/Flow/BagPart.md)
   - [Publish Later](modules/PublishLater/README.md)
+  - [SEO Meta](modules/Seo/README.md)
 - [Content Fields](modules/ContentFields/README.md)
 - [Content Preview](modules/ContentPreview/README.md)
 - [Taxonomies](modules/Taxonomies/README.md)
