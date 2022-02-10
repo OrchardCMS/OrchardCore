@@ -414,3 +414,9 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Design.cshtml`
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n-O4WO6dVJk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IcR-YpxKlGQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
