@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Navigation.Abstractions\OrchardCore.Navigation.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

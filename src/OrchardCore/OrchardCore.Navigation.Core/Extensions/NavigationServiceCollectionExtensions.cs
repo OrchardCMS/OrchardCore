@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace OrchardCore.Navigation
 {
-    public static class ServiceCollectionExtensions
+    public static class NavigationServiceCollectionExtensions
     {
         /// <summary>
         /// Adds tenant level services.
