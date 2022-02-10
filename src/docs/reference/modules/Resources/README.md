@@ -374,7 +374,7 @@ When rendering the scripts the resource manager will order the output based on t
 3. `bar`
 
 !!! note
-    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`.
+    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`. Hence why the above inline examples all include a name.
 
 #### Custom scripts
 
