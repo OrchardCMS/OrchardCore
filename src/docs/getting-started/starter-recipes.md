@@ -31,19 +31,18 @@ Orchard Core Display Management techniques to render content.
 
 ## OrchardCore.Application.Cms.Core.Targets
 
-### Empty Recipe
+### Blank Recipe
 
-The Empty recipe enables content management features, but does not set a current theme.
+The Blank recipe enables content management features, but does not set a current theme.
 You can use this recipe when starting Orchard Core in Decoupled Mode,
 or when building your own theme.
 
 Alternatively you can start with another recipe,
 and change the active theme after setup.
 
-#### Empty Recipe Contents 
+#### Blank Recipe Contents 
 
 - Content management features
-- Enables templating via Liquid
 - Activates `TheAdmin` theme
 
 ### Headless Recipe
