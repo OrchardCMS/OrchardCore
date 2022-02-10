@@ -111,6 +111,8 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Response Compression](modules/ResponseCompression/README.md)
 - [Email](modules/Email/README.md)
 - [Redis](modules/Redis/README.md)
+- [Deployment](modules/Deployment/README.md)
+- [Remote Deployment](modules/Deployment.Remote/README.md)
 
 ### Localization
 

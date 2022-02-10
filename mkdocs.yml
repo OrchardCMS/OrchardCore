@@ -185,6 +185,7 @@ nav:
           - Configuration: docs/reference/core/Configuration/README.md
           - Cors: docs/reference/modules/Cors/README.md
           - Custom Settings: docs/reference/modules/CustomSettings/README.md
+          - Deployment: docs/reference/modules/Deployment/README.md
           - Placement: docs/reference/core/Placement/README.md
           - Data: docs/reference/core/Data/README.md
           - Data Migrations: docs/reference/modules/Migrations/README.md
@@ -203,6 +204,7 @@ nav:
           - Razor Helpers: docs/reference/core/Razor/README.md
           - Recipes: docs/reference/modules/Recipes/README.md
           - Redis: docs/reference/modules/Redis/README.md
+          - Remote Deployment: docs/reference/modules/Deployment.Remote/README.md
           - Response Compression: docs/reference/modules/ResponseCompression/README.md
           - Roles: docs/reference/modules/Roles/README.md
           - Sanitizer: docs/reference/core/Sanitizer/README.md
