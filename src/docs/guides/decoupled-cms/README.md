@@ -387,3 +387,7 @@ In this tutorial we have learned how to
 - Create Razor Pages with custom routes to render then content
 - Load content items with different identifiers
 - Render wysiwyg preview screens while editing the content
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yWpz8p-oaKg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

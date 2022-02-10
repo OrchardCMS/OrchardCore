@@ -45,11 +45,6 @@ and change the active theme after setup.
 - Content management features
 - Activates `TheAdmin` theme
 
-## Using Orchard Core as a Decoupled CMS with the Blank Recipe Video
-
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yWpz8p-oaKg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-
 ### Headless Recipe
 
 The Headless recipe is intended to get you started when using Orchard Core
