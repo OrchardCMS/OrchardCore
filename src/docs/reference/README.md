@@ -22,6 +22,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 ### App security
 
+- [Audit Trail](modules/AuditTrail/README.md)
 - [CORS](modules/Cors/README.md)
 - [ReCaptcha](modules/ReCaptcha/README.md)
 - [Sanitizer](core/Sanitizer/README.md) 

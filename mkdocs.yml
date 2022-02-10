@@ -179,6 +179,7 @@ nav:
           - Home Route: docs/reference/modules/HomeRoute/README.md
           - Feeds: docs/reference/modules/Feeds/README.md
       - Core Modules:
+          - Audit Trail: docs/reference/modules/AuditTrail/README.md
           - Auto Setup: docs/reference/modules/AutoSetup/README.md
           - Features: docs/reference/modules/Features/README.md
           - Contents: docs/reference/modules/Contents/README.md
