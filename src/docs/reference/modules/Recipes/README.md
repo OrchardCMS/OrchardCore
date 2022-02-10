@@ -302,7 +302,7 @@ The WorkflowType step allows you to create a Workflow.
 
 ### Deployment Step
 
-The Deployment step allows you to create a deployment plan with deployment steps.
+The Deployment step allows you to create a deployment plan with deployment steps. Also see [Deployment](../Deployment/README.md).
 
 ```json
     {
