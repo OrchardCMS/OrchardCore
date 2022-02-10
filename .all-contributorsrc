@@ -2441,7 +2441,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/22633385?v=4",
       "profile": "https://bandism.net/",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -2476,6 +2477,24 @@
       "name": "Shane Courtrille",
       "avatar_url": "https://avatars.githubusercontent.com/u/121610?v=4",
       "profile": "https://github.com/ShaneCourtrille",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Tokyo1985",
+      "name": "Tokyo1985",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61869142?v=4",
+      "profile": "https://github.com/Tokyo1985",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "optiklab",
+      "name": "Anton Yarkov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/934368?v=4",
+      "profile": "http://optiklab.github.io/",
       "contributions": [
         "code"
       ]
