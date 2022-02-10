@@ -110,6 +110,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Mini Profiler](modules/MiniProfiler/README.md)
 - [Response Compression](modules/ResponseCompression/README.md)
 - [Email](modules/Email/README.md)
+- [Redis](modules/Redis/README.md)
 
 ### Localization
 

@@ -202,6 +202,7 @@ nav:
           - OpenId: docs/reference/modules/OpenId/README.md
           - Razor Helpers: docs/reference/core/Razor/README.md
           - Recipes: docs/reference/modules/Recipes/README.md
+          - Redis: docs/reference/modules/Redis/README.md
           - Response Compression: docs/reference/modules/ResponseCompression/README.md
           - Roles: docs/reference/modules/Roles/README.md
           - Sanitizer: docs/reference/core/Sanitizer/README.md
