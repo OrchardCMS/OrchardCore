@@ -139,6 +139,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     for (i = 0; i < count; i++) {
                         data.files[i].uploadName =
                             self.getUniqueId() + data.files[i].name;
+                        data.files[i].attachedFileName = data.files[i].name;
                     }
                     data.submit();
                 },
@@ -158,8 +159,10 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         for (var i = 0; i < data.result.files.length; i++) {
                             data.result.files[i].isNew = true;
                             //if error is defined probably the file type is not allowed
-                            if(data.result.files[i].error === undefined || data.result.files[i].error === null)
+                            if (data.result.files[i].error === undefined || data.result.files[i].error === null) {
+                                data.result.files[i].attachedFileName = data.files[i].attachedFileName;
                                 newMediaItems.push(data.result.files[i]);
+                            }
                             else
                                 errormsg += data.result.files[i].error + "\n";
                         }
