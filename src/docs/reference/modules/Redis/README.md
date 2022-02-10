@@ -4,7 +4,7 @@ Integrates Redis into Orchard Core. Provides the following features:
 
 - Redis: Redis configuration support.
 - Redis Cache: Distributed cache using Redis.
-- Redis Bus: Makes the Signal service distributed.
+- Redis Bus: Makes the `Signal` service distributed.
 - Redis Lock: Distributed Lock using Redis.
 - Redis DataProtection: Distributed DataProtection using Redis.
 

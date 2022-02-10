@@ -1,6 +1,6 @@
 # SEO (`OrchardCore.Seo`)
 
-Provides SEO (Search Engine Optimization) features:
+Provides Search Engine Optimization (SEO) features:
 
 - Meta description, keywords, robots, and custom meta tags
 - Canonical URL

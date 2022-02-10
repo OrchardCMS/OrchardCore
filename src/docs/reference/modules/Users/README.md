@@ -28,7 +28,7 @@ If you want to specify custom paths to access the authentication related urls, y
   }
 ```
 
-## Video
+## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/78m04Inmilw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
