@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Validation
@@ -21,7 +20,7 @@ namespace OrchardCore.Validation
         }
 
         /// <inheritdoc/>
-        public virtual Task<IEnumerable<ValidationResult>> ValidateAsync(ValidationContext validationContext, CancellationToken cancellation)
+        public virtual Task<IEnumerable<ValidationResult>> ValidateAsync(ValidationContext validationContext)
             => Task.FromResult((IEnumerable<ValidationResult>)new List<ValidationResult>());
     }
 }
