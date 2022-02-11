@@ -15,7 +15,7 @@
 
   <!-- Watcher include and excludes -->
   <ItemGroup>
-      <Watch Include="**\*.cs" Exclude="Recipes\**;Assets\**;node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />
+    <Watch Include="**\*.cs" Exclude="Recipes\**;Assets\**;node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,5 +37,10 @@
   <Import Project="..\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.targets" />
 
   <Import Project="..\OrchardCore.Build\OrchardCore.Commons.targets" />
+  
+  <ItemGroup>
+    <PackageReference Include="Lombiq.Tests.UI.AppExtensions" />
+    <PackageReference Include="Lombiq.Tests.UI.Shortcuts" />
+  </ItemGroup>
 
 </Project>
