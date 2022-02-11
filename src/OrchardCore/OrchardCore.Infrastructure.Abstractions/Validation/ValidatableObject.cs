@@ -11,13 +11,7 @@ namespace OrchardCore.Validation
     {
         /// <inheritdoc/>
         public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            var validationTask = ValidateAsync(validationContext, CancellationToken.None);
-
-            validationTask.Wait();
-
-            return validationTask.Result;
-        }
+            => new List<ValidationResult>();
 
         /// <inheritdoc/>
         public virtual Task<IEnumerable<ValidationResult>> ValidateAsync(ValidationContext validationContext)
