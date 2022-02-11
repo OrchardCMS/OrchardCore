@@ -1,8 +1,9 @@
+using System.Threading.Tasks;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Pages;
 using Lombiq.Tests.UI.Services;
-using System.Threading.Tasks;
+using OrchardCore.Tests.UI.Helpers;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,7 +23,7 @@ namespace OrchardCore.Tests.UI.Tests
                     .TestBasicOrchardFeaturesExceptRegistrationAsync(
                         new OrchardCoreSetupParameters(context)
                         {
-                            RecipeId = "Lombiq.OSOCE.NuGet.BasicOrchardFeaturesTests",
+                            RecipeId = SetupHelpers.RecipeId,
                         }),
                 browser);
     }
