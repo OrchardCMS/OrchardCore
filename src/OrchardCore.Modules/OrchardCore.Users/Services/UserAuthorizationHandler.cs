@@ -26,7 +26,7 @@ namespace OrchardCore.Users.Services
         private readonly IRoleService _roleService;
 
         public UserAuthorizationHandler(
-            IServiceProvider serviceProvider, 
+            IServiceProvider serviceProvider,
             UserManager<IUser> userManager,
             IRoleService roleService)
         {
@@ -73,7 +73,7 @@ namespace OrchardCore.Users.Services
                     context.Succeed(requirement);
                 }
             }
-            else 
+            else
             {
                 var roleNames = await _roleService.GetRoleNamesAsync();
                 // When the user is in no roles, we check to see if the current user can manage any roles.
@@ -108,6 +108,6 @@ namespace OrchardCore.Users.Services
             }
 
             return false;
-        }        
+        }
     }
 }

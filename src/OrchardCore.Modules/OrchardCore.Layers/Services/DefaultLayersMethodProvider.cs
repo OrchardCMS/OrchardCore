@@ -57,13 +57,13 @@ namespace OrchardCore.Layers.Services
             _isInRole = new GlobalMethod
             {
                 Name = "isInRole",
-                Method = serviceProvider => (Func<string, bool>) (role =>
-                {
-                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    var optionsAccessor = serviceProvider.GetRequiredService<IOptions<IdentityOptions>>();
-                    var roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
-                    return httpContext.User?.Claims.Any(claim => claim.Type == roleClaimType && claim.Value.Equals(role, StringComparison.OrdinalIgnoreCase)) == true; // IsInRole() & HasClaim() are case sensitive
-                })
+                Method = serviceProvider => (Func<string, bool>)(role =>
+               {
+                   var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                   var optionsAccessor = serviceProvider.GetRequiredService<IOptions<IdentityOptions>>();
+                   var roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
+                   return httpContext.User?.Claims.Any(claim => claim.Type == roleClaimType && claim.Value.Equals(role, StringComparison.OrdinalIgnoreCase)) == true; // IsInRole() & HasClaim() are case sensitive
+               })
             };
 
             _url = new GlobalMethod

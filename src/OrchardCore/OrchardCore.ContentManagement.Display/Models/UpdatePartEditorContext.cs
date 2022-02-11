@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 

@@ -3,7 +3,7 @@
   <Import Project="Dependencies.props" />
 
   <PropertyGroup>
-    <VersionPrefix>1.2.0</VersionPrefix>
+    <VersionPrefix>1.3.0</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -23,6 +23,7 @@
     <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageIcon>icon.png</PackageIcon>
 
     <!--This is used to generate symbol package for Source Link-->
     <IncludeSymbols>true</IncludeSymbols>
@@ -42,6 +43,10 @@
   <ItemGroup>
       <!--This is used for Source Link -->
        <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
+      <None Include="$(MSBuildThisFileDirectory)/nuget-icon.png">
+        <Pack>True</Pack>
+        <PackagePath>icon.png</PackagePath>
+      </None>
   </ItemGroup>
 
 </Project>
