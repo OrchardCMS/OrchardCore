@@ -20,19 +20,15 @@
         <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="sortable, jQuery"></script>
     }
 
-    var authorizedIndexes =
-        await Task.WhenAll(
-            Model.ContainedContentTypeDefinitions.
-                Select(async contentTypeDefinition =>
-                    await AuthorizationService.AuthorizeAsync(
-                        User,
-                        CommonPermissions.EditContent,
-                        ContentManager.NewAsync(contentTypeDefinition.Name))));
+    var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
 
-    var authorizedContentTypeDefinitions =
-        Model.ContainedContentTypeDefinitions.
-            Where(contentTypeDefinition =>
-                authorizedIndexes[Model.ContainedContentTypeDefinitions.ToList().IndexOf(contentTypeDefinition)]);
+    foreach(var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
+    {
+        if(await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, ContentManager.NewAsync(contentTypeDefinition.Name)))
+        {
+            authorizedContentTypeDefinitions.Add(contentTypeDefinition);
+        }
+    }
 }
 @if (!Model.ContainedContentTypeDefinitions.Any())
 {
