@@ -2,6 +2,55 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": ".NET Core Launch (console debug) - net6.0",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Web App: Dotnet Build Debug - net6.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net6.0/OrchardCore.Cms.Web.dll",
+      "args": [],
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false
+    },
+    {
+      "name": ".NET Core Launch (web debug) - net6.0",
+      "type": "coreclr",
+      "request": "launch",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "Web App: Dotnet Build Debug - net6.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net6.0/OrchardCore.Cms.Web.dll",
+      "args": [],
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
+      },
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    },
+    {
+      "name": ".NET Core Launch (web release) - net6.0",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Web App: Dotnet Build Release - net6.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/net6.0/OrchardCore.Cms.Web.dll",
+      "args": [],
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    },
+    {
       "name": ".NET Core Launch (web debug) - dotnet watch - net6.0",
       "type": "dotnetwatchattach",
       "request": "launch",
@@ -18,6 +67,12 @@
         "action": "openExternally",
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
+    },
+    {
+        "name": ".NET Core Attach",
+        "type": "coreclr",
+        "request": "attach",
+        "processId": "${command:pickProcess}"
     },
     {
       "name": "Gulp Debug",

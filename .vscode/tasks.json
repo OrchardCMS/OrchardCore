@@ -106,7 +106,7 @@
       ]
     },
     {
-      "label": "dotnet build debug - net6.0",
+      "label": "dotnet build (debug) - net6.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -120,7 +120,21 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "dotnet rebuild debug - net6.0",
+      "label": "dotnet build (release) - net6.0",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "-c",
+        "Release",
+        "-f",
+        "net6.0"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet rebuild (debug) - net6.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -135,12 +149,13 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "dotnet build release - net6.0",
+      "label": "dotnet rebuild (release) - net6.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "--no-incremental",
         "-c",
         "Release",
         "-f",
@@ -149,7 +164,7 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "cleanup build folder",
+      "label": "cleanup publish folder",
       "type": "shell",
       "command": "rm",
       "windows": {
@@ -165,7 +180,7 @@
       ]
     },
     {
-      "label": "dotnet publish release (self-contained) - net6.0",
+      "label": "dotnet publish (self-contained) - release - net6.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -200,7 +215,7 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "dotnet publish release (framework dependent) - net6.0",
+      "label": "dotnet publish (framework dependent) - release - net6.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -239,14 +254,14 @@
     {
       "label": "tasks: dotnet publish release (self-contained) - net6.0",
       "dependsOn": [
-        "cleanup build folder",
+        "cleanup publish folder",
         "dotnet publish (self-contained) - net6.0"
       ]
     },
     {
       "label": "tasks: dotnet publish release (framework dependent) - net6.0",
       "dependsOn": [
-        "cleanup build folder",
+        "cleanup publish folder",
         "dotnet publish (framework dependent) - net6.0"
       ]
     },
