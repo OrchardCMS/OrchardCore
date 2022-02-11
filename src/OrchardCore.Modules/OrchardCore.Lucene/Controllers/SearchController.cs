@@ -75,6 +75,11 @@ namespace OrchardCore.Lucene.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var searchSettings = siteSettings.As<LuceneSettings>();
 
+            if(!String.IsNullOrWhiteSpace(viewModel.Index))
+            {
+                searchSettings.SearchIndex = viewModel.Index;
+            }
+
             if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index") != null)
             {
                 if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index")))
@@ -161,7 +166,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(new SearchIndexViewModel
                 {
                     Terms = viewModel.Terms,
-                    SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms },
+                    SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms, Index = viewModel.Index },
                 });
             }
 
@@ -209,7 +214,7 @@ namespace OrchardCore.Lucene.Controllers
             var model = new SearchIndexViewModel
             {
                 Terms = viewModel.Terms,
-                SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms },
+                SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms, Index = viewModel.Index },
                 SearchResults = new SearchResultsViewModel("Search__Results") { ContentItems = containedItems.Take(pager.PageSize) },
                 Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>() { { "Terms", viewModel.Terms } })
             };
