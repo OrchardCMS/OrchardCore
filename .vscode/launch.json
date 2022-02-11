@@ -24,8 +24,7 @@
       "args": [],
       "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "stopAtEntry": false,
       "serverReadyAction": {
