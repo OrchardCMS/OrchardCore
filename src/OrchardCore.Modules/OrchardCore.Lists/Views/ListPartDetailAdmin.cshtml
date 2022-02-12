@@ -24,7 +24,10 @@
 
     foreach(var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
     {
-        if(await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, ContentManager.NewAsync(contentTypeDefinition.Name)))
+        if(await AuthorizationService.AuthorizeAsync(
+            User,
+            CommonPermissions.EditContent,
+            await ContentManager.NewAsync(contentTypeDefinition.Name)))
         {
             authorizedContentTypeDefinitions.Add(contentTypeDefinition);
         }
