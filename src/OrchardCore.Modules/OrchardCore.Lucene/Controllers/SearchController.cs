@@ -74,7 +74,7 @@ namespace OrchardCore.Lucene.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var searchSettings = siteSettings.As<LuceneSettings>();
-            var searchIndex = !String.IsNullOrWhiteSpace(viewModel.Index) ? viewModel.Index : searchIndex;
+            var searchIndex = !String.IsNullOrWhiteSpace(viewModel.Index) ? viewModel.Index : searchSettings.SearchIndex;
 
             if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchIndex + "Index") != null)
             {
