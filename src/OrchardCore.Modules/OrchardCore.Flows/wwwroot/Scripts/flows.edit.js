@@ -53,7 +53,7 @@ $(function () {
       dom.filter('script').each(function () {
         $.globalEval(this.text || this.textContent || this.innerHTML || '');
       });
-      document.dispatchEvent(new CustomEvent('widget-added', {
+      document.dispatchEvent(new CustomEvent('init-editors', {
         detail: {
           targetId: targetId
         }
@@ -90,7 +90,7 @@ $(function () {
       dom.filter('script').each(function () {
         $.globalEval(this.text || this.textContent || this.innerHTML || '');
       });
-      document.dispatchEvent(new CustomEvent('widget-added', {
+      document.dispatchEvent(new CustomEvent('init-editors', {
         detail: {
           targetId: targetId
         }
@@ -132,7 +132,18 @@ $(function () {
     $(document).trigger('contentpreview:render');
   });
   $(document).on('click', '.widget-editor-btn-toggle', function () {
-    $(this).closest('.widget-editor').toggleClass('collapsed');
+    var widgetEditor = $(this).closest('.widget-editor'); // widgetEditor is currently collapsed, it will be uncollapsed so we must trigger the init-editors event
+
+    if (widgetEditor.hasClass("collapsed")) {
+      widgetEditor.toggleClass('collapsed');
+      document.dispatchEvent(new CustomEvent('init-editors', {
+        detail: {
+          targetId: targetId
+        }
+      }));
+    } else {
+      widgetEditor.toggleClass('collapsed');
+    }
   });
   $(document).on('keyup', '.widget-editor-body .form-group input.content-caption-text', function () {
     var headerTextLabel = $(this).closest('.widget-editor').find('.widget-editor-header:first .widget-editor-header-text');

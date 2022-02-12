@@ -116,6 +116,7 @@
             typePartEditorSelect.change(function () {
                 $('.type-part-editor').hide();
                 $('.type-part-editor-' + typePartEditorSelect.val().toLowerCase()).show();
+                document.dispatchEvent(new CustomEvent('init-editors'));
             });
         }
 

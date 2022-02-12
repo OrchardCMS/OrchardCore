@@ -4,11 +4,12 @@
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var monacoSettings = Model.PartFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
+    var encodedSettings = string.IsNullOrEmpty(monacoSettings.Options) ? "" : System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(monacoSettings.Options));
 }
 
 <div class="form-group">
     <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-<div class="form-control" dir="@culture.GetLanguageDirection()" data-monaco-oc="true" data-linked-id="@Html.IdFor(x => x.Text)" data-settings='@Html.Raw(monacoSettings.Options)'></div>    
+<div class="form-control" dir="@culture.GetLanguageDirection()" data-monaco-oc="true" data-linked-id="@Html.IdFor(x => x.Text)" data-settings='@encodedSettings'></div>    
     <textarea asp-for="Text" hidden>@Html.Raw(Model.Text)</textarea>
     @if (!String.IsNullOrEmpty(settings.Hint))
     {

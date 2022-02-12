@@ -46,7 +46,7 @@ $(function () {
       dom.filter('script').each(function () {
         $.globalEval(this.text || this.textContent || this.innerHTML || '');
       });
-      document.dispatchEvent(new CustomEvent('widget-added', {
+      document.dispatchEvent(new CustomEvent('init-editors', {
         detail: {
           targetId: targetId
         }
@@ -84,7 +84,7 @@ $(function () {
       dom.filter('script').each(function () {
         $.globalEval(this.text || this.textContent || this.innerHTML || '');
       });
-      document.dispatchEvent(new CustomEvent('widget-added', {
+      document.dispatchEvent(new CustomEvent('init-editors', {
         detail: {
           targetId: targetId
         }

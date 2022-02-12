@@ -3,13 +3,14 @@
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
     var monacoSettings = Model.TypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem) ?? CultureInfo.CurrentUICulture;
+    var encodedSettings = string.IsNullOrEmpty(monacoSettings.Options) ? "" : System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(monacoSettings.Options));
 }
 
 @await DisplayAsync(await New.ShortcodeModal())
 
 <div class="form-group">
     <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
-    <div class="form-control" dir="@culture.GetLanguageDirection()" data-monaco-oc="true" data-linked-id="@Html.IdFor(x => x.Html)" data-settings='@Html.Raw(monacoSettings.Options)' data-shortcodes="true"></div>
+    <div class="form-control" dir="@culture.GetLanguageDirection()" data-monaco-oc="true" data-linked-id="@Html.IdFor(x => x.Html)" data-language="html" data-settings="@encodedSettings" data-shortcodes="true" data-preview="true"></div>
     <textarea asp-for="Html" class="content-preview-text" hidden>@Html.Raw(Model.Html)</textarea>
     <span class="hint">@T["The body of the content item."]</span>
 </div>

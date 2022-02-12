@@ -113,6 +113,7 @@
             fieldEditorSelect.change(function () {
                 $('.field-editor').hide();
                 $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
+                document.dispatchEvent(new CustomEvent('init-editors'));
             });
         }
 

@@ -37,7 +37,7 @@ $(function () {
             dom.filter('script').each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || '');
             });
-            document.dispatchEvent(new CustomEvent('widget-added', { detail: { targetId } }));
+            document.dispatchEvent(new CustomEvent('init-editors', { detail: { targetId } }));
         });
     });
 
@@ -77,7 +77,7 @@ $(function () {
             dom.filter('script').each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || '');
             });
-            document.dispatchEvent(new CustomEvent('widget-added', { detail: { targetId } }));
+            document.dispatchEvent(new CustomEvent('init-editors', { detail: { targetId } }));
         });
     });
 
@@ -119,7 +119,16 @@ $(function () {
     });
 
     $(document).on('click', '.widget-editor-btn-toggle', function () {
-        $(this).closest('.widget-editor').toggleClass('collapsed');
+        const widgetEditor = $(this).closest('.widget-editor');
+     
+        // widgetEditor is currently collapsed, it will be uncollapsed so we must trigger the init-editors event
+        if(widgetEditor.hasClass("collapsed")) {
+            widgetEditor.toggleClass('collapsed');
+            document.dispatchEvent(new CustomEvent('init-editors', { detail: { targetId } }));
+        }
+        else {
+            widgetEditor.toggleClass('collapsed');
+        }
     });
 
     $(document).on('keyup', '.widget-editor-body .form-group input.content-caption-text', function () {

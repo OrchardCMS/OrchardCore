@@ -45,6 +45,7 @@ $document.ready(function () {
 
             // sensible defaults for all monaco editors
             const defaultSettings = {
+                wordWrap: "on",
                 "scrollBeyondLastLine": false,
                 "scrollbar": {
                     // allow the page to scroll when bottom of editor is  scrolling
@@ -52,12 +53,22 @@ $document.ready(function () {
                 }
             }
 
-            let editorSettings = {};
-            if(el.dataset.settings)
-            {
-                editorSettings = JSON.parse(el.dataset.settings);
+            // set diagnoticsOptions 
+            if(el.dataset.diagnosticsOptions) {
+                const json =atob(el.dataset.diagnosticsOptions);
+                monaco.languages.json.jsonDefaults.setDiagnosticsOptions(JSON.parse(json));
             }
-            
+
+            let editorSettings = {};
+            if(el.dataset.language)
+            {
+                editorSettings.language = el.dataset.language;
+            }
+            // settings override provided language
+            if(el.dataset.settings) {
+               
+                editorSettings = JSON.parse(atob(el.dataset.settings));
+            }
             const settings = Object.assign({}, defaultSettings, editorSettings);
             // automaticLayout no longer required as we manage the height / width automatically below
             settings.automaticLayout = false;
@@ -72,13 +83,17 @@ $document.ready(function () {
                 linkedElement.value = editor.getValue();
             });
 
-            // debounced change handler that will trigger the preview
-            const debouncedOnChange = debounce(function(event) {
-                linkedElement.value = editor.getValue();
-                $document.trigger('contentpreview:render');
-            }, 250);
-            // trigger preview when content changes (debounced)
-            editor.getModel().onDidChangeContent(debouncedOnChange);
+            // only trigger the preview if the element has the preview data-attribute
+            if(el.dataset.preview)
+            {
+                // debounced change handler that will trigger the preview
+                const debouncedOnChange = debounce(function(event) {
+                    linkedElement.value = editor.getValue();
+                    $document.trigger('contentpreview:render');
+                }, 500);
+                // trigger preview when content changes (debounced)
+                editor.getModel().onDidChangeContent(debouncedOnChange);
+            }
 
             // dynamically update the height of the monaco editor to a max of 650px 
             const updateHeight = () => {
@@ -126,29 +141,27 @@ $document.ready(function () {
             $el.data("monaco", { editor, updateHeight });
         }
 
-        // loop through and initialize all monaco editors on the page
+        // Initially loop through and initialize all monaco editors on the page
         document.querySelectorAll("[data-monaco-oc]").forEach(initMonacoEditor);
 
-        // initialize the monaco editor when a widget is dynamically added to the page
-        document.addEventListener('widget-added', function (e) {
-            document.querySelectorAll("[data-monaco-oc]").forEach(initMonacoEditor);
-        }, false);
 
-        // handle resizing when expanding a widget
-        $document.on('click', '.widget-editor-btn-toggle', function () {
+        // initialize or update monaco editors. This is triggerred when widgets are dynamically added to the page,
+        // when widgets are expanded or collapsed, when tabs are clicked or acoordion expanded.
+
+        document.addEventListener('init-editors', function (e) {
+            // wait until next tick, this is useful when showing / hiding tabs or widgets
             window.requestAnimationFrame(()=>{
-                const widgetEditor = $(this).closest('.widget-editor');
-                if(!widgetEditor.hasClass("collapsed"))
-                {
-                    widgetEditor.find("[data-monaco-oc]").each((k, v) => {
-                        let monacoData = $(v).data("monaco");
-                        if(monacoData)
-                        {
-                            monacoData.updateHeight();
-                        }
-                    });
-                }
+                document.querySelectorAll("[data-monaco-oc]").forEach(function(el) {
+                    let monacoData = $(el).data("monaco");
+                    if(monacoData) {
+                        // update the height if the editor has already been initialized
+                        monacoData.updateHeight();
+                    } else {
+                         // Initialize new editors.
+                        initMonacoEditor(el);
+                    }
+                });
             });
-        });
+        }, false);
     });
 });
