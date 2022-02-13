@@ -7175,7 +7175,6 @@ $(function () {
     $(this).on('change', function (e) {
       // During a double-click, ignore state changes while the element is collapsing
       if (target.hasClass('collapsing')) {
-        console.log('collapsing');
         $(this).prop('checked', !$(this).prop('checked'));
       }
 
@@ -7232,7 +7231,6 @@ $("body").on("submit", "form.no-multisubmit", function (e) {
 }); // Update editors that need to run some code on tab, collapse events. 
 
 $('[data-toggle="tab"]').on('shown.bs.tab', function (event) {
-  console.log("tab", event);
   document.dispatchEvent(new CustomEvent('init-editors', {
     detail: {
       event: event,
