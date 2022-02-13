@@ -9,7 +9,7 @@
 
 <div class="form-group">
     <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-<div class="form-control" dir="@culture.GetLanguageDirection()" data-monaco-oc="true" data-linked-id="@Html.IdFor(x => x.Text)" data-settings='@encodedSettings'></div>    
+<div class="form-control" dir="@culture.GetLanguageDirection()" data-monaco-oc="true" data-textarea-id="@Html.IdFor(x => x.Text)" data-settings='@encodedSettings'></div>    
     <textarea asp-for="Text" hidden>@Html.Raw(Model.Text)</textarea>
     @if (!String.IsNullOrEmpty(settings.Hint))
     {

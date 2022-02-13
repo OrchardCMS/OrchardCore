@@ -296,11 +296,23 @@
     "output": "wwwroot/Scripts/js.cookie.js"
   },
   {
+    "inputs": [
+      "Assets/monaco/ocmonaco-editor.js"
+    ],
+    "output": "wwwroot/Scripts/monaco/ocmonaco-editor.js"
+  },
+  {
+    "inputs": [
+      "Assets/monaco/ocmonaco.js"
+    ],
+    "output": "wwwroot/Scripts/monaco/ocmonaco.js"
+  },
+  {
     "copy": true,
     "inputs": [
-      "Assets/monaco/*"
+      "Assets/monaco/IStandaloneEditorConstructionOptions.json"
     ],
-    "output": "wwwroot/Scripts/monaco/@"
+    "output": "wwwroot/Scripts/monaco/IStandaloneEditorConstructionOptions.json"
   },
   {
     "copy": true,

@@ -10,7 +10,7 @@
 
 <div class="form-group">
     <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
-    <div class="form-control" dir="@culture.GetLanguageDirection()" data-monaco-oc="true" data-linked-id="@Html.IdFor(x => x.Html)" data-language="html" data-settings="@encodedSettings" data-shortcodes="true" data-preview="true"></div>
+    <div class="form-control" dir="@culture.GetLanguageDirection()" data-monaco-oc="true" data-textarea-id="@Html.IdFor(x => x.Html)" data-language="html" data-settings="@encodedSettings" data-shortcodes="true" data-preview="true"></div>
     <textarea asp-for="Html" class="content-preview-text" hidden>@Html.Raw(Model.Html)</textarea>
     <span class="hint">@T["The body of the content item."]</span>
 </div>

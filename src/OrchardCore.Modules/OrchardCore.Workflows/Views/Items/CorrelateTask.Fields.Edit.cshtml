@@ -4,7 +4,7 @@
 <div class="form-group" asp-validation-class-for="Value">
     <label asp-for="Value">@T["Value"]</label>
     <input  type="hidden" asp-for="Value" class="form-control "/>
-    <div class="form-control" data-monaco-oc="true" data-linked-id="@Html.IdFor(x => x.Value)" data-language="javascript"></div>
+    <div class="form-control" data-monaco-oc="true" data-textarea-id="@Html.IdFor(x => x.Value)" data-language="javascript"></div>
     <span asp-validation-for="Value"></span>
     <span class="hint">@T["The value to correlate workflow instances with. With Javascript support."]</span>
 </div> 

@@ -37,7 +37,7 @@ $(function () {
             dom.filter('script').each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || '');
             });
-            document.dispatchEvent(new CustomEvent('init-editors', { detail: { targetId } }));
+            document.dispatchEvent(new CustomEvent('init-editors', { detail: { targetId, source: "add-widget" } }));
         });
     });
 
@@ -77,7 +77,7 @@ $(function () {
             dom.filter('script').each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || '');
             });
-            document.dispatchEvent(new CustomEvent('init-editors', { detail: { targetId } }));
+            document.dispatchEvent(new CustomEvent('init-editors', { detail: { targetId, source: "add-widget" } }));
         });
     });
 

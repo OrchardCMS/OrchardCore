@@ -55,7 +55,8 @@ $(function () {
       });
       document.dispatchEvent(new CustomEvent('init-editors', {
         detail: {
-          targetId: targetId
+          targetId: targetId,
+          source: "add-widget"
         }
       }));
     });
@@ -92,7 +93,8 @@ $(function () {
       });
       document.dispatchEvent(new CustomEvent('init-editors', {
         detail: {
-          targetId: targetId
+          targetId: targetId,
+          source: "add-widget"
         }
       }));
     });

@@ -10,7 +10,7 @@
 
 <div class="form-group" asp-validation-class-for="Script">
     <label asp-for="Script">@T["Script"]</label>
-    <div class="form-control" data-monaco-oc="true" data-linked-id="@Html.IdFor(x => x.Script)" data-language="javascript"></div>
+    <div class="form-control" data-monaco-oc="true" data-textarea-id="@Html.IdFor(x => x.Script)" data-language="javascript"></div>
     <textarea asp-for="Script" hidden>@Html.Raw(Model.Script)</textarea>
     <span asp-validation-for="Script"></span>
     <span class="hint">@T["The script to execute. Make sure to call `setOutcome` with any of the specified available outcomes at least once."]</span>

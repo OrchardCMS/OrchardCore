@@ -224,3 +224,13 @@ $("body").on("submit", "form.no-multisubmit", function (e) {
         form.removeClass(submittingClass);
     }, 5000);
 });
+
+
+// Update editors that need to run some code on tab, collapse events. 
+$('[data-toggle="tab"]').on('shown.bs.tab', function (event) {
+    console.log("tab", event);
+    document.dispatchEvent(new CustomEvent('init-editors', { detail: { event, source: "tab" } }));
+})
+$('[data-toggle="collapse"]').on('shown.bs.collapse', function (event) {
+    document.dispatchEvent(new CustomEvent('init-editors', { detail: { event, source: "collapse" } }));
+})

@@ -1,8 +1,0 @@
-[
-    {
-        "inputs": [
-            "Assets/js/templatepreview.edit.js"
-        ],
-        "output": "wwwroot/Scripts/templatepreview.edit.js"
-    }
-]
