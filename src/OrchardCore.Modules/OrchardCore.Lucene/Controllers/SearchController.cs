@@ -74,10 +74,11 @@ namespace OrchardCore.Lucene.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var searchSettings = siteSettings.As<LuceneSettings>();
+            var searchIndex = !String.IsNullOrWhiteSpace(viewModel.Index) ? viewModel.Index : searchSettings.SearchIndex;
 
-            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index") != null)
+            if (permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchIndex + "Index") != null)
             {
-                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchSettings.SearchIndex + "Index")))
+                if (!await _authorizationService.AuthorizeAsync(User, permissions.FirstOrDefault(x => x.Name == "QueryLucene" + searchIndex + "Index")))
                 {
                     return this.ChallengeOrForbid();
                 }
@@ -88,7 +89,7 @@ namespace OrchardCore.Lucene.Controllers
                 return BadRequest("Search is not configured.");
             }
 
-            if (searchSettings.SearchIndex != null && !_luceneIndexProvider.Exists(searchSettings.SearchIndex))
+            if (searchIndex != null && !_luceneIndexProvider.Exists(searchIndex))
             {
                 _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
                 return BadRequest("Search is not configured.");
@@ -102,12 +103,12 @@ namespace OrchardCore.Lucene.Controllers
                 return BadRequest("Search is not configured.");
             }
 
-            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(searchSettings.SearchIndex);
+            var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(searchIndex);
 
             if (luceneIndexSettings == null)
             {
-                _logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchSettings.SearchIndex}) index.");
-                return BadRequest($"Search index ({searchSettings.SearchIndex}) is not configured.");
+                _logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchIndex}) index.");
+                return BadRequest($"Search index ({searchIndex}) is not configured.");
             }
 
             if (string.IsNullOrWhiteSpace(viewModel.Terms))
@@ -149,7 +150,7 @@ namespace OrchardCore.Lucene.Controllers
             try
             {
                 var query = queryParser.Parse(terms);
-                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
+                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchIndex, start, end))
                     .ToList();
             }
             catch (ParseException e)
@@ -161,7 +162,7 @@ namespace OrchardCore.Lucene.Controllers
                 return View(new SearchIndexViewModel
                 {
                     Terms = viewModel.Terms,
-                    SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms },
+                    SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms, Index = viewModel.Index },
                 });
             }
 
@@ -209,7 +210,7 @@ namespace OrchardCore.Lucene.Controllers
             var model = new SearchIndexViewModel
             {
                 Terms = viewModel.Terms,
-                SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms },
+                SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms, Index = viewModel.Index },
                 SearchResults = new SearchResultsViewModel("Search__Results") { ContentItems = containedItems.Take(pager.PageSize) },
                 Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>() { { "Terms", viewModel.Terms } })
             };
