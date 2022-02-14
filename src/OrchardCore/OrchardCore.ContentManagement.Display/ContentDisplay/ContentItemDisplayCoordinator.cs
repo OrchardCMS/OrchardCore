@@ -244,10 +244,10 @@ namespace OrchardCore.ContentManagement.Display
                 typePartShapeResult.Displaying(ctx =>
                 {
                     // ContentPart_Edit__[PartType]
-                    // eg ContentPart.ServicePart.Edit
+                    // eg ContentPart-ServicePart.Edit
                     ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{partTypeName}");
 
-                    // ContentPart_Edit_[ContentType]_[PartType]
+                    // ContentPart_Edit__[ContentType]__[PartType]
                     // e.g. ContentPart-LandingPage-ServicePart.Edit
                     ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{contentType}__{partTypeName}");
 
@@ -271,48 +271,6 @@ namespace OrchardCore.ContentManagement.Display
                 typePartShape.Properties["ContentPart"] = part;
                 typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
                 partsShape.Properties[partName] = typePartShape;
-
-                if (isNamedPart)
-                {
-                    // Header zone for named part's heading
-                    typePartShape.Properties["Header"] = await context.ShapeFactory.CreateAsync("Zone");
-                    var shapeNamedType = "ContentPartName_Edit";
-                    var nameResult = new ShapeResult(shapeNamedType, ctx =>
-                        ctx.ShapeFactory.CreateAsync(shapeNamedType, Arguments.From(new
-                        {
-                            DisplayName = typePartDefinition.DisplayName(),
-                            Description = typePartDefinition.Description()
-                        })));
-
-                    nameResult.Differentiator($"{contentType}-{partName}");
-                    nameResult.Name(partName);
-                    nameResult.Location($"Parts.{partName}.Header");
-
-                    nameResult.Displaying(ctx =>
-                    {
-                        // ContentPartName_Edit__[PartType]
-                        // eg ContentPartName.ServicePart.Edit
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{partTypeName}");
-
-                        // ContentPartName_Edit__[ContentType]_[PartType]
-                        // e.g. ContentPartName-LandingPage-ServicePart.Edit
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{contentType}__{partTypeName}");
-
-                        // ContentPartName_Edit__[ContentType]__[PartName]
-                        // e.g. ContentPartName-LandingPage-BillingService.Edit ContentPartName-LandingPage-HelplineService.Edit
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{contentType}__{partName}");
-                    });
-
-                    await nameResult.ApplyAsync(context);
-
-                    var namedPartShape = nameResult.Shape;
-                    if (namedPartShape != null)
-                    {
-                        namedPartShape.Properties["ContentPart"] = part;
-                        namedPartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
-                    }
-                }
-
 
                 context.DefaultZone = $"Parts.{partName}";
                 context.DefaultPosition = partPosition;
@@ -399,10 +357,10 @@ namespace OrchardCore.ContentManagement.Display
                 typePartShapeResult.Displaying(ctx =>
                 {
                     // ContentPart_Edit__[PartType]
-                    // eg ContentPart.ServicePart.Edit
+                    // eg ContentPart-ServicePart.Edit
                     ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{partTypeName}");
 
-                    // ContentPart_Edit_[ContentType]_[PartType]
+                    // ContentPart_Edit__[ContentType]__[PartType]
                     // e.g. ContentPart-LandingPage-ServicePart.Edit
                     ctx.Shape.Metadata.Alternates.Add($"{shapeType}__{contentType}__{partTypeName}");
 
@@ -426,50 +384,6 @@ namespace OrchardCore.ContentManagement.Display
                 typePartShape.Properties["ContentPart"] = part;
                 typePartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
                 partsShape.Properties[partName] = typePartShape;
-
-                if (isNamedPart)
-                {
-                    // Header zone for named part's display name and desc
-                    typePartShape.Properties["Header"] = await context.ShapeFactory.CreateAsync("Zone");
-                    var shapeNamedType = "ContentPartName_Edit";
-                    var nameResult = new ShapeResult(shapeNamedType, ctx =>
-                        ctx.ShapeFactory.CreateAsync(shapeNamedType, Arguments.From(new
-                        {
-                            DisplayName = typePartDefinition.DisplayName(),
-                            Description = typePartDefinition.Description()
-                        })));
-
-                    nameResult.Differentiator($"{contentType}-{partName}");
-                    nameResult.Name(partName);
-                    nameResult.Location($"Parts.{partName}.Header");
-
-                    nameResult.Displaying(ctx =>
-                    {
-                        // ContentPartName_Edit__[PartType]
-                        // eg ContentPartName.ServicePart.Edit
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{partTypeName}");
-
-                        // ContentPartName_Edit_[ContentType]_[PartType]
-                        // e.g. ContentPartName-LandingPage-ServicePart.Edit
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{contentType}__{partTypeName}");
-
-
-                        // ContentPartName_Edit__[ContentType]__[PartName]
-                        // e.g. ContentPartName-LandingPage-BillingService.Edit ContentPartName-LandingPage-HelplineService.Edit
-                        ctx.Shape.Metadata.Alternates.Add($"{shapeNamedType}__{contentType}__{partName}");
-
-                    });
-
-                    await nameResult.ApplyAsync(context);
-                    var namedPartShape = nameResult.Shape;
-
-                    // If it's not set to hide in placement, set properties
-                    if (namedPartShape != null)
-                    {
-                        namedPartShape.Properties["ContentPart"] = part;
-                        namedPartShape.Properties["ContentTypePartDefinition"] = typePartDefinition;
-                    }
-                }
 
                 context.DefaultZone = $"Parts.{partName}:{partPosition}";
                 var partDisplayDrivers = _contentPartDisplayDriverResolver.GetEditorDrivers(partTypeName, typePartDefinition.Editor());
