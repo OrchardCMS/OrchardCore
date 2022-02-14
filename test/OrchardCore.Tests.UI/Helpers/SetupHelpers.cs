@@ -13,9 +13,7 @@ namespace OrchardCore.Tests.UI.Helpers
 
         public static async Task<Uri> RunSetupAsync(UITestContext context)
         {
-            var setupPage = await context.GoToSetupPageAsync();
-            setupPage = await setupPage.SetupOrchardCoreAsync(
-                context,
+            var homepageUri = await context.GoToSetupPageAndSetupOrchardCoreAsync(
                 new OrchardCoreSetupParameters(context)
                 {
                     SiteName = "Orchard Core - UI Testing",
@@ -26,7 +24,7 @@ namespace OrchardCore.Tests.UI.Helpers
 
             context.Exists(By.Id("navbar"));
 
-            return setupPage.PageUri.Value;
+            return homepageUri;
         }
     }
 }
