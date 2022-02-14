@@ -1,6 +1,6 @@
 # Audit Trail (`OrchardCore.AuditTrail`)
 
-The Audit Trail module provides an immutable (for users, even administrators but not for developers), auditable log of certain changes and events in the system. This includes e.g. creation or deletion of content items, and events like user login failures. For content items, previous versions and deleted items can be restored, changes tracked.
+The Audit Trail module provides an immutable (for users, even administrators but not for developers), auditable log of certain changes and events in the system. This includes e.g. creation or deletion of content items, and events like user login failures. For content items, previous versions and deleted items can be restored, and changes can be tracked.
 
 ## General Concepts
 
@@ -10,12 +10,12 @@ Once you've enabled the module, you will see a new menu item in the admin UI cal
 
 ## Using the Audit Trail event list
 
-The Audit Trail event list provides you with filtering and pagination to be able to easily find the Audit Trail events that you are looking for. By default, you can filter by the following criteria:
+The Audit Trail event list provides you with filtering and pagination to be able to find the Audit Trail events that you are looking for easily. By default, you can filter by the following criteria:
 
-- a given date range,
+- A given date range,
 - categories (e.g. *All categories*, *Content*, *User*).
 
-You can also sort entries by various parameters.
+Also, you can sort entries by various parameters.
 
 Events provide various details on their line:
 
@@ -24,7 +24,7 @@ Events provide various details on their line:
 - The user initiating the event.
 - An event-specific quick summary, if any. E.g. events of the *Content* category show you the version and title of the content item. If you click on the *Version X* link you can see the read-only editor of the content item filled with the values that the content item has at that version. If you click on the display text of the content item, you can edit the latest version of the content item.
 - Event-specific buttons, if any. E.g. events of the *Content* category will display a *View* button that you can use to view the content item at the given version, and a *Restore* button that you can use to restore the content item to the version even if the item was deleted (the restored item will be created as a draft version that you then need to publish).
-- A *Details* link. Here you can get more general information about the given event, as well as event handlers can provide custom information. E.g. if you check out the Detail view of a *Content* event you can also see the textual differences between the current version of the content item and the previous version under the *Diff* tab. The values of the current version will be shown in green, and the values of the previous version will be shown in red.
+- A *Details* link. Here you can get more general information about the given event, as well as event handlers can provide custom information. E.g. if you check out the *Detail* view of a *Content* event you can also see the textual differences between the current version of the content item and the previous version under the *Diff* tab. The values of the current version will be shown in green, and the values of the previous version will be shown in red.
 
 ## Audit Trail Settings 
 
@@ -41,7 +41,7 @@ You can attach the `AuditTrailPart` content part to your content type. This will
 
 ## Recording Custom Events
 
-Orchard Core is built to be extended, and the Audit Trail module is no different. When creating your own module, you can log your events with Audit Trail too. Check out the source of the `OrchardCore.Users` or `OrchardCore.Contents` modules for examples.
+Orchard Core is built to be extended, and the Audit Trail module is no different. So, when creating your own module, you can log your events with Audit Trail too. Check out the source of the `OrchardCore.Users` or `OrchardCore.Contents` modules for examples.
 
 ## Videos
 
