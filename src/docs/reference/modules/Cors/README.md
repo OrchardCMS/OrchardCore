@@ -9,3 +9,7 @@ For more information, see https://docs.microsoft.com/en-us/aspnet/core/security/
 
 !!! warning
     As using AllowCredentials and AllowAnyOrigin at the same time is considered as a security risk, policies containing BOTH these options will NOT be activated.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/OYXFvKWyVGo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

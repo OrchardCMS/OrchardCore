@@ -18,24 +18,23 @@ All script or stylesheet resources should be prefixed with the `~` character.
 
 Resource Settings are configured through the site admin.
 
-### AppendVersion
+### `AppendVersion`
 
 Enabling `AppendVersion` or Resources cache busting will automatically append a version hash to all local scripts and style sheets.
 This is turned on by default.
 
-### UseCdn
+### `UseCdn`
 
 Enabling UseCdn will configure the `IResourceManager` to provide any scripts or styles, such as `jQuery`, from the configured CDN.
 
-### ResourceDebugMode
+### `ResourceDebugMode`
 
 When enabled will serve scripts or styles, that have a CDN configured, or a debug-src, from the local server in non minified format.  
-This will also disabled the CdnBaseUrl prepending.
+This will also disable the `CdnBaseUrl` prepending.
 
-### CdnBaseUrl
+### `CdnBaseUrl`
 
-When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will
-be disabled in `ResourceDebugMode`
+When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will be disabled in `ResourceDebugMode`
 
 ## Named Resources
 
@@ -375,7 +374,7 @@ When rendering the scripts the resource manager will order the output based on t
 3. `bar`
 
 !!! note
-    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`.
+    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`. Hence why the above inline examples all include a name.
 
 #### Custom scripts
 
