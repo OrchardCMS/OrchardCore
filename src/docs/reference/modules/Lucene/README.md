@@ -134,3 +134,7 @@ So you can use :
 
 See ElasticSearch documentation for more details : 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9EgZ_J1npw4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
