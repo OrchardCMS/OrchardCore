@@ -47,4 +47,13 @@ jobs:
         path: |
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
-  
+    - name: UI Tests
+      if: matrix.os == 'windows-latest'
+      run: |
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests.UI/OrchardCore.Tests.UI.csproj
+    - uses: actions/upload-artifact@v2
+      if: matrix.os == 'windows-latest' && failure()
+      with:
+        name: functional-test-failure
+        path: |
+          test/OrchardCore.Tests.UI/bin/Release/net6.0/FailureDumps
