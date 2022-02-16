@@ -145,7 +145,13 @@ namespace OrchardCore.Environment.Commands
                 }
             }
 
-            if (methodHasParams && (methodParameters.Length - args.Count == 1)) invokeParameters.Add(new string[] { });
+            var lastParameterIsParams =
+                methodParameters.Last().GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0;
+
+            if (methodHasParams && (methodParameters.Length - args.Count == 1) && !lastParameterIsParams)
+            {
+                invokeParameters.Add(new string[] { });
+            }
 
             return invokeParameters.ToArray();
         }
