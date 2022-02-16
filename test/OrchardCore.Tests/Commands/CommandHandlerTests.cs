@@ -160,14 +160,6 @@ namespace OrchardCore.Tests.Commands
         }
 
         [Fact]
-        public async Task TestCommandArgumentsArePassedCorrectlyWithAParamsParameterAndNoArguments()
-        {
-            var commandContext = CreateCommandContext("ConcatParams", new Dictionary<string, string>());
-            await _handler.ExecuteAsync(commandContext);
-            Assert.Empty(commandContext.Output.ToString());
-        }
-
-        [Fact]
         public async Task TestCommandArgumentsArePassedCorrectlyWithNormalParametersAndAParamsParameters()
         {
             var commandContext = CreateCommandContext("ConcatAllParams",
