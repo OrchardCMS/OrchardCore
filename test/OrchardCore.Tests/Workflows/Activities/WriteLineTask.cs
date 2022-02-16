@@ -42,7 +42,7 @@ namespace OrchardCore.Tests.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var text = await _scriptEvaluator.EvaluateAsync(Text, workflowContext);
-            await _output.WriteLineAsync(text);
+            _output.WriteLine(text);
             return Outcomes("Done");
         }
     }

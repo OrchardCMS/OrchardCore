@@ -1,5 +1,4 @@
 using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Commands;
@@ -25,18 +24,18 @@ namespace OrchardCore.Tests.Commands
         }
 
         [Fact]
-        public async Task ManagerCanRunACommand()
+        public void ManagerCanRunACommand()
         {
             var context = new CommandParameters { Arguments = new string[] { "FooBar" }, Output = new StringWriter() };
-            await _manager.ExecuteAsync(context);
+            _manager.ExecuteAsync(context);
             Assert.Equal("success!", context.Output.ToString());
         }
 
         [Fact]
-        public async Task ManagerCanRunACompositeCommand()
+        public void ManagerCanRunACompositeCommand()
         {
             var context = new CommandParameters { Arguments = ("Foo Bar Bleah").Split(' '), Output = new StringWriter() };
-            await _manager.ExecuteAsync(context);
+            _manager.ExecuteAsync(context);
             Assert.Equal("Bleah", context.Output.ToString());
         }
 
