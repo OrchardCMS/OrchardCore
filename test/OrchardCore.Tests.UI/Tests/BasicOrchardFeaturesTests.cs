@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Lombiq.Tests.UI.Attributes;
 using Lombiq.Tests.UI.Extensions;
 using Lombiq.Tests.UI.Services;
+using OpenQA.Selenium;
 using OrchardCore.Tests.UI.Helpers;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,6 +20,12 @@ namespace OrchardCore.Tests.UI.Tests
         public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
             ExecuteTestAsync(
                 context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
+                browser);
+
+        [Theory, Chrome]
+        public Task IntentionallyFailingTest(Browser browser) =>
+            ExecuteTestAfterSetupAsync(
+                context => context.Exists(By.Id("navbarasdfds")),
                 browser);
     }
 }
