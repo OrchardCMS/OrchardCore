@@ -1,9 +1,13 @@
+@using OrchardCore.Contents
 @using OrchardCore.Lists.ViewModels
 @using System.Globalization
 @using OrchardCore.Localization
+@using Microsoft.AspNetCore.Authorization
 @model OrchardCore.Lists.ViewModels.ListPartViewModel
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject OrchardCore.ContentManagement.IContentManager ContentManager
+@inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
 @{
     var enableOrdering =
         Model.EnableOrdering &&
@@ -15,8 +19,20 @@
     {
         <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="sortable, jQuery"></script>
     }
-}
 
+    var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
+
+    foreach (var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
+    {
+        if (await AuthorizationService.AuthorizeAsync(
+            User,
+            CommonPermissions.EditContent,
+            await ContentManager.NewAsync(contentTypeDefinition.Name)))
+        {
+            authorizedContentTypeDefinitions.Add(contentTypeDefinition);
+        }
+    }
+}
 @if (!Model.ContainedContentTypeDefinitions.Any())
 {
     <div class="alert alert-warning">
@@ -48,26 +64,23 @@ else
 
                     <div class="form-group d-inline-flex float-right mb-0">
                         <div class="float-right">
-                            @if (Model.ContainedContentTypeDefinitions.Count() == 1)
+                            <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
+                                @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
+                            </a>
+                            @if (authorizedContentTypeDefinitions.Count() == 1)
                             {
-                                var contentTypeDefinition = Model.ContainedContentTypeDefinitions.FirstOrDefault();
-                                <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
-                                    @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
-                                </a>
+                                var contentTypeDefinition = authorizedContentTypeDefinitions.FirstOrDefault();
                                 <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
                                     @T["Create {0}", contentTypeDefinition.DisplayName]
                                 </a>
                             }
-                            else
+                            else if (authorizedContentTypeDefinitions.Count() > 1)
                             {
-                                <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
-                                    @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
-                                </a>
                                 <a class="btn btn-sm btn-success dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     @T["Create"]
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                    @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
+                                    @foreach (var containedContentTypeDefinition in authorizedContentTypeDefinitions)
                                     {
                                         <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@containedContentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
                                             @containedContentTypeDefinition.DisplayName
