@@ -48,28 +48,28 @@ namespace OrchardCore.Tests.Commands
         }
 
         [Fact]
-        public void TestFooCommand()
+        public async Task TestFooCommand()
         {
             var commandContext = CreateCommandContext("Foo");
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Equal("Command Foo Executed", commandContext.Output.ToString());
         }
 
         [Fact]
-        public void TestNotExistingCommand()
+        public async Task TestNotExistingCommand()
         {
-            Assert.Throws<InvalidOperationException>(() =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 var commandContext = CreateCommandContext("NoSuchCommand");
-                _handler.ExecuteAsync(commandContext);
+                await _handler.ExecuteAsync(commandContext);
             });
         }
 
         [Fact]
-        public void TestCommandWithCustomAlias()
+        public async Task TestCommandWithCustomAlias()
         {
             var commandContext = CreateCommandContext("Bar");
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Equal("Hello World!", commandContext.Output.ToString());
         }
 
@@ -88,34 +88,34 @@ namespace OrchardCore.Tests.Commands
         }
 
         [Fact]
-        public void TestCaseInsensitiveForCommand()
+        public async Task TestCaseInsensitiveForCommand()
         {
             var commandContext = CreateCommandContext("BAZ", new Dictionary<string, string> { { "VERBOSE", "true" } });
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Equal("Command Baz Called : This was a test", commandContext.Output.ToString());
         }
 
         [Fact]
-        public void TestBooleanSwitchForCommand()
+        public async Task TestBooleanSwitchForCommand()
         {
             var commandContext = CreateCommandContext("Baz", new Dictionary<string, string> { { "Verbose", "true" } });
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Equal("Command Baz Called : This was a test", commandContext.Output.ToString());
         }
 
         [Fact]
-        public void TestIntSwitchForCommand()
+        public async Task TestIntSwitchForCommand()
         {
             var commandContext = CreateCommandContext("Baz", new Dictionary<string, string> { { "Level", "2" } });
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Equal("Command Baz Called : Entering Level 2", commandContext.Output.ToString());
         }
 
         [Fact]
-        public void TestStringSwitchForCommand()
+        public async Task TestStringSwitchForCommand()
         {
             var commandContext = CreateCommandContext("Baz", new Dictionary<string, string> { { "User", "OrchardUser" } });
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Equal("Command Baz Called : current user is OrchardUser", commandContext.Output.ToString());
         }
 
@@ -124,14 +124,14 @@ namespace OrchardCore.Tests.Commands
         {
             var switches = new Dictionary<string, string> { { "User", "OrchardUser" } };
             var commandContext = CreateCommandContext("Foo", switches);
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
-        public void TestCommandThatDoesNotReturnAValue()
+        public async Task TestCommandThatDoesNotReturnAValue()
         {
             var commandContext = CreateCommandContext("Log");
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Empty(commandContext.Output.ToString());
         }
 
@@ -140,40 +140,40 @@ namespace OrchardCore.Tests.Commands
         {
             var switches = new Dictionary<string, string> { { "ThisSwitchDoesNotExist", "Insignificant" } };
             var commandContext = CreateCommandContext("Foo", switches);
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
-        public void TestCommandArgumentsArePassedCorrectly()
+        public async Task TestCommandArgumentsArePassedCorrectly()
         {
             var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), new[] { "left to ", "right" });
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left to right", commandContext.Output.ToString());
         }
 
         [Fact]
-        public void TestCommandArgumentsArePassedCorrectlyWithAParamsParameters()
+        public async Task TestCommandArgumentsArePassedCorrectlyWithAParamsParameters()
         {
             var commandContext = CreateCommandContext("ConcatParams", new Dictionary<string, string>(), new[] { "left to ", "right" });
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left to right", commandContext.Output.ToString());
         }
 
         [Fact]
-        public void TestCommandArgumentsArePassedCorrectlyWithAParamsParameterAndNoArguments()
+        public async Task TestCommandArgumentsArePassedCorrectlyWithAParamsParameterAndNoArguments()
         {
             var commandContext = CreateCommandContext("ConcatParams", new Dictionary<string, string>());
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Empty(commandContext.Output.ToString());
         }
 
         [Fact]
-        public void TestCommandArgumentsArePassedCorrectlyWithNormalParametersAndAParamsParameters()
+        public async Task TestCommandArgumentsArePassedCorrectlyWithNormalParametersAndAParamsParameters()
         {
             var commandContext = CreateCommandContext("ConcatAllParams",
                 new Dictionary<string, string>(),
                 new[] { "left-", "center-", "right" });
-            _handler.ExecuteAsync(commandContext);
+            await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left-center-right", commandContext.Output.ToString());
         }
 
@@ -181,21 +181,21 @@ namespace OrchardCore.Tests.Commands
         public async Task TestCommandParamsMismatchWithoutParamsNotEnoughArguments()
         {
             var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), new[] { "left to " });
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
         public async Task TestCommandParamsMismatchWithoutParamsTooManyArguments()
         {
             var commandContext = CreateCommandContext("Foo", new Dictionary<string, string>(), new[] { "left to " });
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
         public async Task TestCommandParamsMismatchWithParamsButNotEnoughArguments()
         {
             var commandContext = CreateCommandContext("ConcatAllParams", new Dictionary<string, string>());
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
         }
     }
 
