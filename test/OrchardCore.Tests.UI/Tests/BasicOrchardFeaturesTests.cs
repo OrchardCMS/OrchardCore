@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.UI.Tests
                 context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
                 browser);
 
-        [Theory, Chrome]
+        [Theory(Skip = "Used to test artifact creation during build."), Chrome]
         public Task IntentionallyFailingTest(Browser browser) =>
             ExecuteTestAfterSetupAsync(
                 context => context.Exists(By.Id("navbarasdfds")),
