@@ -54,6 +54,6 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: matrix.os == 'windows-latest' && failure()
       with:
-        name: functional-test-failure
+        name: ui-test-failure
         path: |
           test/OrchardCore.Tests.UI/bin/Release/net6.0/FailureDumps
