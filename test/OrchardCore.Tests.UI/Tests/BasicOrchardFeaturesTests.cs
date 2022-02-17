@@ -20,7 +20,17 @@ namespace OrchardCore.Tests.UI.Tests
         public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
             ExecuteTestAsync(
                 context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
-                browser);
+                browser,
+                configuration =>
+                {
+                    configuration.AccessibilityCheckingConfiguration.RunAccessibilityCheckingAssertionOnAllPageChanges = true;
+                    configuration.AccessibilityCheckingConfiguration.AxeBuilderConfigurator += axeBuilder =>
+                        AccessibilityCheckingConfiguration
+                            .ConfigureWcag21aa(axeBuilder)
+                            .DisableRules("color-contrast");
+
+                    return Task.CompletedTask;
+                });
 
         [Theory(Skip = "Used to test artifact creation during build."), Chrome]
         public Task IntentionallyFailingTest(Browser browser) =>
