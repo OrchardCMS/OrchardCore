@@ -252,9 +252,9 @@ namespace OrchardCore.Email.Services
                     }
                 }
 
-                if (_options.Proxy != null)
+                if (!String.IsNullOrEmpty( _options.ProxyHost))
                 {
-                    client.ProxyClient = new Socks5Client(_options.Proxy.Host, _options.Proxy.Port);
+                    client.ProxyClient = new Socks5Client(_options.ProxyHost, _options.ProxyPort);
                 }
 
                 var response = await client.SendAsync(message);

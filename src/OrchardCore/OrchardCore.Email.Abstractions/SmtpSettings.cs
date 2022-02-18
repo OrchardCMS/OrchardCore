@@ -69,7 +69,15 @@ namespace OrchardCore.Email
         /// </summary>
         public string Password { get; set; }
 
-        public MailProxy Proxy { get; set; }
+        /// <summary>
+        /// Gets or sets the proxy server.
+        /// </summary>
+        public string ProxyHost { get; set; }
+
+        /// <summary>
+        /// Gets or sets the proxy port number.
+        /// </summary>
+        public int ProxyPort { get; set; }
 
         /// <inheritdocs />
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
