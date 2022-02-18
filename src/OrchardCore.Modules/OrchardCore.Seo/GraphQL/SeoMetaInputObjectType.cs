@@ -12,7 +12,6 @@ public class SeoMetaInputObjectType : WhereInputObjectGraphType<SeoMetaPart>
         Name = "SeoMetaPartInput";
         Description = S["SEO meta fields"];
 
-        //AddScalarFilterFields<BooleanGraphType>("render", S["Whether the seo meta fields should be rendered"]);
         Field(x => x.Render, true)
             .Description("Whether to render the seo metas");
         Field(x => x.PageTitle, true)
