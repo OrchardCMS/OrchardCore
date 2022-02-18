@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,10 +16,12 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
+using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -38,6 +39,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IClock _clock;
         private readonly INotifier _notifier;
         private readonly ISiteService _siteService;
+        private readonly TenantValidator _tenantValidator;
 
         private readonly dynamic New;
         private readonly IStringLocalizer S;
@@ -55,6 +57,7 @@ namespace OrchardCore.Tenants.Controllers
             IClock clock,
             INotifier notifier,
             ISiteService siteService,
+            TenantValidator tenantValidator,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -70,6 +73,7 @@ namespace OrchardCore.Tenants.Controllers
             _clock = clock;
             _notifier = notifier;
             _siteService = siteService;
+            _tenantValidator = tenantValidator;
 
             New = shapeFactory;
             S = stringLocalizer;
@@ -339,6 +343,10 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             model.IsNewTenant = true;
+
+            var modelErrors = await _tenantValidator.ValidateAsync(model);
+
+            ModelState.AddModelErrors(modelErrors);
 
             if (ModelState.IsValid)
             {

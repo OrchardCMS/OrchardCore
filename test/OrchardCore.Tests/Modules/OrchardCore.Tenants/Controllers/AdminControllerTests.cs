@@ -22,6 +22,7 @@ using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 using OrchardCore.Tenants.Controllers;
+using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 using OrchardCore.Tests.Utilities;
 using Xunit;
@@ -81,11 +82,10 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                     RequestUrlHost = Hostname,
                     FeatureProfile = "Feature Profile"
                 };
-                var isModelValid = ModelValidator.Validate(viewModel, out _, controller.HttpContext.RequestServices);
 
                 await controller.Create(viewModel);
 
-                Assert.True(IsValid == isModelValid);
+                Assert.True(IsValid == controller.ModelState.IsValid);
             }
         }
 
@@ -101,11 +101,10 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 RequestUrlHost = "example5.com, example6.com",
                 FeatureProfile = "Feature Profile"
             };
-            var isModelValid = ModelValidator.Validate(viewModel, out _, controller.HttpContext.RequestServices);
 
             await controller.Create(viewModel);
 
-            Assert.True(isModelValid);
+            Assert.True(controller.ModelState.IsValid);
 
             controller = CreateController();
 
@@ -117,12 +116,10 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 FeatureProfile = "Feature Profile"
             };
 
-            isModelValid = ModelValidator.Validate(viewModel, out var errors, controller.HttpContext.RequestServices);
-
             await controller.Create(viewModel);
 
-            Assert.False(isModelValid);
-            Assert.Equal("A tenant with the same host and prefix already exists.", errors.First().ErrorMessage);
+            Assert.False(controller.ModelState.IsValid);
+            Assert.Equal("A tenant with the same host and prefix already exists.", controller.ModelState.First().Value.Errors.First().ErrorMessage);
         }
 
         private AdminController CreateController()
@@ -138,6 +135,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                     };
                 });
 
+            var databaseProviders = Enumerable.Empty<DatabaseProvider>();
             var authServiceMock = new Mock<IAuthorizationService>(MockBehavior.Strict);
 
             authServiceMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
@@ -145,7 +143,7 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
             authServiceMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(AuthorizationResult.Success()));
 
-            var stringLocalizerMock = new Mock<IStringLocalizer<AdminController>>();
+            var stringLocalizerMock = new Mock<IStringLocalizer<TenantValidator>>();
             stringLocalizerMock
                 .Setup(l => l[It.IsAny<string>()])
                 .Returns<string>(n => new LocalizedString(n, n));
@@ -153,10 +151,18 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 .Setup(l => l[It.IsAny<string>(), It.IsAny<object[]>()])
                 .Returns<string, object[]>((n, a) => new LocalizedString(n, n));
 
+            var tenantValidator = new TenantValidator(
+                _shellHostMock.Object,
+                _featureProfilesServiceMock.Object,
+                databaseProviders,
+                _shellSettings.First(),
+                stringLocalizerMock.Object
+                );
+
             var controller = new AdminController(
                 _shellHostMock.Object,
                 shellSettingsManagerMock.Object,
-                Enumerable.Empty<DatabaseProvider>(),
+                databaseProviders,
                 authServiceMock.Object,
                 _featureProfilesServiceMock.Object,
                 _shellSettings.First(),
@@ -165,8 +171,9 @@ namespace OrchardCore.Modules.Tenants.Controllers.Tests
                 new Clock(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ISiteService>(),
+                tenantValidator,
                 Mock.Of<IShapeFactory>(),
-                stringLocalizerMock.Object,
+                Mock.Of<IStringLocalizer<AdminController>>(),
                 Mock.Of<IHtmlLocalizer<AdminController>>())
             {
                 ControllerContext = new ControllerContext
