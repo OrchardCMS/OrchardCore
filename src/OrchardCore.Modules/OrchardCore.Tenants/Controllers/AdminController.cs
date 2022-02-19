@@ -339,12 +339,7 @@ namespace OrchardCore.Tenants.Controllers
 
             model.IsNewTenant = true;
 
-            if (ModelState.IsValid)
-            {
-                var modelErrors = await _tenantValidator.ValidateAsync(model);
-
-                ModelState.AddModelErrors(modelErrors);
-            }
+            await ValidateModelAsync(model);
 
             if (!IsDefaultShell())
             {
@@ -448,12 +443,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (ModelState.IsValid)
-            {
-                var modelErrors = await _tenantValidator.ValidateAsync(model);
-
-                ModelState.AddModelErrors(modelErrors);
-            }
+            await ValidateModelAsync(model);
 
             if (!IsDefaultShell())
             {
@@ -656,5 +646,15 @@ namespace OrchardCore.Tenants.Controllers
 
         private bool IsDefaultShell()
             => String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+
+        private async Task ValidateModelAsync(EditTenantViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var modelErrors = await _tenantValidator.ValidateAsync(model);
+
+                ModelState.AddModelErrors(modelErrors);
+            }
+        }
     }
 }
