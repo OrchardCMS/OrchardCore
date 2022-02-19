@@ -337,16 +337,19 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
+            model.IsNewTenant = true;
+
+            if (ModelState.IsValid)
+            {
+                var modelErrors = await _tenantValidator.ValidateAsync(model);
+
+                ModelState.AddModelErrors(modelErrors);
+            }
+
             if (!IsDefaultShell())
             {
                 return Forbid();
             }
-
-            model.IsNewTenant = true;
-
-            var modelErrors = await _tenantValidator.ValidateAsync(model);
-
-            ModelState.AddModelErrors(modelErrors);
 
             if (ModelState.IsValid)
             {
@@ -443,6 +446,13 @@ namespace OrchardCore.Tenants.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
                 return Forbid();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var modelErrors = await _tenantValidator.ValidateAsync(model);
+
+                ModelState.AddModelErrors(modelErrors);
             }
 
             if (!IsDefaultShell())
