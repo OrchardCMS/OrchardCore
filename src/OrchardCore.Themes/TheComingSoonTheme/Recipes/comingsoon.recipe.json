@@ -462,7 +462,7 @@
           },
           "FormPart": {
             "Action": "[js: getUrlPrefix('/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId'))))]",
-            "Method": "POST"
+            "Method": "post"
           }
         }
       ]
