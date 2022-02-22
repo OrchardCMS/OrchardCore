@@ -14719,6 +14719,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.65.1";
+  CodeMirror.version = "5.65.2";
   return CodeMirror;
 });
