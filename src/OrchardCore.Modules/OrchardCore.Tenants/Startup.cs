@@ -37,7 +37,7 @@ namespace OrchardCore.Tenants
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<TenantValidator>();
+            services.AddScoped<ITenantValidator, TenantValidator>();
             services.AddSetup();
         }
 
@@ -154,7 +154,6 @@ namespace OrchardCore.Tenants
             services.AddScoped<FeatureProfilesManager>();
             services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
             services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
-            services.AddScoped<TenantValidator>();
 
             services.AddRecipeExecutionStep<FeatureProfilesStep>();
         }

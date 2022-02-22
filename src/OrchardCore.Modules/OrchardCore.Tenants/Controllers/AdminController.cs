@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -32,14 +31,14 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IFeatureProfilesService _featureProfilesService;
         private readonly ShellSettings _currentShellSettings;
+        private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly IClock _clock;
         private readonly INotifier _notifier;
         private readonly ISiteService _siteService;
-        private readonly TenantValidator _tenantValidator;
+        private readonly ITenantValidator _tenantValidator;
 
         private readonly dynamic New;
         private readonly IStringLocalizer S;
@@ -50,26 +49,26 @@ namespace OrchardCore.Tenants.Controllers
             IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IAuthorizationService authorizationService,
-            IFeatureProfilesService featureProfilesService,
             ShellSettings currentShellSettings,
+            IFeatureProfilesService featureProfilesService,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             IDataProtectionProvider dataProtectorProvider,
             IClock clock,
             INotifier notifier,
             ISiteService siteService,
-            TenantValidator tenantValidator,
+            ITenantValidator tenantValidator,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _shellHost = shellHost;
-            _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
             _databaseProviders = databaseProviders;
-            _dataProtectorProvider = dataProtectorProvider;
-            _featureProfilesService = featureProfilesService;
+            _authorizationService = authorizationService;
             _currentShellSettings = currentShellSettings;
+            _featureProfilesService = featureProfilesService;
             _recipeHarvesters = recipeHarvesters;
+            _dataProtectorProvider = dataProtectorProvider;
             _clock = clock;
             _notifier = notifier;
             _siteService = siteService;
@@ -87,7 +86,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -231,7 +230,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -296,7 +295,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -337,13 +336,14 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            model.IsNewTenant = true;
-
-            await ValidateModelAsync(model);
-
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
+            }
+
+            if (ModelState.IsValid)
+            {
+                await ValidateViewModelAsync(model, true);
             }
 
             if (ModelState.IsValid)
@@ -387,7 +387,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -443,11 +443,14 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            await ValidateModelAsync(model);
-
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
+            }
+
+            if (ModelState.IsValid)
+            {
+                await ValidateViewModelAsync(model, false);
             }
 
             var shellSettings = _shellHost.GetAllSettings()
@@ -513,7 +516,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -553,7 +556,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -586,7 +589,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!IsDefaultShell())
+            if (!_currentShellSettings.IsDefaultShell())
             {
                 return Forbid();
             }
@@ -644,17 +647,11 @@ namespace OrchardCore.Tenants.Controllers
             return featureProfiles;
         }
 
-        private bool IsDefaultShell()
-            => String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
-
-        private async Task ValidateModelAsync(EditTenantViewModel model)
+        private async Task ValidateViewModelAsync(EditTenantViewModel model, bool newTenant)
         {
-            if (ModelState.IsValid)
-            {
-                var modelErrors = await _tenantValidator.ValidateAsync(model);
+            model.IsNewTenant = newTenant;
 
-                ModelState.AddModelErrors(modelErrors);
-            }
+            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
         }
     }
 }

@@ -11,7 +11,7 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services
 {
-    public class TenantValidator
+    public class TenantValidator : ITenantValidator
     {
         private readonly IShellHost _shellHost;
         private readonly IFeatureProfilesService _featureProfilesService;
@@ -32,6 +32,7 @@ namespace OrchardCore.Tenants.Services
             _shellSettings = shellSettings;
             S = stringLocalizer;
         }
+
         public async Task<IEnumerable<ModelError>> ValidateAsync(TenantViewModel model)
         {
             var errors = new List<ModelError>();
@@ -56,6 +57,24 @@ namespace OrchardCore.Tenants.Services
                 }
             }
 
+            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
+            {
+                errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
+            }
+
+            if (!_shellSettings.IsDefaultShell() && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            {
+                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]));
+            }
+
+            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            {
+                if (model.RequestUrlPrefix.Contains('/'))
+                {
+                    errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
+                }
+            }
+
             var allSettings = _shellHost.GetAllSettings();
 
             if (model.IsNewTenant && allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
@@ -63,34 +82,14 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
             }
 
-            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
-            {
-                errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
-            }
-
-            if (!IsDefaultShell() && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
-            {
-                errors.Add(new ModelError(model.RequestUrlPrefix, S["Host and url prefix can not be empty at the same time."]));
-            }
-
             var allOtherShells = allSettings.Where(t => !String.Equals(t.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-            if (allOtherShells.Any(t => (model.RequestUrlPrefix?.Trim()?.Equals(t.RequestUrlPrefix, StringComparison.OrdinalIgnoreCase) ?? false) && (t.RequestUrlHost?.Contains(model.RequestUrlHost, StringComparison.OrdinalIgnoreCase) ?? false)))
-            {
-                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]));
-            }
 
-            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && (tenant.RequestUrlHost?.Contains(model.RequestUrlHost, StringComparison.OrdinalIgnoreCase) ?? false)))
             {
-                if (model.RequestUrlPrefix.Contains('/'))
-                {
-                    errors.Add(new ModelError(S["The url prefix can not contain more than one segment."], nameof(model.RequestUrlPrefix)));
-                }
+                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
 
             return errors;
-
-            bool IsDefaultShell()
-                => String.Equals(_shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
