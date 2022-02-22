@@ -36,7 +36,6 @@
         "OrchardCore.Html",
         "OrchardCore.ContentFields",
         "OrchardCore.Contents",
-        "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.ContentTypes",
         "OrchardCore.CustomSettings",
         "OrchardCore.Deployment",
