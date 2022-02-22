@@ -12,7 +12,7 @@ namespace OrchardCore.ContentFields.Indexing
         {
             var options = DocumentIndexOptions.Store;
 
-            if (field.ContentItemIds.Length > 0)
+            if (field.LocalizationSets.Length > 0)
             {
                 foreach (var localizationSet in field.LocalizationSets)
                 {
