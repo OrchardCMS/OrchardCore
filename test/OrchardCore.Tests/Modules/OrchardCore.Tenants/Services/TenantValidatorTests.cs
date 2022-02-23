@@ -26,7 +26,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         [InlineData("Tenant1", null, "  ", "Feature Profile", new[] { "Host and url prefix can not be empty at the same time." })]
         [InlineData("Tenant1", "/tenant1", "", "Feature Profile", new[] { "The url prefix can not contain more than one segment." })]
         [InlineData("@Invalid Tenant", "/tenant1", "", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces.", "The url prefix can not contain more than one segment." })]
-        public async Task ExamineInvalidTenantErrors(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
+        public async Task InvalidTenantConfigurationsShouldFailValidation(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
         {
             // Arrange
             var tenantValidator = CreateTenantValidator(defaultTenant: false);
@@ -54,7 +54,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task ShouldNotCreateTenantAlreadyUsedInMultipleHostnames(bool isNewTenant)
+        public async Task DuplicateTenantHostOrPrefixShouldFailValidation(bool isNewTenant)
         {
             // Arrange
             var tenantValidator = CreateTenantValidator();
