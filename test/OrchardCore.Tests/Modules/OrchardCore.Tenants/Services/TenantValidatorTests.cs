@@ -20,12 +20,18 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         public TenantValidatorTests() => SeedTenants();
 
         [Theory]
-        [InlineData("", "tenant1", "example1.com", "Feature Profile", new[] { "The tenant name is mandatory." })]
-        [InlineData("Tenant1", "tenant1", "", "Feature", new[] { "The feature profile does not exist." })]
-        [InlineData("@Invalid Tenant", "tenant1", "example1.com", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces." })]
-        [InlineData("Tenant1", null, "  ", "Feature Profile", new[] { "Host and url prefix can not be empty at the same time." })]
-        [InlineData("Tenant1", "/tenant1", "", "Feature Profile", new[] { "The url prefix can not contain more than one segment." })]
-        [InlineData("@Invalid Tenant", "/tenant1", "", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces.", "The url prefix can not contain more than one segment." })]
+        [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
+        [InlineData("Tenant4", "tenant2", "", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
+        [InlineData("Tenant5", "tenant3", "example3.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
+        [InlineData("", "tenant6", "example1.com", "Feature Profile", new[] { "The tenant name is mandatory." })]
+        [InlineData("Tenant6", "tenant6", "", "Feature", new[] { "The feature profile does not exist." })]
+        [InlineData("@Invalid Tenant", "tenant6", "example1.com", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces." })]
+        [InlineData("Tenant6", null, "  ", "Feature Profile", new[] { "Host and url prefix can not be empty at the same time." })]
+        [InlineData("Tenant6", "/tenant6", "", "Feature Profile", new[] { "The url prefix can not contain more than one segment." })]
+        [InlineData("@Invalid Tenant", "/tenant6", "", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces.", "The url prefix can not contain more than one segment." })]
+        [InlineData("Tenant7", "tenant7", "", "Feature Profile", new string[] { })]
+        [InlineData("Tenant7", "", "example5.com", "Feature Profile", new string[] { })]
+        [InlineData("Tenant7", "tenant7", "example5.com", "Feature Profile", new string[] { })]
         public async Task InvalidTenantConfigurationsShouldFailValidation(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
         {
             // Arrange
@@ -37,7 +43,8 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 Name = name,
                 RequestUrlPrefix = urlPrefix,
                 RequestUrlHost = hostName,
-                FeatureProfile = featureProfile
+                FeatureProfile = featureProfile,
+                IsNewTenant = true
             };
 
             var errors = await tenantValidator.ValidateAsync(viewModel);
@@ -61,17 +68,12 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
             var viewModel = new EditTenantViewModel
             {
-                Name = "Tenant2",
-                RequestUrlHost = "example2.com",
+                Name = "Tenant4",
+                RequestUrlPrefix = "tenant3",
+                RequestUrlHost = "example4.com",
                 FeatureProfile = "Feature Profile",
                 IsNewTenant = isNewTenant
             };
-
-            _shellSettings.Add(new ShellSettings
-            {
-                Name = "Tenant1",
-                RequestUrlHost = "exmple1.com, example2.com"
-            });
 
             // Act
             var errors = await tenantValidator.ValidateAsync(viewModel);
@@ -115,10 +117,10 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
         private void SeedTenants()
         {
-            _shellSettings.Add(new ShellSettings
-            {
-                Name = ShellHelper.DefaultShellName
-            });
+            _shellSettings.Add(new ShellSettings{ Name = ShellHelper.DefaultShellName });
+            _shellSettings.Add(new ShellSettings { Name = "Tenant1" });
+            _shellSettings.Add(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = "tenant2", RequestUrlHost = String.Empty });
+            _shellSettings.Add(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = "example3.com,example4.com" });
         }
     }
 }
