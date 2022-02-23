@@ -121,9 +121,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
         if (dateSQL.hasOwnProperty(word) && (stream.match(/^( )+'[^']*'/) || stream.match(/^( )+"[^"]*"/))) return "number";
         if (atoms.hasOwnProperty(word)) return "atom";
-        if (builtin.hasOwnProperty(word)) return "builtin";
+        if (builtin.hasOwnProperty(word)) return "type";
         if (keywords.hasOwnProperty(word)) return "keyword";
-        if (client.hasOwnProperty(word)) return "string-2";
+        if (client.hasOwnProperty(word)) return "builtin";
         return null;
       }
     } // 'string', with char specified in quote escaped by '\'

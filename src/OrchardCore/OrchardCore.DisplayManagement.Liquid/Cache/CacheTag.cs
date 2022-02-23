@@ -86,7 +86,7 @@ namespace OrchardCore.DynamicCache.Liquid
             var content = "";
             try
             {
-                if (statements != null || statements.Count > 0)
+                if (statements != null && statements.Count > 0)
                 {
                     using var sb = StringBuilderPool.GetInstance();
                     using (var render = new StringWriter(sb.Builder))

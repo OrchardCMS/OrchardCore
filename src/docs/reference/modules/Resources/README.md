@@ -18,24 +18,23 @@ All script or stylesheet resources should be prefixed with the `~` character.
 
 Resource Settings are configured through the site admin.
 
-### AppendVersion
+### `AppendVersion`
 
 Enabling `AppendVersion` or Resources cache busting will automatically append a version hash to all local scripts and style sheets.
 This is turned on by default.
 
-### UseCdn
+### `UseCdn`
 
 Enabling UseCdn will configure the `IResourceManager` to provide any scripts or styles, such as `jQuery`, from the configured CDN.
 
-### ResourceDebugMode
+### `ResourceDebugMode`
 
 When enabled will serve scripts or styles, that have a CDN configured, or a debug-src, from the local server in non minified format.  
-This will also disabled the CdnBaseUrl prepending.
+This will also disable the `CdnBaseUrl` prepending.
 
-### CdnBaseUrl
+### `CdnBaseUrl`
 
-When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will
-be disabled in `ResourceDebugMode`
+When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will be disabled in `ResourceDebugMode`
 
 ## Named Resources
 
@@ -61,8 +60,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.65.0        | -              |
-| codemirror            | Style  | 5.65.0        | -              |
+| codemirror            | Script | 5.65.2        | -              |
+| codemirror            | Style  | 5.65.2        | -              |
 | font-awesome          | Style  | 5.15.4        | -              |
 | font-awesome          | Script | 5.15.4        | -              |
 | font-awesome-v4-shims | Script | 5.15.4        | -              |
@@ -70,8 +69,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | trumbowyg             | Script | 2.25.1        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.31.1        | -              |
-| monaco                | Script | 0.31.1        | monaco-loader  |
+| monaco-loader         | Script | 0.32.1        | -              |
+| monaco                | Script | 0.32.1        | monaco-loader  |
 
 ### Registering a Resource Manifest
 
@@ -375,7 +374,7 @@ When rendering the scripts the resource manager will order the output based on t
 3. `bar`
 
 !!! note
-    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`.
+    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`. Hence why the above inline examples all include a name.
 
 #### Custom scripts
 
