@@ -4,39 +4,17 @@
 @using OrchardCore.Contents;
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @using Microsoft.AspNetCore.Authorization;
-@using OrchardCore.ContentManagement.Metadata.Models;
 @model BagPartEditViewModel
 @inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject OrchardCore.ContentManagement.IContentManager ContentManager
 @{
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
     var parentContentType = Model.BagPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
-
-    var accessibleContentTypes = new List<ContentTypeDefinition>();
-
-    foreach (var contentType in Model.ContainedContentTypeDefinitions)
-    {
-        var settings = contentType.GetSettings<ContentTypeSettings>();
-
-        if (settings.Securable)
-        {
-            var dummyContent = await ContentManager.NewAsync(contentType.Name);
-
-            if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, dummyContent))
-            {
-                continue;
-            }
-        }
-
-        accessibleContentTypes.Add(contentType);
-    }
-
-    var totalItems = accessibleContentTypes.Count();
+    var totalItems = Model.ContainedContentTypeDefinitions.Count();
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
@@ -51,12 +29,12 @@
                 var settings = contentType.GetSettings<ContentTypeSettings>();
 
                 bool canEdit = settings.Securable ? await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, widget) : true;
-                bool canView = settings.Securable ? await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, widget) : true;
+                bool canView = settings.Securable ? await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, widget) : true;
                 bool canDelete = settings.Securable ? await AuthorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, widget) : true;
 
                 if (!canEdit && !canView)
                 {
-                    // At this point the user has no permission to view or edit this item, no need to render anything
+                    // At this point the user has no permission to view or edit this item, skip it
                     continue;
                 }
 
@@ -95,7 +73,7 @@
 
     @if (totalItems == 1)
     {
-        var type = accessibleContentTypes.First();
+        var type = Model.ContainedContentTypeDefinitions.First();
 
         <a class="btn btn-primary add-widget btn-sm"
            data-target-id="@widgetTemplatePlaceholderId"
@@ -116,7 +94,7 @@
                 @T["Add Item"]
             </button>
             <div class="dropdown-menu">
-                @foreach (var type in accessibleContentTypes)
+                @foreach (var type in Model.ContainedContentTypeDefinitions)
                 {
                     <a class="dropdown-item add-widget  btn-sm"
                        data-target-id="@widgetTemplatePlaceholderId"
@@ -147,7 +125,7 @@
     }
 
     @* Rendered only once per type to initialize the scripts its editor will need *@
-    @foreach (var type in accessibleContentTypes)
+    @foreach (var type in Model.ContainedContentTypeDefinitions)
     {
         @if (Context.Items["BagPart.Edit:" + type.Name] == null)
         {

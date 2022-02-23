@@ -59,11 +59,13 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
         {
-            return Initialize<BagPartEditViewModel>(GetEditorShapeType(context), m =>
+            return Initialize<BagPartEditViewModel>(GetEditorShapeType(context), async m =>
             {
+                var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = GetContainedContentTypes(context.TypePartDefinition);
+                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(contentDefinitionManager, context.TypePartDefinition);
             });
         }
 
@@ -171,13 +173,29 @@ namespace OrchardCore.Flows.Drivers
             return settings.Securable;
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(IContentDefinitionManager contentDefinitionManager, ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
 
-            return settings.ContainedContentTypes
+            var contentTypes = settings.ContainedContentTypes
                 .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
                 .Where(contentType => contentType != null);
+
+            var accessibleContentTypes = new List<ContentTypeDefinition>();
+
+            foreach (var contentType in contentTypes)
+            {
+                var dummyContent = await _contentManager.NewAsync(contentType.Name);
+
+                if (!await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, dummyContent))
+                {
+                    continue;
+                }
+
+                accessibleContentTypes.Add(contentType);
+            }
+
+            return accessibleContentTypes;
         }
     }
 }
