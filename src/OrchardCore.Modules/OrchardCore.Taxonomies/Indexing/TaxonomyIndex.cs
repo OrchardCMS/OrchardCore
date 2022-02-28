@@ -87,8 +87,8 @@ namespace OrchardCore.Taxonomies.Indexing
                             continue;
                         }
 
-                        var jField = jPart[fieldDefinition.Name] ?? null;
-                        jField = (JObject)jField;
+                        var jToken = jPart[fieldDefinition.Name] ?? null;
+                        var jField = (JObject)jToken;
 
                         if (jField == null)
                         {
