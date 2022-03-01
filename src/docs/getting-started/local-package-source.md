@@ -25,8 +25,8 @@ https://docs.microsoft.com/en-us/nuget/reference/nuget-config-file#packagesource
     <configuration>
       <packageSources>
         <clear />
-        <add key="NuGet" value="https://api.nuget.org/v3/index.json" />
         <add key="MyFeed" value="\\{YourServer}\NuGetServer" />
+        <add key="NuGet" value="https://api.nuget.org/v3/index.json" />
       </packageSources>
       <disabledPackageSources />
     </configuration>
