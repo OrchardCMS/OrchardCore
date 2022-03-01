@@ -21,6 +21,8 @@ namespace OrchardCore.Flows.ViewModels
         [BindNever]
         public FlowPart FlowPart { get; set; }
 
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         [BindNever]
         public IUpdateModel Updater { get; set; }
 
