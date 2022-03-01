@@ -16,6 +16,8 @@ namespace OrchardCore.Widgets.ViewModels
 
         public WidgetsListPart WidgetsListPart { get; set; }
 
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
         [BindNever]
         public IUpdateModel Updater { get; set; }
     }
