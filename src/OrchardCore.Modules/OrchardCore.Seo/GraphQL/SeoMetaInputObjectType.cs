@@ -12,17 +12,7 @@ public class SeoMetaInputObjectType : WhereInputObjectGraphType<SeoMetaPart>
         Name = "SeoMetaPartInput";
         Description = S["SEO meta fields"];
 
-        Field(x => x.Render, true)
-            .Description("Whether to render the seo metas");
         Field(x => x.PageTitle, true)
             .Description("The seo page title");
-        Field(x => x.MetaDescription, true)
-            .Description("The meta description of the content item");
-        Field(x => x.MetaKeywords, true)
-            .Description("The meta keywords of the content item");
-        Field(x => x.Canonical, true)
-            .Description("The canonical link of the content item");
-        Field( x => x.MetaRobots, true)
-            .Description("The content item specific meta robots definition");
     }
 }

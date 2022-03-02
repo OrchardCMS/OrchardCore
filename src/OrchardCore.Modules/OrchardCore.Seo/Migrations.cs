@@ -4,6 +4,8 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Media.Settings;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Seo.Indexes;
+using YesSql.Sql;
 
 namespace OrchardCore.Seo
 {
@@ -37,7 +39,14 @@ namespace OrchardCore.Seo
                     .WithSettings(new MediaFieldSettings { Multiple = false }))
             );
 
-            return 1;
+            SchemaBuilder.CreateMapIndexTable<SeoMetaPartIndex>(table => table
+                .Column<string>("PageTitle", c => c.WithLength(128)));
+
+            SchemaBuilder.AlterIndexTable<SeoMetaPartIndex>(table => table
+                .CreateIndex("IDX_SeoMetaPartIndex_DocumentId", "DocumentId", "PageTitle")
+            );
+
+            return 3;
         }
 
         public async Task<int> UpdateFrom1Async()

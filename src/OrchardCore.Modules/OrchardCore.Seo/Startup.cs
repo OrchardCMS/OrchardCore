@@ -4,10 +4,13 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Seo.Drivers;
+using OrchardCore.Seo.Indexes;
 using OrchardCore.Seo.Models;
 using OrchardCore.SeoMeta.Settings;
+using YesSql.Indexes;
 
 namespace OrchardCore.Seo
 {
@@ -15,7 +18,7 @@ namespace OrchardCore.Seo
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddSingleton<IIndexProvider, SeoMetaPartIndexProvider>();
 
             services.AddContentPart<SeoMetaPart>()
                 .UseDisplayDriver<SeoMetaPartDisplayDriver>()
@@ -26,6 +29,8 @@ namespace OrchardCore.Seo
 
             // This must be last, and the module dependant on Contents so this runs after the part handlers.
             services.AddScoped<IContentHandler, SeoMetaSettingsHandler>();
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IContentItemIndexHandler, SeoMetaPartContentIndexHandler>();
         }
     }
 }
