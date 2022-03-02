@@ -26,6 +26,12 @@
             foreach (var widget in Model.BagPart.ContentItems)
             {
                 var contentType = ContentDefinitionManager.GetTypeDefinition(widget.ContentType);
+
+                if (contentType == null)
+                {
+                    continue;
+                }
+
                 var settings = contentType.GetSettings<ContentTypeSettings>();
 
                 bool canEdit = settings.Securable ? await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, widget) : true;
