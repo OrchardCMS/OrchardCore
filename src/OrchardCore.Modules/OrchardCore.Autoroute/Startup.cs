@@ -34,7 +34,7 @@ namespace OrchardCore.Autoroute
     public class Startup : StartupBase
     {
         public override int ConfigureOrder => -100;
-
+        public override int Order => 999999;
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
