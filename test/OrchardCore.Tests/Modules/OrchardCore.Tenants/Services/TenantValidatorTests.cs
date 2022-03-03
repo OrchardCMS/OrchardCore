@@ -21,18 +21,19 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
         [Theory]
         [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
-        [InlineData("Tenant4", "tenant2", "", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
-        [InlineData("Tenant5", "tenant3", "example3.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
-        [InlineData("", "tenant6", "example1.com", "Feature Profile", new[] { "The tenant name is mandatory." })]
-        [InlineData("Tenant6", "tenant6", "", "Feature", new[] { "The feature profile does not exist." })]
-        [InlineData("@Invalid Tenant", "tenant6", "example1.com", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces." })]
-        [InlineData("Tenant6", null, "  ", "Feature Profile", new[] { "Host and url prefix can not be empty at the same time." })]
-        [InlineData("Tenant6", "/tenant6", "", "Feature Profile", new[] { "The url prefix can not contain more than one segment." })]
-        [InlineData("@Invalid Tenant", "/tenant6", "", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces.", "The url prefix can not contain more than one segment." })]
-        [InlineData("Tenant7", "tenant7", "", "Feature Profile", new string[] { })]
-        [InlineData("Tenant7", "", "example5.com", "Feature Profile", new string[] { })]
-        [InlineData("Tenant7", "tenant7", "example5.com", "Feature Profile", new string[] { })]
-        public async Task InvalidTenantConfigurationsShouldFailValidation(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
+        [InlineData("Tenant5", "tenant3", "", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
+        [InlineData("Tenant5", "", "example2.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
+        [InlineData("Tenant6", "tenant4", "example4.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
+        [InlineData("", "tenant7", "example1.com", "Feature Profile", new[] { "The tenant name is mandatory." })]
+        [InlineData("Tenant7", "tenant7", "", "Feature", new[] { "The feature profile does not exist." })]
+        [InlineData("@Invalid Tenant", "tenant7", "example1.com", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces." })]
+        [InlineData("Tenant7", null, "  ", "Feature Profile", new[] { "Host and url prefix can not be empty at the same time." })]
+        [InlineData("Tenant7", "/tenant7", "", "Feature Profile", new[] { "The url prefix can not contain more than one segment." })]
+        [InlineData("@Invalid Tenant", "/tenant7", "", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces.", "The url prefix can not contain more than one segment." })]
+        [InlineData("Tenant8", "tenant8", "", "Feature Profile", new string[] { })]
+        [InlineData("Tenant8", "", "example6.com", "Feature Profile", new string[] { })]
+        [InlineData("Tenant8", "tenant8", "example6.com", "Feature Profile", new string[] { })]
+        public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
         {
             // Arrange
             var tenantValidator = CreateTenantValidator(defaultTenant: false);
@@ -68,9 +69,9 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
             var viewModel = new EditTenantViewModel
             {
-                Name = "Tenant4",
-                RequestUrlPrefix = "tenant3",
-                RequestUrlHost = "example4.com",
+                Name = "Tenant5",
+                RequestUrlPrefix = "tenant4",
+                RequestUrlHost = "example5.com",
                 FeatureProfile = "Feature Profile",
                 IsNewTenant = isNewTenant
             };
@@ -119,8 +120,9 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         {
             _shellSettings.Add(new ShellSettings{ Name = ShellHelper.DefaultShellName });
             _shellSettings.Add(new ShellSettings { Name = "Tenant1" });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = "tenant2", RequestUrlHost = String.Empty });
-            _shellSettings.Add(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = "example3.com,example4.com" });
+            _shellSettings.Add(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
+            _shellSettings.Add(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty });
+            _shellSettings.Add(new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com,example5.com" });
         }
     }
 }
