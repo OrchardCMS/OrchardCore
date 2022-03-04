@@ -1,7 +1,7 @@
 {
   "name": "Blog.Lucene.Settings",
   "displayName": "Blog - Lucene settings",
-  "description": "Provides Lucene settings.",
+  "description": "Creates Lucene settings, permission and indices.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
