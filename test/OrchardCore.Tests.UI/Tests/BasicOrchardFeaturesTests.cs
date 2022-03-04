@@ -20,7 +20,7 @@ namespace OrchardCore.Tests.UI.Tests
         [Theory, Chrome]
         public Task BasicOrchardFeaturesShouldWork(Browser browser) =>
             ExecuteTestAsync(
-                context => context.TestBasicOrchardFeaturesExceptRegistrationAsync(SetupHelpers.RecipeId),
+                context => context.TestBasicOrchardFeaturesExceptRegistrationInternalAsync(SetupHelpers.RecipeId),
                 browser,
                 configuration =>
                 {

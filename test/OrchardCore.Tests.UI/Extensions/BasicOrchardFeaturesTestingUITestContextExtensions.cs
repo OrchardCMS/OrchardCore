@@ -26,8 +26,8 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="setupRecipeId">The ID of the recipe to be used to set up the site.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestBasicOrchardFeaturesAsync(this UITestContext context, string setupRecipeId) =>
-            context.TestBasicOrchardFeaturesAsync(new OrchardCoreSetupParameters(context)
+        public static Task TestBasicOrchardFeaturesInternalAsync(this UITestContext context, string setupRecipeId) =>
+            context.TestBasicOrchardFeaturesInternalAsync(new OrchardCoreSetupParameters(context)
             {
                 RecipeId = setupRecipeId,
             });
@@ -44,20 +44,20 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="setupParameters">The setup parameters.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static async Task TestBasicOrchardFeaturesAsync(
+        public static async Task TestBasicOrchardFeaturesInternalAsync(
             this UITestContext context,
             OrchardCoreSetupParameters setupParameters = null)
         {
-            await context.TestSetupWithInvalidDataAsync();
-            await context.TestSetupAsync(setupParameters);
-            await context.TestRegistrationWithInvalidDataAsync();
-            await context.TestRegistrationAsync();
-            await context.TestRegistrationWithAlreadyRegisteredEmailAsync();
-            await context.TestLoginWithInvalidDataAsync();
-            await context.TestLoginAsync();
-            await context.TestContentOperationsAsync();
-            await context.TestTurningFeatureOnAndOffAsync();
-            await context.TestLogoutAsync();
+            await context.TestSetupWithInvalidDataInternalAsync();
+            await context.TestSetupInternalAsync(setupParameters);
+            await context.TestRegistrationWithInvalidDataInternalAsync();
+            await context.TestRegistrationInternalAsync();
+            await context.TestRegistrationWithAlreadyRegisteredEmailInternalAsync();
+            await context.TestLoginWithInvalidDataInternalAsync();
+            await context.TestLoginInternalAsync();
+            await context.TestContentOperationsInternalAsync();
+            await context.TestTurningFeatureOnAndOffInternalAsync();
+            await context.TestLogoutInternalAsync();
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="setupRecipeId">The ID of the recipe to be used to set up the site.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestBasicOrchardFeaturesExceptRegistrationAsync(this UITestContext context, string setupRecipeId) =>
-            context.TestBasicOrchardFeaturesExceptRegistrationAsync(new OrchardCoreSetupParameters(context)
+        public static Task TestBasicOrchardFeaturesExceptRegistrationInternalAsync(this UITestContext context, string setupRecipeId) =>
+            context.TestBasicOrchardFeaturesExceptRegistrationInternalAsync(new OrchardCoreSetupParameters(context)
             {
                 RecipeId = setupRecipeId,
             });
@@ -89,17 +89,17 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="setupParameters">The setup parameters.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static async Task TestBasicOrchardFeaturesExceptRegistrationAsync(
+        public static async Task TestBasicOrchardFeaturesExceptRegistrationInternalAsync(
             this UITestContext context,
             OrchardCoreSetupParameters setupParameters = null)
         {
-            await context.TestSetupWithInvalidDataAsync();
-            await context.TestSetupAsync(setupParameters);
-            await context.TestLoginWithInvalidDataAsync();
-            await context.TestLoginAsync();
-            await context.TestContentOperationsAsync();
-            await context.TestTurningFeatureOnAndOffAsync();
-            await context.TestLogoutAsync();
+            await context.TestSetupWithInvalidDataInternalAsync();
+            await context.TestSetupInternalAsync(setupParameters);
+            await context.TestLoginWithInvalidDataInternalAsync();
+            await context.TestLoginInternalAsync();
+            await context.TestContentOperationsInternalAsync();
+            await context.TestTurningFeatureOnAndOffInternalAsync();
+            await context.TestLogoutInternalAsync();
         }
 
         /// <summary>
@@ -112,8 +112,8 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="setupRecipeId">The ID of the recipe to be used to set up the site.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestSetupAsync(this UITestContext context, string setupRecipeId) =>
-            context.TestSetupAsync(new OrchardCoreSetupParameters(context)
+        public static Task TestSetupInternalAsync(this UITestContext context, string setupRecipeId) =>
+            context.TestSetupInternalAsync(new OrchardCoreSetupParameters(context)
             {
                 RecipeId = setupRecipeId,
             });
@@ -130,11 +130,11 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="setupParameters">The setup parameters.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestSetupAsync(this UITestContext context, OrchardCoreSetupParameters setupParameters = null)
+        public static Task TestSetupInternalAsync(this UITestContext context, OrchardCoreSetupParameters setupParameters = null)
         {
             setupParameters ??= new OrchardCoreSetupParameters(context);
 
-            return context.ExecuteTestAsync(
+            return context.ExecuteTestInternalAsync(
                 "Test setup",
                 async () =>
                 {
@@ -157,7 +157,7 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="setupParameters">The setup parameters.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestSetupWithInvalidDataAsync(
+        public static Task TestSetupWithInvalidDataInternalAsync(
             this UITestContext context,
             OrchardCoreSetupParameters setupParameters = null)
         {
@@ -169,7 +169,7 @@ namespace OrchardCore.Tests.UI.Extensions
                 Password = string.Empty,
             };
 
-            return context.ExecuteTestAsync(
+            return context.ExecuteTestInternalAsync(
                 "Test setup with invalid data",
                 async () =>
                 {
@@ -189,11 +189,11 @@ namespace OrchardCore.Tests.UI.Extensions
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestLoginAsync(
+        public static Task TestLoginInternalAsync(
             this UITestContext context,
             string userName = DefaultUser.UserName,
             string password = DefaultUser.Password) =>
-            context.ExecuteTestAsync(
+            context.ExecuteTestInternalAsync(
                 "Test login",
                 async () =>
                 {
@@ -214,11 +214,11 @@ namespace OrchardCore.Tests.UI.Extensions
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestLoginWithInvalidDataAsync(
+        public static Task TestLoginWithInvalidDataInternalAsync(
             this UITestContext context,
             string userName = DefaultUser.UserName,
             string password = "WrongPass!") =>
-            context.ExecuteTestAsync(
+            context.ExecuteTestInternalAsync(
                 "Test login with invalid data",
                 async () =>
                 {
@@ -241,7 +241,7 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </para>
         /// </summary>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestLogoutAsync(this UITestContext context) =>
+        public static Task TestLogoutInternalAsync(this UITestContext context) =>
             context.ExecuteTestAsync(
                 "Test logout",
                 async () =>
@@ -272,7 +272,7 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="parameters">The user registration parameters.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestRegistrationAsync(this UITestContext context, UserRegistrationParameters parameters = null)
+        public static Task TestRegistrationInternalAsync(this UITestContext context, UserRegistrationParameters parameters = null)
         {
             parameters ??= UserRegistrationParameters.CreateDefault();
 
@@ -311,7 +311,7 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="parameters">The user registration parameters.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestRegistrationWithInvalidDataAsync(
+        public static Task TestRegistrationWithInvalidDataInternalAsync(
             this UITestContext context, UserRegistrationParameters parameters = null)
         {
             parameters ??= new()
@@ -322,7 +322,7 @@ namespace OrchardCore.Tests.UI.Extensions
                 ConfirmPassword = "short",
             };
 
-            return context.ExecuteTestAsync(
+            return context.ExecuteTestInternalAsync(
                 "Test registration with invalid data",
                 async () =>
                 {
@@ -346,13 +346,13 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="parameters">The user registration parameters.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestRegistrationWithAlreadyRegisteredEmailAsync(
+        public static Task TestRegistrationWithAlreadyRegisteredEmailInternalAsync(
             this UITestContext context,
             UserRegistrationParameters parameters = null)
         {
             parameters ??= UserRegistrationParameters.CreateDefault();
 
-            return context.ExecuteTestAsync(
+            return context.ExecuteTestInternalAsync(
                 "Test registration with already registered email",
                 async () =>
                 {
@@ -383,7 +383,7 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="pageTitle">The page title to enter.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestContentOperationsAsync(this UITestContext context, string pageTitle = "Test page") =>
+        public static Task TestContentOperationsInternalAsync(this UITestContext context, string pageTitle = "Test page") =>
             context.ExecuteTestAsync(
                 "Test content operations",
                 async () =>
@@ -425,9 +425,9 @@ namespace OrchardCore.Tests.UI.Extensions
         /// </summary>
         /// <param name="featureName">The name of the feature to use.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task TestTurningFeatureOnAndOffAsync(
+        public static Task TestTurningFeatureOnAndOffInternalAsync(
             this UITestContext context, string featureName = "Background Tasks") =>
-            context.ExecuteTestAsync(
+            context.ExecuteTestInternalAsync(
                 "Test turning feature on and off",
                 async () =>
                 {
@@ -459,7 +459,7 @@ namespace OrchardCore.Tests.UI.Extensions
         /// <param name="testName">The test name.</param>
         /// <param name="testFunctionAsync">The test action.</param>
         /// <returns>The same <see cref="UITestContext"/> instance.</returns>
-        public static Task ExecuteTestAsync(
+        public static Task ExecuteTestInternalAsync(
             this UITestContext context, string testName, Func<Task> testFunctionAsync)
         {
             if (context is null) throw new ArgumentNullException(nameof(context));
