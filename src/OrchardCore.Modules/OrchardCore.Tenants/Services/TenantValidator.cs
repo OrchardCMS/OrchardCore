@@ -13,6 +13,8 @@ namespace OrchardCore.Tenants.Services
 {
     public class TenantValidator : ITenantValidator
     {
+        private readonly static char[] HostsSeparator = new char[] { ',' };
+
         private readonly IShellHost _shellHost;
         private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
@@ -84,7 +86,7 @@ namespace OrchardCore.Tenants.Services
 
             var allOtherShells = allSettings.Where(t => !String.Equals(t.Name, model.Name, StringComparison.OrdinalIgnoreCase));
 
-            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && IsUrlHostExist(tenant.RequestUrlHost, model.RequestUrlHost)))
+            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && DoesUrlHostExist(tenant.RequestUrlHost, model.RequestUrlHost)))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
@@ -92,12 +94,27 @@ namespace OrchardCore.Tenants.Services
             return errors;
         }
 
-        private static bool IsUrlHostExist(string urlHost, string modelUrlHost)
+        private static bool DoesUrlHostExist(string urlHost, string modelUrlHost)
         {
-            urlHost ??= String.Empty;
-            modelUrlHost ??= String.Empty;
+            if (String.IsNullOrEmpty(urlHost) && String.IsNullOrEmpty(modelUrlHost))
+            {
+                return true;
+            }
 
-            return urlHost.Contains(modelUrlHost, StringComparison.OrdinalIgnoreCase);
+            var urlHosts = GetUrlHosts(urlHost);
+            var modelUrlHosts = GetUrlHosts(modelUrlHost);
+
+            return urlHosts.Intersect(modelUrlHosts).Any();
+        }
+
+        private static IEnumerable<string> GetUrlHosts(string compoundUrlHosts)
+        {
+            if (String.IsNullOrEmpty(compoundUrlHosts))
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            return compoundUrlHosts.Split(HostsSeparator).Select(h => h.Trim());
         }
     }
 }
