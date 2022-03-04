@@ -11,9 +11,12 @@
 
   "steps": [
     {
-      "name": "feature",
-      "enable": [
-        "Blog.Lucene.Settings"
+      "name": "recipes",
+      "Values": [
+        {
+          "executionid": "Blog",
+          "name": "Blog.Lucene.Settings"
+        }
       ]
     },
     {
