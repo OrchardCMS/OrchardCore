@@ -22,6 +22,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         [Theory]
         [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
         [InlineData("Tenant5", "tenant3", "", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
+        [InlineData("Tenant5", "tenant3", null, "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant5", "", "example2.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant6", "tenant4", "example4.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("", "tenant7", "example1.com", "Feature Profile", new[] { "The tenant name is mandatory." })]
@@ -33,6 +34,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         [InlineData("Tenant8", "tenant8", "", "Feature Profile", new string[] { })]
         [InlineData("Tenant8", "", "example6.com", "Feature Profile", new string[] { })]
         [InlineData("Tenant8", "tenant8", "example6.com", "Feature Profile", new string[] { })]
+        [InlineData("Tenant8", null, "example2.com", "Feature Profile", new string[] { })]
         public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
         {
             // Arrange
