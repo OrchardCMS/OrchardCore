@@ -31,10 +31,11 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         [InlineData("Tenant7", null, "  ", "Feature Profile", new[] { "Host and url prefix can not be empty at the same time." })]
         [InlineData("Tenant7", "/tenant7", "", "Feature Profile", new[] { "The url prefix can not contain more than one segment." })]
         [InlineData("@Invalid Tenant", "/tenant7", "", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces.", "The url prefix can not contain more than one segment." })]
-        [InlineData("Tenant8", "tenant8", "", "Feature Profile", new string[] { })]
-        [InlineData("Tenant8", "", "example6.com", "Feature Profile", new string[] { })]
-        [InlineData("Tenant8", "tenant8", "example6.com", "Feature Profile", new string[] { })]
-        [InlineData("Tenant8", null, "example2.com", "Feature Profile", new string[] { })]
+        [InlineData("Tenant8", "tenant4", "example6.com,example4.com, example5.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
+        [InlineData("Tenant9", "tenant9", "", "Feature Profile", new string[] { })]
+        [InlineData("Tenant9", "", "example6.com", "Feature Profile", new string[] { })]
+        [InlineData("Tenant9", "tenant9", "example6.com", "Feature Profile", new string[] { })]
+        [InlineData("Tenant9", null, "example2.com", "Feature Profile", new string[] { })]
         public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
         {
             // Arrange
