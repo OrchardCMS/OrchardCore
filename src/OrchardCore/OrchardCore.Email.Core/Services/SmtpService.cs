@@ -4,6 +4,7 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Localization;
@@ -235,8 +236,9 @@ namespace OrchardCore.Email.Services
             using (var client = new SmtpClient())
             {
                 client.ServerCertificateValidationCallback = CertificateValidationCallback;
+
                 await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
-                var useDefaultCredentials = _options.RequireCredentials && _options.UseDefaultCredentials;
+
                 if (_options.RequireCredentials)
                 {
                     if (_options.UseDefaultCredentials)
@@ -248,6 +250,11 @@ namespace OrchardCore.Email.Services
                     {
                         await client.AuthenticateAsync(_options.UserName, _options.Password);
                     }
+                }
+
+                if (!String.IsNullOrEmpty( _options.ProxyHost))
+                {
+                    client.ProxyClient = new Socks5Client(_options.ProxyHost, _options.ProxyPort);
                 }
 
                 var response = await client.SendAsync(message);

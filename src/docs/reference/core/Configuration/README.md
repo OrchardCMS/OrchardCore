@@ -38,7 +38,7 @@ Each Orchard Core module has its own configuration section under the `OrchardCor
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media": {
+    "OrchardCore_Media": {
       ... individual module configuration ...
     }
   }
