@@ -2507,6 +2507,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "DrewBrasher",
+      "name": "Drew Brasher",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9272802?v=4",
+      "profile": "https://drewbrasher.com/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
