@@ -9,7 +9,7 @@
     {
       "id": "OrchardVersion",
       "name": {
-        "text": "Orchard Version"
+        "text": "Orchard Core Version"
       },
       "isVisible": "true"
     }
