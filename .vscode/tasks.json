@@ -22,14 +22,6 @@
       }
     }
   },
-  "inputs": [
-    {
-      "id": "terminatewatchparam",
-      "type": "command",
-      "command": "workbench.action.tasks.terminate",
-      "args": "watch"
-    }
-  ],
   "tasks": [
     {
       "label": "dotnet watch - net6.0",
@@ -39,22 +31,13 @@
         "watch",
         "run",
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary",
         "-f",
         "net6.0"
       ],
       "options": {
         "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web"
       },
-      "isBackground": true,
       "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "terminatewatch",
-      "type": "shell",
-      "command": "echo ${input:terminatewatchparam}",
-      "problemMatcher": []
     },
     {
       "label": "dotnet run",

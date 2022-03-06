@@ -53,14 +53,14 @@
       "name": ".NET Core Launch (web debug) - dotnet watch - net6.0",
       "type": "dotnetwatchattach",
       "request": "launch",
-      "preLaunchTask": "dotnet watch - net6.0",
-      "postDebugTask": "terminatewatch",
+      "task": "dotnet watch - net6.0",
       "program": "OrchardCore.Cms.Web.exe",
-      "args": [],
-      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+      "args": {
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        }
       },
+      "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",
