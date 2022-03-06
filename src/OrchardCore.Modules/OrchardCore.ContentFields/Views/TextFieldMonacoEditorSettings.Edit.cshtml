@@ -1,23 +1,25 @@
+@using Newtonsoft.Json
 @model OrchardCore.ContentFields.ViewModels.MonacoSettingsViewModel
 @inject OrchardCore.Environment.Shell.ShellSettings shellSettings;
 @{
     var urlPrefix = String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix) ? string.Empty : String.Concat(shellSettings.RequestUrlPrefix, '/');
     var IStandaloneEditorConstructionOptionsSchemaPath = $"/{urlPrefix}OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json";
-    var diagnosticsOptions = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(string.Format(@"{{
-            ""validate"": true,
-            ""enableSchemaRequest"": true,
-            ""allowComments"": true,
-            ""schemas"": [{{
-                ""uri"": ""{0}"",
-                ""fileMatch"": [""*""]
-            }}]
-        }}", IStandaloneEditorConstructionOptionsSchemaPath)));
 
-    var settings = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"{
-            ""language"": ""json"",
-            ""lineNumbers"": false,
-            ""minimap"": { ""enabled"": false }
-        }"));
+    var diagnosticsOptionsObj = new {
+        validate = true,
+        enableSchemaRequest = true,
+        allowComments = true,
+        schemas = new []{
+            new {uri = IStandaloneEditorConstructionOptionsSchemaPath, fileMatch = new[]{"*"}}
+        }
+    };
+    var settingsObj = new {
+        language = "json",
+        lineNumbers = false,
+        minimap = new {enabled = false}
+    };
+     var diagnosticsOptions = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(diagnosticsOptionsObj)));
+     var settings = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(settingsObj)));
 }
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-monaco">
