@@ -106,12 +106,15 @@ As the example states, you could add `{{ Model.Content.BlogPost.Subtitle.Text }}
 You can do many things with this Liquid field: Index identifiers, fixed text or numeric values, etc.
 
 We can use the "Use custom full-text" to include the content of widgets or bags inside the full text search index. For example, for widgets inside a FlowPart we should use this Liquid script:
+
 ```html
 {% for contentItem in Model.Content.FlowPart.Widgets %}
   {{ contentItem | full_text_aspect }}
 {% endfor %}
 ```
+
 Or simply use:
+
 ```html
 {{ Model.Content.FlowPart.Widgets | full_text_aspect }}
 ```
