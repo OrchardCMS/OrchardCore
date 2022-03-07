@@ -109,12 +109,12 @@ namespace OrchardCore.Tenants.Services
 
         private static IEnumerable<string> GetUrlHosts(string combinedUrlHosts)
         {
-            if (String.IsNullOrEmpty(compoundUrlHosts))
+            if (String.IsNullOrEmpty(combinedUrlHosts))
             {
                 return Enumerable.Empty<string>();
             }
 
-            return compoundUrlHosts.Split(HostsSeparator).Select(h => h.Trim());
+            return combinedUrlHosts.Split(HostsSeparator).Select(h => h.Trim());
         }
     }
 }
