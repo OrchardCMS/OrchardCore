@@ -107,7 +107,7 @@ namespace OrchardCore.Tenants.Services
             return urlHosts.Intersect(modelUrlHosts).Any();
         }
 
-        private static IEnumerable<string> GetUrlHosts(string compoundUrlHosts)
+        private static IEnumerable<string> GetUrlHosts(string combinedUrlHosts)
         {
             if (String.IsNullOrEmpty(compoundUrlHosts))
             {
