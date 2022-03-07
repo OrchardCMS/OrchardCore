@@ -1,7 +1,7 @@
 {
   "name": "Blog.Lucene.Setup",
   "displayName": "Blog - Lucene setup",
-  "description": "Replaces RecentBlogPosts SQL query with Lucene and runs Lucene settings recipe.",
+  "description": "Setup Lucene settings, permission and indices.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -11,24 +11,66 @@
 
   "steps": [
     {
-      "name": "recipes",
-      "Values": [
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Lucene"
+      ]
+    },
+    {
+      // Create the indices before the content items so they are indexed automatically.
+      "name": "lucene-index",
+      "Indices": [
         {
-          "executionid": "Blog",
-          "name": "Blog.Lucene.Settings"
+          "Search": {
+            "AnalyzerName": "standardanalyzer",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+              "Article",
+              "Blockquote",
+              "Blog",
+              "BlogPost",
+              "Button",
+              "Container",
+              "Form",
+              "ImageWidget",
+              "Image",
+              "Input",
+              "Label",
+              "LinkMenuItem",
+              "Menu",
+              "Page",
+              "Paragraph",
+              "RawHtml",
+              "Select",
+              "TextArea",
+              "Validation",
+              "ValidationSummary"
+            ]
+          }
         }
       ]
     },
     {
-      "name": "queries",
-      "Queries": [
+      // Create the search settings.
+      "name": "Settings",
+      "LuceneSettings": {
+        "SearchIndex": "Search",
+        "DefaultSearchFields": [
+          "Content.ContentItem.FullText"
+        ]
+      }
+    },
+    {
+      // Create the search index permissions.
+      "name": "Roles",
+      "Roles": [
         {
-          "Source": "Lucene",
-          "Name": "RecentBlogPosts",
-          "Index": "Search",
-          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
-          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
-          "ReturnContentItems": true
+          "Name": "Anonymous",
+          "Description": "Anonymous role",
+          "Permissions": [
+            "ViewContent",
+            "QueryLuceneSearchIndex"
+          ]
         }
       ]
     }
