@@ -15,7 +15,7 @@
       "Values": [
         {
           "executionid": "Blog",
-          "name": "Blog.Lucene.Settings"
+          "name": "Blog.Lucene.Setup"
         }
       ]
     },
