@@ -7,6 +7,8 @@ namespace OrchardCore.Seo.Indexes;
 public class SeoMetaPartIndex : MapIndex
 {
     public string PageTitle { get; set; }
+    public string MetaDescription { get; set; }
+    public string MetaKeywords { get; set; }
 }
 
 public class SeoMetaPartIndexProvider : IndexProvider<ContentItem>
@@ -14,7 +16,7 @@ public class SeoMetaPartIndexProvider : IndexProvider<ContentItem>
     public override void Describe(DescribeContext<ContentItem> context)
     {
         context.For<SeoMetaPartIndex>()
-            .When(contentItem => contentItem.Has<SeoMetaPart>())
+            .When(contentItem => contentItem.Has<SeoMetaPart>() && contentItem.Published && contentItem.Latest)
             .Map(contentItem =>
             {
                 var containedPart = contentItem.As<SeoMetaPart>();
@@ -25,7 +27,9 @@ public class SeoMetaPartIndexProvider : IndexProvider<ContentItem>
 
                 return new SeoMetaPartIndex
                 {
-                    PageTitle = containedPart.PageTitle
+                    PageTitle = containedPart.PageTitle,
+                    MetaDescription = containedPart.MetaDescription,
+                    MetaKeywords = containedPart.MetaKeywords
                 };
             });
     }

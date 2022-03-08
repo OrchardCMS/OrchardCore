@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Media.Settings;
 using OrchardCore.Recipes.Services;
@@ -20,7 +21,7 @@ namespace OrchardCore.Seo
             _recipeMigrator = recipeMigrator;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
             _contentDefinitionManager.AlterPartDefinition("SeoMetaPart", builder => builder
                 .Attachable()
@@ -39,11 +40,15 @@ namespace OrchardCore.Seo
                     .WithSettings(new MediaFieldSettings { Multiple = false }))
             );
 
+            await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this);
+
             SchemaBuilder.CreateMapIndexTable<SeoMetaPartIndex>(table => table
-                .Column<string>("PageTitle", c => c.WithLength(128)));
+                .Column<string>("PageTitle", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
+                .Column<string>("MetaDescription", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
+                .Column<string>("MetaKeywords", c => c.WithLength(ContentItemIndex.MaxContentFieldSize)));
 
             SchemaBuilder.AlterIndexTable<SeoMetaPartIndex>(table => table
-                .CreateIndex("IDX_SeoMetaPartIndex_DocumentId", "DocumentId", "PageTitle")
+                .CreateIndex("IDX_SeoMetaPartIndex_DocumentId", "DocumentId", "PageTitle", "MetaDescription", "MetaKeywords")
             );
 
             return 3;
@@ -54,6 +59,20 @@ namespace OrchardCore.Seo
             await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this);
 
             return 2;
+        }
+
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.CreateMapIndexTable<SeoMetaPartIndex>(table => table
+                .Column<string>("PageTitle", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
+                .Column<string>("MetaDescription", c => c.WithLength(ContentItemIndex.MaxContentFieldSize))
+                .Column<string>("MetaKeywords", c => c.WithLength(ContentItemIndex.MaxContentFieldSize)));
+
+            SchemaBuilder.AlterIndexTable<SeoMetaPartIndex>(table => table
+                .CreateIndex("IDX_SeoMetaPartIndex_DocumentId", "DocumentId", "PageTitle", "MetaDescription", "MetaKeywords")
+            );
+
+            return 3;
         }
     }
 }

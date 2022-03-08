@@ -14,5 +14,9 @@ public class SeoMetaInputObjectType : WhereInputObjectGraphType<SeoMetaPart>
 
         Field(x => x.PageTitle, true)
             .Description("The seo page title");
+        Field(x => x.MetaDescription, true)
+            .Description("The seo meta description");
+        Field(x => x.MetaKeywords, true)
+            .Description("The seo meta keywords");
     }
 }
