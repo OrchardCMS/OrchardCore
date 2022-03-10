@@ -31,15 +31,18 @@
             <div class="card-body">
                 <h2 class="card-title">@T["Network delivery options"]</h2>
 
-                <div class="form-group" asp-validation-class-for="Host">
-                    <label asp-for="Host">@T["Host name"]</label>
-                    <input asp-for="Host" class="form-control" type="text" />
-                    <span asp-validation-for="Host"></span>
-                    <span class="hint">@T["The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."]</span>
-                </div>
-
                 <div class="row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-8">
+                        <div class="d-flex flex-wrap align-items-center justify-content-stretch">
+                            <div class="form-group flex-fill" asp-validation-class-for="Host">
+                                <label asp-for="Host">@T["Host name"]</label>
+                                <input asp-for="Host" class="form-control" type="text" />
+                                <span asp-validation-for="Host"></span>
+                                <span class="hint">@T["The SMTP server domain, e.g. <i>smtp.mailprovider.com</i>."]</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
                         <div class="d-flex flex-wrap align-items-center justify-content-stretch">
                             <div class="form-group flex-fill" asp-validation-class-for="Port">
                                 <label asp-for="Port">@T["Port number"]</label>
@@ -49,27 +52,48 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-9">
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8">
                         <div class="d-flex flex-wrap align-items-center justify-content-stretch">
-                            <div id="@Html.Id("SelectEncryptionMethod")" class="form-group flex-fill" asp-validation-class-for="EncryptionMethod">
-                                <label asp-for="EncryptionMethod">@T["Encryption method to use"]</label>
-                                <select asp-for="EncryptionMethod" class="form-control" disabled="@Model.AutoSelectEncryption">
-                                    <option value="@SmtpEncryptionMethod.None" selected="@(SmtpEncryptionMethod.None == Model.EncryptionMethod ? true : false)">
-                                        @T["None"] - @T["Connect to server using insecure connection."]
-                                    </option>
-                                    <option value="@SmtpEncryptionMethod.SSLTLS" selected="@(SmtpEncryptionMethod.SSLTLS == Model.EncryptionMethod ? true : false)">
-                                        @T["SSL/TLS"] - @T["Connect to server using SSL/TSL secure connection"]
-                                    </option>
-                                    <option value="@SmtpEncryptionMethod.STARTTLS" selected="@(SmtpEncryptionMethod.STARTTLS == Model.EncryptionMethod ? true : false)">
-                                        @T["STARTTLS"] - @T["Connect to server using insecure connection and upgrade to secure using SSL/TLS"]
-                                    </option>
-                                </select>
-                                <span asp-validation-for="EncryptionMethod"></span>
-                                <span class="hint">@T["The encryption method used when connecting to mail server."]</span>
+                            <div class="form-group flex-fill" asp-validation-class-for="ProxyHost">
+                                <label asp-for="ProxyHost">@T["Proxy host name"]</label>
+                                <input asp-for="ProxyHost" class="form-control" type="text" />
+                                <span asp-validation-for="ProxyHost"></span>
+                                <span class="hint">@T["The proxy server is optional."]</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="d-flex flex-wrap align-items-center justify-content-stretch">
+                            <div class="form-group flex-fill" asp-validation-class-for="ProxyPort">
+                                <label asp-for="ProxyPort">@T["Proxy port number"]</label>
+                                <input asp-for="ProxyPort" class="form-control" type="number" step="any" min="0" max="65535" />
+                                <span asp-validation-for="ProxyPort"></span>
+                                <span class="hint">@T["The proxy port is optional."]</span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div id="@Html.Id("SelectEncryptionMethod")" class="form-group" asp-validation-class-for="EncryptionMethod">
+                    <label asp-for="EncryptionMethod">@T["Encryption method to use"]</label>
+                    <select asp-for="EncryptionMethod" class="form-control" disabled="@Model.AutoSelectEncryption">
+                        <option value="@SmtpEncryptionMethod.None" selected="@(SmtpEncryptionMethod.None == Model.EncryptionMethod ? true : false)">
+                            @T["None"] - @T["Connect to server using insecure connection."]
+                        </option>
+                        <option value="@SmtpEncryptionMethod.SSLTLS" selected="@(SmtpEncryptionMethod.SSLTLS == Model.EncryptionMethod ? true : false)">
+                            @T["SSL/TLS"] - @T["Connect to server using SSL/TSL secure connection"]
+                        </option>
+                        <option value="@SmtpEncryptionMethod.STARTTLS" selected="@(SmtpEncryptionMethod.STARTTLS == Model.EncryptionMethod ? true : false)">
+                            @T["STARTTLS"] - @T["Connect to server using insecure connection and upgrade to secure using SSL/TLS"]
+                        </option>
+                    </select>
+                    <span asp-validation-for="EncryptionMethod"></span>
+                    <span class="hint">@T["The encryption method used when connecting to mail server."]</span>
+                </div>
+
                 <div class="form-group" asp-validation-class-for="AutoSelectEncryption">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" asp-for="AutoSelectEncryption">
