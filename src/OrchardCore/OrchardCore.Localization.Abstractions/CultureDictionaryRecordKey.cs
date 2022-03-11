@@ -7,9 +7,6 @@ namespace OrchardCore.Localization
     /// </summary>
     public struct CultureDictionaryRecordKey : IEquatable<CultureDictionaryRecordKey>
     {
-        private readonly string _messageId;
-        private readonly string _context;
-
         /// <summary>
         /// Creates new instance of <see cref="CultureDictionaryRecordKey"/>.
         /// </summary>
@@ -26,9 +23,19 @@ namespace OrchardCore.Localization
         /// <param name="context">The message context.</param>
         public CultureDictionaryRecordKey(string messageId, string context)
         {
-            _messageId = messageId;
-            _context = context;
+            MessageId = messageId;
+            Context = context;
         }
+
+        /// <summary>
+        /// Gets the message Id.
+        /// </summary>
+        public string MessageId { get; }
+
+        /// <summary>
+        /// Gets the message context.
+        /// </summary>
+        public string Context { get; }
 
         public static implicit operator string(CultureDictionaryRecordKey cultureDictionaryRecordKey)
             => cultureDictionaryRecordKey.ToString();
@@ -46,14 +53,14 @@ namespace OrchardCore.Localization
 
         /// <inheritdoc />
         public bool Equals(CultureDictionaryRecordKey other)
-            => String.Equals(_messageId, other._messageId) && String.Equals(_context, other._context);
+            => String.Equals(MessageId, other.MessageId) && String.Equals(Context, other.Context);
 
         /// <inheritdoc />
-        public override int GetHashCode() => HashCode.Combine(_messageId, _context);
+        public override int GetHashCode() => HashCode.Combine(MessageId, Context);
 
         public override string ToString()
-            => String.IsNullOrEmpty(_context)
-                ? _messageId
-                : _context.ToLowerInvariant() + "|" + _messageId;
+            => String.IsNullOrEmpty(Context)
+                ? MessageId
+                : Context.ToLowerInvariant() + "|" + MessageId;
     }
 }
