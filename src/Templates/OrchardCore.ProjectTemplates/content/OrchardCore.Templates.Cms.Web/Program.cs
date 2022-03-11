@@ -12,10 +12,10 @@ builder.Host.UseNLogWeb();
 #endif
 #if (UseSerilog)
 builder.Host.UseSerilog((hostingContext, configBuilder) =>
-                {
-                    configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
-                    .Enrich.FromLogContext();
-                });
+    {
+        configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
+        .Enrich.FromLogContext();
+    });
 #endif
 
 builder.Services.AddOrchardCms();
