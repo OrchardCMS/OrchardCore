@@ -24,8 +24,11 @@ dotnet new -i OrchardCore.ProjectTemplates::1.3.0-* --nuget-source https://nuget
 
 #### Generate an Orchard Cms Web Application
 
+!!! warning
+    Due to a bug in the current published version, the following command will require you to force the Orchard Core version to use with the templates by adding `--orchard-version 1.3.0`. For instance instead of typing `dotnet new occms` use `dotnet new occms --orchard-version 1.3.0`
+
 ```CMD
-dotnet new occms  
+dotnet new occms
 ```
 
 The above command will use the default options.
