@@ -58,8 +58,8 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `1.2.0`.
-The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/v1.2.0>
+The latest released version of Orchard Core is `1.3.0`.
+The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/v1.3.0>
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 
@@ -97,3 +97,7 @@ For more details on the various development tools we recommend for using with Or
 - Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
 
 Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>
+
+## Showcasing Orchard Core CMS
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Gfy5SCACyL8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -3980,12 +3980,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   }
 
   function widgetTopHeight(lineObj) {
+    var ref = visualLine(lineObj);
+    var widgets = ref.widgets;
     var height = 0;
 
-    if (lineObj.widgets) {
-      for (var i = 0; i < lineObj.widgets.length; ++i) {
-        if (lineObj.widgets[i].above) {
-          height += widgetHeight(lineObj.widgets[i]);
+    if (widgets) {
+      for (var i = 0; i < widgets.length; ++i) {
+        if (widgets[i].above) {
+          height += widgetHeight(widgets[i]);
         }
       }
     }
@@ -14717,6 +14719,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.65.0";
+  CodeMirror.version = "5.65.2";
   return CodeMirror;
 });

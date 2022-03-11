@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentFields.Settings;
@@ -9,9 +10,11 @@ using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
+using IHttpContextAccessor = Microsoft.AspNetCore.Http.IHttpContextAccessor;
 
 namespace OrchardCore.ContentFields.Controllers
 {
@@ -23,18 +26,23 @@ namespace OrchardCore.ContentFields.Controllers
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public LocalizationSetContentPickerAdminController(
             IContentDefinitionManager contentDefinitionManager,
             IContentLocalizationManager contentLocalizationManager,
             IContentManager contentManager,
-            ISession session
-            )
+            ISession session,
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentLocalizationManager = contentLocalizationManager;
             _contentManager = contentManager;
             _session = session;
+            _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -71,12 +79,15 @@ namespace OrchardCore.ContentFields.Controllers
 
             foreach (var contentItem in cleanedContentItems)
             {
-                results.Add(new VueMultiselectItemViewModel
+                if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent, contentItem))
                 {
-                    Id = contentItem.Key, //localization set
-                    DisplayText = contentItem.Value.ToString(),
-                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem.Value)
-                });
+                    results.Add(new VueMultiselectItemViewModel
+                    {
+                        Id = contentItem.Key, //localization set
+                        DisplayText = contentItem.Value.ToString(),
+                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem.Value)
+                    });
+                }
             }
 
             return new ObjectResult(results);
