@@ -26,7 +26,7 @@ namespace OrchardCore.Resources
             _siteService = siteService;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
-            _tenantPrefix = string.IsNullOrEmpty(shellSettings.RequestUrlPrefix) ? string.Empty : "/" + shellSettings.RequestUrlPrefix;
+            _tenantPrefix = _httpContextAccessor.HttpContext.Request.PathBase;
         }
 
         ResourceManifest BuildManifest()
