@@ -12,7 +12,7 @@ namespace OrchardCore.Resources
         private readonly ISiteService _siteService;
         private readonly IHostEnvironment _env;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly string _tenantPrefix;
+        private readonly string _pathBase;
 
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
@@ -26,7 +26,7 @@ namespace OrchardCore.Resources
             _siteService = siteService;
             _env = env;
             _httpContextAccessor = httpContextAccessor;
-            _tenantPrefix = _httpContextAccessor.HttpContext.Request.PathBase;
+            _pathBase = _httpContextAccessor.HttpContext.Request.PathBase;
         }
 
         ResourceManifest BuildManifest()
@@ -475,7 +475,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("monaco")
-                .SetAttribute("data-tenant-prefix", _tenantPrefix)
+                .SetAttribute("data-tenant-prefix", _pathBase)
                 .SetUrl("~/OrchardCore.Resources/Scripts/monaco/ocmonaco.js")
                 .SetDependencies("monaco-loader")
                 .SetVersion(monacoEditorVersion);
